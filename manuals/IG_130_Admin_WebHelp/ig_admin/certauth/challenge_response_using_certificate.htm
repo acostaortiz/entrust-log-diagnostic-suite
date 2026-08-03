@@ -1,0 +1,165 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\certauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Challenge response using certificate</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nCertificate authentication\nCertificate authentication overview\nChallenge response using certificate");
+addAvenueInfo("r13_std","ig_admin/certauth/certificate_authentication_overview.htm","ig_admin/certauth/risk-based_authentication_using_a_certificate.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"certificate_authentication.htm\">Certificate authentication<\/a> > <a href=\"certificate_authentication_overview.htm\">Certificate authentication overview<\/a> > Challenge response using certificate<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Challenge response using certificate</h1>
+<p class="pparagraph">Your application requests a challenge by specifying an authentication mechanism of type CERTIFICATE. Entrust IdentityGuard returns random data to be signed by the application. Upon receipt of the encoded signature, Entrust IdentityGuard checks it to ensure that the signature is valid and that the certificate used for the signature is valid. Certificate validation conforms to RFC 2459, the X.509 standard.</p>
+<p class="pparagraph">To configure certificate authentication in which the user is authenticated through a challenge that is answered by their certificate, do the following:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Ensure that administrators have the required permissions to set policy (see <a href="../config_roles/user_permissions.htm#XREF_15390_Certificate">User permissions</a>).</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Using the Policies pages of the Administration interface, set the certificate authentication policies (see <a href="../config_policies/certificate_authentication_policies.htm#XREF_47419_Certificate">Certificate Authentication policies</a>).</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create an application that takes the Entrust IdentityGuard challenge, hashes and signs it, and then returns the base-64 encoded signature to Entrust IdentityGuard as a response to the challenge. Some additional requirements to consider:</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>The application must register a new end user certificate only after the user successfully authenticates with another method.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>The application must provide a label for each certificate, since users can have more than one.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If the user has more than one valid certificate, prompt the user to choose which to use.</p>
+
+<p class="pparagraph">For detailed information about configuring your client application, see the <span class="italic" style="font-style: italic; letter-spacing: 0.00em; text-decoration: none;">Entrust IdentityGuard Programming Guide</span>. A certificate authentication sample is provided with Entrust IdentityGuard.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Register one or more CA certificates into Entrust IdentityGuard. See <a href="administering_ca_certificates.htm#XREF_51393_Administering_CA">Administering CA certificates</a> for details.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Load the certificates into Entrust IdentityGuard and associate them with users. See <a href="importing_and_assigning_user_certificates.htm#XREF_28469_Importing_user">Importing and assigning user certificates</a>. Certificates must be globally unique.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

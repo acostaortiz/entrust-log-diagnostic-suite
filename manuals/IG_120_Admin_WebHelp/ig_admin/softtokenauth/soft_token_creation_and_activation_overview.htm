@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\softtokenauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Soft token creation and activation overview</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nSoft token authentication\nSoft token overview\nSoft token creation and activation overview");
+addAvenueInfo("Untitled02","ig_admin/softtokenauth/soft_token_download_overview.htm","ig_admin/softtokenauth/soft_token_transaction_verification_overview.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"softtokenauth.htm\">Soft token authentication<\/a> > <a href=\"soft_token_overview.htm\">Soft token overview<\/a> > Soft token creation and activation overview<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_18262_Creating_and" id="XREF_18262_Creating_and"></a>Soft token creation and activation overview</h1>
+<p class="pparagraph">After users download the soft token application, they must activate the soft token. There are three ways to activate a soft token:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>through the Self-Service Module—see the <span class="italic" style="font-style: italic; letter-spacing: 0.00em; text-decoration: none;">Entrust IdentityGuard Self-Service Module Installation and Configuration Guide</span> for details.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>through a custom interface—see the <span class="italic" style="font-style: italic; letter-spacing: 0.00em; text-decoration: none;">Entrust IdentityGuard Programming Guide</span> <span class="italic" style="font-style: italic; letter-spacing: 0.00em; text-decoration: none;"></span>for details on how to create a custom interface.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>through the Administration interface—help desk model, as shown in the following figure. For more information, see <a href="creating_and_activating_a_mobile_soft_token_using_the.htm#XREF_11878_Creating_and">Creating and activating a mobile soft token using the Administration interface</a>.</p>
+
+<p class="pparagraph">In all cases, a serial number, an activation code, and optionally, a URL, are required to activate the soft token.</p>
+<p class="pparagraph">With version 2.0 of the Entrust IdentityGuard Mobile ST app, this information is entered automatically if users have a an active data connection through a cellular data network or Wi-Fi. Users who do not have an active connection, or who have version 1.0 of the app, or who are using the Mac version of the desktop soft token application, must enter this information manually into the soft token. This generates a registration code. If the Transaction component was enabled during the installation of the Self-Service Module, the registration code is passed automatically to Entrust IdentityGuard, and the activation is completed without further user input. (In other words, step 3 in the following figure does not occur.) If the Transaction component was not enabled, the registration code is displayed on-screen in the soft token application, and users must manually enter this code into Self-Service or the Administration interface to complete the activation.</p>
+<p class="pparagraph">If use of a Personal Verification Number (PVN) is required by policy, the PVN is sent to the user.</p>
+<p class="pparagraph">As mentioned earlier, providing a URL is optional. If users do not enter a URL, then:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>there is no custom branding or colors</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>the user must enter an Identity Provider name</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>the registration code cannot be sent automatically to the soft token. Instead, it is displayed on-screen.</p>
+
+<div style="text-align: left;">
+<p class="pparagraph"><img alt="Soft-Token-Activation-Help-Desk.jpg" id="image3" src="soft-token-activation-help-desk.jpg" width="552" height="402" border="0" name="image3" /></p>
+</div>
+<p class="FM_fcwfigurecaptionwide">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

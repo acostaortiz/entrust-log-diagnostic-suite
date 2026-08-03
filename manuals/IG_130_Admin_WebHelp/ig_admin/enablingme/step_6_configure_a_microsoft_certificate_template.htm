@@ -1,0 +1,330 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Step 6: Configure a Microsoft certificate template</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 6: Configure a Microsoft certificate template");
+addAvenueInfo("r13_std","ig_admin/enablingme/step_5_create_a_scep_account.htm","ig_admin/enablingme/step_7_create_scep_credentials.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobile-enrollment-for-digital-ids.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > Step 6: Configure a Microsoft certificate template<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_39202_Create_a" id="XREF_39202_Create_a"></a>Step 6: 
+ Configure a Microsoft certificate template</h1>
+<p class="pparagraph"><span class="italic">Complete both procedures in 
+ this section only if you are using a Microsoft CA or a Microsoft CA integrated 
+ with Entrust IdentityGuard through Entrust CA Gateway.</span></p>
+<p class="pparagraph">You must create an <span style="font-weight: bold;">IG 
+ Dual Usage</span>&#160;certificate template on the Microsoft CA computer. 
+ The CA uses this template to generate user’s certificates (also known 
+ as digital IDs).</p>
+<p class="prtproceduretitle">To create the IG Dual Usage certificate template</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ Microsoft CA Server 2016 or later, open the <span class="bold">certsrv</span> 
+ (certification service) window. There are two ways to open it.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Open the 
+ <span class="bold">Control Panel</span> and click <span class="bold">Administrative 
+ Tools</span>, In the right pane, double-click <span class="bold">Certification 
+ Authority</span>. The <span class="bold">certsrv</span> window opens.</p>
+<p class="prpprocedureparagraph">OR</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Open the 
+ <span class="bold">Control Panel</span>, click <span class="bold">Administrative 
+ Tools</span>, then click <span class="bold">Server Manager</span>. <a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />More..</a>.</p>
+<div class="droptext" id="POPUP634876726" style="display: none;">
+	<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+	 the left pane, click <span class="bold">AD CS</span> (Active Directory 
+	 Certificate Services).</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under 
+	 <span class="bold">Servers</span>, right-click the name of the server 
+	 that hosts your Microsoft CA and select <span class="bold">Certification 
+	 Authority</span> from the list that appears.</p>
+	<p class="prspsubprocedureparagraph"><img src="../../01_servermgr_adcs__certauth.png" alt="" style="border: none;" width="600" height="325" border="0" /></p>
+	<p class="prspsubprocedureparagraph">The <span class="bold">certsrv</span> 
+	 window opens.</p>
+</div>
+
+
+</div>
+<div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ view the certificate templates, in the left pane of the <span class="bold">certsrv</span> 
+ window, expand the name of your Microsoft CA server, right-click <span 
+	 class="bold">Certificate Templates</span>, and then select <span class="bold">Manage</span> 
+ from the list that appears. </p>
+<p class="prpprocedureparagraph"><img src="../../02_certsrv_certtemp_manage.png" alt="" style="border: none;" border="0" /></p>
+<p class="prpprocedureparagraph">The <span class="bold">Certificate Templates 
+ Console</span> opens.</p>
+</div>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span class="bold">Template Display Name</span> column, right-click 
+ the <span class="bold">User</span> certificate template, and then select 
+ <span class="bold">Duplicate Template</span> from the list that appears. 
+ </p>
+<p class="prpprocedureparagraph"><img src="../../03_user_duplicatetemp.png" alt="" style="border: none;" width="600" height="265" border="0" /></p>
+<p class="prpprocedureparagraph">The <span class="bold">Properties of New 
+ Template</span> window opens.</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span class="bold">Compatibility</span> 
+ tab, configure the following settings:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Certification Authority</span> – 
+ From the drop-down list, select the operating system of computers in your 
+ network with which your &#160;Microsoft CA host needs to be compatible.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Certificate Recipient</span>&#160;– 
+ From the drop-down list, select the pair of compatible operating systems 
+ for client and server computer .in your network with which your Microsoft 
+ CA host needs to be compatible.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Show resulting changes</span>&#160;– (Optional) If this check box 
+ is selected, a message lists the options that will be added with you choice. 
+ Click <span class="bold">OK</span> to dismiss the message.</p>
+<p class="prpprocedureparagraph"><img src="../../04_compat_tab.png" alt="" style="border: none;" border="0" /></p>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span class="bold">General</span>&#160;tab, 
+ configure the following settings:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Template display name</span>&#160;– 
+ Enter:<span class="output">IG Dual Usage</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Template name</span>&#160;– 
+ This is filled in automatically with the template display name (with no 
+ spaces).</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Publish certificate in Active Directory</span>&#160;– Deselect this option. </p>
+<p class="prpprocedureparagraph"><img src="../../dualusage_01.png" alt="" style="border: none;" border="0" /></p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span class="bold">Request Handling</span>&#160;tab, 
+ from the <span class="bold">Purpose</span>&#160;drop-down list, select 
+ <span class="bold">Signature</span>.<span class="bold">and encryption</span>. 
+ </p>
+<p class="prpprocedureparagraph"><img src="../../dualusage_02.png" alt="" style="border: none;" border="0" /></p>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span class="bold">Cryptography</span> 
+ tab, configure the following settings: </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Provider Category</span>&#160;– 
+ Select <span class="bold">Key Storage Provider</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Algorithm name</span>&#160;– 
+ RSA</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Minimum key size</span>&#160;– 
+ 2048</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Request hash</span>&#160;– 
+ Select <span class="bold">SHA256</span> from the drop-down list. </p>
+<p class="prpprocedureparagraph"><img src="../../05_crypto_tab.png" alt="" style="border: none;" border="0" /></p>
+<p 
+	 class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span class="bold">Subject Name</span> 
+ tab, configure the following settings: </p>
+<p class="prpprocedureparagraph"><span class="attention_red"><img src="../../msca_pivpivcert_subjectname.png" alt="" style="border: none;" border="0" /></span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Supply in the request</span>&#160;– 
+ Select this option.</p>
+<p class="liplistparagraph"><img src="../../msca_pivpivcert_subjectname_warning.png" alt="" style="border: none;" border="0" /></p>
+<p class="prpprocedureparagraph">When asked to confirm the change, click 
+ <span class="bold" style="letter-spacing: 0em;">OK</span>. In this case, 
+ security is maintained because an administrator will be requesting certificates 
+ for end users. &#160;</p>
+<p 
+	 class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span class="bold">Extensions</span> 
+ tab,&#160;select <span class="bold">Application Policies</span>, and then 
+ click <span class="bold">Edit</span>.</p>
+<p class="prpprocedureparagraph"><img src="../../09_extensions_tab_apppolicies.png" alt="" style="border: none;" border="0" /></p>
+<p class="prpprocedureparagraph">The <span class="bold">Edit Application 
+ Policies Extension</span> window opens.</p>
+<p class="prpprocedureparagraph"><img src="../../piv-pivauth_editapppoliciesextension_window.png" alt="" style="border: none;" border="0" /></p>
+<p 
+	 class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Add two new policies: <span class="bold">Any 
+ Purpose</span> and <span class="bold">Document Signing</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the <span class="bold">Edit Application Policies Extension</span> window, 
+ click <span class="bold">Add</span>. The <span class="bold">Add Application 
+ Policy</span> window opens. </p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the <span class="bold">Add Application Policy</span> window, select <span 
+	 class="bold">Any Purpose</span>, and then click <span class="bold">OK. 
+ </span></p>
+<p class="prspsubprocedureparagraph"><span class="bold"><img src="../../ext_tab_adding_policy.png" alt="" style="border: none;" border="0" /></span></p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Repeat 
+ steps a. and b., but this time select the <span class="bold">Document 
+ Signing </span>policy. The resulting list of application policies should 
+ have <span class="bold">Any Purpose</span>, <span class="bold">Client 
+ Authentication</span>, <span class="bold">Document Signing</span>, <span 
+	 class="bold">Encrypting File System</span>, and <span class="bold">Secure 
+ Email</span>.</p>
+<p 
+	 class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span class="bold">OK</span> to close 
+ the open windows and save the settings for the new template.</p>
+<p class="prpprocedureparagraph">The<span class="bold"> IG Dual Usage</span> 
+ certificate template is added to the list of templates.</p>
+<p class="prtproceduretitle">To configure the CA to use the IG Dual Usage 
+ template</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ your Microsoft CA computer, open Server Manager by clicking <span style="font-weight: bold;">Start</span>&#160;&gt; 
+ <span style="font-weight: bold;">Administrative Tools</span> &gt; <span 
+	 style="font-weight: bold;">Server Manager</span>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the left navigation pane, expand <span style="font-weight: bold;">Server 
+ Manager</span>&#160;&gt; <span style="font-weight: bold;">Roles</span>&#160;&gt; 
+ <span style="font-weight: bold;">Active Directory Certificate Services</span>, 
+ and select your CA’s common name. It is this entry: <img alt="servermanager_caicon.jpg" 
+															 id="image2" 
+															 src="../../servermanager_caicon.jpg" 
+															 name="image2" 
+															 style="margin-bottom: -6.750pt;" 
+															 width="24" 
+															 height="23" 
+															 border="0" /></p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the main pane, right-click <span style="font-weight: bold;">Certificate 
+ Templates</span>&#160;and select <span style="font-weight: bold;">New</span>&#160;&gt; 
+ <span style="font-weight: bold;">Certificate Template to Issue</span>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span style="font-weight: bold;">IG Dual Usage</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">OK</span>.</p>
+<p class="prpprocedureparagraph">Your Microsoft CA now uses the IG Dual 
+ Usage template to issue user digital IDs.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP634876726');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

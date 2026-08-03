@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Manual Administrativo Entrust IDaaS Cloud - Troubleshooting & SSO</title>
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; color: #0f172a; max-width: 950px; margin: 0 auto; padding: 20px; background: #ffffff; }
+    h1 { color: #0284c7; border-bottom: 3px solid #0284c7; padding-bottom: 10px; }
+    h2 { color: #0369a1; margin-top: 28px; border-left: 5px solid #0369a1; padding-left: 12px; }
+    .error-card { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 16px; margin: 16px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
+    .error-code { font-family: monospace; font-size: 1.1rem; font-weight: bold; color: #0369a1; background: #e0f2fe; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+    .code-block { background: #0f172a; color: #38bdf8; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 13px; overflow-x: auto; margin-top: 8px; }
+    .badge-cloud { background: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Entrust IDaaS (Identity as a Service) - Guía de Troubleshooting Cloud & SSO</h1>
+  <p><strong>Referencia de Administración Cloud:</strong> Entrust Identity Cloud Tenant / SAML 2.0, OIDC & Push MFA</p>
+
+  <h2 id="sec-idaas-saml">1. Troubleshooting SAML 2.0 & Aserción Expirada (SAML_RESPONSE_EXPIRED)</h2>
+  <div class="error-card">
+    <div><span class="error-code">SAML_RESPONSE_EXPIRED</span> <span class="badge-cloud">Entrust IDaaS Cloud SSO</span></div>
+    <p><strong>Significado del Log:</strong> La aserción de identidad SAML 2.0 emitida por el tenant de Entrust IDaaS fue rechazada por la aplicación del cliente porque la hora NotOnOrAfter caducó durante el tránsito de red.</p>
+    <p><strong>Solución Inmediata:</strong></p>
+    <ol>
+      <li>Sincronizar el reloj NTP del servidor con el estrato oficial.</li>
+      <li>Aumentar la tolerancia de reloj (Clock Skew Tolerance) a 180 segundos en las opciones de SSO de la aplicación.</li>
+    </ol>
+  </div>
+
+  <h2 id="sec-idaas-mfa">2. Autenticación Adaptativa Móvil & Push MFA (PUSH_NOTIFICATION_FAILED)</h2>
+  <div class="error-card">
+    <div><span class="error-code">PUSH_NOTIFICATION_FAILED</span> <span class="badge-cloud">Identity Mobile Cloud MFA</span></div>
+    <p><strong>Significado del Log:</strong> No fue posible entregar la notificación Push de segundo factor al dispositivo registrado del usuario.</p>
+    <p><strong>Acción de Remediación:</strong> Re-enrolar el dispositivo o usar el OTP temporal generado por la aplicación móvil Entrust Identity.</p>
+  </div>
+
+  <h2 id="sec-idaas-radius">3. Diagnóstico de RADIUS Cloud Gateway Proxy (RADIUS_PROXY_TIMEOUT)</h2>
+  <div class="error-card">
+    <div><span class="error-code">RADIUS_PROXY_TIMEOUT</span> <span class="badge-cloud">OnPremise RADIUS Gateway</span></div>
+    <p><strong>Significado del Log:</strong> El conector RADIUS local no obtuvo respuesta del servicio Cloud de Entrust IDaaS dentro del timeout especificado.</p>
+    <div class="code-block">sudo systemctl status entrust-radius-gateway && journalctl -u entrust-radius-gateway -n 50</div>
+  </div>
+</body>
+</html>

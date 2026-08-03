@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="topic-comment" content="Adds Entrust branding and doc feedback link to all topics upon generation." />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Entrust</title>
+<link rel="StyleSheet" href="Entrust.css" type="text/css" />
+</head>
+
+<body>
+<?rh-region_start type="header" style="width: 100%; position: relative;" ?>
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="Entrust_logo_onTransparent.png" style="border: none;" 
+					 border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard <?rh-udv_start name="guide" ?>Administration Guide<?rh-udv_end ?> 
+			 for the Virtual Appliance Server <?rh-udv_start name="release" ?>11.0<?rh-udv_end ?></p></td>
+		</tr>
+	</table>
+<?rh-region_end type="header" ?>
+<?rh-region_start type="body" ?>
+	<h1>&#160;</h1>
+	<p class="pparagraph">Type new text here.</p>
+<?rh-region_end type="body" ?>
+<p class="pparagraph">&#160;</p>
+<?rh-region_start type="footer" style="width: 100%; position: relative;" ?>
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Virtual+Appliance+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a 
+			 href="IG_Admin/About_this_Book/Documentation_feedback.htm"><img 
+			 src="Icn_question.png" alt="" style="border: none;" width="15" 
+			 height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+<?rh-region_end type="footer" ?>
+</body>
+</html>

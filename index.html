@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT SERVICIOS - Dashboard de Diagnóstico Entrust OnPremise & IDaaS Cloud</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/styles.css?v=2.5">
+</head>
+<body>
+
+  <!-- Header & App Navbar Corporativo IT SERVICIOS -->
+  <header class="app-header">
+    <div class="brand-container">
+      <div class="official-it-logo">
+        <div class="it-logo-box">
+          <div class="it-logo-red-accent"></div>
+          <span class="it-logo-text-it">IT</span>
+        </div>
+        <span class="it-logo-text-servicios">SERVICIOS</span>
+      </div>
+      <div>
+        <div class="brand-subtitle">Suite de Diagnostico — Entrust OnPremise & IDaaS Cloud</div>
+      </div>
+    </div>
+
+    <nav class="nav-tabs">
+      <button class="nav-btn active" data-tab="overview">📊 Visión General</button>
+      <button class="nav-btn" data-tab="analyzer">🔍 Analizador & Diagnóstico</button>
+      <button class="nav-btn" data-tab="traces">⚡ Trazas Distribuidas</button>
+      <button class="nav-btn" data-tab="kb">🧠 Base de Conocimientos</button>
+      <button class="nav-btn" data-tab="manuals">📚 Manuales Administrativos</button>
+    </nav>
+
+    <div class="header-actions">
+      <div style="display:flex; align-items:center; gap:6px; background:var(--bg-primary); padding:4px 8px; border-radius:6px; border:1px solid var(--border-color);">
+        <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">🏢 Cliente Activo:</span>
+        <select class="form-control" id="active-client-session-select" style="width:230px; height:32px; font-size:0.8rem; font-weight:700; padding:2px 8px;">
+          <!-- Opciones inyectadas por JS -->
+        </select>
+        <button class="btn btn-primary" id="btn-open-create-client-modal" onclick="document.getElementById('client-modal').classList.add('active');" style="padding:4px 8px; font-size:0.75rem; cursor:pointer;" title="Registrar o editar perfil de cliente">➕ Cliente</button>
+      </div>
+
+      <button class="theme-toggle-btn" id="btn-toggle-theme" title="Cambiar entre Modo Claro y Oscuro">☀️ / 🌙 Tema</button>
+      <button class="btn btn-primary" id="btn-generate-exec-report">📄 Generar Informe Preliminar</button>
+      <div class="user-badge-header">
+        <span>👤 Tomás Acosta</span>
+      </div>
+      <div class="pulse-badge" style="display: none;">
+        <span class="pulse-dot"></span> Streaming Activo
+      </div>
+      <button class="btn" id="btn-toggle-stream">▶️ Simulador</button>
+    </div>
+  </header>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+
+    <!-- 1. PESTAÑA: VISIÓN GENERAL -->
+    <div class="tab-pane active" id="tab-overview">
+      <div class="metrics-grid">
+        <div class="metric-card success" id="card-health">
+          <div class="metric-label">Índice de Salud de Autenticación & Servidores</div>
+          <div class="metric-value text-cyan" id="health-index">88%</div>
+          <div class="metric-sub">Entrust OnPremise & IDaaS Cloud</div>
+          <span class="click-hint">Ver estado del sistema ➔</span>
+        </div>
+
+        <div class="metric-card" id="card-total-logs">
+          <div class="metric-label">Total de Logs Analizados</div>
+          <div class="metric-value" id="total-logs-count">0</div>
+          <div class="metric-sub">Registros de auditoría e incidentes</div>
+          <span class="click-hint">Ver todos los logs ➔</span>
+        </div>
+
+        <div class="metric-card critical" id="card-entrust-errors" title="Haz clic para ver la lista de errores 520xxx / IDaaS por separado">
+          <div class="metric-label">Errores IdentityGuard [520xxx / IDaaS]</div>
+          <div class="metric-value text-danger" id="critical-count">0</div>
+          <div class="metric-sub">Fallos de política, SAML, usuarios y claves</div>
+          <span class="click-hint">🔍 Haz clic para filtrar solo Errores [520xxx] ➔</span>
+        </div>
+
+        <div class="metric-card warning" id="card-audit-alerts">
+          <div class="metric-label">Alertas de Auditoría [AUDxxx]</div>
+          <div class="metric-value text-warn" id="warning-count">0</div>
+          <div class="metric-sub">Intentos fallidos y accesos de admin</div>
+          <span class="click-hint">Ver eventos de auditoría ➔</span>
+        </div>
+      </div>
+
+      <div class="dashboard-grid-2">
+        <div class="glass-card">
+          <div class="card-header">
+            <div class="card-title">📈 Tendencia de Eventos Entrust Suite (OnPremise & IDaaS Cloud)</div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chart-trend"></canvas>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <div class="card-title">🍩 Distribución por Severidad</div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chart-severity"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. PESTAÑA: ANALIZADOR DE LOGS Y DIAGNÓSTICO RÁPIDO -->
+    <div class="tab-pane" id="tab-analyzer">
+      <div class="glass-card mb-4">
+        <div class="card-header">
+          <div class="card-title">🛠️ Herramientas de Carga de Logs Entrust OnPremise / IDaaS Cloud</div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn" id="btn-export-report">📥 Exportar Datos JSON</button>
+            <label class="btn btn-primary" style="margin:0;">
+              📂 Cargar Múltiples Archivos (.log, .txt, .json)
+              <input type="file" id="file-input" accept=".log,.txt,.json" multiple style="display:none;">
+            </label>
+          </div>
+        </div>
+
+        <!-- Banner de Filtro Activo cuando se hace clic en la Tarjeta de Errores 520xxx -->
+        <div class="active-filter-banner" id="active-filter-banner" style="display: none;">
+          <span id="active-filter-text">🔐 Filtrando únicamente: Errores Entrust IdentityGuard [520xxx]</span>
+          <button class="btn btn-danger" id="btn-clear-active-filter" style="padding:4px 10px; font-size:0.75rem;">✖ Resetear Filtro</button>
+        </div>
+
+        <!-- Banner Indicador de Estado del Análisis de Archivos -->
+        <div id="analysis-status-bar" style="display:none; background:rgba(14, 165, 233, 0.12); border:1px solid rgba(14, 165, 233, 0.4); padding:10px 16px; border-radius:6px; margin-bottom:14px; font-size:0.85rem; font-family:'JetBrains Mono', monospace; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span id="analysis-status-spinner" class="pulse-dot" style="background:#0284c7;"></span>
+            <span id="analysis-status-text" style="color:var(--text-main); font-weight:700;">✅ ¡Análisis Completado Exitosamente!</span>
+          </div>
+          <span id="analysis-status-detail" style="color:var(--text-muted); font-size:0.8rem;">0 registros procesados</span>
+        </div>
+
+        <div class="log-toolbar">
+          <div class="search-box">
+            <input type="text" class="form-control" id="search-log-input" placeholder="🔍 Buscar por 520xxx, AUDxxx, SAML, MFA, usuario o API...">
+          </div>
+
+          <div style="width: 200px;">
+            <select class="form-control" id="filter-client-select">
+              <option value="ALL">🏢 Todos los Clientes</option>
+            </select>
+          </div>
+
+          <div style="width: 160px;">
+            <select class="form-control" id="filter-level-select">
+              <option value="ALL">Todas las Severidades</option>
+              <option value="CRITICAL">CRITICAL / FATAL</option>
+              <option value="ERROR">ERROR (Errores 520xxx / IDaaS)</option>
+              <option value="WARN">WARN (Auditoría)</option>
+              <option value="INFO">INFO</option>
+            </select>
+          </div>
+
+          <div style="width: 170px;">
+            <select class="form-control" id="filter-type-select">
+              <option value="ALL">Todos los Tipos</option>
+              <option value="Entrust IdentityGuard">Entrust OnPremise</option>
+              <option value="Audit">Auditoría Kernel/System</option>
+              <option value="System">Sistema Operativo</option>
+              <option value="WebAccess">Nginx Web WAF</option>
+            </select>
+          </div>
+
+          <div style="width: 280px;">
+            <select class="form-control" id="preset-selector">
+              <option value="entrust_idg">🔐 Escenario: Entrust OnPremise (520xxx & AUDxxx)</option>
+              <option value="entrust_idaas">☁️ Escenario: Entrust IDaaS Cloud (SAML, MFA & Radius)</option>
+              <option value="oom_crash">💥 Escenario: Crash de Memoria OOM Linux</option>
+              <option value="audit_attack">🛡️ Escenario: Fuerza Bruta SSH & WAF SQLi</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Terminal de Logs -->
+        <div class="log-terminal">
+          <div class="terminal-header">
+            <span id="terminal-title">REGISTROS DE ENTRUST SUITE (ONPREMISE & IDAAS CLOUD) - IT SERVICIOS</span>
+            <span>Haz clic en cualquier línea para ver su Diagnóstico & Manual HTML Vinculado</span>
+          </div>
+          <div class="log-scroll-area" id="log-scroll-area">
+            <!-- Filas inyectadas por JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjeta de Diagnóstico Automatizado RAG / KB -->
+      <div class="diagnostic-box" id="diagnostic-card">
+        <div class="text-muted" style="text-align:center; padding:20px;">
+          Selecciona un registro de log en la tabla superior para emitir su diagnóstico rápido y consultar el manual correspondiente.
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. PESTAÑA: TRAZAS DISTRIBUIDAS -->
+    <div class="tab-pane" id="tab-traces">
+      <div class="glass-card">
+        <div class="card-header">
+          <div class="card-title">⚡ Visualizador Waterfall de Trazas Entrust OnPremise & IDaaS Cloud</div>
+          <span class="text-muted font-mono" style="font-size:0.8rem;">Trace ID: entrust-auth-8f921a</span>
+        </div>
+
+        <p class="text-muted" style="font-size:0.9rem; margin-bottom:16px;">
+          Inspección de latencia entre el Gateway de Autenticación, las llamadas a la API de Contexto de Sistema Entrust y la evaluación de políticas cloud (SAML / TOKENRO).
+        </p>
+
+        <div class="trace-waterfall" id="trace-waterfall-container">
+          <!-- Spans inyectados por JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. PESTAÑA: BASE DE CONOCIMIENTOS -->
+    <div class="tab-pane" id="tab-kb">
+      <div class="glass-card">
+        <div class="card-header">
+          <div class="card-title">🧠 Base de Conocimientos (Entrust 520xxx, AUDxxx & IDaaS Cloud)</div>
+          <button class="btn btn-primary" id="btn-open-add-kb">➕ Agregar Regla Personalizada</button>
+        </div>
+
+        <p class="text-muted" style="font-size:0.9rem; margin-bottom:20px;">
+          El motor de la Base de Conocimientos mapea automáticamente códigos de error <code>[520xxxx]</code>, eventos <code>[AUDxxxx]</code> y fallos IDaaS (SAML, MFA, RADIUS) con su significado, causa raíz y remediación.
+        </p>
+
+        <div id="kb-rules-list">
+          <!-- Reglas inyectadas por JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. PESTAÑA: MANUALES ADMINISTRATIVOS HTML POR VERSIÓN -->
+    <div class="tab-pane" id="tab-manuals">
+      <div class="glass-card">
+        <div class="card-header" style="flex-wrap:wrap; gap:12px;">
+          <div class="card-title">📚 Visor de Manuales Administrativos & Release Notes (HTML)</div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <select class="form-control" id="manual-version-select" style="width:420px;">
+              <!-- Opciones inyectadas por JS -->
+            </select>
+            <button class="btn btn-primary" id="btn-open-add-manual">📥 Incorporar Nuevo Manual HTML</button>
+          </div>
+        </div>
+
+        <!-- Barra de Accesos Rápidos a Release Notes -->
+        <div style="display:flex; gap:8px; margin-bottom:15px; flex-wrap:wrap; background:var(--bg-primary); padding:10px; border-radius:6px; border:1px solid var(--border-color);">
+          <span style="font-size:0.85rem; font-weight:600; color:var(--text-muted); align-self:center;">Acceso Rápido:</span>
+          <button class="btn btn-secondary relnote-quick-btn" data-ver="v13_0_relnotes" style="font-size:0.8rem; padding:4px 10px;">📋 Release Notes v13.0</button>
+          <button class="btn btn-secondary relnote-quick-btn" data-ver="v12_0_relnotes" style="font-size:0.8rem; padding:4px 10px;">📋 Release Notes v12.0</button>
+          <button class="btn btn-secondary relnote-quick-btn" data-ver="v11_0_relnotes" style="font-size:0.8rem; padding:4px 10px;">📋 Release Notes v11.0</button>
+          <button class="btn btn-secondary relnote-quick-btn" data-ver="v13_0_webhelp" style="font-size:0.8rem; padding:4px 10px;">📖 WebHelp v13.0</button>
+          <button class="btn btn-secondary relnote-quick-btn" data-ver="v12_0_webhelp" style="font-size:0.8rem; padding:4px 10px;">📖 WebHelp v12.0</button>
+          <button class="btn btn-secondary relnote-quick-btn" data-ver="v11_0_webhelp" style="font-size:0.8rem; padding:4px 10px;">📖 WebHelp v11.0</button>
+        </div>
+
+        <div class="manual-layout">
+          <!-- Sidebar: Búsqueda y Tabla de Contenidos -->
+          <div class="manual-sidebar">
+            <input type="text" class="form-control" id="manual-search-input" placeholder="🔍 Buscar código 520xxx o IDaaS...">
+            <div class="diag-label">Tabla de Contenidos</div>
+            <ul class="toc-list" id="manual-toc-list">
+              <!-- TOC inyectada por JS -->
+            </ul>
+          </div>
+
+          <!-- Contenedor del Iframe con el HTML del Manual -->
+          <div class="manual-frame-container">
+            <iframe id="manual-iframe" class="manual-iframe" title="Manual Administrativo"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL INFORME DE DIAGNÓSTICO PRELIMINAR EJECUTIVO (PRINTABLE) -->
+  <div class="modal-overlay" id="exec-report-modal">
+    <div class="modal-content" style="max-width: 950px;">
+      <div class="card-header">
+        <div class="card-title text-cyan">📄 Informe de Diagnóstico Preliminar de Incidentes</div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-primary" id="btn-print-exec-report">🖨️ Imprimir / Guardar en PDF</button>
+          <button class="btn" id="btn-close-exec-report">✖ Cerrar</button>
+        </div>
+      </div>
+
+      <div id="exec-report-container">
+        <!-- Renderizado dinámico del informe corporativo -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DEDICADO DE ERRORES ENTRUST 520XXX DETALLADOS -->
+  <div class="modal-overlay" id="entrust-errors-modal">
+    <div class="modal-content">
+      <div class="card-header">
+        <div class="card-title text-danger">🛡️ Catálogo de Errores IdentityGuard [520xxx / IDaaS] Detectados</div>
+        <button class="btn" id="btn-close-entrust-modal">✖</button>
+      </div>
+
+      <p class="text-muted" style="font-size:0.85rem; margin-bottom:16px;">
+        A continuación se muestran por separado todos los códigos de error <code>[520xxxx]</code> y fallos IDaaS observados en la sesión de logs actual, junto con su frecuencia y diagnóstico rápido.
+      </p>
+
+      <div id="entrust-errors-modal-list">
+        <!-- Lista de errores 520xxx inyectados por JS -->
+      </div>
+
+      <div class="flex-between mt-4">
+        <button class="btn btn-primary" id="btn-go-to-analyzer-520">🔍 Ver esta lista filtrada en el Analizador</button>
+        <button class="btn" id="btn-close-entrust-modal-2">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AGREGAR MANUAL HTML PERSONALIZADO -->
+  <div class="modal-overlay" id="add-manual-modal">
+    <div class="modal-content">
+      <div class="card-header">
+        <div class="card-title">📥 Incorporar Manual Administrativo Entrust OnPremise / IDaaS en HTML</div>
+        <button class="btn" id="btn-close-add-manual">✖</button>
+      </div>
+
+      <p class="text-muted" style="font-size:0.85rem; margin-bottom:12px;">
+        💡 Al cargar un manual en HTML, el sistema analizará automáticamente el documento para extraer todos los códigos de error <code>[520xxxx]</code>, eventos <code>[AUDxxxx]</code> e IDaaS e indexarlos de forma automática en la Base de Conocimientos.
+      </p>
+
+      <div class="mt-4">
+        <div class="diag-label">Versión / Identificador del Manual (ej. Entrust-v12.4, IDaaS-Cloud-Manual):</div>
+        <input type="text" class="form-control" id="custom-manual-ver" placeholder="Entrust-v12.4">
+      </div>
+
+      <div class="mt-4">
+        <div class="diag-label">Título del Manual:</div>
+        <input type="text" class="form-control" id="custom-manual-title" placeholder="Manual Completo de Errores Entrust IdentityGuard / IDaaS">
+      </div>
+
+      <div class="mt-4">
+        <div class="diag-label">Código HTML Completo del Manual:</div>
+        <textarea class="form-control font-mono" id="custom-manual-html" rows="10" placeholder="<html><body><h1>1.1 Código [5202013]...</h1></body></html>"></textarea>
+      </div>
+
+      <div class="flex-between mt-4">
+        <span></span>
+        <button class="btn btn-primary" id="btn-save-custom-manual">Guardar e Indexar Manual HTML</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AGREGAR REGLA A LA BASE DE CONOCIMIENTOS -->
+  <div class="modal-overlay" id="add-kb-modal">
+    <div class="modal-content">
+      <div class="card-header">
+        <div class="card-title">🧠 Agregar Regla Entrust / Sistema a la Base de Conocimientos</div>
+        <button class="btn" id="btn-close-add-kb">✖</button>
+      </div>
+
+      <div class="mt-4">
+        <div class="diag-label">Título de la Regla:</div>
+        <input type="text" class="form-control" id="custom-kb-title" placeholder="Entrust [5203019] OTP Token Expired">
+      </div>
+
+      <div class="mt-4">
+        <div class="diag-label">Patrón de Coincidencia (Expresión Regular / Código):</div>
+        <input type="text" class="form-control font-mono" id="custom-kb-pattern" placeholder="5203019|OTP Token expired">
+      </div>
+
+      <div class="mt-4">
+        <div class="diag-label">Significado del Log:</div>
+        <textarea class="form-control" id="custom-kb-meaning" rows="2" placeholder="Explicación en español de lo que significa este código o log."></textarea>
+      </div>
+
+      <div class="mt-4">
+        <div class="diag-label">Causa Raíz Probable:</div>
+        <input type="text" class="form-control" id="custom-kb-cause" placeholder="El token de contraseña de un solo uso (OTP) ingresado ha caducado por tiempo.">
+      </div>
+
+      <div class="mt-4">
+        <div class="diag-label">Pasos de Solución / Remediación:</div>
+        <textarea class="form-control" id="custom-kb-fix" rows="3" placeholder="1. Solicite al usuario generar una nueva clave OTP..."></textarea>
+      </div>
+
+      <div class="mt-4">
+        <div class="diag-label">Vincular con Versión de Manual Administrativo:</div>
+        <select class="form-control" id="custom-kb-manual-ver">
+          <option value="vEntrust">vEntrust - Entrust IdentityGuard Errores 520xxx</option>
+          <option value="vIDaaS">vIDaaS - Entrust IDaaS Cloud Troubleshooting</option>
+          <option value="v2.0">v2.0 - Microservicios & Base de Datos Enterprise</option>
+          <option value="v2.5">v2.5 - Kubernetes Cloud Native & Runbook</option>
+        </select>
+      </div>
+
+      <div class="flex-between mt-4">
+        <span></span>
+        <button class="btn btn-primary" id="btn-save-custom-kb">Guardar Regla en KB</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CREACIÓN Y REGISTRO DE PERFIL DE CLIENTE -->
+  <div class="modal-overlay" id="client-modal">
+    <div class="modal-content" style="max-width: 680px;">
+      <div class="card-header">
+        <div class="card-title text-cyan">🏢 Registrar Perfil de Cliente & Entorno Entrust</div>
+        <button class="btn" id="btn-close-client-modal" onclick="document.getElementById('client-modal').classList.remove('active');">✖ Cerrar</button>
+      </div>
+
+      <p class="text-muted" style="font-size:0.85rem; margin-bottom:16px;">
+        Define los datos oficiales del cliente y la versión de su servidor Entrust para asociar sus logs y personalizar el Informe de Diagnóstico Técnico.
+      </p>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+        <div>
+          <label class="diag-label">Nombre del Cliente / Organización *</label>
+          <input type="text" class="form-control" id="client-input-name" placeholder="Ej. Banco Mercantil C.A.">
+        </div>
+        <div>
+          <label class="diag-label">Plataforma Entrust *</label>
+          <select class="form-control" id="client-input-platform">
+            <option value="Entrust IdentityGuard OnPremise">Entrust IdentityGuard OnPremise</option>
+            <option value="Entrust IDaaS Cloud">Entrust IDaaS Cloud</option>
+            <option value="Entrust Hybrid (OnPremise + Cloud)">Entrust Híbrido (OnPremise + Cloud)</option>
+          </select>
+        </div>
+        <div>
+          <label class="diag-label">Versión del Servidor *</label>
+          <select class="form-control" id="client-input-version">
+            <option value="Release 13.0">Release 13.0 (Diciembre 2020)</option>
+            <option value="Release 12.0">Release 12.0 (Marzo 2017)</option>
+            <option value="Release 11.0">Release 11.0 (Noviembre 2015)</option>
+            <option value="IDaaS Cloud v2026">IDaaS Cloud v2026</option>
+          </select>
+        </div>
+        <div>
+          <label class="diag-label">Build / Compilación / Issue</label>
+          <input type="text" class="form-control" id="client-input-build" placeholder="Ej. 13.0.12.4 / Issue 5">
+        </div>
+        <div>
+          <label class="diag-label">Departamento Destinatario</label>
+          <input type="text" class="form-control" id="client-input-contact" placeholder="Ej. Depto. de Ciberseguridad & TI">
+        </div>
+        <div>
+          <label class="diag-label">Ingeniero de Soporte Responsable</label>
+          <input type="text" class="form-control" id="client-input-engineer" value="Tomás Acosta" placeholder="Ej. Tomás Acosta">
+        </div>
+      </div>
+
+      <div class="flex-between mt-4">
+        <span class="text-muted font-mono" style="font-size:0.75rem;">* Datos requeridos para la carátula e informe técnico</span>
+        <button class="btn btn-primary" id="btn-save-client-profile" onclick="window.saveClientProfileGlobal();">💾 Guardar Perfil de Cliente</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Corporativo IT SERVICIOS -->
+  <footer class="app-footer">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <div class="official-it-logo" style="transform: scale(0.75);">
+        <div class="it-logo-box">
+          <div class="it-logo-red-accent"></div>
+          <span class="it-logo-text-it">IT</span>
+        </div>
+        <span class="it-logo-text-servicios">SERVICIOS</span>
+      </div>
+      <span>&copy; 2026 - Todos los derechos reservados.</span>
+    </div>
+    <div>
+      Desarrollado y Administrado por: <strong class="text-cyan">Tomás Acosta</strong> | Suite de Diagnostico
+    </div>
+  </footer>
+
+  <!-- Scripts JavaScript -->
+  <script src="js/kb-database.js?v=7.0"></script>
+  <script src="js/manuals-engine.js?v=7.0"></script>
+  <script src="js/log-parser.js?v=7.0"></script>
+  <script src="js/app.js?v=7.0"></script>
+
+</body>
+</html>

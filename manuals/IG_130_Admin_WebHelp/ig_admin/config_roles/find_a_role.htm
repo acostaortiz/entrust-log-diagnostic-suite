@@ -1,0 +1,362 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_roles.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Find a role</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nConfiguring roles\nFind a role");
+addAvenueInfo("r13_std","ig_admin/config_roles/modify_a_role.htm","ig_admin/config_roles/deleting_a_role.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > <a href=\"configuring_roles.htm\">Configuring roles<\/a> > Find a role<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_50263_Finding_a_role" id="XREF_50263_Finding_a_role"></a>Find 
+ a role</h1>
+<p class="pparagraph"><a name="IX_role" id="IX_role"></a><a name="IX_finding_1" 
+															 id="IX_finding_1"></a>Before 
+ you can modify or delete a role, you need to locate it.&#160;You can view 
+ a list of all roles or search for roles with specific characteristics.</p>
+<p class="pparagraph">The Administration interface shows&#160;only those 
+ roles that the logged-in administrator is entitled to see—the administrator’s 
+ own roles and those in the role lists of the administrator’s roles.</p>
+<p class="prtproceduretitle"><a name="XREF_73784_To_list_all_roles" id="XREF_73784_To_list_all_roles"></a>To 
+ list all roles</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Roles</span> 
+ on the menu bar.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">List Roles</span> tab.</p>
+<p class="prpprocedureparagraph">A list of all roles appears.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="AI-Roles-List_Roles.jpg" id="image6" src="ai-roles-list_roles.jpg" name="image6" width="566" height="247" border="0" /></p>
+</div>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ any role name to view information about the role.</p>
+<p class="prtproceduretitle">To search for roles</p>
+<div>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521478111" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478112" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Roles</span> 
+ on the menu bar.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Find Roles</span> tab.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Find 
+ existing roles</span>&#160;pane appears. It displays a list you can use 
+ to specify characteristics of the role you want to find. For example, 
+ you can specify that you want to search for a role that grants an administrator 
+ access to all policies or specific policies, or you can search for a role 
+ that grants an administrator some specific permissions.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Grants 
+ Access to Policies</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Grants 
+ Access to Groups</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Grants 
+ Access to Roles</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Grants 
+ Access to Print Modules</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Grants 
+ Access to Definitions</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Grants 
+ Permissions</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Characteristics 
+ that are not selected are not considered in the search. If you do not 
+ select any check boxes on this page, there is no filtering of the results. 
+ A list of all roles is returned.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For 
+ each characteristic of the role, select whether you want to search for 
+ all roles that have that general characteristic (select the <span style="font-weight: bold;">All</span>&#160;check 
+ box) or only roles that match a more specific definition of that characteristic 
+ (select the <span style="font-weight: bold;">A List of</span>&#160;check 
+ box to display a list from which you can select items).</p>
+<p class="prpprocedureparagraph" style="font-weight: bold;"><span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Example 
+ 1:</span></p>
+<p class="prpprocedureparagraph">To search for roles based on the policies 
+ they have access to, do one of the following under <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Grants 
+ access to policies</span>:</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="config_roles00201.jpg" id="image7" 
+											 src="config_roles00201.jpg" 
+											 name="image7" width="449" 
+											 height="121" border="0" /></p>
+</div>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold">All policies</span> to find roles with access to all 
+ policies.</p>
+<p class="prpprocedureparagraph">OR</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ roles that have one or more specific policies:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">A 
+ list of policies</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ one policy or more under <span class="bold">List includes at least one 
+ of</span>. (See <a href="../usingadmininterface/select_options.htm">Select 
+ options</a>).</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>A 
+ role meets the search criteria if it has just one of the selected policies.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Roles that 
+ grant access to <span style="font-weight: bold;">All policies</span>&#160;are 
+ not considered when searching for one or more individual policies. That 
+ is, when you do a search for <span style="font-weight: bold;">All policies</span>, 
+ the search results show the superuser role, but when you search for one 
+ or more individual policies, the superuser role does not appear in the 
+ search results, even though the superuser role includes access to all 
+ of the policies.</p>
+<p class="prpprocedureparagraph" style="font-weight: bold;"><span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Example 
+ 2:</span></p>
+<p class="prpprocedureparagraph">To&#160;find a role based on its permissions, 
+ do one of the following under <span class="bold" style="font-weight: bold; 
+									 letter-spacing: 0.00em; text-decoration: none; ">Grants&#160;Permissions</span>:</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="AI-Roles-find-perms.jpg" id="image8" src="ai-roles-find-perms.jpg" name="image8" width="414" height="456" border="0" /></p>
+</div>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold">All Permissions</span> to find roles with all permissions.</p>
+<p class="prpprocedureparagraph">OR</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ roles that have one or more specific permissions:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">A 
+ List of Permissions</span>. (For information about specific permissions, 
+ see <a href="permissions_quick_reference.htm#XREF_17111_Permissions_quick">Permissions 
+ quick reference</a>.)</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under 
+ <span class="bold">List includes at least one of</span>, select one or 
+ more permissions from the list. (See <a href="../usingadmininterface/select_options.htm">Select 
+ options</a>.)</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>A 
+ role meets the search criteria if it has just one of the selected permissions.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Roles that 
+ grant access to <span style="font-weight: bold;">All permissions</span>&#160;are 
+ not considered when searching for one or more individual permissions. 
+ That is, when you do a search for <span style="font-weight: bold;">All 
+ Permissions</span>, the search results show the superuser role, but when 
+ you search for one or more individual permissions, the superuser role 
+ does not appear in the search results, even though the superuser role 
+ includes all of the permissions.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Search</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Search 
+ Results</span> page appears.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ any role name to open its role information.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+	TextPopupInit('a3','POPUP521478111');
+	TextPopupInit('a4','POPUP521478112');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

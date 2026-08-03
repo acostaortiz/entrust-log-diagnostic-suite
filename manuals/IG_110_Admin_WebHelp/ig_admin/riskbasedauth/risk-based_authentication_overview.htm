@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\riskbasedauth.fm" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Risk-based authentication overview</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nRisk-based authentication\nRisk-based authentication overview");
+addAvenueInfo("Untitled","ig_admin/riskbasedauth/riskbasedauth.htm","ig_admin/riskbasedauth/about_ip_geolocation.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"riskbasedauth.htm\">Risk-based authentication<\/a> > Risk-based authentication overview<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_risk_based"></a><a name="IX_risk_based_authentication"></a><a 
+	 name="XREF_28747_Risk_based"></a><a name="XREF_33723_Risk_based"></a>Risk-based 
+ authentication overview</h1>
+<p class="pparagraph"><a name="IX_risk_based_1"></a><a name="IX_risk_based_authentication_1"></a>There 
+ are situations in which, for security reasons, you want to present users 
+ with an extra authentication challenge or reject the user authentication 
+ attempt immediately. However, when users pose no risk, it is ideal to 
+ authenticate them automatically. Risk-based authentication is a way to 
+ handle all of these scenarios.</p>
+<p class="pparagraph">To take advantage of all the features of risk-based 
+ authentication, you can use any one of the following types of data, any 
+ combination of the types, or all of the types: </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>IP/Geolocation 
+ data (See <a href="about_ip_geolocation.htm#XREF_99953_About_IP">About 
+ IP/Geolocation</a>.)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>certificate 
+ data (See <a href="about_certificate_authentication.htm#XREF_21565_About_certificate">About 
+ certificate authentication</a>.)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>device 
+ data (See <a href="about_machine_authentication.htm#XREF_61653_About_machine">About 
+ machine authentication</a>.)</p>
+<p class="pparagraph">In addition, with Entrust IdentityGuard, you can 
+ configure your application to provide normal or enhanced risk-assessment 
+ levels based on the sensitivity of the information a user wants to access 
+ or the potential for fraud that a transaction poses. (See <a href="about_normal_and_enhanced_levels.htm#XREF_27469_About_normal_and">About 
+ normal and enhanced levels</a>.</p>
+<p class="pparagraph">Complete the procedures in this section to configure 
+ all or some of the types of risk-based authentication you plan to use.</p>
+<p class="pparagraph">After you configure Entrust IdentityGuard policies 
+ and properties for risk-based authentication, configure your client application 
+ to use the Entrust IdentityGuard features. For guidance, see the <span 
+	 class="italic" style="font-style: italic; letter-spacing: 0.00em; 
+	 text-decoration: none; ">Entrust IdentityGuard Programming Guide</span>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

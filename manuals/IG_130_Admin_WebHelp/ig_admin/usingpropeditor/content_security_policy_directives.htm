@@ -1,0 +1,214 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Content Security Policy Directives</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nContent Security Policy Directives");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Content Security Policy Directives<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1>Content Security Policy Directives</h1>
+<p class="pparagraph">Content-Security-Policy (CSP) is the name of an HTTP 
+ response header that modern browsers use to enhance the security of a 
+ web page. Content Security Policy (CSP) is an added layer of security 
+ that helps to detect and mitigate certain types of attacks, including 
+ Cross -site Scripting (XSS) and data injection attacks. These attacks 
+ are used for everything from data theft to site defacement to distribution 
+ of malware. For more information, see <a href="https://www.w3.org/TR/CSP/" 
+											 target="_blank">https://www.w3.org/TR/CSP/</a>. 
+ </p>
+<p class="pparagraph">When enabled, the CSP directives are applied to the 
+ Entrust IdentityGuard Properties Editor and the Entrust IdentityGuard 
+ Administration interface.</p>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Enable Content Security 
+ Policy Directive</a></p>
+<div class="droptext" id="POPUP497316161" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.csp.enabled</span></p>
+	<p class="RefItemBody">This property specifies whether the Entrust 
+	 IdentityGuard Server should set the Content-Security-Policy HTTP header 
+	 when sending content back to a browser.</p>
+</div>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Content-Security-Policy 
+ Directives</a></p>
+<div class="droptext" id="POPUP497361925" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.csp.token</span></p>
+	<p class="RefItemBody">The Content-Security-Policy directives makes 
+	 it possible for server administrators to reduce or eliminate the vectors 
+	 by which cross-site scripting (XSS) can occur by specifying the domains 
+	 that the browser should consider to be valid sources. A CSP-compatible 
+	 browser then only loads the source files that are configured in this 
+	 property received from the domain, ignoring all other source files. 
+	 If no input is provided for this property, default CSP directives 
+	 are used. </p>
+	<p class="RefItemBody">Defaults: <span class="output">connect-src 'self'; 
+	 default-src 'self'; frame-ancestors 'none'; img-src 'self' data:; 
+	 script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 
+	 'unsafe-inline'</span>;</p>
+</div>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />CSP report Enable</a></p>
+<div class="droptext" id="POPUP497394319" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.csp.report.enabled</span></p>
+	<p class="RefItemBody">Enable this property to instruct the user agent 
+	 to report attempts to violate the Content Security Policy. These violation 
+	 reports consist of JSON documents sent by an HTTP POST request to 
+	 the Entrust IdentityGuard CSP Endpoint.</p>
+</div>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />CSP Report Endpoint</a></p>
+<div class="droptext" id="POPUP497422840" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.csp.report.endpoint</span></p>
+	<p class="RefItemBody">This property specifies the common CSP Report 
+	 Endpoint URI of the Entrust IdentityGuard Properties Editor and the 
+	 Entrust IdentityGuard Administration interface. If not specified, 
+	 the default is used.</p>
+	<p class="RefItemBody">Default URL: <span class="output">/IdentityGuardAdmin/CSPEndpoint</span></p>
+</div>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Violation Report 
+ File</a>s</p>
+<div class="droptext" id="POPUP497437827" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.csp.report.filename</span></p>
+	<p class="RefItemBody">This property specifies the file path where 
+	 the IdentityGuard CSP Report Endpoint writes violation report sent 
+	 by browser. The default file location is <span class="output">&lt;IG_HOME&gt;/logs/cspreport.log</span>.</p>
+</div>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP497316161');
+	TextPopupInit('a2','POPUP497361925');
+	TextPopupInit('a3','POPUP497394319');
+	TextPopupInit('a4','POPUP497422840');
+	TextPopupInit('a5','POPUP497437827');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

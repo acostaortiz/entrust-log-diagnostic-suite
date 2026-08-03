@@ -1,0 +1,516 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\tokenauth.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configure token policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nToken authentication\nConfigure token authentication\nConfiguring token policies\nConfigure token policies");
+addAvenueInfo("r13_std","ig_admin/tokenauth/configuring_token_authentication_policies.htm","ig_admin/tokenauth/forcing_token_activation.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"token_authentication.htm\">Token authentication<\/a> > <a href=\"../../configure_token_authentication.htm\">Configure token authentication<\/a> > <a href=\"configuring_token_policies.htm\">Configuring token policies<\/a> > Configure token policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_10931_Configuring_token" id="XREF_10931_Configuring_token"></a>Configure 
+ token policies</h1>
+<p class="pparagraph">Set the token policies in the Administration interface.</p>
+<p class="prtproceduretitle"><a name="XREF_39401_To_view_token" id="XREF_39401_To_view_token"></a>To 
+ view hardware token policies</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Policies</span> 
+ on the menu bar.</p>
+<p class="prpprocedureparagraph">A list of all policies appears on the 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">List 
+ Policies</span> tab.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ a policy name.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">View 
+ Policy</span> page for the selected policy appears.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the <span class="bold">Policy Category</span> drop-down list, select <span 
+	 class="bold">Token</span>.</p>
+<p class="prpprocedureparagraph">The token policies appear.</p>
+<p class="prtproceduretitle"><a name="XREF_36038_To_configure_token" id="XREF_36038_To_configure_token"></a>To 
+ configure hardware token policies</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find 
+ the authentication policy to change.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">View Policy</span>&#160;page, click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Edit 
+ Policy</span>.</p>
+<p class="prpprocedureparagraph">An editable version of the settings appears.</p>
+
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Edit the policies as required. The following 
+ policies are related to hardware tokens. Select a policy in the list to 
+ see its description.</p>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Unassign 
+ Hardware Tokens When User is Deleted</a></p>
+<div class="droptext" id="POPUP476407094" style="display: none;">
+	<p class="RefItemBody">When you remove users, this parameter determines 
+	 whether their tokens are deleted or unassigned. If you delete a token, 
+	 it can never be used again with Entrust IdentityGuard. </p>
+	<p class="RefItemBody"><span class="bold" style="font-weight: bold; 
+								 letter-spacing: 0.00em; text-decoration: none; ">Yes</span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">&#160;</span>indicates 
+	 their tokens are unassigned before the users are deleted, and <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">No</span> 
+	 means their tokens are deleted with the user.</p>
+	<p class="RefItemBody">Default: Yes</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Move 
+ Hardware Tokens to User’s Group During Assignment</a></p>
+<div class="droptext" id="POPUP565659669" style="display: none;">
+	<p class="RefItemBody">When tokens are loaded, they are assigned to 
+	 a particular group. When assigning the tokens to users, the token’s 
+	 group and the user’s group may not match.</p>
+	<p class="RefItemBody">Select this policy to automatically move tokens 
+	 from their current group to the group of the user during assignment.</p>
+	<p class="RefItemBody">When this policy is set to <span class="output" 
+															 style="font-family: Courier; 
+															 font-style: normal; 
+															 font-weight: normal; 
+															 font-size: 10.0pt; 
+															 color: #000000; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">No</span>, 
+	 a mismatch of the user group and the token group results in an error 
+	 message.</p>
+	<p class="RefItemBody">Default: No</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Reset 
+ Token When Token is Created or Activated</a></p>
+<div class="droptext" id="POPUP564156870" style="display: none;">
+	<p class="RefItemBody">Specifies whether a token will be reset on first 
+	 authentication after the token is assigned to a user (for hardware 
+	 tokens) or when it is created and activated (for soft tokens). This 
+	 policy resets the time for time-based tokens, the event counter (for 
+	 event-based tokens), or both (for tokens that are time- and event-based.</p>
+	
+	<p class="RefItemBody">Default: No</p>
+</div>
+<p class="nonote"><span class="bold">Note:</span> This policy is not enabled 
+ by default. Enabling this policy is recommended, especially for event-based 
+ tokens( which can get out of sync if a button is pressed during shipping 
+ or if users test it prior to activation).</p>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Token Sets per User</a></span></p>
+<div class="droptext" id="POPUP562887278" style="display: none;">
+	<p class="RefItemBody">Specifies the number of token sets a 
+	 user is allowed. A token set is a name given to the set of tokens 
+	 that move through their state transitions together. For example, a 
+	 single user might have one token set called &quot;BlackBerry&quot; 
+	 and another token set called &quot;Hardware token&quot;.</p>
+	<p class="RefItemBody">For details on token sets, see <a href="token_set_overview_using_multiple_tokens.htm#XREF_11251_Token_tag_overview">Token 
+	 set overview (using multiple tokens)</a>.</p>
+	<p class="RefItemBody">Default: 1</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Disable 
+ Challenge Retention</a></span></p>
+<div class="droptext" id="POPUP488408523" style="display: none;">
+	<p class="RefItemBody">This setting applies only to challenge-response 
+	 hardware tokens.</p>
+	<p class="RefItemBody">Enable this setting if you want to replace 
+	 the token challenge each time a challenge is requested. Users who 
+	 answer a challenge incorrectly will have a new challenge presented 
+	 to them for the next attempt.</p>
+	<p class="RefItemBody">Deselect it if you want to retain the 
+	 challenge for the duration of the <span style="font-weight: bold;">Token 
+	 Challenge Lifetime</span>. Users who answer a challenge incorrectly 
+	 will have the same challenge presented to them for all subsequent 
+	 attempts until they are locked out or until the challenge lifetime 
+	 is exceeded. After the challenge lifetime is exceeded, a new challenge 
+	 is presented.</p>
+	<p class="RefItemBody">Default: No</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Token 
+ Challenge Lifetime</a></span></p>
+<div class="droptext" id="POPUP486409352" style="display: none;">
+	<p class="RefItemBody">This setting applies only to challenge-response 
+	 hardware tokens.</p>
+	<p class="RefItemBody">Set it to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Unlimited</span>&#160;to 
+	 have the token challenge last an unlimited amount of time.</p>
+	<p class="RefItemBody">Set it to a number of seconds to limit 
+	 the lifetime. If it is not answered in the lifetime, a new challenge 
+	 is generated.</p>
+	<p class="RefItemBody">Default: Unlimited</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><span 
+	 class="bold">Update Lockout for Replaced Challenge </span></a></p>
+<div class="droptext" id="POPUP484921523" style="display: none;">
+	<p class="RefItemBody">This setting applies only to challenge-response 
+	 hardware tokens.</p>
+	<p class="RefItemBody">When set to Yes, the lockout count is 
+	 increased when a token challenge is replaced because:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>a 
+	 user does not answer a token challenge in the allotted time (as defined 
+	 by the Token Challenge Lifetime setting) causing a new challenge to 
+	 be requested by the client application</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>a 
+	 user restarts the client application without answering the token challenge, 
+	 causing a new challenge to be requested by the client application</p>
+	<p class="RefItemBody">When set to No, the lockout count is 
+	 not increased in the above-mentioned scenarios.</p>
+	<p class="nonote"><span class="bold">Note:</span> The lockout count 
+	 is always increased when a user enters an incorrect challenge response, 
+	 regardless of how you configure this setting.</p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ you are using a client application that allows token authentication when 
+ users are not connected to their network, configure the following policies.</p>
+<p class="nonote"><span class="bold">Note:</span> The offline token authentication 
+ feature can be used with hardware tokens that support the OATH TOTP protocol, 
+ ActiveIdentity OT tokens, and Entrust soft tokens. It is not supported 
+ with hybrid time-and-event-based tokens such as Entrust Datacard CR tokens 
+ and Entrust Pocket tokens. Currently, this feature is used only with Entrust 
+ IdentityGuard Desktop for Microsoft Windows (version 11.0 or later). In 
+ the future, they could be used with other applications.</p>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Protected 
+ Offline OTP Support</a></p>
+<div class="droptext" id="POPUP613856639" style="display: none;">
+	<p class="RefItemBody">Specifies whether users of the client application 
+	 can download a supply of time-based, one-time passwords for use when 
+	 they are not connected to their network.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold">Not Allowed</span> — 
+	 Users cannot download OTPs for offline authentication.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold">Allowed</span>&#160;— 
+	 When connected to the network, users can download a supply of OTPs 
+	 for later use when they are not connected to their network.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold">User Requires PVN</span>&#160;— 
+	 &#160;Users can download a supply of OTPs for offline authentication 
+	 and their PVNs are also used as part of the offline authentication. 
+	 This option is used only when the PVN policy requires use of PVNs 
+	 as part of token authentication.</p>
+	<p class="RefItemBody">Default: Not Allowed</p>
+	<p class="RefItemBody">This feature should be enabled in a policy applied 
+	 only to groups of users who will need to perform offline token authentication, 
+	 not to all users because download of OTPs can have an impact on product 
+	 performance. For more information, see the <span class="italic">Entrust 
+	 IdentityGuard Desktop for Microsoft Windows Administration Guide</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Protected 
+ Offline OTP Max. Clients</a></p>
+<div class="droptext" id="POPUP611838031" style="display: none;">
+	<p class="RefItemBody">Specifies the maximum number of client applications 
+	 through which users can request download of OTPs for offline token 
+	 authentication.</p>
+	<p class="RefItemBody">Default: 1</p>
+	<p class="nonote"><span class="bold">Note:</span> Currently, the only 
+	 client application that supports download of tokens for offline use 
+	 is Entrust IdentityGuard Desktop for Microsoft Windows&#160;(version 
+	 11.0 or later). For more information, see the <span class="italic">Entrust 
+	 IdentityGuard Desktop for Microsoft Windows Administration Guide</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Protected 
+ Offline OTP Minor Refill</a></p>
+<div class="droptext" id="POPUP611852505" style="display: none;">
+	<p class="RefItemBody">When an application that allows offline token 
+	 authentication requests a small refill of a number of hours' worth 
+	 of OTPs to download, the server uses this setting to determine the 
+	 number of OTPs to generate. The value can be expressed in hours or 
+	 in days. For example, a value of 1 day means that Entrust IdentityGuard 
+	 downloads 2880 OTPs, enough to refresh the OTP every 30 seconds for 
+	 1 day (24 hours).</p>
+	<p class="RefItemBody">Enter a value in &#160;hours or days. For hours, 
+	 valid values are 1 to 366. For days, valid values are 1 to 14. This 
+	 setting must have a value.</p>
+	<p class="RefItemBody">Default:1 hour</p>
+	<p class="nonote"><span class="bold">Note:</span> If you enter a larger 
+	 value for <span class="bold">Protected Offline OTP Minor Refill</span>&#160;than 
+	 for <span class="bold">Protected Offline OTP Max. Refill</span>, Entrust 
+	 IdentityGuard allows the configuration to be saved but it adjusts 
+	 the numbers during client authentication to ensure that no more than 
+	 the <span class="bold">Protected Offline OTP Max. Refill </span>value 
+	 is generated and returned.</p>
+	<p class="RefItemBody">For more information, see the <span class="italic">Entrust 
+	 IdentityGuard Desktop for Microsoft Windows Administration Guide</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a13"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Protected 
+ Offline OTP Max. Refill</a></p>
+<div class="droptext" id="POPUP611905236" style="display: none;">
+	<p class="RefItemBody">When an application that allows offline token 
+	 authentication requests the maximum number of hours' worth of OTPs 
+	 to download, the server uses this property to determine the number 
+	 of OTPs to generate. The value can be expressed in hours or in days. 
+	 For example, a value of 14 days (the maximum allowed) would mean that 
+	 Entrust IdentityGuard would download 40,320 OTPs, enough to refresh 
+	 the OTP every 30 seconds for 14 days.</p>
+	<p class="RefItemBody">Enter a value in&#160;hours or days. For hours, 
+	 valid values are 1 to 366. For days, valid values are 1 to 14. This 
+	 setting must have a value</p>
+	<p class="RefItemBody">Default:1 hour</p>
+	<p class="RefItemBody">For more information, see the <span class="italic">Entrust 
+	 IdentityGuard Desktop for Microsoft Windows Administration Guide</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a14"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Protected 
+ Offline OTP Protection</a></p>
+<div class="droptext" id="POPUP611929056" style="display: none;">
+	<p class="RefItemBody">Specifies the strength of the protection that 
+	 is used when hashing the OTPs that are stored on a user’s computer.</p>
+	<p class="RefItemBody">The options are <span class="bold">Normal</span>, 
+	 <span class="bold">Strong</span>, and <span class="bold">Very Strong</span>. 
+	 The stronger the protection, the more difficult it becomes for a potential 
+	 attacker to guess the OTP. However, when the protection level is stronger, 
+	 it takes longer for Entrust IdentityGuard Desktop to validate the 
+	 OTP.</p>
+	<p class="RefItemBody">Default: Normal</p>
+	<p class="RefItemBody"><span>For more information, see the </span><span 
+	 class="italic">Entrust IdentityGuard Desktop for Microsoft Windows 
+	 Administration Guide</span><span>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold">Save Changes</span>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+	TextPopupInit('a3','POPUP476407094');
+	TextPopupInit('a4','POPUP565659669');
+	TextPopupInit('a5','POPUP564156870');
+	TextPopupInit('a6','POPUP562887278');
+	TextPopupInit('a7','POPUP488408523');
+	TextPopupInit('a8','POPUP486409352');
+	TextPopupInit('a9','POPUP484921523');
+	TextPopupInit('a10','POPUP613856639');
+	TextPopupInit('a11','POPUP611838031');
+	TextPopupInit('a12','POPUP611852505');
+	TextPopupInit('a13','POPUP611905236');
+	TextPopupInit('a14','POPUP611929056');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

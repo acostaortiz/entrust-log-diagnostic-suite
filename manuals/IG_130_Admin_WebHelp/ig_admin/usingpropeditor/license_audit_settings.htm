@@ -1,0 +1,243 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>License Audit Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nLicense Audit Settings (10)");
+addAvenueInfo("r13_std","ig_admin/usingpropeditor/ldap_sync_container_mapping_settings.htm","ig_admin/usingpropeditor/managed_ca_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > License Audit Settings (10)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_checking" id="IX_checking"></a><a name="IX_audit_properties_1" 
+													 id="IX_audit_properties_1"></a><a 
+	 name="IX_audit_properties" id="IX_audit_properties"></a><a name="XREF_19706_License_and" 
+	 id="XREF_19706_License_and"></a>License Audit Settings</h1>
+<p class="pparagraph">These properties control the Entrust IdentityGuard 
+ periodic license audit mechanism. License auditing helps you determine 
+ when to renew your licenses&#160;or when you are about to run out of Users&#160;licenses 
+ or other&#160;feature-related licenses. For more information and to view 
+ a snapshot of the properties, see <a href="../config_licenses/license_auditing.htm">License 
+ auditing</a>.</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />License 
+ Auditing Enabled</a></span></p>
+<div class="droptext" id="POPUP589304774" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.audit.integrity.enabled</span></p>
+	<p class="RefItemBody">Enables or disables license auditing 
+	 for all types of licenses.</p>
+	<p class="RefItemBody">If set to <span style="font-family: Courier;">True</span>, 
+	 Entrust IdentityGuard counts the number of licenses used without a 
+	 partition ID. What is counted depends on the type of license. For 
+	 example, Users licenses are consumed when user accounts created, and 
+	 Transaction Verification with Soft Tokens licenses are consumed when 
+	 a user first verifies a transaction with a mobile soft token. For 
+	 more information, see <a href="../config_licenses/how_license_counting_works.htm">How 
+	 license counting works</a>. If this value does not match the number 
+	 in the global policy, the global policy is updated and an audit generated. 
+	 License auditing also counts the number of general users and feature-license 
+	 users created in each partition, and compares that count against the 
+	 system count.</p>
+	<p class="attnattention"><span class="bold" style="font-weight: bold; 
+									 letter-spacing: .em; text-decoration: none; ">Attention</span>: 
+	 This property must be enabled on only one Entrust IdentityGuard Server 
+	 at any time. The Entrust IdentityGuard Server chosen must be able 
+	 to see all data in the system.</p>
+	<p class="RefItemBody">Default: True</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />License 
+ Audit Interval</a></span></p>
+<div class="droptext" id="POPUP589504732" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.audit.integrity.interval</span></p>
+	<p class="RefItemBody">Sets the number of hours between license 
+	 integrity checks.</p>
+	<p class="RefItemBody">Default: 12</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />License 
+ Audit User Number Limit</a></span></p>
+<div class="droptext" id="POPUP589684056" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.audit.integrity.count_limit</span></p>
+	<p class="RefItemBody">If set to a positive integer value, generates 
+	 an audit when the user count gets to within the given value of the 
+	 license limit. For example, if this property is set to 3, Entrust 
+	 IdentityGuard generates the message when only three Users licenses 
+	 remain.</p>
+	<p class="RefItemBody">This value can also be specified as a 
+	 percentage. If you specify the user count limit to be 2%, for example, 
+	 Entrust IdentityGuard will start generating audits when 2% of the 
+	 licenses remain.</p>
+	<p class="RefItemBody">Default: 15%</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />License 
+ Audit Expiry Day Limit</a></span></p>
+<div class="droptext" id="POPUP589828905" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.audit.integrity.time_limit</span></p>
+	<p class="RefItemBody">If set to a positive integer value, generates 
+	 an audit when the current date gets to within the given number of 
+	 days of the user license expiry. For example, if set to 3, Entrust 
+	 IdentityGuard generates the message when only three days remain before 
+	 the user license expires.</p>
+	<p class="RefItemBody">Default: 3</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP589304774');
+	TextPopupInit('a2','POPUP589504732');
+	TextPopupInit('a3','POPUP589684056');
+	TextPopupInit('a4','POPUP589828905');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_AdminSSO.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Prerequisites</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nConfiguring SAML authentication to the Administration interface\nConfigure SAML login to the Administration  interface\nPrerequisites for configuring SAML login to Administration");
+addAvenueInfo("r13_std","ig_admin/config_adminsso/configure_saml_login_to_the_authentication_interface.htm","ig_admin/config_adminsso/generate_a_saml_certificate_to_be_used_by_entrust_identityguard_server.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > <a href=\"saml_authentication_to_the_administration_interface.htm\">Configuring SAML authentication to the Administration interface<\/a> > <a href=\"configure_saml_login_to_the_authentication_interface.htm\">Configure SAML login to the Administration  interface<\/a> > Prerequisites for configuring SAML login to Administration<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_81859_Pre_requisites" id="XREF_81859_Pre_requisites"></a>Prerequisites 
+ for configuring SAML login to Administration</h1>
+<p class="pparagraph">Before you can configure SAML authentication to the 
+ Entrust IdentityGuard Administration interface, your implementation must 
+ meet the following prerequisites:</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the Entrust IdentityGuard Server, you have configured the authentication 
+ methods you want to use for SAML. All Entrust IdentityGuard authentication 
+ methods are supported with SAML.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You 
+ have a working installation of the Entrust IdentityGuard Federation Module. <span>with</span> patch 176180 or later 
+ applied. Patches are available from:</p>
+<p class="prpprocedureparagraph" style="color: #0000ff; text-decoration: underline; "><span 
+	 style="font-family: Syntax;"><a title="https://trustedcare.entrustdatacard.com" 
+									 href="https://trustedcare.entrustdatacard.com" 
+									 target="_blank">https://trustedcare.entrustdatacard.com</a></span></p>
+<p class="prpprocedureparagraph">You need a user name and password to access 
+ the site.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The 
+ Federation Module is configured as a SAML Identity Provider (IDP) as described 
+ in the <span style="font-style: italic;">Entrust IdentityGuard Federation 
+ Module Installation and Configuration Guide</span>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You 
+ have copied all the IDP’s files to the SP (which is the Entrust IdentityGuard 
+ Server), in a folder called <span class="output" style="font-family: Courier New; 
+									 font-size: 10.0pt;">c:\IDPdata</span> 
+ or a similarly-named folder. The files you must copy are:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The IDP’s 
+ metadata file (<span class="output" style="font-family: Courier New; font-style: normal; 
+						 font-weight: normal; font-size: 10.0pt; color: #000000; 
+						 letter-spacing: 0.00em; text-decoration: none; ">idp.metadata.xml</span>).</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The root 
+ CA certificate that signed the IDP’s SAML signing and encryption key pairs 
+ (<span class="output" style="font-family: Courier New; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; ">idpca.crt</span>). If you have a certificate 
+ chain leading up to the root CA certificate, copy those intermediate CA 
+ certificates too. Each certificate must be in a separate CER or CRT file. 
+ (They cannot exist together in a P7 file. If they do, export them from 
+ the P7 file, one-by-one, to individual CER or CRT files.)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>One of 
+ the following certificates:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>The root 
+ CA certificate that signed the Federation Module’s Web certificate. This 
+ CA might be the same as the one that signed the IDP’s SAML keys. Again, 
+ if you have a CA certificate chain, export all the CA certificates to 
+ individual CER or CRT files.</p>
+<p class="lip2list2paragraph">OR</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If you 
+ are using the self-signed certificate provided with the Federation Module, 
+ copy this certificate (<span class="output" style="font-family: Courier New; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+								 text-decoration: none; ">igfederation.cer</span>).</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional.) 
+ the MD5, SHA1, and SHA-256 hash values on the Federation Module’s CA certificate.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

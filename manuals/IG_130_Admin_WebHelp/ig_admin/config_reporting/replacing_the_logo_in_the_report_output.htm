@@ -1,0 +1,178 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_reporting.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Replacing the logo in the report output</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring reports\nCustomize report templates\nReplace the logo in the report output");
+addAvenueInfo("r13_std","ig_admin/config_reporting/adding_language_translation_for_a_report.htm","ig_admin/config_security/managing_certificates_in_the_key_store.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"configuring_reports.htm\">Configuring reports<\/a> > <a href=\"customize_report_templates.htm\">Customize report templates<\/a> > Replace the logo in the report output<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_94209_Replacing_the_logo" id="XREF_94209_Replacing_the_logo"></a>Replace the logo in the report output</h1>
+<p class="pparagraph">You can replace the logo used in the report templates if you want to customize the report output for your organization or department. The logo must be changed in each report individually, but the procedure is the same for all reports. The existing Entrust logo is a JPG image 2359 x 243 pixels in size. It is called <span style="font-family: Courier New;">EntrustLogo.jpg</span>.</p>
+<p class="pparagraph">To ensure that the report layout is not affected by the addition of the new logo, it is recommended your replacement logo be roughly the same size as the Entrust logo.</p>
+<p class="prtproceduretitle">To update the logo in a report</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create your own JPG image approximately 2359 x 243 pixels in size. Save the file and make a note of the file name.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Make a copy of the <span style="font-family: Courier New; font-size: 9.0pt;">&lt;$IG_HOME&gt;</span><span style="font-family: Courier New;">/lib/IdentityGuardReportResources.jar</span>&#160;file and give it a new name; <span style="font-family: Courier New;">MyReportResources.jar</span>, for example.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Open the new JAR file with a ZIP utility such as WinZIP<sup><span style="font-family: 'Times New Roman'; font-size: 9.0pt;">®</span></sup>.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Remove the existing <span style="font-family: Courier New;">EntrustLogo.jpg</span>&#160;image from the JAR file, and add your own file.</p>
+
+<p class="attnattention"><span style="font-weight: bold;">Attention:</span> Do not use <span style="font-family: Courier New;">EntrustLogo.jpg</span>&#160;as the file-name.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Save the JAR file.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Copy the updated JAR file from <span style="font-family: Courier New; font-size: 9.0pt;">&lt;$IG_HOME&gt;</span><span style="font-family: Courier New;">/lib</span> to both of the following locations::</p>
+
+<p class="cocode">&lt;$IG_HOME&gt;/services/admin/IdentityGuardAdmin/WEB-INF/lib</p>
+<p class="cocode">&lt;$IG_HOME&gt;/services/admin/IdentityGuardAdminService/WEB-INF/lib</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Restart the Entrust IdentityGuard Server service so that it can find the new logo.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Open the <span style="font-family: Courier New;">.properties</span>&#160;file with the same name as the report you are updating.</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Locate the text that refers to <span style="font-family: Courier New;">EntrustLogo.jpg</span>.</p>
+
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Replace <span class="output">EntrustLogo.jpg</span>&#160;with the new logo file name in the <span style="font-family: Courier New;">.properties</span>&#160;file.</p>
+
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Save the file.</p>
+
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Run the report.</p>
+
+<p class="prpprocedureparagraph">The report output now displays your new logo.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

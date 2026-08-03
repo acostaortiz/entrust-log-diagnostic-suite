@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\biometricauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Finding biometric information</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nBiometric authentication\nAdministering biometrics\nFind biometric information");
+addAvenueInfo("Untitled","ig_admin/biometricauth/creating_biometrics.htm","ig_admin/biometricauth/approving_user_biometrics.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"biometricauth.htm\">Biometric authentication<\/a> > <a href=\"administering_biometrics.htm\">Administering biometrics<\/a> > Find biometric information<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_77431_Finding_biometric"></a>Find biometric information</h1>
+<p class="pparagraph"><a name="IX_assigned_cards"></a>Use one of the following 
+ procedures to search for information about biometrics belonging to an 
+ individual user or list of users. </p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_prt_To_display_card">To find biometric 
+ information </a></p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_prt_To_display_assigned">To display 
+ a user’s biometric information </a></p>
+<p class="prtproceduretitle"><a name="XREF_prt_To_display_card"></a>To 
+ find biometric information </p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Administration interface (see 
+ <a href="../usingadmininterface/logging_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging 
+ in and out of the Administration interface</a>).</p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the main menu, click <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Biometrics</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">List</span>&#160;<span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Biometrics&#160;Search 
+ Options </span>page appears. </p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter any of the following criteria to locate 
+ specific biometrics:</p>
+<p class="FM_prsssubprocedurestart"><span class="FM_Procnum">a<span style="word-spacing: normal; 
+	 font: 6.0pt 'Times New Roman';">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</span></span>To 
+ find a biometric by&#160;whether or not it is active, select the state 
+ from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">State</span>&#160;list. For more 
+ information, see <a href="biometric_states_overview.htm#XREF_59457_Biometric">Biometric 
+ activation states</a>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find biometrics 
+ by their enrollment states, do one of the following:</p>
+<p 
+	 class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To find biometrics in a specific state, select 
+ the states from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Enroll</span>&#160;<span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">States 
+ Include</span>&#160;list. </p>
+<p 
+	 class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To locate biometrics belonging to users who 
+ have no biometrics in a specific state, select the state from the <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">States 
+ Don’t Include</span>&#160;list. Hold down the Ctrl key to select more 
+ than one state.</p>
+<p class="prspsubprocedureparagraph">For more information, see <a href="biometric_states_overview.htm#XREF_79649_Biometric">Biometric 
+ enrollment states</a>. To select more than one option from a list, hold 
+ the Ctrl key (see <a href="../usingadmininterface/selecting_options.htm#XREF_51506_Selecting_from">Selecting 
+ options</a>).</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find biometrics 
+ that were enrolled within a certain date range, select a date range from 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Enroll Date</span>&#160;drop-down 
+ list. </p>
+<p class="prspsubprocedureparagraph"><a name="IX_grid_cards"></a><a name="IX_custom_date_range"></a>If 
+ you select<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; "> Custom date range</span>, select 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">From</span>&#160;and <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;dates 
+ from the drop-down lists (day, month, year). You can also use the calendar 
+ icons to select dates.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find biometrics 
+ by the date they were last used, select a date range from the <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Last 
+ Used </span>drop-down list. </p>
+<p class="prspsubprocedureparagraph"><a name="IX_grid_cards_1"></a><a name="IX_custom_date_range_1"></a>If 
+ you select<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; "> Custom date range</span>, select 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">From</span>&#160;and <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;dates. 
+ You can also click the calendar icons to select dates.</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find biometrics according to specific user 
+ account characteristics, select <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">The 
+ owner of the biometric has the characteristics below</span>. </p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Biometric 
+ owner account characteristics</span>&#160;pane appears. This pane provides 
+ additional options so you can search by various user account information. 
+ For more information about the options in this pane, see <a href="../useradminsection/searching_for_user_information.htm#XREF_74420_To_find_users_by">To 
+ find users by user account information</a>.</p>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. Select how many search results appear 
+ on each page, select a number from the <span class="bold" style="font-weight: bold; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">Showing 
+ results per page </span>drop-down list.</p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Search</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Search 
+ Results</span> page appears.</p>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click the vendor name in the <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Vendor</span> 
+ column of the biometric you want to view.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Biometric 
+ Details</span>&#160;page displays all the information associated with 
+ that biometric.</p>
+<p class="prtproceduretitle"><a name="XREF_prt_To_display_assigned"></a>To 
+ display a user’s biometric information </p>
+<p 
+	 class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Administration interface (see 
+ <a href="../usingadmininterface/logging_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging 
+ in and out of the Administration interface</a>).</p>
+<p 
+	 class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the main menu, click<span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; "> 
+ User Accounts</span>.</p>
+<p 
+	 class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Find a specific user in one of two ways:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Use the <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Go 
+ To Account tab</span>&#160;(see <a href="../useradminsection/searching_for_user_information.htm#XREF_82818_Searching_for_user">To 
+ search for information about one user</a>).</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Use the <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Find 
+ Accounts</span>&#160;tab (see <a href="../useradminsection/searching_for_user_information.htm#XREF_90670_To_get_a_list_of">To 
+ search for information about one or more users</a>). </p>
+<p 
+	 class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Authentication 
+ Types</span>,<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+					 text-decoration: none; ">&#160;</span>click <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Biometrics</span>.</p>
+<p 
+	 class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click the vendor name in the <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Vendor</span> 
+ column of a biometric to view its details.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

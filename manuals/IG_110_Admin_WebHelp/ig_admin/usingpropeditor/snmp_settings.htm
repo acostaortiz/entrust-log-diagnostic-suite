@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>SNMP Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nSNMP Settings (41)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/smtp_server_configuration.htm","ig_admin/usingpropeditor/system_logging_appenders.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > SNMP Settings (41)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_configuring_traps"></a><a name="IX_properties_22"></a><a 
+	 name="XREF_88356_SNMP_configuration"></a>SNMP Settings</h1>
+<p class="pparagraph">SNMP traps can be configured for some of the audits. 
+ Each service has three traps defined: INFO, WARNING, and ERROR. You can 
+ change the list of audits that will be trapped. See <a href="../config_logging/configuring_audits_to_be_sent_as_snmp_traps.htm#XREF_61288_Configuring_audits">Configuring 
+ audits to be sent as SNMP traps</a>.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Traps Enabled</a></span></p>
+<div class="droptext" id="POPUP702201587" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.snmp.traps.enabled</span></p>
+	<p class="lip2list2paragraph">Enables SNMP traps for selected audits. 
+	 Audit traps are sent for each Entrust IdentityGuard service, including 
+	 Master user shell, Authentication, Administration, Administration 
+	 interface, Radius proxy, and Properties Editor.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Heartbeat 
+ Traps Enabled</a></span></p>
+<div class="droptext" id="POPUP701243527" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.snmp.heartbeat.trap.enabled</span></p>
+	<p class="lip2list2paragraph">Enables heartbeat traps. If set to <span 
+	 class="bold">True</span>, Entrust IdentityGuard sends a trap at every 
+	 interval set in <span class="output">identityguard.snmp.heartBeat.interval</span>.</p>
+	<p class="lip2list2paragraph">All Entrust IdentityGuard services will 
+	 generate a heartbeat trap if this property is enabled, except for 
+	 the Master user shell. The heartbeat trap is enabled for all services 
+	 or no services.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Heartbeat 
+ Ping Enabled</a></span></p>
+<div class="droptext" id="POPUP701190190" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.snmp.heartbeat.ping.enabled</span></p>
+	<p class="lip2list2paragraph">Enables heartbeat pings. If set to <span 
+	 class="bold">True</span>, Entrust IdentityGuard attempts a service 
+	 ping in each of its services at intervals defined by <span class="output">identityguard.snmp.heartBeat.interval</span>. 
+	 All Entrust IdentityGuard services are checked except for the Radius 
+	 Proxy service and the Master user shell.</p>
+	<p class="lip2list2paragraph">The heartbeat ping is enabled for all 
+	 services or no services. If heartbeat traps are also enabled, a trap 
+	 is sent only for successful pings.</p>
+	<p class="lip2list2paragraph">A failed heartbeat ping generates an 
+	 audit called HEARTBEAT_PING_FAILED (AUD120).</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SNMP 
+ Manager Host</a></span></p>
+<div class="droptext" id="POPUP701139716" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.snmp.manager.server</span></p>
+	<p class="lip2list2paragraph"><span class="bold" style="letter-spacing: .em;">Server 
+	 address of the SNMP manager. This field is required if either</span> 
+	 <span class="output">identityguard.snmp.traps.enabled</span> is <span 
+	 class="bold">True</span><span class="output" style="font-family: Courier;"> 
+	 </span>or<span class="output"> identityguard.snmp.heartbeat.enabled</span> 
+	 <span class="output">is </span><span class="bold">True</span><span 
+	 class="output">.</span></p>
+	<p class="nonote"><span class="bold">Note:</span> If this string is 
+	 missing or contains an error, traps are disabled.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SNMP 
+ Manager Port</a></span></p>
+<div class="droptext" id="POPUP701054741" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.snmp.manager.port</span></p>
+	<p class="lip2list2paragraph"><span class="bold" style="font-weight: bold; 
+										 letter-spacing: .em; text-decoration: none; ">Port 
+	 number of the SNMP manager. This field is used if either</span> <span 
+	 style="font-family: Courier;">identityguard.snmp.traps.enabled</span>is 
+	 true or <span style="font-family: Courier;">identityguard.snmp.heartbeat.enabled</span> 
+	 is true.</p>
+	<p class="lip2list2paragraph">Values from 1 to 65535 are accepted.</p>
+	<p class="nonote"><span class="bold">Note:</span> If this string is 
+	 missing, the default is used. If this string contains an error, traps 
+	 are disabled, and an error is generated when the services are restarted.</p>
+	<p class="lip2list2paragraph">Default: 162</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SNMP 
+ Community</a></span></p>
+<div class="droptext" id="POPUP701021347" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.snmp.community</span></p>
+	<p class="lip2list2paragraph">This is a string to be used as a pseudo-password 
+	 in SNMP messages. The agent and the manager are set up with the same 
+	 string so that each can recognize that SNMP messages are authentic.</p>
+	<p class="lip2list2paragraph">Select <span style="font-weight: bold;">Encrypt</span> 
+	 to encrypt this value when saving it.</p>
+	<p class="lip2list2paragraph">Default: <span class="output" style="font-family: Courier; 
+												 font-style: normal; font-weight: normal; 
+												 font-size: 9.pt; color: #; 
+												 letter-spacing: .em; text-decoration: none; ">public</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SNMP 
+ Heartbeat Interval</a></span></p>
+<div class="droptext" id="POPUP700448610" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.snmp.heartBeat.interval</span></p>
+	<p class="lip2list2paragraph">This positive integer defines the frequency 
+	 of the heartbeat interval in seconds. If it is an invalid value, the 
+	 default value is used. is an invalid value.</p>
+	<p class="lip2list2paragraph">Default: 900 seconds (15 minutes)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SNMP 
+ Audit Filter</a></span></p>
+<div class="droptext" id="POPUP700106497" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.snmp.filter</span></p>
+	<p class="lip2list2paragraph">A comma-separated list of audit codes 
+	 to be included in traps. If no value is specified, the default audit 
+	 filter is used to determine which audits to send as traps.</p>
+	<p class="lip2list2paragraph">Audits can be specified in ranges. Valid 
+	 values include:</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">-1</span> 
+	 (all audit with codes &lt;= 1)</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">2-3</span> 
+	 (all codes between 2 and 3)</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">1-</span> 
+	 (all codes greater than or equal to 1)</p>
+	<p class="nonote"><span class="bold">Note:</span> The AUD audit code 
+	 prefix is not used in this property.</p>
+	<p class="lip2list2paragraph">Default: See default list of audits trapped 
+	 in <a href="../config_logging/audited_event_reference.htm">Audited 
+	 event reference</a>.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP702201587');
+	TextPopupInit('a2','POPUP701243527');
+	TextPopupInit('a3','POPUP701190190');
+	TextPopupInit('a4','POPUP701139716');
+	TextPopupInit('a5','POPUP701054741');
+	TextPopupInit('a6','POPUP701021347');
+	TextPopupInit('a7','POPUP700448610');
+	TextPopupInit('a8','POPUP700106497');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

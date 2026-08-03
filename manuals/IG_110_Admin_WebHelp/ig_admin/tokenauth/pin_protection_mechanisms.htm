@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>PIN protection mechanisms</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nToken authentication\nEntrust Pocket Tokens\nPIN protection mechanisms");
+addAvenueInfo("Untitled","ig_admin/tokenauth/using_pins_wiith_entrust_pocket_tokens.htm","ig_admin/tokenauth/authentication_modes_with_entrust_pocket_tokens.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"tokenauth.htm\">Token authentication<\/a> > <a href=\"entrust_pocket_tokens.htm\">Entrust Pocket Tokens<\/a> > PIN protection mechanisms<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>PIN protection mechanisms</h1>
+<p class="pparagraph">Entrust Pocket Tokens offer a choice of protection 
+ mechanisms in case someone enters the wrong PIN:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>delay (fixed or incremental)</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>lock</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>reset</p>
+<p class="pparagraph">The fixed delay and incremental delay mechanisms 
+ are mutually exclusive, but you can use the locking and resetting mechanisms 
+ with either of the delay mechanisms. See the following topics for more 
+ information about each mechanism.</p>
+<h3>Delay mechanism</h3>
+<p class="pparagraph">If the Pocket Token is configured to use the delay 
+ mechanism and you enter the wrong PIN, the Pocket Token displays <span 
+	 class="bold">ERROR</span> and then automatically shuts off. </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Fixed delay</span> — 
+ You cannot turn the Pocket Token back on for a specified length of time 
+ (0 to 128 seconds). If you attempt to turn the Pocket Token back on before 
+ the delay period ends, the token displays a <span class="bold">WAIT</span> 
+ message. The fixed delay time is configured during initialization.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span class="bold">Incremental delay&#160;— </span>For the first wrong PIN 
+ entry, you cannot turn the Pocket Token back on for two seconds. For each 
+ successive wrong PIN entry, the delay before you can turn the Pocket Token 
+ back on is double the time of the previous delay (that is, 4 seconds, 
+ then 8 seconds, then 16 seconds, and so on). The maximum delay is 9 hours. 
+ If you attempt to turn the Pocket Token back on before the delay period 
+ ends, the token displays a <span class="bold">WAIT</span> message.</p>
+<p class="pparagraph">The delay mechanism gives a user several chances 
+ to enter the correct PIN without locking or resetting the Pocket Token. 
+ The delay mechanism makes Pocket Tokens easier for the system administrator 
+ to manage. The delay mechanism also avoids accidental locking of the token 
+ by someone playing with it.</p>
+<p class="pparagraph">For additional protection, a Pocket Token using the 
+ delay mechanism can also be configured to automatically lock or reset, 
+ or both, if someone continues to enter wrong PINs. See the appropriate 
+ sections below for more information about these PIN protection mechanisms.</p>
+<h3>Lock mechanism</h3>
+<p class="pparagraph">If an Entrust Pocket Token is configured to use the 
+ lock mechanism and you enter the wrong PIN, the Pocket Token displays 
+ <span class="bold">ERROR</span> and then prompts you to enter the correct 
+ PIN.</p>
+<p class="pparagraph">If you continue to enter wrong PINs (up to 4), the 
+ Pocket Token displays the <span class="bold">LAST TRY</span> message. 
+ If you enter the wrong PIN again, the token will lock. The number of consecutive 
+ wrong entries allowed before the token locks is configured during initialization.</p>
+<h3>Unlock function</h3>
+<p class="pparagraph">When the Pocket Token is locked, only the unlock 
+ function is available. When you turn the Pocket Token on, it displays 
+ the unlock challenge. The system administrator needs this unlock challenge 
+ to generate the unlock code. After the system administrator generates 
+ the unlock code, the user enters it into the Pocket Token to unlock it.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If the unlock code is correct, the Pocket Token 
+ unlocks and, optionally, prompts you to change your PIN (see <a href="change_the_pin_on_entrust_pocket_tokens.htm">Change 
+ the PIN on a Pocket Token</a>).</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If the unlock code is incorrect, the Pocket Token 
+ remains locked, increases the unlock counter by one, and then turns off.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If the unlock counter exceeds the maximum value 
+ (configured during initialization), the Pocket Token automatically resets.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If the Pocket Token resets, the token must be 
+ initialized again.</p>
+<p class="pparagraph">The lock mechanism provides the strongest protection 
+ for the Pocket Token; however, it can result in more work for the system 
+ administrator who manages the Pocket Tokens.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

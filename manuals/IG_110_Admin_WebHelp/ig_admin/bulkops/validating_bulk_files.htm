@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\bulkOps.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Validating bulk files</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nPerform bulk operations\nValidate a bulk file");
+addAvenueInfo("Untitled","ig_admin/bulkops/editing_a_bulk_file.htm","ig_admin/bulkops/performing_bulk_operations_in_the_administration_interface.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/useradminsection1.htm#TOC_System_administration\">System administration<\/a> > <a href=\"bulkops.htm\">Perform bulk operations<\/a> > Validate a bulk file<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_validating"></a><a name="XREF_97712_Validating_bulk"></a>Validate 
+ a bulk file</h1>
+<p class="pparagraph">Before performing a bulk operation, you can have 
+ Entrust IdentityGuard validate your bulk file by verifying the following 
+ file attributes: </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>all data 
+ items (such as userId) are valid data items</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&#160;each 
+ row contains an entry for each column</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>all data 
+ types are valid data types (for example, if the data item for a column 
+ is userState, then all data items for that column must be either<span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">&#160;active</span> 
+ or<span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; "> suspended</span>)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>all data 
+ types with special formatting rules (such as dateTime) are formatted correctly</p>
+<p class="pparagraph">Entrust IdentityGuard does not verify whether the 
+ data in the bulk file is valid. For example, it does not verify whether 
+ any group or user specified in the bulk file currently exists.</p>
+<p class="prtproceduretitle">To validate a bulk file</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create 
+ a bulk file. See <a href="creating_a_bulk_file.htm">Create a bulk file</a>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Administration interface.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Bulk 
+ Operations</span>. </p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Bulk 
+ Operations</span> page appears.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="bulkOps00224.jpg" id="image0" src="bulkops00224.jpg" width="581" height="293" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Bulk Operation</span> tab.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Browse</span> button to locate the 
+ bulk file.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Operation to Perform</span>&#160;drop-down 
+ list, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+					 text-decoration: none; ">Validate bulk data file</span>.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a 
+	 name="IX_halt_processing_2"></a><a name="IX_halt_processing_1"></a><a 
+	 name="IX_Halt_Processing"></a>From the <span class="bold">Halt Processing</span>&#160;drop-down 
+ list, select the number of errors to allow before processing stops due 
+ to too many errors:</p>
+<div>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">After the first error</span>&#160;— 
+ Just one error stops all subsequent operations from being processed.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For the 
+ other options,<span class="bold"> After 10 errors</span>,<span class="bold"> 
+ After 50 errors</span>, and<span class="bold"> After 100 errors</span>, 
+ the operations that have errors up to the specified number are tracked 
+ and not processed. However, all successful operations prior to the specified 
+ number of errors threshold are processed. All operations after the processing 
+ reaches the maximum number of errors specified are not processed.</p>
+</div>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>It is recommended 
+ you select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+					 text-decoration: none; ">After 100 errors</span> to 
+ find as many errors as possible.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Perform 
+ Bulk Operation.</span></p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Bulk 
+ operation is in progress</span>&#160;pane appears. The size of your bulk 
+ operation directly affects the time the operation takes to process. This 
+ page indicates the initial status of the operation.<span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">&#160;</span></p>
+<div style="text-align: center;">
+	<img alt="bulkOps00227.jpg" id="image1" src="bulkops00227.jpg" width="552" height="284" border="0" /> 
+</div>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+ While Entrust IdentityGuard processes the bulk file, you can perform either 
+ of the following actions:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Update Results </span>To view the current status of the 
+ bulk operation, click . (The Results page is also updated automatically 
+ every 10 seconds.)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Cancel Operation </span>To stop processing 
+ the bulk file.</p>
+<p class="prpprocedureparagraph">When Entrust IdentityGuard finishes checking 
+ the bulk file for errors, the <span class="bold" style="font-weight: bold; 
+									 letter-spacing: 0.00em; text-decoration: none; ">Results</span>&#160;page 
+ appears. </p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="bulkOps00230.jpg" id="image2" src="bulkops00230.jpg" width="552" height="371" border="0" /> 
+	 </p>
+</div>
+<p class="prpprocedureparagraph">If Entrust IdentityGuard finds any errors 
+ in the bulk file, open the bulk file and make all necessary corrections. 
+ After you make the corrections, validate the bulk file again to ensure 
+ that it contains no more errors.</p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Done</span>&#160;to return to the <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Bulk 
+ Operation</span> page.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

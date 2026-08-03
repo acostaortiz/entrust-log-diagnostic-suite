@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Import a trusted certificate</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nManaging certificates in the key store\nManage certificates using the Key Store Management tab\nImport a trusted certificate");
+addAvenueInfo("r13_std","ig_admin/config_security/switch_to_a_ca-signed_certificate.htm","ig_admin/config_security/generate_a_self-signed_certificate.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"managing_certificates_in_the_key_store.htm\">Managing certificates in the key store<\/a> > <a href=\"manage_certificates_using_the_key_store_management_tab.htm\">Manage certificates using the Key Store Management tab<\/a> > Import a trusted certificate<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Import a trusted certificate</h1>
+<p class="pparagraph">Use the following procedure to add a new certificate 
+ to the Key Store or replace one that is about to expire with a new one.</p>
+<p class="pparagraph">Among the scenarios in which you would use this procedure 
+ is the case of importing the Self-Service Module's tomcat certificate 
+ into the Entrust IdentityGuard server key store as part of configuring 
+ push authentication, transaction verification (with mobile soft tokens) 
+ or identity-assured operations (with mobile smart credentials).</p>
+<p class="prtproceduretitle">To import a trusted certificate</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log 
+ in to the Administration interface.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From 
+ the top menu, select <span class="bold">System</span>, and then click 
+ the<span class="bold"> Key Store Management</span> tab. </p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Near 
+ the bottom of the page,&#160;click the <span class="bold">Import Trusted 
+ Certificate</span> tab. &#160;&#160;</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold">Browse</span>.</p>
+<p class="prpprocedureparagraph"><img src="../../import_trusted_certificate_idg.png" alt="" style="border: none;" width="494" height="119" border="0" /></p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Browse 
+ to the location of the certificate you want to import, select it, and 
+ then click <span class="bold">Open</span>. The file name is displayed 
+ to the right of the browse button on the <span class="bold">Import Trusted 
+ Certificate</span> tab.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold">Import Certificate</span>. The certificate details 
+ are displayed.</p>
+<p class="prpprocedureparagraph"><img src="../../import_trusted_cert_details.png" alt="" style="border: none;" width="600" height="524" border="0" /></p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If 
+ you are importing a new certificate, enter a meaningful name in the <span 
+	 class="bold">New certificate alias</span> text box.</p>
+<p class="prpprocedureparagraph">OR</p>
+<p class="prpprocedureparagraph">If you are importing an updated version 
+ of a certificate that was already in your key store, select <span class="bold">Existing 
+ certificate alias</span> and then select the existing alias from the drop-down 
+ list. </p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Review 
+ the details to ensure they match what you expect. Check whether the owner 
+ and issuer DN values look correct, and if you are concerned, try to check 
+ the validity of the certificate fingerprint with a definitive, trusted 
+ source. If the information is correct and you trust the certificate, click 
+ <span class="bold">Import</span>. A message confirms that the upload was 
+ successful.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

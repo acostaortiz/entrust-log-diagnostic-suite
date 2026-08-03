@@ -1,0 +1,324 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configure properties for an external risk engine</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nRisk-based authentication\nUsing external risk engine data for RBA authentication\nConfigure properties for an external risk engine");
+addAvenueInfo("r13_std","ig_admin/riskbasedauth/configure_your_application_to_deliver_risk_data_to_entrust_identityguard.htm","ig_admin/riskbasedauth/configure_policies_for_an_external_risk_engine.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"risk-based_authentication.htm\">Risk-based authentication<\/a> > <a href=\"using_external_risk_engine_data_for_rba_authentication.htm\">Using external risk engine data for RBA authentication<\/a> > Configure properties for an external risk engine<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Configure properties for an external risk engine</h1>
+<p class="pparagraph">Configure the general and, if appropriate, iovation-specific 
+ properties for integrating external risk engine data.</p>
+<p class="pparagraph">When you purchase a license to use the iovation SureScore 
+ integration, you receive an information package that incudes the URLs 
+ and administrative account credentials you need to configure these properties.</p>
+<p class="prtproceduretitle">To configure the properties for an external 
+ risk engine</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log 
+ in to the Properties Editor.</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>On 
+ the <span style="font-weight: bold;">Table of Contents</span>, click <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Risk 
+ Engine Configuration</span>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>In 
+ the empty field below <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Configuration Instances</span>, 
+ enter a unique name for the external risk engine, and then click <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Add</span>. 
+ You can create as many configuration instances as you need for the needs 
+ of different user groups.</p>
+<p class="prpprocedureparagraph">The pane expands to display other properties.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Configure 
+ the following properties:</p>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Risk 
+ Engine Class Name</a></p>
+<div class="droptext" id="POPUP656828041" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.riskengine.{0}.impl</span></p>
+	<p class="RefItemBody">Specifies the Java class name of the risk engine. 
+	 Select <span class="bold">Entrust TransactionGuard</span> to use Entrust 
+	 IdentityGuard’s built-in email integration with Entrust TransactionGuard. 
+	 <span>Select</span><span class="bold"> iovation SureScore</span><span> 
+	 to use the iovation integration. </span>Select custom to specify a 
+	 different Java class name.</p>
+	<p class="RefItemBody">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Risk 
+ Engine Display Name</a></p>
+<div class="droptext" id="POPUP657758394" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.riskengine.{0}.displaynamel</span></p>
+	<p class="RefItemBody">Specifies a display name for your risk engine. 
+	 The display name must be unique among all risk engines. This display 
+	 name appears in the Administration interface and can appear in your 
+	 client applications.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Risk 
+ Engine URL</a></p>
+<div class="droptext" id="POPUP658214230" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.riskengine.{0}.url</span></p>
+	<p class="RefItemBody">Specifies the URL of the risk engine.</p>
+</div>
+
+
+</div>
+<p class="prspsubprocedureparagraph">If you are using the iovation risk 
+ engine, this is the URL for the SOAP component of the service.</p>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Risk 
+ Engine Administrator Id</a></p>
+<div class="droptext" id="POPUP658354763" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.riskengine.{0}.adminid</span></p>
+	<p class="RefItemBody">Required. Specifies the user ID of the administrator 
+	 authorized to authenticate to the risk engine.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Risk 
+ Engine Administrator Password</a></p>
+<div class="droptext" id="POPUP658367916" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.riskengine.{0}.adminpassword</span></p>
+	<p class="RefItemBody">Required. Specifies the password of the administrator 
+	 authorized to authenticate to the risk engine.</p>
+	<p class="RefItemBody">Select the <span class="bold">Encrypt</span> 
+	 option to encrypt the password.</p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If 
+ you select <span class="bold">iovation SureScore</span> from the list 
+ in the <span class="bold">Risk Engine Class Name</span> property, configure 
+ the following additional properties:</p>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />iovation 
+ Risk Engine REST Service URL</a></p>
+<div class="droptext" id="POPUP631403499" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.riskengine.iovation.iovation.rest.url</span></p>
+	<p class="RefItemBody">Required. Specifies the URL for the iovation 
+	 SureScore REST service end-point.</p>
+</div>
+
+
+</div>
+<p class="prspsubprocedureparagraph">This is the URL for the REST component 
+ of the iovation service.</p>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />iovation 
+ Risk Engine REST Service Administrator Id</a></p>
+<div class="droptext" id="POPUP631376924" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.riskengine.iovation.iovation.rest.adminid</span></p>
+	<p class="RefItemBody">Required. Specifies the administrator Id used 
+	 to authenticate to the risk engine. </p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />iovation 
+ Risk Engine REST Service Administrator Password</a></p>
+<div class="droptext" id="POPUP631360568" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.riskengine.iovation.iovation.rest.adminpassword</span></p>
+	<p class="RefItemBody">Required. Specifies the administrator password 
+	 used to authenticate to the risk engine. </p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />iovation 
+ Risk Engine Ruleset For RBA Normal Security Level</a></p>
+<div class="droptext" id="POPUP631360609" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.riskengine.iovation.iovation.ruleset.normal</span></p>
+	<p class="RefItemBody">Required. Specifies the name of the iovation 
+	 ruleset to use when determining device risk for the NORMAL security 
+	 level. </p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />iovation 
+ Risk Engine Ruleset For RBA Enhanced Security Level</a></p>
+<div class="droptext" id="POPUP631324713" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.riskengine.iovation.iovation.ruleset.enhanced</span></p>
+	<p class="RefItemBody">Required. Specifies the name of the iovation 
+	 ruleset to use when determining device risk for the ENHANCED security 
+	 level.</p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold">Validate &amp; Save</span>.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log 
+ out of the Properties Editor and restart the Entrust IdentityGuard Server 
+ service to have the changes take effect.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP656828041');
+	TextPopupInit('a2','POPUP657758394');
+	TextPopupInit('a3','POPUP658214230');
+	TextPopupInit('a4','POPUP658354763');
+	TextPopupInit('a5','POPUP658367916');
+	TextPopupInit('a6','POPUP631403499');
+	TextPopupInit('a7','POPUP631376924');
+	TextPopupInit('a8','POPUP631360568');
+	TextPopupInit('a9','POPUP631360609');
+	TextPopupInit('a10','POPUP631324713');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

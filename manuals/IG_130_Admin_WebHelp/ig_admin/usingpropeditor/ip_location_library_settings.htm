@@ -1,0 +1,204 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>IP Location Library Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nIP Location Library Settings (31)");
+addAvenueInfo("r13_std","ig_admin/usingpropeditor/general_reporting_configuration.htm","ig_admin/usingpropeditor/jdbc_database_settings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > IP Location Library Settings (31)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_IP_Geo_properties" id="IX_IP_Geo_properties"></a><a name="IX_properties_17" 
+	 id="IX_properties_17"></a><a name="IX_location_library" id="IX_location_library"></a><a 
+	 name="XREF_97169_IP_Location" id="XREF_97169_IP_Location"></a>IP Location 
+ Library Settings</h1>
+<p class="pparagraph">These property control features are related to IP/Geolocation 
+ and risk-based authentication. For information of IP location data and 
+ risk-based authentication, see <a href="../riskbasedauth/risk-based_authentication_overview.htm">Risk-based 
+ authentication overview</a>.</p>
+<p class="pparagraph">Also see <a href="../config_radius_proxy/configuring_the_radius_proxy_for_vpn_servers.htm">Configuring 
+ the Radius proxy for VPN servers</a>&#160;for using risk-based features 
+ through the Radius proxy.</p>
+<p class="pparagraph">&#160;</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />IP 
+ Location Library Implementation Class</a></span></p>
+<div class="droptext" id="POPUP595377565" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.iplocation.impl</span></p>
+	<p class="RefItemBody">Provides the Java class used by the IP 
+	 location library.</p>
+	<p class="RefItemBody">To use other than the default class, 
+	 select <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+					 text-decoration: none; ">Custom </span>from the list 
+	 and enter a valid class name in the empty field that appears. (Used 
+	 only in highly advanced deployments.)</p>
+	<p class="RefItemBody">Default: MaxMind®</p>
+	<p class="nonote"><span class="bold">Note:</span> You must have a subscription 
+	 to Entrust Open Fraud Intelligence Network (OFIN) to be able to update 
+	 the MaxMind data.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />IP 
+ Location Data Directory</a></span></p>
+<div class="droptext" id="POPUP594641695" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.iplocation.datadirectory</span></p>
+	<p class="RefItemBody">Specifies the location of the IP location data.</p>
+	<p class="RefItemBody">Default:</p>
+	<p class="RefItemBody"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 Windows: <span class="output" style="font-family: Courier; font-style: normal; 
+					 font-weight: normal; font-size: 9.pt; color: #; letter-spacing: .em; 
+					 text-decoration: none; ">&lt;$IG_HOME&gt;\etc\ipdata</span></p>
+	<p class="RefItemBody"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 Linux: <span class="output" style="font-family: Courier; font-size: 9.pt; 
+					 color: #; letter-spacing: .em;">$IG_HOME/etc/ipdata</span></p>
+</div>
+
+
+</div>
+<p class="FM_fcwfigurecaptionwide">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP595377565');
+	TextPopupInit('a2','POPUP594641695');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

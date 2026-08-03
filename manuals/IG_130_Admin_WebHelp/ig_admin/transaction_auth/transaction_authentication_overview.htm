@@ -1,0 +1,191 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\transaction_auth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Transaction authentication overview</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nTransaction authentication\nTransaction authentication overview");
+addAvenueInfo("r13_std","ig_admin/transaction_auth/transaction_authentication.htm","ig_admin/transaction_auth/transaction_receipts_and_certificates.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"transaction_authentication.htm\">Transaction authentication<\/a> > Transaction authentication overview<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_authentication_2" id="IX_authentication_2"></a><a name="IX_transaction" 
+	 id="IX_transaction"></a><a name="IX_signing" id="IX_signing"></a><a 
+	 name="XREF_84656_Completing_the" id="XREF_84656_Completing_the"></a><a 
+	 name="XREF_44557_Preventing_man_in" id="XREF_44557_Preventing_man_in"></a><a 
+	 name="XREF_83315_Transaction" id="XREF_83315_Transaction"></a>Transaction 
+ authentication overview</h1>
+<p class="pparagraph">When your users are challenged by Entrust IdentityGuard 
+ based on a specific transaction, the challenge contains the transaction 
+ details. The transaction details can be configured to be a part of the 
+ challenge and challenge response for all second-factor authentication 
+ methods.</p>
+<p class="pparagraph">In transaction authentication, the transaction details 
+ are compared to those contained in the challenge, and the authentication 
+ is successful only if the two sets of transaction details match. When 
+ the authentication is successful, a transaction receipt is returned to 
+ the application. The transaction receipt might be signed, depending upon 
+ the policies set in Entrust IdentityGuard.</p>
+<p class="pparagraph">With transaction authentication, you get assurance 
+ that the transaction requested is the same as the transaction that is 
+ authenticated. That is, you can be sure that the transaction has not been 
+ modified during transmission.</p>
+<p class="pparagraph"><a name="IX_in_SMS_OTP_message" id="IX_in_SMS_OTP_message"></a><a 
+	 name="IX_in_email_OTP_message" id="IX_in_email_OTP_message"></a>If 
+ a user is using OTP authentication with the email or text message (SMS) 
+ delivery method, you can make the transaction details visible to the user 
+ in the email or text message. See <a href="../outofbandauth/customize_the_javamail_out-of-band_otp_template.htm">Customize 
+ the JavaMail out-of-band OTP template</a>&#160;or <a href="../outofbandauth/customize_the_sms_message_template.htm">Customize 
+ the SMS message template</a>.</p>
+<p class="pparagraph">If users have the Entrust IdentityGuard Mobile Soft 
+ Token app, the transaction details can be sent to users’ mobile devices. 
+ See <a href="../softtokenauth/soft_token_transaction_verification_overview.htm">Soft 
+ token transaction verification overview</a>.</p>
+<p class="pparagraph">There are several options for delivering transaction 
+ details with OTPs. You can set the behavior in the Properties Editor:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Send the 
+ transaction details in a separate email or text message: The transaction 
+ details are sent first, followed by one or more OTPs.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Send the 
+ transaction details with the first OTP: The transaction details are sent 
+ in the first email or text message, along with the first (or only OTP).</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Send the 
+ transaction details in every email: The transaction details are included 
+ with each OTP sent.</p>
+<p class="pparagraph">See <a href="../usingpropeditor/out-of-band_otp_email_delivery_configuration.htm">Out-of-Band 
+ OTP Email Delivery Configuration</a>&#160;and <a href="../usingpropeditor/out-of-band_otp_sms_delivery_configuration.htm">Out-of-Band 
+ OTP SMS Delivery Configuration</a>&#160;for more information about setting 
+ these delivery properties.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

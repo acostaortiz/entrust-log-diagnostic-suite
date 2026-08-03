@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\certauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Revocation checking of CA certificates</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nCertificate authentication\nAbout certificates\nRevocation checking of CA certificates");
+addAvenueInfo("r13_std","ig_admin/certauth/registering_certificates.htm","ig_admin/certauth/configuring_revocation_checking_for_various_cas.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"certificate_authentication.htm\">Certificate authentication<\/a> > <a href=\"about_certificates.htm\">About certificates<\/a> > Revocation checking of CA certificates<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_29470_Revocation" id="XREF_29470_Revocation"></a>Revocation checking of CA certificates</h1>
+<p class="pparagraph">Revocation checking is done only for user certificates issued by registered CAs.</p>
+<p class="pparagraph">A user certificate may be defined with any combination of the following.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>AIA extension for OCSP</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>CDP extension specifying CRLs</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>DN CDP</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>HTTP URL CDP</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>LDAP URL CDP</p>
+
+<p class="pparagraph">The Entrust IdentityGuard CA certificate can be configured with the possible certificate revocation value values described in the following table.</p>
+<p class="pparagraph">Combinations of these parameters can be specified, and if so, multiple revocation sources are checked during certificate validation. If none of these values are specified, then certificate revocation is not checked during validation.</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+<col style="width: 24.827%;" />
+<col style="width: 75.173%;" />
+<tr class="t1st">
+<th>
+<p class="tahtableheader">Entrust IdentityGuard certificate property</p>
+</th>
+<th>
+<p class="tahtableheader">Rule and dependencies</p>
+</th>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext" style="font-weight: bold;">Follow URL CDPs</p>
+</td>
+<td class="last">
+<p class="tattabletext">If set, Entrust IdentityGuard follows the HTTP/LDAP URL CDPs to retrieve the Certificate Revocation Lists.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext" style="font-weight: bold;">LDAP URL</p>
+</td>
+<td class="last">
+<p class="tattabletext">If supplied, Entrust IdentityGuard uses this LDAP server to retrieve CRLs if DN CDPs are defined. It also tries to retrieve combined CRLs from the LDAP entry of the CA certificate.</p>
+<p class="tattabletext">If you enter an LDAP URL, you can also specify the LDAP user DN and LDAP password. If you do not supply the LDAP user DN and password, then authentication to the LDAP directory will be anonymous.</p>
+<p class="tattabletext">If you specify an <span style="font-weight: bold;">LDAP URL</span>, you must also select <span style="font-weight: bold;">Follow URL CDPs</span>, and it will be automatically set if it is not specified. If an LDAP URL is not specified, the LDAP <span style="font-weight: bold;">Follow URL CDPs</span> will be turned off by default.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext" style="font-weight: bold;">Use AIA Extension to Locate OCSP Responder</p>
+</td>
+<td class="last">
+<p class="tattabletext">When this option is enabled, Entrust IdentityGuard uses the OCSP entry in the certificate Authority Information Access (AIA) extension to locate the OCSP server from which to retrieve certificate revocation information.</p>
+<p class="tattabletext">In Entrust IdentityGuard 10.2 FP1 Patch 197971 and later, this option is disabled by default. Previously, it was enabled by default.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext" style="font-weight: bold;">OCSP Responder URL</p>
+</td>
+<td class="last">
+<p class="tattabletext">If supplied, Entrust IdentityGuard uses the URL to access the OCSP revocation checking.</p>
+</td>
+</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

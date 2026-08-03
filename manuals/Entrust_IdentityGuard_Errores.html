@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Manual Administrativo Entrust IdentityGuard - Códigos 520xxx y Auditoría AUDxxx</title>
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; color: #1e293b; max-width: 950px; margin: 0 auto; padding: 20px; background: #ffffff; }
+    h1 { color: #0a3d6d; border-bottom: 3px solid #0a3d6d; padding-bottom: 10px; }
+    h2 { color: #1e6091; margin-top: 28px; border-left: 5px solid #1e6091; padding-left: 12px; }
+    h3 { color: #0369a1; margin-top: 20px; }
+    .error-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; margin: 16px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
+    .proc-card { background: #f0f9ff; border: 1px solid #0284c7; border-radius: 8px; padding: 18px; margin: 16px 0; }
+    .error-code { font-family: monospace; font-size: 1.1rem; font-weight: bold; color: #dc2626; background: #fee2e2; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+    .audit-code { font-family: monospace; font-size: 1.1rem; font-weight: bold; color: #0284c7; background: #e0f2fe; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+    .code-block { background: #0f172a; color: #38bdf8; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 13px; overflow-x: auto; margin-top: 8px; }
+    .badge-info { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+    .badge-warn { background: #fef3c7; color: #b45309; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+    .badge-error { background: #fee2e2; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+    .badge-snmp { background: #fef3c7; color: #b45309; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; margin-left: 6px; }
+    ol, ul { padding-left: 20px; }
+  </style>
+</head>
+<body>
+
+  <h1>Entrust IdentityGuard OnPremise — Catálogo Administrativo de Errores & Auditoría</h1>
+  <p><strong>Referencia Técnica Oficial:</strong> Entrust IdentityGuard Server v12.x / OnPremise Suite</p>
+
+  <!-- ERRORES 520XXX -->
+  <h2 id="sec-5202013">1. Código [5202013]: Invalid user ID or password</h2>
+  <div class="error-card">
+    <div><span class="error-code">5202013</span></div>
+    <p><strong>Significado del Log:</strong> El usuario intentó autenticarse o acceder a través de la API de Contexto de Sistema pero la ID de usuario o la contraseña proporcionada es inválida o no coincide con la base de datos de identidades.</p>
+    <p><strong>Remediación:</strong> Verifique las credenciales en Active Directory / LDAP o desbloquee el usuario en la Consola de Administración.</p>
+  </div>
+
+  <h2 id="sec-5205139">2. Código [5205139]: Unable to find a user for user name or alias</h2>
+  <div class="error-card">
+    <div><span class="error-code">5205139</span></div>
+    <p><strong>Significado del Log:</strong> La API de Gestión de Usuarios no pudo localizar la entidad de usuario o alias dentro de la base de datos o almacén LDAP.</p>
+  </div>
+
+  <h2 id="sec-5203018">3. Código [5203018]: Authentication type is not allowed for user</h2>
+  <div class="error-card">
+    <div><span class="error-code">5203018</span></div>
+    <p><strong>Significado del Log:</strong> El tipo de autenticador solicitado (TOKENRO, Grid, OTP) no está permitido en la política asignada al grupo del usuario.</p>
+  </div>
+
+  <h2 id="sec-5202046">4. Código [5202046]: Cryptographic Services Initialization Failed</h2>
+  <div class="error-card">
+    <div><span class="error-code">5202046</span> <span class="badge-error">Nivel: CRITICAL</span></div>
+    <p><strong>Significado del Log:</strong> No se pueden inicializar los servicios criptográficos porque no hay contraseña o datos de protección de clave disponibles.</p>
+    <div class="code-block">Cannot initialize cryptographic services because no password or key protection data is available. (Ref:31056583)</div>
+    <p><strong>Remediación:</strong> Inicie sesión en <code>supersh</code> y ejecute el comando <code>system bind</code> para asociar el archivo de claves.</p>
+  </div>
+
+  <!-- SECCIÓN DE AUDITORÍA MACHINE SECRETS -->
+  <h2>5. Auditoría de Machine Secrets (AUD2400 a AUD2402)</h2>
+  <div class="error-card">
+    <div><span class="audit-code">AUD2400</span> <span class="badge-info">Machine Secret Created</span></div>
+    <div><span class="audit-code">AUD2401</span> <span class="badge-info">Machine Secret Deleted</span></div>
+    <div><span class="audit-code">AUD2402</span> <span class="badge-info">Machine Secret Updated</span></div>
+  </div>
+
+  <!-- SECCIÓN DE AUDITORÍA MASTER KEYS -->
+  <h2>6. Auditoría de Claves Maestras (Master Key Audit Messages - AUD113 a AUD118)</h2>
+  <div class="error-card">
+    <div><span class="audit-code">AUD113</span> <span class="badge-info">System Bind</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <div><span class="audit-code">AUD114</span> <span class="badge-warn">System Unbind</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <div><span class="audit-code">AUD115</span> <span class="badge-warn">System Rebind</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <div><span class="audit-code">AUD116</span> <span class="badge-info">Master Keys Update</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <div><span class="audit-code">AUD117</span> <span class="badge-warn">Master Keys Update With No Provided Reason</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <div><span class="audit-code">AUD118</span> <span class="badge-info">Repository Update Status</span></div>
+  </div>
+
+  <!-- SECCIÓN DE SERVICIOS Y ALTA DISPONIBILIDAD (HA) -->
+  <h2>7. Auditoría de Servicios, Alta Disponibilidad (HA) y Connection Pools (AUD106 a AUD155)</h2>
+
+  <h3 id="sec-aud106">7.1 Código [AUD106]: Service Start</h3>
+  <div class="error-card">
+    <div><span class="audit-code">AUD106</span> <span class="badge-info">Nivel: INFO</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <p><strong>Descripción del Evento:</strong> El servicio <code>{0}</code> de Entrust IdentityGuard ha iniciado correctamente.</p>
+    <div class="code-block">{0} service started. {1}</div>
+  </div>
+
+  <h3 id="sec-aud107">7.2 Código [AUD107]: Service Stop</h3>
+  <div class="error-card">
+    <div><span class="audit-code">AUD107</span> <span class="badge-info">Nivel: INFO</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <p><strong>Descripción del Evento:</strong> El servicio <code>{0}</code> ha sido detenido.</p>
+    <div class="code-block">{0} service stopped.</div>
+  </div>
+
+  <h3 id="sec-aud125">7.3 Código [AUD125]: Property Editor Connection Failure</h3>
+  <div class="error-card">
+    <div><span class="audit-code">AUD125</span> <span class="badge-error">Nivel: ERROR</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <p><strong>Descripción del Evento:</strong> El Editor de Propiedades no pudo conectar con el Servicio de Administración de Entrust IdentityGuard.</p>
+  </div>
+
+  <h3 id="sec-aud127">7.4 Código [AUD127]: Radius Proxy Connection Failure</h3>
+  <div class="error-card">
+    <div><span class="audit-code">AUD127</span> <span class="badge-error">Nivel: ERROR</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <p><strong>Descripción del Evento:</strong> El Proxy RADIUS no pudo conectar con el Servicio de Autenticación.</p>
+  </div>
+
+  <h3 id="sec-aud151">7.5 Código [AUD151]: High Availability Repository Failover</h3>
+  <div class="error-card">
+    <div><span class="audit-code">AUD151</span> <span class="badge-warn">Nivel: WARN</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <p><strong>Descripción del Evento:</strong> Conmutación por Error en Alta Disponibilidad (HA Failover). La conexión al repositorio primario falló en URL <code>{1}</code> y se conmutó automáticamente a la URL secundaria <code>{2}</code>.</p>
+    <div class="code-block">Repository {0} connection failed to URL {1} switching to URL {2}.</div>
+  </div>
+
+  <h3 id="sec-aud152">7.6 Código [AUD152]: High Availability Primary Repository Restored</h3>
+  <div class="error-card">
+    <div><span class="audit-code">AUD152</span> <span class="badge-info">Nivel: INFO</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <p><strong>Descripción del Evento:</strong> Se restableció la conexión con el repositorio primario en el esquema de Alta Disponibilidad.</p>
+    <div class="code-block">The primary connection has been restored for repository {0} to URL {1}.</div>
+  </div>
+
+  <h3 id="sec-aud153">7.7 Código [AUD153]: High Availability Connection Failure</h3>
+  <div class="error-card">
+    <div><span class="audit-code">AUD153</span> <span class="badge-error">Nivel: ERROR</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <p><strong>Descripción del Evento:</strong> Fallo total de Alta Disponibilidad. No se pudo establecer conexión con ninguna de las URLs suministradas para el repositorio.</p>
+    <div class="code-block">Failed to establish a connection to any supplied URLs for repository {0}.</div>
+  </div>
+
+  <h3 id="sec-aud154">7.8 Código [AUD154]: Connection Pool Exhausted</h3>
+  <div class="error-card">
+    <div><span class="audit-code">AUD154</span> <span class="badge-warn">Nivel: WARN</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <p><strong>Descripción del Evento:</strong> Se agotó el pool de conexiones al repositorio de base de datos por alta concurrencia.</p>
+    <div class="code-block">Failed to obtain a connection to repository {0} from the connection pool due to pool exhaustion.</div>
+  </div>
+
+  <h3 id="sec-aud155">7.9 Código [AUD155]: Connection Pool 80 Percent Used</h3>
+  <div class="error-card">
+    <div><span class="audit-code">AUD155</span> <span class="badge-warn">Nivel: WARN</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <p><strong>Descripción del Evento:</strong> Advertencia preventiva: El pool de conexiones al repositorio alcanzó el 80% de utilización.</p>
+    <div class="code-block">Connection pool to repository {0} is 80 percent used.</div>
+  </div>
+
+  <!-- SECCIÓN DE CONFIGURACIÓN DE PROPIEDADES -->
+  <h2>8. Auditoría de Configuración de Propiedades y Servidores (AUD121 a AUD148)</h2>
+
+  <h3 id="sec-aud121">8.1 Código [AUD121]: Invalid Property Configuration</h3>
+  <div class="error-card">
+    <div><span class="audit-code">AUD121</span> <span class="badge-error">Nivel: ERROR</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <p><strong>Descripción del Evento:</strong> Error al analizar sintácticamente una propiedad en el archivo de configuración.</p>
+    <div class="code-block">An error was detected parsing a property in the properties file {0}.</div>
+  </div>
+
+  <h3 id="sec-aud128">8.2 Código [AUD128]: Invalid SMTP Configuration</h3>
+  <div class="error-card">
+    <div><span class="audit-code">AUD128</span> <span class="badge-error">Nivel: ERROR</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <p><strong>Descripción del Evento:</strong> Errores en las propiedades de configuración del servidor SMTP.</p>
+  </div>
+
+  <h3 id="sec-aud135">8.3 Código [AUD135]: Invalid SMS Configuration</h3>
+  <div class="error-card">
+    <div><span class="audit-code">AUD135</span> <span class="badge-error">Nivel: ERROR</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <p><strong>Descripción del Evento:</strong> Errores en las propiedades de configuración del servidor SMS Gateway.</p>
+  </div>
+
+  <!-- SECCIÓN DE PLANTILLAS SMART CREDENTIALS -->
+  <h2>9. Auditoría de Plantillas de Smart Credentials (AUD137 a AUD139)</h2>
+  <div class="error-card">
+    <div><span class="audit-code">AUD137</span> <span class="badge-error">Invalid Smart Credential Applet Templates</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <div><span class="audit-code">AUD138</span> <span class="badge-error">Invalid Smart Credential Definition Templates</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+    <div><span class="audit-code">AUD139</span> <span class="badge-error">Invalid Smart Credential Layout Templates</span> <span class="badge-snmp">SNMP Trap: Sí</span></div>
+  </div>
+
+  <!-- SECCIÓN PROCEDIMENTAL OPERATIVA -->
+  <h2 id="sec-proc-keyupdate">10. Guía Operativa: Actualización de Claves Maestras y Repositorios</h2>
+  <div class="proc-card">
+    <h3>Rotación de Master Keys (`system keyupdate`)</h3>
+    <p>Procedimiento paso a paso para actualizar las claves maestras de cifrado de Entrust IdentityGuard:</p>
+    <ol>
+      <li><strong>Detener Servicios:</strong> Detenga todos los servicios de Entrust en el servidor primario y réplicas.</li>
+      <li><strong>Respaldo de Seguridad:</strong> Realice una copia de respaldo (backup) completa del servidor primario y de la base de datos.</li>
+      <li><strong>Ejecutar Rotación en Servidor Primario:</strong>
+        <p>Inicie la consola SuperShell (<code>supersh</code>) sin iniciar sesión y ejecute:</p>
+        <div class="code-block">system keyupdate -reason "Rotacion periodica de claves de seguridad IT Servicios"</div>
+        <p>Entrust generará el nuevo archivo de claves maestras cifradas <code>.enc</code> (Registrando el evento <code>AUD116</code>).</p>
+      </li>
+      <li><strong>Respaldar y Copiar el archivo <code>.enc</code>:</strong> Copie el nuevo archivo <code>.enc</code> generado a todos los nodos réplicas.</li>
+      <li><strong>Re-inicializar Réplicas:</strong>
+        <p>En cada nodo réplica, inicie sesión en <code>supersh</code> y ejecute:</p>
+        <div class="code-block">init -replica -overwrite</div>
+        <div class="code-block">system bind</div>
+      </li>
+      <li><strong>Iniciar Servicios:</strong> Inicie los servicios en el servidor primario y réplicas.</li>
+    </ol>
+
+    <h3>Re-encriptación Masiva del Repositorio (`system repositoryupdate`)</h3>
+    <p>Para forzar la re-encriptación inmediata de todos los datos en la base de datos SQL, LDAP y repositorios de tarjetas:</p>
+    <div class="code-block">system repositoryupdate -start</div>
+    <ul>
+      <li><code>-status</code> : Consulta el reporte de avance del proceso (Eventos <code>AUD118</code>).</li>
+      <li><code>-stop</code> : Pausa temporalmente el proceso de cifrado masivo.</li>
+      <li><code>-resume</code> : Reanuda la re-encriptación pausada.</li>
+      <li><code>-continue</code> : Fuerza el avance omitiendo errores no fatales.</li>
+    </ul>
+  </div>
+
+</body>
+</html>

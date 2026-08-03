@@ -1,0 +1,240 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\org_mutualauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring mutual authentication policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nMutual authentication\nConfigure mutual authentication policies");
+addAvenueInfo("r13_std","ig_admin/org_mutualauth/image_and_message_display.htm","ig_admin/org_mutualauth/determining_whether_a_user_has_mutual_authentication_secrets.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"org_mutualauth.htm\">Mutual authentication<\/a> > Configure mutual authentication policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_97715_Configuring_mutual" id="XREF_97715_Configuring_mutual"></a>Configure mutual authentication policies</h1>
+<p class="pparagraph">Each group defined in Entrust IdentityGuard has an associated set of policies. All users belong in a group; therefore the group’s policies affect all users in that group.</p>
+<p class="prtproceduretitle">To configure mutual authentication policies</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Administration interface. (See <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging in and out of the Administration interface</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the main menu, click <span style="font-weight: bold;">Policies</span>.</p>
+
+<p class="prpprocedureparagraph">A list of all policies appears on the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">List Policies</span>&#160;tab.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="org_mutualauth00696.jpg" id="image4" src="org_mutualauth00696.jpg" width="552" height="137" border="0" name="image4" /></p>
+</div>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click a policy name to view its policy information.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Policy</span> page appears.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="org_mutualauth00699.jpg" id="image5" src="org_mutualauth00699.jpg" width="552" height="386" border="0" name="image5" /></p>
+</div>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">Policy Category</span>&#160;drop-down list, select <span style="font-weight: bold;">Mutual Authentication</span>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Edit Policy</span>.</p>
+
+<p class="prpprocedureparagraph">An editable version of the settings appears.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Edit the policies as required. Select a policy in the list to see its description.</p>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><span 
+	 class="bold">Total Maximum Size in Kilobytes</span> </a></p>
+<div class="droptext" id="POPUP624784538" style="display: none;">
+	<p class="RefItemBody">Sets the maximum storage space (in KB) 
+	 that all mutual authentication secrets for the user combined can use. 
+	 To determine the correct size for your system, consider the type of 
+	 information displayed; for example, images require more space than 
+	 text. A setting of 0 disables the storing of authentication secrets 
+	 and effectively turns off mutual authentication.</p>
+	<p class="RefItemBody">Default: 1000</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Mutual Authentication Secrets</a></span></p>
+<div class="droptext" id="POPUP539319377" style="display: none;">
+	<p class="RefItemBody">Sets the maximum number of mutual authentication 
+	 secrets a user can have. A setting of 0 disables the storing of authentication 
+	 secrets and effectively turns off mutual authentication.</p>
+	<p class="RefItemBody">Default: 3</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Return 
+ Mutual Authentication Secrets With Challenge</a></span></p>
+<div class="droptext" id="POPUP539438833" style="display: none;">
+	<p class="RefItemBody">Determines if Entrust IdentityGuard presents 
+	 mutual authentication secrets to users before they log in and are 
+	 authenticated or after authentication.</p>
+	<p class="RefItemBody">The following methods in the Authentication 
+	 API can return the authentication secrets based on the <span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">authSecretParms</span> 
+	 parameter passed to them:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">getGenericChallenge</span>&#160;</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">authenticateGenericChallenge</span>&#160;</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">checkMachineRegistration</span>&#160;</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">registerMachine</span>&#160;</p>
+	<p class="RefItemBody">If set to No, authentication secrets 
+	 are not returned by the authentication API until after Entrust IdentityGuard 
+	 authenticates the user or the machine secret.</p>
+	<p class="RefItemBody">Default: No</p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Save Changes</span>.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP624784538');
+	TextPopupInit('a2','POPUP539319377');
+	TextPopupInit('a3','POPUP539438833');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

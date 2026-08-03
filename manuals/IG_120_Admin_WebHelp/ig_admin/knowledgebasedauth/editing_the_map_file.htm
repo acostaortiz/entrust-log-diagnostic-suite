@@ -1,0 +1,189 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\knowledgebasedauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Editing the map file</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nKnowledge-based authentication\nConfiguring knowledge-based authentication policies\nEdit the word map file");
+addAvenueInfo("Untitled02","ig_admin/knowledgebasedauth/ensuring_exact_answers.htm","ig_admin/knowledgebasedauth/map_file_editing_rules.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"knowledgebasedauth.htm\">Knowledge-based authentication<\/a> > <a href=\"configuring_knowledge-based_authentication_policies.htm\">Configuring knowledge-based authentication policies<\/a> > Edit the word map file<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_91589_Creating_and" id="XREF_91589_Creating_and"></a><a name="XREF_77483_Editing_the_map" id="XREF_77483_Editing_the_map"></a>Edit the word map file</h1>
+<p class="pparagraph">When Entrust IdentityGuard starts, it looks for the file and location named in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Word Map File Name</span>&#160;property. By default, the file is named <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">qamap.txt</span>. When Entrust IdentityGuard finds this file, it loads the contents into memory and uses the settings in the file to verify user responses to authentication questions.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> <a name="IX_word_map_file_1" id="IX_word_map_file_1"></a>If Entrust IdentityGuard cannot read or understand the map file, perhaps because the encoding or format is incorrect, it generates an error and processes responses as if the map file did not exist; that is, it expects exact answers.<br />
+<br />
+Entrust IdentityGuard does not apply the map file if the user policy <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Inexact Match Allowed for an Answer</span> is disabled.</p>
+<p class="pparagraph">Use the Properties Editor&#160;to change the map file location if needed. See <a href="../usingpropeditor/knowledge-based_authentication_settings.htm#XREF_72658_Knowledge_based">Knowledge-Based Authentication Settings</a>.</p>
+<p class="pparagraph">Ensure that your word map file is included in your Entrust IdentityGuard backups.</p>
+<p class="pparagraph">To allow for variations in users’ responses to knowledge-based questions, you can add words to the map file.</p>
+<p class="pparagraph">In addition to the specific advice in this procedure, review the information in <a href="map_file_editing_rules.htm">Map file editing rules</a>.</p>
+<p class="prtproceduretitle">To edit the map file</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Open the map file in a text editor.</p>
+
+<p class="prpprocedureparagraph">The sample map file included in the Entrust IdentityGuard installation looks something like this:</p>
+<p class="cocode">[Protection]</p>
+<p class="cocode">Version=1</p>
+<p class="cocode">[Substitutes]</p>
+<p class="cocode">; This entry would make 'St.'&#160;be equivalent to 'street' and to ;'saint'. It does not make 'street'&#160;equivalent to 'saint'.</p>
+<p class="cocode">;</p>
+<p class="cocode">St. = street saint</p>
+<p class="cocode">;</p>
+<p class="cocode">; This entry makes 'Dr.'&#160;be equivalent to 'doctor' and allows</p>
+<p class="cocode">;'Dr.' to be omitted from the answer or response. It does not</p>
+<p class="cocode">; allow 'doctor' to be omitted from the answer or the response.</p>
+<p class="cocode">;</p>
+<p class="cocode">Dr.= doctor &lt;null&gt;</p>
+<p class="cocode">;</p>
+<p class="cocode">; This entry allows 'doctor' to be omitted from the answer or</p>
+<p class="cocode">; response.</p>
+<p class="cocode">doctor = &lt;null&gt;</p>
+<p class="attnattention"><span style="font-weight: bold;">Attention:</span> Take great care in defining substitutions in the qamap file; you could unintentionally create security holes. Consider the following example:<br />
+<span style="font-family: Courier; font-size: 9.0pt;">Dr.= doctor<br />
+Drive = Dr.<br /></span>In this case, “Maple Doctor” may be accepted as an answer, when you really wanted “Maple Drive.”</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Add new entries under the <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">Substitutes</span>&#160;section header in the form “A = B” where A is a word that might appear in an answer and B is one or more equivalents for it; for example:</p>
+
+<p class="cocode">St. = street saint</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="IX_null_in_word_map_file" id="IX_null_in_word_map_file"></a>To permit a word to be missing from an answer, add an entry in the form “A = B” where one value for B is &lt;null&gt;; for example:</p>
+
+<p class="cocode">Dr.= doctor &lt;null&gt;</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>As you add entries to the file, add comments to explain the intent of each entry. Comments begin with a semicolon and end at the next paragraph return. A semicolon anywhere in a line of text means the rest of the line is treated as a comment.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="IX_UTF_8_encoding" id="IX_UTF_8_encoding"></a>Save the file using UTF-8 encoding. (You can select the UTF-8 option on the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Save As</span> dialog box of most text editors.)</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

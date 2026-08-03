@@ -1,0 +1,174 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\personvernumbersauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring personal verification number policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nPersonal verification numbers\nConfiguring personal verification number policies");
+addAvenueInfo("Untitled02","ig_admin/personvernumbersauth/updating_pvns.htm","ig_admin/personvernumbersauth/creating_and_administering_personal_verification_numbers.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"personvernumbersauth.htm\">Personal verification numbers<\/a> > Configuring personal verification number policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_85178_Configuring" id="XREF_85178_Configuring"></a>Configuring personal verification number policies</h1>
+<p class="pparagraph">Each group defined in Entrust IdentityGuard has an associated set of policies. All users belong to a group, and the group’s policies affect all users in that group.</p>
+<p class="pparagraph">Administrators with applicable permissions in their roles can change policy. (See <a href="../config_roles/user_registration_password_permissions.htm#XREF_29971_User_registration">User registration password permissions</a>&#160;and <a href="../config_roles/user_personal_verification_number_permissions.htm#XREF_96131_Personal">User personal verification number permissions</a>.)</p>
+<p class="pparagraph">The Personal Verification Number policy sets defaults for PVN uses and length for all users of the applicable group.</p>
+<p class="prtproceduretitle"><a name="XREF_44280_To_view_password" id="XREF_44280_To_view_password"></a>To view PVN policy</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Administration interface. (See <a href="../usingadmininterface/logging_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging in and out of the Administration interface</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Policies</span> on the menu bar.</p>
+
+<p class="prpprocedureparagraph">A list of all policies appears on the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">List Policies</span> tab.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click any policy name to view its policy information.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Policy</span> page appears and lists all policy settings.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Policy Category</span>, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Personal Verification Number</span> from the list.</p>
+
+<p class="prpprocedureparagraph">The PVN policies appear.</p>
+<p class="prtproceduretitle">To change PVN policy</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find the policy to change (see <a href="#XREF_44280_To_view_password">To view PVN policy</a>).</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Policy</span>&#160;page, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Edit Policy</span>.</p>
+
+<p class="prpprocedureparagraph">An editable version of the settings appear.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Edit the policies described in <a href="../config_policies/personal_verification_number_policies.htm#XREF_85653_Personal">Personal Verification Number policies</a>.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Save Changes</span>.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

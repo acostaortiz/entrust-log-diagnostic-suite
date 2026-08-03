@@ -1,0 +1,182 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_radius_proxy.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Using a Radius server for first-factor authentication</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring the Entrust IdentityGuard Radius proxy\nConfiguring the Radius proxy for groups\nUsing a Radius server for first-factor authentication");
+addAvenueInfo("Untitled02","ig_admin/config_radius_proxy/using_entrust_identityguard_groups_with_a_vpn_server.htm","ig_admin/config_radius_proxy/using_external_authentication_for_first-factor_authentication.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_radius_proxy.htm\">Configuring the Entrust IdentityGuard Radius proxy<\/a> > <a href=\"configuring_the_radius_proxy_for_groups.htm\">Configuring the Radius proxy for groups<\/a> > Using a Radius server for first-factor authentication<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_33921_Using_a_Radius" id="XREF_33921_Using_a_Radius"></a>Using a Radius server for first-factor authentication</h1>
+<p class="pparagraph">Assume you want to set up one Radius server and one VPN server to provide first-factor authentication for two VPN instances named SalesVPN and MarketingVPN. These instances are paired with two Entrust IdentityGuard user groups, IGSales and IGMarketing. In this scenario, the relevant settings would look like this:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Proxy Configuration</span> pane</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">Radius Proxy Port</span>: <span class="output">1812 1813</span></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>first VPN configuration instance on the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Server Configuration</span> pane</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">Configuration Instance</span>: <span class="output">salesVPN</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">Radius Proxy Port Used By VPN</span>: <span class="output">1812</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">VPN Host</span>:<span class="output">&#160;10.12.1.1</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">VPN Shared Secret</span>:<span class="bold">&#160;</span><span class="output">xyz76#r</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">Entrust IdentityGuard User Group</span>: <span class="output" style="font-family: Courier; font-size: 10.0pt;"></span><span class="output">IGSales</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">First-Factor Authentication Server</span>: <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Server</span>: <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">radius1</span></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>second VPN configuration instance on the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Server Configuration</span> pane</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">Configuration Instance</span>: <span class="output">marketingVPN</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">Radius Proxy Port Used By VPN</span>: <span class="output">1813</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">VPN Host</span>:<span class="bold">&#160;</span><span class="output">10.12.1.</span><span class="output" style="font-family: Courier; font-size: 10.0pt;">1</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">VPN Shared Secret</span>:<span class="bold">&#160;</span><span class="output">xyz76#r</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">Entrust IdentityGuard User Group</span>: <span class="output" style="font-family: Courier; font-size: 10.0pt;"></span><span class="output">IGMarketing</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">First-Factor Authentication Server</span>: <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">Radius Server</span>: <span class="output">radius1</span></p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

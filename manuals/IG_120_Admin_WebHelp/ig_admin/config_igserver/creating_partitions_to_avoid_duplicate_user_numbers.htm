@@ -1,0 +1,181 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Creating partitions to avoid duplicate user numbers</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nUsing partitions\nCreate partitions to avoid duplicate user numbers");
+addAvenueInfo("Untitled02","ig_admin/config_igserver/creating_a_partition_without_allocating_user_or_grid_numbers.htm","ig_admin/config_igserver/using_partitions_to_avoid_duplicate_grid_card_serial_numbers.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"using_partitions.htm\">Using partitions<\/a> > Create partitions to avoid duplicate user numbers<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_31433_Creating" id="XREF_31433_Creating"></a>Create partitions to avoid duplicate user numbers</h1>
+<p class="pparagraph">To avoid duplicate user numbers that may results from repository replication, you must use partitions. Complete the following procedure to set up partitions for ranges of user numbers. The instructions use Toronto and South America as the example, with user numbers in the range of 1 to 50,000. You can use your own partition names and user number range.</p>
+<p class="prtproceduretitle"><a name="XREF_34637_To_set_up_a" id="XREF_34637_To_set_up_a"></a>To set up a partition to avoid duplicate user numbers</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create two partitions:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Call the first partition <span style="font-weight: bold;">TorontoPartition</span> and allocate user numbers 1 to 50,000.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Call the second partition <span style="font-weight: bold;">SouthAmericaPartition</span>&#160;and allocate user numbers 50,001 to 100,000.</p>
+
+<p class="prpprocedureparagraph">To create a partition:</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Master user shell. See <a href="../usingadmininterface/using_the_master_user_shell.htm#XREF_32785_Using_the_master">Using the Master user shell</a>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Before creating the partition and allocating a range of user numbers, check what the next global user numbers are. Enter:</p>
+
+<p class="cocode">system get</p>
+<p class="liplistparagraph">Allocate user numbers starting at this number. In this example, the next global user number is <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">1</span>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To create the partition and allocate the user numbers, enter:</p>
+
+<p class="cocode">partition create &lt;name&gt; [-comment &lt;comment&gt;] -userNumbers -min &lt;min&gt; -max &lt;max&gt;</p>
+<p class="liplistparagraph">Examples:</p>
+<p class="cocode">partition create TorontoPartition -comment "Toronto users" -min 1 -max 50,000</p>
+<p class="cocode">partition create SouthAmericaPartition -comment "South America users" -min 50,001 -max 100,000</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the Entrust IdentityGuard Administration interface, do the following:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create and associate the user group <span style="font-weight: bold;">TorontoUsers</span>&#160;with <span style="font-weight: bold;">TorontoPartition</span>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create and associate the user group <span style="font-weight: bold;">SouthAmericaUsers</span>&#160;with <span style="font-weight: bold;">SouthAmericaPartition</span>.</p>
+
+<p class="prpprocedureparagraph">The result is that users created in the <span style="font-weight: bold;">TorontoUsers</span> group associated with the <span style="font-weight: bold;">TorontoPartition</span>&#160;get user numbers between 1 and 50,000 (the first user getting number 1, the second user getting number 2, and so on). Users created in the <span style="font-weight: bold;">SouthAmericaUsers</span>&#160;group associated with the <span style="font-weight: bold;">SouthAmericaPartition</span>&#160;get user numbers between 50,001 and 100,000 (the first user getting number 50,001, the second user getting number 50,002, and so on).</p>
+<p class="prpprocedureparagraph">This scheme ensures that there is no overlap in user numbers.</p>
+<p class="prpprocedureparagraph">For details on creating and modifying user groups, see <a href="../config_groups/config_groups.htm#XREF_63083_Configuring">Configuring groups</a>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>As you create users, you can add new ranges of user numbers to each partition. To save time and effort later, assign relatively large ranges of user numbers at the outset to avoid adding just a few more each time they run out.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Repository Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nRepository Settings (8)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/report_definitions.htm","ig_admin/usingpropeditor/risk_engine_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Repository Settings (8)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_repository_properties_2"></a><a name="IX_repository_properties_1"></a><a 
+	 name="IX_repository_properties"></a><a name="IX_properties_6"></a><a 
+	 name="IX_general_properties"></a><a name="XREF_90228_Entrust"></a>Repository 
+ Settings</h1>
+<p class="pparagraph">These properties control where Entrust IdentityGuard 
+ stores different types of data; in an LDAP directory, a JDBC database, 
+ a file-based repository, or possibly some combination of these.</p>
+<p class="pparagraph">If you add another repository after installation 
+ that has a different type (that is, you add a database when you originally 
+ specified an LDAP directory as your repository, or vice versa), then you 
+ can adjust these properties to make use of the additional repository. 
+ You can also change the default settings for your unassigned token and 
+ preproduced card file-based repositories when using LDAP as your repository 
+ type.</p>
+<p class="pparagraph">For an explanation of repositories and to view a 
+ snapshot of the properties, see <a href="../config_igserver/specifying_multiple_repositories.htm#XREF_64512_Setting_up">Specifying 
+ multiple repositories</a>. For instructions on changing from a file-based 
+ repository to a database, see <a href="../config_igserver/configuring_token_and_grid_card_repositories.htm#XREF_19176_Configuring_token">Configuring 
+ token and grid card repositories</a>. </p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Card/User 
+ Repository Implementation Classes</a></span></p>
+<div class="droptext" id="POPUP652546399" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.cardRepository.impl</span></p>
+	<p class="lip2list2paragraph">Specifies the type of storage location 
+	 to be used for users and their assigned cards on the primary system. 
+	 The Properties Editor sets the correct class name (or names) based 
+	 on your selection of repository type.</p>
+	<p class="lip2list2paragraph">Your user and associated card information 
+	 can be stored in a database, a directory, or both. If you specify 
+	 both, you are forced to choose one as the default, either database 
+	 or directory.</p>
+	<p class="lip2list2paragraph">Select <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">Custom 
+	 </span>to specify your own repository class name. (Used only in highly 
+	 advanced deployments.)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Policy 
+ Repository Implementation Class</a></span></p>
+<div class="droptext" id="POPUP652728216" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.policyRepository.impl</span></p>
+	<p class="lip2list2paragraph">Specifies the type of storage location 
+	 to be used for the policies on the primary system. Pick a repository 
+	 option from the drop-down list. The Properties Editor sets the correct 
+	 class name based on your choice.</p>
+	<p class="lip2list2paragraph">Select <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">Custom 
+	 </span>to specify your own repository class name. (Used only in highly 
+	 advanced deployments.)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Policy 
+ Repository Cache Timeout</a></span></p>
+<div class="droptext" id="POPUP652809784" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.policyRepository.cacheTimeout</span></p>
+	<p class="lip2list2paragraph">Sets the time in milliseconds that a 
+	 policy is cached before the repository is checked for new policy definitions. 
+	 Setting the value to disables policy caching and forces the policy 
+	 to be accessed from the repository on every operation. This can slow 
+	 performance.</p>
+	<p class="lip2list2paragraph">Default: 30,000 (30 seconds)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Preproduced 
+ Card Repository File Name</a></span></p>
+<div class="droptext" id="POPUP652910601" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.preproducedCardRepository.file.name</span></p>
+	<p class="lip2list2paragraph">For a file-based repository, specifies 
+	 the base name of the file on the primary server used to store preproduced 
+	 cards.</p>
+	<p class="lip2list2paragraph">Default:</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 UNIX <span class="output">$IG_HOME/etc/fpcr/fpcr.pcr</span></p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 Windows <span class="output">&lt;$IG_HOME&gt;\etc\fpcr\fpcr.pcr</span></p>
+	<p class="nonote"><span class="bold">Note:</span> Leave this setting 
+	 blank for a replica server or if unassigned cards are stored in a 
+	 database.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Preproduced 
+ Card Repository Maximum Number Of Cards Per File</a></span></p>
+<div class="droptext" id="POPUP653574098" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.preproducedCardRepository.file.maxsize</span></p>
+	<p class="lip2list2paragraph">Sets the maximum number of cards each 
+	 component of the file-based repository can store, when using a file-based 
+	 repository for preproduced cards.</p>
+	<p class="lip2list2paragraph">Default: 200</p>
+	<p class="lip2list2paragraph">If you deploy cards for over 100,000 
+	 users in a directory, and you still want to use file-based card preproduction, 
+	 set this property to a value higher than 200. The value should be 
+	 the (approximate) number of cards, divided by 500. For example 100,000 
+	 cards divided by 500 equals 200.</p>
+	<p class="nonote"><span class="bold">Note:</span> The preproduced card 
+	 repository needs approximately 0.5 KB of memory per card. Therefore, 
+	 100,000 cards use about 50 MB of memory.</p>
+	<p class="nonote"><span class="bold">Note:</span> Leave this blank 
+	 for a replica server.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Token 
+ Repository Implementation Class</a></span></p>
+<div class="droptext" id="POPUP653815797" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.tokenRepository.impl</span></p>
+	<p class="lip2list2paragraph">Specifies the type of storage location 
+	 to be used for unassigned tokens on the primary system. When using 
+	 a directory, the default is a file-based repository but you can switch 
+	 to a database if you configure one after installation.</p>
+	<p class="lip2list2paragraph">Pick a repository option from the drop-down 
+	 list. The Properties Editor sets the correct class name based on your 
+	 choice.</p>
+	<p class="lip2list2paragraph">Select <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">Custom 
+	 </span>to specify a custom repository class name. (Used only in highly 
+	 advanced deployments.)</p>
+	<p class="nonote"><span class="bold">Note:</span> For a replica server, 
+	 select <span class="bold" style="letter-spacing: .em;">None</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Token 
+ Repository File Name</a></span></p>
+<div class="droptext" id="POPUP653940572" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.tokenRepository.file.name</span></p>
+	<p class="lip2list2paragraph">For a file-based repository, specifies 
+	 the base name of the file on the primary server used to store unassigned 
+	 tokens.</p>
+	<p class="lip2list2paragraph">Default:</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 UNIX<span class="output"> $IG_HOME/etc/ftkr/ftkr.pcr</span></p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 Windows<span class="output"> &lt;$IG_HOME&gt;\etc\ftkr\ftkr.pcr</span></p>
+	<p class="nonote"><span class="bold">Note:</span> Leave this setting 
+	 blank for a replica server or if unassigned tokens are stored in a 
+	 database.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Token 
+ Repository Maximum Number of Tokens Per File</a></span></p>
+<div class="droptext" id="POPUP654862816" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.tokenRepository.file.maxsize</span></p>
+	<p class="lip2list2paragraph">Sets the maximum number of tokens each 
+	 component of the file-based repository can store, when using a file-based 
+	 repository for unassigned tokens.</p>
+	<p class="lip2list2paragraph">Default: 200</p>
+	<p class="nonote"><span class="bold">Note:</span> Leave this blank 
+	 for a replica server.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Smart 
+ Credential Repository Implementation Class</a></span></p>
+<div class="droptext" id="POPUP654877268" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.smartCredentialRepository.impl</span></p>
+	<p class="lip2list2paragraph">Sets the location or locations where 
+	 unassigned smart credentials are stored. Select a repository option 
+	 from the drop-down list. Entrust IdentityGuard sets the correct Java 
+	 class name based on your selection.</p>
+	<p class="lip2list2paragraph">When using a directory with your primary 
+	 Entrust IdentityGuard server, the default is a file-based repository, 
+	 but you can switch to a database. If the Entrust IdentityGuard server 
+	 is a replica server and the primary server is using a file-based repository, 
+	 select None (Replica Nodes). Select Custom to specify your own repository 
+	 class name.</p>
+	<p class="lip2list2paragraph">Default: Database (JDBC)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Smart 
+ Credential Repository File Name</a></span></p>
+<div class="droptext" id="POPUP654902050" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.smartCredentialRepository.file.name</span></p>
+	<p class="lip2list2paragraph">If unassigned smart credentials are stored 
+	 in a file-based repository, then this property specifies the location 
+	 of the file used to store unassigned smart credentials. If this repository 
+	 is a replica server, or if unassigned smart credentials are stored 
+	 in a database, do not specify a location.</p>
+	<p class="lip2list2paragraph">Default: <span class="output" style="font-family: Courier; 
+												 font-style: normal; font-weight: normal; 
+												 font-size: 9.pt; color: #; 
+												 letter-spacing: .em; text-decoration: none; ">$identityguard.home/etc/fscr/fscr.pcr</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Smart 
+ Credential Repository Maximum Number of Smart Credentials per File</a></span></p>
+<div class="droptext" id="POPUP654935012" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.smartCredentialRepository.file.maxsize</span></p>
+	<p class="lip2list2paragraph">If unassigned smart credentials are stored 
+	 in a file-based repository, then this property specifies the maximum 
+	 number of smart credentials each component of the file-based repository 
+	 can store. If the repository is a replica server, do not specify a 
+	 value.</p>
+	<p class="lip2list2paragraph">Default: 200</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Sync 
+ Repository Implementation Class</a></span></p>
+<div class="droptext" id="POPUP656097533" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.syncRepository.impl</span></p>
+	<p class="lip2list2paragraph"><span>S</span>pecifies whether external 
+	 user information should be synchronized when using an Entrust IdentityGuard 
+	 database. Select a repository option from the drop-down list depending 
+	 on whether this is an Entrust IdentityGuard server that supports synchronization 
+	 into an Entrust IdentityGuard database repository or not. If it does, 
+	 then an LDAP directory with synchronization is required to be configured. 
+	 </p>
+	<p class="lip2list2paragraph">At least one Active Directory Sync Directory 
+	 configuration must be configured.</p>
+	<p class="lip2list2paragraph">Options are</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>None</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Directory 
+	 Synchronization with IdentityGuard Databases –&#160;Select 
+	 this option if you are using the Active Directory synchronization 
+	 feature.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Custom 
+	 – Select this 
+	 option only if directed by Entrust.</p>
+	<p class="lip2list2paragraph">Default: None</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP652546399');
+	TextPopupInit('a2','POPUP652728216');
+	TextPopupInit('a3','POPUP652809784');
+	TextPopupInit('a4','POPUP652910601');
+	TextPopupInit('a5','POPUP653574098');
+	TextPopupInit('a6','POPUP653815797');
+	TextPopupInit('a7','POPUP653940572');
+	TextPopupInit('a8','POPUP654862816');
+	TextPopupInit('a9','POPUP654877268');
+	TextPopupInit('a10','POPUP654902050');
+	TextPopupInit('a11','POPUP654935012');
+	TextPopupInit('a12','POPUP656097533');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

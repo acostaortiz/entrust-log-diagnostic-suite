@@ -1,0 +1,397 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_roles.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Card permissions</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nPermissions quick reference\nCard permissions");
+addAvenueInfo("r13_std","ig_admin/config_roles/ca_certificate_permissions.htm","ig_admin/config_roles/external_q_a_permissions.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"permissions_quick_reference.htm\">Permissions quick reference<\/a> > Card permissions<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_26616_Card_permissions" id="XREF_26616_Card_permissions"></a>Card permissions</h1>
+<p class="pparagraph">These permissions control the creation and management of preproduced (unassigned) and assigned grid cards. For information about managing grids and cards, see <a href="../gridauthentication/grid_authentication_overview.htm#XREF_80999_Grid">Grid authentication overview</a>.</p>
+
+<table style="padding-left: 6.00pt; padding-top: 6.00pt; padding-right: 6.00pt; padding-bottom: 4.00pt; margin-bottom: 12.00pt;" cellspacing="0" width="553">
+<caption class="tacwtablecaptionwide">&#160;</caption>
+<tr style="height: 20.00pt;" bgcolor="#E5E5E5">
+<th style="border-right: solid 1px #000000; border-bottom: double 3px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159" bgcolor="#E5E5E5">
+<p class="tahtableheader">Permission</p>
+</th>
+<th style="border-right: solid 1px #000000; border-bottom: double 3px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106" bgcolor="#E5E5E5">
+<p class="tahtableheader">Dependencies</p>
+</th>
+<th style="border-bottom: double 3px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288" bgcolor="#E5E5E5">
+<p class="tahtableheader">Description</p>
+</th>
+</tr>
+<tr style="height: 31.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">cardCreate</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">cardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Create a preproduced card. The role must also include at least one group in the group list.</p>
+</td>
+</tr>
+<tr style="height: 42.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">cardDelete</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">cardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Delete a preproduced card. The role must also include at least one group in the group list, and the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">cardList</span> permission.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">cardExport</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">cardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Export a preproduced card.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">cardGet</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">&#160;</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Retrieve information about a preproduced card.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">cardList</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">cardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">List information about preproduced cards.</p>
+</td>
+</tr>
+<tr style="height: 31.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">cardOverridePolicy</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">&#160;</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Override specific values set in the card policy when modifying or creating a preproduced card.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">cardSet</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">cardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Modify preproduced card information.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">cardView</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">cardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">View the grid for a given preproduced card.</p>
+</td>
+</tr>
+<tr style="height: 31.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userAuthenticate</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">userGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Authenticate a user’s account by requiring the user to respond to a grid challenge.</p>
+</td>
+</tr>
+<tr style="height: 31.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userCardAssign</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">userCardGet, cardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Assign a preproduced card to a user.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userCardCreate</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">userCardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Create a new user card.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userCardDelete</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">userCardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Delete a user’s card.</p>
+</td>
+</tr>
+<tr style="height: 69.50pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userCardDeleteCanceled</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">userCardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Delete canceled cards only.</p>
+<p class="tantablenote"><span class="bold">Note:</span> If <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">userCardDelete</span>&#160;is specified with <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">userCardDeleteCanceled</span>, <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">userCardDelete</span>&#160;takes precedence and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">userCardDeleteCanceled</span>&#160;is ignored.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userCardDeliver</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">&#160;</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Deliver a user’s card.</p>
+</td>
+</tr>
+<tr style="height: 31.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userCardExport</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">userCardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Export the information about a user’s card to a file.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userCardGet</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">&#160;</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Retrieve information about a card.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userCardList</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">userCardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">List information about user cards.</p>
+</td>
+</tr>
+<tr style="height: 42.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userCardOverridePolicy</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">&#160;</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Override the supersede and expiry date values set in the card policy when modifying or creating a user’s card.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userCardSet</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">userCardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Set information for user cards.</p>
+</td>
+</tr>
+<tr style="height: 97.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userCardUnassign</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">userCardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">Move the card back to the preproduced card repository. This is only possible if:</p>
+
+<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>it was originally a preproduced card assigned to the user</p>
+
+<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>it is in the Pending or Hold_Pending state (that is, the card has not been used for authentication yet)</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">userCardView</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="106">
+<p class="tattabletext">userCardGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="288">
+<p class="tattabletext">View the grid for a given user’s card.</p>
+</td>
+</tr>
+</table>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

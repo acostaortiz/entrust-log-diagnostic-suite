@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\bulkOps.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring the Administration interface properties for bulk operations</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nPerform bulk operations\nOptimize the Administration interface for bulk operations");
+addAvenueInfo("r13_std","ig_admin/bulkops/perform_bulk_operations_in_the_administration_interface.htm","ig_admin/bulkops/limitations_of_bulk_operations.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > <a href=\"perform_bulk_operations.htm\">Perform bulk operations<\/a> > Optimize the Administration interface for bulk operations<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_configuring_properties_7" id="IX_configuring_properties_7"></a><a name="XREF_Configuring_the_Entrust" id="XREF_Configuring_the_Entrust"></a><a name="XREF_28681_Configuring_the" id="XREF_28681_Configuring_the"></a><a name="XREF_75980_Configuring_the" id="XREF_75980_Configuring_the"></a>Optimize the Administration interface for bulk operations</h1>
+<p class="pparagraph">When the Administration interface processes large bulk files, it can take a long time and use a lot of memory. Entrust IdentityGuard provides two properties to manage resources used for bulk operations and improve performance:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Bulk File in Memory Threshold</span> This property limits the amount of memory used for bulk operations. Entrust IdentityGuard writes large bulk files to disk and caches them when they exceed the limit.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Bulk File Maximum Size</span> This property limits the size of files imported for bulk operations. You cannot import a bulk file that exceeds this size.</p>
+
+<p class="nonote"><span class="bold">Note:</span> You must have the <span class="bold">propertiesSet</span>&#160;permission to configure properties.</p>
+<p class="prtproceduretitle">To configure the Administration interface properties for bulk operations</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Properties Editor. </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Windows</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 the Windows button, and then select <span style="font-weight: bold;">Entrust</span> 
+	 <span style="font-weight: bold;">IdentityGuard </span>&gt;<span class="bold"> 
+	 Properties Editor</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 the <span class="bold">Log In</span>&#160;page, enter your administrator 
+	 name in <span style="font-weight: bold;">Userid</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 your password in <span style="font-weight: bold;">Password</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 a group name in the <span style="font-weight: bold;">Group</span>&#160;field. 
+	 </p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+	 <span style="font-weight: bold;">Log In</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Complete 
+	 the second-factor challenge, if presented.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Linux</a></p>
+<div class="droptext" id="POPUP630334575" style="display: none;">
+	<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Properties Editor web application in a Web browser. 
+	 It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardPropertiesEditor</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="prspsubprocedureparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="prspsubprocedureparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 the <span class="bold">Log In</span>&#160;page, enter your administrator 
+	 name in <span style="font-weight: bold;">Userid</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 your password in <span style="font-weight: bold;">Password</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 a group name in the <span style="font-weight: bold;">Group</span>&#160;field. 
+	 </p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+	 <span style="font-weight: bold;">Log In</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Complete 
+	 the second-factor challenge, if presented.</p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the Table of Contents, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Web Application Settings</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Bulk File in Memory Threshold</span>&#160;field, enter (in bytes) a new memory threshold.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Bulk File Maximum Size</span> field, enter (in bytes) a new maximum size.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold">Validate &amp; Save</span>.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP630334575');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

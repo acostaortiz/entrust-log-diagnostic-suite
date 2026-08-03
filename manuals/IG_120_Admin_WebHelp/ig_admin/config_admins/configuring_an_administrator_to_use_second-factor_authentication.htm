@@ -1,0 +1,198 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_admins.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring an administrator to use second-factor authentication</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nConfiguring Entrust IdentityGuard administrators\nConfiguring an administrator to use second-factor authentication");
+addAvenueInfo("Untitled02","ig_admin/config_admins/change_a_password_for_another_administrator.htm","ig_admin/config_admins/finding_an_administrator.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > <a href=\"config_admins.htm\">Configuring Entrust IdentityGuard administrators<\/a> > Configuring an administrator to use second-factor authentication<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_63508_Configuring_an" id="XREF_63508_Configuring_an"></a>Configuring an administrator to use second-factor authentication</h1>
+<p class="pparagraph"><a name="IX_authentication_1" id="IX_authentication_1"></a>To control access to the Administration interface more securely, you can configure policies to require that administrators&#160;authenticate with a grid, token, soft token, or temporary PIN when they log in.</p>
+<p class="pparagraph">In addition, you can set policies that allow administrators to bypass additional authentication to the Administration interface if they have already authenticated to another Web application using a smart credential or SAML authentication. See <a href="../config_adminsso/saml_authentication_to_the_administration_interface.htm">Configuring SAML authentication to the Administration interface</a> or <a href="../config_adminsso/smart_credential_authentication_to_the_administration_interface.htm">Configuring smart credential authentication to the Administration interface</a>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> You cannot restrict authentication to the Administration interface based on token name. All valid tokens can be used, regardless of their name. For more on token names, see <a href="../tokenauth/token_set_overview_using_multiple_tokens.htm">Token set overview (using multiple tokens)</a>.</p>
+<p class="prtproceduretitle">To set policy requiring second-factor authentication</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you do not know what policy applies to the administrator’s group, first complete the following steps:</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the menu bar, click <span class="bold">User Accounts</span>&#160;and find the administrator’s account information to locate the administrator’s group name. (See <a href="finding_an_administrator.htm">Find an administrator account</a>.)</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the menu bar, click <span class="bold">Groups</span>&#160;and view that group’s information to determine the group’s associated policy name. (See <a href="../config_groups/finding_a_group.htm">Find a group</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the menu bar, click <span class="bold">Policies</span>&#160;and locate the policy that applies to the group. (See <a href="../config_policies/finding_a_policy.htm">Find a policy</a>.)</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Policy Category</span>, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Administration</span>.</p>
+
+<p class="prpprocedureparagraph">The administrative policy options appear.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="AI-policies-edit_Policy-admin.jpg" id="image2" src="ai-policies-edit_policy-admin.jpg" width="499" height="409" border="0" name="image2" /></p>
+</div>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Edit Policy</span>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To configure login using second-factor authentication, from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Second-Factor Authentication Type</span>&#160;list, select one of the following authentication types:</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Grid</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Token (Response-Only)</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Token (Challenge-Response)</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>None</p>
+
+<p class="prspsubprocedureparagraph">If you want the administrator to use a soft token, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Token (Response-Only).</span></p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Save Changes</span>.</p>
+
+<p class="pparagraph">You must now set up the cards, tokens, or soft tokens for the administrative users.</p>
+<p class="prtproceduretitle">To set up an authenticator</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Access the administrator’s account information page. (See <a href="finding_an_administrator.htm">Find an administrator account</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Scroll to the bottom of the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Account Information</span>&#160;pane and click the applicable link under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Authentication Types</span>.</p>
+
+<p class="prpprocedureparagraph">Each link opens a different pane. Each pane has one or more buttons that perform actions or that open configuration pages for the target authentication type. For information about each of the many authentication types, see the applicable section in the guide:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To create and assign a card, see <a href="../gridauthentication/creating_grid_cards.htm#XREF_14975_Configuring">Creating grid cards</a>&#160;and <a href="../gridauthentication/assigning_grid_cards_to_users.htm">Assign grid cards to users</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To assign a token, see <a href="../tokenauth/assigning_tokens_to_users.htm">Assign tokens to users</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To create and activate a soft token, see <a href="../softtokenauth/soft_token_creation_and_activation_overview.htm">Soft token creation and activation overview</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To create a temporary PIN, see <a href="../temppinsauth/administering_temporary_pins.htm">Administering temporary PINs</a>.</p>
+
+<p class="pparagraph">With the applicable permissions and group access, administrators can issue their own cards, tokens, soft tokens, and temporary PINs.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

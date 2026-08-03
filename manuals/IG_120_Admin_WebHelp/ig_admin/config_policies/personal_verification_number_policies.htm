@@ -1,0 +1,282 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_policies.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Personal Verification Number policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nPolicies quick reference\nPersonal Verification Number policies");
+addAvenueInfo("Untitled02","ig_admin/config_policies/password_policies.htm","ig_admin/config_policies/repository_data_policies.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"policies_quick_reference.htm\">Policies quick reference<\/a> > Personal Verification Number policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_85653_Personal" id="XREF_85653_Personal"></a>Personal 
+ Verification Number policies</h1>
+<p class="pparagraph">These policies enable and control PVNs.</p>
+<p class="pparagraph">Where a policy does not require a PVN for an authentication 
+ method, this can be overridden for authentication through VPN if the <span 
+	 class="bold">PVN Required</span>&#160;property is enabled (see <a href="../usingpropeditor/vpn_server_configuration.htm">VPN Server 
+ Configuration (19)</a>).</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Personal 
+ Verification Number (PVN) Length</a></span></p>
+<div class="droptext" id="POPUP609096170" style="display: none;">
+	<p class="lip2list2paragraph">Sets a value between 1 and 255 for the 
+	 length of the PVN.</p>
+	<p class="lip2list2paragraph">Default: 4</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph" style="mso-bidi-font-weight: normal;"><b><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />PVN 
+ Lifetime</a></b></p>
+<div class="droptext" id="POPUP680242913" style="display: none;">
+	<p class="lip2list2paragraph">Sets a PVN lifetime to force users to 
+	 update their PVN at the next login once the PVN lifetime is achieved.</p>
+	<p class="lip2list2paragraph">Set a lifetime value in days.</p>
+	<p class="lip2list2paragraph">Default: unlimited (the PVN never expires)</p>
+	<p class="nonote"><b style="mso-bidi-font-weight: normal;">Note:</b> 
+	 The PVN lifetime is applied to all PVNs created the policy change 
+	 is made. You must use a bulk operation to apply the policy change 
+	 to PVNs created before the update, see <a href="../personvernumbersauth/managing_pvns_in_bulk.htm">Managing 
+	 PVNs in bulk</a>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Authentication 
+ Types Requiring a PVN</a></span></p>
+<div class="droptext" id="POPUP611032695" style="display: none;">
+	<p class="lip2list2paragraph">This lists all the authentication methods 
+	 for which users can be asked to provide a PVN. It can be one or more 
+	 of: GRID, OTP, TOKEN (Response-Only), TOKEN (Challenge and Response).</p>
+	<p class="lip2list2paragraph">Where:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>GRID 
+	 authenticates with a card.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>OTP 
+	 presents out-of-band authentication (a one-time password provided 
+	 to the user).</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>TOKEN 
+	 (Response-Only) authenticates using a dynamic password generated by 
+	 a response-only token.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>TOKEN 
+	 (Challenge and Response) authenticates using a dynamic password generated 
+	 by a challenge-and-response token.</p>
+	<p class="lip2list2paragraph">If an authentication method is not in 
+	 the &quot;Included&quot; list, the PVN is optional. That is, if you 
+	 ask for PVN on your login page and the user supplies one, it will 
+	 be validated. However, if the login page does not ask for a PVN&#160;(or 
+	 it asks for one but the user does not provide it), the authentication 
+	 will still succeed.</p>
+	<p class="lip2list2paragraph">If you use different kinds of tokens 
+	 (for example, hardware tokens and soft tokens), you can require PVNs 
+	 for some types and not for others. To do so, use the <span style="font-weight: bold;">All 
+	 Token Vendors Require a PVN</span>&#160;and <span style="font-weight: bold;">Token 
+	 Vendors Requiring a PVN</span> options.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />All 
+ Token Vendors Require a PVN</a></span></p>
+<div class="droptext" id="POPUP612553144" style="display: none;">
+	<p class="lip2list2paragraph">When this option is selected, all users 
+	 must enter a PVN to use their tokens. </p>
+	<p class="lip2list2paragraph">Select this option to have the use of 
+	 all tokens protected by a PVN. This setting is recommended for hardware 
+	 tokens and for software tokens that do not use a PIN as an additional 
+	 layer of protection.</p>
+	<p class="lip2list2paragraph">Clear this option if you want the PVN 
+	 requirement to apply only to tokens from specific vendors that you 
+	 select in the <span style="font-weight: bold;">Token Vendors Requiring 
+	 a PVN</span>&#160;list. Typically, PVNs are not used to protect Entrust 
+	 IdentityGuard soft tokens (mobile or desktop) because the soft tokens 
+	 are already protected by a PIN.</p>
+	<p class="lip2list2paragraph">Default: Yes</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Token 
+ Vendors Requiring a PVN</a></span></p>
+<div class="droptext" id="POPUP613988123" style="display: none;">
+	<p class="lip2list2paragraph">From the list, select the token vendors 
+	 for whose tokens you want users to enter a PVN. This option is editable 
+	 only when <span style="font-weight: bold;">All Token Vendors Require 
+	 a PVN</span>&#160;is set to <span style="font-weight: bold;">No</span>&#160;(check 
+	 box is cleared).</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Change 
+ Required on Administrator Reset</a></span></p>
+<div class="droptext" id="POPUP614329548" style="display: none;">
+	<p class="lip2list2paragraph">This determines if the administrator 
+	 can enable or disable the <span class="bold" style="font-weight: bold; 
+									 letter-spacing: 0.00em; text-decoration: none; ">PVN 
+	 Change Required</span>&#160;option for a user. Select it to always 
+	 force the user to update the PVN when the administrator creates a 
+	 new one. Disable it to allow the administrator to choose to force 
+	 an update or not (see <a href="../personvernumbersauth/forcing_pvn_updates.htm#XREF_39549_Forcing_PVN_updates">Forcing 
+	 PVN updates</a>).</p>
+	<p class="lip2list2paragraph">Default: Yes</p>
+</div>
+
+
+</div>
+<p class="tattabletext">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP609096170');
+	TextPopupInit('a2','POPUP680242913');
+	TextPopupInit('a3','POPUP611032695');
+	TextPopupInit('a4','POPUP612553144');
+	TextPopupInit('a5','POPUP613988123');
+	TextPopupInit('a6','POPUP614329548');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

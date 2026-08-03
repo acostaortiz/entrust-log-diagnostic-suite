@@ -1,0 +1,1 @@
+gXMLBuffer ="<?xml version='1.0' encoding='utf-8' ?>  <tocdata>  <item name=\"Push authentication challenges to mobile smart credentials from the Administration interface\" url=\"ig_admin/scauth/push_authentication_challenges_to_mobile_smart_credentials_from_the_administration_interface.htm\" />    </tocdata>";

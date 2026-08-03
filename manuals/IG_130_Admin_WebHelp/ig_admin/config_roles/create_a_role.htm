@@ -1,0 +1,285 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_roles.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Create a role</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nConfiguring roles\nCreate a role");
+addAvenueInfo("r13_std","ig_admin/config_roles/built-in_roles.htm","ig_admin/config_roles/modify_a_role.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > <a href=\"configuring_roles.htm\">Configuring roles<\/a> > Create a role<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_81111_Creating_modifying" id="XREF_81111_Creating_modifying"></a>Create 
+ a role</h1>
+<p class="pparagraph">Entrust IdentityGuard provides several general and 
+ several specialized <a href="built-in_roles.htm">built-in roles</a>. To 
+ create a new role, you must have the</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">superuser</span> 
+ role, or</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>a role 
+ that includes the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+						 text-decoration: none; ">roleCreate</span>&#160;permission 
+ and the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">All policies, All groups</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">, 
+ and</span> <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+					 text-decoration: none; ">All roles</span> options 
+ enabled.</p>
+<p class="pparagraph">An administrator must be able to view the role being 
+ created. A new role is not yet in the administrator's role list. The <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">All 
+ roles</span>&#160;option makes it possible to view all roles, including 
+ those not yet created.</p>
+<p class="pparagraph"><a name="IX_creating" id="IX_creating"></a><a name="IX_roles" 
+	 id="IX_roles"></a><a name="IX_importing" id="IX_importing"></a>You 
+ may need to create roles in your Entrust IdentityGuard system so that 
+ you can delegate different tasks to different administrators. For example, 
+ you can create a help desk role that allows your help desk administrators 
+ to reset user shared secrets, unlock accounts, and assign cards using 
+ the Administration interface. To do this, you need a role that covers 
+ users in all user groups and that has at least the following permissions 
+ (and their dependencies): <span class="bold" style="font-weight: bold; 
+								 letter-spacing: 0.00em; text-decoration: none; ">userSetSecret</span>, 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">userCardAssign</span>, 
+ and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">userUnlock</span>, along with the 
+ associated Get permissions.</p>
+<p class="pparagraph">When you create a new role, you can copy an existing 
+ role, give it a new name and adjust its scope and privileges. As an example, 
+ for the help desk role, start with the <span class="bold" style="font-weight: bold; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">useradmin</span>&#160;role, 
+ rename it and select the <span class="bold" style="font-weight: bold; 
+								 letter-spacing: 0.00em; text-decoration: none; ">All 
+ groups</span> option.</p>
+<p class="pparagraph">When creating a role, consider the following guidelines:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Role names 
+ must be unique.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Roles 
+ must have a list of permissions and permission dependencies.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You can 
+ create roles one at a time in the Administration interface.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You can 
+ create roles in the Master user shell by importing role information from 
+ a file. (Use the <span style="font-family: 'Courier New';">role create</span>&#160;command. 
+ For detailed syntax, see the <span style="font-style: italic;">Entrust 
+ IdentityGuard Master User Shell Reference</span>.)</p>
+<p class="prtproceduretitle">To create a role in the Administration interface</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prpprocedureparagraph">You must log in as an administrator with 
+ the following permissions and options enabled:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">roleCreate</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">All 
+ policies</span> option</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">All 
+ groups</span> option</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">All 
+ roles</span> option</p>
+<p class="prpprocedureparagraph">The user must have access to all policies, 
+ groups, and roles in order to modify roles.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold">Roles</span> on the menu bar.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Create Role</span> tab.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+ a name for the new role in the <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Role 
+ Name</span> field.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Initialize from Role</span>&#160;drop-down 
+ list, use the default <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Don’t Initialize 
+ From An Existing Role</span>, or pick an existing role to copy settings 
+ from. If you choose <span style="font-weight: bold;">Don’t Initialize 
+ From An Existing Role</span>, the new role has no permissions or abilities 
+ until you modify the role to assign them.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. 
+ Enter comments that explain the purpose of the role.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Create 
+ Role</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold">View Role</span>&#160;page 
+ appears and lists all role settings. Modify the settings to meet your 
+ requirements. (See <a href="modify_a_role.htm">Modify a role</a>.)</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

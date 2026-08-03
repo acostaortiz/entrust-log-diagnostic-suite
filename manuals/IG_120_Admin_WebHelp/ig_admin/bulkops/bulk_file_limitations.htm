@@ -1,0 +1,180 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\bulkOps.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Bulk file limitations</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nPerform bulk operations\nLimitations of bulk operations\nBulk file limitations");
+addAvenueInfo("Untitled02","ig_admin/bulkops/limitations_of_bulk_operations.htm","ig_admin/bulkops/administration_interface_limitations.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > <a href=\"bulkops.htm\">Perform bulk operations<\/a> > <a href=\"limitations_of_bulk_operations.htm\">Limitations of bulk operations<\/a> > Bulk file limitations<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_limitations" id="IX_limitations"></a><a name="IX_bulk_file" id="IX_bulk_file"></a><a name="XREF_93524_Bulk_file" id="XREF_93524_Bulk_file"></a>Bulk file limitations</h1>
+<p class="pparagraph">When you process a bulk file, keep the following limitations and restrictions in mind:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If a bulk file references a group that does not exist, Entrust IdentityGuard generates an error message.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you include any data type (except alias) more than once, the bulk operation fails.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You cannot include authentication secrets or shared secrets in a bulk file. Instead, use the<span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">&#160;-import</span> attribute and various authentication attributes of the<span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">&#160;user set&#160;</span>command in the Master user shell.</p>
+
+<p class="lilistbullet" style="margin-bottom: 3.000pt;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If an operation contains both a duration and a dateTime data type for the same data item (for example, <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">lifetime</span>), Entrust IdentityGuard uses the duration data type.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust IdentityGuard generates an error and skips any row in which a field does not have the correct syntax for the data type.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="IX_repeatable" id="IX_repeatable"></a>Processing the same bulk file a second time usually results in errors because Entrust IdentityGuard tries to rewrite existing data. You can perform the following bulk operations repeatedly without errors:</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Create OTPs for users</span> if<span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">&#160;overwrite</span> is <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">true</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span style="font-weight: bold;">Modify OTPs for users</span> if<span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">&#160;overwrite</span> is <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">true</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Create PINs for users</span> if<span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">&#160;overwrite</span> is <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">true</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Modify user cards</span> unless the grid card state is <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">canceled</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Modify user tokens</span> unless the token state is <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">canceled</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Modify user PVNs</span> if PVNs are automatically generated</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Modify user passwords</span>&#160;if passwords are automatically generated or <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">clearHistory</span> is <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">true</span></p>
+
+<p class="lilistbullet2" style="font-weight: bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Unlock users</span></p>
+
+<p class="lilistbullet2" style="font-weight: bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Modify users</span></p>
+
+<p class="lilistbullet2" style="font-weight: bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Modify PINs</p>
+
+<p class="lilistbullet2" style="font-weight: bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Modify user contact information</span></p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

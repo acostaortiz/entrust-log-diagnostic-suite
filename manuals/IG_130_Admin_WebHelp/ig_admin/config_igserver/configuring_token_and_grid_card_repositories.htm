@@ -1,0 +1,219 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring token and grid card repositories</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nSpecifying multiple repositories\nConfiguring token and grid card repositories");
+addAvenueInfo("r13_std","ig_admin/config_igserver/setting_up_user_grid_card_and_token_repositories.htm","ig_admin/config_igserver/moving_data_between_repositories.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"specifying_multiple_repositories.htm\">Specifying multiple repositories<\/a> > Configuring token and grid card repositories<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_19176_Configuring_token" id="XREF_19176_Configuring_token"></a>Configuring 
+ token and grid card repositories</h1>
+<p class="pparagraph">When you select a database for your user repository, 
+ Entrust IdentityGuard automatically stores unassigned tokens and preproduced 
+ grid cards in the default database. No additional settings are needed.</p>
+<p class="pparagraph">When you select an LDAP repository for your default 
+ user repository, the installer automatically configures a file-based repository 
+ for your unassigned tokens and preproduced cards. Using the Properties 
+ Editor, you can change the file-based repository properties or switch 
+ to a database instead.</p>
+<p class="pparagraph">Policy data, users, preproduced grid cards, and unassigned 
+ tokens may all be stored in different repositories. See <a href="../config_groups/entrust_identityguard_groups_overview.htm">Entrust 
+ IdentityGuard groups overview</a>.</p>
+<p class="pparagraph">If you need to switch from a file-based repository 
+ to a database repository to store unassigned tokens, preproduced grid 
+ cards, or both, use the following procedure.</p>
+<p class="prtproceduretitle">To configure database repository settings 
+ for preproduced grid cards and unassigned tokens</p>
+<p class="attnattention"><span style="font-weight: bold;">Attention:</span> 
+ Do not use this procedure if the repository is already in use. If you 
+ do, the repository will no longer be accessible from Entrust IdentityGuard.</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ a database is not already set up for Entrust IdentityGuard, load the Entrust 
+ IdentityGuard schema into your supported database and install the driver 
+ files. For instructions, see the <span class="italic" style="font-style: italic; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Entrust 
+ IdentityGuard Database Configuration Guide</span>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For 
+ Entrust IdentityGuard with embedded Tomcat only, complete the following:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On Linux, 
+ install the driver of the database JAR files in <span class="output" style="font-size: 10.0pt;">$IG_HOME/lib/db</span> 
+ and <span class="output" style="font-size: 10.0pt;">$CATALINA_HOME/lib</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On Microsoft 
+ Windows, install the driver of the database JAR files in <span class="output" 
+	 style="font-family: 'Courier New'; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">&lt;$IG_HOME&gt;\lib\</span>&#160;and 
+ <span class="output" style="font-family: 'Courier New'; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; ">&lt;$IG_HOME&gt;\apache-tomcat-6.0.26\lib</span></p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start 
+ the Entrust IdentityGuard Properties Editor. (See <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">Log 
+ in or out of the Properties Editor</a>.)</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the <span style="font-weight: bold;">Table of Contents</span>, click <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Repository 
+ Settings</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ store preproduced cards in a database, select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Database 
+ (JDBC)</span>&#160;from the <span class="bold" style="font-weight: bold; 
+									 letter-spacing: 0.00em; text-decoration: none; ">Preproduced 
+ Card Repository Implementation Class</span> drop-down list.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ store unassigned tokens in a database, select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Database 
+ (JDBC)</span>&#160;from the <span class="bold" style="font-weight: bold; 
+									 letter-spacing: 0.00em; text-decoration: none; ">Token 
+ Repository Implementation Class</span> drop-down list.</p>
+<p class="prpprocedureparagraph">These two properties are the only mandatory 
+ settings needed to use your default database configuration for unassigned 
+ tokens and preproduced grid cards. Set other properties if required for 
+ your installation. (For a complete list of properties on this pane, see 
+ <a href="../usingpropeditor/repository_settings.htm">Repository Settings</a>.)</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Return 
+ to the <span style="font-weight: bold;">Table of Contents</span>&#160;and 
+ click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">JDBC Database Settings</span>.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span class="bold">Configuration Instances</span>&#160;drop-down list 
+ of the <span class="bold">JDBC Database Settings</span>&#160;pane, click 
+ <span class="bold">Default</span>. If this database is not already fully 
+ configured, do that now. Follow the instructions in <a href="adding_a_new_database_repository.htm">Add 
+ a new database repository</a>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

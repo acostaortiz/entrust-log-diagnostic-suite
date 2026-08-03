@@ -1,0 +1,268 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Plan LDAP users to enroll and methods to find them</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("User administration\nCreating user accounts\nCreate users through LDAP synchronization with a database\nPlan LDAP users to enroll and methods to find them");
+addAvenueInfo("r13_std","ig_admin/useradminsection/overview_of_ldap_synchronization_configuration.htm","ig_admin/useradminsection/ex_1_simple_hierarchy_with_searchbase_at_a_high-level.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"user_admnistration.htm\">User administration<\/a> > <a href=\"creating_user_accounts.htm\">Creating user accounts<\/a> > <a href=\"create_users_through_ldap_sync_with_a_database.htm\">Create users through LDAP synchronization with a database<\/a> > Plan LDAP users to enroll and methods to find them<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Plan LDAP users to enroll and methods to find them</h1>
+<p class="pparagraph">Before you can start the enrollment and synchronization 
+ operation, you need to let Entrust IdentityGuard know exactly which users 
+ in your LDAP directory you want to enroll. The decisions you make about 
+ who in your organization will use Entrust IdentityGuard and where their 
+ information resides in your LDAP directory will affect your configuration 
+ of the LDAP synchronization feature in Entrust IdentityGuard. The procedures 
+ for setting up LDAP synchronization attempt to provide guidance for the 
+ various decisions you make in this planning phase.</p>
+<p class="pparagraph">To understand the discussion that follows, it is 
+ helpful to understand the following terms as they are used in this guide:</p>
+<p class="pparagraph"><span class="bold">LDAP directory</span> — This term is used to represent 
+ the content of the entire LDAP directory of an organization, sometimes 
+ called a directory information tree (DIT). Typically, the DIT contains 
+ sub-trees (which can contain further sub-trees) that represent meaningful 
+ categories of LDAP objects, and the branches of the tree taper down to 
+ leaf nodes, which are containers that have no further levels under them. 
+ </p>
+<p class="pparagraph"><span class="bold">Searchbase</span>&#160;— This term is used to describe 
+ a portion of the LDAP directory where the LDAP users you want to enroll 
+ are located. For each searchbase, Entrust IdentityGuard requires a dedicated 
+ database and a configuration instance in the Properties Editor properties 
+ group <span class="bold">LDAP Directory Server Settings</span>. A searchbase 
+ could be your whole LDAP directory, a forest of domains, a sub-tree, a 
+ leaf node, or several sub-trees and leaf nodes.</p>
+<p class="pparagraph"><span class="bold">Container</span>&#160;— For Entrust IdentityGuard purposes, 
+ a container is a single level of an LDAP hierarchy that holds users objects. 
+ Containers are an important element in planning LDAP synchronization because 
+ when there is a change in the LDAP data for a synchronized user, a notification 
+ is sent to Entrust IdentityGuard so the user record can be updated in 
+ the database. The container is the object that handles notifications. 
+ A leaf node is a container. A sub-tree can also be a container, but notifications 
+ are sent only for the top level of the sub-tree. To enable notifications 
+ for user objects nested further down in a sub-tree, additional configuration 
+ is required in Entrust IdentityGuard..</p>
+<p class="nonote"><span class="bold">Note:</span> For Microsoft Active 
+ Directory, by default, notifications are delivered to one level of containers 
+ in the LDAP hierarchy. While this limitation does not apply to all LDAP 
+ directories, the same model was used when expanding support of this feature 
+ to other LDAP directories.</p>
+<h2>Searchbases and configuration</h2>
+<p class="pparagraph">Your LDAP directory hierarchy might mirror the hierarchy 
+ of your organization. For example, it might reflect operational divisions, 
+ or geographical divisions with nested operational divisions, or any other 
+ variations. The important thing is to understand where in the hierarchy 
+ the users you want to enroll in Entrust IdentityGuard reside so you can 
+ find the most effective way to configure enrollment and synchronization 
+ to cover them all.</p>
+<p class="pparagraph">Depending on what you choose as your searchbase or 
+ searchbases, your configuration of the following settings for this feature 
+ can vary significantly.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">LDAP Sync Directory instances</span>&#160;— Each searchbase you specify requires 
+ its own set of property settings. Each searchbase requires an instance 
+ in the Properties Editor under <span class="bold">LDAP Directory Server 
+ Settings/ LDAP Sync Directory Instances</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Databases</span>&#160;— 
+ Each searchbase you specify requires its own associated database. Database 
+ configuration is discussed in <a href="configure_synchronization_with_an_ldap_directory.htm">Configure 
+ synchronization with an LDAP directory</a> and <a href="add_databases_for_ldap_synchronization.htm">Add 
+ a database for synchronized LDAP directory data</a>.</p>
+<p class="nonote"><span class="bold">Note:</span> If you are using the 
+ Entrust IdentityGuard Virtual Appliance Server, only one database can 
+ be used, so any configuration with multiple searchbases would not be supported 
+ </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Notifications</span>&#160;— 
+ By default, the LDAP directory notifies Entrust IdentityGuard of changes 
+ for a single level of the LDAP hierarchy. If your searchbases correspond 
+ to single containers in the LDAP directory, notifications are sent by 
+ default. If you searchbase has several containers with user objects at 
+ different levels, you need to configure&#160;LDAP Sync Container Mappings 
+ to enable notifications.&#160;This is accomplished through the Properties 
+ Editor by first defining the mappings in the <span class="bold">LDAP Sync 
+ Container Mappings</span> properties, and then specifying the mappings 
+ you want to use with each searchbase in the <span class="bold">LDAP Sync 
+ Apply Container Mappings</span> property (in <span class="bold">LDAP Directory 
+ Server Settings</span>).. If you have a searchbase with numerous sub-trees 
+ and containers of users, you need to define and apply mappings for each 
+ one. This configuration is discussed in <a href="configure_synchronization_with_an_ldap_directory.htm">Configure 
+ synchronization with an LDAP directory</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Filtering</span>&#160;— 
+ If you are able to target LDAP containers that have only user records, 
+ you might not have to define filters to screen out ineligible objects, 
+ or the filters might be very simple (for example, to screen out non-human 
+ administrative accounts). If your searchbase contains multiple types of 
+ LDAP objects, you might need to create multiple or more complex filters 
+ (for example, to screen out devices, applications, groups and so on) to 
+ ensure that you enroll only eligible user objects. &#160;See <a href="create_a_user_synchronization_custom_static_filter.htm">Create 
+ a user synchronization custom static filter</a>.</p>
+<p class="pparagraph">Topics later in this section provide examples that 
+ explain the configuration implications of various searchbase choices.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a href="ex_1_simple_hierarchy_with_searchbase_at_a_high-level.htm">Example 
+ 1: Simple hierarchy with searchbase at a high-level </a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a href="ex_2_more_complex_hierarchy_one_searchbase_for_whole_dit.htm">Example 
+ 2: More complex hierarchy with one searchbase for whole LDAP directory</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a href="ex_3_more_complex_hierarchy_with_multiple_searchbases.htm">Example 
+ 3: More complex hierarchy with multiple searchbases</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a href="ex_4_low-level_nodes_selected_as_searchbases.htm">Example 
+ 4: Low-level nodes selected as searchbases</a></p>
+<h2>Further considerations</h2>
+<p class="pparagraph">In addition, if your Entrust IdentityGuard implementation 
+ includes users who are not synchronized with an LDAP directory, there 
+ are additional considerations. (Your decisions on these points have more 
+ to do with your needs as an organization than Entrust IdentityGuard capabilities.)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Combine data for new synced users and non-synced users 
+ in the same database?</span> If you configure a single searchbase that 
+ contains all your corporate users and you would like their synchronized 
+ data to be stored in the same database that you use for users accounts 
+ created directly in Entrust IdentityGuard (for example, administrative 
+ accounts or partner accounts), you can do so.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Create new Entrust IdentityGuard groups?</span> Consider 
+ whether you want to partition your user community into different Entrust 
+ IdentityGuard groups, and if so, what those groups should be. A group 
+ can be associated with multiple repositories. For example, perhaps your 
+ African and European IT staff come from two different searchbases. Because 
+ each searchbase requires its own database, data for these users will be 
+ synchronized with two different databases. However, both sets of users 
+ can belong to the same Entrust IdentityGuard group (perhaps named <span 
+	 class="bold">IT</span>). The advantage is, you could configure the 
+ Entrust IdentityGuard permissions, roles and policies just once to apply 
+ to all users in the group, if they have similar roles in the organization.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

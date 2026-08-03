@@ -1,0 +1,290 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_policies.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>IP/Geolocation policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nPolicies quick reference\nIP/Geolocation policies");
+addAvenueInfo("Untitled02","ig_admin/config_policies/external_risk_score_policies.htm","ig_admin/config_policies/knowledge-based_authentication_policies.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"policies_quick_reference.htm\">Policies quick reference<\/a> > IP/Geolocation policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_49686_Authentication" id="XREF_49686_Authentication"></a><a name="XREF_49686_Lockout_policies" id="XREF_49686_Lockout_policies"></a><a name="XREF_21107_IP_geolocation" id="XREF_21107_IP_geolocation"></a>IP/Geolocation policies</h1>
+<p class="pparagraph">The IP/Geolocation policies help configure your risk-based authentication setup.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Location History Size</a></span></p>
+<div class="droptext" id="POPUP489159559" style="display: none;">
+	<p class="lip2list2paragraph"><a name="IX_velocity_always_passes"></a>Sets 
+	 the number of IP addresses to store in a user’s history list. An administrator 
+	 can override this policy attribute on a per user basis. A setting 
+	 of 0 means no location history is stored: in this case, the location 
+	 history test always fails and the velocity test always passes. </p>
+	<p class="lip2list2paragraph">For information about the location history 
+	 list, see <a href="../riskbasedauth/using_location_lists.htm#XREF_59168_Checking_the">Using 
+	 location lists</a>.</p>
+	<p class="lip2list2paragraph">Default: 5</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Location 
+ History Lifetime</a></span></p>
+<div class="droptext" id="POPUP489206586" style="display: none;">
+	<p class="lip2list2paragraph">Sets the number of days an entry in the 
+	 location history list can exist before it expires and is no longer 
+	 used in the IP history test. A setting of unlimited means entries 
+	 do not expire. </p>
+	<p class="lip2list2paragraph">For information about the location history 
+	 list, see <a href="../riskbasedauth/using_location_lists.htm#XREF_59168_Checking_the">Using 
+	 location lists</a>.</p>
+	<p class="lip2list2paragraph">Default: Unlimited</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Check 
+ IP Address in Location History</a></span></p>
+<div class="droptext" id="POPUP490276874" style="display: none;">
+	<p class="lip2list2paragraph">When Entrust IdentityGuard compares two 
+	 locations (such as the user’s current location and a previous location), 
+	 it compares several values (such as country and region), but not the 
+	 IP addresses. To include the IP addresses in the comparison, set this 
+	 property to <span style="font-weight: bold;">Yes</span>. </p>
+	<p class="nonote"><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Note</span>: the 
+	 IP address of a location may vary over time, and may change each time 
+	 you connect to an ISP.</p>
+	<p class="lip2list2paragraph">Default: No</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Possible Velocity</a></span></p>
+<div class="droptext" id="POPUP490442488" style="display: none;">
+	<p class="lip2list2paragraph">This defines the maximum velocity that 
+	 a user can travel per hour between locations. The value can be entered 
+	 in kilometers or miles per hour, but is automatically converted to 
+	 kilometers per hour. A setting of 0 means any change in location by 
+	 the user results in failure of the velocity test. </p>
+	<p class="lip2list2paragraph">For information about the velocity test, 
+	 see <a href="../riskbasedauth/using_ip_location_velocity.htm#XREF_83650_Using_IP_location">Using 
+	 IP location velocity</a>.</p>
+	<p class="lip2list2paragraph">Default: 500 km/h</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Check 
+ Velocity</a></span></p>
+<div class="droptext" id="POPUP490504736" style="display: none;">
+	<p class="lip2list2paragraph">Determines if the velocity test is always 
+	 conducted on external addresses. This can be overridden on a per user 
+	 basis.</p>
+	<p class="lip2list2paragraph">Set this to <span style="font-weight: bold;">No</span>&#160;if 
+	 location information for some addresses being compared is inaccurate 
+	 or incomplete. For example, one IP address may have very accurate 
+	 location information including the latitude and longitude, but another 
+	 has only country information. In this case, the test often fails.</p>
+	<p class="lip2list2paragraph">Also see <a href="../riskbasedauth/calculating_the_distance_between_locations.htm#XREF_43250_Calculating_the">Calculating 
+	 the distance between locations</a>&#160;for information about calculating 
+	 velocity using the Master user shell</p>
+	<p class="lip2list2paragraph">Default: Yes</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Country 
+ Blacklist</a></span></p>
+<div class="droptext" id="POPUP491908797" style="display: none;">
+	<p class="lip2list2paragraph">Sets the country codes on the country 
+	 blacklist. For details, see <a href="../riskbasedauth/Configuring_RBA_policies.htm#XREF_10222_Configuring_IP">Configuring 
+	 RBA policies</a>.</p>
+	<p class="lip2list2paragraph">Default: Anonymous Proxy, Satellite Provider</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Expected Locations</a></span></p>
+<div class="droptext" id="POPUP492102996" style="display: none;">
+	<p class="lip2list2paragraph">Sets the number of IP addresses to store 
+	 in the expected location list for any individual user in the group. 
+	 There is no maximum size for the general expected location list. (See 
+	 Expected Location List parameter later in this table.)</p>
+	<p class="lip2list2paragraph">A setting of 0 means no list is stored, 
+	 and the expected location test for the user always fails. For information 
+	 about the expected location list, see <a href="../riskbasedauth/using_the_expected_ip_location_list.htm#XREF_94192_Checking_the">Using 
+	 the expected IP location list</a>.</p>
+	<p class="lip2list2paragraph">Default: 10</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Expected 
+ Locations List</a></span></p>
+<div class="droptext" id="POPUP492151099" style="display: none;">
+	<p class="lip2list2paragraph">Sets the countries, regions, and cities 
+	 on the general expected locations list used by all users in the group 
+	 associated with this policy. User can have their own list. For details, 
+	 see <a href="../riskbasedauth/using_the_expected_ip_location_list.htm#XREF_94192_Checking_the">Using 
+	 the expected IP location list</a>.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP489159559');
+	TextPopupInit('a2','POPUP489206586');
+	TextPopupInit('a3','POPUP490276874');
+	TextPopupInit('a4','POPUP490442488');
+	TextPopupInit('a5','POPUP490504736');
+	TextPopupInit('a6','POPUP491908797');
+	TextPopupInit('a7','POPUP492102996');
+	TextPopupInit('a8','POPUP492151099');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Create and activate a soft token in Admin UI</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("Create and activate a soft token in Admin UI<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Create and activate a mobile soft token in the Administration interface</h1>
+<p class="pparagraph">If you do not use Entrust IdentityGuard Self-Service 
+ Module, or if users have problems with activating a soft token through 
+ self-service, use the following procedure to create or activate a mobile 
+ soft token through the Administration interface. The information needed 
+ to activate the mobile soft token is in a QR code which can be sent to 
+ users by email or scanned by them at a help desk.</p>
+<p class="prtproceduretitle">To create and activate a mobile soft token 
+ from the Administration interface using a QR code</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If 
+ a QR code will be sent to a user by email or SMS, ensure that the user 
+ who is requesting the mobile soft token has contact information associated 
+ with the configured email or SMS delivery method. See <a href="../useradminsection/modify_user_contact_information.htm">Modify 
+ a user’s contact information</a>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Complete 
+ the configuration procedure to enable this feature. See <a href="configure_a_delivery_method_for_soft_token_activation_information.htm">Configure 
+ a delivery method for soft token activation information</a>. The following 
+ screen capture shows a window in which all of the possible features have 
+ been configured.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Soft_Token_Create_QRCode.jpg" id="image11" src="ai-user_account-soft_token_create_qrcode.jpg" name="image11" width="494" height="418" border="0" /></p>
+</div>
+<p class="prpprocedureparagraph"><span class="bold">Deliver activation 
+ information in a QR code</span></p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If 
+ you configured Entrust IdentityGuard to encode activation information 
+ in a QR code (<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+					 text-decoration: none; ">Enable Token Activation using 
+ QR Codes</span>), on the <span class="bold" style="font-weight: bold; 
+								 letter-spacing: 0.00em; text-decoration: none; ">Activate 
+ Token</span> screen, select the <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Display</span>&#160;<span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">QR 
+ Code Information</span> option.</p>
+<p class="prpprocedureparagraph">The QR code that contains the serial number, 
+ activation code, and (optional) Self-Service address appears.</p>
+<p class="prpprocedureparagraph">If you configured the policy to specify 
+ an expiry date, it appears beneath the Activation Code. If the QR code 
+ expires before the user has time to activate the mobile soft token, click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Regenerate</span> 
+ to update the QR code.</p>
+<p class="prpprocedureparagraph"><span class="bold">Delivery of token activation 
+ information by email:</span></p>
+<p class="prpprocedureparagraph">If you have a delivery method configured 
+ and the user has the appropriate contact information, the <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Deliver</span> 
+ button appears.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Deliver</span>.</p>
+<p class="prspsubprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">Deliver 
+ the token activation information</span> section appears.</p>
+<p class="prspsubprocedureparagraph">If you have more than one delivery 
+ configuration (the user has multiple contacts or the system has multiple 
+ user delivery configurations) Entrust IdentityGuard presents a list from 
+ which you choose the appropriate delivery method.</p>
+<div style="text-align: center;">
+	<p class="prspsubprocedureparagraph"><img alt="AI-User_Account-Soft_Token_Create_QRCode_deliver.jpg" id="image12" src="ai-user_account-soft_token_create_qrcode_deliver.jpg" name="image12" width="523" height="129" border="0" /></p>
+</div>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Deliver</span>&#160;to 
+ send the activation information to the user.</p>
+<p class="prpprocedureparagraph">The QR code with activation information&#160;and 
+ the password required to complete the activation are sent to the user, 
+ along with any other information in your email template (possibly an online 
+ activation link or the activation information for manual entry).</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The following 
+ steps describe how a user uses a QR code for mobile soft token activation. 
+ However, the email or SMS message that you send to the user could also 
+ contain the token activation information for manual entry, or a link for 
+ automatic online activation (which requires that the mobile device has 
+ an internet connection). Steps for these activation methods are not described 
+ here.</p>
+<p class="prpprocedureparagraph"><span class="bold">User action:</span></p>
+<p class="prpprocedureparagraph">At this point, the user completes a number 
+ of steps:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If 
+ an email is sent, the user opens the email to display the QR code. the 
+ user taps the QR code and its information is populated in the soft token. 
+ The user selects Activate.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>On 
+ the mobile device on which the Entrust IdentityGuard Mobile ST app is 
+ already installed, the user opens the app and, if prompted, enters a PIN. 
+ (Users are prompted for a PIN only if they already have at least one soft 
+ token in the app.)</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The 
+ user selects the&#160;<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">QR Code</span>&#160;icon 
+ (iOS) or selects <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+						 text-decoration: none; ">Scan QR Code</span>&#160;from 
+ the menu (Android).</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The 
+ app displays a QR Code scanning screen and the user points the mobile 
+ device camera at the computer screen to capture its image in the app.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>When 
+ the app has scanned the QR code, it prompts the user to enter the password 
+ delivered with the QR code.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The 
+ app displays the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+						 text-decoration: none; ">Activate&#160;Identity</span> 
+ screen with the values from the QR code filled in.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">g.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The 
+ user selects <span class="bold">Activate</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">h.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If 
+ the identity requires a PIN and the application does not already have 
+ one configured, the user is prompted to set a PIN.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">i.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If 
+ a transaction URL is specified, the application attempts to complete the 
+ registration<span>.</span>&#160;If automatic registration cannot be completed 
+ (because the mobile device does not have an internet connection), the 
+ app displays a registration code. The user must convey the registration 
+ code to the administrator. This could be done by email, SMS or telephone.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If 
+ the soft token was not registered automatically, the user must contact 
+ you with the registration code. Return&#160;to the <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Activate 
+ Token</span>&#160;page, enter the registration code, and then click <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Activate 
+ Token</span>.</p>
+<p class="prpprocedureparagraph">The token is activated.</p>
+<p class="nonote"><span class="bold">Important!</span> Direct the user 
+ to deletes the email or text message that contained the soft token activation 
+ information.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

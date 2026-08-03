@@ -1,0 +1,400 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Radius Response Attribute Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nRadius Response Attribute Configuration (17)");
+addAvenueInfo("Untitled02","ig_admin/usingpropeditor/token_vendor_configuration.htm","ig_admin/usingpropeditor/radius_server_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Radius Response Attribute Configuration (17)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_properties_12" id="IX_properties_12"></a><a name="IX_configuring_Radius" 
+															 id="IX_configuring_Radius"></a><a 
+	 name="IX_configuring_3" id="IX_configuring_3"></a><a name="XREF_57829_Radius_Attribute" 
+															 id="XREF_57829_Radius_Attribute"></a>Radius 
+ Response Attribute Configuration</h1>
+<p class="pparagraph">The properties described in the following table configure 
+ one or more Radius attributes for use with the VPN for successful authentication. 
+ For more information, see <a href="../config_radius_proxy/configuring_the_radius_response_attributes.htm">Configuring 
+ the Radius response attributes</a>. See also .</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instance</a></span><span class="bold"><a name="XREF_8925_Radius_attribute" 
+															 id="XREF_8925_Radius_attribute"></a></span></p>
+<div class="droptext" id="POPUP720513131" style="display: none;">
+	<p class="lip2list2paragraph">You can create multiple Radius attribute 
+	 configurations.</p>
+	<p class="RefItemBody">To create a new Radius attribute instance, enter 
+	 a unique label in the empty field and click <span class="bold" style="font-weight: bold; 
+														 letter-spacing: .em; 
+														 text-decoration: none; ">Add</span>. 
+	 The other properties appear. The attribute name replaces the {0} placeholder.</p>
+	<p class="RefItemBody">To delete an instance, select it in the list 
+	 and click <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+					 text-decoration: none; ">Remove</span>.</p>
+	<p class="RefItemBody">There is no default configuration.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Attribute ID</a></span></p>
+<div class="droptext" id="POPUP545632371" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.igradius.radiusattribute.{0}.id</span></p>
+	<p class="RefItemBody">Specifies the format for how attribute values 
+	 are returned. The value is interpreted using the Java MessageFormat 
+	 class, where {0} represents the value to format (for example, the 
+	 data object being searched for by Entrust IdentityGuard. </p>
+	<p class="RefItemBody">Currently this can be the Entrust IdentityGuard 
+	 Group Name, the Entrust IdentityGuard Access Group Name, or any predefined 
+	 ldap attribute name). Static values (such as hard-coded values) can 
+	 be included by removing any reference to {0}. The default value is 
+	 {0}. </p>
+	<p class="RefItemBody">The following rules apply to static and non-static 
+	 values: </p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+	 the value type is a string, the format encoder expects a string value 
+	 (for example. non-static = 'CN={0}' static = 'This is a string'). 
+	 </p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+	 the value type is an ip address, the format encoder expects a dot 
+	 notation string value representing an ip address (for example, non-static 
+	 = '{0}' static = '10.4.123.23'). </p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+	 the value type is an integer, the format encoder expects a string 
+	 value representing the integer (for example, non-static = '{0}' static 
+	 = '3423'). </p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+	 the value type is a date, the format encoder expects a string value 
+	 representing the date expressed as an integer (for example, non-static 
+	 = '{0}' static = '132456323'). </p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+	 the value type is binary, the format encoder expect a hexadecimal 
+	 string value representing the actual binary data (for example, non-static 
+	 = '{0}' static = 'A2ED341E5D'). </p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Attribute Value Type</a></span></p>
+<div class="droptext" id="POPUP544586477" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.radiusattribute.{0}.valuetype</span></p>
+	<p class="lip2list2paragraph">Specifies the Radius attribute value 
+	 type. Set this property based on the <span style="font-weight: bold;">Radius 
+	 Attribute ID</span> you set.</p>
+	<p class="lip2list2paragraph">The value types to choose from are:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>STRING 
+	 (character sequence, must be no more than 253 bytes; not necessarily 
+	 null terminated)</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>IP 
+	 (V4) ADDRESS (a 4-byte IP address in network-byte order; for example, 
+	 10.4.16.61)</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>INTEGER 
+	 (a 4-byte value in big-endian order)</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>DATE 
+	 (a 4-byte value in big-endian order; the number of seconds since :: 
+	 GMT - January 1st, 1970)</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>BINARY 
+	 (a byte sequence of length less than 253 bytes — used for VSAs that 
+	 do not conform to RFC2138)</p>
+	<p class="lip2list2paragraph">Default: STRING</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Attribute Format<a name="XREF_Radius_Attribute_Format" id="XREF_Radius_Attribute_Format"></a></a></span></p>
+<div class="droptext" id="POPUP543649240" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.radiusattribute.{0}.format</span></p>
+	<p class="lip2list2paragraph">This property specifies the format in 
+	 which the attribute values should be returned.</p>
+	<p class="lip2list2paragraph">The value of this property is interpreted 
+	 using the Java MessageFormat class where {0} represents the value 
+	 to format (the data object Entrust IdentityGuard is searching for). 
+	 This can be the Entrust IdentityGuard Group Name, the Entrust IdentityGuard 
+	 Access Group Name, or any predefined LDAP attribute name. Static (hard 
+	 coded) values may be included by removing any reference to {0}. The 
+	 default value is {0}.</p>
+	<p class="lip2list2paragraph">The following rules apply to static and 
+	 non-static values:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+	 the value type is a string, the format encoder expects a string value.</p>
+	<p class="lip2list2paragraph">non-static =<span class="output"> ‘CN={0}’</span></p>
+	<p class="lip2list2paragraph">static =<span class="output"> ‘This is 
+	 a string’</span></p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+	 the value type is an IP address, the format encoder expects a dot 
+	 notation string value representing an IP address.</p>
+	<p class="lip2list2paragraph">non-static =<span class="output"> '{0}'</span></p>
+	<p class="lip2list2paragraph">static =<span class="output"> '10.4.123.23'</span></p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+	 the value type is an integer, the format encoder expects a string 
+	 value representing the integer.</p>
+	<p class="lip2list2paragraph">non-static =<span class="output"> '{0}'</span></p>
+	<p class="lip2list2paragraph">static =<span class="output"> '3423'</span></p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+	 the value type is a date, the format encoder expects a string value 
+	 representing the date expressed as an integer.</p>
+	<p class="lip2list2paragraph">non-static = <span class="output">'{0}'</span></p>
+	<p class="lip2list2paragraph">static = <span class="output">'132456323'</span></p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+	 the value type is binary, the format encoder will expect a hexadecimal 
+	 string value representing the actual binary data.</p>
+	<p class="lip2list2paragraph">non-static =<span class="output"> '{0}'</span></p>
+	<p class="lip2list2paragraph">static =<span class="output"> 'A2ED341E5D'</span></p>
+	<p class="lip2list2paragraph">Default: {0}</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Attribute Return as Multiple Attributes Flag</a></span></p>
+<div class="droptext" id="POPUP540693488" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.radiusattribute.{0}.returnasmultipleattributes</span></p>
+	<p class="lip2list2paragraph">Specifies a flag that determines whether 
+	 attributes with multiple values are returned in the same Radius attribute 
+	 or there is a separate Radius attribute for each value.</p>
+	<p class="lip2list2paragraph">If set to <span style="font-weight: bold;">True</span>, 
+	 attributes are returned in separate Radius attributes rather than 
+	 being concatenated and sent in one Radius attribute.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Attribute Multi-Value Delimiter</a></span></p>
+<div class="droptext" id="POPUP540433794" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.radiusattribute.{0}.multivaluedelimiter</span></p>
+	<p class="lip2list2paragraph">Specifies the delimiter to use when returning 
+	 multi-valued attributes in one Radius attribute.</p>
+	<p class="lip2list2paragraph">If the <span style="font-weight: bold;">Radius 
+	 Attribute Return as Multiple Attributes Flag </span>property is <span 
+	 style="font-weight: bold;">True</span>, this property is ignored.</p>
+	<p class="lip2list2paragraph">Default: space</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Vendor-Specific Attribute Vendor Code</a></span></p>
+<div class="droptext" id="POPUP508931492" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.radiusattribute.{0}.vendorcode</span></p>
+	<p class="lip2list2paragraph">This property is required if the <span 
+	 style="font-weight: bold;">Radius Attribute ID </span>property is 
+	 set to <span style="font-weight: bold;">VENDOR-SPECIFIC</span>.</p>
+	<p class="lip2list2paragraph">Provides the vendor code as specified 
+	 in IETF RFC 1007. See <span style="color: #ff; text-decoration: underline; "><a 
+	 href="http://www.iana.org" target="_blank">www.iana.org</a> </span>for 
+	 the up-to-date list of SMI Network Management Private Enterprise Codes. 
+	 Enter the code that corresponds to the equipment vendor you are using.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Vendor-Specific Attribute Conforms to RFC2138 Flag</a></span></p>
+<div class="droptext" id="POPUP508836177" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.radiusattribute.{0}.conformstorfc2865</span></p>
+	<p class="lip2list2paragraph">This property is required if the <span 
+	 style="font-weight: bold;">Radius Attribute ID </span>property is 
+	 set to <span style="font-weight: bold;">VENDOR-SPECIFIC</span>.</p>
+	<p class="lip2list2paragraph">Specifies whether the <span style="font-weight: bold;">Vendor-Specific 
+	 Attribute </span>conforms to the format recommended in RFC 2138. RFC 
+	 2138 format contains a specific vendor attribute number, its length, 
+	 and the value.</p>
+	<p class="lip2list2paragraph">If this property is set to <span style="font-weight: bold;">False</span>, 
+	 the <span style="font-weight: bold;">Radius Attribute Value Type </span>property 
+	 must be set to <span style="font-weight: bold;">BINARY</span>, and 
+	 the <span style="font-weight: bold;">Radius Attribute Format </span>property 
+	 then represents the value specified for the <span style="font-weight: bold;">Vendor-Specific 
+	 Attribute</span>. This must be a hexadecimal value of the type 12AB 
+	 up to a maximum of 249 bytes.</p>
+	<p class="lip2list2paragraph">Default: True</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Vendor-Specific Attribute Number</a></span></p>
+<div class="droptext" id="POPUP507957922" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.radiusattribute.{0}.vendorattributenumber</span></p>
+	<p class="lip2list2paragraph">This property is required if the <span 
+	 style="font-weight: bold;">Radius Attribute ID </span>property is 
+	 set to <span style="font-weight: bold;">VENDOR-SPECIFIC</span>, and 
+	 <span style="font-weight: bold;">Radius Vendor-Specific Attribute 
+	 Conforms to RFC2865 Flag </span>is set to <span style="font-weight: bold;">True</span>.</p>
+	<p class="lip2list2paragraph">This property represents the vendor attribute 
+	 number (a value between 0 and 255). This value is set by the vendor. 
+	 Check the equipment documentation for this attribute number.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP720513131');
+	TextPopupInit('a2','POPUP545632371');
+	TextPopupInit('a3','POPUP544586477');
+	TextPopupInit('a4','POPUP543649240');
+	TextPopupInit('a5','POPUP540693488');
+	TextPopupInit('a6','POPUP540433794');
+	TextPopupInit('a7','POPUP508931492');
+	TextPopupInit('a8','POPUP508836177');
+	TextPopupInit('a9','POPUP507957922');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

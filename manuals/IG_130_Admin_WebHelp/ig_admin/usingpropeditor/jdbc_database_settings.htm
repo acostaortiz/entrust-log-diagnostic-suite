@@ -1,0 +1,689 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>JDBC Database Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nJDBC Database Settings (4)");
+addAvenueInfo("r13_std","ig_admin/usingpropeditor/ip_location_library_settings.htm","ig_admin/usingpropeditor/key_store_certificate_import_settings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > JDBC Database Settings (4)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_properties_3" id="IX_properties_3"></a><a name="IX_properties_2" 
+															 id="IX_properties_2"></a><a 
+	 name="IX_settings_1" id="IX_settings_1"></a><a name="IX_settings" 
+													 id="IX_settings"></a><a 
+	 name="XREF_78672_JDBC_database" id="XREF_78672_JDBC_database"></a>JDBC 
+ Database Settings</h1>
+<p class="pparagraph">These properties set up the configuration for one 
+ or more database repositories. You can store your Entrust IdentityGuard 
+ user data across more than one repository, and the repositories can be 
+ of different types (LDAP directories and databases). This allows you complete 
+ flexibility in how you organize data. For example, you could have normal 
+ users of a group in an LDAP repository and all administrators of that 
+ group in a database repository. See <a href="../config_igserver/setting_up_user_grid_card_and_token_repositories.htm">Setting 
+ up user, grid card, and token repositories</a> for more details and to 
+ view a snapshot of the properties.</p>
+<p class="pparagraph">If you make changes to any of these properties, you 
+ must restart the Entrust IdentityGuard Server service to pick up the changes.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Where the 
+ default property values are given in the property descriptions, these 
+ are the defaults that apply to the default database <span style="font-weight: bold;">Configuration 
+ Instance</span> at installation. You can change the settings in the default 
+ instance and those settings are used for the defaults for subsequent instances 
+ that you create.</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instances</a></span></p>
+<div class="droptext" id="POPUP596993024" style="display: none;">
+	<p class="RefItemBody">Lists all current JDBC database configurations. 
+	 Initially, a default configuration exists if you selected a database 
+	 repository during installation.</p>
+	<p class="RefItemBody">To create a new instance, enter a unique 
+	 name in the empty field and click <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">Add</span>.</p>
+	<p class="RefItemBody">When you create a second or subsequent 
+	 JDBC repository, it inherits the property values defined for the default 
+	 JDBC repository.</p>
+	<p class="nonote"><span class="bold">Note</span>: The default database 
+	 <span style="font-weight: bold;">Configuration Instance </span>is 
+	 always named <span class="output">database</span>.</p>
+	<p class="RefItemBody">To delete an instance, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+							 text-decoration: none; ">Remove</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />JDBC 
+ Driver URL</a></span></p>
+<div class="droptext" id="POPUP597405087" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.url</span></p>
+	<p class="RefItemBody">Provides the URL used to connect to the 
+	 database server. You can enter multiple URLs separated by spaces as 
+	 part of a high-availability setup. Any timeout and credential settings 
+	 apply to all URLs in the list. For the default instance, the initial 
+	 value is set during configuration.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Database 
+ Description</a></span></p>
+<div class="droptext" id="POPUP597402865" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.description</span></p>
+	<p class="RefItemBody">Provides a description of the repository. 
+	 The text is used by the Administration interface. The description 
+	 must be unique for all repositories, including both database and directory 
+	 server.</p>
+	<p class="RefItemBody">Default: the instance name</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Database 
+ Type</a></span></p>
+<div class="droptext" id="POPUP597439073" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.type</span></p>
+	<p class="RefItemBody">Specifies the type of database to be 
+	 use with Entrust IdentityGuard. Set this property to enable setting 
+	 of database-specific option.</p>
+	<p class="RefItemBody">Choose from the database types: Not specified, 
+	 DB2, MySQL, Oracle, PostreSQL, SQLServer, Custom...</p>
+	<p class="RefItemBody">Default: PostgreSQL</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />JDBC 
+ Driver Class Name</a></span></p>
+<div class="droptext" id="POPUP598454821" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.driverClass</span></p>
+	<p class="RefItemBody">Provides the name of the JDBC driver 
+	 class. The value for the default database is set if you selected a 
+	 database repository during installation.</p>
+	<p class="RefItemBody">This value is vendor-dependent.</p>
+	<p class="RefItemBody">Default: If you are setting up a custom 
+	 <span style="font-weight: bold;">Configuration Instance </span>and 
+	 you do not specify this property, it defaults to the value used by 
+	 the default <span style="font-weight: bold;">Configuration Instance</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Database 
+ User Name</a></span></p>
+<div class="droptext" id="POPUP598457546" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.user</span></p>
+	<p class="RefItemBody">Provides the ID of the user used to access 
+	 the database. The value for the default database is set if you selected 
+	 a database repository during configuration. Changing this may disrupt 
+	 access to the database.</p>
+	<p class="RefItemBody">Default: If you are setting up a custom 
+	 <span style="font-weight: bold;">Configuration Instance </span>and 
+	 you do not specify this property, it defaults to the value used by 
+	 the default <span style="font-weight: bold;">Configuration Instance</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Database 
+ User Name Password</a></span></p>
+<div class="droptext" id="POPUP598495458" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.password</span></p>
+	<p class="RefItemBody">Provides the password of the database 
+	 user entered during configuration. By default, the password is encrypted. 
+	 Changing this may disrupt access to the database.</p>
+	<p class="RefItemBody">Default: If you are setting up a custom 
+	 <span style="font-weight: bold;">Configuration Instance </span>and 
+	 you do not specify this property, it defaults to the value used by 
+	 the default <span style="font-weight: bold;">Configuration Instance</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Database 
+ Schema Name</a></span></p>
+<div class="droptext" id="POPUP598522505" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.schema</span></p>
+	<p class="RefItemBody">Provides the name of the database schema 
+	 used to store Entrust IdentityGuard data. The value for the default 
+	 database <span style="font-weight: bold;">Configuration Instance </span>is 
+	 set if you selected a database repository during configuration. Changing 
+	 this may disrupt access to the database.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Primary 
+ Database Maximum Reconnect Interval</a></span></p>
+<div class="droptext" id="POPUP599368408" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.ha.maxrestoretimeout</span></p>
+	<p class="RefItemBody">Sets the maximum time in hours between 
+	 attempts to connect to the primary database (the first database URL 
+	 defined). Use this as part of a high-availability setup.</p>
+	<p class="RefItemBody">Default: 24</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Table 
+ For Testing Database Connections</a></span></p>
+<div class="droptext" id="POPUP606903279" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.ha.testTable</span></p>
+	<p class="RefItemBody">All pooled connections are tested prior 
+	 to being returned to a connection pool to ensure they are still valid. 
+	 This identifies the table to use for testing the connection. The value 
+	 for the default database is set if you selected a database repository 
+	 during configuration.</p>
+	<p class="RefItemBody">Select <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">Custom 
+	 </span>to enter a table name that is different than those associated 
+	 with each Entrust IdentityGuard- supported database.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Run 
+ Database Connection Test When Failover is not Enabled</a></span></p>
+<div class="droptext" id="POPUP606937113" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.ha.runConnectionTest</span></p>
+	<p class="RefItemBody">Set this property to <span class="output">true</span><span 
+	 style="font-family: Courier;"> </span>to enable database connection 
+	 testing to be run even when only a single database driver URL is provided.</p>
+	<p class="RefItemBody">Providing a single URL means failover 
+	 in Entrust IdentityGuard is not enabled (although it may still be 
+	 provided by the database driver outside the direct control of Entrust 
+	 IdentityGuard) and connection testing is not required.</p>
+	<p class="RefItemBody">Connection testing is always performed 
+	 if multiple database driver URLs are provided, regardless of this 
+	 setting. Setting this property to <span class="output">true</span><span 
+	 style="font-family: Courier;"> </span>improves the ability of Entrust 
+	 IdentityGuard to re-connect to a database after a connection failure, 
+	 but it does reduce performance. To reduce the performance penalty, 
+	 you can reduce the value of the <span style="font-weight: bold;">Database 
+	 Connection Test Interval </span>property so the test is run less frequently.</p>
+	<p class="RefItemBody">Default: True</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Database 
+ Connection Test Interval</a></span></p>
+<div class="droptext" id="POPUP607284624" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.ha.testInterval</span></p>
+	<p class="RefItemBody">In a high-availability setup where database 
+	 connections are pooled or when <span style="font-weight: bold;">Run 
+	 Database Connection Test </span>is <span class="output">True</span>, 
+	 this sets the time in seconds to wait between tests to see if a database 
+	 connection is still valid. A setting of means the database is tested 
+	 each time it is pulled from the pool.</p>
+	<p class="RefItemBody">Default: 50</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a13"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Connection 
+ Pool Maximum Size</a></span></p>
+<div class="droptext" id="POPUP607483948" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.connectionpool.max</span></p>
+	<p class="RefItemBody">Sets the maximum number of connections 
+	 that can be kept in the database connection pool. An Entrust IdentityGuard 
+	 service does not open more connections than this value. In an enterprise 
+	 environment, increase the setting to suit your needs (for example, 
+	 to 2 or more).</p>
+	<p class="RefItemBody">If the database server cannot accept 
+	 this number of connections, Entrust IdentityGuard may return errors 
+	 when trying to open some of its connections.</p>
+	<p class="RefItemBody">Default: 10</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a14"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Connection 
+ Pool Maximum Wait Time</a></span></p>
+<div class="droptext" id="POPUP607826175" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.connectionpool.maxWait</span></p>
+	<p class="RefItemBody">Sets the maximum time in milliseconds 
+	 to wait when attempting to get a database connection from the pool.</p>
+	<p class="RefItemBody">Default: 30000 (30 seconds)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a15"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Idle 
+ Connection Minimum Close Time</a></span></p>
+<div class="droptext" id="POPUP611097781" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.connectionpool.minIdleCloseTime</span></p>
+	<p class="RefItemBody">Sets the minimum number of milliseconds 
+	 a pooled connection can be idle before being closed. This property 
+	 works closely with the <span class="bold" style="font-weight: bold; 
+									 letter-spacing: .em; text-decoration: none; ">Idle 
+	 Connections Check Time </span>property.</p>
+	<p class="RefItemBody">Default: 180000 (3 minutes)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a16"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Idle 
+ Connections Check Time</a></span></p>
+<div class="droptext" id="POPUP614995020" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.connectionpool.closeSchedule</span></p>
+	<p class="RefItemBody">Sets the number of milliseconds between 
+	 each check for idle LDAP directory connections. Connections idle longer 
+	 than the value set by the <span class="bold" style="font-weight: bold; 
+									 letter-spacing: .em; text-decoration: none; ">Idle 
+	 Connection Minimum Close Time</span> property are closed at each check.</p>
+	<p class="RefItemBody">A setting of means connections are never 
+	 closed when idle.</p>
+	<p class="RefItemBody">Default: 180000 (3 minutes)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a17"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Database 
+ Login Timeout</a></span></p>
+<div class="droptext" id="POPUP607859820" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.logintimeout</span></p>
+	<p class="RefItemBody">Sets the number of seconds to wait for 
+	 a database login operation to complete before returning an error.</p>
+	<p class="RefItemBody">Default: 30</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a18"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Database 
+ Query Timeout</a></span></p>
+<div class="droptext" id="POPUP607955373" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.querytimeout</span></p>
+	<p class="RefItemBody">Sets the number of seconds that Entrust 
+	 IdentityGuard waits for the database to perform an operation. A value 
+	 of means that the connection never times out.</p>
+	<p class="RefItemBody">Default: 0</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a19"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Database 
+ Fetch Size</a></span></p>
+<div class="droptext" id="POPUP574555395" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.fetchsize</span></p>
+	<p class="RefItemBody">Specifies the number of user records 
+	 retrieved from the database and cached when listing users. When fetching 
+	 potentially large objects like smart credentials, set this property 
+	 to a smaller value. If set to 0, there is no limit to the fetch size.</p>
+	<p class="RefItemBody">Default: 20</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a20"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Database 
+ BLOB Access</a></span></p>
+<div class="droptext" id="POPUP575375449" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.blobAccess</span></p>
+	<p class="RefItemBody">Sets BLOB access. Set this to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">False 
+	 </span>for Microsoft SQL Server, and to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">True 
+	 </span>for all other database types.</p>
+	<p class="RefItemBody">Default: True</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a21"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Remove Abandoned 
+ Timeout</a></p>
+<div class="droptext" id="POPUP652774055" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.connectionpool.removeAbandonedTimeout</span></p>
+	<p class="RefItemBody">This property specifies the period of time, 
+	 in seconds, after which abandoned objects will be removed when pool 
+	 maintenance runs. The default value is 300 seconds.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a22"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SQL 
+ WHERE Clause Escaping</a></span></p>
+<div class="droptext" id="POPUP575570541" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.needsEscape</span></p>
+	<p class="RefItemBody">Indicates if Entrust IdentityGuard should 
+	 use escape characters in an SQL Where clause. Set this to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">False 
+	 </span>for PostgreSQL and MySQL, and to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">True 
+	 </span>for all other database types.</p>
+	<p class="RefItemBody">Default: True</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a23"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SQL 
+ SELECT Lock Syntax</a></span></p>
+<div class="droptext" id="POPUP575730277" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.selectLock</span></p>
+	<p class="RefItemBody">Sets what SQL syntax to use to lock a 
+	 policy when it is updated. The value is set during configuration.</p>
+	<p class="RefItemBody">Default: varies with the database type</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a24"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SQL 
+ TIMESTAMP Data Type</a></span></p>
+<div class="droptext" id="POPUP575756713" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.timestampDataType</span></p>
+	<p class="RefItemBody">Determines how timestamp expressions 
+	 are formatted in an SQL Where clause. If you set this property to 
+	 <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+			 text-decoration: none; ">True</span>, the SQL Where clause 
+	 includes the TIMESTAMP datatype. Set this to <span class="bold" style="font-weight: bold; 
+														 letter-spacing: .em; 
+														 text-decoration: none; ">True 
+	 </span>for an Oracle database, MySQL, and PostgreSQL, and to <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">False 
+	 </span>for DB2 and Microsoft SQL Server.</p>
+	<p class="RefItemBody">Default: True</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a25"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SQL 
+ INSERT Clause Requires SEQUENCE</a></span></p>
+<div class="droptext" id="POPUP576461240" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.includeSequence</span></p>
+	<p class="RefItemBody">This property is used when a database 
+	 is configured to store the audit data generated by Entrust IdentityGuard. 
+	 It accounts for the different ways database vendors support auto-numbering 
+	 columns that Entrust IdentityGuard uses for the audit sequence numbers.</p>
+	<p class="RefItemBody">Set to <span style="font-weight: bold;">True 
+	 </span>for Oracle databases, and <span style="font-weight: bold;">False</span> 
+	 for all other database vendors.</p>
+	<p class="RefItemBody">If you do not specify True for Oracle, 
+	 you see the following error in the <span class="output">identityguard_system.log</span>:</p>
+	<p class="RefItemBody"><span class="output">[IG Audit Writer] 
+	 [ERROR] [IG.SYSTEM.AuditDBLogger.API] Error logging audit.java.sql.SQLException: 
+	 ORA-14: cannot insert NULL into (&quot;IDGUARD&quot;.&quot;AUDITS&quot;.&quot;AUDIT_SEQNO&quot;)</span></p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a26"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SQL 
+ Search Includes NOLOCK</a></span></p>
+<div class="droptext" id="POPUP576992237" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.noLock</span></p>
+	<p class="RefItemBody">Determines whether Entrust IdentityGuard 
+	 includes the NOLOCK clause in SQL search statements. For Microsoft 
+	 SQL Server, set this property to <span class="bold">True</span>. For 
+	 all other databases, set this property to <span class="bold">False</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a27"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Skip 
+ Repository During Search if not Available</a></span></p>
+<div class="droptext" id="POPUP614331437" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.skipOnSearchIfNotAvailable</span></p>
+	<p class="RefItemBody">If set to <span style="font-weight: bold;">True 
+	 </span>for a particular repository, this property allows users on 
+	 other repositories to authenticate to the Entrust IdentityGuard Authentication 
+	 Service while the repository is unavailable. This allows services 
+	 to continue to operate, with limited functionality, until the underlying 
+	 issue with the searchbase or repository is addressed. Note that if 
+	 the repository that contains policy information in not available, 
+	 no operations can proceed.</p>
+	<p class="RefItemBody">This property works in conjunction with 
+	 a timeout property. When a repository is unavailable, user operations 
+	 slow down as the system polls available repositories and waits for 
+	 a response from the one that is unavailable. Specify a low timeout 
+	 value after which to skip the repository. The property to use to specify 
+	 the timeout value depends on the type of repository you are using. 
+	 For more information, see <a href="../config_igserver/mitigating_performance_degradation_when_a_secondary_repository.htm">Mitigate 
+	 performance degradation when a secondary repository is unavailable</a>.</p>
+	<p class="nonote"><span class="bold">Note:</span> This property is 
+	 not used for the Active Directory synchronization feature.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a28"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ Sync Directory</a></span></p>
+<div class="droptext" id="POPUP577037123" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.jdbc.ldapsyncdirectory</span></p>
+	<p class="RefItemBody">If set, this property specifies the name 
+	 of the LDAP Sync Directory instance to be used with this database. 
+	 Only one directory instance can be selected from the drop-down list. 
+	 The value must be one of the configured LDAP Sync directories in this 
+	 environment. The LDAP Sync directories that appear in the list are 
+	 the LDAP Directory Server instances that have the <span class="bold">LDAP 
+	 Directory Specific Usage</span> property set to <span class="bold">SYNC</span>. 
+	 </p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP596993024');
+	TextPopupInit('a2','POPUP597405087');
+	TextPopupInit('a3','POPUP597402865');
+	TextPopupInit('a4','POPUP597439073');
+	TextPopupInit('a5','POPUP598454821');
+	TextPopupInit('a6','POPUP598457546');
+	TextPopupInit('a7','POPUP598495458');
+	TextPopupInit('a8','POPUP598522505');
+	TextPopupInit('a9','POPUP599368408');
+	TextPopupInit('a10','POPUP606903279');
+	TextPopupInit('a11','POPUP606937113');
+	TextPopupInit('a12','POPUP607284624');
+	TextPopupInit('a13','POPUP607483948');
+	TextPopupInit('a14','POPUP607826175');
+	TextPopupInit('a15','POPUP611097781');
+	TextPopupInit('a16','POPUP614995020');
+	TextPopupInit('a17','POPUP607859820');
+	TextPopupInit('a18','POPUP607955373');
+	TextPopupInit('a19','POPUP574555395');
+	TextPopupInit('a20','POPUP575375449');
+	TextPopupInit('a21','POPUP652774055');
+	TextPopupInit('a22','POPUP575570541');
+	TextPopupInit('a23','POPUP575730277');
+	TextPopupInit('a24','POPUP575756713');
+	TextPopupInit('a25','POPUP576461240');
+	TextPopupInit('a26','POPUP576992237');
+	TextPopupInit('a27','POPUP614331437');
+	TextPopupInit('a28','POPUP577037123');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

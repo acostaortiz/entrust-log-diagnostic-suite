@@ -1,0 +1,838 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_logging.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Authentication audit messages</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nAudited event reference\nAuthentication audit messages");
+addAvenueInfo("Untitled","ig_admin/config_logging/audit_based_audit_messages.htm","ig_admin/config_logging/biometrics_license_audit_messages.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"audited_event_reference.htm\">Audited event reference<\/a> > Authentication audit messages<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_audit_messages"></a><a name="XREF_29646_Authentication"></a>Authentication 
+ audit messages</h1>
+<p class="pparagraph">These messages provide information about user authentication 
+ failures and problems with authentication methods.</p>
+
+<table style="padding-left: 4.00pt; padding-top: 5.00pt; padding-right: 3.00pt; 
+		 padding-bottom: 3.00pt; margin-bottom: 16.00pt;" cellspacing="0" 
+		 width="552">
+	<caption class="tactablecaption" style="text-indent: -72.000pt;"><span 
+	 class="FM_Procnum">&#160;</span><a name="XREF_72845_Authentication"></a></caption>
+	<tr style="height: 30.00pt;" bgcolor="#E5E5E5">
+		<th style="border: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153" bgcolor="#E5E5E5"><p class="tahtableheader">Audit 
+		 name</p></th>
+		<th style="border-top: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="68" bgcolor="#E5E5E5"><p class="tahtableheader">Log 
+		 level</p></th>
+		<th style="border-top: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="79" bgcolor="#E5E5E5"><p class="tahtableheader">Default 
+		 SNMP trap?</p></th>
+		<th style="border-top: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="253" bgcolor="#E5E5E5"><p class="tahtableheader">Event 
+		 description</p></th>
+	</tr>
+	<tr style="height: 150.00pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Authentication Success</p>
+		<p class="tattabletext">(AUD6000)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} successfully authenticated a 
+		 challenge. {1}</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is a list of parameters including the authentication type, and 
+		 possibly the location and application name.</p>
+		<p class="tattabletext"><span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Note</span>: 
+		 By default, this audit is disabled. To add this message to logs, 
+		 set the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+						 text-decoration: none; ">Audit Successful Authentications</span>&#160;property 
+		 to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+					 text-decoration: none; ">True</span>.</p></td>
+	</tr>
+	<tr style="height: 89.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Authentication Failure</p>
+		<p class="tattabletext">(AUD6001)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} failed authentication. {1}</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is a list of parameters including the authentication type, and 
+		 possibly the location and application name.</p></td>
+	</tr>
+	<tr style="height: 73.00pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Authentication Failure 
+		 Locks Out User</p>
+		<p class="tattabletext">(AUD6002)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">ERROR</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} failed authentication and is 
+		 now locked{1,choice,0#|1# out of {2} authentication}.</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p></td>
+	</tr>
+	<tr style="height: 34.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Shared Secrets Updated</p>
+		<p class="tattabletext">(AUD6003)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">Shared secrets for user {0} updated.</p>
+		<p class="tattabletext">Where {0} is the user ID.</p></td>
+	</tr>
+	<tr style="height: 106.00pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Authentication Causes 
+		 Card Update</p>
+		<p class="tattabletext">(AUD6004)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} authenticated with pending card. 
+		 Card {1} updated. {2}</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is the serial number of the card. </p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{2} 
+		 is a list of parameters, including the new state of the card.</p></td>
+	</tr>
+	<tr style="height: 78.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Card Replacement Warning</p>
+		<p class="tattabletext">(AUD6005)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} authenticated with a card ({1}) 
+		 that is in the replacement warning period.</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is the serial number of the card. </p></td>
+	</tr>
+	<tr style="height: 89.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Card Replacement Required</p>
+		<p class="tattabletext">(AUD6006)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">WARN</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} authenticated with a card ({1}) 
+		 that is in the replacement required period. &#160;Card has been 
+		 placed on hold.</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is the serial number of the card. </p></td>
+	</tr>
+	<tr style="height: 45.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Authentication Causes 
+		 Machine Registration</p>
+		<p class="tattabletext">(AUD6007)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">New machine registered for user {0}.</p>
+		<p class="tattabletext">Where {0} is the user ID.</p></td>
+	</tr>
+	<tr style="height: 45.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Authentication Causes 
+		 Shared Secrets Update</p>
+		<p class="tattabletext">(AUD6008)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">Authentication secrets for user {0} updated.</p>
+		<p class="tattabletext">Where {0} is the user ID.</p></td>
+	</tr>
+	<tr style="height: 117.00pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Authentication Causes 
+		 Token Update</p>
+		<p class="tattabletext">(AUD6009)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} authenticated with pending token. 
+		 Token {1} updated. {2}</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is the vendor/serial number of token.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{2} 
+		 is list of parameters including new state of the token.</p></td>
+	</tr>
+	<tr style="height: 89.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Authentication Attempt 
+		 By Suspended User</p>
+		<p class="tattabletext">(AUD6010)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} attempted an Authentication 
+		 API {1} operation while suspended.</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is the API operation being performed.</p></td>
+	</tr>
+	<tr style="height: 100.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Challenge Request Results 
+		 in Rejection</p>
+		<p class="tattabletext">(AUD6011)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} challenge request was rejected. 
+		 {1}</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is a&#160;list of parameters, including the result of IP and machine 
+		 authentication, security level of the request, and possibly the 
+		 location of the user.</p></td>
+	</tr>
+	<tr style="height: 161.00pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Challenge Request Results 
+		 in Challenge</p>
+		<p class="tattabletext">(AUD6012)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} challenge request was challenged. 
+		 {1} </p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is a list of parameters, including the result of IP and machine 
+		 authentication, security level of the request, and possibly the 
+		 location of the user.</p>
+		<p class="tattabletext"><span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Note</span>: 
+		 By default, this audit is disabled. To add this message to logs, 
+		 set the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+						 text-decoration: none; ">Audit Challenge Requests 
+		 That Return Challenge</span>&#160;property to <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">True</span>.</p></td>
+	</tr>
+	<tr style="height: 161.00pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Challenge Request Results 
+		 in Authentication</p>
+		<p class="tattabletext">(AUD6013)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} challenge request was authenticated. 
+		 {1} </p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is a list of parameters, including the result of IP and machine 
+		 authentication, security level of the request, and possibly the 
+		 location of the user.</p>
+		<p class="tattabletext"><span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Note</span>: 
+		 By default, this audit is disabled. To add this message to logs, 
+		 set the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+						 text-decoration: none; ">Audit Challenge Requests 
+		 That Return Authenticated</span>&#160;property to <span class="bold" 
+		 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">True</span>.</p></td>
+	</tr>
+	<tr style="height: 139.00pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Incorrectly Answered Questions 
+		 in Challenge Response</p>
+		<p class="tattabletext">(AUD6014)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} answered the following questions 
+		 incorrectly: {1}</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is a list of questions that the user answered incorrectly.</p>
+		<p class="tattabletext"><span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Note</span>: 
+		 By default, this audit is disabled. To add this message to logs, 
+		 set the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+						 text-decoration: none; ">Audit Knowledge-Based 
+		 Questions That Are Answered Incorrectly</span>&#160;property to 
+		 <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">True</span>.</p></td>
+	</tr>
+	<tr style="height: 84.00pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Machine Registration Check 
+		 Success</p>
+		<p class="tattabletext">(AUD6015)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">Machine registration check for user {0} 
+		 succeeded.</p>
+		<p class="tattabletext">Where {0} is the user ID.</p>
+		<p class="tattabletext"><span style="font-weight: bold;">Note</span>: 
+		 This audit property applies only to machine authentication performed 
+		 via the Entrust IdentityGuard 9.0 V1 or V2 API.</p></td>
+	</tr>
+	<tr style="height: 84.00pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Machine Registration Check 
+		 Failure</p>
+		<p class="tattabletext">(AUD6016)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">ERROR</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">Machine registration check for user {0} 
+		 failed.</p>
+		<p class="tattabletext">Where {0} is the user ID.</p>
+		<p class="tattabletext"><span style="font-weight: bold;">Note</span>: 
+		 This audit property applies only to machine authentication performed 
+		 via the Entrust IdentityGuard 9.0 V1 or V2 API. </p></td>
+	</tr>
+	<tr style="height: 45.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Transaction Receipt Signing 
+		 Failure</p>
+		<p class="tattabletext">(AUD6017)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">ERROR</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">Failed generating transaction receipt 
+		 signature.</p></td>
+	</tr>
+	<tr style="height: 100.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Authentication Attempt 
+		 With Disabled Directory Account</p>
+		<p class="tattabletext">(AUD6018)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} attempted an Authentication 
+		 API {1} operation when their directory account was disabled.</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is the API operation being performed.</p></td>
+	</tr>
+	<tr style="height: 100.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Authentication Attempt 
+		 With Expired Directory Account</p>
+		<p class="tattabletext">(AUD6019)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} attempted an Authentication 
+		 API {1} operation when their directory account was expired.</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is the API operation being performed.</p></td>
+	</tr>
+	<tr style="height: 84.00pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">User Token Requires Reset</p>
+		<p class="tattabletext">(AUD6020)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">ERROR</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">Token {1} {2} for user {0} requires a 
+		 reset.</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is the token vendor.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{2} 
+		 is the token serial number.</p></td>
+	</tr>
+	<tr style="height: 56.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">No Second Factor Authentication 
+		 Types Available</p>
+		<p class="tattabletext">(AUD6021)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">ERROR</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} was challenged but has no second-factor 
+		 authenticators available.</p>
+		<p class="tattabletext">Where {0} is the user ID.</p></td>
+	</tr>
+	<tr style="height: 45.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Authentication User Not 
+		 Exist</p>
+		<p class="tattabletext">(AUD6022)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">ERROR</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">User {0} does not exist.</p>
+		<p class="tattabletext">Where {0} is the user ID.</p></td>
+	</tr>
+	<tr style="height: 78.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Certificate&#160;Transaction 
+		 Failure</p>
+		<p class="tattabletext">(AUD6023)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">ERROR</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">Certificate&#160;transaction failed with 
+		 status {1} for user {0}.</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is the transaction status.</p></td>
+	</tr>
+	<tr style="height: 78.50pt;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="153"><p class="tattabletext">Token Transaction Failure</p>
+		<p class="tattabletext">(AUD6024)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="68"><p 
+			 class="tattabletext">ERROR</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="253"><p 
+			 class="tattabletext">Token transaction failed with status 
+		 {1} for user {0}.</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{0} 
+		 is the user ID.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{1} 
+		 is the transaction status.</p></td>
+	</tr>
+</table>
+
+<p class="pparagraph"><a name="XREF_57511_CA_certificate"></a>The messages 
+ for AUD6011, 6012, 6013, 6015 and 6016 also include the user’s IP address 
+ if the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Include Location Information 
+ In Authentication Audits</span>&#160;property is set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">True</span>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

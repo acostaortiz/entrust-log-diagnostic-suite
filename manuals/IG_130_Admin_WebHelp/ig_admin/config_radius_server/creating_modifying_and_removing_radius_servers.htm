@@ -1,0 +1,288 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_radius_server.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Creating, modifying, and removing Radius servers</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring the Radius server\nConfiguring a Radius server\nCreating, modifying, and removing Radius servers");
+addAvenueInfo("r13_std","ig_admin/config_radius_server/configuring_a_radius_server.htm","ig_admin/config_radius_server/configuring_radius_server_for_failover_and_high_availability.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_radius_server.htm\">Configuring the Radius server<\/a> > <a href=\"configuring_a_radius_server.htm\">Configuring a Radius server<\/a> > Creating, modifying, and removing Radius servers<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_35594_Creating_modifying" id="XREF_35594_Creating_modifying"></a>Creating, modifying, and removing Radius servers</h1>
+<p class="pparagraph">Use the Properties Editor to set up and modify any Radius server used by the Radius proxy.</p>
+<p class="pparagraph">This section includes the following procedures:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_18132_To_configure_a">To configure a Radius server</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_30736_To_modify_a_Radius">To modify a Radius server</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_69340_To_allow_selection">To allow selection of Radius server based on Entrust IdentityGuard group name</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_70267_To_remove_a_Radius">To remove a Radius server</a></p>
+
+<p class="prtproceduretitle"><a name="XREF_18132_To_configure_a" id="XREF_18132_To_configure_a"></a>To configure a Radius server</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Entrust IdentityGuard Properties Editor. (See <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">Log in or out of the Properties Editor</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the Table of Contents, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Server Configuration.</span></p>
+
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="PE-Radius-server.jpg" id="image0" src="pe-radius-server.jpg" width="562" height="328" border="0" name="image0" /></p>
+</div>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Initially, you see just one empty field below <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Configuration Instances</span>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To configure one Radius server, enter a unique Radius server name. Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Add</span>.</p>
+
+<p class="liplistparagraph">The pane expands to reveal the properties. Properties marked with the red <span style="font-weight: bold; color: #ff0000;">*</span>&#160;are required.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="IX_with_group_name" id="IX_with_group_name"></a><a name="IX_Radius_server_1" id="IX_Radius_server_1"></a><a name="IX_Entrust_IdentityGuard" id="IX_Entrust_IdentityGuard"></a>To use dynamic Radius server to group mapping at authentication, create multiple Radius server <span style="font-weight: bold;">Configuration Instances</span>, one for each Entrust IdentityGuard group. Give each Radius server instance the name of an IdentityGuard group. See also <a href="#XREF_69340_To_allow_selection">To allow selection of Radius server based on Entrust IdentityGuard group name</a>.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> When using MS-CHAPv2, the user ID entered at login is included in the MS-CHAPv2 data, so the user ID (with group ID) entered in the VPN server must match the user ID used by the third-party Radius server. If the third-party Radius server cannot interpret user IDs that include the group, it is not able to validate MSCHAPv2 protected responses.</p>
+<p class="prpprocedureparagraph">The pane expands to reveal the properties. Properties marked with the red <span style="font-weight: bold; color: #ff0000;">*</span>&#160;are required.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Server Address</span> field, type a unique Radius server host name or IP address. This provides the address of the Radius server where the Radius proxy sends Radius requests. You can set this field with one Radius server address or several Radius server addresses mapped to Entrust IdentityGuard groups.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To configure a Radius Server Address field, you must enter the server name (or IP address) and the port the radius service is listening on. That is, the address must be in the following format:</p>
+
+<p class="cocode">radius1.entrust.com:1812</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To enter more than one address as part of a failover setup, see <a href="configuring_radius_server_for_failover_and_high_availability.htm#XREF_h2_Using_the_Entrust">Configuring Radius server for failover and high availability</a>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Server Secret</span>&#160;field, type the Radius server secret. The server secret is the password value the Radius client uses to protect the message. The secret you enter must match the server secret set for the Radius server. Leave the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Encrypted</span>&#160;option selected so that Entrust IdentityGuard stores an encrypted version of the secret.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate &amp; Save</span>.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log out of the Properties Editor and restart the Entrust IdentityGuard Server service and the Radius proxy service after you finish making all property changes.</p>
+
+<p class="prtproceduretitle"><a name="XREF_30736_To_modify_a_Radius" id="XREF_30736_To_modify_a_Radius"></a>To modify a Radius server</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Entrust IdentityGuard Properties Editor.&#160;(See <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">Log in or out of the Properties Editor</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the Table of Contents, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Server Configuration.</span></p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select the name of a Radius server from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Configuration Instances</span>, drop-down list.</p>
+
+<p class="prpprocedureparagraph">The Radius server settings appear in the property fields.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Change the property settings as required. For a complete list of properties, see <a href="../usingpropeditor/radius_server_configuration.htm#XREF_50848_Radius_server">Radius Server Configuration</a>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate &amp; Save.</span></p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log out of the Properties Editor and restart the Entrust IdentityGuard Server service and the Radius proxy service after you finish making all property changes.</p>
+
+<p class="prtproceduretitle"><a name="IX_with_group_name_1" id="IX_with_group_name_1"></a><a name="IX_Radius_server_2" id="IX_Radius_server_2"></a><a name="IX_Entrust_IdentityGuard_1" id="IX_Entrust_IdentityGuard_1"></a><a name="XREF_69340_To_allow_selection" id="XREF_69340_To_allow_selection"></a>To allow selection of Radius server based on Entrust IdentityGuard group name</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Entrust IdentityGuard Properties Editor. &#160;(See <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">Log in or out of the Properties Editor</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the Table of Contents, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Server Configuration.</span></p>
+
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="PE-Radius-server-grpmap.jpg" id="image1" src="pe-radius-server-grpmap.jpg" width="562" height="335" border="0" name="image1" /></p>
+</div>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Initially, you see just one empty field below <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Configuration Instances</span>.</p>
+
+<p class="prpprocedureparagraph"><a name="IX_with_group_name_2" id="IX_with_group_name_2"></a><a name="IX_Radius_server_3" id="IX_Radius_server_3"></a><a name="IX_Entrust_IdentityGuard_2" id="IX_Entrust_IdentityGuard_2"></a>To use dynamic Radius server to group mapping at authentication, create multiple Radius servers <span style="font-weight: bold;">Configuration Instances</span>, one for each Entrust IdentityGuard group. Give each Radius server instance the name of an IdentityGuard group. See also <a href="#XREF_69340_To_allow_selection">To allow selection of Radius server based on Entrust IdentityGuard group name</a>.</p>
+<p class="prpprocedureparagraph">For example, if your Entrust IdentityGuard groups are called Marketing, Manufacturing, and Distribution, create three Radius Server Configuration instances, also named <span style="font-family: Courier New;">Marketing</span>, <span style="font-family: Courier New;">Manufacturing</span>, and <span style="font-family: Courier New;">Distribution</span>.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="PE-Radius-server-groups.jpg" id="image2" src="pe-radius-server-groups.jpg" width="440" height="154" border="0" name="image2" /></p>
+</div>
+<p class="prpprocedureparagraph">This sets up a mapping of each VPN server configuration to a Radius server configuration. All logins that use the form <span style="font-family: Courier New;">groupid/userid</span>&#160;will be directed to the Radius server with the matching group name, <span style="font-family: Courier New;">groupid</span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Entrust IdentityGuard user login can also be of the form <span style="font-family: Courier New;">groupid\userid</span>&#160;or <span style="font-family: Courier New;">userid@groupid</span>. If you are using either of these, they must be converted to the Entrust IdentityGuard format, <span style="font-family: Courier New;">groupid/userid</span>. This conversion will be completed automatically when you set the corresponding property to <span style="font-family: Courier New;">True</span>.<br />
+For <span style="font-family: Courier New;">groupid\userid</span>, set <span style="font-weight: bold;">Radius Proxy Converts Backslash</span>&#160;to <span style="font-family: Courier New;">True</span>.<br />
+For <span style="font-family: Courier New;">userid@groupid</span>, set <span style="font-weight: bold;">Radius Proxy Converts At Sign</span>&#160;to <span style="font-family: Courier New;">True</span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> When using MS-CHAPv2, the user ID entered at login is included in the MS-CHAPv2 data, so the user ID (with group ID) entered in the VPN server must match the user ID used by the third-party Radius server. If the third-party Radius server cannot interpret user IDs that include the group, it is not able to validate MSCHAPv2 protected responses.</p>
+<p class="prpprocedureparagraph">The pane expands to reveal the properties. Properties marked with the red <span style="font-weight: bold; color: #ff0000;">*</span>&#160;are required.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Server Address</span> field, type a unique Radius server host name or IP address. This provides the address of the Radius server where the Radius proxy sends Radius requests. You can set this field with one Radius server address or several Radius server addresses mapped to Entrust IdentityGuard groups.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To configure a Radius Server Address field, you must enter the server name (or IP address) and the port the radius service is listening on. That is, the address must be in the following format:</p>
+
+<p class="cocode">radius1.entrust.com:1812</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To enter more than one address as part of a failover setup, see <a href="configuring_radius_server_for_failover_and_high_availability.htm#XREF_35375_Configuring_a">Configuring Radius server for failover and high availability</a>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Server Secret</span>&#160;field, type the Radius server secret. The server secret is the password value the Radius client uses to protect the message. The secret you enter must match the server secret set for the Radius server. Leave the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Encrypted</span>&#160;option selected so that Entrust IdentityGuard stores an encrypted version of the secret.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate &amp; Save</span>.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Table of Contents</span> to return to the Properties Editor Table of Contents.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">VPN Server Configuration</span>.</p>
+
+<p class="prpprocedureparagraph">The VPN Server Configuration pane appears.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="PE-VPN-server-grpmap.jpg" id="image3" src="pe-vpn-server-grpmap.jpg" width="453" height="282" border="0" name="image3" /></p>
+</div>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the empty field below <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Configuration Instances</span>, type a unique instance name and click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Add</span>.</p>
+
+<p class="prpprocedureparagraph">This provides a unique label used by Entrust IdentityGuard to refer to this server. The label can be anything you choose, such as the name of your VPN server or the name of a VPN user group.</p>
+<p class="prpprocedureparagraph">The pane expands to reveal available VPN properties. Most properties include default settings. Only the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Host</span>&#160;and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Shared Secret</span>&#160;properties are required. Others are required depending on which first-factor authentication you intend to use.</p>
+
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Host</span>&#160;field, type a unique VPN server host name, using either a DNS or IP address.</p>
+
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Shared Secret</span>&#160;field, type the VPN server secret. This secret must match the server secret already set for the VPN server. Leave the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Encrypted</span>&#160;option selected so that Entrust IdentityGuard stores an encrypted version of the secret.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="PE-VPN-server-grpmap2.jpg" id="image4" src="pe-vpn-server-grpmap2.jpg" width="552" height="213" border="0" name="image4" /></p>
+</div>
+
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Leave the <span style="font-weight: bold;">Radius Server</span>&#160;property set to <span style="font-family: Courier New;">User’s Group is Radius Server</span>.</p>
+
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Change or enter any of the other VPN properties, as required.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Do not use the <span style="font-weight: bold;">Entrust IdentityGuard User Group</span> property. Leave it blank.</p>
+
+<p class="prprocedurestep">14.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate &amp; Save</span>.</p>
+
+<p class="prprocedurestep">15.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Log out of the Properties Editor and restart the Entrust IdentityGuard Server service and the Radius proxy service after you finish making all property changes.</p>
+
+<p class="prtproceduretitle"><a name="XREF_70267_To_remove_a_Radius" id="XREF_70267_To_remove_a_Radius"></a>To remove a Radius server</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Entrust IdentityGuard Properties Editor. &#160;(See <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">Log in or out of the Properties Editor</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the Table of Contents, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Server Configuration.</span></p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select the name of a Radius server from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Configuration Instances</span>, drop-down list.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Remove</span>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">OK</span> on the prompt dialog box.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log out of the Properties Editor and restart the Entrust IdentityGuard Server service and the Radius proxy service after you finish making all property changes.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

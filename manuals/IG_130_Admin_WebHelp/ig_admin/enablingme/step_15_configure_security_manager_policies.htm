@@ -1,0 +1,299 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Step 15: Configure Security Manager policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 15: Configure Security Manager policies");
+addAvenueInfo("r13_std","ig_admin/enablingme/step_14_mirror_password_rules.htm","ig_admin/enablingme/step_16_give_self-service_more_permissions.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobile-enrollment-for-digital-ids.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > Step 15: Configure Security Manager policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_34079_PKCS_12_only" id="XREF_34079_PKCS_12_only"></a>Step 
+ 15: Configure Security Manager policies</h1>
+<p class="pparagraph"><span class="italic">This section applies only if 
+ you are using a Security Manager CA</span>.</p>
+<p class="pparagraph">This section includes two procedures for modifying 
+ Security Manager policies. You will need to complete one or both of them, 
+ depending on the digital ID types you are deploying (see <a href="../about/digital_id_types_and_formats.htm#XREF_59858_Digital_ID_types">Digital 
+ ID types and formats</a> for details).</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you 
+ are deploying PKCS#12 digital IDs, complete <span class="hyperlink" style="font-family: Syntax;"><a 
+	 href="#XREF_18629_To_configure_the">To configure the Security Manager 
+ user policy (PKCS#12 digital IDs)</a></span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you 
+ are deploying SCEP digital IDs, complete<span style="font-style: italic;">&#160;</span><a 
+	 href="#XREF_61079_To_modify_the">To modify the Verification_P10 policy 
+ (SCEP digital IDs)</a><span style="font-style: italic;">.</span></p>
+<p class="prtproceduretitle"><a name="XREF_18629_To_configure_the" id="XREF_18629_To_configure_the"></a>To 
+ configure the Security Manager user policy (PKCS#12 digital IDs)</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the Security Manager computer, open the <span class="output">entmgr.ini</span>&#160;file, 
+ located by default in <span class="output">c:\authdata\manager\</span>&#160;on 
+ Windows or <span class="output">/opt/entrust/authdata/CA/manager</span> 
+ on Linux.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Add 
+ these lines to the bottom of the file:</p>
+<p class="cocode">[Default Variable Values]</p>
+<p class="cocode">all_exportable=0</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Save.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to Security Manager Administration as a user who has sufficient permissions 
+ to create or modify user policies. For details, see the <span style="font-style: italic;">Entrust 
+ Authority Security Manager Administration User Guide</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Export 
+ the <span class="output" style="font-family: 'Courier New'; font-size: 9.0pt;">&#160;</span><span 
+	 class="output">mastercert.spec</span> file:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">File</span>&#160;&gt; <span style="font-weight: bold;">Certificate 
+ Specifications</span>&#160;&gt; <span style="font-weight: bold;">Export</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Preserve 
+ all defaults and click <span style="font-weight: bold;">Save</span>.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Open 
+ the <span class="output">master.certspec</span> file in a text editor.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search 
+ for this string:</p>
+<p class="cocode">Polcert_cliset Attributes</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Immediately 
+ under <span class="output" style="font-family: 'Courier New'; font-style: normal; 
+			 font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; ">[polcert_cliset Attributes]</span>&#160;add 
+ this line:</p>
+<p class="cocode">all_exportable=1.2.840.113533.7.77.63,Boolean,&lt;all_exportable&gt;</p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search 
+ for this string:</p>
+<p class="cocode">[Variables]</p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Immediately 
+ below <span class="output">[Variables]</span>, add this string&#160;as 
+ a single line (if it is not already present):</p>
+<p class="cocode">all_exportable=Boolean,All Exportable:,This serves as 
+ an implicit override of the PKCS12ExportPermission attribute allowing 
+ legacy non-exportable key pairs to be retroactively marked as 'exportable'.,Range,0,1</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> You can 
+ enter the preceding text as multiple lines if you add “_continue_=” at 
+ the start of each new line. It would look as follows:<br />
+all_exportable=Boolean,All Exportable:,This serves as an implicit overri<br />
+_continue_=de of the PKCS12ExportPermission attribute allowing legacy no<br />
+_continue_=n-exportable key pairs to be retroactively marked as 'exporta<br />
+_continue_=ble'.,Range,0,1</p>
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Save 
+ the file.</p>
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Import 
+ the <span class="output">master.certspec</span> file:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ Security Manager Administration, click <span style="font-weight: bold;">File</span>&#160;&gt; 
+ <span style="font-weight: bold;">Certificate Specifications</span>&#160;&gt; 
+ <span style="font-weight: bold;">Import</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ the <span class="output">master.certspec</span> <span class="output" style="font-family: 'Courier New'; 
+														 font-size: 9.0pt;">&#160;</span>you 
+ just modified.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Open</span>&#160;and then click <span 
+	 style="font-weight: bold;">Save</span>.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Import 
+ Certificate Specification</span> message appears.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="sma_certspec_importsuccess.jpg" 
+											 id="image26" src="sma_certspec_importsuccess.jpg" 
+											 name="image26" width="250" 
+											 height="152" border="0" /></p>
+</div>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">OK</span>.</p>
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In 
+ the tree view, expand <span style="font-weight: bold;">Security Policy</span>&#160;&gt; 
+ <span style="font-weight: bold;">User Policies</span>.</p>
+<p class="prprocedurestep">14.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Select 
+ the user policy, <span style="font-weight: bold;">End User Policy</span>.</p>
+<p class="prprocedurestep">15.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ the <span style="font-weight: bold;">General Information</span> tab.</p>
+<p class="prprocedurestep">16.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">Policy Attributes</span> section, 
+ enable:</p>
+<p class="lilistbullet" style="font-weight: bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Allow 
+ PKCS#12 Export</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">All Exportable</span> (listed at the bottom 
+ of the list of policy attributes)</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="enablingME00937.jpg" id="image27" src="enablingme00937.jpg" name="image27" width="575" height="245" border="0" /></p>
+</div>
+<p class="prprocedurestep">17.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Apply</span>.</p>
+<p class="prprocedurestep">18.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Assign 
+ the user policy to the End User role:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the tree view, expand <span style="font-weight: bold;">Security Policy</span>&#160;&gt; 
+ <span style="font-weight: bold;">Roles</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">End User</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Ensure 
+ that <span style="font-weight: bold;">End User Policy</span> is listed.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">OK</span>.</p>
+<p class="prprocedurestep">19.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Restart 
+ the Entrust Authority Security Manager service, located under <span style="font-weight: bold;">Start</span>&#160;&gt; 
+ <span style="font-weight: bold;">Administrative Tools</span>&#160;&gt; 
+ <span style="font-weight: bold;">Services on Windows</span>.</p>
+<p class="prpprocedureparagraph">You have now enabled PKCS#12 export for 
+ the End User policy.</p>
+<p class="prtproceduretitle"><a name="XREF_61079_To_modify_the" id="XREF_61079_To_modify_the"></a>To 
+ modify the Verification_P10 policy (SCEP digital IDs)</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to Security Manager Administration as a user who has sufficient permissions 
+ to create or modify user policies. For details, see the <span style="font-style: italic;">Entrust 
+ Authority Security Manager Administration User Guide</span>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the tree view, expand <span style="font-weight: bold;">Security Policy</span>&#160;&gt; 
+ <span style="font-weight: bold;">User Policies</span>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Verification_p10 Policy</span>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the main pane, click the <span style="font-weight: bold;">General</span> 
+ tab.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under 
+ <span style="font-weight: bold;">Policy Attributes</span>, scroll to <span 
+	 style="font-weight: bold;">Key usage policy</span>.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">Key usage policy</span> field, remove 
+ any existing entry and enter: <span class="output">both</span></p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Apply</span>.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Restart 
+ the Entrust Authority Security Manager service, located under <span style="font-weight: bold;">Start</span>&#160;&gt; 
+ <span style="font-weight: bold;">Administrative Tools</span>&#160;&gt; 
+ <span style="font-weight: bold;">Services on Windows</span>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Authenticate with your Entrust Datacard CR token</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nToken authentication\nEntrust Datacard OTP tokens\nUser procedures for Entrust Datacard OTP tokens\nAuthenticate with your Entrust Datacard CR token");
+addAvenueInfo("Untitled02","ig_admin/tokenauth/set_the_pin_on_your_entrust_datacard_cr_token.htm","ig_admin/tokenauth/sign_a_transaction_with_your_entrust_datacard_cr_token.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"tokenauth.htm\">Token authentication<\/a> > <a href=\"entrust_datacard_otp_tokens.htm\">Entrust Datacard OTP tokens<\/a> > <a href=\"user_procedures_for_entrust_datacard_otp_tokens.htm\">User procedures for Entrust Datacard OTP tokens<\/a> > Authenticate with your Entrust Datacard CR token<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Authenticate with your Entrust Datacard CR token</h1>
+<p class="pparagraph">This section describes how to use the Entrust Datacard 
+ CR token in two different modes.</p>
+<p class="pparagraph"><span class="bold">Response only mode</span></p>
+<p class="pparagraph">Complete this procedure when presented with an authentication 
+ challenge (typically on a Web site or application) that asks you to enter 
+ a one-time password from your token.</p>
+<p class="prtproceduretitle">To obtain a one-time password (OTP) with the 
+ Entrust Datacard CR token</p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Press the power button <img src="../../c300_btn_power.png" alt="" style="border: none;" width="26" height="25" border="0" /> 
+ to turn on the token. </p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter you PIN, and then press the <span class="bold">OK</span> 
+ button.</p>
+<p class="prpprocedureparagraph"><img src="../../display_otp_challenge_code.png" alt="" style="border: none;" border="0" /></p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>When the <span class="bold">OTP</span> option 
+ is highlighted on the display window, press the <span class="bold">OK</span> 
+ button.</p>
+<p class="prpprocedureparagraph">The token displays a one-time password 
+ (a numeric code).</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter the password in response to the authentication 
+ challenge.</p>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Follow any further instructions on the Web 
+ page or application.</p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Press the power button to turn off the display 
+ and conserve battery power. When the OTP expires (30 seconds), the token 
+ displays the menu and then turns off automatically after about 30 seconds 
+ of inactivity.</p>
+<p class="pparagraph"><span class="bold">Challenge-response mode</span></p>
+<p class="pparagraph">Complete this procedure when presented with an authentication 
+ challenge (typically on a Web site or application) that asks you to enter 
+ an 8-digit challenge code received from the Web site or application, and 
+ then enter a one-time password generated by your token.</p>
+<p class="prtproceduretitle">To complete a challenge-code authentication 
+ with the Entrust Datacard CR token</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Press 
+ the power button <img src="../../c300_btn_power.png" alt="" style="border: none;" width="26" height="25" border="0" /> to turn on 
+ the token. </p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter 
+ your PIN, and then press the <span class="bold">OK</span> button.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Press 
+ the down arrow button <img src="../../c300_btn_down.png" alt="" style="border: none;" width="24" height="25" border="0" /> until 
+ <span class="bold">Challenge Code</span> is highlighted on the display 
+ window, and then press the <span class="bold">OK</span> button.</p>
+<p class="prpprocedureparagraph"><img src="../../display_otp_challenge_code.png" alt="" style="border: none;" border="0" /></p>
+<p class="prpprocedureparagraph">The token prompts you to enter the challenge 
+ code.</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter the challenge code.</p>
+<p class="prpprocedureparagraph">The token displays a one-time password 
+ (a numeric code).</p>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter the password in response to the authentication 
+ challenge.</p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Follow any further instructions on the Web 
+ page or application.</p>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Press the power button to turn off the display 
+ and conserve battery power. When the OTP expires (30 seconds), the token 
+ displays the menu and then turns off automatically after about 30 seconds 
+ of inactivity.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\tokenauth.fm" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Finding assigned token information</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nToken authentication\nAdminister assigned tokens\nFind assigned token information");
+addAvenueInfo("Untitled","ig_admin/tokenauth/administering_assigned_tokens.htm","ig_admin/tokenauth/authenticating_a_user_with_a_token.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"tokenauth.htm\">Token authentication<\/a> > <a href=\"administering_assigned_tokens.htm\">Administer assigned tokens<\/a> > Find assigned token information<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_58969_Finding_card"></a>Find assigned token information 
+ </h1>
+<p class="pparagraph"><a name="IX_finding_5"></a>Use one of the following 
+ procedures to search for information about tokens assigned to an individual 
+ user or list of users. </p>
+<p class="pparagraph">Topics in this section:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_prt_To_display_a_user_s">To 
+ find a user’s token information </a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_prt_To_display_assigned">To 
+ search for assigned token information </a></p>
+<p class="prtproceduretitle"><a name="XREF_prt_To_display_a_user_s"></a>To 
+ find a user’s token information </p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt; 
+	 <span class="bold">Administration Interface</span>.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;UNIX 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="liplistparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="liplistparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="liplistparagraph">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="liplistparagraph"></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">User 
+ Accounts</span><span style="font-weight: bold;">&#160;</span>on the menu 
+ bar.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find 
+ a specific user in one of two ways:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>use the 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Go 
+ To Account</span>&#160;tab (see <a href="../useradminsection/searching_for_user_information.htm#XREF_82818_Searching_for_user">To 
+ search for information about one user</a>)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>use the 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Find 
+ Accounts</span>&#160;tab (see <a href="../useradminsection/searching_for_user_information.htm#XREF_90670_To_get_a_list_of">To 
+ search for information about one or more users</a>)</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">View 
+ Account</span> page appears.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Authentication 
+ Types</span>&#160;on the user’s <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Account 
+ Information</span>&#160;pane, click <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Tokens</span>.</p>
+<p class="prpprocedureparagraph">Token information and applicable command 
+ buttons appear.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-token-operations.jpg" id="image16" src="ai-user_account-token-operations.jpg" width="634" height="187" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ the user has more than one token, select the token you wish to modify.</p>
+<p class="prpprocedureparagraph">From this page, you can: </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Authenticate 
+ the user account. See <a href="authenticating_a_user_with_a_token.htm#XREF_18416_Authenticating_a">Authenticating 
+ a user’s token</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Edit token 
+ information. See <a href="editing_token_information.htm#XREF_31136_Modifying_token">Editing 
+ token information </a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Activate 
+ the token. This button may not be available depending on the token type.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Synchronize 
+ a token to fix problems with event or clock drift. See <a href="configuring_the_drift_window_and_fixing_token_drift.htm#XREF_71784_Fixing_token_clock">Configuring 
+ the drift window and fixing token drift</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Move the 
+ token back to the list of unassigned tokens. See <a href="unassigning_an_assigned_token.htm#XREF_20650_Moving_a_card_to">Unassigning 
+ an assigned token </a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Unlock 
+ the token, if the token supports locking. See <a href="unlocking_a_pin-protected_token.htm#XREF_72054_Unlocking_a_token">Unlocking 
+ a PIN-protected token </a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Delete 
+ the token. See <a href="deleting_a_token.htm#XREF_87737_Deleting_cards">Deleting 
+ a token </a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Rename 
+ the token set. See <a href="creating_or_renaming_a_token_set.htm#XREF_93340_Renaming_a_token">Creating 
+ or renaming a token set</a>.</p>
+<p class="prtproceduretitle"><a name="XREF_prt_To_display_assigned"></a>To 
+ search for assigned token information </p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>For a count 
+ of the number of unassigned tokens, use one of the following methods:<br />
+- Run an unassigned token report. See <a href="../config_reporting/generating_reports_in_the_administration_interface.htm#XREF_17788_To_create_reports">To 
+ create reports in the Administration interface</a>.<br />
+- Open the Master user shell (see <a href="../usingadmininterface/using_the_master_user_shell.htm#XREF_32785_Using_the_master">Using 
+ the Master user shell</a>), and enter: <span style="font-family: Courier;">token 
+ list -countOnly</span></p>
+<div>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521478111" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt; 
+	 <span class="bold">Administration Interface</span>.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;UNIX 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478112" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="liplistparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="liplistparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="liplistparagraph">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="liplistparagraph"></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Tokens</span> 
+ from the menu bar.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the <span style="font-weight: bold;">Tokens</span>&#160;page, click the 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">List 
+ Assigned Tokens</span>&#160;tab. </p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Retrieve 
+ a list of assigned tokens. </p>
+<p class="prpprocedureparagraph">Use the following options to reduce the 
+ search results to the exact records you need:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Serial Number</span> — 
+ To locate a particular token, enter the serial number of the token. You 
+ may also use the wildcard character (*). To retrieve all serial numbers, 
+ leave this field blank.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>When you 
+ enter a token serial number, any number with less then 10 digits is prefixed 
+ with zeros.&#160;For example, 7891234 becomes 0007891234. Any hyphens 
+ used as punctuation are stripped out. For example, 7644483-8 becomes 0076444838.<br />
+<br />
+There is an exception to the above rules if you use the wildcard character 
+ to find serial numbers. For example, if you want serial numbers that start 
+ with 007, you must enter 007* not 7*.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Token vendor</span>&#160;— 
+ To locate tokens from a specific token vendor, select the vendor from 
+ the list. Default options include:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Entrust</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Entrust 
+ Soft Token</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>OATH 
+ Token</p>
+<p class="liplistparagraph">If you have configured additional token vendors, 
+ they appear in this list. For more information, see <a href="configuring_token_vendors.htm#XREF_35144_Configuring_token">Configuring 
+ token vendors</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">States Include</span>&#160;— 
+ To locate tokens that are in a specific state, select the state from the 
+ list. Hold down the Ctrl key to select more than one state. For more information 
+ about token states, see <a href="../gridauthentication/grid_card_state_overview.htm#XREF_54456_Configuring">Grid 
+ card state overview</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">States Don’t Include</span>&#160;— 
+ To locate tokens belonging to users who have no tokens in a specific state, 
+ select the state from the list. Hold down the Ctrl key to select more 
+ than one state. </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Token Added</span>&#160;— 
+ To locate tokens that were added to the IdentityGuard service within a 
+ specified time frame (1, 7, 30, or 365 days), select one of the ranges 
+ in the drop-down list. </p>
+<p class="liplistparagraph">Or select <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Custom 
+ date range</span>&#160;and pick a <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">From 
+ </span>and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+					 text-decoration: none; ">To</span>&#160;date. Use 
+ the drop-down lists to select the date, month, and year, or click the 
+ calendar icon to select the date.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="IX_last_used"></a><span 
+	 class="bold">Last Used</span>&#160;— 
+ To locate tokens that were used within a specific time frame (1, 7, 30, 
+ or 365 days), select one of the ranges in the drop-down list. </p>
+<p class="liplistparagraph"><a name="IX_never_used"></a>Or select <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Custom 
+ date range</span>&#160;and pick a <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">From 
+ </span>and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+					 text-decoration: none; ">To</span>&#160;date. Use 
+ the drop-down lists to select the date, month, and year, or click the 
+ calendar icon to select the date. To find unused tokens only, include 
+ just the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">To</span>&#160;date without the 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">From</span> 
+ date.</p>
+<p class="liplistparagraph">If a token has never been used, it has no last-used 
+ date and appears as the earliest token in the search results when you 
+ search using a time frame. It does not appear in the search results if 
+ you search using a date range.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Uses License</span>&#160;— 
+ Select <span class="bold">Yes</span>&#160;if the token to search for is 
+ a soft token and uses a Soft Token license, or <span class="bold">No</span> 
+ if it is not.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Uses Transaction Verification License</span>&#160;— Select <span class="bold">Yes</span>&#160;if 
+ the token to search for is a soft token that can be used for transaction 
+ verification as well as for authentication, and uses a Soft Token license. 
+ Select <span class="bold">No</span> if it is not.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">User Account</span>&#160;— 
+ Select this option to provide related details about token users.</p>
+<p class="liplistparagraph">The <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Token 
+ owner account characteristics </span>pane<span style="font-family: 'Times New Roman'; 
+												 font-size: 12.0pt;">&#160;</span>provides 
+ an extensive list of user characteristics to use in your search. For complete 
+ details, see <a href="../useradminsection/searching_for_user_information.htm#XREF_75895_Searching_for_user">Searching 
+ for user information</a>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. 
+ From the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Showing results per page</span>&#160;drop-down 
+ list, specify the number of search results per page.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Search</span>. 
+ </p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Search 
+ Results</span>&#160;page appears. </p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ a token serial number. </p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Token 
+ Details</span>&#160;page appears. From this page, you can perform other 
+ token administration actions: </p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+	TextPopupInit('a3','POPUP521478111');
+	TextPopupInit('a4','POPUP521478112');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

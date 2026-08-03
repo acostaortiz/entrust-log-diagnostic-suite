@@ -1,0 +1,266 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Step 17: Configure Self-Service basics</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 17: Configure Self-Service basics");
+addAvenueInfo("Untitled02","ig_admin/enablingme/step_16_give_self-service_more_permissions.htm","ig_admin/enablingme/step_18_configure_self-service_administration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobile-enrollment-for-digital-ids.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > Step 17: Configure Self-Service basics<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_78649_Perform_the" id="XREF_78649_Perform_the"></a>Step 17: Configure Self-Service basics</h1>
+<p class="pparagraph">You must make these preliminary configurations:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enable first-factor authentication to Self-Service</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enable (or disable) user registration in Self-Service</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enable user administration in Self-Service</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Registration through Self-Service is a good way to create Entrust IdentityGuard user accounts for each user, on an as-needed basis (as opposed to bulk-loading users). It is also a good way to collect email addresses from users. Remember that users must have an Entrust IdentityGuard account before they can request a digital ID (of any type). They must also have an email address on file before they can request a digital ID for secure email.</p>
+<p class="pparagraph">The above-mentioned configurations are very customer-specific: for example, you can use a variety of different first-factor authentication methods. For details, see the <span style="font-style: italic;">Self-Service Module Installation and Configuration Guide</span>.</p>
+<p class="pparagraph">Here are some quick steps to get a basic configuration working. Note that you will need to alter or re-do completely these configurations later, to meet your organization’s needs.</p>
+<p class="prtproceduretitle">To perform the basic configuration of Self-Service</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Using the Entrust IdentityGuard Administration interface, create a test user called:</p>
+
+<p class="cocode"><span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">mobileenroll</span></p>
+<p class="prpprocedureparagraph">You will be using this user to test your basic configuration.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="ig_webmin_createuser_mobileenroll.jpg" id="image32" src="ig_webmin_createuser_mobileenroll.jpg" width="367" height="243" border="0" name="image32" /></p>
+</div>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Account Information</span>&#160;for <span class="output">mobileenroll</span> appears.</p>
+<p class="prpprocedureparagraph">Now, create a password for <span class="output">mobileenroll</span>:</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span style="font-weight: bold;">Authentication Types</span>, select <span style="font-weight: bold;">Password</span>&#160;and click <span style="font-weight: bold;">Create Password</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select <span style="font-weight: bold;">Manual Generation</span>.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Specify a password in the fields provided.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From the drop-down list, select <span style="font-weight: bold;">Password</span>&#160;<span style="font-weight: bold;">Never</span>&#160;<span style="font-weight: bold;">Expires</span>.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Deselect <span style="font-weight: bold;">Change Is Required On First Usage</span>.</p>
+
+<p class="prpprocedureparagraph">Your page looks like this:</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="ig_webmin_createpass.jpg" id="image33" src="ig_webmin_createpass.jpg" width="363" height="394" border="0" name="image33" /></p>
+</div>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Create Password</span>.</p>
+
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Account Information</span>&#160;page for <span class="output">mobileenroll</span> appears.</p>
+<p class="prpprocedureparagraph">Now, add an email address for <span class="output">mobileenroll</span> (only required if using secure email digital IDs):</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Edit Account</span>.</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Scroll down to <span style="font-weight: bold;">Contact Information</span> and expand it.</p>
+
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Under <span style="font-weight: bold;">Add Contact Entry</span>, next to <span style="font-weight: bold;">Contact Label,</span>&#160;select <span style="font-weight: bold;">Email</span>.</p>
+
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>For the <span style="font-weight: bold;">Contact Value</span>, enter an email address, with your organization’s email domain. For example, <span class="output">mobileenroll@yourorganization.com</span>. You will later be specifying this domain in the Self-Service properties.</p>
+
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Add</span>.</p>
+
+<p class="prpprocedureparagraph">Now, create a shared secret for <span class="output">mobileenroll</span>:</p>
+
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Scroll down to <span style="font-weight: bold;">Shared Secrets</span> and expand it.</p>
+
+<p class="prprocedurestep">14.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Add Shared Secret</span>.</p>
+
+<p class="prprocedurestep">15.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>For the <span style="font-weight: bold;">Secret Name</span>, enter:</p>
+
+<p class="cocode">com.entrust.identityGuard.selfService.sharedSecret.user.registered</p>
+
+<p class="prprocedurestep">16.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>For the <span style="font-weight: bold;">Secret Value</span>, enter:</p>
+
+<p class="prpprocedureparagraph"><span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">True</span></p>
+
+<p class="prprocedurestep">17.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Add</span>.</p>
+
+<p class="prpprocedureparagraph">You have now added a shared secret to <span class="output">mobileenroll</span>. This secret tells Self-Service that the user has registered already. The effect of this is that when <span class="output">mobileenroll</span>browses to Self-Service, the pages asking the user to register will not be shown. Instead, <span class="output">mobileenroll</span>will be taken directly to the Self-Administration pages, where the user can ask for a digital ID.</p>
+
+<p class="prprocedurestep">18.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Save Changes</span>.</p>
+
+<p class="prpprocedureparagraph">The shared secret now appears in <span class="output">mobileenroll</span> account information.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="ig_webmin_accountinfo_mobileenroll.jpg" id="image34" src="ig_webmin_accountinfo_mobileenroll.jpg" width="552" height="267" border="0" name="image34" /></p>
+</div>
+<p class="prpprocedureparagraph">Now, set up first-factor authentication:</p>
+
+<p class="prprocedurestep">19.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Open the Self-Service Module’s Configuration interface.</p>
+
+<p class="prprocedurestep">20.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>From the menu at the top, click <span style="font-weight: bold;">Administration</span>.</p>
+
+<p class="prprocedurestep">21.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Properties</span>.</p>
+
+<p class="prprocedurestep">22.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Generic JAAS Login Module Settings</span>.</p>
+
+<p class="prprocedurestep">23.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Under <span style="font-weight: bold;">First-factor Authentication Login Module</span>, select <span style="font-weight: bold;">Entrust IdentityGuard Password</span>. This setting enables <span class="output">mobileenroll</span> to log in to Self-Service using the password you created earlier.</p>
+
+<p class="prprocedurestep">24.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Validate &amp; Save</span>.</p>
+
+<p class="prpprocedureparagraph">Now, set up authentication to Self-Administration:</p>
+
+<p class="prprocedurestep">25.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Still in the Self-Service Module Configuration interface, from the top menu bar, click <span style="font-weight: bold;">Administration</span>.</p>
+
+<p class="prprocedurestep">26.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">General Self-Administration Options</span> (it is the first link).</p>
+
+<p class="prprocedurestep">27.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>From the list of authenticators, select <span style="font-weight: bold;">Entrust IdentityGuard Password</span>.</p>
+
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="ssm_config_genselfadminops.jpg" id="image35" src="ssm_config_genselfadminops.jpg" width="332" height="297" border="0" name="image35" /></p>
+</div>
+<p class="prpprocedureparagraph">This setting lets <span class="output">mobileenroll</span>&#160;into the Administration pages of the Self-Service Web site using the Entrust IdentityGuard password you set up earlier. (Typically, you would ask for second-factor credentials such as a grid card to access this section of the site.)</p>
+
+<p class="prprocedurestep">28.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Validate &amp; Save.</span></p>
+
+<p class="prprocedurestep">29.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Restart the Self-Service Module (available from the Services panel on Windows, or by entering <span class="output">igselfservice.sh restart</span> from a command shell on UNIX).</p>
+
+<p class="prpprocedureparagraph">Now test that <span class="output">mobileenroll</span>can log in to Self-Service and access the Self-Administration pages:</p>
+
+<p class="prprocedurestep">30.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Access the Self-Service application. (available from the <span style="font-weight: bold;">Start</span>&#160;menu on Windows, or by entering <span class="output">https://&lt;SSM_host&gt;:8445/IdentityGuardSelfService</span>&#160;in a browser).</p>
+
+<p class="prprocedurestep">31.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Log in as <span class="output">mobileenroll</span>.</p>
+
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="ssm_app_login_mobilenroll.jpg" id="image36" src="ssm_app_login_mobilenroll.jpg" width="327" height="253" border="0" name="image36" /></p>
+</div>
+<p class="pparagraph">The <span style="font-weight: bold;">Self-Administration Actions</span> page appears.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="ssm_app_selfadmin_nodigid.jpg" id="image37" src="ssm_app_selfadmin_nodigid.jpg" width="362" height="262" border="0" name="image37" /></p>
+</div>
+<p class="pparagraph">Notice that there are no digital ID links on this page. You will be adding these in the next step.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

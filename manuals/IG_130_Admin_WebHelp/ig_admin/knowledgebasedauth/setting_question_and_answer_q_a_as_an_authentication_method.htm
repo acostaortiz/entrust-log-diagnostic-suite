@@ -1,0 +1,233 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\knowledgebasedauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Setting Question and Answer (Q&amp;A) as an authentication method</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nKnowledge-based authentication\nSet Q&A as an authentication method");
+addAvenueInfo("r13_std","ig_admin/knowledgebasedauth/configure_knowledge-based_authentication.htm","ig_admin/knowledgebasedauth/configuring_knowledge-based_question_policies.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"knowledge-based_authentication.htm\">Knowledge-based authentication<\/a> > Set Q&amp;A as an authentication method<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_14361_Setting_Question" id="XREF_14361_Setting_Question"></a>Set Q&amp;A as an authentication method</h1>
+<p class="pparagraph"><a name="IX_policies_4" id="IX_policies_4"></a>The Authentication Types policy sets the authentication methods available to users and your application. To allow knowledge-based authentication, ensure that the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Q&amp;A</span>&#160;(question and answer authentication) option is in the list of allowed authentication methods using the Administration interface. (<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Q&amp;A</span>&#160;is one of the authentication options available by default.)</p>
+<p class="pparagraph">Through the Authentication API, your client application can specify any method for second-factor authentication as long as that method is allowed by policy.</p>
+<p class="pparagraph"><a name="IX_question_and_answer" id="IX_question_and_answer"></a><a name="IX_knowledge_based_1" id="IX_knowledge_based_1"></a>There are two authentication levels you can set: normal and enhanced. You can set different authentication methods for each level.</p>
+<p class="pparagraph">For more on policies, see <a href="../config_policies/entrust_identityguard_policies_overview.htm#XREF_18464_Using_the_master">Entrust IdentityGuard policies overview</a>.</p>
+<p class="prtproceduretitle"><a name="XREF_82084_Modifying_policies" id="XREF_82084_Modifying_policies"></a>To view authentication policy</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Policies</span> on the menu bar.</p>
+
+<p class="prpprocedureparagraph">A list of all policies appears on the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">List Policies</span> tab.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click any policy name to view its policy information.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Policy</span> page appears and lists all policy settings.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Policy Category</span>, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Authentication Types</span> from the list.</p>
+
+<p class="prpprocedureparagraph">The policies for normal and enhanced security appear along with other authentication-related policies.</p>
+<p class="prtproceduretitle">To change authentication policy</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find the authentication policy to change.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Policy</span>&#160;page, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Edit Policy</span>.</p>
+
+<p class="prpprocedureparagraph">An editable version of the settings appears, and authentication methods are in one of two lists (<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Included</span>&#160;and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Not Included</span>). Buttons placed between the two lists allow you to move some or all options from one list to the other.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="AI-Policies-edit_policy-auth_types.jpg" id="image1" src="ai-policies-edit_policy-auth_types.jpg" width="547" height="669" border="0" name="image1" /></p>
+</div>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Complete one of the following to select authentication methods for the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Normal Security Authentication Types</span>&#160;and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Enhanced Security Authentication Types</span>:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To add Q&amp;A authentication if not already selected, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Q&amp;A</span>&#160;in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Not Included</span>&#160;list and click the right-arrow to move the option to the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Included</span> list.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To disable Q&amp;A authentication if in effect, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Q&amp;A</span>&#160;in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Included</span>&#160;list and click the left-arrow to move the option to the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Not Included</span> list.</p>
+
+<p class="prpprocedureparagraph">See <a href="../usingadmininterface/moving_items_between_option_lists.htm">Move items between option lists</a>&#160;for detailed instructions on moving options between the <span class="bold">Included</span>&#160;and <span class="bold">Not Included</span> lists.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Set the precedence of the Q&amp;A authentication method for normal security, enhanced security, or both:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Q&amp;A</span>&#160;in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Included</span> list.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click either the up-arrow to move <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Q&amp;A</span> up the list or click the down-arrow to move it lower in the list. Click the button once for each position you want the option to move.</p>
+
+<p class="prpprocedureparagraph">See <a href="../usingadmininterface/setting_option_precedence.htm">Set option precedence</a>&#160;for more information about precedence.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>After you make your policy changes, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Save Changes</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Policy</span> page reappears.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

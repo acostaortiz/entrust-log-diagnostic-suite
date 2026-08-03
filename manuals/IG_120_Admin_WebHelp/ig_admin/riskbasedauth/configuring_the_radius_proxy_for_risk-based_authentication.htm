@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\riskbasedauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring the Radius proxy for risk-based authentication</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nRisk-based authentication\nConfigure the Radius proxy for risk-based authentication");
+addAvenueInfo("Untitled02","ig_admin/riskbasedauth/updating_ip_data_files.htm","ig_admin/riskbasedauth/master_user_shell_commands_for_risk-based_authentication.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"riskbasedauth.htm\">Risk-based authentication<\/a> > Configure the Radius proxy for risk-based authentication<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_60962_Configuring_the" id="XREF_60962_Configuring_the"></a>Configure the Radius proxy for risk-based authentication</h1>
+<p class="pparagraph">Use the Radius proxy for risk-based authentication if you want to reject&#160;first- or second-factor authentication requests from blacklisted IP addresses, or if you want to use IP authentication to allow users to skip second-factor authentication.</p>
+<p class="nonote"><span class="bold">Note:</span> Entrust IdentityGuard supports only the IP/Geolocation portion of risk-based authentication through the Radius proxy.</p>
+<p class="prtproceduretitle">To configure the Radius proxy for risk-based authentication</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure the policy to be used with the Radius proxy to skip machine authentication and certificate authentication.</p>
+
+<p class="prpprocedureparagraph">The Radius proxy provides the IP address,&#160;but does not provide the information to support&#160;machine authentication or certificate authentication. For more information about changing the risk-based authentication policy, see <a href="configuring_risk-based_authentication_policies.htm#XREF_51267_Configuring_risk">Configuring risk-based authentication policies</a>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Login in to the Administration interface.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From the main menu, select <span class="bold">Policies</span>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From the list of policies, select the policy you want to modify.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From the <span class="bold">Policy Category</span> drop-down list, select <span class="bold">Risk-Based Authentication</span>., and then click <span class="bold">Edit Policy</span>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select a test and click <span class="bold">Modify Test</span>.</p>
+
+<p class="prpprocedureparagraph"><img src="../../ai-rba_with_radius-select_test_to_modify.png" alt="" style="border: none;" width="550" height="413" border="0" /></p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Clear the check boxes next to <span class="bold">Certificate Authentication</span> and <span class="bold">Machine Authentication</span>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">g.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold">Save Changes</span>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">h.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Repeat the procedure for all tests.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure the following properties for each VPN server.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Properties Editor.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From the table of contents, click <span class="bold">VPN Server Configuration</span>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure the following properties:</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">Use IP Risk Based Authentication</span>&#160;— Set to <span class="bold">True</span>, if you want the Radius proxy to apply risk-based authentication to users accessing Entrust IdentityGuard through a VPN server.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">IP Risk Based Authentication Security Level</span>&#160;— Choose the security level to be used: <span class="bold">Normal</span>&#160;or <span class="bold">Enhanced</span>.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>&#160;<span style="font-weight: bold;">IP Address Radius Attribute ID</span>&#160;— Set the Radius attribute to use to retrieve the IP address. The default selection for this property is <span style="font-weight: bold;">TUNNEL-CLIENT-ENDPOINT</span>.</p>
+
+<p class="lip2list2paragraph">The IP address must be a dot notation representation of a V4 IP address.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> <a name="IX_Radius_proxy_2" id="IX_Radius_proxy_2"></a>The VPN server must supply the attribute that retrieves the IP address. If your VPN server does not provide the user’s IP address in its authentication request to the Radius proxy, no risk-based assessment is possible.</p>
+<p class="liplistparagraph">For a complete Radius proxy description, see <a href="../usingpropeditor/radius_proxy_configuration.htm#XREF_76119_Radius_proxy">Radius Proxy Configuration</a>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold">Validate &amp; Save</span>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Restart the Entrust IdentityGuard Server service to have the changes take effect.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

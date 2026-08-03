@@ -1,0 +1,180 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Moving data between repositories</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nSpecifying multiple repositories\nMoving data between repositories");
+addAvenueInfo("Untitled02","ig_admin/config_igserver/configuring_token_and_grid_card_repositories.htm","ig_admin/config_igserver/preparing_the_new_data_repository.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"specifying_multiple_repositories.htm\">Specifying multiple repositories<\/a> > Moving data between repositories<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_21764_Moving_data" id="XREF_21764_Moving_data"></a>Moving data between repositories</h1>
+<p class="pparagraph"><a name="IX_migrate_data" id="IX_migrate_data"></a><a name="IX_migrating" id="IX_migrating"></a><a name="IX_data" id="IX_data"></a>It may be necessary to move data from one repository to another (sometimes referred to as data migration). In some cases, the new repository may be of a different type; that is, you may need to move data from a database to an LDAP repository, or the other way around.</p>
+<p class="pparagraph">The following procedures in this section describe how to move the various kinds of data stored in Entrust IdentityGuard from one repository to another:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="preparing_the_new_data_repository.htm">Prepare the new data repository</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="moving_users_from_one_repository_to_another.htm">Move users from one repository to another</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="moving_preproduced_grid_cards_from_one_repository_to_another.htm">Move preproduced grid cards from one repository to another</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="moving_unassigned_tokens_from_one_repository_to_another.htm">Move unassigned tokens from one repository to another</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="moving_policy_information_from_one_repository_to_another.htm">Move policy information from one repository to another</a></p>
+
+<p class="pparagraph">You may have created a new repository instance temporarily to migrate users to the new repository. For example, you created a new database instance to migrate users from one database to another database, or you created a new directory instance to migrate users from one directory to another directory. You can point the old repository instance to the new repository before removing the new repository instance: Ti do so, complete the following tasks:</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Modify the properties of the old directory or database repository instance to point to the new repository.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For a directory repository, see <a href="configuring_an_ldap_directory.htm#XREF_39364_Configuring_an">Configuring an LDAP directory</a> .</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For a database repository, see <a href="../config_logging/configuring_a_database.htm#XREF_45404_Configuring_a">Configuring a database</a>.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Move the groups back to the old repository instance:</p>
+
+<p class="cocode">group set &lt;groupname&gt; -repository -add &lt;old_repository&gt;</p>
+<p class="cocode">group set &lt;groupname&gt; -repository -remove &lt;new_repository&gt;</p>
+<p class="prpprocedureparagraph">Where:</p>
+<p class="prpprocedureparagraph"><span class="output">&lt;groupname&gt;</span>&#160;is the name of the group to which the repository is associated.</p>
+<p class="prpprocedureparagraph"><span class="output">&lt;old_repository&gt;</span> is the name of the old repository.</p>
+<p class="prpprocedureparagraph"><span class="output">&lt;new_repository&gt;</span> is the name of the new repository.</p>
+<p class="prpprocedureparagraph">For example:</p>
+<p class="cocode">group set example_group -repository -add old_repository</p>
+<p class="cocode">group set example_group -repository -remove new_repository</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) To remove the repository instance that you are no longer using, see <a href="removing_old_repository_definitions.htm">Remove old repository definitions</a>.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Use the <span class="output">repository list</span>&#160;command in the Master user shell at any time to see the names of all defined repositories and what kind of information can be stored in them. For detailed use of this command, see the <span style="font-style: italic;">Entrust IdentityGuard Master User Shell Command Reference</span>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

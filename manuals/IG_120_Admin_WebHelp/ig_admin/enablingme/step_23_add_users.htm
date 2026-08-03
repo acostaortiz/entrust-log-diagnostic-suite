@@ -1,0 +1,206 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Step 23: Add users</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 23: Add users");
+addAvenueInfo("Untitled02","ig_admin/enablingme/step_22_test_the_mobile_enrollment_configuration.htm","ig_admin/enablingme/step_24_set_up_a_front-end_web_server.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobile-enrollment-for-digital-ids.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > Step 23: Add users<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_99861_Add_users" id="XREF_99861_Add_users"></a>Step 23: Add users</h1>
+<p class="pparagraph">User accounts must be created in two systems:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust IdentityGuard*</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Security Manager CA (if you are using a Microsoft CA, there is no need to add users to this CA)</p>
+
+<p class="pparagraph">* These accounts must include email addresses for users who want secure email digital IDs.</p>
+<p class="pparagraph">There are two approaches to adding users (and email addresses):</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Have users add themselves (and their email addresses), on an as-needed basis.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Bulk-load them.</p>
+
+<p class="pparagraph">You can use a combination of these methods. For example, you can bulk-load user accounts, but have users add their email addresses themselves.</p>
+<p class="pparagraph">See the following sections for instructions:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_27292_To_have_users_add">To have users add themselves to Entrust IdentityGuard</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_13368_To_bulk_load_users">To bulk-load users into Entrust IdentityGuard</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_73071_To_have_users_add">To have users add themselves to Security Manager</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_23530_To_bulk_load_users">To bulk-load users into Security Manager</a></p>
+
+<p class="prtproceduretitle"><a name="XREF_27292_To_have_users_add" id="XREF_27292_To_have_users_add"></a>To have users add themselves to Entrust IdentityGuard</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure registration through Self-Service, and enable the <span style="font-weight: bold;">Create Entrust IdentityGuard User</span>&#160;property. This property is available in the Self-Service Configuration interface, under <span style="font-weight: bold;">Properties</span>&#160;&gt; <span style="font-weight: bold;">Generic JAAS Login Configuration</span>.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are deploying secure email digital IDs, perform these additional tasks:</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure registration to ask for an email address. You can configure this through the Self-Service Configuration interface, under <span style="font-weight: bold;">Registration</span>&#160;&gt; <span style="font-weight: bold;">Personal Information</span>. See the <span style="font-style: italic;">Self-Service Installation and Configuration Guide</span> for details on these properties and settings.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Ensure that users’ email addresses match what is in the <span style="font-weight: bold;">Email Domains</span>&#160;field in Self-Service. For example, if users’ email address look like this...</p>
+
+<p class="cocode"><span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">alice@company.com</span></p>
+<p class="cocode"><span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">alice@example.com</span></p>
+<p class="lip2list2paragraph">&#160;</p>
+<p class="prspsubprocedureparagraph">...then <span class="output">company.com</span>&#160;and <span class="output">example.com</span>&#160;must be listed in the <span style="font-weight: bold;">Email Domains</span>&#160;field. For details on this field, see <a href="step_19_configure_self-service_properties.htm#XREF_68407_To_configure">To configure general digital ID properties</a>.</p>
+<p class="prtproceduretitle"><a name="XREF_13368_To_bulk_load_users" id="XREF_13368_To_bulk_load_users"></a>To bulk-load users into Entrust IdentityGuard</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Bulk load the user accounts using the <span style="font-weight: bold;">Create users</span> bulk operation.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are deploying secure email digital IDs, do these additional tasks:</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Bulk load email addresses using the <span style="font-weight: bold;">Create contact information for users</span>&#160;bulk operation. For detailed instructions, see <a href="../bulkops/performing_bulk_operations_in_the_administration_interface.htm#XREF_99727_Performing_bulk">Performing bulk operations in the Administration interface</a>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Ensure that users email addresses match what is in the <span style="font-weight: bold;">Email Domains</span>&#160;field in Self-Service. For example, if users’ email address look like this:</p>
+
+<p class="cocode"><span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">alice@company.com</span></p>
+<p class="cocode"><span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">alice@example.com</span></p>
+<p class="lip2list2paragraph">&#160;</p>
+<p class="prspsubprocedureparagraph">...then <span class="output">company.com</span>&#160;and <span class="output">example.com</span>&#160;must be listed in the <span style="font-weight: bold;">Email Domains</span>&#160;field. For details on this field, see <a href="step_19_configure_self-service_properties.htm#XREF_68407_To_configure">To configure general digital ID properties</a>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> You can use one data file for both operations. The file would contain columns for user account and contact information. The chosen bulk operation ignores any columns that it does not need to use.</p>
+<p class="prtproceduretitle"><a name="XREF_73071_To_have_users_add" id="XREF_73071_To_have_users_add"></a>To have users add themselves to Security Manager</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enable <span style="font-weight: bold;">Create User If Not Exists</span>&#160;in the digital ID configuration.&#160;See <a href="step_10_add_a_digital_id_configuration.htm#XREF_58495_Add_a_digital_ID">Step 10: Add a digital ID configuration</a> for details.</p>
+
+<p class="prpprocedureparagraph">When <span style="font-weight: bold;">Create User If Not Exists</span>&#160;is enabled, when users click the <span style="font-weight: bold;">I’d like to request a digital ID</span>&#160;link in Self-Service, a user account is created for them in Security Manager if one does not exist yet. The user and corresponding digital ID are created using the building blocks specified in the digital ID configuration.</p>
+<p class="prtproceduretitle"><a name="XREF_23530_To_bulk_load_users" id="XREF_23530_To_bulk_load_users"></a>To bulk-load users into Security Manager</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Bulk-load users using Security Manager Administration. For details, see the bulk operations section of the <span style="font-style: italic;">Entrust Authority Security Manager Administration User Guide</span>.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\outofbandauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Security considerations for using multiple OTPs</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nOut-of-band one-time password authentication\nOut-of-band one-time password overview\nSecurity considerations for using multiple OTPs");
+addAvenueInfo("r13_std","ig_admin/outofbandauth/out-of-band_otp_options.htm","ig_admin/outofbandauth/worksheet_for_enabling_out-of-band_one-time_password.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"out-of-band_otp_authentication.htm\">Out-of-band one-time password authentication<\/a> > <a href=\"out-of-band_one-time_password_overview.htm\">Out-of-band one-time password overview<\/a> > Security considerations for using multiple OTPs<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_80000_Security" id="XREF_80000_Security"></a>Security considerations for using multiple OTPs</h1>
+<p class="pparagraph">In the default operation of one-time password delivery, an OTP is delivered only when needed for authentication, and the OTP has a lifetime of only three minutes.</p>
+<p class="pparagraph">When each user has multiple valid OTPs at the same time, you need to take extra care to minimize the risks of the OTPs being stolen.</p>
+<p class="pparagraph">To make use of the benefits of having multiple OTPs, set the OTP lifetime policy to a much longer time—an OTP may be valid for days or weeks. In addition, because all valid OTPs owned by a particular user have the same expiry date, if the number of OTPs is large enough, and the OTP lifetime long enough, it is possible that a specific OTP can be valid indefinitely.</p>
+<p class="pparagraph">When you configure out-of-band OTP authentication, consider the following security risks and employ a strategy to minimize them.</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+<col style="width: 50%;" />
+<col style="width: 50%;" />
+<tr class="t1st">
+<th>
+<p class="tahtableheader">Security risk</p>
+</th>
+<th>
+<p class="tahtableheader">Ways to minimize the risk</p>
+</th>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext">More valid OTPs means it may be easier for an attacker to guess the OTP.</p>
+</td>
+<td class="last">
+<p class="tattabletext">Make the OTPs longer. A 6-digit OTP is more difficult to guess than a 4-digit OTP.</p>
+<p class="tattabletext">Increase the OTP alphabet to increase the number of possible combinations of characters.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext">Longer OTP lifetimes may give an attacker time to cycle through many OTPs and come up with a valid OTP.</p>
+</td>
+<td class="last">
+<p class="tattabletext">Balance the number of OTPs each person has against the lifetime of the OTPs so that users are likely to cycle through all their OTPs within the OTP lifetime.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext">Users will have emails on their computers and text messages on their SMS devices that contain valid OTPs.</p>
+</td>
+<td class="last">
+<p class="tattabletext">Users must keep their computers secure, and ensure that their mobile&#160;phones are not left where they might be compromised.</p>
+</td>
+</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

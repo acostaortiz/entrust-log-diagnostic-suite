@@ -1,0 +1,211 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Overview of the Key Store Management tab</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nManaging certificates in the key store\nManage certificates using the Key Store Management tab\nOverview of the Key Store Management tab");
+addAvenueInfo("Untitled02","ig_admin/config_security/manage_certificates_using_the_key_store_management_tab.htm","ig_admin/config_security/check_for_certificates_nearing_expiry.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"managing_certificates_in_the_key_store.htm\">Managing certificates in the key store<\/a> > <a href=\"manage_certificates_using_the_key_store_management_tab.htm\">Manage certificates using the Key Store Management tab<\/a> > Overview of the Key Store Management tab<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Overview of the Key Store Management tab</h1>
+<p class="pparagraph">If your Entrust IdentityGuard installation uses the 
+ embedded Tomcat application server, the Administration interface includes 
+ a <span class="bold">Key Store Management </span>interface .</p>
+<p class="pparagraph">Use the Key Store Management tab to perform certificate-related 
+ functions such as replacing the self-signed tomcat certificate and tracking 
+ and updating certificates that are about to expire. </p>
+<p class="pparagraph">To see the Key Store Management interface, select 
+ <span class="bold">System</span> from the top menu, and then select the<span 
+	 class="bold"> Key Store Management</span> tab. </p>
+<p class="nonote"><span class="bold">Note:</span> &#160;To use this feature, 
+ you must log in to the Administration interface with an account that includes 
+ the <span class="bold">keystoreManage</span> permission (in the <span 
+	 class="bold">Application-Specific</span> permissions category). The 
+ <span class="bold">superuser</span> role is the only built-in role that 
+ has this permission enabled by default.</p>
+<p class="pparagraph"><img src="../../ai-key_store_mgmt_list.png" alt="" style="border: none;" width="700" height="176" border="0" /></p>
+<p class="pparagraph">The Key Store Contents table contains two sections: 
+ <span class="bold">Private Keys</span> and <span class="bold">Trusted 
+ Certificates</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Each row 
+ in the <span class="bold">Private Keys</span> list represents a key pair. 
+ Each key pair contains a private key that is kept on the Entrust IdentityGuard 
+ server, and a public key, which is stored in a certificate and often signed 
+ by a Certificate Authority (CA). The public key is given out freely. Together 
+ these two keys enable secure communication between a server and its clients 
+ using server-authenticated SSL. The <span class="bold">tomcat</span> entry 
+ contains the Entrust IdentityGuard server's private key and its associated 
+ public certificate.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Each row 
+ in the <span class="bold">Trusted Certificates</span> list contains certificates 
+ that have been imported into Entrust IdentityGuard. Those can include 
+ an Entrust Root Certificate, the root certificates of other CAs, some 
+ intermediate certificates that complete the validation chain between your 
+ CA-signed tomcat server certificate and the Entrust Root Certificate, 
+ and the SSL server certificates of external services that the Entrust 
+ IdentityGuard server needs to interact with. When you add an external 
+ certificate, your Entrust IdentityGuard server requires that you trust 
+ it. When the certificate is trusted, Entrust IdentityGuard is able to 
+ communicate with other servers whose public certificates match those in 
+ your key store. </p>
+<h3>Certificate details</h3>
+<p class="pparagraph">The list shows summary information for each entry 
+ in the table. To see detailed information about a selected certificate, 
+ click the down arrow <img src="../../ai-key_store_mgmt_expand_icon.png" alt="" style="border: none;" border="0" /> 
+ in the <span class="bold">Actions</span> column. The detailed information 
+ includes:</p>
+<p class="liflistbulletfirst"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Expiry Date</span> as found in the summary row but expanded 
+ to include the time in addition to the date.</p>
+<p class="liflistbulletfirst"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Subject (Owner)</span> The distinguished name (DN) as 
+ found in the summary row.</p>
+<p class="liflistbulletfirst"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Issue Date </span>The date and time that the certificate 
+ was issued.</p>
+<p class="liflistbulletfirst"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Issuer </span>The distinguished name of the issuer.</p>
+<p class="liflistbulletfirst"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Signature Algorithm</span>. The hashing algorithm (for 
+ example, SHA1), along with the public key encryption algorithm (for example, 
+ RSA).</p>
+<p class="liflistbulletfirst"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Serial Number</span> of the certificate.</p>
+<p class="liflistbulletfirst"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Fingerprint </span>The certificate fingerprints using 
+ MD5, SHA-1, and SHA-256.</p>
+<p class="prpprocedureparagraph"><img src="../../key_store_dropdown.png" alt="" style="border: none;" width="500" height="436" border="0" /></p>
+<p class="prpprocedureparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

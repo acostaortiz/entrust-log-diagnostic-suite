@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\biometricauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Biometric states overview</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nBiometric authentication\nBiometric states overview");
+addAvenueInfo("Untitled","ig_admin/biometricauth/overview_of_authenticating_with_fingerprint_biometrics.htm","ig_admin/biometricauth/configuring_biometric_authentication.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"biometricauth.htm\">Biometric authentication<\/a> > Biometric states overview<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_86204_Biometric_states"></a>Biometric states overview</h1>
+<p class="pparagraph">There are two types of biometrics states: enrollment 
+ states and activation states. These states are described in the tables 
+ that follow.</p>
+<p class="pparagraph">Enrollment states</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 10.629%;" />
+	<col style="width: 89.371%;" />
+	<tr class="t1st">
+		<th><p class="tahtableheader">Enrollment state</p></th>
+		<th><p class="tahtableheader">Description</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Enrolled</p></td>
+		<td class="last"><p class="tattabletext">Enrolled means that the 
+		 user has successfully enrolled&#160;the required fingerprints 
+		 (usually through self-service and the fingerprint enrollment client).</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Not Enrolled</p></td>
+		<td class="last"><p class="tattabletext">Not enrolled means that 
+		 biometric&#160;metadata has been created for a user biometric 
+		 by an administrator, (using&#160;the <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Create 
+		 Biometric</span>&#160;command in the Administration interface 
+		 or the <span class="output" style="font-family: Courier; font-style: normal; 
+						 font-weight: normal; font-size: 10.0pt; color: #000000; 
+						 letter-spacing: 0.00em; text-decoration: none; ">user 
+		 biometric create</span>&#160;command in the Master User Shell), 
+		 but the user has not yet enrolled fingerprints using the fingerprint 
+		 enrollment client.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Enrolling</p></td>
+		<td class="last"><p class="tattabletext">Enrolling means that the 
+		 user is in the process of enrolling fingerprints using the fingerprint 
+		 enrollment client, but the client has not yet reported the result.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Enroll Failed</p></td>
+		<td class="last"><p class="tattabletext">Enroll Failed means that 
+		 a fingerprint enrollment session was started but it was not completed 
+		 successfully.</p></td>
+	</tr>
+</table>
+<p class="pparagraph">Activation states</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 10.629%;" />
+	<col style="width: 89.371%;" />
+	<tr class="t1st">
+		<th><p class="tahtableheader">Activation state</p></th>
+		<th><p class="tahtableheader">Description</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Active</p></td>
+		<td class="last"><p class="tattabletext">’Active’&#160;means the 
+		 user has successfully enrolled fingerprint biometrics with IdentityGuard 
+		 through self-service and the biometrics can be used for authentication.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Inactive</p></td>
+		<td class="last"><p class="tattabletext">’Inactive’ means the user 
+		 has successfully enrolled fingerprint biometrics with IdentityGuard 
+		 through self-service and the fingerprint enrollment client but 
+		 is awaiting approval by an administrator. For more information 
+		 about approval of biometrics, see <a href="approving_user_biometrics.htm">Approve 
+		 user biometrics</a>.</p>
+		<p class="tattabletext">When the biometric is in the inactive state, 
+		 it cannot be used for authentication.</p></td>
+	</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

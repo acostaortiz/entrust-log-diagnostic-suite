@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Token Vendor Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nToken Vendor Configuration (20)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/system_logging_appenders.htm","ig_admin/usingpropeditor/transaction_component_and_callback_settings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Token Vendor Configuration (20)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_vendor"></a><a name="IX_configuring_token_vendor"></a><a 
+	 name="IX_properties_15"></a><a name="IX_settings_4"></a><a name="XREF_37917_Token_permissions"></a>Token 
+ Vendor Configuration</h1>
+<p class="pparagraph">These properties control the configuration of token 
+ vendors and the repositories for unassigned tokens. For information about 
+ managing tokens, see <a href="..\tokenauth\Token_authentication_overview.htm#XREF_48756_Using_tokens_for">Token 
+ authentication overview</a>. For additional token-related properties, 
+ see <a href="../config_radius_proxy/customizing_vpn_challenge_strings.htm#XREF_81548_Customizing_VPN">Customizing 
+ VPN challenge strings</a>. Also see <a href="../tokenauth/configuring_token_vendors.htm#XREF_35144_Configuring_token">Configuring 
+ token vendors</a> for more details and to view a snapshot of the properties.</p>
+<p class="pparagraph">During installation of Entrust IdentityGuard, you 
+ are asked what token vendor you plan to use for authentication. Based 
+ on your choice, the installer sets these properties.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instances</a></span></p>
+<div class="droptext" id="POPUP545246266" style="display: none;">
+	<p class="lip2list2paragraph">Provides a list of token configurations.</p>
+	<p class="lip2list2paragraph">To create a new instance, enter a unique 
+	 name (100 characters or less) in the empty field and click <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Add</span>. 
+	 The other properties appear.</p>
+	<p class="lip2list2paragraph">To delete an instance, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+							 text-decoration: none; ">Remove</span>.</p>
+	<p class="lip2list2paragraph">Default: Entrust</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Token 
+ Vendor Implementation Class</a></span></p>
+<div class="droptext" id="POPUP545093908" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.token.&lt;vendor&gt;.impl</span></p>
+	<p class="lip2list2paragraph">Sets the Java class name of the token 
+	 library. You can select <span class="bold" style="letter-spacing: .em;">Entrust</span><span 
+	 style="font-weight: bold;">Token</span>, <span class="bold" style="letter-spacing: .em;">Entrust 
+	 Soft Token</span>, <span style="font-weight: bold;">Entrust Display</span><span 
+	 class="bold" style="letter-spacing: .em;">Card,</span> <span class="bold">Watchdata 
+	 QRO</span>, <span class="bold">OATH Token</span> or <span class="bold" 
+	 style="letter-spacing: .em;">Custom</span>.</p>
+	<p class="lip2list2paragraph">If you select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: .em; 
+														 text-decoration: none; ">Custom</span>, 
+	 enter the custom Java class name in the field that appears. (Used 
+	 only in highly advanced custom installations.)</p>
+	<p class="lip2list2paragraph">Default: Entrust</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Token 
+ Vendor Display Name</a></span></p>
+<div class="droptext" id="POPUP544876142" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.token.&lt;vendor&gt;.name</span></p>
+	<p class="lip2list2paragraph">Provides a unique display name for the 
+	 token type or vendor. The name appears in the Administration interface 
+	 and can appear in your client application.</p>
+	<p class="lip2list2paragraph">Default: the instance name</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Token Vendor</a></span></p>
+<div class="droptext" id="POPUP541949573" style="display: none;">
+	<p class="liplistparagraph"><span class="output">identityguard.token.&lt;vendor&gt;.default</span></p>
+	<p class="lip2list2paragraph">Determines if the token vendor named 
+	 in the configuration instance is used as the default when no vendor 
+	 is specified. Set this to <span class="bold" style="font-weight: bold; 
+									 letter-spacing: .em; text-decoration: none; ">True 
+	 </span>for the token vendor to use as the default.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Token 
+ Vendor Configuration File</a></span></p>
+<div class="droptext" id="POPUP541932320" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.token.&lt;vendor&gt;.configfile</span></p>
+	<p class="lip2list2paragraph">Provides the name and location of the 
+	 token configuration file, if it is required by the token vendor. This 
+	 file is used only for special vendor-specific settings.</p>
+	<p class="lip2list2paragraph">For Entrust tokens and Entrust soft tokens, 
+	 this property is set by default. The file, <span class="output" style="font-family: Courier; 
+														 font-style: normal; 
+														 font-weight: normal; 
+														 font-size: 9.pt; 
+														 color: #; letter-spacing: .em; 
+														 text-decoration: none; ">entrusttoken.conf</span>, 
+	 is located:</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 UNIX <span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 9.pt; color: #; letter-spacing: .em; 
+				 text-decoration: none; ">$IG_HOME/etc</span></p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 Windows <span class="output" style="font-family: Courier; font-style: normal; 
+					 font-weight: normal; font-size: 9.pt; color: #; letter-spacing: .em; 
+					 text-decoration: none; ">&lt;$IG_HOME&gt;\etc</span></p>
+	<p class="lip2list2paragraph">For other tokens, set this property only 
+	 if you need to use a configuration file.</p>
+	<p class="nonote"><span class="bold">Note:</span> You can use a file 
+	 similar to the Entrust configuration file for Entrust DisplayCard 
+	 tokens as well (use the Entrust DisplayCard setting), except that 
+	 the <span style="font-family: Courier;">resetClockWindow</span> parameter 
+	 is not supported.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP545246266');
+	TextPopupInit('a2','POPUP545093908');
+	TextPopupInit('a3','POPUP544876142');
+	TextPopupInit('a4','POPUP541949573');
+	TextPopupInit('a5','POPUP541932320');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

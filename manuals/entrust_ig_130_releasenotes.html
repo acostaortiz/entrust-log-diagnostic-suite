@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrust IdentityGuard Server v13.0 - Notas de la Versión (Release Notes)</title>
+  <style>
+    :root {
+      --primary: #0a3d6d;
+      --secondary: #0284c7;
+      --accent: #d32f2f;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #cbd5e1;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      margin: 0;
+      padding: 24px;
+    }
+    .header {
+      background: linear-gradient(135deg, #0a3d6d 0%, #0f172a 100%);
+      color: #ffffff;
+      padding: 24px 30px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .header h1 { margin: 0 0 8px 0; font-size: 1.8rem; }
+    .header p { margin: 0; opacity: 0.9; font-size: 0.95rem; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: #d32f2f;
+      color: #fff;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    h2 { color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-top: 0; }
+    h3 { color: var(--secondary); margin-top: 18px; margin-bottom: 8px; }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 8px; }
+    code {
+      background: #e2e8f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.9em;
+      color: #b91c1c;
+    }
+    .alert-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--secondary);
+      padding: 12px 16px;
+      margin: 14px 0;
+      border-radius: 0 6px 6px 0;
+    }
+    .warning-box {
+      background: #fef2f2;
+      border-left: 4px solid var(--accent);
+      padding: 12px 16px;
+      margin: 14px 0;
+      border-radius: 0 6px 6px 0;
+    }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 10px; border: 1px solid var(--border); text-align: left; font-size: 0.9rem; }
+    th { background: #f1f5f9; color: var(--primary); }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Entrust® IdentityGuard Server Release 13.0</h1>
+    <p>Documento de Referencia Oficial de Notas de la Versión, Novedades, Requisitos de Sistema y Errores Conocidos</p>
+    <span class="badge">DOCUMENT ISSUE 1.0 — DIC 2020</span>
+  </div>
+
+  <!-- 1. RESUMEN Y NUEVAS CARACTERÍSTICAS -->
+  <div class="section" id="sec-novedades">
+    <h2>1. Nuevas Características y Mejoras (New Features)</h2>
+    
+    <h3>Integración con CAs adicionales a través de Entrust CA Gateway (IDG-12004)</h3>
+    <p>IdentityGuard 13.0 se integra con Entrust CA Gateway, permitiendo el uso de cualquier Entidad Certificadora (CA). Se ha certificado formalmente la integración con <strong>Microsoft Active Directory Certificate Services (Microsoft CA)</strong>.</p>
+
+    <h3>Migración de Framework CXF 3.3.5 en reemplazo de Axis 1.4 (IDG-2451)</h3>
+    <p>Se reemplazó Axis 1.4 por Apache CXF 3.3.5 para resolver vulnerabilidades de seguridad. <strong>Nota de Compatibilidad:</strong> CXF utiliza WSS4J 1.6 en lugar de WSS4J 1.5.x, lo que requiere actualizar clientes WS-Security antiguos.</p>
+
+    <h3>Visualización Mejorada de Cuentas y Autenticadores Bloqueados (IDG-13095)</h3>
+    <p>La consola de administración resalta las fechas de desbloqueo automático en <code>ROJO</code> si están vigentes (bloqueado) o en <code>VERDE</code> si ya expiraron (desbloqueado).</p>
+
+    <h3>Soporte para HTTP Strict Transport Security - HSTS (IDG-12030)</h3>
+    <p>El Editor de Propiedades permite activar HSTS para proteger contra ataques de degradación TLS (SSL stripping). Al activarse, las cabeceras HTTP fuerzan HTTPS en el navegador.</p>
+  </div>
+
+  <!-- 2. CAMBIOS Y DESCONTINUACIONES -->
+  <div class="section" id="sec-cambios">
+    <h2>2. Cambios Importantes y Compatibilidad Descontinuada</h2>
+    <div class="warning-box">
+      <strong>⚠️ ATENCIÓN SOBRE PLATAFORMAS DESCONTINUADAS:</strong>
+      <ul>
+        <li><strong>Plataformas UNIX Descontinuadas:</strong> Se elimina el soporte para Solaris y AIX. Entrust IdentityGuard 13.0 se ejecuta exclusivamente en <strong>Linux (RHEL 7.x/8.x 64-bit)</strong> y <strong>Windows Server (2012 R2, 2016, 2019 64-bit)</strong>.</li>
+        <li><strong>Servidores de Aplicación Descontinuados:</strong> Se elimina el soporte para IBM WebSphere y Oracle WebLogic. Solo se soporta el servidor embebido <strong>Apache Tomcat 8.5.57</strong> con <strong>AdoptOpenJDK 11.0.8_10 (64-bit)</strong>.</li>
+        <li><strong>Herramientas Retiradas:</strong> Se retiraron los ejecutables legados <code>igclean.exe</code> e <code>igcustomize.exe</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 3. CORRECCIONES DE ERRORES (FIXED) -->
+  <div class="section" id="sec-correcciones">
+    <h2>3. Correcciones de Errores Relevantes (Fixed Issues)</h2>
+    <ul>
+      <li><strong>IDG-10081 / IDG-11135:</strong> Corregido el mensaje engañoso <code>"Connection test failed Cause: null"</code> al verificar el RDN de políticas en Active Directory durante la instalación en Windows.</li>
+      <li><strong>IDG-13119:</strong> Restricción corregida para que el comando <code>Authenticate Smart Credential</code> solo permita credenciales móviles push y no tarjetas físicas de plástico.</li>
+      <li><strong>IDG-13117 & IDG-12118:</strong> Corregida la verificación de bloqueo en comandos de administración para tokens Soft y Smart Credentials tras ventanas de auto-desbloqueo.</li>
+      <li><strong>IDG-12029:</strong> Corregido el manejo de la política "Disable Challenge Retention" en tokens Challenge/Response (TOKENCR).</li>
+      <li><strong>IDG-11476:</strong> Agregado registro detallado de logs si la contraseña del keystore SAML o clave privada es incorrecta en el inicio del servicio.</li>
+    </ul>
+  </div>
+
+  <!-- 4. ERRORES CONOCIDOS Y REMEDIACIONES -->
+  <div class="section" id="sec-errores-conocidos">
+    <h2>4. Errores Conocidos y Remediaciones Técnicas (Known Issues)</h2>
+
+    <h3>IDG-14962: Fallo al Inicializar Réplica desde Backup Completo</h3>
+    <div class="alert-box">
+      <strong>Síntoma:</strong> Al crear un nodo Réplica en Windows usando un backup completo del nodo primario, la inicialización falla.<br>
+      <strong>Solución:</strong> Utilizar siempre un <strong>backup parcial</strong> generado desde el nodo primario para inicializar réplicas.
+    </div>
+
+    <h3>IDG-11176 / IDG-13717: Excepción en Linux por Fuentes Faltantes (AdoptOpenJDK 11)</h3>
+    <div class="alert-box">
+      <strong>Síntoma:</strong> Fallos al generar informes y Smart Credentials en Red Hat Linux.<br>
+      <strong>Solución:</strong> Ejecutar en terminal como root: <code>yum install fontconfig</code> y reiniciar el servicio <code>identityguard</code>.
+    </div>
+
+    <h3>IDG-11529: Errores de Conexión a Base de Datos tras Actualización a Java 11</h3>
+    <div class="alert-box">
+      <strong>Síntoma:</strong> Incompatibilidad del driver JDBC tras migrar a AdoptOpenJDK 11.<br>
+      <strong>Solución:</strong> Actualizar los drivers JDBC de la base de datos (p. ej. Microsoft SQL Server Driver o Oracle JDBC) compatibles con Java 11.
+    </div>
+
+    <h3>IDG-15116: Error de Flujo de Certificado en Credenciales Móviles PIV/PIV-I</h3>
+    <div class="alert-box">
+      <strong>Log:</strong> <code>Caused by: com.entrust.idcard.encode.EncodingException: Invalid 'key backup' certificate stream policy setting...</code><br>
+      <strong>Solución:</strong> Habilitar la opción <em>"Archive subject's encryption private key"</em> en la plantilla PIV de Microsoft CA o seleccionar la plantilla PIV-C.
+    </div>
+
+    <h3>IDG-14983: Fallos en Entrega OOB SMS por TLS 1.2</h3>
+    <div class="alert-box">
+      <strong>Síntoma:</strong> Fallo al enviar SMS de un solo uso (OTP) si la pasarela externa requiere TLS 1.0/1.1.<br>
+      <strong>Solución:</strong> Entrust 13.0 exige TLS 1.2 por defecto. Configurar el gateway externo para soportar TLS 1.2 o degradar la versión según la Guía de Administración.
+    </div>
+  </div>
+
+  <!-- 5. REQUISITOS MÍNIMOS DE SISTEMA -->
+  <div class="section" id="sec-requisitos">
+    <h2>5. Requisitos Mínimos de Sistema (System Requirements)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Componente</th>
+          <th>Requisito Mínimo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Sistemas Operativos</strong></td>
+          <td>Windows Server 2012 R2, 2016, 2019 (64-bit) | Red Hat Enterprise Linux 7.x, 8.x (64-bit)</td>
+        </tr>
+        <tr>
+          <td><strong>Java / Runtime</strong></td>
+          <td>AdoptOpenJDK 11.0.8_10 (64-bit incluido)</td>
+        </tr>
+        <tr>
+          <td><strong>Servidor Web</strong></td>
+          <td>Apache Tomcat 8.5.57 embebido</td>
+        </tr>
+        <tr>
+          <td><strong>Memoria RAM</strong></td>
+          <td>4 GB Mínimo (Se recomienda ampliar según volumen de usuarios)</td>
+        </tr>
+        <tr>
+          <td><strong>Disco Duro</strong></td>
+          <td>5 GB de espacio libre para instalación y reportes de auditoría</td>
+        </tr>
+        <tr>
+          <td><strong>Bases de Datos Compatibles</strong></td>
+          <td>PostgreSQL 9.5-12 | MS SQL Server 2012-2019 | MySQL 5.6-8.0 | Oracle DB 12c-19c</td>
+        </tr>
+        <tr>
+          <td><strong>Directorios LDAP</strong></td>
+          <td>Microsoft Active Directory 2012-2019 | AD LDS | OpenLDAP 2.4.50 | Oracle DS 11g</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\usingAdminInterface.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Using the Master user shell</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nUsing the Master user shell");
+addAvenueInfo("r13_std","ig_admin/usingadmininterface/set_your_browser_to_trust_the_entrust_identityguard.htm","ig_admin/config_policies/configuring_policies.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > Using the Master user shell<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1><a name="XREF_32785_Using_the_master" id="XREF_32785_Using_the_master"></a>Using 
+ the Master user shell</h1>
+<p class="pparagraph">Most of your day-to-day administration tasks can 
+ be performed in the Administration interface as described in this guide. 
+ For some of the tasks you will perform less frequently, you must use the 
+ Master user shell.&#160;</p>
+<p class="pparagraph">For more information about using the Master user 
+ shell commands and detailed descriptions of all the Master user shell 
+ commands, see the <span style="font-style: italic;">Entrust IdentityGuard 
+ Master User Shell Reference</span>.</p>
+<p class="prtproceduretitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><a 
+	 name="IX_starting_on_UNIX" id="IX_starting_on_UNIX"></a><a name="XREF_31719_To_start_the" 
+	 id="XREF_31719_To_start_the"></a>To start the Master user shell on 
+ Linux</a></p>
+<div class="droptext" id="POPUP703283894" style="display: none;">
+	<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+	 in to the Entrust IdentityGuard server as the user who owns the Entrust 
+	 IdentityGuard installation.</p>
+	<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Change 
+	 to <span class="output" style="font-family: 'Courier New'; font-style: normal; 
+				 font-weight: normal; font-size: 10.0pt; color: #000000; 
+				 letter-spacing: 0.00em; text-decoration: none; ">$IG_HOME</span> 
+	 (usually <span class="output" style="font-family: 'Courier New'; font-style: normal; 
+					 font-weight: normal; font-size: 10.0pt; color: #000000; 
+					 letter-spacing: 0.00em; text-decoration: none; ">/opt/entrust/identityguard101</span>).</p>
+	<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+	 <span class="output" style="font-family: 'Courier New'; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; ">$IG_HOME</span>, source the environment 
+	 settings file by typing:</p>
+	<p class="cocode"><span style="font-weight: bold;">. .</span>/env_settings.sh</p>
+	<p class="prpprocedureparagraph">(Include a space between the two periods 
+	 in the command.)</p>
+	<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+	 start the Master user shell, enter:</p>
+	<p class="cocode"><a name="IX_supersh" id="IX_supersh"></a>supersh</p>
+	<p class="prpprocedureparagraph">Copyright information and the Entrust 
+	 IdentityGuard version number appear, followed by a command prompt.</p>
+</div>
+<p class="prtproceduretitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><a 
+	 name="IX_starting_on_Windows" id="IX_starting_on_Windows"></a><a name="XREF_90546_To_start_the" 
+	 id="XREF_90546_To_start_the"></a>To start the Master user shell on 
+ Windows</a></p>
+<div class="droptext" id="POPUP703320737" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+	 <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Start</span> &gt;<span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">&#160;</span><span 
+	 style="font-weight: bold;">All Programs</span> &gt; <span style="font-weight: bold;">Entrust</span> 
+	 &gt; <span style="font-weight: bold;">IdentityGuard</span> &gt; <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Master 
+	 User Shell</span>.</p>
+	<p class="prpprocedureparagraph">Copyright information and the Entrust 
+	 IdentityGuard version number appear, followed by a command prompt.</p>
+</div>
+<p class="prpprocedureparagraph">&#160;</p>
+<p class="prtproceduretitle"><a name="IX_logging_in" id="IX_logging_in"></a><a 
+	 name="XREF_27980_To_log_in_to_the" id="XREF_27980_To_log_in_to_the"></a>To 
+ log in to the Master user shell</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ log in to the Master user shell, enter:</p>
+<p class="cocode"><a name="IX_login_command" id="IX_login_command"></a>login</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>At 
+ the prompt, enter your user name (<span class="output" style="font-family: 'Courier New'; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Master1</span>, 
+ <span class="output" style="font-family: 'Courier New'; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; ">Master2</span>, or <span class="output" 
+															 style="font-family: 'Courier New'; 
+															 font-style: normal; 
+															 font-weight: normal; 
+															 font-size: 10.0pt; 
+															 color: #000000; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Master3</span>). 
+ User names are case-sensitive.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>At 
+ the prompt, enter your password. Passwords are case-sensitive.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The Master 
+ user shell does not display your password as you type it.</p>
+<p class="pparagraph">Log out of the Master user shell whenever you have 
+ completed your session, or when leaving the Entrust IdentityGuard server 
+ unattended.</p>
+<p class="prtproceduretitle"><a name="IX_logging_out_1" id="IX_logging_out_1"></a><a 
+	 name="IX_logging_out" id="IX_logging_out"></a>To log out of the Master 
+ user shell</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ log out of the Master user shell, enter:</p>
+<p class="cocode"><a name="IX_logout_command" id="IX_logout_command"></a>logout</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ exit the Master user shell, enter:</p>
+<p class="cocode"><a name="IX_exit" id="IX_exit"></a><a name="IX_exit_command" 
+														 id="IX_exit_command"></a>exit</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> You can 
+ also exit the Master user shell without typing the <span class="output" 
+															 style="font-family: 'Courier New'; 
+															 font-style: normal; 
+															 font-weight: normal; 
+															 font-size: 10.0pt; 
+															 color: #000000; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">logout</span>&#160;command.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP703283894');
+	TextPopupInit('a2','POPUP703320737');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

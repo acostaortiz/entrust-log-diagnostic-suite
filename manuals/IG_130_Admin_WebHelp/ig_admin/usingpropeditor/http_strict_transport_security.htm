@@ -1,0 +1,237 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>HTTP Strict Transport Security</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nHTTP Strict Transport Security");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > HTTP Strict Transport Security<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>HTTP Strict Transport Security</h1>
+<p class="pparagraph">This properties group provides an option to enable 
+ HTTP Strict Transport Security (HSTS), a web security technique that offers 
+ protection against TLS downgrade attacks. TLS downgrade attacks (also 
+ known as SSL stripping attacks) are a form of man-in-the-middle attack 
+ in which the attacker tricks the victim's browser into communicating with 
+ Entrust IdentityGuard over HTTP rather than the more secure HTTPS protocol. 
+ </p>
+<p class="pparagraph">HSTS prevents attacks by including a header in HTTP 
+ responses that tells the browser to require HTTPS on future connections 
+ to this server. A web browser ignores the HTTP Strict-Transport-Security 
+ header directive if the current TLS connection has any warnings or errors, 
+ or if it used a self-signed certificate. HSTS is a &quot;trust-on-first-use&quot; 
+ or &quot;ratcheting&quot; mechanism, meaning that a browser is still vulnerable 
+ during its first connection to a site, but subsequent connections are 
+ protected. For more information, see RFC 6797. </p>
+<p class="pparagraph">Entrust Datacard recommends enabling HSTS, but has 
+ chosen to have the HSTS properties disabled by default. Enabling HSTS 
+ introduces some risk that the service becomes unusable, and therefore 
+ requires extra care and attention while administering the site's TLS configuration. 
+ For example, if the server's TLS certificate expires, or if revocation 
+ information cannot be fetched, when users attempt to access the Administration 
+ interface, their browsers will display a message stating that the page 
+ is untrusted and they cannot proceed.</p>
+<p class="pparagraph">When the <span class="bold">Enable HTTP Strict Transport 
+ Security</span> property is set to <span class="bold">True</span>, the 
+ specified HTTP Strict-Transport-Security header with selected values is 
+ applied to the Properties Editor and the Administration Interface.</p>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Enable HTTP Strict 
+ Transport Security</a></p>
+<div class="droptext" id="POPUP657355441" style="display: none;">
+	<p class="RefItemBody"><span class="output">igsss.hsts.enabled</span></p>
+	<p class="RefItemBody">This property specifies whether the Entrust 
+	 IdentityGuard Properties Editor and Administration interface should 
+	 set the Strict-Transport-Security HTTP header when delivering content 
+	 to a browser.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />HTTP Strict-Transport-Security 
+ Max Age</a></p>
+<div class="droptext" id="POPUP657332520" style="display: none;">
+	<p class="RefItemBody"><span class="output">igsss.hsts.maxage</span></p>
+	<p class="RefItemBody">The time, in seconds, that the browser should 
+	 remember that a site is only to be accessed using HTTPS. The default 
+	 value is 31536000 seconds (365 days).</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />HTTP Strict-Transport-Security 
+ Include Sub Domains</a></p>
+<div class="droptext" id="POPUP657309930" style="display: none;">
+	<p class="RefItemBody"><span class="output">igsss.hsts.includesubdomains</span></p>
+	<p class="RefItemBody">If the optional<span class="bold"> Enable HTTP 
+	 Strict Transport Security</span> setting is enabled, this property 
+	 specifies whether HSTS should apply to all of the site's sub-domains.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />HTTP Strict-Transport-Security 
+ preload</a></p>
+<div class="droptext" id="POPUP657272918" style="display: none;">
+	<p class="RefItemBody"><span class="output">igsss.hsts.preload</span></p>
+	<p class="RefItemBody">Google maintains an HSTS preload service. By 
+	 following the guidelines and successfully submitting a request to 
+	 the domain where the Entrust IdentityGuard server is hosted, browsers 
+	 never connect to the same domain using an insecure connection. While 
+	 the service is hosted by Google, all browsers have stated an intent 
+	 to use (or actually started using) the preload list. Note that this 
+	 functionality is not part of the HSTS specification.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a4','POPUP657355441');
+	TextPopupInit('a3','POPUP657332520');
+	TextPopupInit('a2','POPUP657309930');
+	TextPopupInit('a1','POPUP657272918');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

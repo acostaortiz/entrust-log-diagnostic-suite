@@ -1,0 +1,271 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_logging.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>View historical audits in the Administration interface</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring logging and auditing\nView historical audits in the Administration interface");
+addAvenueInfo("r13_std","ig_admin/config_igserver/configure_an_audit_database.htm","ig_admin/config_logging/view_real-time_audits_in_the_audit_monitor.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"configuring_logging_and_auditing.htm\">Configuring logging and auditing<\/a> > View historical audits in the Administration interface<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_58997_Viewing_audits_in" id="XREF_58997_Viewing_audits_in"></a>View 
+ historical audits in the Administration interface</h1>
+<p class="pparagraph">This section describes how to use the capabilities 
+ of the Administration interface to search for and display audit data stored 
+ in the audit database.</p>
+<p class="pparagraph">To view audits, you need to have configured a database 
+ to capture audits. For more information, see <a href="../config_igserver/configure_an_audit_database.htm#XREF_79673_Configuring_an">Configuring 
+ an audit database</a>.</p>
+<p class="prtproceduretitle"><a name="XREF_77798_To_find_audits_to" id="XREF_77798_To_find_audits_to"></a>To 
+ find audits to view in the Administration interface</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Administration interface (<a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+ in and out of the Administration interface</a>).</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">System</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Find 
+ audits</span> screen appears (if auditing is configured).&#160;You use 
+ this screen to search for the exact audits you want to display.</p>
+<div style="width: 52.548%;">
+	<p class="prpprocedureparagraph"><img alt="AI-Audits-find_audits.jpg" id="image5" src="ai-audits-find_audits.jpg" name="image5" width="553" height="267" border="0" /></p>
+</div>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ search for audits based on their target type and operation, select <span 
+	 style="font-weight: bold;">Target Type and Operation</span>. The audits 
+ record operations like create or delete on the various items or structures 
+ (such as user or token) in Entrust IdentityGuard.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the <span style="font-weight: bold;">Target Type</span>&#160;drop down 
+ menu, select the target type. Examples of Entrust IdentityGuard targets 
+ include <span style="font-weight: bold;">User</span>, <span style="font-weight: bold;">Role</span>, 
+ <span style="font-weight: bold;">Report</span>, <span style="font-weight: bold;">Unassigned 
+ Token</span>, and <span style="font-weight: bold;">Policy</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the <span style="font-weight: bold;">Operation</span>&#160;drop down menu, 
+ select the operation. Examples of operations are <span style="font-weight: bold;">Assign</span>, 
+ <span style="font-weight: bold;">Authenticate</span>, <span style="font-weight: bold;">Create</span>, 
+ <span style="font-weight: bold;">Delete</span>, <span style="font-weight: bold;">Import</span>, 
+ and <span style="font-weight: bold;">Modify</span>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ search for specific audits, select <span style="font-weight: bold;">Individually 
+ by Category</span>.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Audit 
+ Categories</span> list box appears.</p>
+<div style="width: 51.513%;">
+	<p class="prpprocedureparagraph"><img alt="AI-Audits-find_audits2.jpg" id="image6" src="../../ai-audits-find_audits2.png" name="image6" width="550" height="560" border="0" /></p>
+</div>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ one or more audit categories from the list.</p>
+<p class="prspsubprocedureparagraph">All of the audits in that category 
+ appear in another list box.</p>
+<div style="width: 53.662%;">
+	<p class="prpprocedureparagraph"><img alt="AI-Audits-find_audits3.jpg" id="image7" src="ai-audits-find_audits3.jpg" name="image7" width="552" height="543" border="0" /></p>
+</div>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the right-hand window displaying the individual audits, select one or 
+ more audits to display.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the <span style="font-weight: bold;">Audit Date</span>&#160;drop down 
+ menu, select the date range of the audits you want to find. If you select 
+ custom date range, you can select the start and end dates for the search.</p>
+<p class="prpprocedureparagraph">If you do not make a selection, all audits 
+ that match the operation and target type criteria are displayed.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Show 
+ Advanced Options</span> to specify more search criteria.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Advanced 
+ audit search options</span> panel appears.</p>
+<p class="prpprocedureparagraph">You can use all or none of the search 
+ options in the <span style="font-weight: bold;">Advanced audit search 
+ options</span> screen.</p>
+<div style="width: 53.264%;">
+	<p class="prpprocedureparagraph"><img alt="AI-Audits-find_audits-advanced.jpg" id="image8" src="../../ai-audits-find_audits-advanced.jpg" name="image8" width="552" height="354" border="0" /></p>
+</div>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Administrator Name Generating Audit</span>&#160;— Enter the user name of the administrator 
+ whose audits you want to see.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Administrator Group Generating Audit</span>&#160;— Enter the group the administrator 
+ generating the audits belongs to.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Computer Host Generating Audit</span>&#160;— Enter the name of the computer 
+ host the audits came from.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Service Generating Audit</span>&#160;— Select the service the audits 
+ are generated from. The choices are: Master User Shell, Administration 
+ Service, Web Administration, Authentication Service, Properties Editor, 
+ Radius Proxy, and Windows Configuration Utility.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Audit Level</span>&#160;— Choose one of INFO, WARN or ERROR.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Audit Target Group</span> — Enter the name of the group for 
+ which you want to view audits. If the audit involves a user or something 
+ associated with a user like an assigned card or token, then the target 
+ group is that user's group.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Audit Target Name</span>&#160;— Enter the name of the target 
+ for the audits you want to see. If the audit is a user-based audit, the 
+ target is the user name; if the audit is about a group, then the target 
+ is the group name, and so on.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Audit Target Sub-Name</span>&#160;— Enter the sub-name of the target 
+ for the audits you want to see. Not all audits include sub-names. An example 
+ of an audit that does is a create or delete audit for a user’s grid. In 
+ this example, the target name is the user name, and the target sub-name 
+ is the serial number of the grid.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Audit Message Contains</span>&#160;— Enter a text string to search 
+ the audit file for. Audits containing the search string are displayed. 
+ Audit text searches can be slow if your system has a large number of audits, 
+ so it is recommended that this search be used only if it is difficult 
+ to find the information using other search criteria.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Audit Sequence Number</span>&#160;— Enter the exact sequence numbers 
+ or the range or sequence numbers to search for in the audit file. Each 
+ audit is automatically assigned a sequence number when it is generated. 
+ The oldest audits have the lowest sequence numbers, so the most recently 
+ generated audits are those with the highest sequence numbers.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Search</span>.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Search 
+ results</span> screen<span style="font-weight: bold;">&#160;</span>appears. 
+ The <span style="font-weight: bold;">Number</span>&#160;column displays 
+ the audit sequence number.</p>
+<div style="width: 51.274%;">
+	<p class="prpprocedureparagraph"><img alt="AI-Audits-find_audits-search_results.jpg" id="image9" src="ai-audits-find_audits-search_results.jpg" name="image9" width="552" height="284" border="0" /></p>
+</div>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

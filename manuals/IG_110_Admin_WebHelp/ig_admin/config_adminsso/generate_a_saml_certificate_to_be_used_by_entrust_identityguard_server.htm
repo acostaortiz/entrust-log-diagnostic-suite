@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Generate a SAML certificate to be used by Entrust IdentityGuard Server</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nConfiguring SAML authentication to the Administration interface\nConfigure SAML login to the Administration  interface\nGenerate a SAML certificate to be used by Entrust IdentityGuard Server");
+addAvenueInfo("Untitled","ig_admin/config_adminsso/prerequisites.htm","ig_admin/config_adminsso/import_the_federation_module_web_certificate.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/useradminsection1.htm#TOC_System_administration\">System administration<\/a> > <a href=\"saml_authentication_to_the_administration_interface.htm\">Configuring SAML authentication to the Administration interface<\/a> > <a href=\"configuring_saml.htm\">Configure SAML login to the Administration  interface<\/a> > Generate a SAML certificate to be used by Entrust IdentityGuard Server<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_88205_Generate_SAML_keys"></a>Generate a SAML certificate 
+ to be used by Entrust IdentityGuard Server</h1>
+<p class="prtproceduretitle">To generate a SAML certificate to be used 
+ by Entrust IdentityGuard Server</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Decide 
+ on the type of SAML certificate you want. You have these options:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>You can 
+ generate new <span style="font-style: italic;"><i>self-signed </i></span>certificate 
+ (and a corresponding key pair) dedicated to encrypt and sign SAML messages. 
+ This option should only be used in test environments. If you choose this 
+ option, go to Step 2.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>You can 
+ generate new <span style="font-style: italic;"><i>Certification Authority 
+ (CA)-signed</i></span>&#160;certificate (and a corresponding key pair) to 
+ encrypt and sign SAML messages. This option can be used in live environments. 
+ If you choose this option, go to <a href="#XREF_77099_3_If_in_step_1_you"><span 
+	 class="hyperlink" style="font-family: Syntax; font-style: normal; 
+	 font-weight: normal; color: #0000ff; letter-spacing: 0.00em; text-decoration: none; "><font color="blue" >Step&#160;3</font></span></a>. 
+ </p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If, 
+ in Step 1, you decided to use a new, self-signed SAML certificate and 
+ keys, complete the following steps:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>On 
+ the Entrust IdentityGuard Server, open the keytool utility in</p>
+<p class="prspsubprocedureparagraph"><span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">$IG_HOME/jre&lt;version&gt;/bin</font></span>&#160;(Unix), 
+ </p>
+<p class="prspsubprocedureparagraph"><span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;$IG_HOME&gt;\jre&lt;version&gt;\bin</font></span> 
+ (Windows).</p>
+<p class="prprocedurestep" style="
+margin-bottom:3.000pt; margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Generate 
+ the key pairs using this command:</p>
+<p class="cocode">keytool -genkeypair -alias &lt;alias&gt; -dname &quot;&lt;required 
+ DN&gt;&quot; -keyalg RSA -keysize &lt;keysize&gt; -keystore &lt;path_to_keystore&gt; 
+ -keypass entrust -storepass entrust</p>
+<p class="prspsubprocedureparagraph">where:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;alias&gt;</font></span>&#160;is 
+ a short name you want to associate with your Entrust IdentityGuard Server’s 
+ SAML certificate. This guide assumes <span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">igsaml</font></span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;required_DN&gt;</font></span>&#160;is 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&quot;cn=&lt;FQDN&gt;&quot;</font></span>&#160;where 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;FQDN&gt;</font></span>&#160;is the fully-qualified 
+ domain name of the Entrust IdentityGuard Server.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;keysize&gt;</font></span>&#160;is 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">1024</font></span>&#160;or <span class="output" 
+															 style="font-family: Courier; 
+															 font-style: normal; 
+															 font-weight: normal; 
+															 font-size: 10.0pt; 
+															 color: #000000; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">2048</font></span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;path_to_keystore&gt;</font></span>&#160;is 
+ the name and path of the Entrust IdentityGuard Server’s keystore, which 
+ is <span class="output" style="font-family: Courier; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;$IG_HOME&gt;\etc\keystore</font></span>, 
+ by default. If you specify a different keystore from the default, supported 
+ file extensions are: JKS, JCK (for a JCEKS type of store), and P12 (for 
+ a PKCS#12 type of store). If no file extension is provided, JKS is used.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">-keypass</font></span>&#160;sets 
+ the password for the certificate and keys. This guide assumes <span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">entrust</font></span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">-storepass</font></span>&#160;is 
+ the password for the keystore specified by -keystore. If you are using 
+ the existing <span class="output" style="font-family: Courier; font-style: normal; 
+					 font-weight: normal; font-size: 10.0pt; color: #000000; 
+					 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;$IG_HOME&gt;\etc\keystore</font></span>, 
+ the password is <span class="output" style="font-family: Courier; font-style: normal; 
+						 font-weight: normal; font-size: 10.0pt; color: #000000; 
+						 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">entrust.</font></span></p>
+<p class="prspsubprocedureparagraph">Example:</p>
+<p class="cocode">keytool -genkeypair -alias igsaml -dname &quot;cn=igserver.yourorg.com&quot; 
+ -keyalg RSA -keysize 2048 -keystore &quot;C:\Program Files\Entrust\IdentityGuard\<br />
+identityguard102\etc\keystore&quot; -keypass entrust -storepass entrust</p>
+<p class="prprocedurestep" style="
+margin-bottom:3.000pt; margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Export 
+ the certificate to a CER file, for later use. </p>
+<p class="prspsubprocedureparagraph">Example:</p>
+<p class="cocode">keytool -exportcert -v -keystore &quot;C:\Program Files\Entrust\IdentityGuard\identityguard102\etc\keystore&quot; 
+ -alias igsaml -file &quot;c:\igsaml.cer&quot;</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a 
+	 name="XREF_77099_3_If_in_step_1_you"></a>If, in step 1, you decided 
+ to use a new, CA-signed SAML certificate and keys, complete the following 
+ steps:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>On 
+ the Entrust IdentityGuard Server, open the keytool utility. It is available 
+ in <span class="output" style="font-family: Courier; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">$IG_HOME/jre&lt;version&gt;/bin</font></span>&#160;(Unix), 
+ </p>
+<p class="prspsubprocedureparagraph"><span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;$IG_HOME&gt;\jre&lt;version&gt;\bin</font></span> 
+ (Windows).</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-family: 'Times New Roman'; font-size: 12.0pt;"><font size="3" style="font-size:12pt;">G</font></span>enerate 
+ a key pair using the keytool. </p>
+<p class="prspsubprocedureparagraph">Example:</p>
+<p class="cocode">keytool -genkeypair -alias igsaml -dname &quot;cn=igserver.example.com&quot; 
+ -keyalg RSA -keysize 2048 -keystore &quot;c:\Program Files\Entrust\IdentityGuard\<br />
+identityguard102\etc\keystore&quot; -keypass entrust -storepass entrust</p>
+<p class="prspsubprocedureparagraph">where:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;alias&gt;</font></span>&#160;is 
+ a short name you want to associate with your Entrust IdentityGuard Server’s 
+ SAML certificate. This guide assumes <span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">igsaml</font></span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;required_DN&gt;</font></span>&#160;is 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&quot;cn=&lt;FQDN&gt;&quot;</font></span>&#160;where 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;FQDN&gt;</font></span>&#160;is the fully-qualified 
+ domain name of the Entrust IdentityGuard Server.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;keysize&gt;</font></span>&#160;is 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">1024</font></span>&#160;or <span class="output" 
+															 style="font-family: Courier; 
+															 font-style: normal; 
+															 font-weight: normal; 
+															 font-size: 10.0pt; 
+															 color: #000000; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">2048</font></span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;path_to_keystore&gt;</font></span>&#160;is 
+ the name and path of the Entrust IdentityGuard Server’s keystore, which 
+ is <span class="output" style="font-family: Courier; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;$IG_HOME&gt;\etc\keystore</font></span>, 
+ by default. If you specify a different keystore from the default, supported 
+ file extensions are: JKS, JCK (for a JCEKS type of store), and P12 (for 
+ a PKCS#12 type of store). If no file extension is provided, JKS is used.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">-keypass</font></span>&#160;sets 
+ the password for the certificate and keys. This guide assumes <span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">entrust</font></span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">-storepass</font></span>&#160;is 
+ the password for the keystore specified by -keystore. If you are using 
+ the existing <span class="output" style="font-family: Courier; font-style: normal; 
+					 font-weight: normal; font-size: 10.0pt; color: #000000; 
+					 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;$IG_HOME&gt;\etc\keystore</font></span>, 
+ the password is <span class="output" style="font-family: Courier; font-style: normal; 
+						 font-weight: normal; font-size: 10.0pt; color: #000000; 
+						 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">entrust.</font></span></p>
+<p class="prspsubprocedureparagraph">Example:</p>
+<p class="cocode">keytool -genkeypair -alias igsaml -dname &quot;cn=igserver.yourorg.com&quot; 
+ -keyalg RSA -keysize 2048 -keystore &quot;C:\Program Files\Entrust\IdentityGuard\<br />
+identityguard102\etc\keystore&quot; -keypass entrust -storepass entrust</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Create 
+ a Certificate Signing Request (CSR). </p>
+<p class="prspsubprocedureparagraph">Example:</p>
+<p class="cocode">keytool -certreq -alias igsaml -file &quot;c:\igsamlCSR.txt&quot; 
+ -keystore &quot;c:\Program Files\Entrust\<br />
+IdentityGuard\identityguard102\etc\keystore&quot; -storepass entrust</p>
+<p class="prprocedurestep" style="
+margin-bottom:3.000pt; margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Go to 
+ <span class="WWWhyperlink" style="font-family: Syntax; font-size: 10.0pt; 
+		 text-decoration: underline; "><font size="2" style="font-size:10pt;"><u><a href="http://www.entrust.net" 
+											 target="_blank">http://www.entrust.net</a></u></font></span>. 
+ On this Web site, you can submit your CSR, and Entrust will give you back 
+ a certificate that is signed by its CA. Copy the certificate displayed 
+ on-screen to a file. For example:</p>
+<p class="prspsubprocedureparagraph"><span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">c:\igsaml.cer</font></span></p>
+<p class="prprocedurestep" style="
+margin-bottom:3.000pt;
+font-family:Times New Roman; margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Import 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">igsaml.cer </font></span>to the Entrust IdentityGuard 
+ Server’s keystore. </p>
+<p class="prspsubprocedureparagraph">Example:</p>
+<p class="cocode">keytool -importcert -alias igsaml -file &quot;c:\igsaml.cer&quot; 
+ -keystore &quot;c:\Program Files\Entrust\IdentityGuard\<br />
+identityguard102\etc\keystore&quot; -storepass entrust</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Export 
+ all the CA certificates in the certificate chain to file. To do this: 
+ double-click the <span class="output" style="font-family: Courier; font-style: normal; 
+						 font-weight: normal; font-size: 10.0pt; color: #000000; 
+						 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">igsaml.cer</font></span>&#160;on 
+ a Windows computer. Click <span style="font-weight: bold;">Certification 
+ Path</span>. Click the top-most certificate in the chain. That is the 
+ root CA. Any others are intermediate CAs. The certificate at the bottom 
+ is <span class="output" style="font-family: Courier; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">igsaml.cer</font></span>. With the root 
+ CA selected, click <span style="font-weight: bold;">View Certificate</span>. 
+ Click <span style="font-weight: bold;">Details</span>. Click <span style="font-weight: bold;">Copy 
+ to File</span>. Click <span style="font-weight: bold;">Next</span>&#160;through 
+ the wizard, selecting <span style="font-weight: bold;">DER encoded binary 
+ X.509 (.CER) </span>and selecting a name and location for the file, for 
+ example: <span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 10.0pt; color: #000000; 
+				 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">c:\igsamlRootCA.cer</font></span>. 
+ Repeat for each intermediate CA, giving them distinct file names such 
+ as</p>
+<p class="prspsubprocedureparagraph"><span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">c:\igsamlIntermediateCA1.cer</font></span>, 
+ and</p>
+<p class="prspsubprocedureparagraph"><span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">c:\igsamlIntermediateCA2.cer</font></span>. 
+ </p>
+<p class="prprocedurestep" style="
+margin-bottom:3.000pt; margin-left: 70px;">g.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Import 
+ each CA CER file to the Entrust IdentityGuard Server’s keystore, using 
+ different aliases for each. </p>
+<p class="prspsubprocedureparagraph">Example:</p>
+<p class="cocode">keytool -importcert -alias igsamlRootCA -trustcacerts 
+ -file &quot;c:\igsamlRootCA.cer&quot; -keystore &quot;c:Program Files\Entrust\IdentityGuard\identityguard102\etc\keystore&quot; 
+ -storepass entrust</p>
+<p class="prpprocedureparagraph">After completing step 2 or step 3, you 
+ have a SAML certificate and keys that will be used by Entrust IdentityGuard 
+ Server (the SP) to secure SAML messages for the Federation Module (the 
+ IDP).</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

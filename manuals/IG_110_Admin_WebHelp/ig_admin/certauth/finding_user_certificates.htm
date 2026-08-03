@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\certauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Finding user certificates</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nCertificate authentication\nAdministering user certificates\nFind user certificates");
+addAvenueInfo("Untitled","ig_admin/certauth/importing_and_assigning_user_certificates.htm","ig_admin/certauth/changing_user_certificates.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"certauth.htm\">Certificate authentication<\/a> > <a href=\"administering_user_certificates.htm\">Administering user certificates<\/a> > Find user certificates<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_85872_Assigning_user"></a><a name="XREF_67635_Finding_user"></a>Find 
+ user certificates</h1>
+<p class="pparagraph">You can find specific user certificates, or you can 
+ find users by their certificate information.</p>
+<p class="prtproceduretitle">To find user certificates</p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Administration interface (<a href="../usingadmininterface/logging_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging 
+ in and out of the Administration interface</a>).</p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Certificates</span>.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">List 
+ user certificates</span> screen appears.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-Certificates-find_user_certs00471.jpg" id="image15" src="ai-certificates-find_user_certs00471.jpg" width="552" height="499" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You can specify any or all of the search criteria 
+ to search for user certificates with specific characteristics.</p>
+<p class="FM_prsssubprocedurestart"><span class="FM_Procnum">a<span style="word-spacing: normal; 
+	 font: 6.0pt 'Times New Roman';">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;</span></span>To 
+ search by subject DN, enter the DN in <span style="font-weight: bold;">Subject 
+ DN</span>. </p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To search by issuer 
+ DN, enter the DN in <span style="font-weight: bold;">Issuer DN</span>. 
+ </p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To search by the 
+ certificate serial number, enter the serial number in Serial Number. Wild 
+ card characters are allowed.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To search for only 
+ active or only inactive user certificates, select <span style="font-weight: bold;">Active</span>&#160;or 
+ <span style="font-weight: bold;">Inactive</span>&#160;in the <span style="font-weight: bold;">States 
+ Include</span> list box.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find certificates 
+ belonging to users who have no certificates in a specific state, select 
+ the state from the <span style="font-weight: bold;">States Don’t Include</span>&#160;list. 
+ Hold down the Ctrl key to select more than one state.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To search on whether 
+ the certificate is self-signed, select <span style="font-weight: bold;">Yes</span>&#160;or 
+ <span style="font-weight: bold;">No</span>&#160;beside <span style="font-weight: bold;">Certificate 
+ is Self-Signed</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To search on whether 
+ the certificate was issued by an unregistered CA, select <span style="font-weight: bold;">Yes</span>&#160;or 
+ <span style="font-weight: bold;">No</span>&#160;beside <span style="font-weight: bold;">Issued 
+ by an Unregistered CA</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">g.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To search for certificates 
+ issued by specific CAs, select the desired CA from the <span style="font-weight: bold;">Issued 
+ by</span> list box.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">h.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To search by issue 
+ date, expiry date, assigned date, or last used date, select the time range 
+ from the corresponding drop-down menus. If<span style="font-weight: bold;"> 
+ </span>you select <span style="font-weight: bold;">Custom date range</span>, 
+ you can choose specific dates using the date selectors or the calendar 
+ icons.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>When searching 
+ on <span style="font-weight: bold;">Last Used</span>&#160;date using the 
+ custom date range, if a start date is specified, then the search will 
+ not list certificates that have never been used. If a start date is not 
+ specified for the search, the search list includes certificates that have 
+ never been used.</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Search</span>.</p>
+<p class="prtproceduretitle"><a name="XREF_prt_To_display_assigned"></a>To 
+ find users by their certificate information </p>
+<li><div>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt; 
+	 <span class="bold">Administration Interface</span>.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;UNIX 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="liplistparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="liplistparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="liplistparagraph">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="liplistparagraph"></p>
+</div>
+
+
+</div></li>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">User 
+ Accounts</span>.</p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Find 
+ Accounts</span>.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Find 
+ existing user accounts</span> screen appears.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_user_account_info.jpg" id="image16" src="ai-user_account-find_accounts_-_user_account_info.jpg" width="552" height="359" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select <span style="font-weight: bold;">Has 
+ a certificate with the characteristics below</span>.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Certificate 
+ characteristics</span> pane appears.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_certificateFull.jpg" id="image17" src="ai-user_account-find_accounts_-_certificatefull.jpg" width="552" height="364" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter the search information.</p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Find 
+ Accounts</span>.</p>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If there are accounts matching the certificate 
+ criteria you entered, a <span style="font-weight: bold;">Search Results</span> 
+ screen appears.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-Certificates-find_users_by_certs.jpg" id="image18" src="ai-certificates-find_users_by_certs.jpg" width="552" height="134" border="0" /> 
+	 </p>
+</div>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

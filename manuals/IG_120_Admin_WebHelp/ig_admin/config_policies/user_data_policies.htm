@@ -1,0 +1,308 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_policies.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>User Data policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nPolicies quick reference\nUser Data policies");
+addAvenueInfo("Untitled02","ig_admin/config_policies/transaction_policies.htm","ig_admin/config_logging/audited_event_reference.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"policies_quick_reference.htm\">Policies quick reference<\/a> > User Data policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_28894_User_data_policies" id="XREF_28894_User_data_policies"></a>User 
+ Data policies</h1>
+<p class="pparagraph">These policies cover miscellaneous user specification 
+ features.</p>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Aliases</a></p>
+<div class="droptext" id="POPUP611962781" style="display: none;">
+	<p class="RefItemBody">Sets the maximum number of application user 
+	 names to be mapped to a Entrust IdentityGuard user ID. A reasonable 
+	 default number is set to ensure that capacity issues are not encountered. 
+	 A setting of 0 means no aliases are allowed.</p>
+	<p class="RefItemBody">Default: 5</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Include 
+ User Information in Challenge</a></p>
+<div class="droptext" id="POPUP614573992" style="display: none;">
+	<p class="RefItemBody">Determines whether the grid challenge or token 
+	 includes information about a user. Examples of the information displayed 
+	 are a grid or token serial number or and indicator of whether the 
+	 user has a temporary PIN. Displaying this information provides a form 
+	 of mutual authentication.</p>
+	<p class="nonote"><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Note</span>: This 
+	 may reveal additional information to an attacker.</p>
+	<p class="RefItemBody">Default: Yes (selected)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Contact Info Entries</a></p>
+<div class="droptext" id="POPUP617698639" style="display: none;">
+	<p class="RefItemBody">Sets the maximum number of contact references 
+	 (email addresses, phone numbers, OTP delivery solutions) to store 
+	 for each user. It must be greater than zero. If the setting is 0, 
+	 users cannot have contact information.</p>
+	<p class="RefItemBody">Default: 10</p>
+	<p class="nonote"><span style="font-weight: bold;">Note:</span>&#160;When 
+	 creating a user from an LDAP-compliant directory, the number of contact 
+	 information entries is not checked. An error message is displayed 
+	 when you modify or update the user’s account at a later time.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />User 
+ Registration Password Lifetime</a></p>
+<div class="droptext" id="POPUP616803430" style="display: none;">
+	<p class="RefItemBody">The lifetime, in minutes, associated with an 
+	 internally generated password that authenticates a request to activate 
+	 a smart credential, activate a soft token online, or submit fingerprint 
+	 biometric data.&#160;The maximum is 36,500 minutes.</p>
+	<p class="RefItemBody">Default: 10 minutes</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />User 
+ Registration Password Length</a></p>
+<div class="droptext" id="POPUP616732090" style="display: none;">
+	<p class="RefItemBody">The length of a user registration password, 
+	 in bytes. This is an automatically generated password that is used 
+	 internally by Entrust IdentityGuard, therefore, there are no usability 
+	 concerns to offset the increased security associated with a long password 
+	 length.</p>
+	<p class="RefItemBody">Default: 16 bytes</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Federations per User</a></p>
+<div class="droptext" id="POPUP618020479" style="display: none;">
+	<p class="RefItemBody">The maximum number of SAML service providers 
+	 with which the IdentityGuard users in this group can federate.</p>
+	<p class="RefItemBody">Default: 10</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of User Preferences</a> </p>
+<div class="droptext" id="POPUP618968155" style="display: none;">
+	<p class="RefItemBody">An example of a user preference is a saved report 
+	 query. </p>
+	<p class="RefItemBody">By default, each administrator can store up 
+	 to 50 user preferences.&#160;If you set this policy to zero, the user 
+	 cannot have any user preferences.</p>
+	<p class="RefItemBody">Default: 50</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Characters in a User Preference </a></p>
+<div class="droptext" id="POPUP619436364" style="display: none;">
+	<p class="RefItemBody">This policy defines the size limit of each search 
+	 criteria preference, in characters, stored by Entrust IdentityGuard 
+	 for reporting. </p>
+	<p class="RefItemBody">Default: 5000</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of User Access Groups</a></p>
+<div class="droptext" id="POPUP621088011" style="display: none;">
+	<p class="RefItemBody">This policy defines the maximum number of user 
+	 access groups to which an Entrust IdentityGuard user can belong. </p>
+	<p class="RefItemBody"><span>Default: 5</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Access Groups</a></p>
+<div class="droptext" id="POPUP678620748" style="display: none;">
+	<p class="RefItemBody">This policy lets you define the user access 
+	 groups to which Entrust IdentityGuard users can belong. The access 
+	 groups names are string-based values, similar to role or Entrust IdentityGuard 
+	 group names. There is no maximum number of user access groups that 
+	 can be added to the policy.</p>
+</div>
+
+
+</div>
+<p class="RefItemBody">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP611962781');
+	TextPopupInit('a2','POPUP614573992');
+	TextPopupInit('a3','POPUP617698639');
+	TextPopupInit('a4','POPUP616803430');
+	TextPopupInit('a5','POPUP616732090');
+	TextPopupInit('a6','POPUP618020479');
+	TextPopupInit('a7','POPUP618968155');
+	TextPopupInit('a8','POPUP619436364');
+	TextPopupInit('a9','POPUP621088011');
+	TextPopupInit('a10','POPUP678620748');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

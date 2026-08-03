@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\gridauthentication.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Creating grid cards</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nGrid authentication\nCreating grid cards");
+addAvenueInfo("Untitled02","ig_admin/gridauthentication/configuring_grid_card_export_properties.htm","ig_admin/gridauthentication/approach_1_creating_preproduced_grid_cards_for_printing.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"gridauthentication.htm\">Grid authentication<\/a> > Creating grid cards<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_43805_Forcing_card_or" id="XREF_43805_Forcing_card_or"></a><a name="XREF_14975_Configuring" id="XREF_14975_Configuring"></a><a name="XREF_85148_Creating_cards" id="XREF_85148_Creating_cards"></a>Creating grid cards</h1>
+<p class="pparagraph">Entrust IdentityGuard offers you multiple approaches to grid card creation:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Approach 1: Create the grid cards in Entrust IdentityGuard and then print them (the preproduction model).&#160;See <a href="approach_1_creating_preproduced_grid_cards_for_printing.htm">Approach 1: Create preproduced grid cards for printing</a>.</p>
+
+<p class="liplistparagraph">With this approach, you create the digital versions of the grid cards in Entrust IdentityGuard, and then you have them printed out using a printer of your choosing. Once printed, you can begin assigning grids to users.</p>
+<p class="liplistparagraph"><a name="IX_preproduction_1" id="IX_preproduction_1"></a><a name="IX_creating_7" id="IX_creating_7"></a>Use this option to preproduce the grids so that you can assign them to users later. You may prefer to create and configure grid cards independently of user management activities, for example, if you want to have the grid cards manufactured before assigning them to users.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Approach 2: Obtain grid cards from Entrust and then add them to Entrust IdentityGuard (a variation on the preproduction model). See <a href="approach_2_loading_preproduced_cards_from_entrust.htm">Approach 2: Load preproduced cards from Entrust</a>.</p>
+
+<p class="liplistparagraph">With this approach, Entrust sends you a box of pre-printed physical grid cards, along with a CSV file containing the equivalent grids in digital format. You must load the CSV into Entrust IdentityGuard, and once this task is complete, you can begin assigning grids to users.</p>
+<p class="liplistparagraph">Use this option if you would prefer to have the grid card printing handled by Entrust instead of your organization.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Approach 3: Create a single grid card and assign it to an existing user (the produce and assign model). See <a href="approach_3_creating_a_grid_card_for_a_specific_user.htm">Approach 3: Create a grid card for a specific user</a>.</p>
+
+<p class="liplistparagraph">Use this option if you want to create grid cards on demand.</p>
+<p class="pparagraph"><a name="IX_partition_1" id="IX_partition_1"></a>You can create grids in multiple partitions. You can create grids from any site or replica repository as long as your replica sites and your “master site” create grids in different partitions. </p>
+<p class="pparagraph">When creating grid cards, the following occurs:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The grid is associated with a group.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>An entry containing the card information and grid is stored in a repository.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optionally, the grid card is assigned to a user.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The grid card’s lifetime is set when assigned to a user.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The preproduced grid card must belong in the same group as the user to whom it will be assigned. If it does not, you cannot assign the grid card to that user.</p>
+<p class="pparagraph">In order to complete these procedures, administrators must have the correct role permissions. See <a href="configuring_grid_card_policies.htm#XREF_19582_Setting_up_grid">Configuring grid card policies</a>&#160;for a list of all role permissions relating to grids.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

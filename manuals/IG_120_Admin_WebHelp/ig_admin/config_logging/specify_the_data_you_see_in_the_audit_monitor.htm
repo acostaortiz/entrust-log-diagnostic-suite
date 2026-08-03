@@ -1,0 +1,316 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Specify the data you see in the Audit Monitor</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring logging and auditing\nView real-time audits in the Audit Monitor\nSpecify the data you see in the Audit Monitor");
+addAvenueInfo("Untitled02","ig_admin/config_logging/view_real-time_audits_in_the_audit_monitor.htm","ig_admin/config_logging/control_the_view_of_data_in_the_audit_monitor.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"configuring_logging_and_auditing.htm\">Configuring logging and auditing<\/a> > <a href=\"view_real-time_audits_in_the_audit_monitor.htm\">View real-time audits in the Audit Monitor<\/a> > Specify the data you see in the Audit Monitor<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1>Specify the data you see in the Audit Monitor</h1>
+<p class="pparagraph">The Audit Monitor shows audit data in three categories:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Authentication Activity</span> — 
+ displays audited events related to user authentications. The events shown 
+ in this category are controlled by the <span class="bold">Authentication 
+ Audit and Error Settings</span> category in the Properties Editor. You 
+ can further filter the audits in the Audit Monitor.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">System Activity</span>&#160;— 
+ displays audited events related to the overall Entrust IdentityGuard deployment, 
+ including authentications by administrators, and creation and deletion 
+ of objects such as users, groups, roles, policies and so on. The full 
+ list of system activity events can be seen in the Administration interface 
+ on the <span class="bold">System &gt; Find Audits</span> tab. For simplification, 
+ the Audit Monitor categorizes the events as follows.<a name="audit_monitor_categories_and_events"></a></p>
+<table class="Entrust_table" style="margin-left: 80px;" cellspacing="0px" width="75.099%">
+	<col style="width: 23.693%;" />
+	<col style="width: 76.307%;" />
+	<tr class="t1st">
+		<td style="vertical-align: top;"><p class="tattabletext">Create 
+		 operations</p></td>
+		<td style="vertical-align: top;"><p class="tattabletext">create, 
+		 assign, load, import, issue, enroll</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: top;"><p class="tattabletext">Delete 
+		 operations</p></td>
+		<td class="last" style="vertical-align: top;"><p class="tattabletext">Delete, 
+		 unassign, cancel, clean, wipe</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: top;"><p class="tattabletext">Modify 
+		 operations</p></td>
+		<td class="last" style="vertical-align: top;"><p class="tattabletext">Modify, 
+		 activate, initialize,unlock, unblock, approved, sealed, register, 
+		 suspend, hold, unhold, unregister, recover, encrypt, decrypt, 
+		 manage</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: top;"><p class="tattabletext">Action 
+		 operations</p></td>
+		<td class="last" style="vertical-align: top;"><p class="tattabletext">Authenticate 
+		 (administrators only), deliver, sign</p></td>
+	</tr>
+</table>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Administrator Activity</span>&#160;— displays audited events related 
+ to the activities of Entrust IdentityGuard administrators. Initially, 
+ the actions of the administrator that is currently logged in are shown.</p>
+<p class="pparagraph">There are several ways to modify the dataset to see 
+ only what is of interest to you.</p>
+<h4>Show or hide activity categories and filter criteria</h4>
+<p class="liplistparagraph">Click the minus sign (-) beside the Activity 
+ or Activity Filter heading to hide a section that you do not want to see. 
+ </p>
+<p class="liplistparagraph"><img src="../../auditmon_collapse.png" alt="" style="border: none;" border="0" /></p>
+<p class="liplistparagraph">Click the plus sign (+) to display a hidden 
+ section again.</p>
+<p class="liplistparagraph"><img src="../../auditmon_expand.png" alt="" style="border: none;" border="0" /></p>
+<h4>Filter the audits displayed</h4>
+<p class="liplistparagraph">Use the filter criteria in each section to 
+ describe the audits you want to see, and then click <span class="bold">Update 
+ Filter</span>. Only audits that match your criteria are displayed. Each 
+ filter is associated with the logged-in administrator, and it remains 
+ in effect until you update it again, or until the end Entrust IdentityGuard 
+ server is restarted. The filter fields support the same wildcard capabilities 
+ as other parts of Entrust IdentityGuard. For example, if some of the instances 
+ of Entrust IdentityGuard server in your deployment are named by their 
+ location, you could use all or part of the name and one or more wildcard 
+ symbols (*) to specify them, for example: <span class="output">IG-Tor*</span>. Click 
+ + to see details about each filter.</p>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Authentication 
+ Activity Filter criteria</a></p>
+<div class="droptext" id="POPUP620771423" style="display: none;">
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Errors Only</span> — 
+	 Enable this option to see only audits with the ERROR level. To see 
+	 which audits those are, see the <a href="audited_event_reference.htm">Audited 
+	 event reference</a>.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Host</span>&#160;— 
+	 Use this field to select an Entrust IdentityGuard server instance.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Group</span>&#160;— 
+	 Use this field to limit the results shown to users from a specific 
+	 Entrust IdentityGuard group.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">User Name</span>&#160;— 
+	 Use this field to specify an Entrust IdentityGuard user account.</p>
+</div>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />System 
+ Activity Filter criteria</a></p>
+<div class="droptext" id="POPUP620938883" style="display: none;">
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Errors Only</span> — 
+	 Enable this option to see only audits with the ERROR log level. To 
+	 see which audits those are, see the <a href="audited_event_reference.htm">Audited 
+	 event reference</a>.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Host</span>&#160;— 
+	 Use this field to select an Entrust IdentityGuard server instance.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Target Operation</span>&#160;— 
+	 Choose from All Target Operations, Create Operations Only, Delete 
+	 Operations Only, Modify Operations Only, and Action Operations Only. 
+	 For a list of operations included in each of these groups, see the 
+	 <a href="#audit_monitor_categories_and_events">table of Audit Monitor 
+	 categories and events</a>. </p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Group</span>&#160;— 
+	 Use this field to limit the results shown to users from a specific 
+	 Entrust IdentityGuard group.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">User Name</span>&#160;— 
+	 Use this field to specify an Entrust IdentityGuard user account.</p>
+</div>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Administrator 
+ Activity Filter criteria</a></p>
+<div class="droptext" id="POPUP630136341" style="display: none;">
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Errors Only</span> — 
+	 Enable this option to see only audits with the ERROR log level. To 
+	 see which audits those are, see the <a href="audited_event_reference.htm">Audited 
+	 event reference</a>.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Host</span>&#160;— 
+	 Use this field to select an Entrust IdentityGuard server instance.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Target Operation</span>&#160;— 
+	 Choose from All Target Operations, Create Operations Only, Delete 
+	 Operations Only, Modify Operations Only, and Action Operations Only. 
+	 For a list of operations included in each of these groups, see the 
+	 <a href="#audit_monitor_categories_and_events">table of Audit Monitor 
+	 audit categories and events</a>..</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Group</span>&#160;— 
+	 Use this field to limit the results shown to users from a specific 
+	 Entrust IdentityGuard group.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">User Name</span>&#160;— 
+	 Use this field to specify an Entrust IdentityGuard user account.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Administrator Group</span>&#160;— 
+	 Use this field to limit the results shown to administrators from a 
+	 specific Entrust IdentityGuard administrative group.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Administrator Name</span>&#160;— 
+	 Use this field to specify an Entrust IdentityGuard administrator account.</p>
+</div>
+<h4>Configure properties to show only selected Authentication-related audits</h4>
+<p class="liplistparagraph">Use the Properties Editor to specify the Authentication-related 
+ events to audit. Only the specified audits will be displayed in the Authentication 
+ Activity list in the Audit Monitor. For more information, see <a href="configure_authentication_audits.htm">Configuring 
+ authentication audits</a>.</p>
+<h4>View additional audit information and delete audits</h4>
+<p class="liplistparagraph">Click the value in the <span class="bold">Number</span> 
+ column to see additional information for a selected audit on the <span 
+	 class="bold">Audit Information</span> page. That page also includes 
+ the <span class="bold">Delete Audit</span> button. You can delete an audit 
+ if you have solved a problem (for example, resolved a license issue) and 
+ no longer want the audit to appear in the audit database.</p>
+<p class="nonote"><span class="bold">Note:</span> The Audit Monitor is 
+ not designed to view older audits. To view older data stored in the audit 
+ database, see <a href="view_historical_audits_in_the_administration_interface.htm">Viewing 
+ audits in the Administration interface</a>. </p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP620771423');
+	TextPopupInit('a2','POPUP620938883');
+	TextPopupInit('a3','POPUP630136341');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

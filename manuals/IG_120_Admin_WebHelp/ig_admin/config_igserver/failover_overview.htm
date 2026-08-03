@@ -1,0 +1,191 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Failover overview</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nConfiguring repository failover\nFailover overview");
+addAvenueInfo("Untitled02","ig_admin/config_igserver/configuring_repository_failover.htm","ig_admin/config_igserver/configuring_failover_and_high_availability.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"configuring_repository_failover.htm\">Configuring repository failover<\/a> > Failover overview<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_85380_Failover_overview" id="XREF_85380_Failover_overview"></a>Failover overview</h1>
+<p class="pparagraph"><a name="IX_directory_repository_1" id="IX_directory_repository_1"></a><a name="IX_LDAP" id="IX_LDAP"></a><a name="IX_directory_repository" id="IX_directory_repository"></a><a name="IX_common" id="IX_common"></a>Entrust IdentityGuard offers a common failover mechanism so that you can ensure there are backup systems in place in the event that a primary system fails.</p>
+<p class="pparagraph">You can set up failover for any data source (databases, directories, Radius servers, and external authentication resources) that Entrust IdentityGuard uses. To set up a common failover mechanism, you simply list two or more URLs or addresses for the data source in the Properties Editor.</p>
+<p class="pparagraph">For example, to set up failure to a directory repository, you would specify each directory’s URL in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">LDAP URL</span> field in the Properties Editor as follows:</p>
+<p class="pparagraph"><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">LDAP URL</span>: URL1 URL2 URL3</p>
+<p class="pparagraph">Entrust IdentityGuard uses a ‘sticky’ round robin type of failover mechanism. It works as follows:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>When Entrust IdentityGuard needs to access a data source (for example, an LDAP directory), it tries the first URL in the list (known as the primary source). If the connection succeeds, Entrust IdentityGuard sticks to it until it fails.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>When the primary fails or is unavailable, Entrust IdentityGuard tries the second URL in the list and sticks to it until it fails.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If the second URL fails or is unavailable, Entrust IdentityGuard tries the next URL, and so on.</p>
+
+<p class="pparagraph">In failure cases, Entrust IdentityGuard always restarts at the primary source and moves through the URL list until it makes a valid connection. As the process moves through the URL list, the connection that caused the original failure is skipped.</p>
+<p class="pparagraph">For example, assume:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">LDAP URL</span>: URL1 URL2 URL3 URL4.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Current connection is to URL1, but URL1 fails.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The only working directory is at URL3.</p>
+
+<p class="pparagraph">In the above scenario, Entrust IdentityGuard moves through the URL list as follows:</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>URL1</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>URL2</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>URL3 (stick)</p>
+
+<p class="pparagraph">Once Entrust IdentityGuard connects to a non-primary URL, Entrust IdentityGuard tries to restore a connection to the primary at intervals determined by the following algorithm:</p>
+<p class="cocode">Time Before Retry = 2 * (number of previous restore attempts + 1)<sup>2</sup></p>
+<p class="pparagraph">For example, assume:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">LDAP URL</span>: URL1 URL2 URL3 URL4.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Current connection is to URL2.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>No restore has been attempted to URL1 yet.</p>
+
+<p class="pparagraph">In the above scenario, Entrust IdentityGuard attempts to reconnect to URL1 in two minutes (<span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">2 * (0 + 1)</span><sup><span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">2</span></sup> <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">= 2</span>). If that fails, Entrust IdentityGuard’s next attempt occurs in eight minutes (<span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">2 * (1 + 1)</span><sup><span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">2</span></sup> <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">= 8</span>). If that fails, the next attempt is in 18 minutes (<span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">2 * (2 + 1)</span><sup><span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">2</span></sup> <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">= 18</span>), and so on, until a maximum value of 24 hours is reached. At this point, Entrust IdentityGuard stops increasing the interval, and retries the connection at a steady rate of once every 24 hours. (You can change the 24 hour maximum through the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Primary Directory/Database Server Maximum Reconnect Interval</span>&#160;field in the Properties Editor. How to set this field is described in one of the following sections.)</p>
+<p class="pparagraph">Upon a successful reconnection to URL1, URL1 is set to be the active host.</p>
+<p class="pparagraph">The high-availability options supported by Entrust IdentityGuard do not maintain any persistent state information. High-availability settings are only maintained within the lifetime of the process. After a process has been shut down and restarted, connection settings are reset to the startup conditions defined within the <span style="font-family: Courier;">identityguard.properties</span>&#160;file. This applies to all Entrust IdentityGuard Web services (that is, Administration and Authentication), Entrust Properties Editor service, Entrust Administration service and Master user shell.</p>
+<p class="pparagraph">Failover applies only for the URLs in the same repository configuration instance (LDAP and database data sources only); that is, it does not failover to a different repository instance.</p>
+<p class="pparagraph">JDBC database property settings</p>
+<div style="text-align: left;"><img alt="PE-Repository-failover.jpg" id="image11" src="pe-repository-failover.jpg" width="552" height="174" border="0" name="image11" /></div>
+<p class="pparagraph">For example if you create a configuration instance named Default with three URLs and another called Databases2 with three URLs, the URLs in Default never failover to a URL in Databases2, or from Databases2 to Default.</p>
+<p class="attnattention"><span style="font-weight: bold;">Attention:</span> If you are using failover on an Entrust IdentityGuard configuration that actively uses replica databases, you must take extra care in planning the Entrust IdentityGuard server failover strategy to ensure that the active Entrust IdentityGuard servers have access to all required data. See <a href="using_partitions.htm#XREF_16286_Managing">Using partitions</a> for more information about managing data in this environment.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Collect diagnostic data</title>
+<link rel="StyleSheet" href="../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nCollect diagnostic data");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../index.htm", "", ">", "Home", "about_this_book/about_this_book.htm");
+document.write("<a href=\"systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > Collect diagnostic data<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Collect diagnostic data</h1>
+<p class="pparagraph">If you need to consult Entrust Datacard Customer 
+ Support, you might be asked to send diagnostic data to help troubleshoot 
+ problems.</p>
+<p class="pparagraph">With release 12.0 Patch 200020 and newer, your Entrust 
+ IdentityGuard installation includes a command-line utility, <span class="output">igsupportutil</span> 
+ (in .bat format for Windows and .sh format for Linux), that makes it easy 
+ to collect diagnostic data when requested by customer support. </p>
+<p class="pparagraph">The data that is collected includes files with extensions 
+ such as log, txt, info, properties, sample, xml, as well as the complete 
+ contents of the <span class="output">templates</span> folder. (Private 
+ keys are not collected).</p>
+<p class="pparagraph">The utility offers two options: <span class="output">recent</span> 
+ or <span class="output">all</span>. If no option is specified, the default, 
+ <span class="output">all</span>, is used. The <span class="output">all</span> 
+ option collects all files. The recent option collects the same data except 
+ that for Entrust IdentityGuard log files, it includes only the two most 
+ recent ones (*.log and *.log1). The data is saved in a ZIP file (<span 
+	 class="output">ig_support_data_&lt;HOSTNAME&gt;_&lt;date and time&gt;.zip</span>) 
+ in the new directory <span class="output">IG_HOME/identityguard_support</span>.</p>
+
+<p class="prtproceduretitle">To collect diagnostic data requested by Customer 
+ Support</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>In 
+ a command window, navigate into the location of the utility.</p>
+<p class="prpprocedureparagraph"><span class="bold">Windows:</span></p>
+<p class="prpprocedureparagraph"><span class="output">&lt;IG_HOME&gt;\bin</span> 
+ </p>
+<p class="prpprocedureparagraph"><span class="bold">Linux:</span></p>
+<p class="prpprocedureparagraph"><span class="output">&lt;IG_HOME&gt;/bin</span></p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Run 
+ the following command:</p>
+<p class="prpprocedureparagraph"><span class="bold">Windows:</span></p>
+<p class="prpprocedureparagraph"><span class="output">igsupportutil.bat 
+ all|recent</span></p>
+<p class="prpprocedureparagraph"><span class="bold">Linux:</span></p>
+<p class="prpprocedureparagraph"><span class="output">igsupportutil.sh 
+ all|recent</span></p>
+<p class="prpprocedureparagraph"><span class="italic">Where</span>:</p>
+<p class="prpprocedureparagraph"><span class="output">all</span> – specifies collection of all data 
+ described above, including all Entrust IdentityGuard log files. This is 
+ the default option and it is used if no option is specified.</p>
+<p class="prpprocedureparagraph"><span class="output">recent</span>&#160;– specifies collection all data 
+ described above, but only the two most recent Entrust IdentityGuard log 
+ files (*.log and *.log1).</p>
+<p class="prpprocedureparagraph">Messages display the progress of the operation. 
+ The utility creates a ZIP file with a name in the following format: <span 
+	 class="output">ig_support_data_&lt;HOSTNAME&gt;_&lt;date and time&gt;.zip</span>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Locate 
+ the ZIP file in the <span class="output">IG_HOME/identityguard_support</span> 
+ directory and send it to Entrust Datacard Customer Support.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="about_this_book/documentation_feedback.htm"><img src="../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

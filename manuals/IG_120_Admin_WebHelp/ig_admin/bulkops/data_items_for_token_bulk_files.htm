@@ -1,0 +1,260 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\bulkOps.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Data items for token bulk files</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nBulk file operations and data items\nData items for token bulk files");
+addAvenueInfo("Untitled02","ig_admin/bulkops/token_bulk_operations.htm","ig_admin/bulkops/user_account_bulk_operations.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"bulk_file_operations_and_data_items.htm\">Bulk file operations and data items<\/a> > Data items for token bulk files<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_26143_Data_items_for" id="XREF_26143_Data_items_for"></a>Data 
+ items for token bulk files</h1>
+<p class="pparagraph">Each data item in a token bulk file must use the 
+ correct data type.</p>
+<p class="pparagraph">For more information about creating, editing and 
+ validating bulk files, see <a href="bulkops.htm">Perform bulk operations</a>.</p>
+<p class="pparagraph">&#160;</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 12.865%;" />
+	<col style="width: 24.27%;" />
+	<col style="width: 62.865%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">Data 
+		 item name</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Data 
+		 type</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Description</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">userId</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Provides 
+		 a user’s full user ID, in group/username format. The group is 
+		 optional if user names are unique.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">serialNumber</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p>
+		<p class="tattabletext">Contains one of three types of values:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+		 class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; ">all</span> matches all tokens</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>a 
+		 state value (for example, <span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">current</span>) 
+		 matches any tokens in that state (only one state can be specified)</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>any 
+		 other value is treated as a serial number</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Provides 
+		 a token serial number.</p>
+		<p class="tattabletext"><span style="font-weight: bold;">Note:</span> 
+		 The <span class="output">all</span>&#160;and <span class="output">state</span>&#160;values 
+		 are not valid for assign operations.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">state</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">One 
+		 of: <span class="output">pending, hold_pending, current, hold,</span> 
+		 <span class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span>or 
+		 <span class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span><span 
+		 class="output">canceled</span></p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Provides 
+		 the state of a token.</p>
+		<p class="tattabletext"><span class="bold">Note:</span> You cannot 
+		 create a token in the <span class="output">canceled</span> state.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">group</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Specifies 
+		 the group to move the token to.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">targetSets</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Specifies 
+		 an existing token set to which an existing token belongs.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">set</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Specifies 
+		 a new token set for the token.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">tokenVendor</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Specifies 
+		 the vendor ID of the token.</p>
+		<p class="tattabletext">If you do not include this data item, the 
+		 default token vendor is assumed.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">resetToken</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Boolean</p>
+		<p class="tattabletext"><span class="output">true</span> <span 
+		 class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span>or 
+		 <span class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span><span 
+		 class="output">false</span></p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">When 
+		 <span class="output" style="font-family: Courier; font-size: 10.0pt;">true,</span> 
+		 it resets a token to fix token drift. Depending on the token, 
+		 the bulk file must also include at least one of <span class="output">resetTokenResponse1</span> 
+		 <span class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span>and 
+		 <span class="output">resetTokenResponse2</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">tokenActivationType</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Can 
+		 be one of <span class="output">NONE</span>, <span class="output">ONLINE</span>, 
+		 or <span class="output">OFFLINE</span>.</p>
+		<p class="tattabletext">Used for activation of third-party soft 
+		 tokens. Do no use for Entrust tokens or soft tokens.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">comment</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Assigns 
+		 a comment to a token.</p></td>
+	</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Setting up user, grid card, and token repositories</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nSpecifying multiple repositories\nSetting up user, grid card, and token repositories");
+addAvenueInfo("Untitled02","ig_admin/config_igserver/specifying_multiple_repositories.htm","ig_admin/config_igserver/configuring_token_and_grid_card_repositories.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"specifying_multiple_repositories.htm\">Specifying multiple repositories<\/a> > Setting up user, grid card, and token repositories<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_56256_Setting_up_user" id="XREF_56256_Setting_up_user"></a>Setting up user, grid card, and token repositories</h1>
+<p class="pparagraph">When you first install Entrust IdentityGuard, you have one repository, either a database or an LDAP directory. Use the Properties Editor to change any of the default settings, or to configure Entrust IdentityGuard to use both a database and an LDAP directory. When you use both a database and an LDAP directory, you must set one as the default.</p>
+<p class="prtproceduretitle">To use both a database and an LDAP directory</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Entrust IdentityGuard Properties Editor. (See <a href="../usingpropeditor/logging_in_and_out_of_the_properties_editor.htm#XREF_34072_Logging_in_and_out">Logging in and out of the Properties Editor</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span style="font-weight: bold;">Table of Contents</span>, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Repository Settings</span>.</p>
+
+<p class="prpprocedureparagraph">The repository properties appear with default settings based on choices you made during installation.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Card/User Repository Implementation Classes</span>&#160;drop-down list, select either:</p>
+
+<p class="lilistbullet" style="font-weight: bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Database (Default) and Directory Server</span></p>
+
+<p class="lilistbullet" style="font-weight: bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Directory Server (Default) and Database</span></p>
+
+<p class="prpprocedureparagraph">The default determines where Entrust IdentityGuard stores user data when no repository is specified. You can choose where to store policy data, and you can also move policy to another repository later using the <span class="output">system set -policyRepository</span>&#160;command in the Master user shell. For details and command syntax, see the <span style="font-style: italic;">Entrust IdentityGuard Master User Shell Command Reference</span>.</p>
+<p class="prpprocedureparagraph">If your selection in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Card/User Repository Implementation Classes</span>&#160;drop-down list includes a database, the database maps to the one configured as the default on the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">JDBC Database Settings</span>&#160;pane. If your selection in the drop-down list includes a directory, this directory maps to the one configured as the default on the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">LDAP Directory Server Settings</span> pane.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="PE-Repository.jpg" id="image10" src="pe-repository.jpg" width="570" height="382" border="0" name="image10" /></p>
+</div>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Policy Repository Implementation Class</span>&#160;drop-down list, select whether you want policy stored in the database or in the LDAP directory. This must be the repository specified as the default.</p>
+
+<p class="prpprocedureparagraph"><a name="IX_policy" id="IX_policy"></a><a name="IX_repository" id="IX_repository"></a>The policy repository stores Entrust IdentityGuard policy settings, group and role definitions, license information, and the IP blacklist.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. Set a value in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Policy Repository Cache Timeout</span>&#160;field. This sets the amount of time that a policy can be cached before the repository is checked for new policy definitions. The default is 30 seconds.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You can set the card and token repository properties now or wait until later. Either way, it is better to set up your final repository configuration before you start using the repository. (For details, see <a href="configuring_token_and_grid_card_repositories.htm#XREF_19176_Configuring_token">Configuring token and grid card repositories</a>.)</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>After you set the types of repositories to use, you must provide the configuration details.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For an LDAP repository, see <a href="configuring_an_ldap_directory.htm#XREF_39364_Configuring_an">Configuring an LDAP directory</a> .</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For a database repository, see <a href="../config_logging/configuring_a_database.htm#XREF_45404_Configuring_a">Configuring a database</a>.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="XREF_21149_8_After" id="XREF_21149_8_After"></a>After configuring the repositories in the Properties Editor, assign the repositories to groups. See <a href="../config_groups/creating_a_group.htm">Create a group</a>.</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>After your repositories and groups are set up and configured, you have choices to make when you create users. Each user you create, whether administrator or ordinary user, must be assigned to a group and to a repository. See <a href="../useradminsection/creating_users.htm#XREF_33180_Configuring">Creating users</a>.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> You may decide to create users in one repository and administrators in another repository, and the repositories can be of different types. For instance, you may decide to create all administrator in an LDAP repository and all users in a database repository. In this case, assign the administrators to one group (see <a href="#XREF_21149_8_After"><span class="hyperlink" style="font-family: Syntax; font-style: normal; font-weight: normal; color: #0000ff; letter-spacing: 0.00em; text-decoration: none;">Step&#160;8</span></a>&#160;above), and the users to another group and repository as your organizational plan dictates.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

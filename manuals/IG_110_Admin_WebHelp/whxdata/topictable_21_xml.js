@@ -1,0 +1,1 @@
+gXMLBuffer="<?xml version=\"1.0\" encoding=\"UTF-8\"?><ck><di ky=\"1032\" rd=\"reference.htm|Reference\" ct=\"  	 		 		 		 			 			     IdentityGuard Server 			 11.0 Administration Guide 		 ...\"/></ck>";

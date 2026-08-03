@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Out-of-Band OTP Voice Delivery Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nOut-of-Band OTP Voice Delivery Configuration (25)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/out-of-band_otp_sms_delivery_configuration.htm","ig_admin/usingpropeditor/performance_statistics_logging_settings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Out-of-Band OTP Voice Delivery Configuration (25)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_voice_delivery"></a><a name="IX_configuring_voice_1"></a><a 
+	 name="IX_configuring_voice"></a><a name="IX_configuring_OTP_delivery_1"></a><a 
+	 name="IX_voice"></a><a name="XREF_h2_Out_of_band_OTP_Voice"></a><a 
+	 name="XREF_84154_One_time_password"></a>Out-of-Band OTP Voice Delivery 
+ Configuration</h1>
+<p class="pparagraph">Your application can automate the delivery of one-time 
+ passwords using email, a text message to a cell phone, or voice message 
+ to a standard phone or cell phone. Using the following properties, you 
+ can set up delivery of the OTP by voice mail through Authentify®, TeleSign® 
+ or a custom voice message delivery service.&#160;For more details and 
+ to view a snapshot of the properties, see <a href="../outofbandauth/configuring_out-of-band_otp_delivery_in_voice_messages.htm#XREF_40112_Configuring_out_of">Configuring 
+ out-of-band OTP delivery in voice messages</a>. </p>
+<p class="liplistparagraph">Configuration Instances</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Voice 
+ Delivery Class Name</a></span></p>
+<div class="droptext" id="POPUP627838066" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.authentify.{0}.impl</span></p>
+	<p class="lip2list2paragraph">Sets the Entrust IdentityGuard Java class 
+	 used for communicating with Authentify. For the <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">Authentify</span>option, 
+	 the Properties Editor sets the correct class in the background.</p>
+	<p class="lip2list2paragraph">To use TeleSign, select <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Custom</span>, 
+	 and then enter the following Voice Delivery Class Name:</p>
+	<p class="co3code3">com.entrust.identityGuard.common.oobDelivery.otp.telesign.OTPTeleSignDeliveryVoice</p>
+	<p class="lip2list2paragraph">If you select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: .em; 
+														 text-decoration: none; ">Custom</span>, 
+	 enter a valid Java class name in the field that appears. (Used only 
+	 in highly advanced deployments.)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Voice 
+ Delivery Configuration Display Name</a></span></p>
+<div class="droptext" id="POPUP628234543" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.authentify.{0}.displayname</span></p>
+	<p class="lip2list2paragraph">The name you use to identify this delivery 
+	 mechanism.</p>
+	<p class="lip2list2paragraph">This is the name you see in the Administration 
+	 interface when associating the user contact information to the delivery 
+	 method.</p>
+	<p class="lip2list2paragraph">Default: the instance name</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Authentify 
+ Site Owner ID</a></span></p>
+<div class="droptext" id="POPUP628428621" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.authentify.{0}.tsoid</span></p>
+	<p class="lip2list2paragraph">Provides the Authentify account customer 
+	 ID.</p>
+	<p class="lip2list2paragraph">Entrust IdentityGuard requires that this 
+	 field have content, but If you are using TeleSign or another custom 
+	 service, it is not used. Enter any value, for example: NOT_USED.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Authentify 
+ Application ID</a></span></p>
+<div class="droptext" id="POPUP628645020" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.authentify.{0}.application</span></p>
+	<p class="lip2list2paragraph">Names the application that is using the 
+	 Authentify service.</p>
+	<p class="lip2list2paragraph">Entrust IdentityGuard requires that this 
+	 field have content, but If you are using TeleSign or another custom 
+	 service, it is not used. Enter any value, for example: NOT_USED.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Authentify 
+ Account ID</a></span></p>
+<div class="droptext" id="POPUP628833944" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.authentify.{0}.asid</span></p>
+	<p class="lip2list2paragraph">Provides the user name or account ID 
+	 required to access your Authentify, TeleSign, or custom service account.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Authentify 
+ Account Password</a></span></p>
+<div class="droptext" id="POPUP629149089" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.authentify.{0}.password</span></p>
+	<p class="lip2list2paragraph">Provides the password required to access 
+	 your Authentify, TeleSign or custom service account.</p>
+	<p class="lip2list2paragraph">Select the <span style="font-weight: bold;">Encrypt</span> 
+	 option to have the password encrypted when saved.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Authentify 
+ Service URL</a></span></p>
+<div class="droptext" id="POPUP629165011" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.authentify.{0}.url</span></p>
+	<p class="lip2list2paragraph">Provides the application-specific Authentify 
+	 service URL.</p>
+	<p class="lip2list2paragraph">Entrust IdentityGuard requires that this 
+	 field have content, but If you are using TeleSign or another custom 
+	 service, it is not used. Enter any value that has the format of a 
+	 URL, for example: http://notused.not_used.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Authentify 
+ Template File</a></span></p>
+<div class="droptext" id="POPUP629229920" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.authentify.{0}.template</span></p>
+	<p class="lip2list2paragraph">Provides the location of the Authentify 
+	 XML request template. Entrust IdentityGuard provides a default template 
+	 named <span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 9.pt; color: #; letter-spacing: .em; 
+				 text-decoration: none; ">authentify_template.xml</span>. 
+	 You can configure it as required. This file is copied and populated 
+	 by Entrust IdentityGuard for each voice mail sent to a user.</p>
+	<p class="lip2list2paragraph">You can find the file:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>on 
+	 Windows <span class="output">&lt;$IG_HOME&gt;\etc\templates\oob\</span></p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>on 
+	 UNIX <span class="output">$IG_HOME/etc/templates/oob/</span></p>
+	<p class="lip2list2paragraph">If you are using TeleSign or another 
+	 customer service, enter NOT_USED.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP627838066');
+	TextPopupInit('a2','POPUP628234543');
+	TextPopupInit('a3','POPUP628428621');
+	TextPopupInit('a4','POPUP628645020');
+	TextPopupInit('a5','POPUP628833944');
+	TextPopupInit('a6','POPUP629149089');
+	TextPopupInit('a7','POPUP629165011');
+	TextPopupInit('a8','POPUP629229920');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

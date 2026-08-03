@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Configure properties for SAML login to the Administration interface</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nConfiguring SAML authentication to the Administration interface\nConfigure SAML login to the Administration  interface\nConfigure properties for SAML login to the Administration interface");
+addAvenueInfo("Untitled","ig_admin/config_adminsso/create_a_delegation_administrator.htm","ig_admin/config_adminsso/restart_the_server_and_verify_that_the_saml_link_appears.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/useradminsection1.htm#TOC_System_administration\">System administration<\/a> > <a href=\"saml_authentication_to_the_administration_interface.htm\">Configuring SAML authentication to the Administration interface<\/a> > <a href=\"configuring_saml.htm\">Configure SAML login to the Administration  interface<\/a> > Configure properties for SAML login to the Administration interface<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Configure properties for SAML login to the Administration interface</h1>
+<p class="pparagraph">Several categories of Entrust IdentityGuard properties 
+ must be configured to enable SAML authentication to the Administration 
+ interface. The categories are:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Web Application 
+ Settings</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>SAML IDP 
+ Configuration</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>SAML SP 
+ Keystore Settings</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>SAML SP 
+ Keys Settings</p>
+<p class="prtproceduretitle">To configure properties related to SAML authentication 
+ to the Administration interface</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log 
+ in to the Entrust IdentityGuard Properties Editor. </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Windows</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt;<span 
+	 class="bold"> Properties Editor</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>On 
+	 the <span class="bold">Log In</span>&#160;page, enter your administrator 
+	 name in <span style="font-weight: bold;">Userid</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter 
+	 your password in <span style="font-weight: bold;">Password</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter 
+	 a group name in the <span style="font-weight: bold;">Group</span>&#160;field. 
+	 </p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+	 <span style="font-weight: bold;">Log In</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Complete 
+	 the second-factor challenge, if presented.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />UNIX</a></p>
+<div class="droptext" id="POPUP630334575" style="display: none;">
+	<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter 
+	 the URL of your Properties Editor web application in a Web browser. 
+	 It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardPropertiesEditor</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="prspsubprocedureparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="prspsubprocedureparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>On 
+	 the <span class="bold">Log In</span>&#160;page, enter your administrator 
+	 name in <span style="font-weight: bold;">Userid</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter 
+	 your password in <span style="font-weight: bold;">Password</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter 
+	 a group name in the <span style="font-weight: bold;">Group</span>&#160;field. 
+	 </p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+	 <span style="font-weight: bold;">Log In</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Complete 
+	 the second-factor challenge, if presented.</p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From 
+ the table of contents, click <span style="font-weight: bold;">Web Application 
+ Settings </span>(near the top) and configure the following properties:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">SAML Single Sign-On Enabled</span> — Set<span style="font-weight: bold;"> 
+ </span>to <span style="font-weight: bold;">True</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>(Optional.) 
+ <span style="font-weight: bold;">SAML Single Sign-On Login Auto-Redirect</span>&#160;— Set to <span style="font-weight: bold;">True</span>&#160;if 
+ you want users to be redirected to the Federation Module’s SAML login 
+ page when they attempt to access the Administration interface. Set it 
+ to <span style="font-weight: bold;">False</span>&#160;to have a <span 
+	 style="font-weight: bold;">SAML Single Sign-On</span>&#160;link appear 
+ at the bottom of the Administration interface’s login page. This link 
+ takes users to the Federation Module’s SAML login page. See <a href="how_the_saml_login_works_with_the_administration_interface.htm">How 
+ SAML login works with the Administration interface</a>&#160;for details.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Also 
+ in the <span class="bold">Web Applications Settings</span> section, configure 
+ the following properties related to the Delegation Administrator you created 
+ in <a href="create_a_delegation_administrator.htm">Create a delegation 
+ administrator</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Delegation Administrator User ID</span> 
+ — Specify <span class="output" 
+	 style="font-family: Courier; font-size: 10.0pt;"><font size="2" style="font-size:10pt;">iginternalSAMLdelegate</font></span>&#160;or 
+ whatever name you chose for the delegation administrator.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Delegation Administrator Password</span> 
+ — Specify the password 
+ for the <span class="output" style="font-family: Courier; font-size: 10.0pt;"><font size="2" style="font-size:10pt;">iginternalSAMLdelegate</font></span> 
+ account. Select <span style="font-weight: bold;">Encrypt</span> to encrypt 
+ the password.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Delegation Administrator Password Length</span> 
+ — Specify the maximum 
+ length of the password. This length is respected when the password is 
+ auto-updated. If you do not specify anything, the maximum length is the 
+ length specified in the Entrust IdentityGuard password policy. </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Delegation Administrator Password Auto 
+ Update</span> — Select 
+ <span style="font-weight: bold;">True</span> to have Entrust IdentityGuard 
+ generate a new delegation administrator password when the current one 
+ expires. If you set the password to <span style="font-weight: bold;">Password 
+ Never Expires</span>&#160;(when setting up the delegation administrator 
+ account), set the <span style="font-weight: bold;">Delegation Administrator 
+ Password Auto Update </span>setting to <span style="font-weight: bold;">False</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Delegation Administrator Password Auto 
+ Update Interval</span> — 
+ Specify the frequency, in seconds, with which the password is checked 
+ to see if it is close to its expiry. The password will be updated prior 
+ to expiry. The default is 3600 seconds (or 1 hour).</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span style="font-weight: bold;">Validate Only</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From 
+ the table of contents, click <span style="font-weight: bold;">SAML IDP 
+ Configuration </span>(near the bottom), and configure the following properties:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Configuration Instances</span>&#160;— Enter a name for the configuration. 
+ </p>
+<p class="liplistparagraph">Example: <span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">IDP 
+ Configuration</font></span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">IDP Metadata File Location</span>&#160;— Specify the name and location 
+ of the Federation Module’s metadata file. For example, <span class="output" 
+	 style="font-family: Courier; font-size: 10.0pt;"><font size="2" style="font-size:10pt;">c:\IDPdata\idp.metadata.xml</font></span>. 
+ </p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If 
+ you have another Federation Module deployment with a metadata file that 
+ is different from the one you just specified, create another configuration 
+ instance, and specify the name and location of that metadata file.</p>
+<p class="prpprocedureparagraph">Example:</p>
+<p class="prpprocedureparagraph">You might specify another configuration 
+ instances called, </p>
+<p class="prpprocedureparagraph" style="font-family: Courier;"><span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">IDP 
+ Configuration 2</font></span></p>
+<p class="prpprocedureparagraph">with a metadata file, here:</p>
+<p class="prpprocedureparagraph" style="font-family: Courier;"><span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">c:\IDPdata\idp2.metadata.xml</font></span></p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span style="font-weight: bold;">Validate Only</span>.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Scroll 
+ to the next section in the Properties Editor, entitled,<span style="font-weight: bold;">&#160;SAML 
+ SP Keystore Settings</span>, and &#160;configure the following properties:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">SAML Keystore File Location</span> — Specify the keystore file that 
+ contains the Entrust IdentityGuard Server’s SAML certificate and keys. 
+ See <a href="#XREF_88205_Generate_SAML_keys">Generate a SAML certificate 
+ to be used by Entrust IdentityGuard Server</a>&#160;for details. The default 
+ is <span class="output" style="font-family: Courier; font-size: 10.0pt;"><font size="2" style="font-size:10pt;">&lt;$IG_HOME&gt;\etc\keystore</font></span>. 
+ If you instead created a keystore dedicated to SAML keys, specify that 
+ keystore here. </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">SAML Keystore Password</span> — Specify the password of the SAML 
+ keystore. If you are using Entrust IdentityGuard Server’s default keystore, 
+ <span class="output" style="font-family: Courier; font-size: 10.0pt;"><font size="2" style="font-size:10pt;">&lt;$IG_HOME&gt;\etc\keystore,</font></span>&#160;the 
+ password is <span class="output" style="font-family: Courier; font-size: 10.0pt;"><font size="2" style="font-size:10pt;">entrust</font></span>. 
+ If you created a new keystore dedicated to SAML keys, enter its password. 
+ Select <span style="font-weight: bold;">Encrypt</span> to encrypt the 
+ password.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">SAML Keystore Type</span>&#160;— Specify the format of the keystore 
+ used for the SAML keys. Supported types are: JCEKS, JKS, and PKCS12. The 
+ default is JKS, which is the type used for Entrust IdentityGuard Server’s 
+ keystore, <span class="output" style="font-family: Courier; font-size: 10.0pt;"><font size="2" style="font-size:10pt;">&lt;$IG_HOME&gt;\etc\keystore</font></span>. 
+ </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Default Signing Key Alias</span>&#160;— Specify the alias of the Entrust 
+ IdentityGuard Server’s SAML certificate and keys. This alias can be one 
+ of two things:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>If you 
+ decided to re-use keys that already exist in the Entrust IdentityGuard 
+ keystore as your SAML keys, then use the alias <span class="output" style="font-family: Courier; 
+														 font-style: normal; 
+														 font-weight: normal; 
+														 font-size: 10.0pt; 
+														 color: #000000; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">tomcat</font></span>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>If you 
+ decided to generate and import new SAML keys to be used by the Entrust 
+ IdentityGuard Server, use the alias that you used when you imported the 
+ keys. For example: <span class="output" style="font-family: Courier; font-size: 10.0pt;"><font size="2" style="font-size:10pt;">igsaml</font></span>. 
+ For details, see <a href="#XREF_88205_Generate_SAML_keys">Generate a SAML 
+ certificate to be used by Entrust IdentityGuard Server</a>.</p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Scroll 
+ to the next section in the Properties Editor, entitled,<span style="font-weight: bold;">&#160;SAML 
+ SP Keys Settings</span> and configure the following properties:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Configuration Instances</span>&#160;— &#160;Enter the name for the 
+ Entrust IdentityGuard SAML keys, and then click <span class="bold">Add</span>. 
+ Example:</p>
+<p class="lip2list2paragraph" style="font-family: Courier;"><span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">IG 
+ Server SAML Keys</font></span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Key Alias</span>&#160;— Enter the same alias as specified 
+ under <span style="font-weight: bold;">Default Signing Key Alias</span>. 
+ Example: <span class="output" style="font-family: Courier; font-size: 10.0pt;"><font size="2" style="font-size:10pt;">igsaml</font></span></p>
+<p class="liplistparagraph">This is the alias of the Entrust IdentityGuard 
+ Server’s SAML certificate and keys.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Key Password</span>&#160;— Enter the password for the certificate 
+ specified under <span style="font-weight: bold;">Key Alias</span>. This 
+ password can be one of two things:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>If you 
+ decided to re-use certificate and keys that already exist in the Entrust 
+ IdentityGuard keystore as your SAML keys, then use the password <span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">entrust</font></span>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>If you 
+ decided to generate and import a new SAML certificate and keys to be used 
+ by the Entrust IdentityGuard Server, use the password that you specified 
+ when you imported the SAML certificate to the keystore using the keytool 
+ utility. If you did not specify a password for the certificate when you 
+ imported it, then enter the associated keystore password. If you are using 
+ the Entrust IdentityGuard Server’s default keystore, the password is <span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">entrust</font></span>. 
+ </p>
+<p class="liplistparagraph">Select <span style="font-weight: bold;">Encrypt</span> 
+ to encrypt the password.</p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Click 
+ <span style="font-weight: bold;">Validate &amp; Save</span>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP630334575');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

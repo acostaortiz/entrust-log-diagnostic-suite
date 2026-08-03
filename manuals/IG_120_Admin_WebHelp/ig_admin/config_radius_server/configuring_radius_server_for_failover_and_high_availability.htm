@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_radius_server.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring Radius server for failover and high availability</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring the Radius server\nConfiguring Radius server for failover and high availability");
+addAvenueInfo("Untitled02","ig_admin/config_radius_server/creating_modifying_and_removing_radius_servers.htm","ig_admin/config_radius_proxy/config_radius_proxy.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_radius_server.htm\">Configuring the Radius server<\/a> > Configuring Radius server for failover and high availability<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_h2_Using_the_Entrust" id="XREF_h2_Using_the_Entrust"></a><a name="XREF_35375_Configuring_a" id="XREF_35375_Configuring_a"></a><a name="XREF_48233_Configuring_a" id="XREF_48233_Configuring_a"></a>Configuring Radius server for failover and high availability</h1>
+<p class="pparagraph"><a name="IX_common_1" id="IX_common_1"></a><a name="IX_Radius_2" id="IX_Radius_2"></a><a name="IX_Radius_1" id="IX_Radius_1"></a>Entrust IdentityGuard offers a common failover scheme to ensure there are backup systems in place in the event that a primary system fails.</p>
+<p class="pparagraph">All data sources and resources that Entrust IdentityGuard uses are listed in specific properties in the Entrust IdentityGuard properties file. This includes Radius servers.</p>
+<p class="pparagraph">For more information about failover and high availability, see <a href="../config_igserver/specifying_multiple_repositories.htm#XREF_73354_Configuring">Specifying multiple repositories</a>.</p>
+<p class="pparagraph">To set up failover and high availability for Radius, complete the following procedure.</p>
+<p class="prtproceduretitle">To configure the Entrust Identity Guard Radius proxy server for failover</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Entrust IdentityGuard Properties Editor. &#160;(See <a href="../usingpropeditor/logging_in_and_out_of_the_properties_editor.htm">Log in or out of the Properties Editor</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the Table of Contents, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Server Configuration</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Configuration Instances</span>&#160;drop-down list, select the instance you want to set up for failover.</p>
+
+<p class="prpprocedureparagraph">If the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Configuration Instances</span>&#160;list is empty, enter a Radius server name in the empty field and click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Add</span>. The other properties appear.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Server Address</span> field, enter two or more Radius server addresses. These are Radius server host names or IP addresses. Use a space to separate servers in the list.</p>
+
+<p class="prpprocedureparagraph">To properly configure the Radius Server Address field, you must enter the server name (or IP address) as well as the port the radius service is listening on. That is, the address must be in the following format:</p>
+<p class="cocode">radius1.entrust.com:1812</p>
+<p class="prpprocedureparagraph">An example of a failover value for this field would be:</p>
+<p class="cocode">radius1.entrust.com:1812 radius2.entrust.com:1812</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Server Secret</span>&#160;field, provide a valid shared secret that applies to all Radius servers in the address list.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure the <span style="font-weight: bold;">Radius Timeout</span>&#160;value in the Radius Proxy to be shorter than the timeout value set for the VPN server.</p>
+
+<p class="prpprocedureparagraph">This ensures that the IG radius proxy server is given enough time to fail over to the next third party Radius server prior to the VPN server resending an ACCESS-REQUEST.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate &amp; Save</span>.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log out of the Properties Editor and restart Entrust IdentityGuard Server service and the Radius proxy service after making all of the property changes.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_radius_proxy.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring the Radius proxy configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring the Entrust IdentityGuard Radius proxy\nConfiguring the Radius proxy configuration");
+addAvenueInfo("r13_std","ig_admin/config_radius_proxy/using_mobile_soft_tokens_for_second-factor_authentication.htm","ig_admin/config_radius_proxy/configuring_the_radius_proxy_for_vpn_servers.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"configuring_the_entrust_identityguard_radius_proxy.htm\">Configuring the Entrust IdentityGuard Radius proxy<\/a> > Configuring the Radius proxy configuration<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_46761_Configuring_the" id="XREF_46761_Configuring_the"></a>Configuring the Radius proxy configuration</h1>
+<p class="pparagraph"><a name="IX_on_Windows" id="IX_on_Windows"></a>Use the Properties Editor to create or modify a Radius proxy configuration. Through the Properties Editor you also have access to any Radius proxy properties set during installation.</p>
+<p class="prtproceduretitle"><a name="XREF_32363_To_configure_a" id="XREF_32363_To_configure_a"></a>To configure the Radius proxy</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Properties Editor. </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Windows</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 the Windows button, and then select <span style="font-weight: bold;">Entrust</span> 
+	 <span style="font-weight: bold;">IdentityGuard </span>&gt;<span class="bold"> 
+	 Properties Editor</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 the <span class="bold">Log In</span>&#160;page, enter your administrator 
+	 name in <span style="font-weight: bold;">Userid</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 your password in <span style="font-weight: bold;">Password</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 a group name in the <span style="font-weight: bold;">Group</span>&#160;field. 
+	 </p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+	 <span style="font-weight: bold;">Log In</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Complete 
+	 the second-factor challenge, if presented.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Linux</a></p>
+<div class="droptext" id="POPUP630334575" style="display: none;">
+	<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Properties Editor web application in a Web browser. 
+	 It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardPropertiesEditor</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="prspsubprocedureparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="prspsubprocedureparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 the <span class="bold">Log In</span>&#160;page, enter your administrator 
+	 name in <span style="font-weight: bold;">Userid</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 your password in <span style="font-weight: bold;">Password</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 a group name in the <span style="font-weight: bold;">Group</span>&#160;field. 
+	 </p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+	 <span style="font-weight: bold;">Log In</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Complete 
+	 the second-factor challenge, if presented.</p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the Table of Contents, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Proxy Configuration</span>.</p>
+
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="PE-Radius-proxy.jpg" id="image4" src="pe-radius-proxy.jpg" width="511" height="487" border="0" name="image4" /></p>
+</div>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Proxy URL</span>&#160;field, type the URL of the Entrust IdentityGuard server where the Radius proxy is running.</p>
+
+<p class="prpprocedureparagraph">As a default, Entrust IdentityGuard uses the value of the Authentication service URL as set in the Configuration Panel.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold">Radius Proxy Host</span> field, enter the host name of the computer that Entrust IdentityGuard Radius proxy uses as its host when listening for incoming requests. Normally this value should only be set if the Entrust IdentityGuard host has multiple IP addresses and you want to use a non-default IP address as the host address of Entrust IdentityGuard Radius.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold">Radius Proxy Port</span>&#160;field, type a space-separated list of ports used by the Radius proxy. Each port value must be an integer between 1024 and 65535. The default is 1812.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> If you plan to associate different VPN server groups with separate Radius proxy ports, enter all applicable ports here separated by spaces, then configure your VPN servers on the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Server Configuration</span>&#160;pane. There can be only one VPN server defined for each port.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="XREF_75247_5_If_you_are_using" id="XREF_75247_5_If_you_are_using"></a>If you&#160;are using the transaction verification capability of mobile soft tokens for second-factor authentication&#160;(see <a href="configuring_the_radius_proxy_for_vpn_servers.htm#XREF_35504_To_configure_the">To configure VPN connections</a>, <span class="hyperlink" style="font-family: Syntax;"><a href="configuring_the_radius_proxy_for_vpn_servers.htm#XREF_51574_33_If_you_use">Step&#160;33</a></span>), configure the following properties:&#160;</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Proxy Callback Host</span> – Enter the&#160;name or IP address of the host of the Entrust IdentityGuard Radius proxy that handles callbacks from Entrust IdentityGuard when it receives responses to mobile authentication challenges. If no host is specified,&#160;the local host name is used.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Proxy Callback Port</span>&#160;– Enter the port number that the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Proxy Callback Host</span> should use. If no port is specified, a random port is used.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Callback Queue Check Interval</span>&#160;– Enter the interval, in seconds, between checks for expired entries in the callback queue. The acceptable values are from 2 to 10.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Number of Callback Worker Threads</span> – Enter the number of threads that&#160;the Entrust IdentityGuard Radius Proxy should use to process callback requests&#160;from Entrust IdentityGuard.&#160;Each thread has its own connection to Entrust IdentityGuard. The default is 5.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure the following logging properties:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Enable Radius Message Logging</span>–&#160;Set to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>&#160;to write Radius messages to a log file.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Message Log File</span>&#160;– If&#160;you&#160;set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Enable Radius Message Logging</span>&#160;to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>, enter a file name for the Radius messages log file.</p>
+
+<p class="prspsubprocedureparagraph">If you do not enter a file name, no Radius messages are logged. If you do not specify a file path, the log file is created in the Entrust IdentityGuard installation directory.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To have Entrust IdentityGuard create a new log file when the current log file reaches a specified threshold (approximately), enter a threshold number of messages in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Message Log Maximum Number of Entries</span> field.</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Number of Worker Threads</span>&#160;field, enter the number of worker threads that the Radius proxy uses to process incoming requests. The default is 5.</p>
+
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Connection to Entrust IdentityGuard Timeout</span>&#160;field, enter the amount of time (in milliseconds) that a request should wait for a response from Entrust IdentityGuard before the connection times out. If 0, connections never timeout. The default is 0.</p>
+
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Maximum Message Queue Time</span>&#160;field, enter the amount of time (in milliseconds) that a request to the Radius proxy can be queued. If the request is queued longer than the specified time, the Radius proxy ignores the request. The default is 10000.</p>
+
+<p class="prpprocedureparagraph">It is recommended that you set the value lower than the connection timeout used by the VPN server that calls the Entrust IdentityGuard Radius proxy.</p>
+
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Maximum Message Queue Size</span>&#160;field, enter the maximum number of requests to the Radius proxy that can be queued. The default is 100.</p>
+
+<p class="prpprocedureparagraph">When the queue becomes full, the Radius proxy removes the oldest queued requests when new requests are processed.</p>
+
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate &amp; Save</span>.</p>
+
+<p class="prprocedurestep">14.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Log out of the Properties Editor and restart Entrust IdentityGuard and the Radius proxy once you make all property changes.</p>
+
+<p class="pparagraph">The Entrust IdentityGuard Radius proxy is now configured for use with your VPN server.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP630334575');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>How Active Directory synchronization works</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("User administration\nSynchronize Active Directory users with an Entrust IdentityGuard database\nHow Active Directory synchronization works");
+addAvenueInfo("Untitled","ig_admin/useradminsection/prerequisites_for_active_directory_synchronization.htm","ig_admin/useradminsection/limitations_of_the_active_directory_syncrhonization_feature.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"users.htm\">User administration<\/a> > <a href=\"synchronize_users_with_active_directory.htm\">Synchronize Active Directory users with an Entrust IdentityGuard database<\/a> > How Active Directory synchronization works<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>How Active Directory synchronization works</h1>
+<p class="pparagraph">The following sections describe how the Active Directory 
+ synchronization feature works when administrators or users perform various 
+ actions.</p>
+<h3>When you add a new user in Active Directory</h3>
+<p class="pparagraph">After you configure the Active Directory synchronization 
+ feature as described in this section, you have the option to create Entrust 
+ IdentityGuard user accounts for new Active Directory users as described 
+ in <a href="create_users_through_synchronization_with_active_directory.htm">Create 
+ new Entrust IdentityGuard user accounts from Active Directory</a>. (You 
+ can also create the Entrust IdentityGuard user accounts directly in Administration 
+ interface, after which they can be synchronized with Active Directory.)</p>
+<p class="pparagraph">Entrust IdentityGuard creates the user accounts and 
+ performs a first synchronization operation for the new user accounts. 
+ User accounts that have been synchronized display synchronization information 
+ in the Account Information and have the <span class="bold">Sync Account</span> 
+ and <span class="bold">Unsync Account</span> option buttons.</p>
+<p class="pparagraph"><img src="../../ai-sync_info_in_ad_user_account_anno.png" alt="" style="border: none;" width="450" height="402" border="0" /></p>
+<h3 class="pparagraph">When you change user account information in Active 
+ Directory</h3>
+<p class="pparagraph">The following Active Directory account information 
+ can be synchronized with Entrust IdentityGuard (copied into the Entrust 
+ IdentityGuard database):</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 style="mso-list: l0 level1 lfo1;">Disabled</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Expired</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Fullname 
+ — The user’s full 
+ name in the repository. If the Entrust IdentityGuard user fullname is 
+ not set, the Active Directory value is used.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Contact 
+ information&#160;— 
+ The user’s contact information in the repository. This data is merged 
+ with the user’s current Entrust IdentityGuard contact information. This 
+ is mapped using the current LDAP Contact Info Mapping settings. The following 
+ values are stored in the Entrust IdentityGuard database repository with 
+ an AD Sync directory configured.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Value</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Label</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Is Default</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Delivery 
+ Method</p>
+<h3>When you delete a user from Active Directory</h3>
+<p class="pparagraph">When a user is deleted from a synchronized Active 
+ Directory container, Entrust IdentityGuard receives a notification and 
+ marks the user account as Orphaned in Repository.</p>
+<p class="pparagraph"><img src="../../ai-users-deleted_user_acct_after_sync.png" alt="" style="border: none;" width="500" height="299" border="0" /></p>
+<p class="pparagraph">Entrust IdentityGuard does not automatically delete 
+ Entrust IdentityGuard user accounts because doing so would delete all 
+ authenticator data for the user and it cannot be recovered if the user 
+ account was deleted by mistake from Active Directory. </p>
+<p class="nonote"><span class="bold">Note:</span> If a deleted user account 
+ is recreated in Active Directory, the new account has a new unique ID, 
+ so the original user account must be deleted and recreated or unsynchronized 
+ and resynchronized so the sync unique user ID is reset.</p>
+
+
+
+
+<h3 class="nonote">If a user account is moved to a different Entrust IdentityGuard 
+ repository</h3>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If the 
+ user is placed in an <span>Entrust IdentityGuard </span>LDAP repository, 
+ all sync operational and user data is removed.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If the 
+ user is placed in an Entrust IdentityGuard database repository without 
+ an AD Sync directory configured (or the Entrust IdentityGuard database 
+ no longer has an AD Sync directory configured), all sync operational and 
+ user data is removed</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If the 
+ user is placed in an Entrust IdentityGuard database repository with the 
+ same AD Sync directory, the user remains synchronized.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If the 
+ user is placed in an Entrust IdentityGuard database repository with a 
+ different AD Sync directory, the user account is synchronized at the time 
+ of the update. If the user account cannot be synchronized (for example, 
+ because the user does not exist in the new AD Sync directory), the user 
+ is orphaned. In this case the source unique id and the sync DN value are 
+ also removed and the sync user name is reset to the Entrust IdentityGuard 
+ user name. The following audit message is written:</p>
+<p class="liplistparagraph"><span class="output">Unable to synchronize 
+ user default/john with unique user ID 119d0d80-699d-4e81-8e4e-5477e22ac1b3 
+ as the user cannot be found against the LDAP sync directory AD, the unique 
+ user ID will be removed and the user will be orphaned</span>.</p>
+<h3 class="pparagraph">When a user's name changes in Active Directory</h3>
+<p class="pparagraph">If a user name is changed in Active Directory the 
+ Entrust IdentityGuard user and sync data remain in place because the source 
+ unique user ID has not changed. The list of users that can be enrolled 
+ in Entrust IdentityGuard will include the new user name, however, creation 
+ of this user will fail because the ID already exists in Entrust IdentityGuard 
+ &#160;or a user. The administrator must explicitly update the Entrust 
+ IdentityGuard user name. Automatic handling of Active Directory user name 
+ changes is not currently supported. This might be considered in a future 
+ release. </p>
+<p class="nonote"><span class="bold">Note:</span> In the current release, 
+ the user name used for external authentication must be the same as the 
+ Entrust IdentityGuard user name. If the Active Directory user name changes 
+ and it is not updated in Entrust IdentityGuard (or vice-versa), external 
+ authentication will fail for the user.</p>
+<h3>When users change their name or contact information through Self-Service 
+ or another client application</h3>
+<p class="pparagraph">Synchronized data is read only, but fullname and 
+ contact info have corresponding Entrust IdentityGuard user attributes. 
+ If these attributes are changed by a user, updated values are retained 
+ in the Entrust IdentityGuard database. They are not overwritten by Active 
+ Directory values during subsequent synchronizations.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

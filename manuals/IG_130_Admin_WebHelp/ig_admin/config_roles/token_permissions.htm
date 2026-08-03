@@ -1,0 +1,479 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_roles.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Token permissions</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nPermissions quick reference\nToken permissions");
+addAvenueInfo("r13_std","ig_admin/config_roles/system_and_license_permissions.htm","ig_admin/config_roles/transaction_certificate_permissions.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"permissions_quick_reference.htm\">Permissions quick reference<\/a> > Token permissions<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_37917_Token_permissions" id="XREF_37917_Token_permissions"></a>Token 
+ permissions</h1>
+<p class="pparagraph">These permissions control the management of tokens 
+ and soft tokens. The table indicates whether the permission applies to 
+ tokens, soft tokens, or both. For information about managing tokens, see:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="../tokenauth/overview_of_token_authentication.htm">Overview 
+ of token authentication</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="../softtokenauth/administering_soft_tokens.htm">Administering 
+ soft tokens</a></p>
+
+<table style="padding-left: 6.00pt; padding-top: 6.00pt; padding-right: 6.00pt; 
+		 padding-bottom: 4.00pt; margin-bottom: 12.00pt;" cellspacing="0" 
+		 width="554">
+	<caption class="tacwtablecaptionwide">&#160;</caption>
+	<tr style="height: 20.00pt;" bgcolor="#E5E5E5">
+		<th style="border-right: solid 1px #000000; border-bottom: double 3px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157" 
+			 bgcolor="#E5E5E5"><p class="tahtableheader">Permission</p></th>
+		<th style="border-right: solid 1px #000000; border-bottom: double 3px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101" 
+			 bgcolor="#E5E5E5"><p class="tahtableheader">Dependencies</p></th>
+		<th style="border-bottom: double 3px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296" bgcolor="#E5E5E5"><p 
+			 class="tahtableheader">Description</p></th>
+	</tr>
+	<tr style="height: 31.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">tokenDelete</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">tokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Delete 
+		 an unassigned token, or delete a soft token from a user.</p></td>
+	</tr>
+	<tr style="height: 20.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">tokenGet</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Retrieve 
+		 information about an unassigned token.</p></td>
+	</tr>
+	<tr style="height: 20.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">tokenInitialize</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">tokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Initialize 
+		 a token</p></td>
+	</tr>
+	<tr style="height: 20.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">tokenList</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">tokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">List 
+		 information about unassigned tokens.</p></td>
+	</tr>
+	<tr style="height: 31.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">tokenLoad</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">tokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Applies 
+		 to tokens only. Load token data from a vendor-specific file.</p></td>
+	</tr>
+	<tr style="height: 31.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">tokenSet</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">tokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Applies 
+		 to tokens only. Modify information about an unassigned token.</p></td>
+	</tr>
+	<tr style="height: 20.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenActivate</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">tokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Applies 
+		 to soft tokens only. Activate a soft token.</p></td>
+	</tr>
+	<tr style="height: 31.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenAssign</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">userTokenGet, tokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Applies 
+		 to tokens only. Assign a token to a user.</p></td>
+	</tr>
+	<tr style="height: 42.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenAuthenticate</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">userTokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Authenticate 
+		 a user’s account by requiring the user to respond to a challenge 
+		 using a token or soft token.</p></td>
+	</tr>
+	<tr style="height: 31.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenCreate</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Applies 
+		 to soft tokens only. Create and assign a soft token to a user.</p></td>
+	</tr>
+	<tr style="height: 20.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenDelete</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">userTokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Delete 
+		 a user’s token or soft token.</p></td>
+	</tr>
+	<tr style="height: 20.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenDeliver</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">userTokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Deliver 
+		 tokens to users.</p></td>
+	</tr>
+	<tr style="height: 31.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenGet</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Retrieve 
+		 information about a user’s token or soft token.</p></td>
+	</tr>
+	<tr style="height: 31.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenList</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">userTokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">List 
+		 information about soft tokens, or tokens that are assigned to 
+		 users.</p></td>
+	</tr>
+	<tr style="height: 42.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenParameterSet</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">userToken<br />
+		Parameter<br />
+		View</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Set 
+		 the token parameter values as part of the user token assign, create 
+		 or set operations.</p></td>
+	</tr>
+	<tr style="height: 31.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenParameter<br />
+		View</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">View 
+		 the token parameters associated with a particular user’s token, 
+		 if these parameters exist.</p></td>
+	</tr>
+	<tr style="height: 20.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenResponseGet</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Return 
+		 the next response for the specified token.</p></td>
+	</tr>
+	<tr style="height: 20.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenSet</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">userTokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Set 
+		 information for user tokens or soft tokens.</p></td>
+	</tr>
+	<tr style="height: 53.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenTransaction<br />
+		Validate</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Invoke 
+		 the admin API method userTokenTransactionValidate. This method 
+		 is used by the online token transaction verification operation.</p></td>
+	</tr>
+	<tr style="height: 31.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenUnassign</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">userTokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Applies 
+		 to tokens only. Unassign a token for a user.</p></td>
+	</tr>
+	<tr style="height: 31.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="157"><p 
+			 class="tattabletext">userTokenUnlock</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="101"><p 
+			 class="tattabletext">userTokenGet</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="296"><p class="tattabletext">Unlock 
+		 a user’s token or soft token that was locked after repeated authentication 
+		 failures.</p></td>
+	</tr>
+</table>
+
+<p class="pparagraph">.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

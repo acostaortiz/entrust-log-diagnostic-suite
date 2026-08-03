@@ -1,0 +1,223 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\softtokenauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Disable PVNs on soft tokens</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nSoft token authentication\nConfiguring soft token policies\nDisable PVNs on soft tokens");
+addAvenueInfo("r13_std","ig_admin/softtokenauth/configure_soft_token_policies.htm","ig_admin/softtokenauth/setting_soft_token_activation_policies_enabling_a_grace_period.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"softtokenauth.htm\">Soft token authentication<\/a> > <a href=\"configuring_soft_token_policies.htm\">Configuring soft token policies<\/a> > Disable PVNs on soft tokens<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_55503_Disabling_PVNs_on" id="XREF_55503_Disabling_PVNs_on"></a>Disable 
+ PVNs on soft tokens</h1>
+<p class="pparagraph">An additional policy setting that affects soft tokens 
+ is located in the Personal Verification Number policy category.</p>
+<p class="pparagraph">By default, if tokens are selected as an authentication 
+ type that requires a PVN, the PVN is required by all token types. If your 
+ implementation uses more than one kind of token (for example, hardware 
+ tokens and Entrust IdentityGuard soft tokens), this means that Entrust 
+ soft tokens require a PVN even though these soft tokens already have (by 
+ default) a PIN as an extra layer of protection.</p>
+<p class="pparagraph">Complete the following procedure to have PVNs required 
+ for some types of tokens (for example, for hardware tokens that do not 
+ have PIN protection available), and not for others (for example, soft 
+ tokens that have PIN protection).</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Second 
+ factor authentication using a mobile soft token does not use a PVN or 
+ a PIN. However, the app may be protected by a PIN if any of its soft token 
+ identities requires one.</p>
+<p class="prtproceduretitle">To disable PVNs on a soft token</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Administration interface. (See <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+ in and out of the Administration interface</a>)</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Policies</span> 
+ on the menu bar.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find 
+ the policy to modify (see <a href="../config_policies/find_a_policy.htm">Find 
+ a policy</a>).</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">View 
+ Policy</span> page appears and lists all policy settings.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">View Policy</span>&#160;page, click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Edit 
+ Policy</span>.</p>
+<p class="prpprocedureparagraph">An editable version of the settings appear.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Policy Category</span>&#160;list, 
+ select <span style="font-weight: bold;">Personal Verification Number</span>.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Policy 
+ Category</span> settings appear.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Edit Policy</span>.</p>
+<p class="prpprocedureparagraph">An editable version of the settings appears.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="AI-Policies-edit_policy-PVN.jpg" id="image5" src="ai-policies-edit_policy-pvn.jpg" name="image5" width="565" height="287" border="0" /> 
+	 </p>
+</div>
+<p class="prpprocedureparagraph">For a description of each setting, see 
+ <a href="../config_policies/personal_verification_number_policies.htm">Personal 
+ Verification Number policies</a>.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Edit 
+ the settings as follows:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ any tokens in your implementation should use PVNs, add one or both of 
+ the token types under <span style="font-weight: bold;">Authentication 
+ Types Requiring a PVN</span>&#160;to the <span style="font-weight: bold;">Included 
+ list</span>&#160;(double-click the item in the <span class="bold">Not 
+ Included</span> list to move it to the Included list), if they are not 
+ already there.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Clear 
+ the <span class="bold">All Token Vendors Require a PVN</span> check box.</p>
+<p class="prspsubprocedureparagraph">The <span style="font-weight: bold;">Token 
+ Vendors Requiring a PVN</span> list becomes editable.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">Token Vendors Requiring a PVN</span>&#160;list, 
+ select one or more token vendors for whose tokens you want users to enter 
+ a PVN.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Save 
+ Changes</span>.</p>
+<p class="prpprocedureparagraph">When users with tokens that require a 
+ PVN register their tokens, they receive a PVN to unlock the token for 
+ use.</p>
+<p class="prpprocedureparagraph">Users with tokens that do not require 
+ a PVN are not given a PVN and are not prompted to use it when they use 
+ their tokens.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

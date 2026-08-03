@@ -1,0 +1,267 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>IntelliTrust migration audit messages</title>
+<link rel="StyleSheet" href="../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nAudited event reference\nIntelliTrust migration audit messages");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../index.htm", "", ">", "Home", "../ig_admin/about_this_book/about_this_book.htm");
+document.write("<a href=\"../reference.htm\">Reference<\/a> > <a href=\"../ig_admin/config_logging/audited_event_reference.htm\">Audited event reference<\/a> > IntelliTrust migration audit messages<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>IntelliTrust migration audit messages</h1>
+<p class="pparagraph">These messages provide information about the process 
+ of migrating Entrust IdentityGuard data and authenticators to Entrust 
+ Datacard IntelliTrust. For more information, see <a href="../migration/migration_to_entrust_datacard_intellitrust.htm">Migration 
+ to Entrust Datacard IntelliTrust</a>..</p>
+
+<table style="padding-left: 4.00pt; padding-top: 5.00pt; padding-right: 3.00pt; 
+		 padding-bottom: 3.00pt; margin-bottom: 16.00pt;" cellspacing="0" 
+		 width="554">
+	<caption class="tactablecaption" style="text-indent: -72.000pt;">&#160;</caption>
+	<tr style="height: 81px;" bgcolor="#E5E5E5">
+		<th style="border: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="160" bgcolor="#E5E5E5"><p class="tahtableheader">Audit 
+		 name</p></th>
+		<th style="border-top: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="64" bgcolor="#E5E5E5"><p class="tahtableheader">Log 
+		 level</p></th>
+		<th style="border-top: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="79" bgcolor="#E5E5E5"><p class="tahtableheader">Default 
+		 SNMP trap?</p></th>
+		<th style="border-top: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="250" bgcolor="#E5E5E5"><p class="tahtableheader">Event 
+		 description</p></th>
+	</tr>
+	<tr style="height: 75px;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="160"><p class="tattabletext">IntelliTrust Migration 
+		 Export Start</p>
+		<p class="tattabletext">(AUD8500)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="64"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="250"><p 
+			 class="tattabletext">IntelliTrust Migration authenticator 
+		 export started</p></td>
+	</tr>
+	<tr style="height: 71px;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="160"><p class="tattabletext">IntelliTrust Migration 
+		 Export Failed</p>
+		<p class="tattabletext">(AUD8501)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="64"><p 
+			 class="tattabletext">ERROR</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="250"><p 
+			 class="tattabletext">IntelliTrust Migration authenticator 
+		 export failed</p></td>
+	</tr>
+	<tr style="height: 104px;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="160"><p class="tattabletext">IntelliTrust Migration 
+		 Export Finished</p>
+		<p class="tattabletext">(AUD8502)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="64"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="250"><p 
+			 class="tattabletext">IntelliTrust Migration authenticator 
+		 export completed with status {0}.</p>
+		<p class="tattabletext">Where:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>{0} 
+		 is a string with information about the export. </p>
+		<p class="tattabletext">Example:</p>
+		<p class="tattabletext"><span class="output">authexport: Export 
+		 file: C:\Program Files\Entrust\IdentityGuard\identityguard120\testexport9.dat, 
+		 steps completed: 2 of 2, user number: 156 of maximum user number: 
+		 156, exported users: 79 of possible 156, exported unassigned tokens: 
+		 28, Done at: Fri Oct 20 07:38:33 GMT-04:00 2017</span></p></td>
+	</tr>
+	<tr style="height: 74px;">
+		<td style="border-left: solid 1px #000000; border-right: solid 1px #000000; 
+			 border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; 
+			 padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" 
+			 width="160"><p class="tattabletext">IntelliTrust Migration 
+		 Export Password View</p>
+		<p class="tattabletext">(AUD8503)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="64"><p 
+			 class="tattabletext">INFO</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="79"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="250"><p 
+			 class="tattabletext">IntelliTrust Migration authenticator 
+		 export password was displayed to a master user</p></td>
+	</tr>
+</table>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../ig_admin/about_this_book/documentation_feedback.htm"><img src="../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

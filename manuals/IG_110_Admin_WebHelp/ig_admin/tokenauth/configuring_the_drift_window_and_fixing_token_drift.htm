@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\tokenauth.fm" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Configuring the drift window and fixing token drift</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nToken authentication\nAdminister assigned tokens\nCorrect token drift (synchronizing a token)\nConfigure the drift window and fix token drift");
+addAvenueInfo("Untitled","ig_admin/tokenauth/ensuring_the_token_configuration_file_is_assigned.htm","ig_admin/tokenauth/getting_the_reason_for_token_response_failure.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"tokenauth.htm\">Token authentication<\/a> > <a href=\"administering_assigned_tokens.htm\">Administer assigned tokens<\/a> > <a href=\"correcting_token_drift_synchronizing_a_token.htm\">Correct token drift (synchronizing a token)<\/a> > Configure the drift window and fix token drift<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_71784_Fixing_token_clock"></a>Configure&#160;the drift 
+ window and fix token drift</h1>
+<p class="pparagraph">The following table describes drift-based tasks you 
+ might want to perform.</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 73.417%;" />
+	<col style="width: 26.583%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">I want 
+		 to...</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Instructions</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext" 
+															 style="font-weight: bold;">Reset 
+		 new tokens when they are created or activated</p>
+		<p class="tattabletext">To avoid having token drift issues with 
+		 new tokens, enable the <span class="bold" style="font-family: Calibri; 
+										 font-size: 11.0pt;">Reset Token 
+		 When Token is Created or Activated</span> <span style="font-family: Calibri; 
+														 font-size: 11.0pt;">policy. 
+		 This policy resets&#160;the time or event counter, or both&#160;(depending 
+		 on&#160;whether you are using time-based or event-based tokens)&#160;</span>on 
+		 first authentication after the token is assigned to a user (for 
+		 hardware tokens) or when it is created and activated (for soft 
+		 tokens).</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a 
+		 href="file://T:/Server/11.0/Admin_Guide_RH/IG Server Admin Guide/IG_Admin/tokenauth/Configuring_token_policies1.htm#XREF_36038_To_configure_token">To 
+		 configure token policies</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext" 
+															 style="font-weight: bold;">Increase 
+		 the allowable event or clock drift window within which users’ 
+		 token responses are valid</p>
+		<p class="tattabletext">By default, Entrust IdentityGuard automatically 
+		 accommodates token event drift of up to 10 events, and clock drift 
+		 up to 5 minutes. If it is common for your users’ event-based tokens 
+		 to have the buttons pressed multiple times between authentications, 
+		 or if it is common for your time-based tokens’ clocks to drift 
+		 more than 5 minutes from the actual time, then you can set Entrust 
+		 IdentityGuard to automatically correct for token drift greater 
+		 than 10 events or 5 minutes. With a larger event or clock window, 
+		 the need to synchronize tokens is reduced. (For more on synchronization, 
+		 see the next table cell.)</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a 
+		 href="#XREF_87849_To_configure_the">To configure the size of the 
+		 drift that is accommodated automatically</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext" 
+															 style="font-weight: bold;">Fix 
+		 token drift by synchronizing the token to the server</p>
+		<p class="tattabletext">By default, if the token event drift exceeds 
+		 10 events, or the clock drift exceeds 5 minutes, then the token 
+		 can no longer be used for authentication. To fix this problem, 
+		 an administrator can synchronize the token. During a synchronize 
+		 operation, the token’s event count or clock is synchronized with 
+		 the one on the Entrust IdentityGuard server.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a 
+		 href="#XREF_15372_To_fix_clock_drift">To fix minor drift by synchronizing 
+		 the token</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext" 
+															 style="font-weight: bold;">Fix 
+		 token drift that I could not fix through a sync operation</p>
+		<p class="tattabletext">By default, when an administrator synchronizes 
+		 a token, Entrust IdentityGuard searches 100 future events, or 
+		 15 minutes in the past to 1 hour into the future of the current 
+		 time to find a token response that matches what the user entered. 
+		 If the drift exceeds these amounts, the <span style="font-weight: bold;">Synchronize 
+		 Token </span>operation does not work. </p>
+		<p class="tattabletext">To fix this problem, you have two options:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Option 
+		 1: Increase the window of time or the number of events that Entrust 
+		 IdentityGuard searches during a synchronize operation, and then 
+		 try the synchronize operation again (this option works for tokens 
+		 and soft tokens).</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Option 
+		 2: Delete the token and create a new one (this option works for 
+		 soft tokens only).</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">For 
+		 Option 1, see <a href="#XREF_17222_To_fix_large_event">To fix 
+		 large drift by increasing the size of the event or clock window</a>.</p>
+		<p class="tattabletext">For Option 2, see <a href="deleting_a_token.htm">Delete 
+		 a token</a>.</p></td>
+	</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="prtproceduretitle"><a name="XREF_87849_To_configure_the"></a>To 
+ configure the size of the drift that is accommodated automatically</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find 
+ the <span class="output">entrusttoken.conf</span>&#160;file (or an equivalent 
+ file with a different name). If the file does not exist, create it as 
+ a text file. The default location is:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on UNIX, 
+ <span class="output">$IG_HOME/etc/</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on Microsoft 
+ Windows, <span class="output">&lt;$IG_HOME&gt;\etc\</span></p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Add 
+ one of the following entries to the file:</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 15.12%;" />
+	<col style="width: 84.88%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">If you 
+		 are synchronizing...</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Add...</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Event-based 
+		 tokens</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext" 
+														 style="font-family: Courier;"><span 
+		 class="output">automaticResetEventWindow=&lt;size&gt;</span></p>
+		<p class="tattabletext">where <span class="output">&lt;size&gt;</span>&#160;is 
+		 the number of token responses that Entrust IdentityGuard searches 
+		 during a normal authentication operation to find a token response 
+		 that matches what the user entered.</p>
+		<p class="tattabletext">Rules for allowable <span class="output">&lt;size&gt;</span> 
+		 values:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>must 
+		 be an integer divisible by 10</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>minimum 
+		 10, maximum 200</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>must 
+		 be smaller than the value set in the <span class="output">resetEventWindow</span>&#160;parameter</p>
+		<p class="tattabletext" style="font-family: Courier;"><span class="output">automaticResetEventWindow=50</span></p>
+		<p class="tattabletext">The default is 10. </p>
+		<p class="tattabletext">The larger the event window, the greater&#160;the 
+		 risk of someone being able to guess the dynamic token password. 
+		 Larger event windows can also make authentication slower.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Time-based 
+		 tokens</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext" 
+														 style="font-family: Courier;"><span 
+		 class="output">maxTimeSteps=&lt;timestep&gt;</span></p>
+		<p class="tattabletext">where <span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; ">&lt;timestep&gt;</span>&#160;is 
+		 a number of 30-second timesteps that Entrust IdentityGuard searches 
+		 in both the positive and negative direction during a normal authentication 
+		 operation to find a token response that matches what the user 
+		 entered. </p>
+		<p class="tattabletext">One timestep = 30 seconds.</p>
+		<p class="tattabletext">Examples:</p>
+		<p class="tattabletext"><span class="output">maxTimeSteps=10</span> 
+		 (10 X 30 = 300 seconds = 5 minutes)<br />
+		<span class="output">maxTimeSteps=120</span> (120 X 30 = 3600 seconds 
+		 = 1 hour)</p>
+		<p class="tattabletext">The default is 10 (5 minutes).</p>
+		<p class="tattabletext">The maximum is 1200 (10 hours). </p>
+		<p class="tattabletext">As the clock window is set larger, the 
+		 risk of someone being able to guess the dynamic token password 
+		 increases.</p>
+		<p class="tattabletext">Exactly how long a response is valid depends 
+		 on how much of the time window had elapsed the last time the user 
+		 authenticated. Therefore, a token response can be said to be valid 
+		 for at least <span class="output">maxTimeSteps</span> X 30 and 
+		 at most (<span class="output">maxTimeSteps</span> + 1) X 30.</p></td>
+	</tr>
+</table>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Save 
+ the file.</p>
+<p class="prtproceduretitle"><a name="XREF_15372_To_fix_clock_drift"></a>To 
+ fix minor drift by synchronizing the token</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Administration interface (<a href="../usingadmininterface/logging_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging 
+ in and out of the Administration interface</a>).</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Locate 
+ the problem token in one of two ways:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find a 
+ user’s token</p>
+<p class="liplistparagraph">See <a href="finding_assigned_token_information.htm#XREF_prt_To_display_a_user_s">To 
+ find a user’s token information </a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find an 
+ assigned token</p>
+<p class="liplistparagraph">See <a href="finding_assigned_token_information.htm#XREF_prt_To_display_assigned">To 
+ search for assigned token information </a>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>After 
+ you locate the token in the Administration interface, click <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Synchronize 
+ Token</span>. What happens next depends on the token’s vendor and type.</p>
+<p class="prpprocedureparagraph">For some tokens, clicking <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Synchronize 
+ Token </span>is all that is needed. In this case, a confirmation message 
+ appears.</p>
+<p class="prpprocedureparagraph">In other cases, the <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Synchronize 
+ Token</span>&#160;page appears. </p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Synchronize a user’s Token</span>&#160;page 
+ appears, enter the required responses. Depending on the token vendor and 
+ type, the page asks for one or two token responses. If you are unsure 
+ how many responses to enter, first try with just one response.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>When one 
+ response is required, generate and enter a token password in the <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Response 
+ 1 </span>field.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>When one 
+ response is asked for but is optional, you can either enter the response 
+ in the<span style="font-weight: bold;"> Response 1</span>&#160;field, 
+ or leave the field blank. If you leave the field blank, the attempt to 
+ synchronize will be made the next time the user authenticates.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>When two 
+ responses are required, enter two token passwords generated in succession 
+ in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Response 1</span>&#160;and <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Response 
+ 2 </span>fields.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Synchronize 
+ Token</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Token 
+ Details </span>or <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+						 text-decoration: none; ">Account Information</span>&#160;page 
+ reappears. A message at the top informs you if the synchronization operation 
+ succeeded or failed.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>Hardware 
+ and software OT tokens do not behave the same way when reset. When a software 
+ OT token is reset, the drift time is reduced to zero. When a hardware 
+ OT token is reset, the drift time is reduced by half. If the time drift 
+ is big enough, it might require more than one reset to synchronize the 
+ hardware OT token.</p>
+<p class="pparagraph">If this procedure does not fix the problem, see <a 
+	 href="#XREF_17222_To_fix_large_event">To fix large drift by increasing 
+ the size of the event or clock window</a>.</p>
+<p class="pparagraph">The following procedure help you correct drift if 
+ the above procedure is not successful in synchronizing the token.</p>
+<p class="prtproceduretitle"><a name="XREF_17222_To_fix_large_event"></a>To 
+ fix large drift by increasing the size of the event or clock window</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find 
+ the <span class="output" style="font-family: Courier; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; ">entrusttoken.conf</span>&#160;file 
+ (or an equivalent file with a different name). If the file does not exist, 
+ create it as a text file. The default location is:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on UNIX, 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; ">$IG_HOME/etc/ </span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on Microsoft 
+ Windows, <span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 10.0pt; color: #000000; 
+				 letter-spacing: 0.00em; text-decoration: none; ">&lt;$IG_HOME&gt;\etc\</span></p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Add 
+ one of the following entries to the file:</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 26.898%;" />
+	<col style="width: 73.102%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">If you 
+		 are synchronizing...</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Add...</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Event-based 
+		 tokens including</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust 
+		 Mini-token&#160;AT (time and event)</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust 
+		 Pocket Token&#160;</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext" 
+														 style="font-family: Courier;"><span 
+		 class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; ">resetEventWindow=&lt;size&gt;</span></p>
+		<p class="tattabletext">where <span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; ">&lt;size&gt;</span>&#160;is 
+		 the number of token responses that Entrust IdentityGuard searches 
+		 during a token synchronization in order to find a token response 
+		 that matches what the user entered. The number must be an integer 
+		 divisible by 10, for example:</p>
+		<p class="tattabletext" style="font-family: Courier;"><span class="output" 
+		 style="font-family: Courier; font-style: normal; font-weight: normal; 
+		 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">resetEventWindow=200</span></p>
+		<p class="tattabletext">The default is 100. This means that administrators 
+		 with the appropriate privileges are able to synchronize tokens 
+		 for which the event window has gone out of sync by fewer than 
+		 100 events.</p>
+		<p class="tattabletext">The minimum is 10. There is no maximum.</p>
+		<p class="tattabletext">Increase the <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">resetEventWindow</span>&#160;parameter 
+		 incrementally and with care. As you increase its value, you also 
+		 increase the likelihood of a random value accidentally matching.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Entrust 
+		 time-based OT tokens including</p>
+		<p class="tattabletext">soft tokens in Entrust IdentityGuard Desktop 
+		 Soft Token application or the Entrust IdentityGuard Mobile ST 
+		 app</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust 
+		 Mini-token OT (time only)</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust 
+		 Pocket Token </p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext" 
+														 style="font-family: Courier;"><span 
+		 class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; ">maxResetTimeSteps=&lt;timestep&gt;</span></p>
+		<p class="tattabletext">where <span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; ">&lt;timestep&gt;</span>&#160;is 
+		 a number of timesteps that Entrust IdentityGuard searches in both 
+		 the positive and negative direction during a synchronization operation 
+		 in order to find a token response that matches what the user entered. 
+		 </p>
+		<p class="tattabletext">One timestep = 30 seconds.</p>
+		<p class="tattabletext">Examples:</p>
+		<p class="tattabletext"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">maxResetTimeSteps=120</span> 
+		 (60 minutes)<br />
+		<span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 10.0pt; color: #000000; 
+				 letter-spacing: 0.00em; text-decoration: none; ">maxResetTimeSteps=60</span> 
+		 (30 minutes)</p>
+		<p class="tattabletext">The default is 120 (60 minutes).</p>
+		<p class="tattabletext">There is no minimum. The maximum is 1200 
+		 (10 hours). </p>
+		<p class="tattabletext">Increase the <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">maxResetTimeSteps</span>&#160;parameter 
+		 incrementally and with care. As you increase its value, you also 
+		 increase the likelihood of a random value accidentally matching.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Time-based 
+		 tokens including </p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust 
+		 Mini-token AT (time and event)</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust 
+		 Mini-token OT (time only)</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust 
+		 Pocket Token</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext" 
+														 style="font-family: Courier;"><span 
+		 class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; ">resetClockWindow=&lt;minutes&gt;</span></p>
+		<p class="tattabletext">where <span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; ">&lt;minutes&gt;</span>&#160;is 
+		 the number of minutes that Entrust IdentityGuard searches during 
+		 a token synchronization in order to find a token response that 
+		 matches what the user entered. </p>
+		<p class="tattabletext">Example:</p>
+		<p class="tattabletext" style="font-family: Courier;"><span class="output" 
+		 style="font-family: Courier; font-style: normal; font-weight: normal; 
+		 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">resetClockWindow=60</span></p>
+		<p class="tattabletext">The default is 60. This means that administrators 
+		 with the appropriate privileges are able to reset tokens for which 
+		 the clock has gone out-of-sync by less than 60 minutes in the 
+		 positive or negative direction.</p>
+		<p class="tattabletext">There is no minimum or maximum.</p>
+		<p class="tattabletext" style="font-family: Courier;">Increase 
+		 the <span class="output" style="font-family: Courier; font-style: normal; 
+					 font-weight: normal; font-size: 10.0pt; color: #000000; 
+					 letter-spacing: 0.00em; text-decoration: none; ">resetClockWindow</span>&#160;parameter 
+		 incrementally and with care. As you increase its value, you also 
+		 increase the likelihood of a random value accidentally matching.</p></td>
+	</tr>
+</table>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Save 
+ the file.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Make 
+ sure the configuration file is assigned to the token vendor in the Properties 
+ Editor.</p>
+<p class="prpprocedureparagraph">Follow the procedure at <a href="ensuring_the_token_configuration_file_is_assigned.htm#XREF_78186_To_ensure_that_the">To 
+ ensure that the token configuration file is assigned</a>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Administration interface and synchronize the token. (See <a 
+	 href="#XREF_15372_To_fix_clock_drift">To fix minor drift by synchronizing 
+ the token</a>.)</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ this procedure does not correct the problem, edit <span style="font-family: Courier;">entrusttoken.conf</span>&#160;with 
+ a larger value for <span style="font-family: Courier; font-size: 9.0pt;">resetEventWindow</span>&#160;or 
+ <span style="font-family: Courier; font-size: 9.0pt;">maxResetTimeSteps 
+ </span>and synchronize again.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Restore 
+ the settings in the <span class="output" style="font-family: Courier; 
+							 font-style: normal; font-weight: normal; font-size: 10.0pt; 
+							 color: #000000; letter-spacing: 0.00em; text-decoration: none; ">entrusttoken.conf</span>&#160;file 
+ to their original values after synchronizing the tokens.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

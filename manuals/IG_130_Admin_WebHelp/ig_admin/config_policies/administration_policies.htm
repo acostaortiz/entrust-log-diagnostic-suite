@@ -1,0 +1,305 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_policies.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Administration policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nPolicies quick reference\nAdministration policies");
+addAvenueInfo("r13_std","ig_admin/config_policies/basic_policy_settings.htm","ig_admin/config_policies/authentication_types_policies.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"policies_quick_reference.htm\">Policies quick reference<\/a> > Administration policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_17162_Administration" id="XREF_17162_Administration"></a>Administration 
+ policies</h1>
+<p class="pparagraph">These policies control settings related to an administrator’s 
+ use of the Administration interface and the Properties Editor. They also 
+ apply to any applications that use the Administration API.</p>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Idle 
+ Timeout</a></p>
+<div class="droptext" id="POPUP679362216" style="display: none;">
+	<p class="RefItemBody">Specifies the number of minutes an Administration 
+	 API session can remain idle before the session is terminated. This 
+	 affects the Administration interface, and any application that uses 
+	 the Administration API. </p>
+	<p class="RefItemBody">This setting does not include the Properties 
+	 Editor&#160;because the Properties Editor only uses the Administration 
+	 API for authentication.</p>
+	<p class="RefItemBody">Default: 15</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Confirmation 
+ Interval</a></p>
+<div class="droptext" id="POPUP824825093" style="display: none;">
+	<p class="RefItemBody">Specifies the interval, in seconds, at 
+	 which IdentityGuard validates that the currently logged in user is 
+	 authorized to perform administrative functions in IdentityGuard. If 
+	 this validation finds that a user is deleted, disabled, or no longer 
+	 has an administrative role, subsequent operations through IdentityGuard 
+	 Administration will fail.</p>
+	<p class="RefItemBody">Set to <span class="FM_bold" style="font-weight: bold; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">Never</span>&#160;to 
+	 have the confirmation interval last an unlimited amount of time. With 
+	 this setting, the administrative user is validated only at login.</p>
+	<p class="RefItemBody">Set a number of seconds to specify how 
+	 frequently the validation should occur.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set 
+	 to 0 to have the system validate the user for each administrative 
+	 request. This setting may have an impact on performance.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set 
+	 to a number of seconds to between validations. A small value means 
+	 there will be frequent validations, which may have an impact on performance. 
+	 A large value means that it will take longer for changes in the administrator 
+	 status to be recognized. </p>
+	<p class="RefItemBody">Default: Never</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />First-Factor 
+ Authentication Type</a></p>
+<div class="droptext" id="POPUP825503087" style="display: none;">
+	<p class="RefItemBody">Specifies either password or external 
+	 login for administrators.</p>
+	<p class="RefItemBody">Set this policy to <span class="FM_bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">External</span>&#160;if 
+	 you want to use the Active Directory password, for example, instead 
+	 of the Entrust IdentityGuard password to log in to the Administration 
+	 interface.</p>
+	<p class="RefItemBody">Default: Password</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Second-Factor 
+ Authentication Type</a></p>
+<div class="droptext" id="POPUP675641672" style="display: none;">
+	<p class="RefItemBody">Determines if an administrator, after 
+	 logging in with a password, receives a second-factor authentication 
+	 challenge. You can select one of:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>GRID: 
+	 authenticates with a card or temporary PIN.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>TOKEN 
+	 (Response-Only): authenticates using a dynamic password generated 
+	 by a response-only token, or a temporary PIN.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>TOKEN 
+	 (Challenge and Response): authenticates using a dynamic password generated 
+	 by a challenge-and-response token, or a temporary PIN.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>None: 
+	 requires no second-factor authentication.</p>
+	<p class="RefItemBody">Default: None</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ SAML Authentication</a></p>
+<div class="droptext" id="POPUP677094820" style="display: none;">
+	<p class="RefItemBody">Select this option to enable single-sign 
+	 on to the Administration interface from Federation Module or other 
+	 SAML-enabled applications. For more information, see <a href="../config_adminsso/saml_authentication_to_the_administration_interface.htm">Configuring 
+	 SAML authentication to the Administration interface</a>.</p>
+	<p class="RefItemBody">Default: No.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ Smart Credential Authentication </a></p>
+<div class="droptext" id="POPUP677207227" style="display: none;">
+	<p class="RefItemBody">Select this option to enable single-sign 
+	 on to the Administration interface or administrative users who have 
+	 logged in to their computer using smart credentials. </p>
+	<p class="RefItemBody">Default: No</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ External Smart Credential Authentication</a></span></p>
+<div class="droptext" id="POPUP535530259" style="display: none;">
+	<p class="RefItemTitle">Select this option to enable smart credential 
+	 login to the Administration interface with smart credentials created 
+	 by a vendor other than Entrust IdentityGuard. </p>
+	<p class="RefItemTitle">Default: No.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ Header-Based Authentication</a></p>
+<div class="droptext" id="POPUP679308531" style="display: none;">
+	<p class="RefItemBody">This feature will be available in a future 
+	 release.</p>
+	<p class="RefItemBody">Default: No</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP679362216');
+	TextPopupInit('a2','POPUP824825093');
+	TextPopupInit('a3','POPUP825503087');
+	TextPopupInit('a4','POPUP675641672');
+	TextPopupInit('a5','POPUP677094820');
+	TextPopupInit('a6','POPUP677207227');
+	TextPopupInit('a7','POPUP535530259');
+	TextPopupInit('a8','POPUP679308531');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

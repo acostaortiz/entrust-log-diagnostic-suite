@@ -1,0 +1,128 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title> WebHelp Navigation Toolbar </title>
+
+<meta name="generator" content="Adobe RoboHelp 11" />
+<meta name="description" content="WebHelp 5.50" />
+<style>
+<!--
+body {margin:0;}
+-->
+</style>
+<script  src="whver.js" charset="utf-8"></script>
+<script  src="whutils.js" charset="utf-8"></script>
+<script  src="whmsg.js" charset="utf-8"></script>
+<script  src="whproxy.js" charset="utf-8"></script>
+<script  src="whmozemu.js" charset="utf-8"></script>
+<script  src="whtbar.js" charset="utf-8"></script>
+<script type="text/javascript" language="JavaScript1.2" src="toggle.js"></script>
+
+<script type="text/javascript" language="JavaScript1.2">
+//<![CDATA[
+var printAction = function()
+{
+var topicPane = top.frames[1].frames[1];
+topicPane.focus();
+topicPane.print();
+}
+
+//]]>
+</script>
+</head>
+<body marginheight="0"  marginwidth="0"  bgcolor="#f0f0f0"    background="banner.png"  scroll="no">
+<script language="javascript1.2">
+<!--
+if (window.gbWhTBar)
+{
+	setButtonFont("toc","Arial","8pt","Black","Normal","Bold","none");
+setButtonFont("toc","Arial","8pt","Black","Normal","Bold","none", true);
+setButtonFont("idx","Arial","8pt","Black","Normal","Bold","none");
+setButtonFont("idx","Arial","8pt","Black","Normal","Bold","none", true);
+setButtonFont("fts","Arial","8pt","Black","Normal","Bold","none");
+setButtonFont("fts","Arial","8pt","Black","Normal","Bold","none", true);
+setButtonFont("glo","Arial","8pt","Black","Normal","Bold","none");
+setButtonFont("glo","Arial","8pt","Black","Normal","Bold","none", true);
+setButtonFont("searchform","Arial","8pt","Black","Normal","Bold","none");
+setButtonFont("searchform","","","","","","", true);
+setButtonFont("banner","","","","","","");
+setButtonFont("banner","","","","","","", true);
+setButtonFont("custom7838","Arial","8pt","Black","Normal","Bold","none");
+setButtonFont("custom7838","Arial","8pt","Black","Normal","Bold","none", true);
+setButtonFont("custom22915","Arial","8pt","Black","Normal","Bold","none");
+setButtonFont("custom22915","Arial","8pt","Black","Normal","Bold","none", true);
+setButtonFont("custom6704","Arial","8pt","Black","Normal","Bold","none");
+setButtonFont("custom6704","Arial","8pt","Black","Normal","Bold","none", true);
+setButtonFont("custom5301","Arial","8pt","Black","Normal","Bold","none");
+setButtonFont("custom5301","Arial","8pt","Black","Normal","Bold","none", true);
+
+	gsIToc = "wht_toc_n.gif";
+	gsITocS = "wht_toc_h.gif";
+	gsIIndex = "wht_idx_n.gif";
+	gsIIndexS = "wht_idx_h.gif";
+	gsISearch = "wht_fts_n.gif";
+	gsISearchS = "wht_fts_h.gif";
+	gsIGlossary = "wht_glo_n.gif";
+	gsIGlossaryS = "wht_glo_h.gif";
+	gsIWebSearch = "wht_ws.gif";
+	gsIWebSearchD = "wht_ws_g.gif";
+	gsIBanner = "wht_logo1.gif";
+	gsIGo = "wht_go.gif";
+	setBackgroundcolor("#f0f0f0");
+	setBackground("banner.png");
+	setAlignment("left");
+	setGoImage("selectsearch.gif");
+	
+	if (!gsBgImage)
+	{
+	setButtonBgColor("toc", gsBgColor);
+	setButtonBgColor("idx", gsBgColor);
+	setButtonBgColor("fts", gsBgColor);
+	setButtonBgColor("glo", gsBgColor);
+	setButtonBgColor("toc", gsTBSelectedBgColor, true);
+	setButtonBgColor("idx", gsTBSelectedBgColor, true);
+	setButtonBgColor("fts", gsTBSelectedBgColor, true);
+	setButtonBgColor("glo", gsTBSelectedBgColor, true);
+	setButtonBgColor("toc","#f0f0f0");
+setButtonBgColor("idx","#f0f0f0");
+setButtonBgColor("fts","#f0f0f0");
+setButtonBgColor("glo","#f0f0f0");
+setButtonBgColor("searchform","");
+setButtonBgColor("banner","");
+setButtonBgColor("custom7838","#f0f0f0");
+setButtonBgColor("custom22915","#f0f0f0");
+setButtonBgColor("custom6704","#f0f0f0");
+setButtonBgColor("custom5301","#f0f0f0");
+
+	}
+	setButtonBgColor("toc","#f0f0f0", true);
+setButtonBgColor("idx","#f0f0f0", true);
+setButtonBgColor("fts","#f0f0f0", true);
+setButtonBgColor("glo","#f0f0f0", true);
+setButtonBgColor("searchform","", true);
+setButtonBgColor("banner","", true);
+setButtonBgColor("custom7838","#f0f0f0", true);
+setButtonBgColor("custom22915","#f0f0f0", true);
+setButtonBgColor("custom6704","#f0f0f0", true);
+setButtonBgColor("custom5301","#f0f0f0", true);
+
+	addButton("toc",BTN_TEXT|BTN_IMG,"TOC","","","","",0,0,"selecttoc.gif","selecttoc.gif","","selecttoc.gif","","");
+addButton("idx",BTN_TEXT|BTN_IMG,"Index","","","","",0,0,"indexicon.gif","indexicon.gif","","indexicon.gif","","");
+addButton("fts",BTN_TEXT|BTN_IMG,"Search","","","","",0,0,"selectsearch.gif","selectsearch.gif","","selectsearch.gif","","");
+addButton("glo",BTN_TEXT|BTN_IMG,"Glossary","","","","",0,0,"selectglossary.gif","selectglossary.gif","","selectglossary.gif","","");
+addButton("searchform",BTN_TEXT,"","","","","",0,0,"","","","","","");
+addButton("custom7838",BTN_TEXT|BTN_IMG,"Print","","printAction()","","",0,0,"print.gif","print.gif","","print.gif","","");
+addButton("custom22915",BTN_TEXT|BTN_IMG,"Back","","history.go(-1)","","",0,0,"selectbrowsesequenceback.gif","selectbrowsesequenceback.gif","","selectbrowsesequenceback.gif","","");
+addButton("custom6704",BTN_TEXT|BTN_IMG,"Forward","","history.go(1)","","",0,0,"selectbrowsesequence.gif","selectbrowsesequence.gif","","selectbrowsesequence.gif","","");
+addButton("custom5301",BTN_TEXT,"Show All / Hide All","","toggle()","","",0,0,"","","","","","");
+
+	addButton("blankblock");
+	writeStyle(false);
+	ReSortToolbarButtons();
+}
+else
+	document.location.reload();
+//-->
+</script>
+</body>
+</html>

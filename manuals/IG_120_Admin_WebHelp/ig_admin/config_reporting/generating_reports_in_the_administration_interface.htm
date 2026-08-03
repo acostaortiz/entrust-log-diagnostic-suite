@@ -1,0 +1,349 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_reporting.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Generating reports in the Administration interface</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring reports\nGenerating and managing reports\nGenerate reports in the Administration interface");
+addAvenueInfo("Untitled02","ig_admin/config_reporting/generating_and_managing_reports.htm","ig_admin/config_reporting/viewing_reports.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_reporting.htm\">Configuring reports<\/a> > <a href=\"generating_and_managing_reports.htm\">Generating and managing reports<\/a> > Generate reports in the Administration interface<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1><a name="XREF_90795_Generating_reports" id="XREF_90795_Generating_reports"></a>Generate reports in the Administration interface</h1>
+<p class="pparagraph">There are many reports available that you can run right away. To launch a report, follow the instructions in the following procedure.</p>
+<p class="pparagraph">You cannot schedule reports to run at specific times. You must launch them manually.</p>
+<p class="prtproceduretitle"><a name="XREF_17788_To_create_reports" id="XREF_17788_To_create_reports"></a>To create reports in the Administration interface</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt; 
+	 <span class="bold">Administration Interface</span>.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;UNIX 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="liplistparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="liplistparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="liplistparagraph">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="liplistparagraph">or 
+	 other login scenarios, see </p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Reports</span>.</p>
+
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Select a report</span> screen appears, displaying the list of available reports.</p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />The list each administrator sees may be different, depending on the administrator's permissions and on repository settings</a>.</p>
+<div class="droptext" id="POPUP621306901" style="display: none;">
+<p class="prpprocedureparagraph">&#160;If the administrator does not have permission to run the report, it does not appear in the list.&#160;See <a href="Report_permissions.htm#XREF_26167_Report_permissions">Report permissions</a>.</p>
+<p class="prpprocedureparagraph">In addition, the list of reports that appears can depend on your repository settings:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The audit reports appear only if you have enabled the Audits to Database feature. For more information, see <a href="../config_logging/configuring_an_audit_database1.htm#XREF_59990_Configuring_audit">Configuring an audit database</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you do not have a preproduced card repository set up, you do not see the <span style="font-weight: bold;">Unassigned Card</span>&#160;report. This is often the case when you are using a replica LDAP directory-based installation.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If do not have token repository set up, you do not see the <span style="font-weight: bold;">Unassigned Token</span>&#160;report. This is often the case when you are using a replica LDAP directory-based installation.</p>
+</div>
+<div>
+<p class="prpprocedureparagraph"><img alt="AI-Reports-select_a_report-all00147.jpg" id="image23" src="ai-reports-select_a_report-all00147.jpg" width="495" height="446" border="0" name="image23" /></p>
+</div>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select the report you want to run, and click <span style="font-weight: bold;">Next</span>.</p>
+
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Choose your report options</span> screen appears.</p>
+<p class="prpprocedureparagraph">The top portion of the screen shows the general report options. It displays the name of the report you have chosen and the information message you configured in the Properties Editor (<span class="bold">Report Definitions &gt; Report Information</span>), if specified.</p>
+<p class="prpprocedureparagraph">It also displays the output format to use for the report.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-choose_report_options.jpg" id="image1" src="ai-reports-choose_report_options.jpg" width="552" height="354" border="0" name="image1" /></p>
+</div>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Specify the following options for your report:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Report Description</span> — Enter a text description of the report being generated. This is a mandatory field, and in the default case, this description is displayed in the report. You can enter a maximum of 255 characters.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Use this field to describe the search criteria you are using. This helps you and other administrators tell the difference between two reports with the same report name when you look at the results later.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Do Not Include Description in Report</span>&#160;— Select this option only if you do not want the report description displayed in the report. Typically, it is useful to have this information displayed in the report (default setting)</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Display Summary Only</span>&#160;— Select this option to&#160;display only the summary of the report, if a summary is available for that report type. If a summary is not available, the full report is generated. You can find out whether the report template includes a summary by reading the information message at the top of the form.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Time Zone For Report</span>&#160;— Select the applicable time zone from the drop-down list. The default is the time zone of the Entrust IdentityGuard server.&#160;Reports generated for your time zone use your current local time, adjusted for Daylight Savings Time (DST).</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> This&#160;setting label does not reflect whether the time zone uses Daylight Savings Time (DST).</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Use the personal query section of the report options screen to select a personal query for reporting (if there are any).</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-use_personal_query.jpg" id="image2" src="ai-reports-use_personal_query.jpg" width="552" height="109" border="0" name="image2" /></p>
+</div>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>See <a href="managing_your_report_search_criteria.htm#XREF_78635_To_report_search">To create personal report queries</a>&#160;to set up personal report queries.</p>
+
+<p class="prpprocedureparagraph">OR</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you have already set up a personal query for the current report type, select one from the <span style="font-weight: bold;">Personal Query</span>&#160;drop-down list.&#160;After you select&#160;one, the starting set of search criteria for your report are displayed in the search criteria pane below.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select the search criteria for the report you are generating. The search criteria screen is different for each of the different data sources. Select an item in the following list to see more detail.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Audit search criteria</span>.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> When you have an audit database configured, you can create audit reports. See <a href="../config_igserver/configure_an_audit_database.htm#XREF_79673_Configuring_an">Configuring an audit database</a> for instructions.</p>
+<p class="prspsubprocedureparagraph">For instructions on using the audit search criteria, see <a href="../config_logging/view_historical_audits_in_the_administration_interface.htm#XREF_77798_To_find_audits_to">To find audits to view in the Administration interface</a>.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-Audit_search_criteria.jpg" id="image3" src="ai-reports-audit_search_criteria.jpg" width="552" height="191" border="0" name="image3" /></p>
+</div>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Biometric search criteria</span>.</p>
+
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-Biometric_search_criteria.jpg" id="image4" src="ai-reports-biometric_search_criteria.jpg" width="508" height="276" border="0" name="image4" /></p>
+</div>
+<p class="prspsubprocedureparagraph">For instructions on using the biometric search pane, see <a href="../biometricauth/finding_biometric_information.htm#XREF_77431_Finding_biometric">Finding biometric information</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are generating a <span style="font-weight: bold;">Card</span>&#160;report, select the <span style="font-weight: bold;">Card search criteria</span>.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-card_search_criteria.jpg" id="image5" src="ai-reports-card_search_criteria.jpg" width="552" height="344" border="0" name="image5" /></p>
+</div>
+<p class="prspsubprocedureparagraph">For instructions on using the card search pane, see <a href="../gridauthentication/finding_grid_card_information.htm#XREF_58969_Finding_card">Finding grid card information</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are generating a <span style="font-weight: bold;">Certificate</span>&#160;report, select the <span style="font-weight: bold;">Certificate search criteria</span>.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-certificate_search_criteria.jpg" id="image6" src="ai-reports-certificate_search_criteria.jpg" width="552" height="403" border="0" name="image6" /></p>
+</div>
+<p class="prspsubprocedureparagraph">For instructions on using the certificate search pane, see <a href="../certauth/finding_user_certificates.htm#XREF_85872_Assigning_user">Finding user certificates</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are generating a <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Digital ID</span> report, select the digital ID search criteria.</p>
+
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-DigID_search_criteria.jpg" id="image7" src="ai-reports-digid_search_criteria.jpg" width="619" height="194" border="0" name="image7" /></p>
+</div>
+<p class="prspsubprocedureparagraph">For instructions on using the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Digital ID search criteria</span>&#160;pane, see <a href="../adminme/finding_digital_ids.htm#XREF_36001_Finding_digital_ID">Finding digital IDs</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are generating a <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Smart Credential</span>&#160;report, select the smart credential search criteria.</p>
+
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-SC_search_criteria.jpg" id="image8" src="ai-reports-sc_search_criteria.jpg" width="583" height="352" border="0" name="image8" /></p>
+</div>
+<p class="prspsubprocedureparagraph">For instructions on using the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Smart credential search criteria</span>&#160;pane, see <a><span class="hyperlink" style="font-family: Syntax; font-style: normal; font-weight: normal; color: #0000ff; letter-spacing: 0.00em; text-decoration: none;">“To search for assigned smart credentials” on page&#160;1589</span></a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are generating a <span style="font-weight: bold;">Token</span>&#160;report, select the <span style="font-weight: bold;">Token search criteria</span>.&#160;The <span style="font-weight: bold;">Token Vendor</span>&#160;field appears only if you have more than one token vendor configured.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports_-_token_Search_criteria.jpg" id="image9" src="ai-reports_-_token_search_criteria.jpg" width="552" height="356" border="0" name="image9" /></p>
+</div>
+<p class="prspsubprocedureparagraph">For instructions on using the token search pane, see <a href="../tokenauth/finding_assigned_token_information.htm#XREF_58969_Finding_card">Finding assigned token information</a> .</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are generating an <span style="font-weight: bold;">Unassigned Card</span> report, select the <span style="font-weight: bold;">Unassigned card search criteria</span>.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-unassignedcard_search_criteria.jpg" id="image10" src="ai-reports-unassignedcard_search_criteria.jpg" width="552" height="149" border="0" name="image10" /></p>
+</div>
+<p class="prspsubprocedureparagraph">For instructions on using the unassigned card search pane, see <a href="../gridauthentication/finding_unassigned_grid_card_information.htm#XREF_62650_Finding_unassigned">Finding unassigned grid card information</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are generating an <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Unassigned Smart Credential</span>&#160;report, select the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Unassigned smart credential search criteria</span>.</p>
+
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-Unassigned_SC_search_criteria.jpg" id="image11" src="ai-reports-unassigned_sc_search_criteria.jpg" width="409" height="251" border="0" name="image11" /></p>
+</div>
+<p class="prspsubprocedureparagraph">For instructions on using the <span class="bold">Unassigned smart credential search criteria</span>&#160;pane, see the <span class="italic">Entrust IdentityGuard Smart Credentials Guide</span>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are generating an <span style="font-weight: bold;">Unassigned Token</span>&#160;report, select the <span style="font-weight: bold;">Unassigned token search criteria</span>.&#160;The <span style="font-weight: bold;">Token Vendor</span>&#160;field appears only if you have more than one token vendor configured.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-unassignedtoken_search_criteria.jpg" id="image12" src="ai-reports-unassignedtoken_search_criteria.jpg" width="552" height="173" border="0" name="image12" /></p>
+</div>
+<p class="prspsubprocedureparagraph">For instructions on using the unassigned token search pane, see <a href="../tokenauth/finding_unassigned_token_information.htm#XREF_51085_Displaying">Finding unassigned token information</a> .</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are generating a <span style="font-weight: bold;">User</span>&#160;report, select the <span style="font-weight: bold;">User search criteria</span>.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-user_search_criteria.jpg" id="image13" src="ai-reports-user_search_criteria.jpg" width="552" height="314" border="0" name="image13" /></p>
+</div>
+<p class="prspsubprocedureparagraph">For instructions on using the user search pane, see <a href="../useradminsection/searching_for_user_information.htm#XREF_74420_To_find_users_by">To find users by user account information</a>.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To&#160;save this set of search criteria so that you can run it again in the future, select <span style="font-weight: bold;">Save As Personal Query</span>, and enter a name to use when saving the query.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Personal queries you create and save are not visible to others, and cannot be shared with other administrators.</p>
+<p class="prpprocedureparagraph">If you are using a personal query, the name of the personal query appears automatically in this pane. This allows you to update an existing query or create a new one, as required.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-Save_as_personal_query.jpg" id="image14" src="ai-reports-save_as_personal_query.jpg" width="552" height="161" border="0" name="image14" /></p>
+</div>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Generate Report</span> to start the report creation.</p>
+
+<p class="prpprocedureparagraph">The report list appears with the newly created report at the top of the list.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-new_report_gen_started.jpg" id="image15" src="ai-reports-new_report_gen_started.jpg" width="574" height="359" border="0" name="image15" /></p>
+</div>
+<p class="prpprocedureparagraph">When the report generation is complete, the list entry for the new report shows the <span style="font-weight: bold;">Success Status</span>, and an Adobe (PDF) or Microsoft (CSV) icon in the <span style="font-weight: bold;">Download</span> column.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> You may cancel report generation while the report is in the queue, as long as it has not yet started the data acquisition stage. After the report starts to acquire data,&#160;it cannot be canceled.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-report_generation_successful.jpg" id="image16" src="ai-reports-report_generation_successful.jpg" width="569" height="384" border="0" name="image16" /></p>
+</div>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click the Adobe or Microsoft icon to view the report.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> You must have Adobe Reader<sup><span style="font-family: 'Times New Roman';">®</span></sup>&#160;or a similar PDF reader installed to view the PDF files.</p>
+<p class="prpprocedureparagraph">The first page of an example PDF report is shown here.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Reports-PDF_report.jpg" id="image17" src="ai-reports-pdf_report.jpg" width="552" height="424" border="0" name="image17" /></p>
+</div>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a2','POPUP521422358');
+	TextPopupInit('a3','POPUP521478110');
+	TextPopupInit('a1','POPUP621306901');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring a managed CA (Security Manager CA)</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 9: Configure a managed CA\nConfiguring a managed CA (Security Manager CA)");
+addAvenueInfo("Untitled02","ig_admin/enablingme/step_9_configure_a_managed_ca.htm","ig_admin/enablingme/configuring_a_managed_ca_microsoft_ca.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobile-enrollment-for-digital-ids.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > <a href=\"step_9_configure_a_managed_ca.htm\">Step 9: Configure a managed CA<\/a> > Configuring a managed CA (Security Manager CA)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_18294_Configuring_a" id="XREF_18294_Configuring_a"></a>Configuring a managed CA (Security Manager CA)</h1>
+<p class="pparagraph">At this point, you should have one or two EPF files&#160;on the Entrust IdentityGuard server:</p>
+
+<p class="lilistbullet" style="margin-bottom: 3.000pt; font-family: Courier; font-size: 9.0pt;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">XAPadministrator.epf</span></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">IGSCEPadministrator.epf</span> (only required if enabling SCEP digital IDs)</p>
+
+<p class="pparagraph">You must now create a managed CA configuration in Entrust IdentityGuard. This involves specifying your Security Manager CA host&#160;name or IP, and loading the EPF&#160;file or files mentioned above. Follow the instructions below.</p>
+<p class="prtproceduretitle">To configure a Security Manager managed CA</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt; 
+	 <span class="bold">Administration Interface</span>.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;UNIX 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="liplistparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="liplistparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="liplistparagraph">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="liplistparagraph">or 
+	 other login scenarios, see </p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From the top menu, click <span style="font-weight: bold;">Certificates</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">List Managed CAs</span>.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Create Managed CA</span>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">Managed CA Name</span> field, enter a globally unique friendly name for the CA.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For the <span style="font-weight: bold;">Vendor</span>, select <span style="font-weight: bold;">Entrust</span>.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">PKI Host</span>&#160;field, enter the fully qualified host name or IP address of the computer hosting Security Manager. This information is specified in Security Manager’s <span class="output">entrust.ini</span>&#160;file, under <span class="output">Authority=</span>.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">Directory Host</span>&#160;field, enter the fully qualified domain name or IP address of the computer running the LDAP directory that Security Manager is using. This information is specified in Security Manager’s <span class="output">entrust.ini</span> <span class="output" style="font-family: Courier; font-size: 9.0pt;"></span>file, under <span class="output">Server=</span>.</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">LDAP Port</span>&#160;field, enter the port on which the LDAP directory service is running. If you do not specify a port, the default is used (389). This port is specified in Security Manager’s <span class="output">entrust.ini</span>&#160;file, under <span class="output">Server=</span>.</p>
+
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="FM_Emphasis" style="font-style: italic;">This field applies only to an Entrust CA</span>. In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">LDAP User</span>&#160;field, enter the name of the LDAP user account used to connect to the CA repository. This argument is optional. If specified, the CA operations performed when managing smart credentials use the specified LDAP account to connect to the CA repository instead of connecting anonymously. If you entered an LDAP User name, enter the password for this account in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">LDAP password</span>&#160;and the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Confirm LDAP password</span> fields.</p>
+
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="FM_Emphasis" style="font-style: italic;">This option applies only to an Entrust CA</span>. Enable the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">LDAP Uses SSL</span>&#160;option to specify that the LDAP connection must use SSL. In addition to enabling this option, you must load the SSL certificate of the LDAP&#160;server into the Entrust IdentityGuard trust store. See <a href="../config_igserver/securing_the_ldap_connection_with_ssl.htm#XREF_26144_Reconfiguring_LDAP">To import the LDAP SSL certificate or the CA certificate</a>.</p>
+
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><a name="XREF_30535_10_Enable_Publish" id="XREF_30535_10_Enable_Publish"></a>Enable <span style="font-weight: bold;">Publish CRL After Revocation</span>&#160;if you want to have your Certificate Revocation List (CRL) republished immediately after you revoke a user’s certificate through the Entrust IdentityGuard Administration interface. The CRL will be updated immediately with the newly revoked certificate, and Entrust IdentityGuard clients will instantly no longer trust it. If you leave <span style="font-weight: bold;">Publish CRL After Revocation</span>&#160;disabled, then the CRL is published on a scheduled interval defined in your CA, typically once every 24 hours, so there may be a delay between the time the certificate is revoked, and the time your clients no longer trust it.</p>
+
+<p class="prpprocedureparagraph">There are benefits and drawbacks to enabling <span style="font-weight: bold;">Publish CRL After Revocation</span>. The benefit, as mentioned earlier, is that revocations take immediate effect; the drawback is that there is an increased load on the CA because it will be republishing its CRL more frequently.</p>
+<p class="prpprocedureparagraph">Entrust recommends that you enable <span style="font-weight: bold;">Publish CRL After Revocation</span>&#160;unless you are experiencing performance issues.</p>
+<p class="prpprocedureparagraph">The default is deselected.</p>
+
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">Revocation Cache Timeout</span>&#160;field, enter a time (in minutes) for which Entrust IdentityGuard should cache the CRL before it gets an updated the list from the Managed CA.</p>
+
+<p class="prpprocedureparagraph">The conditions under which a CA will publish its CRL are determined by that CA. For example, the Entrust CA can be configured to publish a new CRL each time an administrator revokes a user certificate.</p>
+
+<p class="prprocedurestep">14.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the<span style="font-weight: bold;">&#160;XAP Security Store (.epf)</span> field, browse for the <span class="output" style="font-family: Courier; font-size: 9.0pt;"></span><span class="output">XAPadministrator.epf</span>&#160;file. You should have created this Security Store in <a href="creating_an_xap_credential_epf_file.htm#XREF_34264_Create_a_XAP">Creating an XAP credential (EPF file)</a>.</p>
+
+<p class="prprocedurestep">15.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">XAP Security Store Password</span>&#160;and <span style="font-weight: bold;">Confirm XAP Security Store Password</span>&#160;fields, enter the password for <span class="output">XAPadministrator.epf</span>.</p>
+
+<p class="prprocedurestep">16.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the<span style="font-weight: bold;">&#160;PKIX-CMP Port</span> field, enter the PKIX CMP port. If you do not specify a port, the default is used (829). This port is specified in Security Manager’s <span class="output">entrust.ini</span>&#160;file, under <span class="output">Authority=</span> .</p>
+
+<p class="prprocedurestep">17.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">XAP Port</span>&#160;field, enter the XAP port. If you do not specify a port, the default is used (443). This information is specified in Security Manager’s <span class="output">entmgr.ini</span> <span class="output" style="font-family: Courier; font-size: 9.0pt;"></span>file, under <span class="output">XAPlisten=</span>.</p>
+
+<p class="prprocedurestep">18.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Leave the <span style="font-weight: bold;">PIV Content Signer Algorithm</span>&#160;as-is. This setting is for smart credentials.</p>
+
+<p class="prprocedurestep">19.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If you are using SCEP, select the <span class="bold">SCEP Enabled</span> check box, and then complete&#160;the SCEP fields as follows:</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">SCEP Security Store (.epf)</span>&#160;field, browse for the <span class="output">IGSCEPadministrator.epf</span>. You should have created this Security Store in <a href="step_7_create_scep_credentials.htm#XREF_56463_Creating_SCEP">Step 7: Create SCEP credentials</a>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">SCEP Security Store Password</span> and <span style="font-weight: bold;">Confirm SCEP Security Store Password</span>&#160;fields, enter the password for <span class="output">IGSCEPadministrator.epf</span>.</p>
+
+<p class="prpprocedureparagraph">Your page should look similar to the following example.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="ig_webmin_createmanagedca.jpg" id="image10" src="ig_webmin_createmanagedca.jpg" width="410" height="462" border="0" name="image10" /></p>
+</div>
+
+<p class="prprocedurestep">20.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Create Managed CA</span>.</p>
+
+<p class="prpprocedureparagraph">Your CA appears in the list. Leave the page open and proceed to the next section.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="ig_webmin_listcas.jpg" id="image11" src="ig_webmin_listcas.jpg" width="483" height="125" border="0" name="image11" /></p>
+</div>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\Users.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Modifying user information</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("User administration\nManaging users\nModifying user information");
+addAvenueInfo("Untitled02","ig_admin/useradminsection/managing_users.htm","ig_admin/useradminsection/unlocking_accounts.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"user_admnistration.htm\">User administration<\/a> > <a href=\"managing_users.htm\">Managing users<\/a> > Modifying user information<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_52412_Modifying_user" id="XREF_52412_Modifying_user"></a>Modifying user information</h1>
+<p class="pparagraph"><a name="IX_modifying_2" id="IX_modifying_2"></a>You may need to modify user account information when:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>you are adding or modifying contact information</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="IX_modifying_3" id="IX_modifying_3"></a>your users require new or modified aliases</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>you need to assign a user to a different group</p>
+
+<p class="pparagraph">When modifying user information:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are updating the user name in an LDAP-compliant directory, you can do one of the following</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>First update the user name in the directory and then make the corresponding changes in Entrust IdentityGuard.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Create a new user name in the directory and then change the user name in Entrust IdentityGuard. You can then delete the old directory entry.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you move a user to another group, ensure that the user’s user name and aliases are unique within the group (they cannot match another user name or alias in the group).</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you move a user to another group, the associated cards and tokens also automatically move and any new challenges are generated using the policies of the new group. Ensure the card is valid for answering the challenges generated using the new policies. If not, cancel it and issue another card for the user.</p>
+
+<p class="liplistparagraph">Entrust IdentityGuard generates the challenge using the grid size policy. The least-used challenge algorithm generates challenges according to the history of previous challenges using the current card. The least-used algorithm does not update automatically with the policy or group change—you must issue your user a new card with the new challenge policies. See <a href="../gridauthentication/when_to_replace_a_user_grid_card.htm#XREF_45440_When_to_replace_a">When to replace a user grid card</a>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> If an administrator changes the policy governing the maximum number of aliases, shared secrets, or contact information entries allowed for a user to values less than those already assigned to a user, you cannot change and save any fields related to that user's account until the problem is fixed. The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Edit Account</span>&#160;page displays a message informing you how many aliases, shared secrets, or contact information entries must be deleted.</p>
+<p class="prtproceduretitle"><a name="XREF_49416_To_modify_user" id="XREF_49416_To_modify_user"></a>To modify information about a user</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Administration interface (<a href="../usingadmininterface/logging_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging in and out of the Administration interface</a>).</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the main menu, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">User Accounts</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">User Accounts</span>&#160;page appears.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find a specific user in one of two ways:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>use the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Go To Account</span>&#160;tab (see <a href="searching_for_user_information.htm#XREF_82818_Searching_for_user">To search for information about one user</a>)</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>use the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Find Accounts</span>&#160;tab (see <a href="searching_for_user_information.htm#XREF_90670_To_get_a_list_of">To search for information about one or more users</a>)</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Account</span>&#160;pane appears with account and authentication information for the specific user.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="ai-user_account-view_account-fullname_mapped.jpg" id="image52" src="ai-user_account-view_account-fullname_mapped.jpg" width="594" height="269" border="0" name="image52" /></p>
+</div>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Edit Account</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Edit Account</span> page appears.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> If you use a directory as your repository and you have changed a user name entry for a user, Entrust IdentityGuard recognizes the discrepancy and forces you to update the user name when you select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Edit Account</span>. For more information, see <a href="user_name_consistency_between_entrust_identityguard_and_an_ldap.htm#XREF_36705_User_name_labels">User name consistency between Entrust IdentityGuard and an LDAP directory</a>.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-User_Account-Edit_Account.jpg" id="image53" src="ai-user_account-edit_account.jpg" width="552" height="553" border="0" name="image53" /></p>
+</div>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Edit Account</span> page, edit the user information as required:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(If applicable) Change the user name by entering a new user name in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">User Name</span>&#160;field.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select the new group for the user in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Group</span>&#160;drop-down list. (For LDAP repositories, changing the group may not be possible if the group references a different search base.)</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The user ID (group and user name) must be a maximum of 255 characters.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Change the user’s full name by entering a new full name in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">User’s Full Name</span> field.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Add or remove aliases. (For more information about aliases, see <a href="using_aliases.htm#XREF_28839_Using_aliases">Using aliases</a>.)</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To add a new alias, enter a new alias in the text field and click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Add</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">&#160;or press Enter while your cursor is still in the text field</span>.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To remove aliases, select one or more aliases in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Aliases</span>&#160;list and click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Remove</span>. See <a href="../usingadmininterface/selecting_options.htm#XREF_51506_Selecting_from">Selecting options</a>.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Restore</span>&#160;to restore the list of aliases to what it was when the page was initially displayed. This restores deleted aliases and also removes newly added aliases.</p>
+
+<p class="liplistparagraph">Alias guidelines:</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Aliases must contain at least one character and can contain any Unicode characters except for the slash mark (/).</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Aliases are case-insensitive.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Spaces before and after an alias are removed by Entrust IdentityGuard.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Aliases must be unique within a group (an alias cannot match another user name or alias within the group).</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Change the user’s card or token activation time period. (See <a href="../gridauthentication/creating_grid_cards.htm#XREF_43805_Forcing_card_or">Creating grid cards</a>.)</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Add comments to the user account by entering text in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Comments</span>&#160;text box.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create, edit, or delete contact information. (See <a href="administering_contact_information.htm#XREF_16113_Administering">Administering contact information</a>.)</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create, edit, or delete shared secrets. (See <a href="administering_shared_secrets.htm#XREF_11611_Administering">Administering shared secrets</a> .)</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Save Changes</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Account</span> page reappears.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,1111 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configure synchronization with an LDAP directory</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("User administration\nCreating user accounts\nCreate users through LDAP synchronization with a database\nConfigure synchronization with an LDAP directory");
+addAvenueInfo("r13_std","ig_admin/useradminsection/add_databases_for_ldap_synchronization.htm","ig_admin/useradminsection/create_a_user_synchronization_custom_static_filter.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"user_admnistration.htm\">User administration<\/a> > <a href=\"creating_user_accounts.htm\">Creating user accounts<\/a> > <a href=\"create_users_through_ldap_sync_with_a_database.htm\">Create users through LDAP synchronization with a database<\/a> > Configure synchronization with an LDAP directory<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Configure synchronization with an LDAP directory </h1>
+<p class="pparagraph">Complete 
+ the following procedure to configure the settings required to enroll new 
+ users and begin synchronization of user information in an LDAP directory 
+ user repository with Entrust IdentityGuard user information stored in 
+ a supported database. </p>
+<p class="pparagraph">The procedure provides guidance on setting properties 
+ grouped by their function:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Basic 
+ settings for any LDAP directory server used with Entrust IdentityGuard</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Settings 
+ for user enrollment and synchronization</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Settings 
+ for notifications and containers. These settings enable the LDAP directory 
+ server to notify Entrust IdentityGuard when changes to LDAP user data 
+ occur </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Database 
+ settings for synchronization</p>
+<p class="prtproceduretitle">To configure synchronization of an LDAP directory 
+ and Entrust IdentityGuard user accounts</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Open 
+ the Entrust IdentityGuard Properties Editor.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From 
+ the table of contents, click <span style="font-weight: bold;">LDAP Directory 
+ Server Settings </span>(near the top) to see the settings in this properties 
+ group. </p>
+<p class="nonote"><span class="bold">Note:</span> The default settings 
+ for any LDAP Directory Server Settings not described in this procedure 
+ are appropriate for most implementations. You can read their descriptions 
+ in the reference section <a href="../usingpropeditor/ldap_directory_server_settings.htm">LDAP 
+ Directory Server Settings</a>. </p>
+<h3>Basic settings for the LDAP directory server</h3>
+<p class="pparagraph">Most settings in this step apply to an LDAP directory 
+ server used in any use case, not just LDAP directory synchronization.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Based 
+ on the searchbases you identified in the planning phase, create a configuration 
+ instance for each LDAP Directory Server you want to create, and then configure 
+ the following property settings for each instance. </p>
+<p class="prpprocedureparagraph"><span class="bold">LDAP Directory Server 
+ Settings - common group</span></p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 30.856%;" />
+	<col style="width: 69.144%;" />
+	<tr class="t1st">
+		<td style="vertical-align: Top;"><p class="tahtableheader">Select 
+		 a property to see its full description</p></td>
+		<td style="vertical-align: Top;"><p class="tahtableheader">Use 
+		 this value. Where not specified, read the property description</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instances</a></span></p>
+<div class="droptext" id="POPUP621502028" style="display: none;">
+	<p class="RefItemBody">Lists all current LDAP directory configurations. 
+	 Initially, a default configuration exists if you selected a directory 
+	 repository during installation.</p>
+	<p class="RefItemBody">To create a new instance, enter a unique 
+	 name in the empty field and click <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">Add</span>.</p>
+	<p class="RefItemBody">When you create a second or subsequent 
+	 LDAP repository, it inherits the property values defined for the default 
+	 LDAP repository.</p>
+	<p class="RefItemBody">To delete an instance, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+							 text-decoration: none; ">Remove</span>.</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Create 
+		 a configuration for each searchbase from which you will enroll 
+		 and synchronize users. </p>
+		<p class="tattabletext">For a new Entrust IdentityGuard installation 
+		 in which you are setting up LDAP synchronization with a database 
+		 from the start, there should be no default configuration instance.</p>
+		<p class="tattabletext">If your Entrust IdentityGuard installation 
+		 previously had LDAP Configuration Instances configured, do not 
+		 use the default instance settings.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ URL</a></span></p>
+<div class="droptext" id="POPUP542453083" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.url</span></p>
+	<p class="RefItemBody">Provides the URL used to connect to the LDAP 
+	 directory server. This can include a port number and initial context 
+	 prefix to bind to. Encode spaces in the URL as %20. All lookups are 
+	 relative to the given context prefix.</p>
+	<p class="RefItemBody">Syntax:</p>
+	<p class="co3code3">&lt;ldap_server_URL&gt;:&lt;port&gt;/&lt;search_base&gt;</p>
+	<p class="RefItemBody">Where:</p>
+	<p class="RefItemBody"><span class="output">&lt;ldap_server_URL&gt;</span>&#160;is 
+	 the URL to your LDAP directory, including the <span class="output">ldap://&#160;or 
+	 ldaps://</span> prefix</p>
+	<p class="RefItemBody"><span class="output">&lt;port&gt;</span>&#160;is 
+	 the LDAP port. The port is optional if you are using the default port 
+	 (389 for LDAP; 636 for LDAPS)</p>
+	<p class="RefItemBody"><span class="output">&lt;search_base&gt;</span> 
+	 is the searchbase to connect to. For more information, see <a href="../config_igserver/using_a_search_base.htm">Using 
+	 a searchbase</a>.</p>
+	<p class="RefItemBody">For example</p>
+	<p class="co3code3">ldap://myldaphost.com:389/ou=People, dc=AnyCorp,dc=com</p>
+	<p class="RefItemBody">binds to port 389 on the computer myldaphost, 
+	 with <span class="output">ou=People,dc=AnyCorp,dc=com</span> as the 
+	 context prefix.</p>
+	<p class="RefItemBody">You can enter multiple URLs separated by spaces 
+	 as part of a high-availability setup. For the default instance, the 
+	 initial value is set during configuration.</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">&#160;</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Directory 
+ Server Description</a></span></p>
+<div class="droptext" id="POPUP623629937" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.description</span></p>
+	<p class="RefItemBody">Provides a description of the repository. 
+	 The text is used by the Administration interface. The description 
+	 must be unique for all repositories, both LDAP and database.</p>
+	<p class="RefItemBody">Default: the instance name</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">SYNC. 
+		 This setting is specific to the LDAP synchronization feature.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ Vendor</a></span></p>
+<div class="droptext" id="POPUP624049172" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.vendor</span></p>
+	<p class="RefItemBody">Sets the type of LDAP repository being 
+	 used to store users. This setting is required if users that are disabled 
+	 in the LDAP repository are to be automatically suspended in Entrust 
+	 IdentityGuard. The LDAP directory vendor is also required if you want 
+	 to be able to automatically extract user contact information directly 
+	 from the repository.</p>
+	<p class="nonote"><span style="font-weight: bold;">Note:</span> When 
+	 you select an LDAP vendor, you enable features that let you manage 
+	 disabled and expired user accounts (if supported by the selected vendor). 
+	 To explicitly disable the these features, you must set the Repository 
+	 Data policies to <span class="output">False</span>. For more information, 
+	 see <a href="../config_policies/repository_data_policies.htm#XREF_29954_Repository_data">Repository 
+	 Data policies</a>.</p>
+	<p class="nonote"><span class="bold">Note:</span> If you are using 
+	 LDAP synchronization with an Entrust database (which means that the 
+	 <span class="bold">LDAP Directory Specific Usage</span> property is 
+	 set to <span class="bold">SYNC</span>), Active Directory and Red Hat 
+	 are the officially supported vendors.</p>
+	<p class="RefItemBody">The choices are:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Not 
+	 specified</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Active 
+	 Directory</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>AD 
+	 LDS</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>CA 
+	 Directory</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>eDirectory</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>OpenLDAP</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Oracle</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Red 
+	 Hat</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Oracle 
+	 Unified Directory</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Sun 
+	 ONE</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Tivoli</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>UnboundID</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Custom</p>
+	<p class="RefItemBody">Default: Not specified</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Set 
+		 this property. Active Directory and Red Hat are the only vendors 
+		 officially supported for this feature&#160;at this time, however, 
+		 LDAP vendors listed in this property should work with this feature.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Directory 
+ Administrator</a></span></p>
+<div class="droptext" id="POPUP624856045" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.principal</span></p>
+	<p class="RefItemBody">Names the user entity binding to the LDAP directory 
+	 set during configuration, for example:</p>
+	<p class="RefItemBody">cn=Directory Manager</p>
+	<p class="RefItemBody"><span class="bold">Required access to the LDAP 
+	 directory server:</span></p>
+	<p class="RefItemList"><span class="bold">Read access only</span>: 
+	 If you are setting up LDAP synchronization, this administrator account 
+	 needs read access to the LDAP directory server to enroll users in 
+	 Entrust IdentityGuard. The administrator does not require write access 
+	 because communication is one way, with LDAP data being copied to the 
+	 Entrust IdentityGuard database.</p>
+	<p class="RefItemList"><span class="bold">Read and write access:</span> 
+	 &#160;Read and write access are required in the following scenarios:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>If 
+	 your organization uses Entrust IdentityGuard External authentication 
+	 and you want users to be able to change expired LDAP passwords when 
+	 authenticating, this administrator account must have write access 
+	 to the LDAP directory (in addition to read access) to write the new 
+	 passwords to the LDAP directory. In this case, if you are using Active 
+	 Directory, an SSL connection is also required to be able to change 
+	 passwords. For more information, see &quot;Expired Password Allows 
+	 Change (LDAP)&quot; in <a href="../usingpropeditor/external_first-factor_authentication.htm">External 
+	 First-Factor Authentication</a>.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>If 
+	 you host Entrust IdentityGuard user data in your organization's LDAP 
+	 directory, this administrator account must be able to add and remove 
+	 object classes and attributes from all entries in the LDAP directory. 
+	 </p>
+	<p class="RefItemBody">Default: If you are setting up an additional 
+	 <span style="font-weight: bold;">Configuration Instance </span>and 
+	 you do not specify this property, it defaults to the value used by 
+	 the default <span style="font-weight: bold;">Configuration Instance</span>.</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 Directory administrator account needs read access to the LDAP 
+		 directory server to enroll users in Entrust IdentityGuard. </p>
+		<p class="tattabletext">This account requires write access only 
+		 if your organization uses external authentication and also allows 
+		 users to change their LDAP passwords when authenticating. Read 
+		 the full property description for more information.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Directory 
+ Administrator Password</a></span></p>
+<div class="droptext" id="POPUP625598884" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.credentials</span></p>
+	<p class="RefItemBody">Provides the password of the directory 
+	 administrator entered during configuration. By default, the password 
+	 is encrypted.</p>
+	<p class="RefItemBody">Depending on your directory password 
+	 policies, this password might expire and need to be updated. See <a href="../config_igserver/updating_the_directory_password.htm">Update 
+	 the directory password</a>.</p>
+	<p class="RefItemBody">Default: If you are setting up an additional 
+	 <span style="font-weight: bold;">Configuration Instance </span>and 
+	 you do not specify this property, it defaults to the value used by 
+	 the default <span style="font-weight: bold;">Configuration Instance</span>.</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">&#160;</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />User 
+ ID Attribute</a></span></p>
+<div class="droptext" id="POPUP621410382" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.useridattribute</span></p>
+	<p class="RefItemBody">Sets the LDAP directory attribute that 
+	 contains the unique user identifier.</p>
+	<p class="RefItemBody">Default: cn</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Default: 
+		 <span class="output">cn</span>. Some directory servers use the 
+		 attribute name <span class="output">uid</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Disabled 
+ Account Attribute</a></span></p>
+<div class="droptext" id="POPUP619227851" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.accountDisabledAttribute</span></p>
+	<p class="RefItemBody"><span class="bold"><a name="XREF_LDAP_Disabled_User" 
+														 id="XREF_LDAP_Disabled_User"></a></span>Sets 
+	 the LDAP directory attribute and value to interpret as meaning the 
+	 user account is disabled.</p>
+	<p class="RefItemBody">Choose one of the following options. 
+	 See <a href="../config_igserver/suspend_disabled_or_expired_ldap_users.htm">Suspend 
+	 disabled and expired LDAP users</a> for more information about how 
+	 these options are interpreted.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Vendor Default</span>, use the default 
+	 mapping for the directory specified in <span style="font-weight: bold;">LDAP 
+	 Vendor</span>, if a default exists.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">ds-pwp-account-disabled (Unbound ID)</span>, use the 
+	 Unbound ID way of determining if a user account is disabled.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">dxPwdLocked (CA Directory)</span>, use 
+	 the IBM Tivoli way of determining if a user account is disabled.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">ibm-pwdAccountLocked (Tivoli)</span>, use 
+	 the IBM Tivoli way of determining if a user account is disabled.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">loginDisabled (eDirectory)</span>, use 
+	 the eDirectory way of determining if a user account is disabled.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">msDS-UserAccountDisabled (AD LDS)</span>, use the AD 
+	 LDS way of determining if a user account is disabled.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">nsAccountLock (Sun ONE/Red Hat)</span>, 
+	 use the Sun ONE way of determining if a user account is disabled.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">orclIsEnabled (Oracle Internet/Oracle Unified)</span>, 
+	 use the Oracle way of determining if a user account is disabled.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">userAccountControl (Active Directory)</span>, 
+	 use the Active Directory way of determining if a user account is disabled.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Custom</span>, specify an attribute and 
+	 value to interpret as meaning the user account is disabled. This field 
+	 contains an attribute and value in the following form: <span class="output">attribute;value_meaning_disabled</span></p>
+	<p class="RefItemBody">Where:</p>
+	<p class="RefItemBody"><span class="output">attribute</span><span 
+	 style="font-family: Courier;"> </span>is the name of the LDAP directory 
+	 attribute to check to find out if the user account is disabled. The 
+	 attribute name is not case sensitive.</p>
+	<p class="RefItemBody"><span style="font-family: Courier;">value_meaning_disabled 
+	 </span>is optional. If provided, it is the value of the attribute 
+	 that means the user account is disabled. If the attribute is multi-valued, 
+	 the first value returned is checked for a match. If this value matches 
+	 the <span class="output">&lt;value_meaning_disabled&gt;</span><span 
+	 style="font-family: Courier;"> </span>parameter in this property, 
+	 the user account is treated as disabled.</p>
+	<p class="RefItemBody">Also, if <span class="output">value_meaning_disabled</span><span 
+	 style="font-family: Courier;"> </span>is not provided, the existence 
+	 of the named attribute is interpreted as the user account being disabled.</p>
+	<p class="RefItemBody">Default: Vendor Default</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Select 
+		 <span class="bold">Vendor Default</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Expired 
+ Account Attribute</a></span></p>
+<div class="droptext" id="POPUP619973067" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.accountExpiredAttribute</span></p>
+	<p class="RefItemBody"><span class="bold"><a name="XREF_Expired_Account_Attribute" 
+														 id="XREF_Expired_Account_Attribute"></a></span>Sets 
+	 the LDAP directory attribute and value to interpret as meaning the 
+	 user account has expired.</p>
+	<p class="RefItemBody">Choose one of the following options. 
+	 See <a href="../config_igserver/suspend_disabled_or_expired_ldap_users.htm">Suspend 
+	 disabled and expired LDAP users</a> for more information about how 
+	 these options are interpreted.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">Vendor Default</span>, use the default 
+	 mapping for the directory specified in <span style="font-weight: bold;">LDAP 
+	 Vendor</span>, if a default exists.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">accountExpires (AD/AD LDS)</span>, use 
+	 the AD/AD LDS way of determining if a user account has expired.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">loginExpirationTime (eDirectory)</span>, 
+	 use the eDirectory way of determining if a user account has expired.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 style="font-weight: bold;">orclActiveEndDate (Oracle Internet/Oracle 
+	 Unified)</span>, use the Oracle way of determining if a user account 
+	 has expired.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Custom, 
+	 specify an attribute to interpret as meaning the user account has 
+	 expired.</p>
+	<p class="RefItemBody">When you select <span style="font-weight: bold;">Custom</span>, 
+	 you must enter an <span class="output">attribute</span>, which is 
+	 the name of the LDAP directory attribute to check to find out if the 
+	 user account has expired. The attribute name is not case sensitive, 
+	 but it must have a GeneralizedTime syntax.</p>
+	<p class="nonote"><span class="bold">Note:</span> If this property 
+	 is not used, and the directory vendor configured for the searchbase 
+	 has no rules for determining whether user accounts have expired, then 
+	 all users accounts are treated as not being expired.</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Select 
+		 <span class="bold">Vendor Default</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Full 
+ Name Attribute</a></span></p>
+<div class="droptext" id="POPUP620338106" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.fullNameAttribute</span></p>
+	<p class="RefItemBody"><span class="bold"><a name="XREF_Full_Name_Attribute" 
+														 id="XREF_Full_Name_Attribute"></a></span>Indicates 
+	 an attribute in a user's entry in the directory that contains the 
+	 user’s full name. This attribute is mapped to&#160;the Entrust IdentityGuard 
+	 user full name whether user enrollment is enabled or not. However, 
+	 user enrollment and the LDAP synchronization variation of the enrollment 
+	 feature both make use of this attribute if it is set.</p>
+	<p class="RefItemBody">If the <span style="font-weight: bold;">Full 
+	 Name Attribute</span> property is not set, then no full name mapping 
+	 is applied.</p>
+	<p class="RefItemBody">Many directory servers us the attribute 
+	 <span class="bold">displayName</span> to specify a user's full name.</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Active 
+		 Directory and several other LDAP vendors use the <span class="bold">displayName</span> 
+		 attribute.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Apply 
+ Contact Info Mappings</a></span></p>
+<div class="droptext" id="POPUP620357347" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.applyContactInfoMappings</span></p>
+	<p class="RefItemBody">Specifies a comma-separated list of LDAP contact 
+	 information mappings to apply to this LDAP instance. </p>
+	<p class="RefItemBody">If user enrollment is enabled, including the 
+	 LDAP synchronization variation of this feature, this attribute is 
+	 used, if set.</p>
+	<p class="RefItemBody">The mappings are case-sensitive.</p>
+	<p class="RefItemBody">The mappings are applied in the order in which 
+	 they are listed in the property, so choose their order carefully.</p>
+	<p class="RefItemBody">For example, if multiple contact information 
+	 mappings map to the same contact information label, only the first 
+	 mapping is applied. Contact information mappings are defined in the 
+	 <a href="../usingpropeditor/ldap_contact_info_mapping_settings.htm">LDAP 
+	 Contact Info Mapping Settings</a><a href="../../IGPropertiesREF/LDAPContactInfoMappingSettings/LDAP_Contact_Info_Mapping_Settings.htm#XREF_1429_LDAP_Contact_Info"><span 
+	 class="hyperlink" style="font-family: Syntax; font-weight: normal; 
+	 color: #ff; letter-spacing: .em; text-decoration: none; "> </span></a>properties 
+	 group. </p>
+	<p class="nonote"><span class="bold">Note</span>: It is recommended 
+	 that you configure the <span class="output">mail</span> and <span 
+	 class="output">telephoneNumber</span> property group instance names. 
+	 When they are configured, you can map contact information to them.</p>
+	<p class="RefItemBody">For more information, see <a href="../config_igserver/map_contact_info_from_an_ldap_directory.htm">Map 
+	 contact info from an LDAP directory</a>.</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">If 
+		 the LDAP directory already has user contact information that Entrust 
+		 IdentityGuard needs (especially email addresses and phone numbers), 
+		 configure these mappings to copy it automatically.</p>
+		<p class="tattabletext">Enter a comma-separated list of the names 
+		 of pre-defined contact information mapping property group instance 
+		 names. It is recommended that you specify mappings for email addresses 
+		 and telephone numbers. The mappings are first configured in the 
+		 <span class="bold">LDAP Contact Info Mappings</span> property 
+		 group. See <a href="../config_igserver/map_contact_info_from_an_ldap_directory.htm">Map 
+		 contact info from an LDAP directory</a>..</p></td>
+	</tr>
+</table>
+<h3>Settings for user enrollment and synchronization</h3>
+<p>The settings in this step enable user enrollment and synchronization.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Still 
+ in the <span style="font-weight: bold;">LDAP Directory Server Settings</span> 
+ properties group, configure the properties that apply to user enrollment 
+ and synchronization.</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 30.989%;" />
+	<col style="width: 69.011%;" />
+	<tr class="t1st">
+		<td style="vertical-align: Top;"><p class="tahtableheader">Select 
+		 a property to see its full description</p></td>
+		<td style="vertical-align: Top;"><p class="tahtableheader">Use 
+		 this value. </p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ Directory Specific Usage</a></span></p>
+<div class="droptext" id="POPUP621863000" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.subtype</span></p>
+	<p class="RefItemBody">Identifies a special usage for this LDAP 
+	 directory.</p>
+	<p class="RefItemBody">Options are:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>NONE 
+	 – Use for all 
+	 cases except when this LDAP directory is used for synchronizing users 
+	 with an Entrust IdentityGuard database.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>SYNC&#160;– Use this option when the LDAP 
+	 directory is used for synchronization of an LDAP repository with an 
+	 Entrust IdentityGuard database.</p>
+	<p class="nonote"><span class="bold">Note:</span> Currently, Microsoft 
+	 &#160;Active Directory and Red Hat Directory Server are officially 
+	 supported.</p>
+	<p class="nonote"><span class="bold">Note:</span> If this property 
+	 is set to SYNC, then the <span class="bold">Repository</span> setting 
+	 <span class="bold">Sync Repository Implementation Class</span> &#160;must 
+	 be set to <span class="bold">Directory Synchronization with IdentityGuard 
+	 Databases</span>. The directory can be used only for synchronization 
+	 and not any other purpose.</p>
+	<p class="RefItemBody">Default: NONE</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">From 
+		 the drop-down list, select <span class="bold">SYNC</span>. </p>
+		<p class="tattabletext">When this property is set to SYNC, several 
+		 properties not relevant to LDAP synchronization become uneditable 
+		 (appear faded in the UI).</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a13"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Paging 
+ Supported</a></span></p>
+<div class="droptext" id="POPUP616706492" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.supportsPaging</span></p>
+	<p class="RefItemBody">Some LDAP directories support viewing 
+	 of search results by pages, with each page displaying a certain number 
+	 of results. Search results paging is required for the user enrollment 
+	 feature to find all users in a directory instead of just the maximum 
+	 number of search results that can be shown on a single page (1000). 
+	 Currently, paging is known to work with Microsoft Active Directory, 
+	 Microsoft Active Lightweight Directory Services, and Red Hat Directory 
+	 Server (version 8.2 and newer). If you are using the user enrollment 
+	 feature to find all users in a directory and you are using a directory 
+	 that supports paging, set this property to <span class="bold">True</span>. 
+	 Otherwise, leave the default setting, <span class="bold">False</span>, 
+	 because setting it to True on a directory that does not support paging 
+	 can result in errors.</p>
+	<p class="nonote"><span class="bold">Note:</span> Some directories, 
+	 for example, IBM Tivoli, support a form of search results paging in 
+	 which all searches must be performed using the same connection to 
+	 the directory. Entrust IdentityGuard does not support this form of 
+	 paging.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">True</span>&#160;— 
+		 Paging is supported in Active Directory and Red Hat Directory 
+		 server (8.2 and newer). For other directories, check whether paging 
+		 is supported. If not, leave the default setting, False.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a14"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />User 
+ Enrollment</a></span></p>
+<div class="droptext" id="POPUP614348387" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.enroll.enabled</span></p>
+	<p class="RefItemBody">This property determines whether Entrust 
+	 IdentityGuard allows user enrollment from the LDAP repository specified 
+	 in this configuration instance. Set to <span class="bold">True</span> 
+	 to allow Entrust IdentityGuard to search for non-user accounts in 
+	 the LDAP directory. </p>
+	<p class="nonote"><span class="bold">Note:</span> This property affects 
+	 only the operations to create multiple users or create selected users. 
+	 You can always create or synchronize single users, provided the user 
+	 exists in the LDAP repository.</p>
+	<p class="RefItemBody">If the directory specified in this configuration 
+	 instance is used with the LDAP synchronization feature, the property 
+	 is set to <span class="bold">True</span> automatically and cannot 
+	 be changed as long as the directory is used for LDAP synchronization..</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">True</span> is set automatically when <span class="bold">LDAP 
+		 Directory &#160;Specific Usage</span> is set to <span class="bold">SYNC</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a15"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />User 
+ Enrollment Search Attributes</a></p>
+<div class="droptext" id="POPUP589829077" style="display: none;">
+	<p class="RefItemBody">If user enrollment is enabled, this property 
+	 can be used to search for users in the current directory who are candidate 
+	 Entrust IdentityGuard users. This property contains a comma-separated 
+	 list of user attributes that should be searched for in combination 
+	 with an administrator-provided search value. This is applicable both 
+	 when an Entrust IdentityGuard account is being created within the 
+	 current directory, and when it is being synchronized into a database. 
+	 An example of search attributes would be <code>cn,sAMAccountName,mail</code>. 
+	 When searching for a user to enroll, an administrator provides a value 
+	 that is tested against each of the attributes specified. A match against 
+	 any of them means that the given user is a candidate for enrollment. 
+	 If the administrator does not provide a value, then the value of the 
+	 <span class="bold">User ID Attribute</span> property is used</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Enter 
+		 a comma-separated list of attributes used by your LDAP directory 
+		 for which values should be searched to match the users you want 
+		 to enroll. If you do not specify attributes, the <span class="bold">User 
+		 ID Attribute </span>is used by default.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a16"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ Sync User Enrollment Search Filter</a></span></p>
+<div class="droptext" id="POPUP614427585" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.sync.filter</span></p>
+	<p class="RefItemBody">When user enrollment is used in conjunction 
+	 with synchronizing users in an Entrust IdentityGuard database, this 
+	 property is used to locate potential user entries in the LDAP directory. 
+	 </p>
+	<p class="RefItemBody">The default is to not use a search filter, in 
+	 which case all objects in the searchbase defined by this instance's 
+	 LDAP URL are eligible for enrollment. </p>
+	<p class="RefItemBody">To make sure that the set of LDAP users eligible 
+	 for enrollment matches the set of users for which background synchronization 
+	 notifications are received (assuming that the background synchronization 
+	 feature is enabled by setting the <span class="bold">LDAP Sync Background 
+	 Thread Enabled</span> to True), it is recommended that this setting 
+	 reference the same set of LDAP containers as the <span class="bold">LDAP 
+	 Sync Apply Container Mappings</span> property. Failure to do this 
+	 can result in the enrollment of users who will not receive background 
+	 synchronization notifications, or background notifications for users 
+	 who can never be enrolled. </p>
+	<p class="RefItemBody">This setting is optional.</p>
+	<p class="RefItemBody">Your filter, which is combined with the base 
+	 Entrust IdentityGuard filter, could be something like the following:</p>
+	<p class="co3code3">objectclass=inetOrgPerson</p>
+	<p class="RefItemBody">This filter would allow enrollment of LDAP objects 
+	 that are of the type InetOrgPerson (people) only.</p>
+	<p class="RefItemBody">For details about creating filters, see <a href="create_a_user_synchronization_custom_static_filter.htm">Create 
+	 a user synchronization custom static filter</a>.</p>
+	<p class="nonote"><span class="bold">Note:</span> If there is a syntax 
+	 error in this filter, it cannot be used for user enrollment (user 
+	 enrollment becomes disabled). However, if users were enrolled before 
+	 use of this filter, their synchronization continues. The filter is 
+	 not used for synchronization.</p>
+	<p class="RefItemBody">Default: filter not used</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">(Optional) 
+		 Use a filter to eliminate LDAP directory object that you do not 
+		 want to enroll. The following example would be used to screen 
+		 out two containers from within a searchbase:</p>
+		<p class="tattabletext">|(entrydn=cn*,ou=class1,dc=training,dc=mycorp,dc=com)<br />
+		(entrydn=cn*,ou=class2,dc=training,dc=mycorp,dc=com)</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a17"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ Sync Unique User ID</a></span></p>
+<div class="droptext" id="POPUP622205923" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.sync.uuid</span> 
+	 </p>
+	<p class="RefItemBody">Specifies the LDAP user attribute used 
+	 to uniquely identify the user being synchronized from this LDAP directory. 
+	 Active Directory uses the default setting. Red Hat directory server 
+	 uses <span class="output">nsUniqueId;string</span>.</p>
+	<p class="RefItemBody">The value of this attribute stays the 
+	 same regardless of changes to the user's common name (cn) or user 
+	 ID (uid)..</p>
+	<p class="RefItemBody">Other values can be used, but they are 
+	 not officially supported. To specify another value, enter the value 
+	 followed by an optional semi-colon type (binary or string), for example: 
+	 <span class="output">sAMAccountName;string</span> or <span class="output">someBinaryAttr;binary</span>.</p>
+	<p class="nonote"><span class="bold">Note:</span> This property is 
+	 used only with the LDAP directory synchronization feature.</p>
+	<p class="RefItemBody">Default: objectGUID</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">If 
+		 not specified, the default, <span class="output">objectGUID </span>Active 
+		 Directory uses the default. For Red Hat the value <span class="output">nsUniqueId;sring</span> 
+		 is filled in automatically when you select Red Hat as the LDAP 
+		 Vendor.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a18"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ Sync Audit Successful Notifications</a></span></p>
+<div class="droptext" id="POPUP657541662" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.sync.audit.success</span></p>
+	<p class="RefItemBody">Sets whether Entrust IdentityGuard generates 
+	 audit messages when a successful LDAP sync notification with a user 
+	 occurs. Set to <span class="bold">True</span> (recommended) to have 
+	 the system generate these audit messages.</p>
+	<p class="nonote"><span class="bold">Note:</span> This property is 
+	 used only with the LDAP synchronization feature.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Set 
+		 to <span class="bold">True</span> to have a record of all LDAP 
+		 synchronization operations that have been processed</p></td>
+	</tr>
+</table>
+<h3>Settings for notifications and containers</h3>
+<p class="pparagraph">The settings in the next few steps enable synchronization 
+ of user data between the LDAP directory and Entrust IdentityGuard. For 
+ each LDAP directory container that has users you want to enroll, you need 
+ to set a notifications listener. This is accomplished through the Properties 
+ Editor by defining the mappings in the <span class="bold">LDAP Sync Container 
+ Mappings</span> properties, and then applying the mappings you want to 
+ use with each LDAP server in the <span class="bold">LDAP Sync Apply Container 
+ Mappings</span> property of the <span class="bold">LDAP Directory Server 
+ Settings</span>. </p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Configure 
+ settings to enable notifications about LDAP Contact Info Mapping Settings.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Still 
+ in the Properties Editor, from the table of contents, click <span style="font-weight: bold;">LDAP 
+ Sync Container Mapping Settings </span>(near the top) and configure the 
+ following properties:</p>
+<p class="nonote"><span class="bold">Note:</span> The container mappings 
+ are defined for the Entrust IdentityGuard system and can then be used 
+ with an LDAP directory instance configured for LDAP directory synchronization.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Configuration Instances</span>&#160;— Enter a configuration name in 
+ the empty field and click <span class="bold">Add</span> to configure a 
+ new LDAP synchronization container mapping. The instance name must not 
+ contain spaces or commas and should not be set to ROOT. </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Name</span> — 
+ Enter the exact name of a container defined in the LDAP directory instance 
+ that you will use for Entrust IdentityGuard account synchronization. The 
+ name is relative to the context prefix defined in the <span class="bold">LDAP 
+ URL</span> property in <span class="bold">LDAP Directory Server Settings</span>. 
+ </p>
+<p class="liplistparagraph">Example:</p>
+<p class="liplistparagraph">If this were the LDAP URL for your searchbase 
+ is</p>
+<p class="co3code3">ldap://myldaphost.com:389/dc=AnyCorp,dc=com</p>
+<p class="liplistparagraph">you could enter the following for a container 
+ within the searchbase</p>
+<p class="co3code3">ou=Marketing,ou=people</p>
+
+<p class="nonote"><span class="bold">Note:</span> If the value contains 
+ any non-ASCII characters, they must be encoded using the RFC2253 standard 
+ string format. You can use a UTF conversion tool such as the one found 
+ at this location: <a href="http://macchiato.com/unicode/convert.html" 
+						 target="_blank"><span style="color: #1F497D;"><font color="#1f497d" >http://macchiato.com/unicode/convert.html</font></span></a>. 
+ Output should be specified at UTF-8, Base 16.</p>
+<p class="prpprocedureparagraph"><span class="bold">LDAP Directory Server 
+ Setting - Settings related to containers and notifications</span></p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 31.994%;" />
+	<col style="width: 68.006%;" />
+	<tr class="t1st">
+		<td style="vertical-align: Top;"><p class="tahtableheader">Select 
+		 a property to see its full description</p></td>
+		<td style="vertical-align: Top;"><p class="tahtableheader">Use 
+		 this value. </p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a19"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ Sync Background Thread Enabled</a></span></p>
+<div class="droptext" id="POPUP622482622" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.sync.notifications.enabled</span></p>
+	<p class="RefItemBody">Specifies whether to propagate updates 
+	 automatically from this LDAP directory to the associated Entrust IdentityGuard 
+	 users using a background thread. This feature requires that the LDAP 
+	 server support persistent search or the Microsoft variation that is 
+	 implemented by Microsoft Active Directory (AD Notify). </p>
+	<p class="RefItemBody">For more information about persistent 
+	 search, see <a title="https://tools.ietf.org/html/draft-ietf-ldapext-psearch-03" 
+					 href="https://tools.ietf.org/html/draft-ietf-ldapext-psearch-03" 
+					 target="_blank">https://tools.ietf.org/html/draft-ietf-ldapext-psearch-03</a>.</p>
+	<p class="nonote"><span class="bold">Note:</span> Enable this property 
+	 on the primary Entrust IdentityGuard server to allow background synchronization. 
+	 <span class="bold">Do not enable it on replica servers</span> or duplicate 
+	 notifications will be generated.</p>
+	<p class="nonote"><span class="bold">Note:</span> If this property 
+	 is not enabled, user synchronization occurs only when users are created 
+	 and on-demand by an administrator.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">True</span> - Enable this property on the primary 
+		 Entrust IdentityGuard Server only. </p>
+		<p class="tattabletext">When set to <span class="bold">True</span>, 
+		 each time a user's full name or contact information changes in 
+		 the LDAP directory, the change is copied into the Entrust IdentityGuard 
+		 database. It also causes audits to be generated when a new user 
+		 is added to or removed from the container, or moved to a different 
+		 searchbase.</p>
+		<p class="tattabletext">When this property is set to True, the 
+		 next three settings become editable. </p>
+		<p class="tattabletext"><span class="bold">Note:</span> If an administrator 
+		 (using the Administration interface) or user (using Self-Service) 
+		 overwrites the full name or contact information in the database, 
+		 the manual edits persist. </p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a20"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ Sync Apply Container Mappings</a></span></p>
+<div class="droptext" id="POPUP622856125" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.sync.applyContainerMappings</span></p>
+	<p class="RefItemBody">Specifies a comma-separated list of property 
+	 group instance names that reference the LDAP container mappings that 
+	 should be applied to this directory server. The instance names for 
+	 the mappings are case-sensitive. They reference the LDAP containers 
+	 that will receive background notification updates for this LDAP directory 
+	 instance if the <span class="bold">LDAP Sync Background Thread Enabled</span> 
+	 property is set to <span class="bold">True</span>.</p>
+	<p class="RefItemBody">The LDAP sync container mappings referenced 
+	 by the provided instance names are defined in <a href="../usingpropeditor/ldap_sync_container_mapping_settings.htm">LDAP 
+	 Sync Container Mapping Settings</a> property group. Notification updates 
+	 from the LDAP directory are sent only for entries within the specified 
+	 containers, not for all entries in this LDAP directory.</p>
+	<p class="RefItemBody">An Entrust IdentityGuard background thread is 
+	 used to process the notification updates for each container.</p>
+	<p class="RefItemBody">The default is an empty setting, which means 
+	 that a container mapping is not specified and therefore the root container 
+	 of this LDAP directory configuration is used. If the root container 
+	 of this LDAP directory configuration requires notification updates 
+	 (in addition to other containers within root), the built-in container 
+	 mapping name ROOT should be included as an entry in the comma-separated 
+	 list.</p>
+	<p class="nonote"><span class="bold">Note:</span> This property is 
+	 used only with the LDAP directory synchronization feature.</p>
+	<p class="RefItemBody">Default: no value</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">This 
+		 property is editable only when <span class="bold">LDAP Background 
+		 Thread Enabled</span> is set to <span class="bold">True</span>. 
+		 </p>
+		<p class="tattabletext">LDAP directory notification must be configured 
+		 explicitly for each container. In a comma-separated list, enter 
+		 the mappings that you created in step 3 for the property LDAP 
+		 Contact Info Mapping Settings. The entries are case sensitive.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a21"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ Sync Number of Worker Threads</a></span></p>
+<div class="droptext" id="POPUP623249235" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.sync.numthreads</span></p>
+	<p class="RefItemBody">Specifies the number of worker threads 
+	 that handle LDAP sync updates during background synchronization from 
+	 this LDAP directory.</p>
+	<p class="nonote"><span class="bold">Note:</span> This property is 
+	 used only with the LDAP synchronization feature.</p>
+	<p class="RefItemBody">Default: 5</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">This 
+		 property is editable only when <span class="bold">LDAP Background 
+		 Thread Enabled</span> is set to <span class="bold">True</span>. 
+		 The default setting is appropriate in most cases.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a22"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ Sync Maximum Updates Queue Size</a></span></p>
+<div class="droptext" id="POPUP621473401" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.sync.maxupdatesqueuesize</span></p>
+	<p class="RefItemBody">Specifies the maximum number of LDAP 
+	 sync updates that can be queued during background synchronization 
+	 from this LDAP directory. When the queue is full, the oldest updates 
+	 are deleted.</p>
+	<p class="nonote"><span class="bold">Note:</span> This property is 
+	 used only with the LDAP synchronization feature.</p>
+	<p class="RefItemBody">Default: 10000</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">This 
+		 property is editable only when <span class="bold">LDAP Background 
+		 Thread Enabled</span> is set to <span class="bold">True</span>. 
+		 The default setting is appropriate in most cases.</p></td>
+	</tr>
+</table>
+<h3>Database settings for synchronization</h3>
+<p class="pparagraph">The settings in this section configure the databases 
+ that you created previously to work with the LDAP directory servers designated 
+ for synchronization. Complete the following steps for each database associated 
+ with a synchronized searchbase.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Still 
+ in the Properties Editor, from the table of contents, click <span class="bold">JDBC 
+ Database</span> <span style="font-weight: bold;">Settings </span>(near 
+ the top) and configure the following property for each database to be 
+ used with this feature. </p>
+<p class="prpprocedureparagraph"><span class="bold">LDAP Sync Directory</span>&#160;— Specify the LDAP synchronization 
+ directory to be used with the database. It should be a directory you designated 
+ with <span class="bold">SYNC</span> in the <span class="bold">LDAP Directory 
+ Specific Usage</span> property of the <span style="font-weight: bold;">LDAP 
+ Directory Server Settings</span>. The value here is the LDAP Directory 
+ Server Settings instance name. </p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From 
+ the table of contents, click <span class="bold">Repository</span> <span 
+	 style="font-weight: bold;">Settings </span>and ensure that the <span 
+	 class="bold">Sync Repository Implementation Class</span> property 
+ is set to <span class="bold">Directory Synchronization with IdentityGuard 
+ Databases</span>. If you are using the Properties Editor to perform your 
+ configuration, this is done automatically.</p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold">Validate &amp; Save</span>.</p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Restart 
+ the Entrust IdentityGuard Server service to have the changes take effect.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP621502028');
+	TextPopupInit('a2','POPUP542453083');
+	TextPopupInit('a3','POPUP623629937');
+	TextPopupInit('a4','POPUP624049172');
+	TextPopupInit('a5','POPUP624856045');
+	TextPopupInit('a6','POPUP625598884');
+	TextPopupInit('a7','POPUP621410382');
+	TextPopupInit('a8','POPUP619227851');
+	TextPopupInit('a9','POPUP619973067');
+	TextPopupInit('a10','POPUP620338106');
+	TextPopupInit('a11','POPUP620357347');
+	TextPopupInit('a12','POPUP621863000');
+	TextPopupInit('a13','POPUP616706492');
+	TextPopupInit('a14','POPUP614348387');
+	TextPopupInit('a15','POPUP589829077');
+	TextPopupInit('a16','POPUP614427585');
+	TextPopupInit('a17','POPUP622205923');
+	TextPopupInit('a18','POPUP657541662');
+	TextPopupInit('a19','POPUP622482622');
+	TextPopupInit('a20','POPUP622856125');
+	TextPopupInit('a21','POPUP623249235');
+	TextPopupInit('a22','POPUP621473401');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

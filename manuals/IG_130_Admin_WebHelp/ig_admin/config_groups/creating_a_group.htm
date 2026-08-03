@@ -1,0 +1,319 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_groups.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Creating a group</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nConfiguring groups\nCreate a group");
+addAvenueInfo("r13_std","ig_admin/config_groups/assigning_policies_to_groups.htm","ig_admin/config_groups/setting_repository_order.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > <a href=\"config_groups.htm\">Configuring groups<\/a> > Create a group<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_43139_Creating_groups" id="XREF_43139_Creating_groups"></a>Create 
+ a group</h1>
+<p class="pparagraph">The initial built-in roles provided with Entrust 
+ IdentityGuard permit only an administrator with the <span class="bold">superuser</span>&#160;role 
+ to create a new group (see <a href="../config_roles/built-in_roles.htm">Built-in 
+ roles</a>). Any administrator with a role that includes the <span class="bold">groupCreate</span>&#160;and 
+ <span class="bold">repositoryList</span>&#160;permissions and the <span 
+	 class="bold">All groups</span>&#160;option in their role can accomplish 
+ this, too. (The administrator needs access to all groups, because a new 
+ group is not yet in the administrator's group list.)</p>
+<p class="pparagraph">Consider the following guidelines when creating a 
+ new group:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Each group 
+ name must be unique.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Assign 
+ each group to at least one specific repository. The repository can be 
+ a database or an LDAP directory or searchbase. If you do not assign a 
+ repository to the group, the group uses the default repository. (If there 
+ is only one repository, then the Administration interface does not provide 
+ a choice of repositories.)</p>
+<p class="liplistparagraph">Unlike database repositories, LDAP repositories 
+ require that user entries exist in them <span style="text-decoration: underline; ">before</span>&#160;you 
+ can add Entrust IdentityGuard user’s information to them.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Assign 
+ a repository to store unassigned tokens for the group. This does&#160;not 
+ have to be the same repository as for the users or the preproduced cards.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Assign 
+ a repository to store preproduced cards for the group. This does&#160;not 
+ have to be the same repository as for the users or the unassigned tokens.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you 
+ use grid authentication, you need to associate users and cards with the 
+ same group in order to be able to assign them.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you 
+ use token authentication, you need to associate users and tokens with 
+ the same group in order to be able to assign them.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Assign 
+ each group one policy. If one is not assigned, the group gets the default 
+ policy. (<a href="../config_policies/configuring_policies.htm">Configuring 
+ policies</a>).</p>
+<p class="pparagraph">You must configure the repositories before you can 
+ assign them to groups. (See <a href="../config_igserver/repository_overview.htm">Repository 
+ overview</a>.) You can store your Entrust IdentityGuard user data across 
+ more than one repository, and the repositories can be of different types 
+ (LDAP directory, searchbase, and database). This allows you complete flexibility 
+ in how you organize data. For example, you could have normal users of 
+ a group in an LDAP repository and all administrators of that group in 
+ a database repository. (See also <a href="../usingpropeditor/jdbc_database_settings.htm">JDBC 
+ Database Settings</a>&#160;or <a href="../usingpropeditor/ldap_directory_server_settings.htm">LDAP 
+ Directory Server Settings</a>.)</p>
+<p class="prtproceduretitle"><a name="XREF_33044_To_create_groups" id="XREF_33044_To_create_groups"></a>To 
+ create a group</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Groups</span> 
+ on the home page.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Create Group</span> tab.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Type 
+ a name in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+					 text-decoration: none; ">Group</span> field.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ you used the Properties Editor&#160;to configure Entrust IdentityGuard 
+ to store user information in more than one repository, the <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Repositories</span>&#160;option 
+ is available. It lists the names and types (database or directory) of 
+ each repository. The default repository (on the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Repository 
+ Settings</span> pane of the Properties Editor) appears in the <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Included</span> 
+ list.<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">&#160;</span></p>
+<p class="prpprocedureparagraph">To add another repository, select a repository 
+ in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Not Included</span>&#160;list 
+ and click the right-arrow to move it to the <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Included</span>&#160;list.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="config_groups00178.jpg" 
+											 id="image0" src="config_groups00178.jpg" 
+											 name="image0" width="557" 
+											 height="425" border="0" /></p>
+</div>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a 
+	 name="XREF_Step_6_repos_order" id="XREF_Step_6_repos_order"></a>If 
+ you have multiple user repositories, you can change the order that repositories 
+ appear. (See <a href="setting_repository_order.htm">Set repository order</a>&#160;for 
+ an explanation of why this may be important.) To change the order of repositories, 
+ select a repository and change its position using either the up-arrow 
+ or down-arrow.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+ Select a repository in which to store unassigned cards. All configured 
+ databases and file-based repositories appear in the list. The default 
+ is <span style="font-weight: bold;">Do not assign a specific repository</span>.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+ Select a repository in which to store unassigned tokens. All configured 
+ databases and file-based repositories appear in the list. The default 
+ is <span style="font-weight: bold;">Do not assign a specific repository</span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> You can 
+ use the same database to store unassigned tokens and cards, or you can 
+ store them in separate databases. You can also store tokens in a file-based 
+ repository, and cards in a database, (or cards in the file-based repository, 
+ and tokens in the database).<br />
+You cannot store unassigned cards or tokens in more than one file-based 
+ repository.</p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+ Select a policy from the <span class="bold">Policy</span>&#160;list. If 
+ you do not select a policy, the <span class="bold">default</span> policy 
+ is applied. (You can select just one policy.)</p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>(Optional) 
+ Select a partition from the <span style="font-weight: bold;">Partition</span>&#160;list. 
+ The default setting is <span style="font-weight: bold;">Do not assign 
+ a partition</span>.</p>
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Default 
+ Group</span>&#160;if you want this new group to be the default in any 
+ case where a later action does not specify a group. You can have just 
+ one default group.</p>
+<p class="prpprocedureparagraph">The built-in group named <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">default</span>&#160;continues 
+ to exist but is no longer used as the default in cases where a group is 
+ not specified.</p>
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>(Optional) 
+ Add comments describing the purpose or detailed characteristics of the 
+ group.</p>
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Create 
+ Group</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold">View Group</span>&#160;page 
+ appears and lists all group settings. Modify the settings to meet your 
+ requirements. (See <a href="modifying_a_group.htm">Modify a group</a>.)</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

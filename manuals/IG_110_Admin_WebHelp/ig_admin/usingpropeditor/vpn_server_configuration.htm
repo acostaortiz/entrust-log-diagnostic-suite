@@ -1,0 +1,1603 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>VPN Server Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nVPN Server Configuration (19)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/user_sms_delivery_configuration.htm","ig_admin/usingpropeditor/web_application_settings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > VPN Server Configuration (19)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_properties_14"></a><a name="IX_configuring_4"></a><a name="XREF_51155_VPN_server"></a>VPN 
+ Server Configuration</h1>
+<p class="pparagraph"><a name="XREF_75742_VPN_server"></a>These properties 
+ set up your VPN server configurations. You can have multiple configurations, 
+ where each references a different VPN server or Entrust IdentityGuard 
+ Radius proxy port. This allows you to associate different VPN servers 
+ with different user groups, which in turn are mapped into different Entrust 
+ IdentityGuard groups using different authentication methods. Alternatively, 
+ you can have multiple VPN servers that are not group-specific, and which 
+ communicate with the same Radius proxy port or ports. In this case, each 
+ configuration can use a different form of first-factor authentication. 
+ For more details and to view a snapshot of the properties, see <a href="../config_radius_proxy/configuring_the_radius_proxy_for_groups.htm#XREF_Configuring_the_VPN">Configuring 
+ the Radius proxy for groups</a>. With Entrust IdentityGuard Server 10.2 
+ FP1 Patch 195848 or later, you can specify multiple hosts, IP addresses 
+ or CIDRs for a VPN instance, using a space separated list.</p>
+<p class="pparagraph">Typically, you create your VPN server setups using 
+ the Configuration Panel or a UNIX script, as described in the <span class="FM_Emphasis" 
+	 style="font-style: italic;">Entrust IdentityGuard Installation Guide</span>. 
+ You can add new servers or change existing settings using these properties.</p>
+<p class="nonote"><span style="font-weight: bold;">Note</span><span style="font-weight: bold;">: 
+ </span>Each VPN server configuration must be unique. Each instance must 
+ differ from all others either in its host name, Radius proxy port, or 
+ VPN Radius Attribute ID value.</p>
+<p class="pparagraph">Where it appears in properties in the following table, 
+ the {0} placeholder is replaced by the VPN server configuration instance 
+ name.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>All challenge 
+ and challenge retry messages must contain no more than 253 characters 
+ after all their placeholder parameters are replaced by real values.</p>
+<p class="pparagraph">&#160;</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />VPN 
+ Host</a></span></p>
+<div class="droptext" id="POPUP688597354" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.host</span></p>
+	<p class="lip2list2paragraph">This is the host of the VPN server. The 
+	 entries in this field can be single host names or IP addresses, multiple 
+	 host names for IP addresses, or ranges of IP addresses specified using 
+	 Classless inter-Domain routing (CIDR) blocks, as described in RFC 
+	 4632. Entries in this field must be separated by spaces.</p>
+	<p class="lip2list2paragraph">When multiple hosts are specified, they 
+	 share the same configuration, including the same port (or no port) 
+	 and VPN shared secret.</p>
+	<p class="lip2list2paragraph">When the CIDR is specified, any VPN server 
+	 whose IP address is included in the range of the CIDR will match the 
+	 given VPN configuration, as it pertains to the host name match.</p>
+	<p class="lip2list2paragraph">Example:</p>
+	<p class="lip2list2paragraph">1.4.2./24</p>
+	<p class="nonote"><span class="bold">Note:</span> Each VPN server configuration 
+	 must be unique. Each instance must differ from all others either in 
+	 its host name, Radius proxy port, or VPN Radius Attribute ID value.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Proxy Port Used By VPN</a></span></p>
+<div class="droptext" id="POPUP630136182" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.igport</span></p>
+	<p class="lip2list2paragraph">Optional. Specifies the Radius proxy 
+	 port the VPN server is associated with. (See <a href="radius_proxy_configuration.htm">Radius 
+	 Proxy Configuration (15)</a>.</p>
+	<p class="nonote"><span class="bold">Note:</span> Each VPN server configuration 
+	 must be unique. Each instance must differ from all others either in 
+	 its host name, Radius proxy port, or VPN Radius Attribute ID value.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Attribute ID Used to Identify the VPN</a></span></p>
+<div class="droptext" id="POPUP687207109" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.vpnattributeid</span></p>
+	<p class="lip2list2paragraph">Specifies the Radius attribute ID of 
+	 the initial Radius request message that is used to identify the VPN 
+	 Server associated with this configuration (for example, 3 for CALLER-STATION-ID). 
+	 If this setting is specified, you must also specify the associated 
+	 properties:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>The 
+	 Type of the Radius Attribute ID Used to Identify the VPN</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>The 
+	 Value of the Radius Attribute ID Used to Identify the VPN</p>
+	<p class="lip2list2paragraph">The Radius Attribute ID is used to determine 
+	 the VPN server configuration to use in addition to the VPN server 
+	 host and Entrust IdentityGuard Radius proxy port. A Radius Attribute 
+	 ID is not used by default. Each configuration should specify a unique 
+	 VPN server, Entrust IdentityGuard Radius proxy port, and Radius Attribute 
+	 ID (with its Type and Value expressions).</p>
+	<p class="lip2list2paragraph">To determine which VPN server configuration 
+	 to use, the following searches are performed, in this order:</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search 
+	 for matching host, port and Radius Attribute ID.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search 
+	 for matching host and port.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search 
+	 for matching host and Radius attribute ID.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search 
+	 for matching host.</p>
+	<p class="lip2list2paragraph">The first matching VPN server is used. 
+	 If the Radius Attribute ID and expression values (type and value) 
+	 can result in duplicate possibilities across different VPN server 
+	 configurations, the selected configuration for a Radius request may 
+	 be ambiguous.</p>
+	<p class="nonote"><span class="bold">Note:</span> This feature can 
+	 be used with external Radius servers only if the VPN requests always 
+	 include the Radius Attribute ID. Otherwise, in some cases, where Radius 
+	 sends reject messages for non-failure cases (for example, a password 
+	 expiry using MSCHAPv2), the Radius Attribute ID used to identify the 
+	 VPN configuration must be re-sent with the next Radius request. Otherwise, 
+	 there is no way to identify the VPN configuration to use. Normally 
+	 the Radius State ID attribute is used in subsequent requests. However, 
+	 for a Radius reject message, a State ID cannot be used.</p>
+	<p class="nonote"><span class="bold">Note:</span> Each VPN server configuration 
+	 must be unique. Each instance must differ from all others either in 
+	 its host name, Radius proxy port, or VPN Radius Attribute ID value.</p>
+	<p class="lip2list2paragraph">Default: none.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />The 
+ Type of the Radius Attribute ID Used to Identify the VPN</a></span></p>
+<div class="droptext" id="POPUP687216642" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.vpnattributetype</span></p>
+	<p class="lip2list2paragraph">Specifies the type of Radius attribute 
+	 comparison to perform to identify the VPN Server associated with this 
+	 configuration. This setting is used if the associated attribute ID 
+	 is specified.</p>
+	<p class="lip2list2paragraph">There are 2 options: STRING and HEX. 
+	 HEX should be used if the values from the Radius request message are 
+	 sent in binary form.</p>
+	<p class="lip2list2paragraph">Default: STRING.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />The 
+ Value of the Radius Attribute ID Used to Identify the VPN</a></span></p>
+<div class="droptext" id="POPUP639051941" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.vpnattributeexpr</span></p>
+	<p class="lip2list2paragraph">Specifies the value for the Radius attribute 
+	 ID of the initial Radius request message used to identify the VPN 
+	 Server associated with this configuration. This setting is used if 
+	 the associated attribute ID is specified. The value can be in the 
+	 form of a wildcard-based expression which gives it the ability to 
+	 perform pattern matching (for example, *test* or A*D4), depending 
+	 on the type. This value should be represented as a string or using 
+	 hexadecimal characters (for example, AB1C2D3). All expressions are 
+	 case insensitive.</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Entrust 
+ IdentityGuard User Group</a></span></p>
+<div class="droptext" id="POPUP687369076" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.group</span></p>
+	<p class="lip2list2paragraph">Optional. Specifies the Entrust IdentityGuard 
+	 user group associated with the VPN server instance.</p>
+	<p class="lip2list2paragraph">You can configure a VPN server instance 
+	 to apply to a specific group. This way, the Radius proxy can direct 
+	 users in specific groups to different methods of first-factor authentication.</p>
+	<p class="lip2list2paragraph">The VPN group property works as follows:</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+	 the user ID received from the VPN client contains a group, that user 
+	 ID is passed to Entrust IdentityGuard as is.</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+	 the user ID received from the VPN client does not contain a group, 
+	 the group is set to the VPN group property. If no group is set in 
+	 the property, your VPN server configuration applies to all groups 
+	 not explicitly associated with a VPN server.</p>
+	<p class="lip2list2paragraph">For information about using this and 
+	 other VPN property options, see <a href="../config_radius_proxy/configuring_the_radius_proxy_for_groups.htm">Configuring 
+	 the Radius proxy for groups</a>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />VPN 
+ Shared Secret</a></span></p>
+<div class="droptext" id="POPUP639173456" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.secret</span></p>
+	<p class="lip2list2paragraph">This is the VPN server shared secret. 
+	 Select the <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+						 text-decoration: none; ">Encrypt </span>option 
+	 to have the secret encrypted when saved.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />VPN 
+ Application Name</a></span></p>
+<div class="droptext" id="POPUP639190543" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.applicationName</span></p>
+	<p class="lip2list2paragraph">Specifies the application name sent to 
+	 Entrust IdentityGuard in authentication requests. This value appears 
+	 in audit and log messages. If no name is specified, the default name 
+	 is used.</p>
+	<p class="lip2list2paragraph">Default: <span class="output" style="font-family: Courier; 
+												 font-style: normal; font-weight: normal; 
+												 font-size: 9.pt; color: #; 
+												 letter-spacing: .em; text-decoration: none; ">Entrust 
+	 IdentityGuard Radius/&lt;vpnname&gt;</span>where <span class="output" 
+															 style="font-family: Courier; 
+															 font-style: normal; 
+															 font-weight: normal; 
+															 font-size: 9.pt; 
+															 color: #; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">&lt;vpnname&gt;</span>is 
+	 the name of this VPN definition.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />VPN 
+ Character Set</a></span></p>
+<div class="droptext" id="POPUP639244697" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.charset</span></p>
+	<p class="lip2list2paragraph">Specifies the character set used to decode 
+	 user names sent by the VPN server and encode messages sent back to 
+	 the server. Pick one of the options: <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">UTF-8 
+	 </span>or <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+					 text-decoration: none; ">ISO-8859-1</span>.</p>
+	<p class="lip2list2paragraph">If not specified, the Radius proxy expects 
+	 UTF-8. The character set is only a concern when extended (that is, 
+	 non-ASCII) characters are part of the names.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Proxy Converts Backslash</a></span></p>
+<div class="droptext" id="POPUP640590115" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.processbackslash</span></p>
+	<p class="lip2list2paragraph">When enabled, converts group and user 
+	 name pairs in the form “group\name” coming through the Radius proxy 
+	 into the form “group/name.”</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Proxy Converts At Sign</a></span></p>
+<div class="droptext" id="POPUP640643713" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.processat</span></p>
+	<p class="lip2list2paragraph">When enabled, converts group and user 
+	 name pairs in the form “name@group” coming through the Radius proxy 
+	 into the form “group/name.”</p>
+	<p class="lip2list2paragraph">Default: False.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Proxy Removes Group for 3rd-party Radius</a></span></p>
+<div class="droptext" id="POPUP662355197" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{].stripgroupforradius</span></p>
+	<p class="lip2list2paragraph">If this property is set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">True</span>, 
+	 the group is stripped out of the user ID before the request is forwarded 
+	 to a third-party Radius server for first-factor authentication. If 
+	 not set, or set to <span style="font-family: Courier;">False</span>, 
+	 no changes are made to the user ID.</p>
+	<p class="nonote"><span class="bold">Note:</span> If you are using 
+	 the MS-CHAPv2 protocol, this property setting may not have the desired 
+	 effect depending on the Radius server implementation of MS-CHAPv2, 
+	 because the user ID used by the client when it calculated the MS-CHAPv2 
+	 response must also be used by the third-party Radius when it validates 
+	 the MS-CHAPv2 response.</p>
+	<p class="nonote"><span class="bold">Note:</span> If set to <span class="bold">True</span>, 
+	 this property works as intended only if group names do not include 
+	 a backslash (\) or at-sign (@) character.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a13"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Proxy Removes Group for IdentityGuard</a></span></p>
+<div class="droptext" id="POPUP633634249" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.stripgroupforig</span></p>
+	<p class="lip2list2paragraph">If this property is set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">True</span>, 
+	 the Radius proxy strips the group out of the user ID before the request 
+	 is forwarded to Entrust IdentityGuard server. If set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">False</span>, 
+	 the group is kept in the user ID when the Radius proxy forwards the 
+	 request to Entrust IdentityGuard server.</p>
+	<p class="lip2list2paragraph">Set this property to <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">True 
+	 </span>only if your domain group names and Entrust IdentityGuard group 
+	 names do not match.</p>
+	<p class="nonote"><span class="bold">Note:</span> If set to <span class="bold" 
+	 style="letter-spacing: .em;">True</span>, the VPN server must use 
+	 the PAP protocol, and user names in Entrust IdentityGuard must be 
+	 unique across all Entrust IdentityGuard groups.</p>
+	<p class="nonote"><span class="bold">Note:</span> If set to <span class="bold">True</span>, 
+	 this property works as intended only if group names do not include 
+	 a backslash (\) or at-sign (@) character.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a14"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Skip 
+ Second-Factor Authentication for Nonexistent Users</a></span></p>
+<div class="droptext" id="POPUP640678560" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.skipauth.noexist</span></p>
+	<p class="lip2list2paragraph">Specifies how to deal with VPN users 
+	 who do not yet exist in Entrust IdentityGuard. (This applies to access 
+	 through a Radius server, not using external authentication.)</p>
+	<p class="lip2list2paragraph">If set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">True</span>, 
+	 the user can log in without being prompted for Entrust IdentityGuard 
+	 authentication.</p>
+	<p class="lip2list2paragraph">If set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">False</span>, 
+	 the user login attempt generates an error.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a15"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Skip 
+ Second-Factor Authentication for Users Without Active Grids or Tokens</a></span></p>
+<div class="droptext" id="POPUP640683948" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.skipauth.noactive</span></p>
+	<p class="lip2list2paragraph">Sets how to deal with users who exist 
+	 in Entrust IdentityGuard but who do not have an activated grid or 
+	 token for second-factor authentication.</p>
+	<p class="lip2list2paragraph">When set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">True</span>, 
+	 a user who has never had an active grid or token can log in without 
+	 being prompted for Entrust IdentityGuard authentication. This allows 
+	 users to continue to authenticate before they receive or activate 
+	 a grid or token.</p>
+	<p class="lip2list2paragraph">If a user previously had an active grid 
+	 or token but the grid or token has been deleted, and this setting 
+	 is <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+				 text-decoration: none; ">True</span>, the user receives 
+	 a failed authentication error. The user must complete a fallback second-factor 
+	 authentication or contact the administrator. This prevents users or 
+	 attackers from deleting grids or tokens for the purpose of skipping 
+	 second-factor authentication.</p>
+	<p class="lip2list2paragraph">If set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">False</span>, 
+	 the user login attempt generates an error.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a16"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />VPN 
+ Timeout</a></span></p>
+<div class="droptext" id="POPUP640729014" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.vpntimeout</span></p>
+	<p class="lip2list2paragraph">Sets the number of seconds that the Radius 
+	 proxy waits for a response from the VPN server.</p>
+	<p class="lip2list2paragraph">Defaults: 180</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a17"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of VPN Outstanding Requests</a></span></p>
+<div class="droptext" id="POPUP692435537" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.vpnrequests</span></p>
+	<p class="lip2list2paragraph">Provides the size of the VPN state table; 
+	 that is, the number of outstanding requests from the VPN.</p>
+	<p class="lip2list2paragraph">Default: 1000</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a18"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />VPN 
+ Request Timeout</a></span></p>
+<div class="droptext" id="POPUP642692166" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.vpnrequesttimeout.</span></p>
+	<p class="lip2list2paragraph">Specifies the length of time (in seconds) 
+	 that the Entrust IdentityGuard Radius proxy queues responses for previous 
+	 requests. Responses are queued to handle any VPN requests that are 
+	 retransmitted by the VPN server. This value should be set to a value 
+	 larger than the retransmit interval set in the VPN server.</p>
+	<p class="lip2list2paragraph">Default: 10 seconds</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a19"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Incoming 
+ Messages from VPN Server Require Message-Authenticator</a></span></p>
+<div class="droptext" id="POPUP627641497" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.vpnrequiremsgauth</span></p>
+	<p class="lip2list2paragraph">If this property is set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">True</span>, 
+	 incoming messages from the VPN server must include the <span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 9.pt; color: #; letter-spacing: .em; text-decoration: none; ">Message-Authenticator</span> 
+	 attribute. If the attribute is not found, the message is ignored.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<p class="pparagraph">Outgoing Messages to VPN Server Require Message-Authenticator</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a20"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ ACL Download Requests from VPN Server</a></span></p>
+<div class="droptext" id="POPUP690197804" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.allowacldownload</span></p>
+	<p class="lip2list2paragraph">This determines if ACL download requests 
+	 from the VPN server are allowed. The ACL download request is only 
+	 supported when a Radius server is used for first-factor authentication.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a21"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Use 
+ IP Risk-Based Authentication</a></span></p>
+<div class="droptext" id="POPUP689550255" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.allowriskbasedauthentication</span></p>
+	<p class="lip2list2paragraph">Determines if the Radius proxy will apply 
+	 risk-based authentication to users accessing Entrust IdentityGuard 
+	 through a VPN server.</p>
+	<p class="lip2list2paragraph">When you set <span style="font-weight: bold;">Use 
+	 IP Risk-Based Authentication</span>to <span style="font-weight: bold;">True</span>, 
+	 Entrust IdentityGuard looks for the IP address in the <span class="hyperlink" 
+	 style="font-family: Syntax; color: #ff; letter-spacing: .em;"><a href="../../IG_Properties_REF/VPNServerConfigSettings/IP_Address_Radius_Attribute_ID.htm#XREF_IP_Address_Radius">IP 
+	 Address Radius Attribute ID</a> </span>property. By default the IP 
+	 Address Radius Attribute ID is set to <span style="font-weight: bold;">TUNNEL-CLIENT-ENDPOINT 
+	 (66)</span>.</p>
+	<p class="lip2list2paragraph"><span style="font-weight: bold;">Attention</span>: 
+	 For risk-based authentication to occur through the Radius proxy, first-factor 
+	 authentication must be enabled through the Radius proxy. In other 
+	 words, the <span style="font-weight: bold;">First-Factor Authentication 
+	 Method </span>property (<span class="output" style="font-family: Courier; 
+									 font-style: normal; font-weight: normal; 
+									 font-size: 9.pt; color: #; letter-spacing: .em; 
+									 text-decoration: none; ">identityguard.igradius.vpn.{}.firstfactortype</span>) 
+	 must not be set to <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+								 text-decoration: none; ">No First-Factor 
+	 Authentication (</span>NULL).</p>
+	<p class="lip2list2paragraph">Also see <a href="../riskbasedauth/risk-based_authentication_overview.htm">Risk-based 
+	 authentication overview</a> for more information.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a22"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />IP 
+ Risk-Based Authentication Security Level</a></span></p>
+<div class="droptext" id="POPUP692703442" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.secondfactorsecuritylevel</span></p>
+	<p class="lip2list2paragraph">If the Radius proxy is configured to 
+	 use risk-based authentication (the <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">Use 
+	 IP Risk-Based Authentication </span>property is <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">True</span>), 
+	 this sets the security level to apply.</p>
+	<p class="lip2list2paragraph">The choices are <span class="bold" style="font-weight: bold; 
+														 letter-spacing: .em; 
+														 text-decoration: none; ">Normal 
+	 </span>or <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+					 text-decoration: none; ">Enhanced</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a23"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><span class="bold">IP 
+ Address Radius Attribute ID</span><a name="XREF_IP_Address_Radius1" id="XREF_IP_Address_Radius1"></a></a></p>
+<div class="droptext" id="POPUP689669049" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.ipaddressattributeid</span></p>
+	<p class="lip2list2paragraph">This property specifies the Radius attribute 
+	 ID to use to read the client IP address in Radius Access-Request and 
+	 Access-Response messages.</p>
+	<p class="lip2list2paragraph">The IP address encapsulated in the Radius 
+	 attribute must be a dot notation value encoded as a string.</p>
+	<p class="lip2list2paragraph">Default: TUNNEL-CLIENT-ENDPOINT (66)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a24"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />First-Factor 
+ Authentication Method</a></span></p>
+<div class="droptext" id="POPUP689976095" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.firstfactortype</span></p>
+	<p class="lip2list2paragraph">Determines which type of first-factor 
+	 authentication to use through the Radius proxy. The choices are <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Radius</span>, 
+	 <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+			 text-decoration: none; ">External</span>, <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">Entrust 
+	 IdentityGuard Password</span>, <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">Entrust 
+	 IdentityGuard Token </span>or <span class="bold" style="font-weight: bold; 
+										 letter-spacing: .em; text-decoration: none; ">No 
+	 First-Factor Authentication</span> &#160;where:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Radius</span> 
+	 indicates users are authenticated using a Radius server.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">External </span>indicates 
+	 users are authenticated using an LDAP directory or a Windows domain 
+	 controller. (See <a href="external_first-factor_authentication.htm">External 
+	 First-Factor Authentication (18)</a>, and <a href="../externalauth/external_authentication_overview.htm">External 
+	 authentication overview</a>.)</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Entrust IdentityGuard Password 
+	 </span>indicates users are authenticated using an Entrust IdentityGuard 
+	 password. (Also see <a href="../passwordauth/password_authentication_overview.htm">Password 
+	 authentication overview</a>)</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Entrust IdentityGuard Token 
+	 </span>indicates users are authenticated using a token supported by 
+	 Entrust IdentityGuard. If you choose this option, you cannot add any 
+	 second-factor authentication. This is also called “one-step token 
+	 authentication.” (Also see <a href="../tokenauth/Token_authentication_overview.htm">Token 
+	 authentication overview</a>)</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Entrust IdentityGuard One-Time Password 
+	 </span>indicates that first-factor authentication will be performed 
+	 using OTPs delivered out-of-band. (Also see <a href="../outofbandauth/out-of-band_one-time_password_overview.htm">Out-of-band 
+	 one-time password overview</a>.)</p>
+	<p class="nonote"><span class="bold">Note:</span> When using Radius 
+	 first-factor authentication with OTPs, the <span style="font-weight: bold;">OTP 
+	 Dynamic Refresh Enabled </span>policy must be set to <span style="font-family: Courier;">True 
+	 </span>to ensure that new OTPs can be delivered.</p>
+	<p class="nonote"><span class="bold">Note:</span> If you use OTP for 
+	 first-factor authentication, you cannot set OTP as a second-factor 
+	 authenticator.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">No 
+	 First-Factor Authentication </span>implies first-factor authentication 
+	 has already occurred outside of Entrust IdentityGuard and the user 
+	 is ready for second-factor authentication. In this case, second-factor 
+	 authentication by some means is required.</p>
+	<p class="lip2list2paragraph">Do not select <span style="font-weight: bold;">No 
+	 First-Factor Authentication </span>if you want the Radius proxy to 
+	 perform risk-based authentication (<span style="font-weight: bold;">Use 
+	 IP Risk-Based Authentication</span>= <span style="font-weight: bold;">True</span>). 
+	 For risk-based authentication to occur through the Radius proxy, first-factor 
+	 authentication must be enabled.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a25"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Server</a></span></p>
+<div class="droptext" id="POPUP690594175" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.radius</span></p>
+	<p class="lip2list2paragraph">Specifies the Radius server associated 
+	 with the VPN server, if applicable. The drop-down list includes any 
+	 Radius servers you previously configured in the Radius Server Configuration 
+	 pane.</p>
+	<p class="lip2list2paragraph">This property applies only if the <span 
+	 class="bold" style="letter-spacing: .em;">First-Factor Authentication 
+	 Method</span>property specifies <span class="bold" style="letter-spacing: .em;">Radius</span>. 
+	 See <a href="radius_server_configuration.htm">Radius 
+	 Server Configuration (16)</a>.</p>
+	<p class="lip2list2paragraph">If you are using the group mapping feature, 
+	 and you have configured your Radius servers by giving them Entrust 
+	 IdentityGuard group names, use the default setting: <span style="font-weight: bold;">User’s 
+	 Group is Radius Server</span>. For more information about using this 
+	 feature, see <a href="../config_radius_server/creating_modifying_and_removing_radius_servers.htm">Creating, 
+	 modifying, and removing Radius servers</a>.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">Convert Group to Lower Case</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a26"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Displaced 
+ Server</a></span></p>
+<div class="droptext" id="POPUP690658101" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.displacedRadius</span></p>
+	<p class="lip2list2paragraph">If you are replacing an existing Radius 
+	 authentication server with Entrust Identityguard Radius, use this 
+	 property to specify the name of the Radius server being replaced.</p>
+	<p class="lip2list2paragraph">If you select the name of the old Radius 
+	 server, authentication is forwarded to the old server when a user 
+	 does not exist in Entrust IdentityGuard.</p>
+	<p class="lip2list2paragraph">If <span style="font-weight: bold;">No 
+	 Server </span>is selected, then authentication will not be forwarded 
+	 in the case where a user does not exist in Entrust IdentityGuard.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a27"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Only 
+ Perform First-Factor Authentication</a></span></p>
+<div class="droptext" id="POPUP693659310" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.firstfactoronly</span></p>
+	<p class="lip2list2paragraph">If this property is set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">True</span>, 
+	 the user is authenticated after successful first-factor authentication 
+	 and is not shown a second-factor challenge.</p>
+	<p class="lip2list2paragraph">If <span style="font-weight: bold;">First-Factor 
+	 Authentication Method</span> is set to <span style="font-weight: bold;">No 
+	 First Factor Authentication </span>this property must be set to <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">False</span>.</p>
+	<p class="lip2list2paragraph">If <span style="font-weight: bold;">First-Factor 
+	 Authentication Method</span> is set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">Entrust 
+	 IdentityGuardToken</span>, this property must be set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">True</span>. 
+	 Users must enter the token response manually, Use of MST TVS token 
+	 authentication (by which a user of the Entrust IdentityGuard Mobile 
+	 Soft Token app selects <span class="bold" style="font-weight: bold; 
+									 letter-spacing: .em; text-decoration: none; ">Confirm 
+	 </span>to authenticate) is not supported for first-factor authentication.</p>
+	<p class="lip2list2paragraph">MST TVS token authentication can be used 
+	 only as a second-factor authentication method.</p>
+	<p class="lip2list2paragraph">If this property is set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">True</span>, 
+	 the <span style="font-weight: bold;">Allowable Entrust IdentityGuard 
+	 Second-Factor Authentication Methods</span> property is disabled.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a28"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allowable 
+ Entrust IdentityGuard Second-Factor Authentication Methods</a></span></p>
+<div class="droptext" id="POPUP700099785" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.allowedsecondfactortype</span></p>
+	<p class="lip2list2paragraph">This property specifies which second-factor 
+	 authentication methods are valid through the Entrust IdentityGuard 
+	 Radius proxy; that is, Entrust IdentityGuard chooses the second-factor 
+	 authentication based on this property.</p>
+	<p class="lip2list2paragraph">Select one or more of the following:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Grid</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Token—If Token is used for first-factor 
+	 authentication, second-factor authentication is disabled. This option 
+	 now supports authentication with mobile soft tokens (using the Entrust 
+	 IdentityGuard Mobile Soft Token app).</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>OTP—OTP is not allowed for second-factor 
+	 authentication if it is used for first-factor authentication.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Q&amp;A 
+	 (Question and Answer)</p>
+	<p class="lip2list2paragraph">Default: Grid<span class="bold" style="letter-spacing: .em;">,</span> 
+	 Token, OTP, Q&amp;A (If you use OTP for first-factor authentication, 
+	 the default is Grid, Token, Q&amp;A.)</p>
+	<p class="nonote"><span class="bold">Note:</span> If you are setting 
+	 up multiple VPNs, they can have different second-factor types. That 
+	 is, you can set up VPN1 with Grid, for example, and VPN2 with Token.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a29"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />PVN 
+ Required</a></span></p>
+<div class="droptext" id="POPUP700151975" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.pvnrequired</span></p>
+	<p class="lip2list2paragraph">This property can override PVN policy 
+	 set by the <span class="bold" style="letter-spacing: .em;">Authentication 
+	 Types Requiring a PVN </span>policy attribute (see <a href="../config_policies/personal_verification_number_policies.htm">Personal 
+	 Verification Number policies</a>).</p>
+	<p class="lip2list2paragraph">When set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">True</span>, 
+	 a PVN is required during Radius authentication through VPN for any 
+	 authentication method that supports PVN, regardless of how the policy 
+	 is set.</p>
+	<p class="lip2list2paragraph">When set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">False 
+	 </span>(the default), the PVN policy setting determines if a PVN is 
+	 required.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a30"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Use 
+ MST TVS for Token Authentication</a></span></p>
+<div class="droptext" id="POPUP669458560" style="display: none;">
+	<p class="lip2list2paragraph">Specifies whether mobile soft tokens 
+	 (in the Entrust IdentityGuard Mobile Soft Token app) can be used for 
+	 authentication challenges. Set to <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">True 
+	 </span>to allow mobile soft token authentication challenges using 
+	 online mode (by which users select <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">Confirm 
+	 </span>in the app to authenticate).</p>
+	<p class="lip2list2paragraph">This authentication method can be used 
+	 only for second-factor authentication.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a31"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />MST 
+ TVS Online Fallback</a></span></p>
+<div class="droptext" id="POPUP668882813" style="display: none;">
+	<p class="lip2list2paragraph">Specifies whether the &quot;classic&quot; 
+	 mode of mobile soft token authentication should be used for fallback 
+	 authentication if a user does not respond to the online authentication 
+	 challenge on the Entrust IdentityGuard Mobile Soft Token app within 
+	 a certain time frame. With classic mode, the user manually enters 
+	 the OTP generated by the soft token instead of selecting the <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Confirm</span> 
+	 button.</p>
+	<p class="lip2list2paragraph">This property can be set only if <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Use 
+	 MST TVS for Token Authentication </span>is set to <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">True</span>.</p>
+	<p class="lip2list2paragraph">Set to <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">True 
+	 </span>to allow users to manually enter the OTP if they do not have 
+	 an Internet connection (known as classic mode). If this property is 
+	 set to <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+					 text-decoration: none; ">False</span>, no fallback 
+	 authentication method is offered.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a32"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ MST TVS Online Token Challenge Summary Message</a></span></p>
+<div class="droptext" id="POPUP698341159" style="display: none;">
+	<p class="lip2list2paragraph">Use this property to set the content 
+	 of the message displayed on a user’s mobile device for authentication 
+	 using the Entrust IdentityGuard Mobile Soft Token app. If you do not 
+	 specify a message, the default message is used. The message must not 
+	 exceed 1024 characters.</p>
+	<p class="lip2list2paragraph">This property can be set only if <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Use 
+	 MST TVS for Token Authentication </span>is set to <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">True</span>.</p>
+	<p class="lip2list2paragraph">Default: &quot;User {0} wants to authenticate.&quot; 
+	 The placeholder {0} is used to insert the user’s Entrust IdentityGuard 
+	 user ID.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a33"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />TVS 
+ Callback Response Timeout<a name="XREF_2767_TVS_Callback" id="XREF_2767_TVS_Callback"></a></a></span></p>
+<div class="droptext" id="POPUP668572237" style="display: none;">
+	<p class="lip2list2paragraph">Specifies the time, in seconds, that 
+	 Entrust IdentityGuard Radius waits for a response from Entrust IdentityGuard. 
+	 This value should be less than the overall VPN timeout for a request 
+	 to complete processing. If the challenge lifetime policy defined by 
+	 Entrust IdentityGuard is smaller than this value, this value is set 
+	 to the value in the policy.</p>
+	<p class="lip2list2paragraph">Default: 60</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a34"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Use 
+ EAP for Authentication</a></span></p>
+<div class="droptext" id="POPUP668604809" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.eapsupported</span></p>
+	<p class="lip2list2paragraph">Determines if the EAP protocol is supported 
+	 by the VPN server.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a35"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Type 
+ of EAP Protocol Supported</a></span></p>
+<div class="droptext" id="POPUP669642502" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.supplicant</span></p>
+	<p class="lip2list2paragraph">If the <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">Use 
+	 EAP for Authentication </span>property is set to <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">True</span>, 
+	 this property specifies which EAP protocol is supported by the VPN 
+	 server. The choices are <span style="font-weight: bold;">PEAPv with 
+	 MSCHAPV2 </span>and <span style="font-weight: bold;">PEAPv1 with EAP-GTC</span>.</p>
+	<p class="nonote"><span class="bold">Note:</span> PEAP is Protected 
+	 EAP.</p>
+	<p class="lip2list2paragraph">When using <span style="font-weight: bold;">PEAPv1 
+	 with EAP-GTC</span>, the authentication type used is determined by 
+	 the <span style="font-weight: bold;">Allowable Entrust IdentityGuard 
+	 Second-Factor Authentication Methods </span>property.</p>
+	<p class="lip2list2paragraph"><span style="font-weight: bold;">EAP-MSCHAPv2 
+	 </span>supports only response-only tokens. For support of challenge-response 
+	 tokens and all other second-factor authentication methods, use EAP-GTC.</p>
+	<p class="lip2list2paragraph">The <span style="font-weight: bold;">Allowable 
+	 Entrust IdentityGuard Second-Factor Authentication Methods </span>property 
+	 is not used when you select <span style="font-weight: bold;">EAP-MSCHAPv2.</span></p>
+	<p class="lip2list2paragraph">See the <span class="italic" style="font-style: italic; 
+												 letter-spacing: .em; text-decoration: none; ">Entrust 
+	 IdentityGuard Installation Guide </span>for more information about 
+	 supported Radius protocols.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a36"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Include 
+ MPPE Keys Flag</a></span></p>
+<div class="droptext" id="POPUP629455993" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradiusvpn.{}.usemppe</span></p>
+	<p class="lip2list2paragraph">Determines whether both the mppe recv 
+	 and mppe send keys are included in the Access-Accept message returned 
+	 during a successful EAP authentication.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a37"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Use 
+ PEAP V1Flag</a></span></p>
+<div class="droptext" id="POPUP629536420" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradiusvpn.{}.useprspb1label</span></p>
+	<p class="lip2list2paragraph">Determines whether to use the PEAP V1 
+	 Label when calculating the mppe recv and mppe send keys.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a38"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Grid Challenge Message</a></span></p>
+<div class="droptext" id="POPUP629794492" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.gridchallengestring</span></p>
+	<p class="lip2list2paragraph">Sets the challenge message presented 
+	 to VPN users when they must authenticate with a grid. This may include 
+	 a PVN. (For more information, see <a href="../config_radius_proxy/customizing_vpn_challenge_strings.htm">Customizing 
+	 VPN challenge strings</a>.)</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a39"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Token Challenge Message</a></span></p>
+<div class="droptext" id="POPUP696416311" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.tokenchallengestring</span></p>
+	<p class="lip2list2paragraph">Sets the challenge message presented 
+	 to VPN users when they must authenticate with a token. This may include 
+	 a PVN. (For more information, see <a href="../config_radius_proxy/customizing_vpn_challenge_strings.htm">Customizing 
+	 VPN challenge strings</a>.)</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a40"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ One-Time Password Challenge Message</a></span></p>
+<div class="droptext" id="POPUP671432212" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.otpchallengestring</span></p>
+	<p class="lip2list2paragraph">Sets the challenge message presented 
+	 to VPN users when they must authenticate with an OTP. This may include 
+	 a PVN. (For more information, see <a href="../config_radius_proxy/customizing_vpn_challenge_strings.htm">Customizing 
+	 VPN challenge strings</a>.)</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a41"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Q&amp;A Challenge Message</a></span></p>
+<div class="droptext" id="POPUP673775262" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.qachallengestring</span></p>
+	<p class="lip2list2paragraph">Sets the challenge message presented 
+	 to VPN users when they must authenticate with questions and answers. 
+	 (For more information, see <a href="../config_radius_proxy/customizing_vpn_challenge_strings.htm">Customizing 
+	 VPN challenge strings</a>.)</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a42"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Single 
+ Challenge for Password Update</a></span></p>
+<div class="droptext" id="POPUP671485060" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.passwordupdatesinglechallenge</span></p>
+	<p class="lip2list2paragraph">Sets whether the user will be challenged 
+	 once for the new password or twice. If this property is <span style="font-family: Courier;">True</span>, 
+	 the user is challenged just once, and must enter the new password 
+	 twice in the same response, for example, <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 9.pt; color: #; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">newpasswordnewpassword</span>.</p>
+	<p class="lip2list2paragraph">If this property is set to <span style="font-family: Courier;">False</span>, 
+	 the user will be prompted twice, once to enter the new password, and 
+	 again to confirm the new password.</p>
+	<p class="lip2list2paragraph">Default: True</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a43"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Password Update Message</a></span></p>
+<div class="droptext" id="POPUP671543393" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.passwordupdatestring</span></p>
+	<p class="lip2list2paragraph">Sets the message to display if the user 
+	 needs to update their password.</p>
+	<p class="lip2list2paragraph">If you do not specify a message, the 
+	 default message is displayed.</p>
+	<p class="lip2list2paragraph">If Single Challenge for Password Update 
+	 is <span style="font-family: Courier;">True,</span> the default message 
+	 is: “Your password must be updated. Please enter a new password twice 
+	 in succession.<span style="font-size: 12.pt;">”</span></p>
+	<p class="lip2list2paragraph">If Single Challenge for Password Update 
+	 is <span style="font-family: Courier;">False</span>, and you do not 
+	 specify a message, the default message is: “Your password must be 
+	 updated. Please enter a new password.<span style="font-size: 12.pt;">”</span></p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a44"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Password Update Verify Message</a></span></p>
+<div class="droptext" id="POPUP671549317" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.passwordupdateverifystring</span></p>
+	<p class="lip2list2paragraph">Sets the message to display when prompting 
+	 the user for confirmation of their new password.</p>
+	<p class="nonote"><span class="bold">Note:</span> This message is only 
+	 used if Single Challenge for Password Update is set to <span style="font-family: Courier;">False</span>.</p>
+	<p class="lip2list2paragraph">The default message is “Please enter 
+	 your new password again.”</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a45"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Password Failure Message</a></span></p>
+<div class="droptext" id="POPUP676037003" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.passwordchangefailurestring</span></p>
+	<p class="lip2list2paragraph">Sets the message to display if the user’s 
+	 password change fails.</p>
+	<p class="lip2list2paragraph">If you do not specify a message, the 
+	 default message is displayed: “The new password was not entered correctly.”</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a46"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Separate 
+ Challenge for PVN Update<a name="XREF_Separate_Challenge_for1" id="XREF_Separate_Challenge_for1"></a></a></span></p>
+<div class="droptext" id="POPUP671097234" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.pvnupdateseparatechallenge</span></p>
+	<p class="lip2list2paragraph">When changing the PVN, this property 
+	 sets whether the new PVN must be entered and confirmed with one prompt 
+	 or two.</p>
+	<p class="lip2list2paragraph">For first-factor token or OTP authentication: 
+	 If this property is <span style="font-family: Courier;">False</span>, 
+	 the user is prompted once, and must enter the new PVN twice. If this 
+	 property is <span style="font-family: Courier;">True</span>, the user 
+	 is prompted twice, and enters the new PVN once for each prompt.</p>
+	<p class="lip2list2paragraph">For second-factor authentication supporting 
+	 PVN (grid, token, and OTP): If this property is <span style="font-family: Courier;">False</span>, 
+	 the user is prompted once for the second-factor challenge (including 
+	 the old PVN), and must enter the new PVN twice, along with the challenge 
+	 response. If this property is <span style="font-family: Courier;">True</span>, 
+	 the user is prompted for the challenge response (which includes the 
+	 old PVN). Then they are prompted twice more, and must enter the new 
+	 PVN once for each prompt.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a47"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ PVN Update Message</a></span></p>
+<div class="droptext" id="POPUP691977318" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.pvnupdatestring</span></p>
+	<p class="lip2list2paragraph">Sets the first message to display if 
+	 the user needs to update their PVN.</p>
+	<p class="lip2list2paragraph">If you do not specify a message, the 
+	 default message is displayed.</p>
+	<p class="lip2list2paragraph">For token first-factor authentication: 
+	 If Separate Challenge for PVN Update is <span style="font-family: Courier;">False</span>, 
+	 the default message is: “Your password must be updated. Please enter 
+	 a new PVN twice in succession.<span style="font-size: 12.pt;">”</span></p>
+	<p class="lip2list2paragraph">For first-factor or second-factor authentication: 
+	 If Separate Challenge for PVN Update is <span style="font-family: Courier;">True</span>, 
+	 and you do not specify a message, the default message is: “Your PVN 
+	 must be updated. Please enter a new PVN.<span style="font-size: 12.pt;">” 
+	 </span></p>
+	<p class="nonote"><span class="bold">Note:</span> This property is 
+	 ignored for second-factor authentication if Separate Challenge for 
+	 PVN Update is <span style="font-family: Courier;">False</span>.</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long..</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a48"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ PVN Update Verify Message</a></span></p>
+<div class="droptext" id="POPUP692010408" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.pvnupdateverifystring</span></p>
+	<p class="lip2list2paragraph">Sets the message to display when prompting 
+	 the user for confirmation of their new PVN.</p>
+	<p class="lip2list2paragraph">The default message is “Please enter 
+	 your new PVN again.”</p>
+	<p class="nonote"><span class="bold">Note:</span> This message is only 
+	 used if Separate Challenge for PVN Update is set to <span style="font-family: Courier;">True</span>.</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a49"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ PVN Failure Message</a></span></p>
+<div class="droptext" id="POPUP692034825" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.pvnchangefailurestring</span></p>
+	<p class="lip2list2paragraph">Sets the message to display if the user’s 
+	 two PVNs do not match.</p>
+	<p class="lip2list2paragraph">If you do not specify a message, the 
+	 default message is displayed: “The new PVN was not entered properly.”</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a50"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Grid Retry Message</a></span></p>
+<div class="droptext" id="POPUP692069383" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.gridretrystring</span></p>
+	<p class="lip2list2paragraph">Sets the message to display if the user 
+	 enters an invalid response to the grid challenge.</p>
+	<p class="lip2list2paragraph">If you do not specify a message, then 
+	 the default message is the reason for authentication failure.</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a51"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Token Retry Message</a></span></p>
+<div class="droptext" id="POPUP692070589" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.tokenretrystring</span></p>
+	<p class="lip2list2paragraph">Sets the message to display if the user 
+	 enters an invalid response to the token challenge.</p>
+	<p class="lip2list2paragraph">If you do not specify a message, then 
+	 the default message is the reason for authentication failure.</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a52"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ One-Time Password Retry Message</a></span></p>
+<div class="droptext" id="POPUP692103787" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.otpretrystring</span></p>
+	<p class="lip2list2paragraph">Sets the message to display if the user 
+	 enters an invalid response to the OTP challenge.</p>
+	<p class="lip2list2paragraph">If you do not specify a message, then 
+	 the default message is the reason for authentication failure.</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a53"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Q&amp;A Retry Message</a></span></p>
+<div class="droptext" id="POPUP672843915" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.qaretrystring</span></p>
+	<p class="lip2list2paragraph">Sets the message to display if the user 
+	 enters an invalid response to the question-and-answer challenge.</p>
+	<p class="lip2list2paragraph">If you do not specify a message, then 
+	 the default message includes the reason for the authentication failure.</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a54"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Custom 
+ Error Message</a></span></p>
+<div class="droptext" id="POPUP672888503" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.customerrorstring</span></p>
+	<p class="lip2list2paragraph">This custom error string is displayed 
+	 with the new challenge when a user enters an invalid response.</p>
+	<p class="lip2list2paragraph">If a custom error message is supplied 
+	 in this property, the message is prepended to the new challenge presented 
+	 to the user.</p>
+	<p class="lip2list2paragraph">If this property is left blank, the default 
+	 error string from Entrust IdentityGuard is used.</p>
+	<p class="nonote"><span class="bold">Note:</span> This string must 
+	 be less than 250 characters long.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a55"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Custom 
+ Error Messages Properties File</a></span></p>
+<div class="droptext" id="POPUP672929685" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.customerrors</span></p>
+	<p class="lip2list2paragraph">Specifies the path and file name of the 
+	 properties file used for custom error messages for the VPN server 
+	 instance. Separate VPN server configurations can be used to support 
+	 different translations of the error messages. The properties map Entrust 
+	 IdentityGuard internal error codes to error messages. If no file is 
+	 specified of if the internal error code is not found, the default 
+	 English error message is used.</p>
+	<p class="lip2list2paragraph">Example: <span class="output" style="font-family: Courier; 
+												 font-style: normal; font-weight: normal; 
+												 font-size: 9.pt; color: #; 
+												 letter-spacing: .em; text-decoration: none; ">$identityguard.home/etc/vpn-example.error.messages.properties</span></p>
+	<p class="lip2list2paragraph">For more information, see <a href="../config_radius_proxy/customizing_error_messages.htm">Customizing 
+	 error messages</a>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a56"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Additional 
+ Radius Response Attributes</a></span></p>
+<div class="droptext" id="POPUP546014398" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.responseattributes</span></p>
+	<p class="lip2list2paragraph">Use this property to specify the attributes 
+	 to include in the Radius response to a successful authentication.</p>
+	<p class="lip2list2paragraph">Select a <span style="font-weight: bold;">Radius 
+	 Attribute Instance </span>from the drop-down list. The list contains 
+	 the attributes you configured using the <span style="font-weight: bold;">Radius 
+	 Response Attribute Configuration</span> properties. See <a href="radius_response_attribute_configuration.htm">Radius 
+	 Response Attribute Configuration (17)</a>.</p>
+	<p class="lip2list2paragraph">Select a mapping value. The choices are:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold">Use Static Value</span> – 
+	 Use this option to map a static value defined in <span style="font-weight: bold;">Radius 
+	 Response Attribute Configuration</span>. For information about static 
+	 values, see Radius Attribute Format in <a href="radius_response_attribute_configuration.htm">Radius 
+	 Response Attribute Configuration (17)</a>.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold">Entrust IdentityGuard Group</span>&#160;– Use this to map the Entrust IdentityGuard 
+	 group to the attribute.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold">Custom</span>&#160;– 
+	 Create your own mapping by specifying a custom LDAP attribute. This 
+	 option is available only when you are using an LDAP repository.</p>
+	<p class="lip2list2paragraph">Click <span style="font-weight: bold;">Add 
+	 Mapping</span> to create the mapping.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a57"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Authorization 
+ expression</a></span></p>
+<div class="droptext" id="POPUP544179652" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{0}.authorizeif</span></p>
+	<p class="lip2list2paragraph">Use <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">Authorization 
+	 expression </span>to define a set of LDAP or Entrust IdentityGuard 
+	 groups to which the user must belong in order to be granted access 
+	 to the requested resource.</p>
+	<p class="lip2list2paragraph">&#160;For more information, see &quot;Authorization 
+	 expression syntax and examples&quot;.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a58"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Skip 
+ Second-Factor Authentication for Users That Have Been Authorized</a></span></p>
+<div class="droptext" id="POPUP630750138" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.vpn.{}.skipsecondfactorifauthorized</span></p>
+	<p class="lip2list2paragraph">Use <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">Second-Factor 
+	 Authentication for Users That Have Been Authorized </span>in conjunction 
+	 with <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+				 text-decoration: none; ">Authorization expression</span>. 
+	 If <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+				 text-decoration: none; ">True</span>, users who have been 
+	 successfully authorized against your authorization expression skip 
+	 second-factor authentication.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">For information about the default challenge messages 
+ and how to change them, see <a href="../config_radius_proxy/customizing_vpn_challenge_strings.htm#XREF_81548_Customizing_VPN">Customizing 
+ VPN challenge strings</a>.</p>
+<h3>Authorization expression syntax and examples<a name="Authorization_expression_syntax_and_examples"></a></h3>
+<p class="pparagraph">When the <span class="bold">Authorization expression</span> 
+ property contains an expression, Entrust IdentityGuard performs an authorization 
+ check immediately after first-factor authentication (if second-factor 
+ authentication is disabled), or second-factor authentication (if second-factor 
+ authentication is enabled).</p>
+<p class="pparagraph">Define groups using the following syntax:</p>
+<p class="cwcodewide">&lt;attributename&gt;(!=|=)<span style="font-family: Syntax; 
+														 font-size: 10.0pt;">&quot;</span>&lt;attributevalue&gt;<span 
+	 style="font-family: Syntax; font-size: 10.0pt;">&quot;</span>[(AND|OR)&lt;attributename&gt;(!=|=) 
+ <span style="font-family: Syntax; font-size: 10.0pt;">&quot;</span>&lt;attributevalue&gt;<span 
+	 style="font-family: Syntax; font-size: 10.0pt;">&quot;</span>]*</p>
+<p class="pparagraph">where:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">&lt;attributename&gt;</span> 
+ is either:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>an LDAP 
+ attribute name used to retrieve the LDAP group information</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">igGroup</span>, 
+ if you are defining an Entrust IdentityGuard group</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">&lt;attributevalue&gt;</span>&#160;is 
+ the name of the LDAP or Entrust IdentityGuard group</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>the exclamation 
+ point (!) is used to negate an expression</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>double-quotes 
+ (&quot;&quot;) are used around names that include spaces</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>AND and 
+ OR are used to create authorization rules that require users to be members 
+ of more than one group (AND) or require users to be members of at least 
+ one of several groups (OR).</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>attribute 
+ names and values are case insensitive.</p>
+<p class="pparagraph">Examples</p>
+<p class="pparagraph"><span style="font-family: Courier; font-size: 9.0pt;">memberOf=</span>&quot;<span 
+	 style="font-family: Courier; font-size: 9.0pt;">cn=VPN Users*</span>&quot;<span 
+	 style="font-family: Courier; font-size: 9.0pt;">&#160;</span></p>
+<p class="prpprocedureparagraph">This expression means a user is authorized 
+ if they belong to any LDAP group that has <span class="output" style="font-family: Courier;">cn=VPN 
+ Users</span> in the group name.</p>
+<p class="prpprocedureparagraph">&#160;</p>
+<p class="cwcodewide">memberOf=<span style="font-family: Syntax;">&quot;</span>cn=VPN 
+ Users 1<span style="font-family: Syntax;">&quot;</span> AND memberOf=cn=Administrators 
+ OR memberOf=<span style="font-family: Syntax;">&quot;</span>cn=VPN Users 
+ 2*<span style="font-family: Syntax;">&quot;</span></p>
+<p class="prpprocedureparagraph">This expression means a user is authorized 
+ if they belong to the LDAP groups <span class="output" style="font-family: Courier; 
+										 font-size: 10.0pt;">VPN Users 
+ 1</span>&#160;and <span class="output" style="font-family: Courier; font-size: 10.0pt;">Administrators</span>, 
+ or to the group <span class="output" style="font-family: Courier; font-size: 10.0pt;">VPN 
+ Users 2</span>.</p>
+<p class="prpprocedureparagraph">&#160;</p>
+<p class="cwcodewide">memberOf=<span style="font-family: Syntax;">&quot;</span>cn=VPN 
+ Users<span style="font-family: Syntax;">&quot;</span>&#160;AND memberOf=cn=Administrators 
+ OR igGroup=Group1</p>
+<p class="prpprocedureparagraph">This expression means a user is authorized 
+ if they belong to the LDAP groups <span class="output" style="font-family: Courier; 
+										 font-size: 10.0pt;">VPN Users 
+ </span>and <span class="output" style="font-family: Courier; font-size: 10.0pt;">Administrators</span>,&#160;or 
+ to the Entrust IdentityGuard group <span class="output" style="font-family: Courier; 
+											 font-size: 10.0pt;">Group1</span>.</p>
+<p class="prpprocedureparagraph">&#160;</p>
+<p class="cwcodewide">memberOf!=<span style="font-family: Syntax; font-size: 10.0pt;">&quot;</span>cn=Desktop 
+ Users*<span style="font-family: Syntax; font-size: 10.0pt;">&quot;</span></p>
+<p class="prpprocedureparagraph">This expression means a user is authorized 
+ if they are <span style="font-style: italic;">not</span>&#160;a member 
+ of an LDAP group that has <span class="output" style="font-family: Courier; 
+								 font-size: 10.0pt;">cn=Desktop Users</span>&#160;in 
+ the group name.</p>
+<p class="pparagraph">&#160;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP688597354');
+	TextPopupInit('a2','POPUP630136182');
+	TextPopupInit('a3','POPUP687207109');
+	TextPopupInit('a4','POPUP687216642');
+	TextPopupInit('a5','POPUP639051941');
+	TextPopupInit('a6','POPUP687369076');
+	TextPopupInit('a7','POPUP639173456');
+	TextPopupInit('a8','POPUP639190543');
+	TextPopupInit('a9','POPUP639244697');
+	TextPopupInit('a10','POPUP640590115');
+	TextPopupInit('a11','POPUP640643713');
+	TextPopupInit('a12','POPUP662355197');
+	TextPopupInit('a13','POPUP633634249');
+	TextPopupInit('a14','POPUP640678560');
+	TextPopupInit('a15','POPUP640683948');
+	TextPopupInit('a16','POPUP640729014');
+	TextPopupInit('a17','POPUP692435537');
+	TextPopupInit('a18','POPUP642692166');
+	TextPopupInit('a19','POPUP627641497');
+	TextPopupInit('a20','POPUP690197804');
+	TextPopupInit('a21','POPUP689550255');
+	TextPopupInit('a22','POPUP692703442');
+	TextPopupInit('a23','POPUP689669049');
+	TextPopupInit('a24','POPUP689976095');
+	TextPopupInit('a25','POPUP690594175');
+	TextPopupInit('a26','POPUP690658101');
+	TextPopupInit('a27','POPUP693659310');
+	TextPopupInit('a28','POPUP700099785');
+	TextPopupInit('a29','POPUP700151975');
+	TextPopupInit('a30','POPUP669458560');
+	TextPopupInit('a31','POPUP668882813');
+	TextPopupInit('a32','POPUP698341159');
+	TextPopupInit('a33','POPUP668572237');
+	TextPopupInit('a34','POPUP668604809');
+	TextPopupInit('a35','POPUP669642502');
+	TextPopupInit('a36','POPUP629455993');
+	TextPopupInit('a37','POPUP629536420');
+	TextPopupInit('a38','POPUP629794492');
+	TextPopupInit('a39','POPUP696416311');
+	TextPopupInit('a40','POPUP671432212');
+	TextPopupInit('a41','POPUP673775262');
+	TextPopupInit('a42','POPUP671485060');
+	TextPopupInit('a43','POPUP671543393');
+	TextPopupInit('a44','POPUP671549317');
+	TextPopupInit('a45','POPUP676037003');
+	TextPopupInit('a46','POPUP671097234');
+	TextPopupInit('a47','POPUP691977318');
+	TextPopupInit('a48','POPUP692010408');
+	TextPopupInit('a49','POPUP692034825');
+	TextPopupInit('a50','POPUP692069383');
+	TextPopupInit('a51','POPUP692070589');
+	TextPopupInit('a52','POPUP692103787');
+	TextPopupInit('a53','POPUP672843915');
+	TextPopupInit('a54','POPUP672888503');
+	TextPopupInit('a55','POPUP672929685');
+	TextPopupInit('a56','POPUP546014398');
+	TextPopupInit('a57','POPUP544179652');
+	TextPopupInit('a58','POPUP630750138');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

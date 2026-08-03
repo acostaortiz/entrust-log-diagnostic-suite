@@ -1,0 +1,179 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\personvernumbersauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Creating a PVN for a single user</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nPersonal verification numbers\nCreating and administering personal verification numbers\nCreating a PVN for a single user");
+addAvenueInfo("Untitled02","ig_admin/personvernumbersauth/searching_for_users_based_on_personal_verification_numbers.htm","ig_admin/personvernumbersauth/modifying_personal_verification_numbers.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"personvernumbersauth.htm\">Personal verification numbers<\/a> > <a href=\"creating_and_administering_personal_verification_numbers.htm\">Creating and administering personal verification numbers<\/a> > Creating a PVN for a single user<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_64068_Creating_a_PVN_for" id="XREF_64068_Creating_a_PVN_for"></a>Creating a PVN for a single user</h1>
+<p class="pparagraph"><a name="IX_autogenerate" id="IX_autogenerate"></a>Administrators with applicable permissions can set the PVN for the user by typing one or by using the <span class="bold">Automatic Generation</span> option to generate a random PVN for a user.</p>
+<p class="pparagraph">If a PVN lifetime in days is specified in the policy, it is automatically added to the creation date of the PVN and the expiry date is shown in the <span class="bold">User Account Detail</span> view. After a PVN has expired, users are forced to update the PVN when they try to login using the expired PVN.</p>
+<p class="prtproceduretitle">To create a PVN for a user</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find one or more users without a PVN. (See <a href="searching_for_users_based_on_personal_verification_numbers.htm#XREF_66724_Searching_for">Searching for users based on personal verification numbers</a>.)</p>
+
+<p class="prpprocedureparagraph">On the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Find Accounts</span>&#160;page, be sure to select the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Doesn’t have a PVN</span>&#160;option as part of your search criteria.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select a user on the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Search Results</span> page.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Account</span>&#160;<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Information</span> pane appears for the user.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Authentication Types,</span>&#160;click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Personal Verification Number</span>.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Create PVN</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Create PVN</span> page appears.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="personvernumbersauth00729.jpg" id="image1" src="personvernumbersauth00729.jpg" width="545" height="195" border="0" name="image1" /></p>
+</div>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Set a PVN value in one of two ways:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter a value next to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Personal Verification Number</span>. The value must match the length set by policy</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Autogenerate PVN</span>&#160;to have Entrust IdentityGuard create a random number.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Change Is Required On First Usage</span>&#160;to force the user assigned the PVN to provide an update the first time the PVN is used. Use this option if administrators create or distribute PVNs to users to ensure that users operate with a PVN known only to them. This is not necessary if users create their own PVNs through your application. Depending on policy, you may not be able to deselect this option (see <a href="forcing_pvn_updates.htm#XREF_39549_Forcing_PVN_updates">Forcing PVN updates</a>.)</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The Radius proxy does not support the updating of PVNs except through the Password Authentication Protocol (PAP).</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Create PVN</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Account</span>&#160;<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Information</span>&#160;pane reappears for the user showing the new PVN information.</p>
+<p class="prpprocedureparagraph">After you create user PVNs, you need to distribute them to your users. Alternatively, you can have the user create and update their own PVN in your application interface (see <a href="having_a_user_set_up_a_pvn.htm#XREF_43722_Having_a_user_set">Having a user set up a PVN</a>).</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

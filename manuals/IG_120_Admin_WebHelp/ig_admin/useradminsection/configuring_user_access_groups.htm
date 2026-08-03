@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring user access groups</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("User administration\nConfiguring user access groups");
+addAvenueInfo("Untitled02","ig_admin/useradminsection/create_users_using_entrust_identityguard_user_enrollment.htm","ig_admin/useradminsection/set_the_user_data_policy_to_allow_multiple_groups_for_users.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"user_admnistration.htm\">User administration<\/a> > Configuring user access groups<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Configuring user access groups</h1>
+<p class="pparagraph">Entrust IdentityGuard can be configured to authorize 
+ users to use specific protected resources, for example, web pages, web 
+ portals, or applications.</p>
+<p class="pparagraph">One way to grant different authorizations to different 
+ users is to create Entrust IdentityGuard groups, and group users with 
+ the same access needs together. Each IdentityGuard user can be a member 
+ of only one Entrust IdentityGuard group.</p>
+<p class="pparagraph">This section describes another way to grant different 
+ authorizations to users in an organization, by configuring user access 
+ groups.</p>
+<p class="pparagraph">User access groups might be a good solution for your 
+ organization if</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>if Entrust IdentityGuard groups are not used, 
+ or the fact that a user can be a member of only one Entrust IdentityGuard 
+ is constraining</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If you use a database as the user data repository 
+ for your Entrust IdentityGuard installation, or if you use an LDAP repository 
+ such as Microsoft Active Directory but you are not able to configure user 
+ access through that software</p>
+<p class="pparagraph">A user access group is an attribute of a user account 
+ and can be seen in a user's account details or in user reports. A user 
+ account can have a list of access groups that are determined by the policy, 
+ or it can have a custom list that overrides the policy.</p>
+<h2>An example of how to use user access groups</h2>
+<p class="liplistparagraph">Charles is a human resources staff member in 
+ a company. To do his job he uses a number of specialized applications 
+ hosted on the company's HR Web portal. He often travels to company recruiting 
+ events and he needs to access the company network and the HR Web portal 
+ remotely through VPN. Unlike his colleagues in the HR department, he also 
+ needs occasional use of software used by the Finance department.</p>
+<p class="liplistparagraph">All of the staff in the company's HR department 
+ have user accounts in the Entrust IdentityGuard group &quot;HR&quot; and 
+ the group uses the Entrust IdentityGuard policy &quot;HR Policy&quot;. 
+ The Entrust IdentityGuard administrator created user access groups for 
+ this policy so the users in the group to which the policy applies are 
+ authorized to access the HR portal and to work remotely through VPN.</p>
+<p class="liplistparagraph">To give Charles the additional authorization 
+ to access the Finance department software, the Entrust IdentityGuard administrator 
+ updated Charles' account information to override the access groups set 
+ by the policy for the department and add the custom list of access groups 
+ so Charles can access the software applications and web pages he needs 
+ to do his work.</p>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">These user access groups are returned with the user 
+ ID during a successful authentication. The user access groups can then 
+ be used by an application for authorization purposes (for example, return 
+ the list of access groups to a VPN server for further authorization processing). 
+ In the preceding example, the access groups related to access the Finance 
+ department software would be included in Charles' Radius response to the 
+ VPN.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_reporting.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Reporting overview</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring reports\nReporting overview");
+addAvenueInfo("r13_std","ig_admin/config_reporting/configuring_reports.htm","ig_admin/config_reporting/tips_for_optimal_reporting_performance.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"configuring_reports.htm\">Configuring reports<\/a> > Reporting overview<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_21610_Logging_overview" id="XREF_21610_Logging_overview"></a>Reporting 
+ overview</h1>
+<p class="pparagraph">Reporting is a powerful tool that you can use to 
+ get information about your Entrust IdentityGuard deployment. It is designed 
+ to zoom in on current information about specific groups of users, audits, 
+ or authentication types, based on search criteria and the personal queries 
+ feature. Reporting makes use of the same data repositories used by your 
+ production IdentityGuard system.</p>
+<p class="pparagraph">Entrust IdentityGuard allows you to create reports 
+ to help you get a snapshot of your current repository details. Use the 
+ built-in report templates to create reports&#160;for all the Entrust IdentityGuard 
+ data types.&#160;No database is required (except for creating audit reports). 
+ You can generate reports to display detailed information about users, 
+ authentication methods, and audits.</p>
+<p class="pparagraph">Reports and their associated report information files 
+ are stored in the file system used by the Entrust IdentityGuard server. 
+ This means that the reports are not included in Entrust IdentityGuard 
+ backups, so you must set up your own procedures for backing up the report 
+ storage directories.</p>
+<p class="pparagraph">You can generate reports from the Administration 
+ interface and from the Master user shell. From the Master user shell, 
+ you generate reports using options in the list command. See the <span 
+	 style="font-style: italic;">Entrust IdentityGuard Master User Shell 
+ Command Reference</span>&#160;for detailed information about Master user 
+ shell command syntax.</p>
+<p class="pparagraph">You can view reports from the Administration interface 
+ or directly from the file system.</p>
+<h3>Report permissions</h3>
+<p class="pparagraph">The reports you can run, view,&#160;list, and delete 
+ depend on the permissions attached to your role. The contents of the reports 
+ also depend on your permissions.&#160;For example, if the administrator 
+ generating the report has access only to their group, then only data from 
+ that group is pulled into the report. Administrators with the <span style="font-weight: bold;">superuser</span>&#160;role 
+ can launch and view any report.</p>
+<p class="pparagraph">When you launch reports from the Master user shell, 
+ you can create and view any report because Master users have all permissions. 
+ Users with the superuser role can view reports created in the Master user 
+ shell using the Administration interface.</p>
+<p class="pparagraph">For the permissions needed to create, view, or delete 
+ reports, see <a href="../config_roles/report_permissions1.htm">Report 
+ permissions</a>.</p>
+<p class="pparagraph">The <span style="font-weight: bold;">auditor</span> 
+ role contains all of the permissions required to view reports (get, list 
+ and view ). The <span style="font-weight: bold;">useradmin</span>&#160;role 
+ contains all of the report permissions for the groups available to the 
+ user administrator, except <span style="font-family: 'Courier New';">auditReport</span>, 
+ so administrators with the <span style="font-weight: bold;">useradmin</span>&#160;role 
+ can get, view, list, create, and delete all report types for their groups, 
+ except audit reports.</p>
+<h3>Report templates</h3>
+<p class="pparagraph">Reports are generated in PDF or CSV format, depending 
+ on the report template you choose.&#160;To see a list of all reports that 
+ Entrust IdentityGuard can generate, in the Administration interface, click 
+ <span class="bold">Reports</span>.</p>
+<p class="pparagraph">You set up the report search criteria in the Administration 
+ interface or Master user shell and generate one of these reports.</p>
+<h3>Report information</h3>
+<p class="pparagraph">Each time you generate a report, Entrust IdentityGuard 
+ also produces a report information file.&#160;The report information file 
+ includes data such as the report run date and time, the number of records 
+ processed, and so on.</p>
+<p class="pparagraph">You can view the report information in the Administration 
+ interface or by opening the XML file in the report directory.</p>
+<p class="pparagraph">Report information files are stored in the same folder 
+ as the reports.&#160;The file extension of the report information files 
+ is <span class="output">md.xml</span>. The report information file name 
+ is a concatenation of the report name plus a timestamp.</p>
+<p class="pparagraph">The location of these files is set in the Properties 
+ Editor&#160;property, <span style="font-weight: bold;">Report Output Directory</span>. 
+ The default location is:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On Windows: 
+ <span class="output">&lt;$IG_HOME&gt;\reports</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On Linux: 
+ <span class="output">$IG_HOME/reports</span></p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The same 
+ Entrust IdentityGuard instance must be used to create the reports and 
+ manage and view the reports.&#160;That is, reports are not replicated 
+ or accessible across Entrust IdentityGuard instances unless you are using 
+ a file system that is shared across your Entrust IdentityGuard instances.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

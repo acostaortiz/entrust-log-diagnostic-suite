@@ -1,0 +1,520 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\bulkOps.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Data items for digital ID bulk files</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nBulk file operations and data items\nData items for digital ID bulk files");
+addAvenueInfo("Untitled02","ig_admin/bulkops/digital_id_bulk_operations.htm","ig_admin/bulkops/federation_bulk_operations.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"bulk_file_operations_and_data_items.htm\">Bulk file operations and data items<\/a> > Data items for digital ID bulk files<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Data items for digital ID bulk files</h1>
+<p class="pparagraph">Each data item in a digital ID bulk file must use 
+ the correct data type.</p>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">For more information about creating, editing and 
+ validating bulk files, see <a href="bulkops.htm">Perform bulk operations</a>.</p>
+<p class="pparagraph">&#160;</p>
+<table class="Entrust_table" cellspacing="0px" width="56.042%">
+	<col style="width: 13.746%;" />
+	<col style="width: 20.306%;" />
+	<col style="width: 55.166%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">Data 
+		 item name</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Data 
+		 type</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Description</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">digitalIdConfig</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 digital ID configuration&#160;name to use for the user’s digital 
+		 ID. See <a href="file://T:/Server/11.0/Admin_Guide_RH/IG Server Admin Guide/IG_Admin/enablingME/Step_10_Add_a_digital_ID_configuration.htm#XREF_58495_Add_a_digital_ID">Step 
+		 10: Add a digital ID configuration</a>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">digitalIdDn</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 DN of the user’s digital ID. For more on DNs, see the <span style="font-style: italic;">Entrust 
+		 Authority Security Manager Directory Configuration Guide</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">digitalIdClientType</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 client type to use for the user’s digital ID. For example, iPhone. 
+		 See <a href="file://T:/Server/11.0/Admin_Guide_RH/IG Server Admin Guide/IG_Admin/config_policies/Digital_ID_policies.htm#XREF_23515_Digital_ID_policies">Digital 
+		 ID policies</a>&#160;for more on client types.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">digitalIdRemoveClientTypes</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">A 
+		 flag to causes client types to be removed from an existing digital 
+		 ID, if they are present.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">digitalIdProfileType</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 format of the digital ID. Allowable values are <span class="output">epf</span>&#160;and 
+		 <span class="output">p12</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">digitalIdProfilePassword</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 password of the digital ID. The password protects the digital 
+		 ID. This password must be supplied to gain access to the keys 
+		 and certificates within the digital ID.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">digitalIdOutputFile</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 path and filename of the digital ID.</p>
+		<p class="tattabletext">For example, <span class="output">c:/ASmithDigitalId.epf</span></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">digitalIdP10CertDefn</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 certificate definition to use with the digital ID, for example, 
+		 <span class="output">Verification_p10</span>. Certificate definitions 
+		 are defined in Security Manager. See the <span style="font-style: italic;">Security 
+		 Manager Administration User Guide</span> for details.</p>
+		<p class="tattabletext">If you are using your digital IDs with 
+		 mobile enrollment, see also <a href="file://T:/Server/11.0/Admin_Guide_RH/IG Server Admin Guide/IG_Admin/enablingME/Step_10_Add_a_digital_ID_configuration.htm#XREF_58495_Add_a_digital_ID">Step 
+		 10: Add a digital ID configuration</a>&#160;to see which certificate 
+		 definitions Entrust IdentityGuard uses by default, when it creates 
+		 digital IDs for users who are requesting digital IDs through Self-Service.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">digitalIdP10</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 base64-encoded PKCS#10 data.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">comment</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">A 
+		 comment.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">createIfNotExists</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Boolean</p>
+		<p class="tattabletext"><span class="output">true</span> <span 
+		 class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span>or 
+		 <span class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span><span 
+		 class="output">false</span></p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">When 
+		 <span class="output">true</span>, a user account is created in 
+		 Security Manager if one does not yet exist for the user.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">recoverIfExists</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Boolean</p>
+		<p class="tattabletext"><span class="output">true</span> <span 
+		 class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span>or 
+		 <span class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span><span 
+		 class="output">false</span></p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">When 
+		 <span class="output">true</span>, the user can enroll for a digital 
+		 ID even if they already have an account in Security Manager. When 
+		 <span class="output" style="font-family: Courier; font-size: 10.0pt;">false</span>, 
+		 the user cannot obtain a digital ID after they have an account 
+		 Security Manager.</p></td>
+	</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+
+<table style="padding-left: 4.00pt; padding-top: 5.00pt; padding-right: 3.00pt; 
+		 padding-bottom: 3.00pt; margin-bottom: 16.00pt;" cellspacing="0" 
+		 width="553">
+	<caption class="tacwtablecaptionwide"><span class="FM_Procnum">Table 
+	 196:</span> <a name="XREF_30879_Data_items_for" id="XREF_30879_Data_items_for"></a>Data 
+	 items for digital ID bulk files</caption>
+	<tr style="height: 18.00pt;" bgcolor="#E5E5E5">
+		<th style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133" 
+			 bgcolor="#E5E5E5"><p class="tahtableheader">Data item name</p></th>
+		<th style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158" 
+			 bgcolor="#E5E5E5"><p class="tahtableheader">Data type</p></th>
+		<th style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263" bgcolor="#E5E5E5"><p 
+			 class="tahtableheader">Description</p></th>
+	</tr>
+	<tr style="height: 40.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133"><p 
+			 class="tattabletext">digitalIdConfig</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158"><p 
+			 class="tattabletext">string</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263"><p class="tattabletext">The 
+		 digital ID configuration&#160;name to use for the user’s digital 
+		 ID. See <a href="../enablingme/step_10_add_a_digital_id_configuration.htm#XREF_58495_Add_a_digital_ID">Step 
+		 10: Add a digital ID configuration</a>.</p></td>
+	</tr>
+	<tr style="height: 40.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133"><p 
+			 class="tattabletext">digitalIdDn</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158"><p 
+			 class="tattabletext">string</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263"><p class="tattabletext">The 
+		 DN of the user’s digital ID. For more on DNs, see the <span style="font-style: italic;">Entrust 
+		 Authority Security Manager Directory Configuration Guide</span>.</p></td>
+	</tr>
+	<tr style="height: 51.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133"><p 
+			 class="tattabletext">digitalIdClientType</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158"><p 
+			 class="tattabletext">string</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263"><p class="tattabletext">The 
+		 client type to use for the user’s digital ID. For example, iPhone. 
+		 See <a href="../config_policies/digital_id_policies.htm#XREF_23515_Digital_ID_policies">Digital 
+		 ID policies</a>&#160;for more on client types.</p></td>
+	</tr>
+	<tr style="height: 40.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133"><p 
+			 class="tattabletext">digitalIdRemove<br />
+		ClientTypes</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158"><p 
+			 class="tattabletext">string</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263"><p class="tattabletext">A 
+		 flag to causes client types to be removed from an existing digital 
+		 ID, if they are present.</p></td>
+	</tr>
+	<tr style="height: 29.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133"><p 
+			 class="tattabletext">digitalIdProfileType</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158"><p 
+			 class="tattabletext">string</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263"><p class="tattabletext">The 
+		 format of the digital ID. Allowable values are <span class="output" 
+		 style="font-family: Courier; font-style: normal; font-weight: normal; 
+		 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">epf</span>&#160;and 
+		 <span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 10.0pt; color: #000000; 
+				 letter-spacing: 0.00em; text-decoration: none; ">p12</span>.</p></td>
+	</tr>
+	<tr style="height: 51.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133"><p 
+			 class="tattabletext">digitalIdProfile<br />
+		Password</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158"><p 
+			 class="tattabletext">string</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263"><p class="tattabletext">The 
+		 password of the digital ID. The password protects the digital 
+		 ID. This password must be supplied to gain access to the keys 
+		 and certificates within the digital ID.</p></td>
+	</tr>
+	<tr style="height: 34.50pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133"><p 
+			 class="tattabletext">digitalIdOutputFile</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158"><p 
+			 class="tattabletext">string</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263"><p class="tattabletext">The 
+		 path and filename of the digital ID.</p>
+		<p class="tattabletext">For example, <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">c:/ASmithDigitalId.epf</span></p></td>
+	</tr>
+	<tr style="height: 155.50pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133"><p 
+			 class="tattabletext">digitalIdP10CertDefn</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158"><p 
+			 class="tattabletext">string</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263"><p class="tattabletext">The 
+		 certificate definition to use with the digital ID, for example, 
+		 <span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 10.0pt; color: #000000; 
+				 letter-spacing: 0.00em; text-decoration: none; ">Verification_p10</span>. 
+		 Certificate definitions are defined in Security Manager. See the 
+		 <span style="font-style: italic;">Security Manager Administration 
+		 User Guide</span> for details.</p>
+		<p class="tattabletext">If you are using your digital IDs with 
+		 mobile enrollment, see also <a href="../enablingme/step_10_add_a_digital_id_configuration.htm#XREF_58495_Add_a_digital_ID">Step 
+		 10: Add a digital ID configuration</a>&#160;to see which certificate 
+		 definitions Entrust IdentityGuard uses by default, when it creates 
+		 digital IDs for users who are requesting digital IDs through Self-Service.</p></td>
+	</tr>
+	<tr style="height: 18.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133"><p 
+			 class="tattabletext">digitalIdP10</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158"><p 
+			 class="tattabletext">string</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263"><p class="tattabletext">The 
+		 base64-encoded PKCS#10 data.</p></td>
+	</tr>
+	<tr style="height: 18.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133"><p 
+			 class="tattabletext">comment</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158"><p 
+			 class="tattabletext">string</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263"><p class="tattabletext">A 
+		 comment.</p></td>
+	</tr>
+	<tr style="height: 40.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133"><p 
+			 class="tattabletext">createIfNotExists</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158"><p 
+			 class="tattabletext">Boolean</p>
+		<p class="tattabletext"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">true</span> 
+		 or <span class="output" style="font-family: Courier; font-style: normal; 
+					 font-weight: normal; font-size: 10.0pt; color: #000000; 
+					 letter-spacing: 0.00em; text-decoration: none; ">false</span></p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263"><p class="tattabletext">When 
+		 <span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 10.0pt; color: #000000; 
+				 letter-spacing: 0.00em; text-decoration: none; ">true</span>, 
+		 a user account is created in Security Manager if one does not 
+		 yet exist for the user.</p></td>
+	</tr>
+	<tr style="height: 62.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="133"><p 
+			 class="tattabletext">recoverIfExists</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="158"><p 
+			 class="tattabletext">Boolean</p>
+		<p class="tattabletext"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">true</span> 
+		 or <span class="output" style="font-family: Courier; font-style: normal; 
+					 font-weight: normal; font-size: 10.0pt; color: #000000; 
+					 letter-spacing: 0.00em; text-decoration: none; ">false</span></p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="263"><p class="tattabletext">When 
+		 <span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 10.0pt; color: #000000; 
+				 letter-spacing: 0.00em; text-decoration: none; ">true</span>, 
+		 the user can enroll for a digital ID even if they already have 
+		 an account in Security Manager. When <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">false</span>, 
+		 the user cannot obtain a digital ID after they have an account 
+		 Security Manager.</p></td>
+	</tr>
+</table>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

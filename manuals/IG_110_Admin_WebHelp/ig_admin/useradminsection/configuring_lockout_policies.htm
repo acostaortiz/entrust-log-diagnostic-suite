@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\Users.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Configuring lockout policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("User administration\nConfiguring user policies\nConfigure lockout policies");
+addAvenueInfo("Untitled","ig_admin/useradminsection/configuring_user_policies.htm","ig_admin/useradminsection/configuring_authentication_types.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"users.htm\">User administration<\/a> > <a href=\"configuring_user_policies.htm\">Configuring user policies<\/a> > Configure lockout policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_59491_Setting"></a>Configure lockout policies</h1>
+<p class="pparagraph">A user becomes locked out when they enter incorrect 
+ login information too many times. For a detailed discussion on lockouts, 
+ see <a href="../config_policies/ip_geolocation_policies.htm#XREF_49686_Lockout_policies">IP/Geolocation 
+ policies</a>.</p>
+<p class="pparagraph"><a name="XREF_64539_Login_Attempts"></a>Through the 
+ Administration interface, you can set lockout policies, which determine 
+ the behavior of the lockouts.</p>
+<p class="prtproceduretitle"><a name="XREF_82084_Modifying_policies"></a>To 
+ configure lockout policies</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt; 
+	 <span class="bold">Administration Interface</span>.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;UNIX 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="liplistparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="liplistparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="liplistparagraph">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="liplistparagraph"></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the main menu, click <span style="font-weight: bold;">Policies</span>.</p>
+<p class="prpprocedureparagraph">A list of all policies appears on the 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">List 
+ Policies</span>&#160;tab. </p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="Users00261.jpg" id="image6" src="users00261.jpg" width="552" height="134" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ any policy name to view its policy information.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">View 
+ Policy</span> page appears and lists all policy settings.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the <span style="font-weight: bold;">Policy Category</span>&#160;drop-down 
+ list, select <span class="bold">Lockout</span> .</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>The following 
+ screen capture shows the default lockout policy. Your policy may include 
+ fewer items depending on how you set the <span style="font-weight: bold;">Lockout 
+ Mode</span>&#160;setting in the lockout policy. If the policy includes 
+ multiple passwords, there will be one password lockout setting for each 
+ password.</p>
+<div style="text-align: left;">
+	<img alt="AI-policy-lockout.jpg" id="image1" src="ai-policy-lockout.jpg" width="552" height="470" border="0" /> 
+</div>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Edit 
+ Policy</span>.</p>
+<p class="prpprocedureparagraph">An editable version of the settings appears. 
+ </p>
+<div style="text-align: left;">
+	<img alt="AI-policy-lockout-edit.jpg" id="image2" src="ai-policy-lockout-edit.jpg" width="552" height="576" border="0" /> 
+</div>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold">Lockout Policy Category</span>&#160;pane, 
+ configure the following settings:</p>
+<p class="prpprocedureparagraph">&#160;Click 
+ a policy to see its description.</p>
+<div>
+
+<p class="liplistparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><span class="bold">Lockout 
+ Mode</span>.</a></p>
+<div class="droptext" id="POPUP530067429" style="display: none;">
+	<p class="lip2list2paragraph">A lockout mode is the logic that Entrust 
+	 IdentityGuard uses to calculate whether to lock out the authenticator. 
+	 There are a few lockout modes:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Lock 
+	 Authenticator (Authenticator Counter)</p>
+	<p class="lip2list2paragraph">With this option, Entrust IdentityGuard 
+	 tracks incorrect logins using individual lockout counters for each 
+	 authenticator (for example, grid, Q&amp;A, and so on). The counter 
+	 for a particular authenticator is decremented by one on each consecutive 
+	 unsuccessful login attempt using that authenticator. If one of the 
+	 counters reaches zero, then the user is locked out of <span style="font-style: italic;">that 
+	 authenticator only</span>. </p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>(Default) 
+	 Lock User (Authenticator Counter)</p>
+	<p class="lip2list2paragraph">With this option, as with the previous 
+	 option, there are individual counters for each authenticator and each 
+	 password type. If any one of the individual counters reaches zero, 
+	 then the user is locked out of <span style="font-style: italic;">all 
+	 authenticators</span>.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Lock 
+	 User (Global Counter)</p>
+	<p class="lip2list2paragraph">With this option, there is a single, 
+	 global, lockout counter that tallies up all incorrect logins using 
+	 any authenticator. If the global counter reaches zero, the user is 
+	 locked out of <span style="font-style: italic;">all authenticators</span>. 
+	 </p>
+	<p class="lip2list2paragraph">For details on these options, see <a href="../config_policies/lockout_modes_and_examples.htm#XREF_25733_Lockout_modes_and">Lockout 
+	 modes and examples</a>.</p>
+	<p class="lip2list2paragraph">See also <a href="../config_policies/switching_lockout_modes.htm#XREF_73331_Switching_lockout">Switching 
+	 lockout modes</a>&#160;for the ramifications of switching between 
+	 modes.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Lockout 
+ Period</a></span></p>
+<div class="droptext" id="POPUP533554767" style="display: none;">
+	<p class="lip2list2paragraph">Determines how long the lockout lasts. 
+	 There are two options:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold">Until Unlocked By An Administrator</span> (default)</p>
+	<p class="lip2list2paragraph">The lockout remains in effect until an 
+	 administrator unlocks the user. For details on unlocking the user 
+	 see <a href="../Users/Unlocking_accounts.htm#XREF_93463_Unlocking_a_user">Unlocking 
+	 accounts</a></p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold">Number of minutes</span></p>
+	<p class="lip2list2paragraph">The lockout remains in effect for a specified 
+	 number of minutes. There is one lockout period for all authenticators. 
+	 For example, you cannot set the lockout period to 15 minutes for grid 
+	 and 20 hours for OTP. </p>
+	<p class="lip2list2paragraph">Despite having a single lockout period, 
+	 it is possible to have staggered lockouts if you set your <span style="font-weight: bold;">Lockout 
+	 Mode</span>&#160;(see previous table cell) to <span style="font-weight: bold;">Lock 
+	 Authenticator (Authenticator Counter)</span>. With this lockout mode, 
+	 separate timers are kept for each authenticator, and staggered unlocks 
+	 will occur as a result. For example, if you set the Lockout Period 
+	 to 10 minutes, and you lock yourself out of grid at 2 pm and token 
+	 at 2:05 pm, the grid will become unlocked at 2:10 pm while the token 
+	 will become unlocked at 2:15 pm. </p>
+	<p class="lip2list2paragraph">For the <span style="font-weight: bold;">Lock 
+	 User (Authenticator Counter) lockout mode</span>, there are individual 
+	 timers for each authenticator; however, the behavior of this lockout 
+	 mode is such that the first locked out authenticator locks the user 
+	 out of all authenticators. Thus only the timer for the first authenticator 
+	 will ever be set, so there is no staggered unlocking.</p>
+	<p class="lip2list2paragraph">For the <span style="font-weight: bold;">Lock 
+	 User (Global Authenticator)</span>&#160;lockout mode, a single timer 
+	 is kept for all authenticators, so there is no staggered unlocking.</p>
+</div>
+
+
+</div>
+<p class="prpprocedureparagraph">Each of the remaining policy settings 
+ specifies the lockout counter for failed login attempts with a specific 
+ authentication method. The counter is decremented on each consecutive 
+ failed authentication attempt with the same authentication method. When 
+ the counter reaches zero, the user is prevented from a making further 
+ authentication attempts with that authenticator (locked out). Depending 
+ on the lockout mode you selected, the user might also be locked out of 
+ all other authentication methods (default), or able to attempt to login 
+ with another authentication method.</p>
+<p class="prpprocedureparagraph">For details on each setting, see <a href="../config_policies/lockout_policies.htm">Lockout 
+ policies</a>.</p>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Save 
+ Changes</span>. The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">View Policy</span> 
+ page reappears.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+	TextPopupInit('a3','POPUP530067429');
+	TextPopupInit('a4','POPUP533554767');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

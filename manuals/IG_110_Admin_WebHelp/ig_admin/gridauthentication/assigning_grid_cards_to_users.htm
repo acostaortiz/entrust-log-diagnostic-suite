@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\gridauthentication.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Assigning grid cards to users</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nGrid authentication\nAssign grid cards to users");
+addAvenueInfo("Untitled","ig_admin/gridauthentication/deleting_an_unassigned_grid_card.htm","ig_admin/gridauthentication/administering_assigned_grid_cards.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"gridauthentication.htm\">Grid authentication<\/a> > Assign grid cards to users<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_52242_Assigning"></a>Assign grid cards to users</h1>
+<p class="pparagraph"><a name="IX_assign_user"></a><a name="IX_assign_grid_card"></a><a 
+	 name="IX_assign_to_user"></a>After you distribute preproduced grid 
+ cards to your users, you need to assign a grid card to each user when 
+ the users register. When you do so, you verify:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>the user’s identity</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>the serial number on the grid card</p>
+<p class="pparagraph">When you assign a grid card to a user, Entrust IdentityGuard 
+ automatically moves it from the preproduced (unassigned) list to the assigned 
+ list.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>Always 
+ assign grid cards to users (and vice versa) from the primary server. The 
+ preproduced grid card repository resides on the hard disk of the primary 
+ server, and is not available to the replica servers.</p>
+<p class="pparagraph">If a user has requested a grid card through Entrust 
+ IdentityGuard Self-Service Module, do not assign a grid card to the user. 
+ When a user requests a grid card through the Self-Service Module, Entrust 
+ IdentityGuard server assigns a grid card to the user.</p>
+<p class="pparagraph">To complete the procedures in this section, administrators 
+ must have the correct role permissions. See <a href="../config_roles/card_permissions.htm#XREF_26616_Card_permissions">Card 
+ permissions</a>.</p>
+<p class="pparagraph">This section contains the following procedures:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_prt_To_assign_a_user_a">To assign 
+ a user a preproduced grid card</a></p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_prt_To_assign_a">To assign a preproduced 
+ grid card to a user </a></p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_prt_To_assign">To assign preproduced 
+ grid cards to multiple users using bulk operations </a></p>
+<p class="prtproceduretitle"><a name="XREF_prt_To_assign_a_user_a"></a>To 
+ assign a user a preproduced grid card</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt; 
+	 <span class="bold">Administration Interface</span>.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;UNIX 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="liplistparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="liplistparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="liplistparagraph">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="liplistparagraph"></p>
+</div>
+
+
+</div>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the main menu, click <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">User 
+ Accounts</span>.</p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find a specific user in one of two ways:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Use the <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Go 
+ To Account</span>&#160;tab (see <a href="../useradminsection/searching_for_user_information.htm#XREF_82818_Searching_for_user">To 
+ search for information about one user</a>).</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Use the <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Find 
+ Accounts</span>&#160;tab (see <a href="../useradminsection/searching_for_user_information.htm#XREF_90670_To_get_a_list_of">To 
+ search for information about one or more users</a>).</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Authentication 
+ Types</span>, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Cards</span>, then 
+ click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Assign card</span>. </p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Assign 
+ Card </span>page appears. </p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="gridauthentication00558.jpg" 
+											 id="image14" src="gridauthentication00558.jpg" 
+											 width="552" height="382" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Serial 
+ Number</span>&#160;field, type an existing grid card serial number. The 
+ serial number must be a serial number for an unassigned grid card belonging 
+ to the user’s group.</p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Initial 
+ Card State</span>&#160;list, select a state for the new grid card. By 
+ default, the grid card is created in the pending state. For more information 
+ about grid card states, see <a href="grid_card_state_overview.htm#XREF_54456_Configuring">Grid 
+ card state overview</a>.</p>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Card 
+ Lifetime</span> list, select one of the following:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Default</span>&#160;— This option sets the grid card’s 
+ lifetime to the default lifetime set in the grid card policy category 
+ (see <a href="configuring_grid_card_policies.htm#XREF_19582_Setting_up_grid">Configuring 
+ grid card policies</a>). The policy setting is shown in parentheses beside 
+ <span class="bold">Default</span>. You can change this policy on a per 
+ user basis by selecting other options in the <span class="bold">Card Lifetime</span> 
+ list.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Set Card Lifetime</span>&#160;— This option lets you set a period 
+ of time the grid card can be used before expiring. Type a numerical value 
+ in the text field, then select a time value from the drop-down list (<span 
+	 class="bold">hours</span>, <span class="bold">days</span>, or <span 
+	 class="bold">months</span>).</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Set Card Expiry Date</span>&#160;— This option lets you set a specific 
+ day and time when the grid card expires. Using the drop-down lists, select 
+ a date (day, month, year), then select a time (hour and minute). Alternatively, 
+ you can click the calendar icon to select a date.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Card Never Expires</span>&#160;— No expiry date exists.</p>
+<p 
+	 class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If this user already has a grid card in the 
+ Current state, you also see the <span style="font-weight: bold;">Current 
+ Card Supersede Date</span>. Select the time by which your user must use 
+ the new grid card.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="gridauthentication00561.jpg" 
+											 id="image15" src="gridauthentication00561.jpg" 
+											 width="552" height="337" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) Type any comments. </p>
+<p 
+	 class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Assign 
+ Card</span>. </p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Account 
+ Information</span>&#160;pane appears and the grid card is listed under 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Authentication 
+ Types</span>. </p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="gridauthentication00564.jpg" 
+											 id="image16" src="gridauthentication00564.jpg" 
+											 width="552" height="199" border="0" /> 
+	 </p>
+</div>
+<p class="prpprocedureparagraph">You can now:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Authenticate the user with this grid card, if 
+ the user contacts you for verification (see <a href="authenticating_grid_card_users.htm">Authenticate 
+ grid card users</a>).</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Edit the grid card information as required (see 
+ <a href="administering_assigned_grid_cards.htm#XREF_16733_Managing_assigned">Administering 
+ assigned grid cards</a>).</p>
+<p class="prtproceduretitle"><a name="XREF_prt_To_assign_a"></a>To assign 
+ a preproduced grid card to a user </p>
+<div>
+
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521478111" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt; 
+	 <span class="bold">Administration Interface</span>.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;UNIX 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478112" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="liplistparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="liplistparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="liplistparagraph">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="liplistparagraph"></p>
+</div>
+
+
+</div>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the main menu, click <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Cards</span>.</p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Cards</span>&#160;page, 
+ click the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">List Unassigned Cards</span> 
+ tab.</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search for the grid cards to assign. See <a href="finding_unassigned_grid_card_information.htm">Find unassigned 
+ grid card information</a>.</p>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Search 
+ Results</span>&#160;page, click the serial number of the grid card you 
+ want to assign.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Card 
+ Details</span>&#160;page appears. </p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Card 
+ Details</span>&#160;page, click <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Assign 
+ Card</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Select 
+ Account</span>&#160;page appears. </p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="gridauthentication00567.jpg" 
+											 id="image17" src="gridauthentication00567.jpg" 
+											 width="552" height="181" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">User 
+ Name</span>&#160;field, type the user name of the user you want to assign 
+ the grid card to.</p>
+<p 
+	 class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Next</span>. 
+ </p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Assign 
+ Card</span>&#160;page appears. </p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="gridauthentication00570.jpg" 
+											 id="image18" src="gridauthentication00570.jpg" 
+											 width="552" height="321" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Initial 
+ Card State</span>&#160;list, select a state. For more information about 
+ grid card states, see <a href="grid_card_state_overview.htm#XREF_H1_Card_and_token_state">Grid 
+ card state overview</a>.</p>
+<p 
+	 class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Card 
+ Lifetime</span> list, select one of the following:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Default</span> — This option sets the grid card’s 
+ lifetime to the default lifetime set in the grid card policy category 
+ (see <a href="configuring_grid_card_policies.htm#XREF_19582_Setting_up_grid">Configuring 
+ grid card policies</a>). The policy setting is shown in parentheses beside 
+ <span class="bold">Default</span>. You can change this policy on a per 
+ user basis by selecting other options in the <span class="bold">Card Lifetime</span> 
+ list.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Set Card Lifetime</span>&#160;— This option lets you set a period 
+ of time the grid card can be used before expiring. Type a numerical value 
+ in the text field, then select a time value from the drop-down list (<span 
+	 class="bold">hours</span>, <span class="bold">days</span>, or <span 
+	 class="bold">months</span>).</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Set Card Expiry Date</span>&#160;— This option lets you set a specific 
+ day and time when the grid card expires. Using the drop-down lists, select 
+ a date (day, month, year), then select a time (hour and minute). Alternatively, 
+ you can click the calendar icon to select a date.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Card Never Expires</span>&#160;— No expiry date exists.</p>
+<p 
+	 class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Current 
+ Card Supersede Date</span>&#160;drop-down list, select one of the following:</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span><a name="IX_superseded_2"></a><a 
+	 name="IX_superseded_grid_card_1"></a>The <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Current 
+ Card Supersede Date</span>&#160;option only appears when the user has 
+ a current active grid card. This option provides the time remaining for 
+ a superseded grid card. For an explanation of superseded grid cards, see 
+ <a href="unassigned_deleted_valid_active_expired_and_superseded_grids.htm#XREF_66609_Unassigned_deleted">Unassigned, 
+ deleted, valid, active, expired, and superseded grids</a>.</p>
+<p 
+	 class="lilistbullet" style="font-weight: bold; letter-spacing: 0.00em; 
+	 text-decoration: none; "><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Default</span> <span class="bold">&#160;</span>— This option sets the superseded 
+ grid card’s lifetime to the default superseded grid card lifetime set 
+ in the grid card specification policy. To change the default superseded 
+ grid card lifetime value in the policy, see <a href="configuring_grid_card_policies.htm#XREF_19582_Setting_up_grid">Configuring 
+ grid card policies</a>.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Set Time When Superseded</span> 
+ — This option lets 
+ you set a period of time the superseded grid card can be used before expiring. 
+ Type a numerical value in the text field, then select a time value from 
+ the drop-down list (<span class="bold">hours</span>, <span class="bold">days</span>, 
+ or <span class="bold">months</span>).</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Set Supersede Date</span>&#160;— <a name="IX_calendar"></a>This 
+ option lets you set a specific day and time when the superseded grid card 
+ expires. Using the drop-down lists, select a date (day, month, year), 
+ then select a time (hour and minute). Alternatively, you can click the 
+ calendar icon to select a date.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; 
+								 letter-spacing: 0.00em; text-decoration: none; ">Current 
+ Card Will Not Be Superseded</span> — 
+ The superseded grid card never expires.</p>
+<p 
+	 class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To add a new comment, select <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Use 
+ the following comments instead of those found in the preproduced card</span>, 
+ then type the comment in the box (2048 maximum character limit). This 
+ comment overrides any comment that was added to the grid card when it 
+ was created.</p>
+<p 
+	 class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Assign 
+ Card</span>.</p>
+<p class="prtproceduretitle"><a name="XREF_prt_To_assign"></a>To assign 
+ preproduced grid cards to multiple users using bulk operations </p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create a bulk file. See <a href="../bulkops/creating_a_bulk_file.htm">Create 
+ a bulk file</a>.</p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Administration interface. </p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the main menu, click <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Bulk 
+ Operations</span>. </p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Bulk 
+ Operations</span>&#160;page appears. </p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Bulk 
+ Operation</span> tab.</p>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Browse</span> 
+ button to locate the bulk file.</p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Operation 
+ to Perform</span>&#160;drop-down list, select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Assign 
+ cards to users</span>.</p>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="IX_halt_processing_10"></a><a name="IX_halt_processing_9"></a><a 
+	 name="IX_Halt_Processing_8"></a>From the <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Halt 
+ Processing</span>&#160;drop-down list, select the number of errors to 
+ allow before processing stops due to too many errors.</p>
+<p class="prpprocedureparagraph">For more information about bulk file options, 
+ see <a href="../bulkops/performing_bulk_operations_in_the_administration_interface.htm">Perform 
+ bulk operations in the Administration interface</a>.</p>
+<p 
+	 class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Perform 
+ Bulk Operation</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Bulk 
+ Operation in Progress</span>&#160;page appears. The size of your bulk 
+ operation directly affects the time the operation takes to process. This 
+ page indicates the initial status of the operation. </p>
+<p 
+	 class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) While Entrust IdentityGuard processes 
+ the bulk file, you can do the following: </p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To view the current status of the bulk operation, 
+ click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Update Results</span>. (The Results 
+ page is also updated automatically every 10 seconds.)</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To cancel the bulk operation, click <span style="font-weight: bold;">Cancel 
+ Operation</span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>If you 
+ cancel a bulk operation, Entrust IdentityGuard keeps all changes it made 
+ while it processed the bulk file. You cannot undo a bulk operation. See 
+ <a href="../bulkops/limitations_of_bulk_operations.htm#XREF_52103_Limitations">Limitations 
+ of bulk operations</a> for more information.</p>
+<p class="prpprocedureparagraph">When Entrust IdentityGuard completes the 
+ bulk operation, the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Results</span>&#160;page 
+ appears. </p>
+<p 
+	 class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Done</span>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+	TextPopupInit('a3','POPUP521478111');
+	TextPopupInit('a4','POPUP521478112');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Modify license auditing</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nManaging licenses\nLicense auditing\nModify license auditing");
+addAvenueInfo("Untitled02","ig_admin/config_licenses/license_auditing.htm","ig_admin/config_licenses/disable_license_auditing.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_licenses.htm\">Managing licenses<\/a> > <a href=\"license_auditing.htm\">License auditing<\/a> > Modify license auditing<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Modify license auditing</h1>
+<p>&#160;</p>
+<p class="prtproceduretitle">To modify license auditing</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Start the Entrust IdentityGuard Properties Editor on the primary or replica server where you want to modify the auditing features. (See <a href="../usingpropeditor/logging_in_and_out_of_the_properties_editor.htm">Log in or out of the Properties Editor</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>On the <span style="font-weight: bold;">Table of Contents</span>, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">License Audit Settings</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">License Auditing Enabled</span>, ensure that <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span> is selected.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>(Optional) Enter a number in the <span class="bold">License Audit Interval</span>&#160;field. This sets how often in hours Entrust IdentityGuard performs the license audit check. The default is 12.</p>
+
+<p class="prpprocedureparagraph">The audit check runs only after the interval has passed, not at system startup. This means that if the service is always restarted within the specified interval, the audit integrity is never checked.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>(Optional) Enter a number in the <span class="bold">License Audit User Number Limit</span>&#160;field. When the user count remaining reaches that number, Entrust IdentityGuard generates an audit message. The default is 15%.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>(Optional) Enter a number in the <span class="bold">License Audit Expiry Day Limit</span>&#160;field. When the number of days left before license expiry reaches that number, Entrust IdentityGuard generates an audit message. The default is 30.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a name="XREF_77242_7_The_remaining" id="XREF_77242_7_The_remaining"></a>The remaining fields in the License Audit Settings let you specify the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Number Limit</span>&#160;and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Expiry Day Limit</span>&#160;for each of the features you are licensed to use. Complete the fields relevant to your system, based on this example for soft tokens. Check the help in the License Audit Settings page&#160;for defaults. For more information on these properties, see <a href="../usingpropeditor/license_audit_settings.htm#XREF_19706_License_and">License Audit Settings</a>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Token License Audit Token Number Limit</span>, enter a number or percentage value such as 10%.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>If set to a number, an audit is generated when the soft token count gets to within this number of the license limit. For example, if you set this value to 10, and the license limit is 50, then an audit is logged when the soft token count reaches 40.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>If set to a percentage, an audit is written when the soft token count is within this percentage of the maximum. For example, if you set this value to 10% and the license limit is 50, then an audit is logged when the soft token count reaches 45.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>If not set, the default is 15%.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Token License Audit Expiry Day Limit</span>, enter a number in days. An audit is generated when the current date gets to within the given number of days of the soft token license expiry. For example, if you set the value to 30 and the soft token license expires on December 30th, an audit is logged on December 1st.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If not set, the default is 90.&#160;</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Repeat the previous step for all relevant license types, then click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate &amp; Save</span>.</p>
+
+<p class="prpprocedureparagraph"><a name="IX_integrity_check" id="IX_integrity_check"></a><a name="IX_replica_servers" id="IX_replica_servers"></a>The audit is enabled on all replicas of the Entrust IdentityGuard Server. To prevent duplicate audits from being generated on replica Entrust IdentityGuard servers, use the Properties Editor to disable the audit integrity check on all but one of the replicas.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

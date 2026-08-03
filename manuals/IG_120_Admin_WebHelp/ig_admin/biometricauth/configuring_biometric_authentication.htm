@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\biometricauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Worksheet_biometric_authentication</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nBiometric authentication\nWorksheet for configuring biometric authentication");
+addAvenueInfo("Untitled02","ig_admin/biometricauth/biometric_states_overview.htm","ig_admin/biometricauth/configuring_a_biometric_vendor.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"biometric_authentication.htm\">Biometric authentication<\/a> > Worksheet for configuring biometric authentication<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_52037_Biometric_creation" id="XREF_52037_Biometric_creation"></a><a name="TOC_Worksheet_for" id="TOC_Worksheet_for"></a><a name="XREF_80002_Worksheet_for" id="XREF_80002_Worksheet_for"></a>Worksheet for configuring biometric authentication</h1>
+<div>
+<p class="nonote"><span class="bold">Tip:</span> Copy and save this worksheet 
+ in Microsoft Word or another word-processing application to track your 
+ progress and record configuration details. Be sure to keep your worksheet 
+ in a secure location.</p>
+</div>
+<p class="pparagraph">This worksheet describes the tasks involved in configuring Entrust IdentityGuard to support fingerprint biometric authentication with Entrust IdentityGuard Desktop for Microsoft Windows. Tasks are performed in various Entrust IdentityGuard components, as indicated.</p>
+<p class="pparagraph">This worksheet uses the following abbreviations:</p>
+<p class="pparagraph">IG—Server that hosts the Entrust IdentityGuard Server</p>
+<p class="pparagraph">IG Ad—Entrust IdentityGuard Server Administration interface</p>
+<p class="pparagraph">PE—Entrust IdentityGuard Properties Editor</p>
+<p class="pparagraph">SSM—Server that hosts the Entrust IdentityGuard Self-Service Module</p>
+<p class="pparagraph">SSM&#160;Config—Entrust IdentityGuard Self-Service Module Configuration interface</p>
+<p class="pparagraph">SSA—Self-Service application</p>
+<p class="pparagraph">&#160;</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+<col style="width: 8.928%;" />
+<col style="width: 43.716%;" />
+<col style="width: 47.356%;" />
+<tr class="t1st">
+<th style="vertical-align: Top;">
+<p class="tahtableheader">Task done on...</p>
+</th>
+<th style="vertical-align: Top;">
+<p class="tahtableheader">Task</p>
+</th>
+<th style="vertical-align: Top;">
+<p class="tahtableheader">Details</p>
+</th>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">IG</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tapstableprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Install Entrust IdentityGuard 10.2 Feature Pack 1 or later.</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">For installation instructions, see the patch release notes.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">SSM</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tapstableprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Install Entrust IdentityGuard Self-Service Module 10.2 Patch 184895 or later. Ensure the Transaction component is enabled. (It is selected by default in the Self-Service Module installer.)</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">For installation instructions, see the patch release notes.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">IG Ad</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tapstableprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Ensure that your IdentityGuard implementation has licenses for the biometric authentication feature.</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">To check, see <a href="../config_licenses/displaying_and_modifying_license_information.htm">Display license information</a>. For more information, see <a href="../config_licenses/config_licenses.htm">Managing licenses</a>.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">IG Ad</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tapstableprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Ensure that Entrust IdentityGuard administrators have the required permissions to complete biometric-related tasks and manage biometrics. The built-in roles superuser, useradmin, auditor, and transactionadmin have biometric-related permissions.</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">See <a href="file://T:/Server/11.0/Admin_Guide_RH/IG Server Admin Guide/IG_Admin/config_roles/Biometric_permissions.htm#XREF_46211_CA_Certificate">Biometric permissions</a>&#160;and <a href="../config_roles/initial_roles.htm">Built-in roles</a>.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">SSM</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tapstableprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Ensure that Entrust IdentityGuard Self-Service administrators have the required permissions. If the Self-Service administrator uses the superuser role and the transaction administration service account uses the default transactionadmin role, they will have all the required permissions.</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">See <a href="file://T:/Server/11.0/Admin_Guide_RH/IG Server Admin Guide/IG_Admin/config_roles/Biometric_permissions.htm#XREF_46211_CA_Certificate">Biometric permissions</a>&#160;and <a href="../config_roles/initial_roles.htm">Built-in roles</a>.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">PE</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tapstableprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Use the Properties Editor to set the configure the biometric vendor.</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">See <a href="file://T:/Server/11.0/Admin_Guide_RH/IG Server Admin Guide/IG_Admin/biometricauth/Configuring_a_biometric_vendor.htm#XREF_14100_Configuring_a">Configuring a biometric vendor</a>.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">IG Ad</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tapstableprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Use the Administration interface to configure policies for biometric authentication.</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">See <a href="setting_the_authentication_policy_for_biometrics.htm">Include biometric authentication in a policy</a> and <a href="setting_biometrics_policies.htm">Configure biometric authentication policies</a>.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">SSM Config</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tapstableprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Use Self-Service Module Configuration to configure biometric self-administration actions that allow end-users to launch the fingerprint enrollment client and enroll their fingerprints in Entrust IdentityGuard.</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">For more information, see "Configuring biometric self-administration" in the <span class="FM_Emphasis" style="font-style: italic;">Entrust IdentityGuard Self-Service Module Administration Guide</span>.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">User PCs</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tapstableprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Deploy fingerprint scanners to users.</p>
+</td>
+<td class="last" style="vertical-align: Top;">&#160;</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">User PCs</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tapstableprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Deploy Entrust IdentityGuard Desktop for Microsoft Windows and the Fingerprint Enrollment Client to end users.</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">For more information, see the <span class="FM_Emphasis" style="font-style: italic;">Entrust IdentityGuard Desktop for Microsoft Windows Administration Guide for Windows Login</span>.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">SSA</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tapstableprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Have users install the Entrust IdentityGuard Desktop for Microsoft Windows and the Fingerprint Enrollment Client. As part of the installation of the Fingerprint Enrollment Client, users are directed to your self-service module where they select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">I’d like to enroll for biometric authentication</span>.</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">For end-user instructions, see the Entrust IdentityGuard Self-Service Module User Guide.</p>
+</td>
+</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

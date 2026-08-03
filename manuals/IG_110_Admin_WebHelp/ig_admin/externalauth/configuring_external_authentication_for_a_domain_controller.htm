@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\externalauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Configuring external authentication for a domain controller</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nExternal authentication\nConfiguring external authentication for a domain controller");
+addAvenueInfo("Untitled","ig_admin/externalauth/configuring_external_authentication_for_an_ldap_directory.htm","ig_admin/externalauth/configuring_the_kdc_map_file.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"externalauth.htm\">External authentication<\/a> > Configuring external authentication for a domain controller<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_35404_Configuring"></a>Configuring external authentication 
+ for a domain controller</h1>
+<p class="pparagraph"><a name="IX_domain_controller_3"></a><a name="IX_domain_controller_2"></a>There 
+ are two sources available for external authentication: Windows domain 
+ controller or LDAP directory. This section describes how to set properties 
+ for using a domain controller for authentication. For a complete list 
+ of properties, see <a href="../usingpropeditor/external_first-factor_authentication.htm#XREF_60691_External">External 
+ First-Factor Authentication</a>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>If you 
+ are using Entrust IdentityGuard Radius configured to use external authentication 
+ (Kerberos or LDAP), you must configure the VPN to use PAP. </p>
+<p class="pparagraph">When you choose to use a domain controller for first-factor 
+ authentication as described below, you must also configure the Kerberos 
+ Key Distribution Center (KDC) map file. For details, see <a href="configuring_the_kdc_map_file.htm#XREF_50789_Configuring_the">Configuring 
+ the KDC map file</a>.</p>
+<p class="prtproceduretitle">Pre-configuration step: Synchronize clocks</p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Ensure that the clock on your domain controller 
+ is synchronized with the clock on your Entrust IdentityGuard server. Kerberos 
+ authentication is time-sensitive, so if the clocks are not synchronized, 
+ authentication fails.</p>
+<p class="prtproceduretitle">To use a domain controller for external authentication</p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Entrust IdentityGuard Properties 
+ Editor. (See <a href="../usingpropeditor/logging_in_and_out_of_the_properties_editor.htm#XREF_34072_Logging_in_and_out">Logging 
+ in and out of the Properties Editor</a>.)</p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the Table of Contents, click <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">External 
+ First-Factor Authentication. </span></p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="PE-ext-auth-domc.jpg" id="image2" src="pe-ext-auth-domc.jpg" width="643" height="354" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span style="font-weight: bold;">Configuration 
+ Instances</span>, do one of the following:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are not using Entrust IdentityGuard groups, 
+ select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Default</span>&#160;to modify 
+ the default configuration.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If are using Entrust IdentityGuard groups, and 
+ want to have a configuration instance apply to only one of those groups, 
+ enter the name of the Entrust IdentityGuard group in the empty field and 
+ click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Add</span>.</p>
+<p class="liplistparagraph">When you include a group name as part of a 
+ configuration instance, it sets external authentication for just members 
+ of that group. </p>
+<p class="liplistparagraph">One reason to use Entrust IdentityGuard groups 
+ is if you are using multiple Kerberos servers. In this case, you must 
+ set up one Entrust IdentityGuard group per Kerberos server: users in the 
+ first group authenticate against the first configured Kerberos server, 
+ while users in the second group authenticate against the second configured 
+ Kerberos server, and so on.</p>
+<p class="liplistparagraph">For more information, see <a href="using_groups_with_external_authentication.htm#XREF_85954_Using_groups_with">Using 
+ groups with external authentication</a>. </p>
+<p class="liplistparagraph">To see an example configuration using groups, 
+ see <a href="../config_radius_proxy/using_external_authentication_for_first-factor_authentication.htm#XREF_51280_External">Using 
+ external authentication for first-factor authentication</a>.</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">External 
+ First-Factor Authentication Method</span>&#160;drop-down list, select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Domain 
+ Controller External Authentication</span>.</p>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Domain controller authentication uses the 
+ Kerberos protocol. Under <span class="bold" style="font-weight: bold; 
+								 letter-spacing: 0.00em; text-decoration: none; ">Kerberos 
+ Realm for Domain Controller Authentication</span>, type, in uppercase 
+ letters, the server acting as the Kerberos realm or domain. For example: 
+ </p>
+<p class="cocode"><span class="output" style="font-family: Courier; font-style: normal; 
+						 font-weight: normal; font-size: 10.0pt; color: #000000; 
+						 letter-spacing: 0.00em; text-decoration: none; ">ENTRUST.COM</span></p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Kerberos authentication is case-sensitive. 
+ If the user enters an ID that does not match the case Kerberos expects, 
+ the authentication fails. If applicable, select the conversion option 
+ from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Kerberos User ID Case Conversion 
+ for Domain Controller Authentication</span> drop-down list:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; 
+								 letter-spacing: 0.00em; text-decoration: none; ">No 
+ Conversion</span> means leave the case as is.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; 
+								 letter-spacing: 0.00em; text-decoration: none; ">Lowercase</span> 
+ means switch the case to all lowercase.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; 
+								 letter-spacing: 0.00em; text-decoration: none; ">Uppercase</span> 
+ means switch the case to all uppercase.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; 
+								 letter-spacing: 0.00em; text-decoration: none; ">User 
+ Principle Name (UPN)</span>&#160;means, for a domain controller, switch 
+ the user ID to the form id@DOMAIN; that is, the <span style="font-weight: bold;">id</span>&#160;is 
+ always lowercase, and the <span style="font-weight: bold;">DOMAIN</span> 
+ is always uppercase.</p>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If applicable, set the <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Expired 
+ Password Equals Successful Authentication (Kerberos)</span>&#160;property 
+ to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">True</span>.</p>
+<p class="prpprocedureparagraph">When set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">True</span>, 
+ first-factor authentication succeeds even if the user's password has expired. 
+ Your domain controller must ensure the user and password are still valid; 
+ that is, make sure that the only problem is that the password has expired.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>In this 
+ configuration, you cannot change the password from the VPN client. Setting 
+ the <span style="font-weight: bold;">Expired Password Equals Successful 
+ Authentication (Kerberos)</span>&#160;property to <span style="font-weight: bold;">True</span> 
+ allows you to access the network to change the password.</p>
+<p 
+	 class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Validate 
+ &amp; Save</span>.</p>
+<p 
+	 class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log out of the Properties Editor&#160;and 
+ restart the Entrust IdentityGuard server service.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

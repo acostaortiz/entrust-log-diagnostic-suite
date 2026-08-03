@@ -1,0 +1,350 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Enable transaction queuing</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nSoft token authentication\nConfiguring soft token policies\nEnable transaction queuing");
+addAvenueInfo("r13_std","ig_admin/softtokenauth/effects_of_mobile_soft_token_allow_unsecured_device_policy_on_users.htm","ig_admin/softtokenauth/administering_soft_tokens.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"softtokenauth.htm\">Soft token authentication<\/a> > <a href=\"configuring_soft_token_policies.htm\">Configuring soft token policies<\/a> > Enable transaction queuing<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Enable transaction queuing</h1>
+<p class="pparagraph">The transaction queuing feature is intended for organizations 
+ whose users are required to hold multiple transactions in the Mobile Soft 
+ Token app until a user can respond to them. For example, it could be used 
+ by bank loan officers in the loan approval process who receive several 
+ transaction challenges in a day and who might need time to perform other 
+ process steps before they can confirm each one.</p>
+<p class="pparagraph">With this feature configured, Entrust IdentityGuard 
+ can deliver multiple transactions to a user's mobile soft token app and 
+ the user can address them within a configured amount of time. When this 
+ feature is not configured, only one transaction delivered to a soft token 
+ identity is active at a time (a new one overwrites an older one), and, 
+ typically, transactions expire after a short time.</p>
+<p class="pparagraph"><span class="bold">Prerequisites</span>:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Entrust 
+ IdentityGuard Server 12.0 with Patch 78604 or newer</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Entrust 
+ IdentityGuard Self-Service Module 12.0 with Patch 86284 or newer</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Entrust 
+ IdentityGuard Mobile Soft Token app version 3.5 or newer</p>
+<p class="pparagraph">The following policy settings are important to making 
+ this feature work well for your users:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Transaction policy &gt; Maximum Queued Transactions</span> 
+ —&#160;This setting 
+ determines how many transactions can be lined up for action.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Token policy &gt; Token Transaction Lifetime</span>&#160;—&#160;This setting determines 
+ how long each transaction is available for response before it expires.</p>
+<p class="pparagraph"><span class="bold">Example policy configuration</span></p>
+<p class="pparagraph">A loan officer at AnyBank, Juan, is asked to approve 
+ about 15 loans a day. The approval is granted by responding to a transaction 
+ challenge sent to his mobile soft token identity that is used only for 
+ queued transactions. The transaction challenge is configured to expire 
+ after 2 days (<span class="bold">Token Transaction Lifetime</span>). The 
+ Entrust IdentityGuard administrator configured the system to hold double 
+ they typical daily number of transactions in the queue (<span class="bold">Maximum 
+ Queued Transactions</span>) to accommodate surges of activity. This means 
+ that Juan's queue of transactions for this identity could have up to 30 
+ transactions before the expired or oldest ones are deleted to make room 
+ for new ones. Ideally, this maximum is never reached and no transactions 
+ are deleted before Juan responds to them.</p>
+<p class="pparagraph">Juan also uses his mobile soft token to authenticate 
+ to his VPN application. For security reasons, authentication challenges 
+ expire after a short time (for example, 1 minute). This is why he uses 
+ a different mobile soft token identity to respond to those soft token 
+ challenges. That identity is associated with his other Entrust IdentityGuard 
+ user account (in a different group governed by a different policy which 
+ allows only brief token transaction lifetimes). </p>
+<p class="pparagraph">The same mobile soft token app handles both of Juan's 
+ soft token identities which he uses for these different purposes.</p>
+<p class="prtproceduretitle">To enable transaction queuing</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Create 
+ an Entrust IdentityGuard group for users who will use the transaction 
+ queuing feature. See <a href="../config_groups/creating_a_group.htm">Create 
+ a group</a>.</p>
+<p class="nonote"><span class="bold">Note:</span> If users in this group 
+ will also use the mobile soft token app to authenticate (for example to 
+ log in to their computers or to VPN), they will need a separate Entrust 
+ IdentityGuard user account to use this feature, because users can have 
+ only one Entrust IdentityGuard group and be associated with only one group 
+ policy. The <span class="bold">Token Transaction Lifetime</span> policy 
+ setting for queued transactions will be set to a much longer time than 
+ is required for other transaction verification scenarios.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Create 
+ a policy for the new group of users. See <a href="../config_policies/creating_policies.htm">Create 
+ a policy</a>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Ensure 
+ that challenge caching is <span class="bold">not</span> enabled. This 
+ setting is not enabled by default. </p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Start 
+ the Entrust IdentityGuard Properties Editor.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>On 
+ the <span style="font-weight: bold;">Table of Contents</span>, click <span 
+	 class="bold">Challenge Cache Settings</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Ensure 
+ <span class="bold">Cache Challenges</span> is set to <span class="bold">False</span>.</p>
+<p class="prpprocedureparagraph">For more information about this setting, 
+ see <a href="../usingpropeditor/challenge_cache_settings.htm">Challenge 
+ Cache Settings</a>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Apply 
+ the <span class="bold">Token</span> and<span class="bold"> Transaction</span> 
+ policy settings required for this feature in the policy. The settings 
+ control how many items are queued and how long the transactions are valid.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log 
+ in to the Administration interface. (See <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+ in and out of the Administration interface</a>)</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Policies</span> 
+ on the menu bar.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Find 
+ the policy to modify (see <a href="../config_policies/find_a_policy.htm">Find 
+ a policy</a>).</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>On 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">View Policy</span>&#160;page, click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Edit 
+ Policy</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From 
+ the <span class="bold">Policy Category</span>&#160;list, select <span 
+	 style="font-weight: bold;">Token</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Set 
+ the <span class="bold">Token Transaction Lifetime</span> policy to a value 
+ that allows users adequate time to review and respond to multiple transactions. 
+ By default this policy is set to 300 seconds (5 minutes). For queued transactions, 
+ set it to a period of time appropriate to the your process. It could be 
+ a typical 8-hour work day (28800 seconds), or, as in the example above, 
+ 2 days (172,800 seconds). </p>
+<p class="prprocedurestep" style=" margin-left: 70px;">g.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold">Save Changes</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">h.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From 
+ the <span class="bold">Policy Category</span>&#160;list, select <span 
+	 style="font-weight: bold;">Transaction</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">i.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Set 
+ the <span class="bold">Maximum Queued Transactions</span> policy based 
+ on the rate at which the organization creates transactions during peak 
+ loads, then consider doubling this value. The aim is to set a value that 
+ can accommodate an unusually high volume but is rarely, if ever, reached. 
+ This helps ensure that transaction notifications are not removed from 
+ the queue before a user has had time to respond to them.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">j.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Set 
+ the <span class="bold">Transaction Lifetime</span> to a value equal to 
+ or greater than the one used for <span class="bold">Token Transaction 
+ Lifetime</span>. Do not leave the default value, Unlimited. </p>
+<p class="prprocedurestep" style=" margin-left: 70px;">k.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold">Save Changes</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>In 
+ the Self-Service Module transaction component, configure the transaction 
+ cache lifetime by editing the <span class="output">ehcache.xml</span> 
+ file. The <span class="output">ehcache.xml</span> file stores transaction 
+ details. By default, the ehcache lifetime is 1800 seconds (30 minutes), 
+ which might not be long enough to allow users to authenticate and fetch 
+ queued transactions. Set the ehcache lifetime to be at least as long as 
+ the token transaction lifetime so that the mobile soft token app will 
+ be able to fetch the transactions that are still valid in the Entrust 
+ IdentityGuard server. To do so, complete the following steps:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>On 
+ a server where the transaction component is enabled, open <span class="output" 
+	 style="font-family: 'Courier New'; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">ehcache.xml</font></span> 
+ in an XML editor. This file is located in:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">&lt;$IGSSM_HOME&gt;\identityguardselfservice&lt;version&gt;\instances\ROOT\etc</font></span>&#160;(Windows)</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">$IGSSM_HOME/identityguardselfservice&lt;version&gt;/et</font></span>c 
+ (Linux)</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Locate 
+ &quot;TransactionCache&quot;.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Change 
+ the value of <span class="output">timeToLiveSeconds</span> to the value 
+ you set for <span class="bold">Token Transaction Lifetime</span> in step 
+ 4f, or longer.</p>
+<p class="prspsubprocedureparagraph">In the following example, timeToLiveSeconds 
+ is changed to 2 days (172,800 seconds).</p>
+<p class="prspsubprocedureparagraph"><span class="output">&lt;cache name=&quot;TransactionCache&quot;</span></p>
+<p class="prspsubprocedureparagraph"><span class="output">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;maxElementsInMemory=&quot;10000&quot;</span></p>
+<p class="prspsubprocedureparagraph"><span class="output">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;maxElementsOnDisk=&quot;10000&quot;</span></p>
+<p class="prspsubprocedureparagraph"><span class="output">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;overflowToDisk=&quot;false&quot;</span></p>
+<p class="prspsubprocedureparagraph"><span class="output">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;eternal=&quot;false&quot;</span></p>
+<p class="prspsubprocedureparagraph"><span class="output">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;timeToLiveSeconds=&quot;</span><span 
+	 class="outputbold">172800</span><span class="output">&quot;</span></p>
+<p class="prspsubprocedureparagraph"><span class="output">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;diskPersistent=&quot;true&quot;</span></p>
+<p class="prspsubprocedureparagraph"><span class="output">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;memoryStoreEvictionPolicy=&quot;LRU&quot;&gt;</span></p>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Save 
+ the file.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If 
+ your implementation uses multiple Self-Service Modules and transaction 
+ components, you need to replicate this change in the <span class="output">ehcache.xml</span> 
+ file for each transaction component installation. Follow the instructions 
+ in <span class="output" style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">ehcache.xml</font></span> 
+ itself to configure the file for replication. </p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Configure 
+ your client application that initiates the transaction challenges. See 
+ the <span class="italic">Entrust IdentityGuard Mobile Soft Token SDK Programming 
+ Guide</span> and the <span class="italic">Entrust IdentityGuard Programming 
+ Guide</span> (Java or .NET version, as required).</p>
+<p class="prpprocedureparagraph"><span class="bold">Suggestions for you 
+ client application:</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Use callbacks instead of polling:</span> In the Entrust 
+ IdentityGuard repository, transactions are not removed from the queue 
+ when they are approved; they remain so that your client application can 
+ get transaction receipts. Consider using callbacks as an alternative to 
+ polling the authentication service for the transaction receipts. Your 
+ client application can optionally provide a callback URL when it initiates 
+ the transaction.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">Consider setting priority values on transactions:</span> 
+ The Entrust IdentityGuard Authentication API lets you set an integer value 
+ to represent the priority of a transaction (1 is highest priority, 9 is 
+ lowest priority). Several transactions can have the same priority. Entrust 
+ IdentityGuard does not use this priority value, but it is passed to the 
+ Self-Service Module transaction component and displayed to the user&#160;in 
+ the mobile soft token app. To set the priority, add a transaction detail 
+ whose name is ENT_IDG_TRANSACTION_QUEUE_PRIORITY and give a value 1 through 
+ 9.<span style="font-size: 11.0pt; font-family: Calibri, sans-serif; mso-fareast-font-family: Calibri; 
+		 mso-fareast-theme-font: minor-latin; mso-bidi-font-family: 'Times New Roman'; 
+		 color: #1F497D; mso-ansi-language: EN-US; mso-fareast-language: EN-US; 
+		 mso-bidi-language: AR-SA;"><font size="3" color="#1f497d" style="font-size:11.000000pt;">&#160;&#160;</font></span>See &quot;Online 
+ authentication and transaction verification&quot;<span class="attention_red"> 
+ </span>in the <span class="italic">Entrust IdentityGuard Programming Guide</span>.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Advise 
+ users how to use queued transactions. See the help in the Mobile Soft 
+ Token app or read the <span class="italic">Entrust IdentityGuard Mobile 
+ Soft Token App User Guide</span> (Android and iOS versions) available 
+ through <a title="Entrust Trusted Care" href="https://trustedcare.entrust.com/TrustedCare/" 
+			 target="_blank">Entrust Trusted Care</a>. If desired, customize 
+ procedures in the user guide (Microsoft Word format). </p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

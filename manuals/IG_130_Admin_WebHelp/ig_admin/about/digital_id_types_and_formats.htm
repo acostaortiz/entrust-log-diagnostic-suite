@@ -1,0 +1,213 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\about.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Digital ID types and formats</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nDigital ID types and formats");
+addAvenueInfo("r13_std","ig_admin/about/how_it_works.htm","ig_admin/enablingme/enablingme.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobile-enrollment-for-digital-ids.htm\">Mobile enrollment for digital IDs<\/a> > Digital ID types and formats<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_59858_Digital_ID_types" id="XREF_59858_Digital_ID_types"></a>Digital ID types and formats</h1>
+<p class="pparagraph">Entrust IdentityGuard can issue digital IDs in these types:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Network access—this type is used to log in to a network over a wireless or VPN connection</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Secure email—this type is used to encrypt, decrypt, sign and verify email</p>
+
+<p class="pparagraph">Entrust IdentityGuard can issue digital IDs that use the following formats or protocols:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>SCEP — This format is considered more secure because the mobile device itself creates the keys, and only the public ones are passed to the CA, Rhe private keys never leave the device.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>PKCS#12 (also called P12)&#160;— For this format, all keys, both public and private, are generated by the CA and need to travel back to the mobile device.</p>
+
+<p class="pparagraph">The following table shows which digital ID types support which formats, protocols, and operating systems, and CA vendors.</p>
+<table class="Entrust_table" cellspacing="0px" width="55.103%">
+<col style="width: 21.574%;" />
+<col style="width: 25.789%;" />
+<col style="width: 29.709%;" />
+<col style="width: 22.928%;" />
+<tr class="t1st">
+<th style="vertical-align: Top;">
+<p class="tahtableheader">This digital ID type...</p>
+</th>
+<th style="vertical-align: Top;">
+<p class="tahtableheader">Supports these formats &amp; protocols...</p>
+</th>
+<th style="vertical-align: Top;">
+<p class="tahtableheader">On these operating systems...</p>
+</th>
+<th style="vertical-align: Top;">
+<p class="tahtableheader">With this CA vendor...</p>
+</th>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" rowspan="3" style="vertical-align: Top;">Network access</td>
+<td class="t1Col" style="vertical-align: Top;">SCEP (PKCS#10 request with PKCS#7 response)</td>
+<td class="t1Col" style="vertical-align: Top;">iOS only</td>
+<td class="last" style="vertical-align: Top;">Entrust and Microsoft</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" rowspan="2" style="vertical-align: Top;">PKCS#12 over HTTPS</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Android</p>
+<p class="tattabletext">BlackBerry</p>
+<p class="tattabletext">BlackBerry PlayBook</p>
+<p class="tattabletext">Windows Mobile</p>
+<p class="tattabletext">Windows Phone 7 or 8</p>
+</td>
+<td class="last" style="vertical-align: Top;">Entrust and Microsoft</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">iOS</p>
+</td>
+<td class="last" style="vertical-align: Top;">Entrust only</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">Secure email</td>
+<td class="t1Col" style="vertical-align: Top;">PKCS#12 over HTTPS</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Android</p>
+<p class="tattabletext">BlackBerry</p>
+<p class="tattabletext">BlackBerry PlayBook</p>
+<p class="tattabletext">Windows Mobile</p>
+<p class="tattabletext">Windows Phone 7 or 8</p>
+</td>
+<td class="last" style="vertical-align: Top;">Entrust only</td>
+</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

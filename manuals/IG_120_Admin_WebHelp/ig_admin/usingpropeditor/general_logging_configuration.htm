@@ -1,0 +1,367 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>General Logging Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nGeneral Logging Configuration (36)");
+addAvenueInfo("Untitled02","ig_admin/usingpropeditor/external_q_a_provider_configuration.htm","ig_admin/usingpropeditor/general_reporting_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > General Logging Configuration (36)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_general_properties_1" id="IX_general_properties_1"></a><a 
+	 name="IX_configuring_7" id="IX_configuring_7"></a><a name="XREF_74285_General_Logging" 
+															 id="XREF_74285_General_Logging"></a>General 
+ Logging Configuration</h1>
+<p class="pparagraph">Entrust IdentityGuard uses the log4j logging service 
+ to generate both audit logs and general system logs. Log4J lets you define 
+ loggers (the type and level of messages to be logged), appenders (where 
+ the logs are to be written), and layouts (the format used for writing 
+ the logs). Below are the general log properties. For more details and 
+ to view a snapshot of the properties, see <a href="../config_logging/set_general_logging_properties.htm">Set 
+ general logging properties</a>.</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Logging 
+ Configuration Refresh Interval</a></span></p>
+<div class="droptext" id="POPUP592383227" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.refreshinterval</span></p>
+	<p class="RefItemBody">Defines how often in seconds the configuration 
+	 is checked for changes to the log settings.</p>
+	<p class="RefItemBody">Default: 10</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Logging 
+ Stack Trace Size</a></span></p>
+<div class="droptext" id="POPUP592374476" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.log.maxstacksize</span></p>
+	<p class="RefItemBody">Defines the number of stack frames that are 
+	 logged for errors. A setting of 0means that no stack trace is logged.</p>
+	<p class="RefItemBody">Default: 0</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Base 
+ Logger Configuration</a></span></p>
+<div class="droptext" id="POPUP590254750" style="display: none;">
+	<p class="RefItemBody"><span class="output">log4j.logger.IG</span></p>
+	<p class="RefItemBody">Defines the logging level of the Base Logger, 
+	 and the location of the messages logged by the Base Logger.</p>
+	<p class="RefItemBody">The message level can be one of <span class="bold" 
+	 style="font-family: Courier; font-weight: bold; letter-spacing: 0.00em; 
+	 text-decoration: none; ">ALL</span>,<span class="bold" style="font-weight: bold; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">&#160;</span><span 
+	 class="bold" style="font-family: Courier; font-weight: bold; letter-spacing: 0.00em; 
+	 text-decoration: none; ">DEBUG</span>, <span class="bold" style="font-family: Courier; 
+													 font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">INFO</span>, 
+	 <span class="bold" style="font-family: Courier; font-weight: bold; 
+			 letter-spacing: 0.00em; text-decoration: none; ">WARN</span>, 
+	 <span class="bold" style="font-family: Courier; font-weight: bold; 
+			 letter-spacing: 0.00em; text-decoration: none; ">ERROR</span>, 
+	 <span class="bold" style="font-family: Courier; font-weight: bold; 
+			 letter-spacing: 0.00em; text-decoration: none; ">FATAL</span>&#160;and 
+	 <span class="bold" style="font-family: Courier; font-weight: bold; 
+			 letter-spacing: 0.00em; text-decoration: none; ">OFF</span>, 
+	 where <span class="bold" style="font-family: Courier; font-weight: bold; 
+				 letter-spacing: 0.00em; text-decoration: none; ">ALL</span>&#160;produces 
+	 the most messages and <span class="bold" style="font-family: Courier; 
+								 font-weight: bold; letter-spacing: 0.00em; 
+								 text-decoration: none; ">FATAL</span>&#160;the 
+	 least. This sets the lowest level of message to show; for example, 
+	 <span class="bold" style="font-family: Courier; font-weight: bold; 
+			 letter-spacing: 0.00em; text-decoration: none; ">WARN</span>&#160;provides 
+	 messages of <span class="bold" style="font-family: Courier; font-weight: bold; 
+						 letter-spacing: 0.00em; text-decoration: none; ">WARN</span>, 
+	 <span class="bold" style="font-family: Courier; font-weight: bold; 
+			 letter-spacing: 0.00em; text-decoration: none; ">ERROR</span>&#160;and 
+	 <span class="bold" style="font-family: Courier; font-weight: bold; 
+			 letter-spacing: 0.00em; text-decoration: none; ">FATAL</span> 
+	 status.</p>
+	<p class="RefItemBody">Select <span class="bold" style="font-family: Courier; 
+										 font-weight: bold; letter-spacing: 0.00em; 
+										 text-decoration: none; ">OFF</span> 
+	 to stop all messages.</p>
+	<p class="RefItemBody">The destination can be <span class="bold">SYSTEM_SYSLOG,</span>&#160;or 
+	 <span class="bold">SYSTEM_FILELOG</span>, or both if you edit the 
+	 properties file manually. </p>
+	<p class="RefItemBody">Default: <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">WARN</span>, 
+	 <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">SYSTEM_FILELOG</span></p>
+	<p class="nonote"><span style="font-weight: bold;">Note:</span>&#160;If 
+	 this property is set to DEBUG, <span class="output">log4j.logger.additivity.IG</span>&#160;must 
+	 be set to <span class="output">False</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Base 
+ Logger Messages also go to Root Logger</a></span></p>
+<div class="droptext" id="POPUP591595589" style="display: none;">
+	<p class="RefItemBody"><span class="output">log4j.logger.additivity.IG</span></p>
+	<p class="RefItemBody">If this property is <span class="output">True</span>, 
+	 base logger messages (those that are not included in the audit logs 
+	 and system logs) are also written to the root logger.</p>
+	<p class="RefItemBody">When the base logger is set to <span style="font-family: Courier;">DEBUG</span>, 
+	 leave this property at <span class="output">False</span>, the default.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Logger Configuration</a></span></p>
+<div class="droptext" id="POPUP591730241" style="display: none;">
+	<p class="RefItemBody"><span class="output">log4j.logger.IG.AUDIT</span></p>
+	<p class="RefItemBody">Defines the logging level of the audit logger, 
+	 and the destination of any messages logged by the audit logger.</p>
+	<p class="RefItemBody">This property takes two values as listed in 
+	 the paired drop-down lists: one for the message level and one for 
+	 destination of logging messages.</p>
+	<p class="RefItemBody">The message level can be one of ALL,DEBUG, INFO, 
+	 WARN, ERROR, FATAL<span class="bold" style="font-family: Courier; 
+							 letter-spacing: .em;"> </span>and OFF, where 
+	 ALL<span class="bold" style="font-family: Courier; letter-spacing: .em;"> 
+	 </span>produces the most messages and FATAL<span class="bold" style="font-family: Courier; 
+														 letter-spacing: .em;"> 
+	 </span>the least. This sets the lowest level of message to show; for 
+	 example, WARN<span class="bold" style="font-family: Courier; letter-spacing: .em;"> 
+	 </span>provides messages of WARN, ERROR<span class="bold" style="font-family: Courier; 
+													 letter-spacing: .em;"> 
+	 </span>and FATAL status.</p>
+	<p class="RefItemBody">Select OFF to stop all messages.</p>
+	<p class="RefItemBody">The destination is either AUDIT_SYSLOG<span 
+	 class="bold" style="font-family: Courier; letter-spacing: .em;"> </span>or 
+	 AUDIT_FILELOG.</p>
+	<p class="RefItemBody">Default: ALL, AUDIT_FILELOG</p>
+	<p class="nonote"><span class="bold">Note</span>: Changing this configuration 
+	 may disable audits. The logging message level should never need to 
+	 be changed from its default of ALL, and the destination is either 
+	 AUDIT_SYSLOG&#160;or AUDIT_FILELOG.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ logger messages also go to Base logger</a></span></p>
+<div class="droptext" id="POPUP592165797" style="display: none;">
+	<p class="RefItemBody"><span class="output">log4j.additivity.IG.AUDIT</span></p>
+	<p class="RefItemBody">Defines whether or not Entrust IdentityGuard 
+	 audits should also be added to the base logger.</p>
+	<p class="RefItemBody">Leave this value set to the default, False.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />System 
+ Logger Configuration</a></span></p>
+<div class="droptext" id="POPUP592832053" style="display: none;">
+	<p class="RefItemBody"><span class="output">lo4j.logger.IG.SYSTEM</span></p>
+	<p class="RefItemBody">Defines the logging level of the system logger, 
+	 and the destination of any messages logged by the system logger.</p>
+	<p class="RefItemBody">This property takes two values as listed in 
+	 the paired drop-down lists: one for the message level and one for 
+	 destination of logging messages.</p>
+	<p class="RefItemBody">The message level can be one of ALL,DEBUG, INFO, 
+	 WARN, ERROR, FATAL<span class="bold" style="font-family: Courier; 
+							 letter-spacing: .em;"> </span>and OFF, where 
+	 ALL<span class="bold" style="font-family: Courier; letter-spacing: .em;"> 
+	 </span>produces the most messages and FATAL<span class="bold" style="font-family: Courier; 
+														 letter-spacing: .em;"> 
+	 </span>the least. This sets the lowest level of message to show; for 
+	 example, WARN<span class="bold" style="font-family: Courier; letter-spacing: .em;"> 
+	 </span>provides messages of WARN, ERROR<span class="bold" style="font-family: Courier; 
+													 letter-spacing: .em;"> 
+	 </span>and FATAL status.</p>
+	<p class="RefItemBody">Select OFF to stop all messages.</p>
+	<p class="RefItemBody">The destination is either AUDIT_SYSLOG<span 
+	 class="bold" style="font-family: Courier; letter-spacing: .em;"> </span>or 
+	 AUDIT_FILELOG. This default is set during configuration. (The destination 
+	 can be SYSTEM_SYSLOG and SYSTEM_FILELOG if you edit the properties 
+	 file manually.)</p>
+	<p class="RefItemBody">Default: WARN</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />System 
+ logger messages also go to Base logger</a></span></p>
+<div class="droptext" id="POPUP592857690" style="display: none;">
+	<p class="RefItemBody"><span class="output">log4j.additivity.IG.SYSTEM</span></p>
+	<p class="RefItemBody">Defines whether or not Entrust IdentityGuard 
+	 system logs should also be added to the base logger.</p>
+	<p class="RefItemBody">This value should remain set to the default, 
+	 False.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP592383227');
+	TextPopupInit('a2','POPUP592374476');
+	TextPopupInit('a3','POPUP590254750');
+	TextPopupInit('a4','POPUP591595589');
+	TextPopupInit('a5','POPUP591730241');
+	TextPopupInit('a6','POPUP592165797');
+	TextPopupInit('a7','POPUP592832053');
+	TextPopupInit('a8','POPUP592857690');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

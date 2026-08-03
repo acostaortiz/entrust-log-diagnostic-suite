@@ -1,0 +1,238 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\certauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>User certificates</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nCertificate authentication\nAbout certificates\nUser certificates");
+addAvenueInfo("r13_std","ig_admin/certauth/disabling_certificate_authentication.htm","ig_admin/certauth/ca_certificates.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"certificate_authentication.htm\">Certificate authentication<\/a> > <a href=\"about_certificates.htm\">About certificates<\/a> > User certificates<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1><a name="XREF_91323_User_certificates" id="XREF_91323_User_certificates"></a>User certificates</h1>
+<p class="pparagraph">Each user certificate must be unique across all users; that is, the issuer DN and serial number are unique across all user certificates for all users. If you try to register a user certificate that is not unique, an error will be returned.</p>
+<p class="pparagraph">When assigning a user certificate, it must have the <span style="font-family: Courier New;">digitalSignature</span>&#160;or <span style="font-family: Courier New;">nonRepudiation</span>&#160;key usage set, and the certificate must be valid.</p>
+<p class="pparagraph">Depending on policy, user certificates may not be allowed because they are self-signed or because the CA that issued them is not allowed. For more information about certificate policies, see <a href="../config_policies/certificate_authentication_policies.htm#XREF_47419_Certificate">Certificate Authentication policies</a>.</p>
+<p class="pparagraph">The following list describes the information that Entrust IdentityGuard stores for each CA certificate. Click a list item to read the description for each item.</p>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Issuer DN</a></p>
+<div class="droptext" id="POPUP804079652" style="display: none;">
+<p class="liplistparagraph">Specifies the issuer DN of the certificate. This is mandatory.</p>
+<p class="liplistparagraph">The <span style="font-family: Courier New;">issuerDN</span> is stored as a string.</p>
+<p class="liplistparagraph">Can be used for searching, but wild card characters are not supported.</p>
+</div>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Subject DN</a></p>
+<div class="droptext" id="POPUP804109745" style="display: none;">
+<p class="liplistparagraph">Specifies the subject DN of the certificate.</p>
+<p class="liplistparagraph">The <span style="font-family: Courier New;">subjectDN</span> is stored as a string.</p>
+<p class="liplistparagraph">Can be used for searching, but wild card characters are not supported.</p>
+<p class="liplistparagraph">Optional in X.509, but mandatory in Entrust IdentityGuard.</p>
+</div>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Serial number</a></p>
+<div class="droptext" id="POPUP804145033" style="display: none;">
+<p class="liplistparagraph">Specifies the serial number of the certificate.</p>
+<p class="liplistparagraph">The serial number is stored as a string.</p>
+<p class="liplistparagraph">Can be used for searching.</p>
+</div>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />State</a></p>
+<div class="droptext" id="POPUP804052650" style="display: none;">
+<p class="liplistparagraph">Specifies the state of the certificate, either ACTIVE or INACTIVE.</p>
+<p class="liplistparagraph">Can be used for searching.</p>
+</div>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Assign date</a></p>
+<div class="droptext" id="POPUP803893631" style="display: none;">
+<p class="liplistparagraph">Specifies the date on which the certificate was assigned to the user</p>
+<p class="liplistparagraph">Can be used for searching.</p>
+</div>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Issue date</a></p>
+<div class="droptext" id="POPUP804339778" style="display: none;">
+<p class="liplistparagraph">The date on which the certificate was issued by its CA.</p>
+</div>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Expiry date</a></p>
+<div class="droptext" id="POPUP804377353" style="display: none;">
+<p class="liplistparagraph">The date on which the certificate expires.</p>
+</div>
+<p class="pparagraph"><span class="dropspot"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Last used date</a></span></p>
+<div class="droptext" id="POPUP804407137" style="display: none;">
+<p class="liplistparagraph">The date on which the certificate was last used for authentication</p>
+</div>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Self-signed</a></p>
+<div class="droptext" id="POPUP804271338" style="display: none;">
+<p class="liplistparagraph">A Boolean flag that indicates whether this certificate is self-signed.</p>
+<p class="liplistparagraph">Can be used for searching.</p>
+</div>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />CA</a></p>
+<div class="droptext" id="POPUP804111448" style="display: none;">
+<p class="liplistparagraph">The name of the registered CA that issued this certificate.</p>
+<p class="liplistparagraph">This value is not set if the certificate is self-signed or the certificate was not issued by a registered CA.</p>
+<p class="liplistparagraph">Can be used for searching.</p>
+</div>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Comment</a></p>
+<div class="droptext" id="POPUP804459548" style="display: none;">
+<p class="liplistparagraph">This is a comment describing the certificate.</p>
+<p class="liplistparagraph">You enter this comment when you load the CA certificate.</p>
+</div>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Certificate</a></p>
+<div class="droptext" id="POPUP804060836" style="display: none;">
+<p class="liplistparagraph">The full X.509 encoded certificate</p>
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">Example searches you might use when administering user certificates:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search by <span style="font-weight: bold;">issuer DN</span>&#160;or <span style="font-weight: bold;">CA</span> to find all certificates issued by a given CA.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search on the inactive <span style="font-weight: bold;">state</span>&#160;to find all inactive certificates so you can remove them.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search on the active <span style="font-weight: bold;">state</span>&#160;to see only certificates that can be used for authentication.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search on the <span style="font-weight: bold;">expiry date</span>&#160;to find certificates that may be close to expiry and will soon need to be replaced.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search on the <span style="font-weight: bold;">last used date</span>&#160;to find users that are or are not actively using certificate authentication.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a3','POPUP804079652');
+	TextPopupInit('a4','POPUP804109745');
+	TextPopupInit('a5','POPUP804145033');
+	TextPopupInit('a2','POPUP804052650');
+	TextPopupInit('a1','POPUP803893631');
+	TextPopupInit('a6','POPUP804339778');
+	TextPopupInit('a7','POPUP804377353');
+	TextPopupInit('a8','POPUP804407137');
+	TextPopupInit('a9','POPUP804271338');
+	TextPopupInit('a12','POPUP804111448');
+	TextPopupInit('a10','POPUP804459548');
+	TextPopupInit('a11','POPUP804060836');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

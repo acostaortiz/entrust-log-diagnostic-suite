@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_roles.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Built-in roles</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nConfiguring roles\nBuilt-in roles");
+addAvenueInfo("r13_std","ig_admin/config_roles/skipping_second-factor_authentication.htm","ig_admin/config_roles/create_a_role.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > <a href=\"configuring_roles.htm\">Configuring roles<\/a> > Built-in roles<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_77036_Initial_roles" id="XREF_77036_Initial_roles"></a>Built-in 
+ roles</h1>
+<p class="pparagraph">The Entrust IdentityGuard installation includes several 
+ default roles. These initial roles are built-in system roles and cannot 
+ be modified or deleted. You can copy and modify these roles to make variations.</p>
+<p class="pparagraph"><span class="bold">Superuser role</span></p>
+<p class="liplistparagraph">This role is for the most privileged administrator, 
+ with every option, feature and permission enabled.</p>
+<p class="liplistparagraph">Permissions for the superuser role:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>All permissions</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>All policies</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>All groups</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>All roles</p>
+<p class="pparagraph"><span class="bold">Useradmin role</span></p>
+<p class="liplistparagraph">This role allows administration of users. It 
+ also includes permissions related to preproduced cards and unassigned 
+ tokens. It has an empty role list, an empty policy list, and the <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Administrator's 
+ own group</span>&#160;option in the group list. The useradmin role does 
+ not have permission to manage roles or policies. It cannot grant administrator 
+ permissions to a user.</p>
+<p class="pparagraph"><span class="bold">Auditor role</span></p>
+<p class="liplistparagraph">A user with the auditor role can view all data 
+ in the system, but not modify it.</p>
+<p class="h3"><span class="bold">Delegationadmin role</span></p>
+<p class="liplistparagraph">This role used to configure single sign-on 
+ to the Administration interface using SAML or smart credential authentication. 
+ For more information, see <a href="../config_adminsso/create_a_delegation_administrator.htm">Create 
+ a delegation administrator</a> or <a href="../config_adminsso/create_a_delegation_administrator_for_smart_credential_login.htm">Create 
+ a delegation administrator for smart credential login</a>.</p>
+<p class="h3"><span class="bold">Transactionadmin role</span></p>
+<p class="liplistparagraph">An administrator with this role can view and 
+ set token and smart credential parameters.</p>
+<p class="liplistparagraph">The transactionadmin role is used for the transaction 
+ administrator account of the Entrust IdentityGuard Self-Service Module. 
+ It includes permissions required to support the actions performed by the 
+ self-service transaction component, including biometric enrollment, soft 
+ token and smart credential activation, soft token transaction verification 
+ and smart credential identity assured operations, and migration of TruePass 
+ digital IDs to Entrust IdentityGuard.</p>
+<p class="h3"><span class="bold">Federationadmin role</span></p>
+<p class="liplistparagraph">The federationadmin role is used by the administrative 
+ account for Entrust IdentityGuard Federation Module. It allows the administrator 
+ to perform operations on user federation-related information and also 
+ to fetch information about the end user authenticating using Federation 
+ Module.</p>
+<p class="h3"><span class="bold">Smart credential enroller role</span></p>
+<p class="liplistparagraph">The Smart Credential Enroller role is assigned 
+ to an administrator who enrolls a user for a smart credential using either 
+ the Administration interface or Entrust IdentityGuard Enrollment Module. 
+ It allows the administrator to perform operations including creating the 
+ user, creating a user's smart credential, and setting enrollment values 
+ for the smart credential. It does not allow the administrator to issue 
+ the smart credential.</p>
+<p class="pparagraph"><span class="bold">Smart credential approver role</span></p>
+<p class="liplistparagraph">An administrator with this role can reject, 
+ approve, or edit a previously enrolled smart credential (edit is not set 
+ by default). The smart credential definition specifies whether approval 
+ for each enrollment is necessary.</p>
+<p class="liplistparagraph">The approver can approve the smart credential 
+ but cannot enroll or issue the smart credential.</p>
+<p class="h3"><span class="bold">Smart credential issuer role</span></p>
+<p class="liplistparagraph">An administrator with this role can print and 
+ encode smart credentials after users have been enrolled and their smart 
+ credentials are approved and ready to be issued.</p>
+<p class="h3"><span class="bold">Smart credential print module role</span></p>
+<p class="liplistparagraph">This role is assigned to the administrative 
+ account used by Entrust IdentityGuard Print Module and is required when 
+ installing the Print Module. It handles communications between the Entrust 
+ IdentityGuard server and Print Module. It allows Print Module to perform 
+ the operations required to print and encode smart credentials, including 
+ fetching smart credential configuration information and performing operations 
+ to interact with the managed CA</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

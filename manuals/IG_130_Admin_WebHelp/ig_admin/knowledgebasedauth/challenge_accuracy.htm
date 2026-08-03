@@ -1,0 +1,213 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\knowledgebasedauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Challenge accuracy</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nKnowledge-based authentication\nChallenge requirements\nChallenge accuracy");
+addAvenueInfo("r13_std","ig_admin/knowledgebasedauth/challenge_size.htm","ig_admin/knowledgebasedauth/security_considerations.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"knowledge-based_authentication.htm\">Knowledge-based authentication<\/a> > <a href=\"challenge_requirements.htm\">Challenge requirements<\/a> > Challenge accuracy<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_challenge_size_1" id="IX_challenge_size_1"></a><a name="XREF_89340_Challenge_accuracy" 
+	 id="XREF_89340_Challenge_accuracy"></a>Challenge accuracy</h1>
+<p class="pparagraph">After you determine how many questions a user must 
+ answer to authenticate, you must determine how accurate a user’s answers 
+ must be.</p>
+<h3><a name="XREF_11341_Setting_how_many" id="XREF_11341_Setting_how_many"></a>Number 
+ of correct answers required</h3>
+<p class="pparagraph"><a name="IX_flexibility_in_answers" id="IX_flexibility_in_answers"></a><a 
+	 name="IX_tolerance" id="IX_tolerance"></a>Entrust IdentityGuard provides 
+ tolerance, or flexibility, in the number of questions a user must answer 
+ correctly. You can make it mandatory that all questions be answered correctly, 
+ or you can allow room for error. For example, you can decide that three 
+ out of four correct answers represents a successful authentication.</p>
+<p class="pparagraph">If you configure knowledge-based challenges to allow 
+ some wrong answers, you must take into account the number of questions 
+ presented in different scenarios. The number of allowed wrong answers 
+ must be lower than the number of questions presented. For example, you 
+ cannot ask only two questions, and allow two wrong answers. In any knowledge-based 
+ challenge, at least one question must be answered correctly.</p>
+<h3><a name="XREF_31805_Configuring_the" id="XREF_31805_Configuring_the"></a><a 
+	 name="XREF_46548_Setting_the" id="XREF_46548_Setting_the"></a>Accuracy 
+ of answers</h3>
+<p class="pparagraph">When you use knowledge-based authentication, you 
+ can configure your system to allow people to be “close” rather than exact 
+ in their responses to questions. It is easy for a challenge response to 
+ differ a bit from the answer stored during registration.</p>
+<p class="pparagraph">In the standard configuration, the answer matching 
+ compensates for additional or missing spaces, and for different character 
+ case, so that “the q uick bro wnfo x” is considered a match for the correct 
+ answer, “The Quick Brown Fox”, for example.</p>
+<p class="pparagraph"><a name="IX_inexact" id="IX_inexact"></a>Using the 
+ word map file, Entrust IdentityGuard also lets you ignore wrong answers 
+ caused by typing errors (for example, “receive”&#160;versus “recieve”), 
+ common abbreviations (for example, “Dr.”&#160;versus “Doctor”), pluralized 
+ words (for example, “dollar”&#160;versus “dollars”) and alternative spellings 
+ of common words (for example, “color”&#160;versus “colour”).</p>
+<p class="pparagraph"><a name="IX_exact_answers" id="IX_exact_answers"></a>If 
+ you take the exact-answer approach, your application should employ the 
+ following techniques to improve the chances of receiving an exact match:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Standardize 
+ responses.</p>
+<p class="liplistparagraph">Questions that require answers formatted in 
+ a standard way (especially dates), should include drop-down lists or other 
+ mechanisms that enforce a standardized response.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Avoid 
+ syntactic representations.</p>
+<p class="liplistparagraph">What do you expect the answer to look like 
+ (for example, having to process “St.” as “Street”)? This requires thoughtful 
+ creation of the question. Allowing a word map (inexact answers) can eliminate 
+ most of these problems.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Validate 
+ the answer set.</p>
+<p class="liplistparagraph">You should include rules-based post-processing 
+ of the answers given during enrollment to ensure answer quality. Your 
+ application can reject answers that do not fit your rules and prompt the 
+ user for a better answer. For example, your application should reject:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>sequential 
+ keyboard sequences (such as <span class="output" style="font-family: Courier New; 
+									 font-style: normal; font-weight: normal; 
+									 font-size: 10.0pt; color: #000000; 
+									 letter-spacing: 0.00em; text-decoration: none; ">qwertyuiop</span>)</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>repeated 
+ characters (such as <span class="output" style="font-family: Courier New; 
+							 font-style: normal; font-weight: normal; font-size: 10.0pt; 
+							 color: #000000; letter-spacing: 0.00em; text-decoration: none; ">aaaaaaaa</span>)</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>answers 
+ that repeat the question</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>the same 
+ answer to different questions</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

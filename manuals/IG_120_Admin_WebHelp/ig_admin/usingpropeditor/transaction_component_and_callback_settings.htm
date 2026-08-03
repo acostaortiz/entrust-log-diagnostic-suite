@@ -1,0 +1,316 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Transaction Component and Callback Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nTransaction Component and Callback Settings (43)");
+addAvenueInfo("Untitled02","ig_admin/usingpropeditor/system_logging_appenders.htm","ig_admin/usingpropeditor/unrecognized_and_custom_properties.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Transaction Component and Callback Settings (43)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_58825_Transaction" id="XREF_58825_Transaction"></a>Transaction 
+ Component and Callback Settings</h1>
+<p class="pparagraph">These properties specify how to connect to the transaction 
+ component on the Self-Service Module. This connection is required if you 
+ want to enable transaction verification (an optional feature of the Entrust 
+ IdentityGuard Mobile ST app) or identity-assured transactions (an optional 
+ feature of the Entrust IdentityGuard Mobile Smart Credential app). For 
+ more information, see <a href="../softtokenauth/soft_token_transaction_verification_overview.htm">Soft 
+ token transaction verification overview</a>&#160;and “Using mobile smart 
+ credentials for security challenges” in the <span class="italic">Entrust 
+ IdentityGuard Smart Credentials Guide</span>.</p>
+
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Transaction 
+ Component URL</a></p>
+<div class="droptext" id="POPUP676353552" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.transaction.url</span></p>
+	<p class="RefItemBody">Specifies the URL and port of the transaction 
+	 component. Ensure you use the port that is used internally by Entrust 
+	 IdentityGuard server to access the transaction component. By default, 
+	 this port is 8449.</p>
+	<p class="RefItemBody">The URL has the following syntax:</p>
+	<p class="RefItemBody"><span class="output">https://&lt;ssm.example.com&gt;:8449/igst</span></p>
+	<p class="RefItemBody">where <span class="output">&lt;ssm.example.com&gt;</span> 
+	 is the host name of the Self-Service Module where the transaction 
+	 component is enabled.</p>
+	<p class="RefItemBody">For failover and high-availability reasons, 
+	 you may have several transaction components in your environment. If 
+	 this is the case, enter the URL of each one, separated by a space. 
+	 If the first transaction component in the list is not available, the 
+	 next transaction component URL in the list is used, and so on, until 
+	 a working transaction component URL is found. This URL continues to 
+	 be used until it fails, at which point Entrust IdentityGuard tries 
+	 to connect to the next URL in the list, and cycles through to the 
+	 beginning of the list until a working URL is found.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Transaction 
+ Component Secret</a></p>
+<div class="droptext" id="POPUP676291930" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.transaction.secret</span></p>
+	<p class="RefItemBody">Specifies the secret that is shared between 
+	 the Entrust IdentityGuard server and the transaction component. You 
+	 can use any secret of your choosing.</p>
+	<p class="RefItemBody">Record the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">Transaction 
+	 Component Secret </span>value. You must enter this secret into the 
+	 Self-Service Module’s Configuration interface.</p>
+	<p class="RefItemBody">In the Properties Editor, click <span class="bold" 
+	 style="letter-spacing: .em;">Encrypt </span>to encrypt the secret. 
+	 If you are editing the <span class="output">identityguard.properties</span> 
+	 file by hand, enter:</p>
+	<p class="RefItemBody"><span class="output">&amp;identityguard.transaction.secret= 
+	 &lt;Your_secret&gt;</span></p>
+	<p class="RefItemBody">The use of the ’&amp;’ prefix causes the secret 
+	 to be encrypted the next time Entrust IdentityGuard starts.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Transaction 
+ Connect Timeout</a></p>
+<div class="droptext" id="POPUP675283879" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.transaction.connectTimeout</span></p>
+	<p class="RefItemBody">Sets the timeout (in milliseconds) after which 
+	 a connection between the transaction component and the Entrust IdentityGuard 
+	 server is deemed to have failed.</p>
+	<p class="RefItemBody">A value of means no connect timeout.</p>
+	<p class="RefItemBody">Default: 15000 (15 seconds)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Transaction 
+ Disable Hostname Verification</a></p>
+<div class="droptext" id="POPUP675266439" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.transaction.disableSSLHostnameVerification</span></p>
+	<p class="RefItemBody">Host name verification is where the SSL client 
+	 (in this case, the Entrust IdentityGuard server) verifies that the 
+	 host name in the transaction component’s certificate matches the host 
+	 name in the URL it is trying to connect to. For example, if Entrust 
+	 IdentityGuard server is trying to connect to <span class="output">https://ssm.example.com:8449/igst</span>, 
+	 then <span class="output">ssm.example.com</span><span class="output" 
+															 style="font-family: Courier; 
+															 font-size: 9.pt; 
+															 color: #; 
+															 letter-spacing: .em;"> 
+	 </span>must appear in the transaction component’s certificate. If 
+	 the names match, host name verification passes. If the names are different, 
+	 host name verification fails.</p>
+	<p class="RefItemBody">The transaction component uses the same certificate 
+	 as the Self-Service Module.</p>
+	<p class="RefItemBody">True&#160;– 
+	 SSL host name verification is disabled.</p>
+	<p class="RefItemBody">False – 
+	 SSL host name verification is enabled.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Callback 
+ Connect Timeout</a></p>
+<div class="droptext" id="POPUP675066688" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.callback.connectTimeout</span></p>
+	<p class="RefItemBody">Specifies the connection timeout (in milliseconds) 
+	 when Entrust IdentityGuard connects to a callback URL to notify the 
+	 client that a security challenge response has been received. A value 
+	 of 0 means no connect timeout is used. If a value is not specified 
+	 the default value is used.</p>
+	<p class="RefItemBody">Default: 5000 (5 seconds)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Callback 
+ Disable Hostname Verification</a></p>
+<div class="droptext" id="POPUP675078209" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.transaction.disableSSLHostnameVerification</span></p>
+	<p class="RefItemBody">If set to true, SSL host name verification is 
+	 disabled when connecting to the callback URL to notify the client 
+	 that a security challenge response has been received.</p>
+	<p class="RefItemBody">Default: <span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 9.pt; color: #; 
+											 letter-spacing: .em; text-decoration: none; ">False</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Transaction 
+ Component External URL</a></p>
+<div class="droptext" id="POPUP585845889" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.transaction.url.external</span></p>
+	<p class="RefItemBody">This property specifies the URL where end users 
+	 access the Entrust IdentityGuard Self-Service Module Transaction Component. 
+	 This URL is embedded in a QR code that is sent to users in an anonymous 
+	 security challenge. It is not necessary to set this property unless 
+	 Entrust IdentityGuard will create anonymous security challenges. </p>
+	<p class="RefItemBody">Example: <span class="output">https://selfservice.example.com:8445/igst</span></p>
+</div>
+
+
+</div>
+<p class="lip2list2paragraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP676353552');
+	TextPopupInit('a2','POPUP676291930');
+	TextPopupInit('a3','POPUP675283879');
+	TextPopupInit('a4','POPUP675266439');
+	TextPopupInit('a5','POPUP675066688');
+	TextPopupInit('a6','POPUP675078209');
+	TextPopupInit('a7','POPUP585845889');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

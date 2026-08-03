@@ -1,0 +1,222 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Service Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nService Settings (2)");
+addAvenueInfo("Untitled02","ig_admin/usingpropeditor/saml_sp_keystore_settings.htm","ig_admin/usingpropeditor/smart_credential_expiry_notification_additional_recipients.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Service Settings (2)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_setting_URL_1" id="IX_setting_URL_1"></a><a name="XREF_65991_Service_properties" id="XREF_65991_Service_properties"></a>Service Settings</h1>
+<p class="pparagraph">These properties reflect the URLs used to access Entrust IdentityGuard services. Their initial values are set during installation and configuration. In addition, the WSDL Query property determines whether an Entrust IdentityGuard service returns WSDL or not. Do not change these settings unless absolutely necessary and use extreme caution so that you do not disable services.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Administration 
+ Service URL</a></span></p>
+<div class="droptext" id="POPUP663306098" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.adminservice.url</span></p>
+	<p class="lip2list2paragraph">Sets the URL used to access the Administration 
+	 service.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Authentication 
+ Service URL</a></span></p>
+<div class="droptext" id="POPUP664968532" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.authservice.url</span></p>
+	<p class="lip2list2paragraph">Sets the URL used to access the Authentication 
+	 service.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Authentication 
+ Service HTTPS URL</a></span></p>
+<div class="droptext" id="POPUP664988480" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.authservice.https.url</span></p>
+	<p class="lip2list2paragraph">Sets the URL used to access the SSL protected 
+	 version of the Authentication service.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Authentication 
+ Service Client-Authenticated HTTPS URL </a></span></p>
+<div class="droptext" id="POPUP665000616" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.authservice.client.https.url</span></p>
+	<p class="lip2list2paragraph">Sets the URL used to access a client-authenticated 
+	 SSL protected version of the Authentication service.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />WSDL 
+ Query returns WSDL</a></span></p>
+<div class="droptext" id="POPUP665488086" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.service.wsdlquery.enable</span></p>
+	<p class="lip2list2paragraph">Determines if a WDSL query to an Entrust 
+	 IdentityGuard service returns WSDL or not.</p>
+	<p class="lip2list2paragraph">By default, the Entrust IdentityGuard 
+	 WSDL query is disabled. Enable this setting to retrieve the WSDL definition 
+	 for a service. For example, if the property is set to <span class="bold">T</span><span 
+	 class="bold" style="letter-spacing: .em;">rue </span>and you query 
+	 the Authentication service URL with</p>
+	<p class="co3code3">http://igserver:88/IdentityGuardAuthService/services/AuthenticationServicev6?wsdl</p>
+	<p class="lip2list2paragraph">the query returns the WSDL definition 
+	 for the service.</p>
+	<p class="lip2list2paragraph">Default: <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">False</span>.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP663306098');
+	TextPopupInit('a2','POPUP664968532');
+	TextPopupInit('a3','POPUP664988480');
+	TextPopupInit('a4','POPUP665000616');
+	TextPopupInit('a5','POPUP665488086');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

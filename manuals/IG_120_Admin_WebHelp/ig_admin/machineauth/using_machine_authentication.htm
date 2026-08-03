@@ -1,0 +1,198 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\machineauth.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Using machine authentication</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nMachine authentication\nOverview of machine authentication\nUsing machine authentication");
+addAvenueInfo("Untitled02","ig_admin/machineauth/machine_authentication_overview.htm","ig_admin/machineauth/creating_a_machine_secret.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"machineauth.htm\">Machine authentication<\/a> > <a href=\"machine_authentication_overview.htm\">Overview of machine authentication<\/a> > Using machine authentication<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_65672_Using_machine" id="XREF_65672_Using_machine"></a>Using 
+ machine authentication</h1>
+<p class="pparagraph"><a name="IX_machine_fingerprint" id="IX_machine_fingerprint"></a><a 
+	 name="IX_machine_secret" id="IX_machine_secret"></a>Machine authentication 
+ provides a way to allow rightful owners of a second factor authenticator 
+ to skip second-factor authentication when using devices from which they 
+ normally authenticate to access resources protected by Entrust IdentityGuard.</p>
+<p class="pparagraph">When a user first registers a device, Entrust IdentityGuard 
+ stores detailed information about the device in the form of a machine 
+ secret. Later during machine authentication, Entrust IdentityGuard checks 
+ the user’s device against the stored machine secret. Successful device 
+ registration with Entrust IdentityGuard only occurs after the user has 
+ successfully responded to a second factor challenge. Later, during subsequent 
+ authentication requests, Entrust IdentityGuard checks the machine secret 
+ provided by the application against the list of machine secrets stored 
+ for the given user.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If the 
+ stored machine secrets do not match, Entrust IdentityGuard could present 
+ the user with an additional authentication challenge or set the machine 
+ authentication test (part of risk-based authentication) to “fail”, depending 
+ on how you have configured your RBA policy. (For more information about 
+ risk-based tests, see <a href="../riskbasedauth/using_risk-based_authentication_tests.htm">Using 
+ risk-based authentication tests</a>.)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If a match 
+ exists, Entrust IdentityGuard either skips the challenge or sets the machine 
+ authentication risk-assessment test to “pass”, depending on how you have 
+ configured your client application.</p>
+<p class="pparagraph">This device registration process is performed for 
+ all devices a user wants to register. Registration can be as easy as having 
+ the user select a check box. The following illustration shows computer 
+ registration a <span class="bold">Remember me on this machine</span>&#160;option 
+ on a user login page.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="machineauth00782.jpg" id="image0" 
+											 src="machineauth00782.jpg" 
+											 name="image0" width="289" 
+											 height="215" border="0" /></p>
+</div>
+<p class="pparagraph">During subsequent logins, the follow things happen:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The client 
+ application retrieves or regenerates the machine secret transparently. 
+ (The machine secret library introduced with Entrust IdentityGuard 11.0 
+ provides this capability.)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust 
+ IdentityGuard authenticates the machine secret and compares it to the 
+ one stored in the repository for that device.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If a match 
+ exists, Entrust IdentityGuard updates the sequence nonce (if required 
+ by policy) and the client application writes the sequence nonce part of 
+ the machine secret back into persistent storage.</p>
+<p class="nonote"><span class="bold">Note:</span> If only the device fingerprint 
+ is being used, neither reading from nor writing to persistent storage 
+ is necessary. The device fingerprint is re-calculated each time it is 
+ presented to Entrust IdentityGuard.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

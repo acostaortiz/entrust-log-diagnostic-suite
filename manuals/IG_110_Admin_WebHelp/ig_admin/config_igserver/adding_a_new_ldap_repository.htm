@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Adding a new LDAP repository</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nConfiguring an LDAP directory\nAdd a new LDAP repository");
+addAvenueInfo("Untitled","ig_admin/config_igserver/configuring_an_ldap_directory.htm","ig_admin/config_igserver/test_add_a_new_ldap_repository.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"configuring_an_ldap_directory.htm\">Configuring an LDAP directory<\/a> > Add a new LDAP repository<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1><a name="XREF_94083_Adding_a_new_LDAP"></a>Add a new LDAP repository</h1>
+<p class="pparagraph">You 
+ can add a new LDAP repository at any time, even if you already have database 
+ repositories configured.</p>
+<p class="pparagraph">The first LDAP repository added, whether during Entrust 
+ IdentityGuard installation or using this procedure, becomes the Default 
+ instance. The properties you set for the Default instance become the defaults 
+ for any subsequent LDAP repository you add.</p>
+<p class="prtproceduretitle"><a name="XREF_68104_To_add_a_new_LDAP"></a>To 
+ add a new LDAP repository</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ your LDAP directory is not already set up for Entrust IdentityGuard, load 
+ the Entrust IdentityGuard directory LDIF files and configure the directory 
+ accordingly. For instructions, see the <span class="italic" style="font-style: italic; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">Entrust 
+ IdentityGuard Directory Configuration Guide</span>.</p>
+<p class="attnattention"><span style="font-weight: bold;">Attention: </span>Choose 
+ the name for the repository carefully; you cannot change the name after 
+ you have assigned it to a group. If you do, the user data in that repository 
+ cannot be found. The first directory you define is always called <span 
+	 style="font-family: Courier;">Default</span>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start 
+ the Entrust IdentityGuard Properties Editor. (See <a href="../usingpropeditor/logging_in_and_out_of_the_properties_editor.htm">Log 
+ in or out of the Properties Editor</a>)</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the <span style="font-weight: bold;">Table of Contents</span>, click <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">LDAP 
+ Directory Server Settings</span>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Configuration Instances</span> drop-down 
+ list, do one of the following:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold">Default</span>&#160;to configure LDAP repository settings 
+ that will apply to all repositories in your implementation (if you have 
+ multiple repositories) or your only LDAP repository.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+ a configuration name in the empty field and select <span class="bold">Add</span> 
+ to configure an LDAP repository that will have settings that are different 
+ from the default.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure 
+ the following properties for the LDAP directory server:</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ URL</a></span></p>
+<div class="droptext" id="POPUP542453083" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.ldap.url</span></p>
+	<p class="lip2list2paragraph">Provides the URL used to connect to the 
+	 LDAP directory. This can include a port number and initial context 
+	 prefix to bind to. Encode spaces in the URL as %2. All lookups are 
+	 relative to the given context prefix.</p>
+	<p class="lip2list2paragraph">Syntax:</p>
+	<p class="co3code3">&lt;ldap_server_URL&gt;:&lt;port&gt;/&lt;search_base&gt;</p>
+	<p class="lip2list2paragraph">Where:</p>
+	<p class="lip2list2paragraph"><span class="output">&lt;ldap_server_URL&gt;</span>&#160;is 
+	 the URL to your LDAP directory, including the <span class="output">ldap://&#160;or 
+	 ldaps://</span> prefix</p>
+	<p class="lip2list2paragraph"><span class="output">&lt;port&gt;</span>&#160;is 
+	 the LDAP port. The port is optional if you are using the default port 
+	 (389 for LDAP; 636 for LDAPS)</p>
+	<p class="lip2list2paragraph"><span class="output">&lt;search_base&gt;</span> 
+	 is the search base to connect to. For more information, see <a href="using_a_search_base.htm#XREF_49241_Configuring_an">Using 
+	 a search base</a>.</p>
+	<p class="lip2list2paragraph">For example</p>
+	<p class="co3code3">ldap://myldaphost.com:389/ou=People, dc=AnyCorp,dc=com</p>
+	<p class="lip2list2paragraph">binds to port 389 on the computer myldaphost, 
+	 with <span class="output">ou=People,dc=AnyCorp,dc=com</span> as the 
+	 context prefix.</p>
+	<p class="lip2list2paragraph">You can enter multiple URLs separated 
+	 by spaces as part of a high-availability setup. For the default instance, 
+	 the initial value is set during configuration.</p>
+</div>
+
+
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Guidelines 
+ for specifying the <span class="bold" style="font-weight: bold; text-decoration: none; ">LDAP 
+ URL</span>:</a></p>
+<div class="droptext" id="POPUP599645720" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Replace 
+	 spaces in the URL with <span class="output" style="font-family: Courier; 
+									 font-style: normal; font-weight: normal; 
+									 font-size: 10.0pt; color: #000000; 
+									 letter-spacing: 0.00em; text-decoration: none; ">%20</span>. 
+	 </p>
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+	 specify more than one search base for failover purposes, use the full 
+	 URL and separate each URL with a space. For example:</p>
+	<p class="cocode">ldap://ldap.svr.com:389/ou=users,c=ca ldap://ldap.svr.com:389/ou=admins,c=ca</p>
+	<p class="nonote"><span style="font-weight: bold;">Note: </span>To 
+	 specify multiple search bases so you can store users in multiple search 
+	 bases, create and configure a separate LDAP <span style="font-weight: bold;">Configuration 
+	 Instance</span>&#160;for each search base.</p>
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+	 you are specifying a search base in Active Directory, it is highly 
+	 recommended that you do not use a top-level container such as <span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">dc=mycompany,dc=com</span>. 
+	 Instead, use one or several lower-level containers such as <span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">cn=users,dc=mycompany,dc=com</span>&#160;and 
+	 <span class="output" style="font-family: Courier; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; ">cn=admins,dc=mycompany,dc=com</span>. 
+	 If you must use a top-level container, ensure that referrals are disabled 
+	 in Entrust IdentityGuard or else errors may occur. For more information 
+	 about referrals, see the property <a href="../usingpropeditor/ldap_directory_server_settings.htm#XREF_Follow_Referrals">Follow 
+	 Referrals Returned by the Repository</a>. </p>
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Directory 
+ Server Description</a></span></p>
+<div class="droptext" id="POPUP623629937" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.ldap.description</span></p>
+	<p class="lip2list2paragraph">Provides a description of the repository. 
+	 The text is used by the Administration interface. The description 
+	 must be unique for all repositories, both LDAP and database.</p>
+	<p class="lip2list2paragraph">Default: the instance name</p>
+</div>
+
+
+</div>
+<p class="prpprocedureparagraph"><a name="XREF_55964_7_If_you_are_using"></a></p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />LDAP 
+ Vendor</a></span></p>
+<div class="droptext" id="POPUP624049172" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.ldap.vendor</span></p>
+	<p class="lip2list2paragraph">Sets the type of LDAP repository being 
+	 used to store users. This setting is required if users that are disabled 
+	 in the LDAP repository are to be automatically suspended in Entrust 
+	 IdentityGuard. The LDAP directory vendor is also required if you want 
+	 to be able to automatically extract user contact information directly 
+	 from the repository.</p>
+	<p class="nonote"><span style="font-weight: bold;">Note:</span> When 
+	 you select an LDAP vendor, you enable features that let you manage 
+	 disabled and expired user accounts (if supported by the selected vendor). 
+	 To explicitly disable the these features, you must set the Repository 
+	 Data policies to <span class="output">False</span>. For more information, 
+	 see <a href="../config_policies/repository_data_policies.htm#XREF_29954_Repository_data">Repository 
+	 Data policies</a>.</p>
+	<p class="nonote"><span class="bold">Note:</span> If you are using 
+	 the Active Directory synchronization with an Entrust database feature 
+	 (which means that the <span class="bold">LDAP Directory Specific Usage</span> 
+	 property is set to <span class="bold">SYNC</span>), Active Directory 
+	 is the only supported vendor.</p>
+	<p class="lip2list2paragraph">The choices are:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Not 
+	 specified</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Active 
+	 Directory</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>ADAM/AD 
+	 LDS</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>CA 
+	 Directory</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>eDirectory</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>OpenLDAP</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Oracle</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Red 
+	 Hat</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Sun 
+	 ONE</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Tivoli</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>UnboundID</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Custom</p>
+	<p class="lip2list2paragraph">Default: Not specified</p>
+</div>
+
+
+</div>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Primary Directory Server Maximum Reconnect 
+ Interval</span>&#160;— 
+ In a high-availability environment, the property specifies the maximum 
+ time, in hours, between attempts to connect to the primary directory. 
+ The default is 24 hours.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Directory Server Connection Test Interval</span>&#160;— In a high-availability environment 
+ with pooled connections, this property specifies the time, in seconds, 
+ between tests to check if the connections are still valid.</p>
+<p class="liplistparagraph">If this property is set to 0 (zero), the connection 
+ is tested only when Entrust IdentityGuard attempts to connect to the directory. 
+ The default value is 0.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">SSL LDAP Connection</span>&#160;— Set to <span style="font-weight: bold;">True</span>&#160;if 
+ you are using an SSL connection to the directory. The default value is 
+ <span style="font-weight: bold;">False</span>.</p>
+<p class="liplistparagraph">Before setting this property to <span style="font-weight: bold;">True</span>, 
+ ensure that the URL in the <span style="font-weight: bold;">LDAP URL</span>&#160;property 
+ refers to a secure port (636, for example) and that the directory has 
+ a trusted certificate. </p>
+<p class="attnattention"><span style="font-weight: bold;">Attention: </span>If 
+ you do not specify a secure port when this property is set to <span style="font-weight: bold;">True</span>, 
+ the server could hang indefinitely when it attempts to connect to the 
+ directory.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Disable SSL Host Name Verification</span>&#160;— Set to <span style="font-weight: bold;">True</span>&#160;only 
+ for testing or debugging your Entrust IdentityGuard system. The default 
+ value is <span style="font-weight: bold;">False</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&#160;<span 
+	 class="bold">Directory Administrator</span>&#160;— Ensure that the administrator 
+ specified in this property has permission to add and remove object classes 
+ and attributes from all entries in the new repository, for example:</p>
+<p class="cocode">cn=administrator,cn=users,dc=myldapserver,dc=entrust,dc=com</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>If you 
+ are configuring an Active Directory repository, the add/remove permissions 
+ are not necessary.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&#160;<span 
+	 class="bold">Directory Administrator Password</span>&#160;— Enter a valid password for the 
+ administrator.</p>
+<p class="liplistparagraph">Depending on your directory password policies, 
+ this password may expire from time to time and must be updated. See <a href="updating_the_directory_password.htm#XREF_10769_Updating_the">Updating 
+ the directory password</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">User ID Attribute</span>&#160;— 
+ Specify the user ID. Typically this is <span class="output" style="font-family: Courier; 
+												 font-size: 10.0pt;">sAMAccountName</span>&#160;for 
+ Active Directory, and usually <span class="output" style="font-family: Courier; 
+									 font-size: 10.0pt;">uid</span>&#160;or 
+ <span class="output" style="font-family: Courier; font-size: 10.0pt;">cn</span>&#160;for 
+ other LDAP repositories. (See the <span class="italic">Entrust IdentityGuard 
+ Directory Configuration Guide</span>&#160;for details about supported 
+ directories.)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">User ID Case-Sensitivity</span>&#160;— Set to <span style="font-weight: bold;">True</span>&#160;to 
+ make the user ID in the directory case sensitive. The default value is 
+ <span style="font-weight: bold;">False</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Policy Directory Entry</span>&#160;— Specify the DN of the special 
+ user created in the directory to hold Entrust IdentityGuard policy. This 
+ DN must be specified relative to the base DN entered in the LDAP URL. 
+ For example, if the LDAP URL is </p>
+<p class="cocode">ldap://ldap.host.com/dc=users,dc=mycompany,dc=com </p>
+<p class="liplistparagraph">In this example, the full DN of the policy 
+ entry is:</p>
+<p class="cocode">uid=IGPolicy,dc=users,dc=mycompany,dc=com</p>
+<p class="liplistparagraph">Then set <span style="font-weight: bold;">Policy 
+ Directory Entry</span> to:</p>
+<p class="cocode">uid=IGPolicy</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">User Object Class</span>&#160;— 
+ Specify the directory object class that allows the addition of the Entrust 
+ IdentityGuard attributes. If you do not set it, it defaults to<span style="font-weight: bold;"> 
+ entrustIGUser</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Add User Object Class</span>&#160;— To configure an Active Directory 
+ repository, set the property to <span class="bold">False</span>. For any 
+ other LDAP directory, set this property to <span style="font-weight: bold;">True</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Policy Object Class</span>&#160;— Specify the directory object 
+ class to be used to allow policy attributes to be added to an entry. If 
+ you do not set it, it defaults to <span style="font-weight: bold;">entrustIGPolicy</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Add Policy Object Class</span>&#160;&#160;— For an Active Directory repository, 
+ set to <span class="bold">False</span>. For any other LDAP directory, 
+ set this property to <span style="font-weight: bold;">True</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Entrust IdentityGuard User Entry Object 
+ Class</span>&#160;— 
+ To restrict your Entrust IdentityGuard users to directory entries that 
+ already have a particular object class, enter the appropriate object class. 
+ If you choose to add this property, all Entrust IdentityGuard users must 
+ have this object class. If you do not set this property, this search filter 
+ is not set.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Use Optimized Filter</span>&#160;— 
+ The LDAP optimization filter is set to <span class="bold">True</span> 
+ by default to optimize LDAP search performance. </p>
+<p class="liplistparagraph">If your upgrade path has 
+ continued from Entrust IdentityGuard 7.x, and there is still user data 
+ that was not used for authentication (and therefore not updated in the 
+ Administration interface) while you were running Entrust IdentityGuard 
+ 8.1, set <span style="font-weight: bold;">Use Optimized Filter</span>&#160;to 
+ <span style="font-weight: bold;">False</span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>If all 
+ of your Entrust IdentityGuard users have the <span style="font-family: Courier;">entrustIGGroup</span>&#160;attribute 
+ set, you can safely set this property to <span style="font-weight: bold;">True</span>.</p>
+<p class="liplistparagraph">The next group of LDAP properties is used when 
+ configuring failover. If you are not enabling failover, you can leave 
+ all of these properties at their defaults. To enable failover and set 
+ these properties appropriately, see <a href="configuring_failover_and_high_availability.htm#XREF_92149_Configuring">Configuring 
+ failover and high availability</a>. </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>LDAP Connection 
+ Timeout</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>LDAP Search 
+ Timeout</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>LDAP Maximum 
+ Search Limit</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Connection 
+ Pool Maximum Size</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Connection 
+ Pool Maximum Wait Time</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Idle Connection 
+ Minimum Close Time</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Idle Connections 
+ Check TIme</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold">Include Subseconds with Generalized Time</span>&#160;— Set this property to <span class="bold">True</span>&#160;(default) 
+ if your directory requires generalized time attributes that contain subseconds. 
+ Set this property to <span class="bold">False</span> for Novell eDirectory.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Follow Referrals Returned by the Repository</span>&#160;— Set to <span style="font-weight: bold;">True</span>, 
+ to have Entrust IdentityGuard follows referrals. This may result in connection 
+ timeouts if your directory returns referrals that cannot be followed.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Skip Repository 
+ During Search if not Available</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">User Enrollment</span>&#160;— Set to <span style="font-weight: bold;">True</span> 
+ if you plan to create Entrust IdentityGuard users by enrolling them from 
+ this repository.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">User Enrollment Search Filter</span>&#160;— (Optional) If you set <span style="font-weight: bold;">User 
+ Enrollment</span>&#160;to <span style="font-weight: bold;">True</span>, 
+ you can add a filter expression. See <a href="../useradminsection/creating_a_user_enrollment_custom_static_filter.htm#XREF_13750_To_create_the">To 
+ create the filter for finding potential new users in the LDAP repository</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you 
+ are configuring an Active Directory repository and you are enabling <span 
+	 style="font-weight: bold;">User Enrollment</span>, set <span style="font-weight: bold;">Paging 
+ Supported</span>&#160;to <span style="font-weight: bold;">True</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Disabled Account Attribute</span>&#160;— <a name="XREF_63798_31_If_you_are"></a>If 
+ you are using the user account disabled indicator in the LDAP directory 
+ to determine the user account status in Entrust IdentityGuard, use this 
+ property to set which directory attribute should be interpreted as meaning 
+ the user account is disabled. For more detailed information, see also 
+ <a href="suspending_disabled_and_expired_ldap_users.htm">Suspend disabled 
+ and expired LDAP users</a>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Vendor 
+ Default (default) — 
+ When this option is used, Entrust IdentityGuard uses the value that applies 
+ to the specific directory being used, as defined in the<span style="font-weight: bold;"> 
+ LDAP Vendor</span>&#160;property. In each case, this is the most commonly 
+ used attribute to indicate a disabled user in the named directory</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>ibm-pwdAccountLocked 
+ (Tivoli)</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>loginDisabled 
+ (eDirectory)</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>msDS-UserAcountDisabled 
+ (ADAM/ADLDS)</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>nsAccountLock 
+ (Sun ONE/Red Hat)</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>orcllsEnabled 
+ (Oracle)</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>userAccountControl 
+ (Active Directory)</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Custom</p>
+<p class="liplistparagraph">If you are using one of the directories listed, 
+ but you are not using the default attribute, select <span style="font-weight: bold;">Custom</span>. 
+ Selecting <span style="font-weight: bold;">Custom</span>&#160;reveals 
+ another field. Use this field to enter the disabled account attribute 
+ for your directory. </p>
+<p class="liplistparagraph">Enter the attribute and the value that indicates 
+ the user is disabled in the following form:</p>
+<p class="cocode">&lt;attribute_name&gt;;&lt;value_meaning_disabled&gt;</p>
+<p class="liplistparagraph">Where:</p>
+<p class="liplistparagraph"><span style="font-family: Courier;">&lt;attribute_name&gt;</span>&#160;is 
+ the name of the LDAP directory attribute to check to find out if the user 
+ is disabled. The attribute name is not case sensitive.</p>
+<p class="liplistparagraph"><span style="font-family: Courier;">&lt;value_meaning_disabled&gt;</span>&#160;is 
+ optional. When used, it contains the value of the attribute that means 
+ the user is disabled. When it is not used, the presence of the attribute 
+ means that the user is treated as being disabled. </p>
+<p class="liplistparagraph">(If you do not include this value, leave off 
+ the semi-colon (;), too.)</p>
+<p class="liplistparagraph">Some examples:</p>
+<p class="cocode">userIsDisabled</p>
+<p class="liplistparagraph">The user is treated as being disabled if they 
+ have the attribute <span style="font-family: Courier;">userIsDisabled</span>.</p>
+<p class="cocode">userIsDisabled;true</p>
+<p class="liplistparagraph">The user is treated as being disabled if they 
+ have the attribute <span style="font-family: Courier;">userIsDisabled</span>&#160;and 
+ it is set to the value <span style="font-family: Courier;">true</span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>Only one 
+ attribute/value pair is allowed in this field.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>To explicitly 
+ disable the LDAP disabled user features, you must set the Repository data 
+ policies to <span style="font-weight: bold;">False</span>. See <a href="../config_policies/repository_data_policies.htm#XREF_29954_Repository_data">Repository 
+ Data policies</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Expired Account Attribute</span>&#160;— <a name="XREF_64352_32_If_you_change"></a>If 
+ you are using the user expired indicator in the LDAP directory to determine 
+ the user status in Entrust IdentityGuard, use this property to set which 
+ directory attribute should be interpreted as meaning the user is expired. 
+ For more information about setting this attribute, see <a href="suspending_disabled_and_expired_ldap_users.htm">Suspend 
+ disabled and expired LDAP users</a>.</p>
+<p class="liplistparagraph">The following choices are available:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Vendor 
+ Default (default) — 
+ When this option is specified, Entrust IdentityGuard uses the value that 
+ applies to the specific directory being used, as defined in the<span style="font-weight: bold;"> 
+ LDAP Vendor</span>&#160;property. In each case, this is the most commonly 
+ used attribute to indicate a expired user in the named directory.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>accountExpires 
+ (AD/ADAM/AD LDS)</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>loginExpirationTime 
+ (eDirectory)</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>orclActiveEndDate 
+ (Oracle)</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Custom 
+ — If you are using 
+ one of the directories listed, but you are not using the default attribute, 
+ select <span style="font-weight: bold;">Custom</span>. Selecting <span 
+	 style="font-weight: bold;">Custom</span>&#160;reveals another field. 
+ Use this field to enter the disabled account attribute for your directory. 
+ <a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />More...</a></p>
+<div class="droptext" id="POPUP599988645" style="display: none;">
+	<p class="lip2list2paragraph">Enter this property in the form <span 
+	 style="font-family: Courier;">&lt;attribute_name&gt;</span>&#160;where 
+	 <span style="font-family: Courier;">&lt;attribute_name&gt;</span>&#160;is 
+	 the name of the LDAP directory attribute to check to find out if the 
+	 user is expired. The attribute name is not case sensitive.</p>
+	<p class="lip2list2paragraph">If <span style="font-family: Courier;">&lt;attribute_name&gt;</span>&#160;is 
+	 not recognized as one of the predefined values set for the supported 
+	 LDAP directories, it is assumed to be an ASN.1 time type.</p>
+</div>
+
+
+<p class="nonote"><span style="font-weight: bold;">Note: </span>To explicitly 
+ disable the LDAP expired user features, you must set the Repository data 
+ policies to <span style="font-family: Courier;">False</span>. See <a href="../config_policies/repository_data_policies.htm#XREF_29954_Repository_data">Repository 
+ Data policies</a>.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ map the user’s full name from the directory into Entrust IdentityGuard, 
+ enter the attribute your directory uses for the full name in <span style="font-weight: bold;">Full 
+ Name Attribute</span>. If you leave it blank, no mapping is performed.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ map the user’s contact info from the directory into Entrust IdentityGuard, 
+ enter the contact information mappings in <span style="font-weight: bold;">Apply 
+ Contact Info Mappings</span>.</p>
+<p class="prpprocedureparagraph">These mappings are case-sensitive and 
+ applied in the order listed. If multiple contact information mappings 
+ map to the same contact information label, only the first mapping is applied. 
+ To define the contact information mappings, see <a href="mapping_contact_info_from_an_ldap_directory.htm">Map 
+ contact info from an LDAP directory</a>.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Change 
+ other settings as required. If left blank, they use implied defaults. 
+ For an explanation of each property and its default, see <a href="../usingpropeditor/ldap_directory_server_settings.htm#XREF_90180_LDAP_directory">LDAP 
+ Directory Server Settings</a>.</p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Validate &amp; Save</span>.</p>
+<p class="attnattention"><span style="font-weight: bold;">Attention: </span>If 
+ you have only database repositories configured, and you are adding the 
+ first LDAP repository, you must set the <span style="font-weight: bold;">Card/User 
+ Repository Implementation Classes</span>&#160;to <span style="font-weight: bold;">Database 
+ (Default) and Directory Server</span></p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+ you already have JDBC repositories configured, and this is your first 
+ LDAP repository: </p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Set 
+ the <span style="font-weight: bold;">Use Optimized Filter</span>&#160;property 
+ to <span style="font-weight: bold;">True.</span></p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Table of Contents</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the <span style="font-weight: bold;">Table of Contents</span>, click <span 
+	 style="font-weight: bold;">Repository Settings</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Set 
+ <span style="font-weight: bold;">Card/User Repository Implementation Classes</span>&#160;to 
+ <span style="font-weight: bold;">Database (Default) and Directory Server</span>.</p>
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Validate 
+ &amp; Save</span>.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a3','POPUP542453083');
+	TextPopupInit('a4','POPUP623629937');
+	TextPopupInit('a5','POPUP624049172');
+	TextPopupInit('a1','POPUP599645720');
+	TextPopupInit('a2','POPUP599988645');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

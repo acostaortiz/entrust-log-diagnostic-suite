@@ -1,0 +1,255 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\tokenauth.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Token set overview (using multiple tokens)</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nToken authentication\nOverview of token authentication \nToken set overview (using multiple tokens)");
+addAvenueInfo("Untitled02","ig_admin/tokenauth/token_state_overview.htm","ig_admin/tokenauth/configuring_entrust_identityguard_for_token_authentication.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"tokenauth.htm\">Token authentication<\/a> > <a href=\"overview_of_token_authentication.htm\">Overview of token authentication <\/a> > Token set overview (using multiple tokens)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1><a name="XREF_11251_Token_tag_overview" id="XREF_11251_Token_tag_overview"></a>Token 
+ set overview (using multiple tokens)</h1>
+<p class="pparagraph">By default, a user account can have only one current 
+ token. To change this behavior so that a user can have any number of current 
+ tokens, you must assign each token to a different token set.</p>
+<p class="pparagraph">This topic describes how token sets work, and how 
+ they can be used.</p>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />How 
+ token sets work</a></span></p>
+<div class="droptext" id="POPUP475430133" style="display: none;">
+	<p class="RefItemBody">After tokens have been assigned to a token set, 
+	 tokens within the same set are related, and move through state transitions 
+	 together, while tokens in different sets move through their state 
+	 transitions independently. For example, if Alice has a current token 
+	 in the ’GroupA Token’ set, and she loses this token, then you can 
+	 assign her a new, pending token, also in the ’GroupA Token’ set. The 
+	 pending token then moves to the current state when Alice first uses 
+	 it to authenticate, and the current (lost) token moves to the canceled 
+	 state. While these state transitions are occurring, Alice might have 
+	 another token within a different set (for example, ‘Home Token’) that 
+	 remains unaffected.</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Why 
+ users might need multiple tokens</a></span></p>
+<div class="droptext" id="POPUP475414486" style="display: none;">
+	<p class="RefItemBody">A single Entrust IdentityGuard user account 
+	 might need multiple current tokens because:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>the 
+	 account is shared by multiple people, and each person needs their 
+	 own token</p>
+	<p class="RefItemBody">For example, if the user account is used by 
+	 a husband and a wife, you might call the husband’s token ‘John Token’, 
+	 and the wife’s token, ‘Alice Token’.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>the 
+	 user wants to log in from different devices, and each device needs 
+	 its own soft token</p>
+	<p class="RefItemBody">For example, if a user called Bob has two tokens, 
+	 one on his phone and another hardware token, you might call the phone 
+	 token ‘Bob’s Phone Token’, and the hardware token ‘Bob’s Hardware 
+	 Token’.</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />How 
+ temporary PINs and PVNs work with multiple tokens</a></span></p>
+<div class="droptext" id="POPUP475425205" style="display: none;">
+	<p class="RefItemBody">Temporary PINs and PVNs are issued for each 
+	 account, not per token. This means that if two people share an account, 
+	 such as a husband and a wife, then they can both log in with the same 
+	 temporary PIN and must use the same PVN (if PVNs are enabled).</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Using 
+ token names to restrict authentication</a></span></p>
+<div class="droptext" id="POPUP475410003" style="display: none;">
+	<p class="RefItemBody">Another use for token sets is to restrict authentication. 
+	 For example, you can set up your client application to allow authentications 
+	 only from tokens within specific sets. For details on setting up your 
+	 application to restrict authentications based on token sets, see the 
+	 <span class="italic">Entrust IdentityGuard Programming Guide</span>&#160;for 
+	 your platform language (.NET or Java).</p>
+</div>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Enabling multiple 
+ tokens per user through the token policy</a></p>
+<div class="droptext" id="POPUP602798143" style="display: none;">
+	<p class="RefItemBody">By default, user accounts have only one token 
+	 set. To allow multiple token sets, set the <span class="bold">Maximum 
+	 Number of Token Sets per User</span> token policy, as described in 
+	 <a href="configuring_token_policies1.htm">Configure token policies</a>.</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Specifying 
+ a token set</a></span></p>
+<div class="droptext" id="POPUP475379976" style="display: none;">
+	<p class="RefItemBody">A token set can be specified in any of the following 
+	 ways:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>through 
+	 the Administration interface</p>
+	<p class="RefItemBody">To specify a token set when you assign or create 
+	 the token, see <a href="assigning_tokens_to_users.htm">Assign tokens 
+	 to users</a>&#160;(hardware tokens) or <a href="../softtokenauth/administrative_creation_and_activation_of_mobile_soft_tokens_-.htm#XREF_87997_To_create_a_soft">To 
+	 create and activate a soft token using manual information entry</a> 
+	 (soft tokens).</p>
+	<p class="RefItemBody">To specify a token set after the token has been 
+	 assigned, see <a href="creating_or_renaming_a_token_set.htm">Create 
+	 or rename a token set</a>.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>through 
+	 the Master User Shell</p>
+	<p class="RefItemBody">See the <span class="italic" style="font-style: italic; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Entrust 
+	 IdentityGuard Master User Shell Command Reference</span> for details.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>in 
+	 bulk, for multiple users</p>
+	<p class="RefItemBody">See <a href="assigning_tokens_to_multiple_users_in_bulk.htm">Assign 
+	 tokens to users in a bulk operation</a>, ensuring that your bulk file 
+	 includes the <span class="output" style="font-family: Courier; font-size: 10.0pt;">set</span>&#160;data 
+	 item. For more on creating bulk files, see <a href="../bulkops/creating_a_bulk_file.htm">Create 
+	 a bulk file</a>.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>through 
+	 Self-Service, by the end-user</p>
+	<p class="RefItemBody">See the <span class="italic" style="font-style: italic; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Entrust 
+	 IdentityGuard Self-Service Module User Guide</span> for details.</p>
+</div>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a5','POPUP475430133');
+	TextPopupInit('a4','POPUP475414486');
+	TextPopupInit('a3','POPUP475425205');
+	TextPopupInit('a2','POPUP475410003');
+	TextPopupInit('a6','POPUP602798143');
+	TextPopupInit('a1','POPUP475379976');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

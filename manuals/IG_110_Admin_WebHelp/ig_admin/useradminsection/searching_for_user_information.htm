@@ -1,0 +1,1473 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\Users.fm" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Searching for user information</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("User administration\nFinding users\nSearching for user information");
+addAvenueInfo("Untitled","ig_admin/useradminsection/user_name_consistency_between_entrust_identityguard_and_an_ldap.htm","ig_admin/useradminsection/display_information_about_user_authenticators.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"users.htm\">User administration<\/a> > <a href=\"finding_users.htm\">Finding users<\/a> > Searching for user information<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_75895_Searching_for_user"></a>Searching for user information</h1>
+<p class="pparagraph">Use the following procedures to find user information.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_82818_Searching_for_user">To 
+ search for information about one user</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_90670_To_get_a_list_of">To 
+ search for information about one or more users</a></p>
+<p class="prtproceduretitle"><a name="XREF_82818_Searching_for_user"></a>To 
+ search for information about one user</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt; 
+	 <span class="bold">Administration Interface</span>.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;UNIX 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="liplistparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="liplistparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="liplistparagraph">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="liplistparagraph"></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the main menu, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">User Accounts</span>. 
+ </p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">User 
+ Account</span>&#160;page appears. </p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="Users00303.jpg" id="image22" src="users00303.jpg" width="543" height="200" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">User Name or Alias</span> field, 
+ enter the name or alias of a user.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. 
+ In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Group</span> list box, select 
+ the user’s group.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>If multiple 
+ users in your system have the same user name or alias, you must specify 
+ the group.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Go 
+ To Account</span>. </p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">View 
+ Account</span>&#160;page appears with account and authentication information 
+ for the specific user. For information about the actions you can perform 
+ from this screen, see <a href="managing_users.htm#XREF_99213_Managing_users">Managing 
+ users</a>.</p>
+<p class="prtproceduretitle"><a name="XREF_90670_To_get_a_list_of"></a>To 
+ search for information about one or more users</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Administration interface (<a href="../usingadmininterface/logging_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging 
+ in and out of the Administration interface</a>).</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the main menu, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">User Accounts</span>. 
+ </p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">User 
+ Accounts</span>&#160;page appears. </p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="Users00306.jpg" id="image23" src="users00306.jpg" width="549" height="115" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Find Accounts</span>&#160;tab. </p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Specify 
+ as many of the search options as necessary to reduce the search results 
+ to the exact records you need.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_74420_To_find_users_by">To 
+ find users by user account information</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_83180_To_find_users_by">To 
+ find users by forced card or token activation</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_69768_To_find_users_by">To 
+ find users by knowledge-based authentication</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_14163_To_find_users_by">To 
+ find users by machine authentication</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_52386_To_find_users_by">To 
+ find users by IP/Geolocation history</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_89585_To_find_users_by">To 
+ find users by personal verification number</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_51037_To_find_users_by">To 
+ find users by temporary PIN authentication</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_76511_To_find_users_by">To 
+ find users by password authentication</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_82523_To_find_users_by">To 
+ find users by one-time password authentication</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_17481_To_find_users_by">To 
+ find users by grid card</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_57192_To_find_users_by">To 
+ find users by token </a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_56912_To_find_users_by">To 
+ find users by biometric </a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_51946_To_find_users_by">To 
+ find users by certificate</a></p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_25195_Finding_a_user_s">To 
+ find users by smart credential</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_99205_To_find_users_by">To 
+ find users by digital ID</a></p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ specify how many search results are displayed per page, select a number 
+ from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Showing results per page</span> 
+ drop-down list.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Find 
+ Accounts</span>. </p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="Users00309.jpg" id="image24" src="users00309.jpg" width="552" height="39" border="0" /> 
+	 </p>
+</div>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Search 
+ Results</span> page displays all users that match your search criteria.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span><a name="IX_sort_results"></a>You 
+ can change the sort order of records in the <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Search 
+ Results</span>&#160;page. Click any column header to sort records by the 
+ values in that column.<br />
+Only the entries on the current page are sorted; if there are multiple 
+ pages of search results, only the one you are viewing is sorted.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts-search_results.jpg" id="image25" src="ai-user_account-find_accounts-search_results.jpg" width="552" height="207" border="0" /> 
+	 </p>
+</div>
+<p class="pparagraph">To get details about a particular user, click the 
+ <span style="font-weight: bold;">User Name</span>&#160;to access that 
+ user’s account information.</p>
+<p class="prtproceduretitle"><a name="IX_account_information"></a><a name="XREF_74420_To_find_users_by"></a>To 
+ find users by user account information</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with a matching user name:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">User Name Matches</span> field, enter 
+ a user name.</p>
+<p class="prpprocedureparagraph"><a name="IX_character"></a><a name="IX_wildcard"></a>When 
+ entering a user name, you can include one or more wildcard characters 
+ (*). For example, enter <span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+								 text-decoration: none; ">IG*</span> to 
+ find all user names that begin with IG.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ also find users with an alias that matches the provided string, select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Consider 
+ aliases as well</span>.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_user_account_info.jpg" id="image26" src="ai-user_account-find_accounts_-_user_account_info.jpg" width="552" height="361" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their full name, enter the name in the <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">User’s 
+ Full Name Matches</span>&#160;field.</p>
+<p class="prpprocedureparagraph">When typing the user’s full name, you 
+ can include one or more wildcard characters (*). For example, enter <span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">Jo*</span> 
+ to find all names that begin with Jo.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who belong to specific groups, select one or more groups from 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Groups Include</span>&#160;list box. 
+ See <a href="../usingadmininterface/selecting_options.htm#XREF_51506_Selecting_from">Selecting 
+ options</a>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ search for users in a specific state, do one of the following:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users whose account is active, select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Active</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users whose account is suspended, select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Suspended</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find a specific type of user, do one of the following:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find Entrust IdentityGuard administrators, select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Administrator</span>.</p>
+<p class="prspsubprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">Roles</span> 
+ list appears.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To find 
+ administrators with specific roles, select the roles from the <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Roles</span>&#160;list. 
+ If you do not select any roles, all administrators are returned. See <a href="../usingadmininterface/selecting_options.htm#XREF_51506_Selecting_from">Selecting 
+ options</a>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find non-administrator users, select <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Regular 
+ User</span>.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users based on whether their accounts are locked or unlocked, do 
+ one of the following:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who are locked out of their account, select <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Locked</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who are not locked out of their account, select <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Unlocked</span>.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by other account information, click <span style="font-weight: bold;">Has 
+ the additional account characteristics below</span>. The extended search 
+ pane appears.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts-additional_info.jpg" id="image27" src="../../ai-users_find_users-additional_account_chrs.png" width="550" height="633" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Make 
+ your selections to narrow down the search as required using the check 
+ boxes and minimum and maximum number pairs, as described in the following 
+ topics.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>The users 
+ found in these searches meet <span style="font-weight: bold;">all</span>&#160;the 
+ criteria specified. In other words, the search criteria are combined using 
+ the AND operation.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_62056_To_find_users_by">To 
+ find users by whether or not they have contact information</a> </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users by whether their accounts have been orphaned after synchronization 
+ with Active Directory</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_83180_To_find_users_by">To 
+ find users by forced card or token activation</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_69768_To_find_users_by">To 
+ find users by knowledge-based authentication</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_14163_To_find_users_by">To 
+ find users by machine authentication</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_52386_To_find_users_by">To 
+ find users by IP/Geolocation history</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_89585_To_find_users_by">To 
+ find users by personal verification number</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_51037_To_find_users_by">To 
+ find users by temporary PIN authentication</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_76511_To_find_users_by">To 
+ find users by password authentication</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_82523_To_find_users_by">To 
+ find users by one-time password authentication</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_21856_To_find_a_user_by">To 
+ find users by last authentication</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_17481_To_find_users_by">To 
+ find users by grid card</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_57192_To_find_users_by">To 
+ find users by token </a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_51946_To_find_users_by">To 
+ find users by certificate</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_25195_Finding_a_user_s">To 
+ find users by smart credential</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_99205_To_find_users_by">To 
+ find users by digital ID</a></p>
+<p class="prtproceduretitle"><a name="XREF_62056_To_find_users_by"></a>To 
+ find users by whether or not they have contact information</p>
+<div style="text-align: left;">
+	<img alt="AI-User_Account-Find_Accounts-contact_info.jpg" id="image28" src="ai-user_account-find_accounts-contact_info.jpg" width="490" height="82" border="0" /> 
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who have contact information, select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Doesn’t 
+ have contact information</span>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who do not have contact information, select <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Has 
+ contact information</span>.</p>
+<p class="prpprocedureparagraph">More options appear.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users for whom out-of-band delivery has been specified, select <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">OOB 
+ delivery specified</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users for whom out-of-band delivery has not been specified, select <span 
+	 class="bold">OOB delivery not specified</span>. </p>
+<p class="prtproceduretitle"><a name="To_find_users_by_whether_or_not_their_accounts_have_been_orphaned_after_synchronization_with_Active_Directory"></a>To 
+ find users by whether their accounts have been orphaned after synchronization 
+ with Active Directory</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts-contact_info.jpg" id="image281" src="../../ai-find_users-_sync_orphaned.png" border="0" /> </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find user accounts that have been orphaned after synchronization with 
+ Active Directory, select <span class="bold" style="font-weight: bold; 
+								 letter-spacing: 0.00em; text-decoration: none; ">Sync 
+ orphaned</span>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find user accounts that have not been orphaned after synchronization with 
+ Active Directory, select <span class="bold">Not sync orphaned</span>.</p>
+<p class="prpprocedureparagraph">The search results for orphaned users 
+ display <span class="bold">No</span> in the <span class="bold">Available</span> 
+ column. (A <span class="bold">No</span> value is also used to indicate 
+ whether a user is suspended, disable in the repository, or expired in 
+ the repository.)</p>
+<p class="prpprocedureparagraph">For more information, see <a href="manage_orphaned_user_accounts.htm">Manage 
+ orphaned user accounts</a>.</p>
+<p class="prtproceduretitle"><a name="XREF_83180_To_find_users_by"></a>To 
+ find users by forced card or token activation</p>
+<p class="prpprocedureparagraph">For more information about forcing card 
+ or token activation, see<a href="../gridauthentication/creating_grid_cards.htm#XREF_43805_Forcing_card_or">Creating 
+ grid cards</a>.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="Users00320.jpg" id="image29" src="users00320.jpg" width="348" height="204" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who have activated a card or token, select <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Card/Token 
+ activated</span>, or</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who have not activated a card or token, select <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Card/Token 
+ not activated</span>.</p>
+<p class="prpprocedureparagraph">More options appear. You can do one of 
+ the following.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users who are not set for forced activation, select <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Activation 
+ period expiry date not set</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users who are set for forced activation, select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Activation 
+ period expiry date set</span>&#160;and select a date range from the drop-down 
+ list. </p>
+<p class="prspsubprocedureparagraph">If you selected <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prtproceduretitle"><a name="XREF_69768_To_find_users_by"></a>To 
+ find users by knowledge-based authentication</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="Users00323.jpg" id="image30" src="users00323.jpg" width="417" height="37" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with knowledge-based authentication data (question-and-answer 
+ pairs), select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+						 text-decoration: none; ">Has between [ ] and [ 
+ ] question and answer pairs</span>, then do one of the following:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with at least one question and answer pair, enter 1 in the first 
+ text field.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with a minimum number of questions or more, enter the minimum number 
+ in the first text field and leave the second field blank.</p>
+<p class="liplistparagraph">For example, enter <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">3</span>&#160;in 
+ the first text field to find users with 3 or more question-and-answer 
+ pairs.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with a maximum number of questions or fewer (including zero (0)), 
+ enter the maximum number in the second text field.</p>
+<p class="liplistparagraph">For example, enter <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">4</span>&#160;in 
+ the second text field to find users with 4 or fewer question-and-answer 
+ pairs.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with any number of questions in a range, enter the minimum number 
+ in the first text field, and the maximum number in the second text field.</p>
+<p class="liplistparagraph">For example, to find users with 1, 2, or 3 
+ question-and-answer pairs, enter <span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">1</span>&#160;in 
+ the first text field and enter <span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">3</span> 
+ in the second text field.</p>
+<p class="prtproceduretitle"><a name="XREF_14163_To_find_users_by"></a>To 
+ find users by machine authentication</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="Users00326.jpg" id="image31" src="users00326.jpg" width="354" height="38" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with registered machines (machine secrets), select <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Has 
+ between [ ] and [ ] machine secrets</span>, then do one of the following:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with at least one machine secret, enter 1 in the first text field.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with a minimum number of registered machines or more, enter the 
+ minimum number in the first text field.</p>
+<p class="liplistparagraph">For example, enter <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">3</span>&#160;in 
+ the first text field to find users with 3 or more registered machines.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with a maximum number of registered machines or fewer, enter the 
+ maximum number in the second text field and leave the first field blank</p>
+<p class="liplistparagraph">For example, enter <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">4</span>&#160;in 
+ the second text field to find users with 4 or fewer (including zero (0)) 
+ registered machines.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with any number of registered machines in a range, enter the minimum 
+ number in the first text field, and the maximum number in the second text 
+ field.</p>
+<p class="liplistparagraph">For example, to find users with 1, 2, or 3 
+ registered machines, enter <span class="output" style="font-family: Courier; 
+									 font-style: normal; font-weight: normal; 
+									 font-size: 10.0pt; color: #000000; 
+									 letter-spacing: 0.00em; text-decoration: none; ">1</span>&#160;in 
+ the first text field and enter <span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">3</span> 
+ in the second text field.</p>
+<p class="prtproceduretitle"><a name="XREF_52386_To_find_users_by"></a>To 
+ find users by IP/Geolocation history</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="Users00329.jpg" id="image32" src="users00329.jpg" width="394" height="38" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with location history entries, select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Has 
+ between [ ] and [ ] location history entries</span>, then do one of the 
+ following:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with at least one location history entry, enter 1 in the first text 
+ field.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with a minimum number of location history entries or more, enter 
+ the minimum number in the first text field.</p>
+<p class="liplistparagraph">For example, enter <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">3</span>&#160;in 
+ the first text field to find users with 3 or more location history entries.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with a maximum number of location history entries or fewer (including 
+ zero (0)), enter the maximum number in the second text field.</p>
+<p class="liplistparagraph">For example, enter <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">4 
+ </span>in the second text field to find users with 4 or fewer location 
+ history entries.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with any number of location history entries in a range, enter the 
+ minimum number in the first text field, and the maximum number in the 
+ second text field.</p>
+<p class="liplistparagraph">For example, to find users with 1, 2, or 3 
+ location history entries, enter <span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">1</span>&#160;in 
+ the first text field and enter <span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">3</span> 
+ in the second text field.</p>
+<p class="prtproceduretitle"><a name="XREF_89585_To_find_users_by"></a>To 
+ find users by personal verification number</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="Users00332.jpg" id="image33" src="users00332.jpg" width="296" height="235" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users without a personal verification number, select <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Doesn’t 
+ have a PVN</span>, or</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who have a personal verification number (PVN), select <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Has 
+ a PVN</span>.</p>
+<p class="prpprocedureparagraph">More options appear.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You 
+ can do one of the following:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To find 
+ users who need to change their PVN, select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">PVN 
+ needs to be changed</span>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To find 
+ users who do not need to change their PVN, select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">PVN 
+ doesn’t need to be changed</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who last changed their PVN within a specific date range, select 
+ a date range from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">PVN last changed</span> 
+ drop-down list.</p>
+<p class="prspsubprocedureparagraph">If you selected <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prtproceduretitle"><a name="XREF_51037_To_find_users_by"></a>To 
+ find users by temporary PIN authentication</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="Users00335.jpg" id="image34" src="users00335.jpg" width="393" height="212" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users without a temporary PIN, select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Doesn’t 
+ have a temporary PIN</span>, or</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with a temporary PIN, select <span class="bold" style="font-weight: bold; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">Has 
+ a temporary PIN</span>.</p>
+<p class="prpprocedureparagraph">More options appear.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with a specified number of allowed temporary PIN uses remaining, 
+ select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Has between [ ] and [&#160;] 
+ uses left</span>, then do one of the following:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To find 
+ users with a minimum number of uses left or more (including unlimited 
+ uses), enter the minimum number in the first text field.</p>
+<p class="lip2list2paragraph">For example, enter <span class="output" style="font-family: Courier; 
+														 font-style: normal; 
+														 font-weight: normal; 
+														 font-size: 10.0pt; 
+														 color: #000000; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">3</span>&#160;in 
+ the first text field to find users with 3 or more uses left (including 
+ unlimited uses).</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To find 
+ users with a maximum number of uses remaining or fewer (including zero 
+ (0)), enter the maximum number in the second text field.</p>
+<p class="lip2list2paragraph">For example, enter <span class="output" style="font-family: Courier; 
+														 font-style: normal; 
+														 font-weight: normal; 
+														 font-size: 10.0pt; 
+														 color: #000000; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">2</span>&#160;in 
+ the second text field to find users with 2 or fewer uses left.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To find 
+ users with any number of uses remaining in a range, enter the minimum 
+ number in the first text field, and enter the maximum number in the second 
+ text field.</p>
+<p class="lip2list2paragraph">For example, to find users with 1, 2, or 
+ 3 uses remaining, enter <span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+								 text-decoration: none; ">1</span>&#160;in 
+ the first text field and <span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+								 text-decoration: none; ">3</span> in the 
+ second text field.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users whose temporary PIN expires within a specific date range, select 
+ a date range from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Temporary PIN expiry 
+ date</span>&#160;drop-down list. This could be an expiry date in the past 
+ (the PIN has already expired), or in the future.</p>
+<p class="prspsubprocedureparagraph">If you selected <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prtproceduretitle"><a name="XREF_76511_To_find_users_by"></a>To 
+ find users by password authentication</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="Users00338.jpg" id="image35" src="users00338.jpg" width="336" height="379" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users without a password, select <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Doesn’t 
+ have a password</span>.</p>
+<p class="prpprocedureparagraph">or</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who have a password, select <span class="bold" style="font-weight: bold; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">Has 
+ a password</span>.</p>
+<p class="prpprocedureparagraph">More options appear.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who need to change their password, select <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Password 
+ needs to be changed</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find user who do not need to change their password, select <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Password 
+ doesn’t need to be changed</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who last changed their password within a specific date range, 
+ select a date range from the <span class="bold" style="font-weight: bold; 
+									 letter-spacing: 0.00em; text-decoration: none; ">Password 
+ last-changed</span> drop-down list.</p>
+<p class="prspsubprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users whose password expires within a specific date range, select 
+ a date range from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Password expiry date</span>&#160;drop-down 
+ list. The expiry date can be in the past (the password has already expired), 
+ or in the future.</p>
+<p class="prspsubprocedureparagraph">If you selected <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prtproceduretitle"><a name="XREF_82523_To_find_users_by"></a>To 
+ find users by one-time password authentication</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_OTPfullsearch.jpg" id="image36" src="ai-user_account-find_accounts_-_otpfullsearch.jpg" width="552" height="274" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You 
+ can do one of the following:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users allowed to authenticate with a one-time password, select <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">OTP 
+ authentication is allowed</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users not allowed to authenticate with a one-time password, select <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">OTP 
+ authentication is not allowed</span>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users who are allowed or not allowed to receive a one-time password 
+ by an out-of band delivery mechanism, select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">OTP 
+ delivery is enabled</span>. </p>
+<p class="prpprocedureparagraph">More options appear. You can select one 
+ or more of the following:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users who are allowed to receive a one-time password by an out-of-band 
+ delivery mechanism, select <span class="bold" style="font-weight: bold; 
+									 letter-spacing: 0.00em; text-decoration: none; ">Yes</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users who are not allowed to receive a one-time password by an out-of-band 
+ delivery mechanism, select <span class="bold" style="font-weight: bold; 
+									 letter-spacing: 0.00em; text-decoration: none; ">No</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users who let their group’s policy determine whether they are allowed 
+ or not allowed to receive a one-time password by an out-of-band delivery 
+ mechanism, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+						 text-decoration: none; ">Depends on policy</span>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with a specified number of one-time passwords, select <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Has 
+ between [&#160;] and [&#160;] OTPs</span>, then do one of the following:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with at least one OTP, enter 1 in the first text field.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with a minimum number of OTPs or more (including unlimited OTPs), 
+ enter the minimum number in the first text field.</p>
+<p class="liplistparagraph">For example, enter <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">3</span> 
+ in the first text field to find users with 3 or more OTPs.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with a maximum number of OTPs or fewer (including zero (0)), enter 
+ the maximum number in the second text field.</p>
+<p class="liplistparagraph">For example, enter <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">2</span>&#160;in 
+ the second text field to find users with 2 or fewer OTPs.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find 
+ users with any number of OTPs in a range, enter the minimum number in 
+ the first text field, and enter the maximum number in the second text 
+ field.</p>
+<p class="liplistparagraph">For example, to find users with 1, 2, or 3 
+ OTPs, enter <span class="output" style="font-family: Courier; font-style: normal; 
+					 font-weight: normal; font-size: 10.0pt; color: #000000; 
+					 letter-spacing: 0.00em; text-decoration: none; ">1</span>&#160;in 
+ the first text field and <span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+								 text-decoration: none; ">3</span> in the 
+ second text field.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their OTP expiry date, choose the time frame from the <span 
+	 style="font-weight: bold;">OTP Expiry Date</span>&#160;drop-down list. 
+ </p>
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>Even if 
+ a user is allowed to receive a one-time password by an out-of-band delivery 
+ mechanism, the user must have contact information associated with their 
+ user account to receive the one-time password. To find users with contact 
+ information, see <a href="#XREF_62056_To_find_users_by">To find users 
+ by whether or not they have contact information</a>.</p>
+<p class="prtproceduretitle"><a name="XREF_21856_To_find_a_user_by"></a>To 
+ find users by last authentication</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>To use 
+ this search, the policy that allows storage of last authentication data 
+ must be enabled. This policy is enabled by default. See <a href="../config_policies/authentication_types_policies.htm#XREF_Store_Type_and_Date_of">Store 
+ Type and Date of Last Authentication</a> for details.</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users (or administrators) by their last successful authentication 
+ date, select the time interval from the <span style="font-weight: bold;">Last 
+ Successful Authentication</span>&#160;drop-down list. </p>
+<p class="prpprocedureparagraph">You can choose to search for the last 
+ successful authentication within the time interval. You can also choose 
+ to look for users who have not authenticated successfully within the selected 
+ time period.</p>
+<p class="prpprocedureparagraph">If you do not select any authentication 
+ types, the search results will include the last successful authentications 
+ of any authentication type.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_lastauth.jpg" id="image37" src="ai-user_account-find_accounts_-_lastauth.jpg" width="478" height="337" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their last successful authentication type, select one or 
+ more authentication types from the <span style="font-weight: bold;">Last 
+ Successful Authentication Type</span> selection list.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the date of their last failed authentication, select the 
+ time interval from the <span style="font-weight: bold;">Last Failed Authentication</span>&#160;drop-down 
+ list. </p>
+<p class="prpprocedureparagraph">You can choose to search for the last 
+ failed authentication within the time interval. You can also choose to 
+ look for users who have not failed authentication within the selected 
+ time period.</p>
+<p class="prpprocedureparagraph">If you do not select any authentication 
+ types, the search results will include the last failed authentications 
+ of any authentication type.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the authentication method used for their last failed authentication, 
+ select one or more authentication types from the <span style="font-weight: bold;">Last 
+ Failed Authentication Type</span> selection list.</p>
+<p class="prtproceduretitle"><a name="XREF_17481_To_find_users_by"></a>To 
+ find users by grid card</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_card.jpg" id="image38" src="ai-user_account-find_accounts_-_card.jpg" width="316" height="41" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with cards, select <span class="bold" style="font-weight: bold; 
+									 letter-spacing: 0.00em; text-decoration: none; ">Has 
+ a card with the characteristics below</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Card 
+ characteristics</span>&#160;pane appears. </p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_cardFull.jpg" id="image39" src="ai-user_account-find_accounts_-_cardfull.jpg" width="552" height="346" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their card serial number, enter the serial number in the 
+ <span style="font-weight: bold;">Serial Number</span>&#160;field. Wild 
+ cards are allowed, so you can enter 11*, for example, to search for all 
+ users with grid card serial numbers beginning with “11”.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their card states, select the card states from the <span 
+	 style="font-weight: bold;">States Include</span>&#160;and <span style="font-weight: bold;">States 
+ Don’t Include</span> lists. You can select more than one state from the 
+ list.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the threshold indicator, select from the <span style="font-weight: bold;">Usage 
+ Threshold Indicator</span> list. You can select one or more of the options.</p>
+<p class="prpprocedureparagraph">For example, if you want to find all users 
+ with cards that need to be replaced, select <span style="font-weight: bold;">Replacement</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their card creation date, select a card creation time frame 
+ from the <span style="font-weight: bold;">Creation Date</span> drop-down 
+ list.</p>
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their card expiry date, select a card expiry time frame 
+ from the <span style="font-weight: bold;">Expiry Date</span> drop-down 
+ list.</p>
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prtproceduretitle"><a name="XREF_57192_To_find_users_by"></a>To 
+ find users by token </p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_token.jpg" id="image40" src="ai-user_account-find_accounts_-_token.jpg" width="317" height="37" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with tokens, select <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Has 
+ a token with the characteristics below</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Token 
+ characteristics</span>&#160;pane appears. </p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_tokenFull.jpg" id="image41" src="ai-user_account-find_accounts_-_tokenfull.jpg" width="552" height="350" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their token serial number, enter the serial number in the 
+ <span style="font-weight: bold;">Serial Number</span>&#160;field. Wild 
+ cards are allowed, so you can enter 11*, for example, to search for all 
+ users with token serial numbers beginning with “11”.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with tokens from a particular vendor, select the vendor from 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Token Vendor </span>list.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their token states, select the token states from the <span 
+	 style="font-weight: bold;">States Include</span>&#160;and <span style="font-weight: bold;">States 
+ Don’t Include</span> lists. You can select more than one state from the 
+ list.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their the date their token was added to Entrust IdentityGuard, 
+ select a time frame from the <span style="font-weight: bold;">Token Added 
+ </span>drop-down list.</p>
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>The Token 
+ Added date is the date the token was loaded into Entrust IdentityGuard, 
+ not the date it was assigned to a user.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the date they last used their token, select a time frame 
+ from the <span style="font-weight: bold;">Last Used </span>drop-down list.</p>
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by whether or not they have a soft token&#160;license, next 
+ to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Uses License</span>, select <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Yes</span> 
+ if the&#160;user has a soft token and uses a Soft Token license, or <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">No</span> 
+ if it they do not.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by whether or not they have a soft token&#160;that is licensed 
+ to use the transaction verification feature, next to <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Uses 
+ Transaction Verification License</span>, select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Yes</span>&#160;if 
+ the user uses the transaction verification feature or <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">No</span> 
+ if they do not.</p>
+<p class="prtproceduretitle"><a name="XREF_56912_To_find_users_by"></a>To 
+ find users by biometric </p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_biometric.jpg" id="image42" src="ai-user_account-find_accounts_-_biometric.jpg" width="484" height="41" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with biometrics, select <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Has 
+ a biometric with the characteristics below</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Biometric 
+ characteristics</span> pane appears.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_biometricFull.jpg" id="image43" src="ai-user_account-find_accounts_-_biometricfull.jpg" width="513" height="259" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the biometric vendor, select the vendor from the <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Biometric 
+ Vendor</span>&#160;drop-down list. The list is not shown if there is only 
+ one vendor in the system.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the state of their biometric, select one&#160;or more of 
+ the states, Active or Inactive, from the <span class="bold" style="font-weight: bold; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">State 
+ </span>drop-down list:</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their biometric enrollment state, select one&#160;or more 
+ of the states from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+								 text-decoration: none; ">Enroll States 
+ Include </span>drop-down list:</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the date on which they enrolled a biometric, select a time 
+ frame from the <span style="font-weight: bold;">Enroll Date </span>drop-down 
+ list.</p>
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the date on which they last used a biometric for authentication, 
+ select a time frame from the <span style="font-weight: bold;">Last Used 
+ </span>drop-down list.</p>
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prtproceduretitle"><a name="XREF_51946_To_find_users_by"></a>To 
+ find users by certificate</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_ce.jpg" id="image44" src="ai-user_account-find_accounts_-_ce.jpg" width="484" height="51" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with certificates, select <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Has 
+ a certificate with the characteristics below</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Certificate 
+ characteristics</span> pane appears.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_certificateFull.jpg" id="image45" src="ai-user_account-find_accounts_-_certificatefull.jpg" width="552" height="366" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the subject DN of certificates assigned to them, enter the 
+ DN in <span style="font-weight: bold;">Subject DN</span>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the issuer DN of certificates assigned to them, enter the 
+ DN in <span style="font-weight: bold;">Issuer DN</span>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their certificate serial number, enter the serial number 
+ in <span style="font-weight: bold;">Serial Number</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by their certificate states, select the certificate states 
+ from the <span style="font-weight: bold;">States Include</span>&#160;and 
+ <span style="font-weight: bold;">States Don’t Include</span> lists.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with certificates that are self-signed, select <span style="font-weight: bold;">Yes</span>&#160;beside 
+ <span style="font-weight: bold;">Certificate is Self-Signed</span>.</p>
+<p class="prpprocedureparagraph">To find users with certificates that are 
+ not self-signed, select <span style="font-weight: bold;">No</span>&#160;beside 
+ <span style="font-weight: bold;">Certificate is Self-Signed</span>.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with certificates that were issued by an unregistered Certificate 
+ Authority (CA), select <span style="font-weight: bold;">Yes</span>&#160;beside 
+ <span style="font-weight: bold;">Issued by Unregistered CA</span>.</p>
+<p class="prpprocedureparagraph">To find users with certificates that were 
+ issued by a registered Certificate Authority (CA), select <span style="font-weight: bold;">No</span>&#160;beside 
+ <span style="font-weight: bold;">Issued by Unregistered CA</span>.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with certificates issued by a specific CA or CAs, select the 
+ CAs from the <span style="font-weight: bold;">Issued by</span> list.</p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the date their certificate was issued, select a time frame 
+ from the <span style="font-weight: bold;">Issue Date </span>drop-down 
+ list.</p>
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To 
+ find users by the expiry date of their certificate, select a time frame 
+ from the <span style="font-weight: bold;">Expiry Date </span>drop-down 
+ list.</p>
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To 
+ find users by their the date their certificate was assigned to them, select 
+ a time frame from the <span style="font-weight: bold;">Assigned </span>drop-down 
+ list.</p>
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To 
+ find users by the date they last used their certificate, select a time 
+ frame from the <span style="font-weight: bold;">Last Used </span>drop-down 
+ list.</p>
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prtproceduretitle"><span style="font-size: 14.0pt;"><a name="XREF_25195_Finding_a_user_s"></a></span>To 
+ find users by smart credential</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_SC.jpg" id="image46" src="ai-user_account-find_accounts_-_sc.jpg" width="486" height="41" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find users with 
+ certificates, select <span class="bold">Has a smart credential with the 
+ characteristics below</span>.</p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The <span class="bold">Smart credential characteristics</span> 
+ pane appears.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_SCFull.jpg" id="image47" src="../../ai-user_account-find_accounts_-_scfull.png" width="500" height="419" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find users by their smart credential ID, 
+ enter the ID in <span class="bold">Smart Credential ID</span>.</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find users by their smart credential serial 
+ number, enter the serial number in <span style="font-weight: bold;">Serial 
+ Number</span>.</p>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find users by their smart credential states, 
+ select the smart credential states from the <span style="font-weight: bold;">States 
+ Include</span>&#160;and <span style="font-weight: bold;">States Don’t 
+ Include</span>&#160;lists. For more information on states, see “Assigned 
+ (user) smart credential states”<span class="hyperlink" style="font-family: Syntax;"> 
+ </span>&#160;in the <span class="italic">Entrust IdentityGuard Smart Credentials 
+ Guide</span>.</p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find users by their smart credential definition, 
+ select one of the existing definitions from the <span class="bold">Definition 
+ </span>drop-down list.</p>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find users by their smart credential enrollment 
+ state, select one of the states from the <span class="bold">Enrollment 
+ state</span> drop-down list:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Enrolling</span>.<span class="bold">&#160;</span>A 
+ smart credential is in this state as soon as all required enrollment data 
+ is collected. The smart credential then automatically moves to the Enrolled 
+ state.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Enrolled</span>. A smart credential 
+ is in this state when a new smart credential enrollment has been submitted, 
+ but is not yet approved.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: 
+ </span>If you are not using the approval feature, the smart credential 
+ is automatically approved upon submission and moves to the Approved state.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Approved</span>. A smart credential 
+ is in this state when the administrative user with the Smart Credential 
+ Approver role (or equivalent permissions) approves the smart credential 
+ record.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Sealed</span>. Optional. A 
+ smart credential is in this state when the administrator manually clicks 
+ Seal after printing and/or encoding. Generally, this occurs just before 
+ distributing the smart credential to the employee. This seals the record 
+ in the database so that it cannot be edited, reprinted, or re-encoded.</p>
+<p 
+	 class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find users by their smart credential card 
+ type or mobile device brand, select one of the states from the <span class="bold">Card 
+ Type</span> drop-down list. Options include:</p>
+<p 
+	 class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">Android</span>, <span class="bold">Apple 
+ iOS</span>&#160;and <span class="bold">BlackBerry</span>&#160;devices 
+ for software mobile smart credentials</p>
+<p 
+	 class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold">Infineon</span>, <span class="bold">NXP</span>, 
+ or <span class="bold">Unknown</span> for physical smart cards</p>
+<p 
+	 class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find users by the date their smart credential 
+ was created, select a time frame from the <span style="font-weight: bold;">Creation 
+ Date </span>drop-down list.</p>
+<p class="prpprocedureparagraph">If 
+ you select <span class="bold">Custom date range</span>, choose a date 
+ range from the <span class="bold">From</span>&#160;and <span class="bold">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p 
+	 class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To find users by the expiry date of their 
+ smart credential, select a time frame from the <span style="font-weight: bold;">Expiry 
+ Date </span>drop-down list.</p>
+<p class="prpprocedureparagraph">If 
+ you select <span class="bold">Custom date range</span>, choose a date 
+ range from the <span class="bold">From</span>&#160;and <span class="bold">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p 
+	 class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To find users by whether or not they have 
+ a mobile smart credentials license, next to <span class="bold">Mobile 
+ License</span>, select <span class="bold">Yes</span>&#160;if the user 
+ has a mobile smart credential and uses a mobile smart credentials license, 
+ or <span class="bold">No</span> if it they do not.</p>
+<p 
+	 class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To find users by whether or not they have 
+ a&#160;mobile smart credential that is licensed to use the Identity Assured 
+ features, next to <span class="bold">Identity Assured License</span>, 
+ select <span class="bold">Yes</span>&#160;if the user uses the identity 
+ assured features on their mobile smart credential, or <span class="bold">No</span> 
+ if they do not.</p>
+
+
+<p 
+	 class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To find users by enrollment details, select 
+ the <span class="bold">Enrollment Details</span> check box<span class="bold">. 
+ </span>Complete one of more of the fields that appear. The fields that 
+ appear are dynamic, and based on the definition or definitions configured 
+ in IdentityGuard.</p>
+<p 
+	 class="prprocedurestep">14.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To find users by enrollment details, select 
+ the <span class="bold">Issuance Details check</span> box<span class="bold">. 
+ </span>Select one of more of the following options:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Issuance Status Includes</span>: 
+ The options provided are based on your Print Module configuration. For 
+ more information on issuance status, see the <span class="italic">Entrust 
+ IdentityGuard Print Module User Guide</span>.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Issuance Status Doesn’t Include</span>: 
+ The options provided are based on your Print Module configuration. For 
+ more information on issuance status, see the <span class="italic">Entrust 
+ IdentityGuard Print Module User Guide</span>.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find users by the date their smart credential 
+ was issued, select an issuance time frame from the <span class="bold">Issuance 
+ Date </span>drop-down list. </p>
+<p class="prspsubprocedureparagraph">If 
+ you select <span class="bold">Custom date range</span>, choose a date 
+ range from the <span class="bold">From</span>&#160;and <span class="bold">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="prtproceduretitle"><a name="XREF_99205_To_find_users_by"></a>To 
+ find users by digital ID</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_DigID.jpg" id="image48" src="ai-user_account-find_accounts_-_digid.jpg" width="476" height="49" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users with digital IDs, select <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Has 
+ a digital ID with the characteristics below</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Digital 
+ ID characteristics</span> pane appears.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_DigIDFull.jpg" id="image49" src="ai-user_account-find_accounts_-_digidfull.jpg" width="556" height="316" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the DN of digital IDs assigned to them, enter the DN in 
+ <span style="font-weight: bold;">Distinguished Name (DN</span><span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">)</span>. 
+ Enter a full DN or partial DN of the users. For example, <span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">o=Ottawa,c=CA</span>&#160;finds 
+ users with <span class="output" style="font-family: Courier; font-style: normal; 
+					 font-weight: normal; font-size: 10.0pt; color: #000000; 
+					 letter-spacing: 0.00em; text-decoration: none; ">cn=Alice 
+ Smith,o=Ottawa,c=CA</span>&#160;and <span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; ">cn=Bob 
+ Jones,o=Ottawa,c=CA</span> in their DNs.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by managed CA, select the managed CA from the <span style="font-weight: bold;">Managed 
+ CA </span>drop-down list. </p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the configuration of their digital ID, select the configuration 
+ from the <span style="font-weight: bold;">Digital ID Config</span> drop-down 
+ list.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by digital ID client type, enter the name of a client type 
+ in <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Client Type</span>. A client type 
+ is any piece of information set by an Entrust IdentityGuard client and 
+ passed to Entrust IdentityGuard server. For example, the Self-Service 
+ Module sets the client type to the brand of mobile device on which a digital 
+ ID is being downloaded. You can therefore use the Client Type field to 
+ search for digital IDs that have been downloaded to particular mobile 
+ devices. The client type values set by the Self-Service Module are: <span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">android</span>, 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; ">blackberry</span>, <span class="output" 
+															 style="font-family: Courier; 
+															 font-style: normal; 
+															 font-weight: normal; 
+															 font-size: 10.0pt; 
+															 color: #000000; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">blackberryTablet</span>, 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; ">iOS</span>, <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">windowsPhone</span>.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Client 
+ Type</span>&#160;maps to the <span style="font-weight: bold;">Device Type 
+ Value</span>&#160;property listed in the Self-Service Module’s Configuration 
+ interface, under <span style="font-weight: bold;">Properties</span>&#160;&gt;<span 
+	 style="font-weight: bold;">&#160;Digital ID Device Type Settings</span>.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ find users by the date that there digital ID was created or recovered, 
+ select a time frame from the <span style="font-weight: bold;">Create/Recover 
+ Date </span>drop-down list. (Recovered is another word for ‘re-created’.)</p>
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Custom 
+ date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">From</span>&#160;and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">To</span>&#160;drop-down 
+ lists (day, month, year), or click the calendar icons to select dates.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

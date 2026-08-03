@@ -1,0 +1,405 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>New in this release</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("About this guide\nNew in this release");
+addAvenueInfo("Untitled02","ig_admin/about_this_book/about_this_book.htm","ig_admin/about_this_book/revision_informationtable_1_revisions_in_this_documentdocument.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "about_this_book.htm");
+document.write("<a href=\"about_this_book.htm\">About this guide<\/a> > New in this release<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1>New in this release</h1>
+<p class="pparagraph">This topic leads you to information related to the 
+ main new features of this release and other recent releases. For more 
+ specifications about the release, see the <span class="italic">Entrust 
+ IdentityGuard Server Release Notes</span>.</p>
+<h2>Release 12.0</h2>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 38.462%;" />
+	<col style="width: 61.538%;" />
+	<tr class="t1st">
+		<td style="vertical-align: Top;"><p class="tahtableheader">Feature</p></td>
+		<td style="vertical-align: Top;"><p class="tahtableheader">This 
+		 feature is documented in the following topics</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Built-in key store management interface and alerting</span> 
+		 )</p>
+		For installations that use the embedded Tomcat Java application 
+		 server, this release simplifies the tasks related to managing 
+		 certificates needed by Entrust IdentityGuard. 
+		<br /><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />More...</a> 
+		 
+		<div class="droptext" id="POPUP599310650" style="display: none;">
+			<p class="tattabletext">These tasks include switching from 
+			 a self-signed to a CA-signed certificate, updating certificates 
+			 that are nearing expiry, and managing third-party certificates. 
+			 In the Administration interface, the feature also warns you 
+			 when certificates are nearing expiry or have expired.</p>
+  </div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../config_security/managing_certificates_in_the_key_store.htm">Managing 
+		 certificates in the key store</a> -New section </p>
+		<p class="tattabletext">Several procedures that can be done using 
+		 the new interface have been updated.</p>
+		<p class="tattabletext">This feature is also implemented in the 
+		 Self-Service Module. For more information, see the <span class="italic">Entrust 
+		 IdentityGuard Self-Service Module Installation and Configuration 
+		 Guide</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Support for user access groups</span> </p>
+		<p class="tattabletext">This feature allows customers&#160;more 
+		 options when they are trying to configure access control&#160;by 
+		 group membership. <a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />More...</a>&#160;</p>
+		<div class="droptext" id="POPUP652154286" style="display: none;">
+			<p class="tattabletext">Previously they could use only Entrust 
+			 IdentityGuard groups. A new User Data policy, <span style="font-weight: bold;">Maximum 
+			 Number of User Access Groups</span>, lets you specify the 
+			 number of groups that users governed by the policy can belong 
+			 to, and lets you specify the group names. The policy setting 
+			 can be overridden for specific&#160;users, if required.</p>
+  </div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../useradminsection/configuring_user_access_groups.htm">Configuring 
+		 user access groups</a> </p>
+		
+		
+		
+		
+		
+		
+		
+		
+		</td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Send push authentication challenges to Entrust IdentityGuard 
+		 mobile apps from the Administration interface</span> </p>
+		<p class="tattabletext">Typically, mobile soft tokens and mobile 
+		 smart credentials receive authentication challenges from Web sites. 
+		 This feature allows an Entrust IdentityGuard administrator to 
+		 send a challenge to a user's mobile soft token or smart credential 
+		 app on demand from the Administration interface. <a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />More...</a> 
+		 </p>
+		<div class="droptext" id="POPUP647206347" style="display: none;">
+			<p class="tattabletext">This way, push authentication can be 
+			 used in new scenarios, for example, to grant someone access 
+			 to a building (like a badge) or to verify the identity of 
+			 someone calling a help desk to reset a password or obtain 
+			 account information.</p>
+  </div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../scauth/push_authentication_challenges_to_mobile_smart_credentials_from_the_administration_interface.htm">Push 
+		 authentication challenges to mobile smart credentials from the 
+		 Administration interface</a> </p>
+		<p class="tattabletext"><a href="../scauth/push_authentication_challenges_to_mobile_smart_credentials_from_the_administration_interface.htm">Push 
+		 authentication challenges to mobile smart credentials from the 
+		 Administration interface</a> </p>
+		<p class="tattabletext">New properties support this feature:</p>
+		<p class="tattabletext"><a href="../usingpropeditor/push_authentication_for_smart_credential_and_soft_token.htm">Push 
+		 Authentication for Smart Credential and Soft Token</a> </p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Anonymous smart credential security challenges</span> 
+		 </p>
+		<p class="tattabletext">This feature provides options for users 
+		 to respond to smart credential security challenges without first 
+		 entering a user name. <a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />More...</a></p>
+		<div class="droptext" id="POPUP647482386" style="display: none;">
+			<p class="tattabletext">In the traditional security challenge 
+			 feature, users browse to a protected web application, enter 
+			 their user names and receive push notifications on their mobile 
+			 devices.&#160;With anonymous security challenges, the web 
+			 application no longer needs to prompt for a user name.&#160;Instead, 
+			 it&#160;displays a QR code that the user scans and responds 
+			 to with the smart credential app. Alternatively,&#160;users 
+			 with physical smart credentials can authenticate&#160;&#160;anonymous 
+			 challenges using Entrust Entelligence Security Provider for 
+			 Windows (version 10.0 <span style="font-size: 11pt; font-family: Calibri, sans-serif;"><font size="3" style="font-size:11pt;">Patch 
+			 206124 or later). </font></span>After responding to the anonymous 
+			 security challenge, the web application knows which user completed 
+			 the challenge. This feature requires Entrust IdentityGuard 
+			 Self-Service Module 12.0 and the Entrust IdentityGuard Mobile 
+			 Smart Credential app version 3.1.</p>
+  </div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">New 
+		 properties support this feature:</p>
+		<p class="tattabletext"><a href="../usingpropeditor/anonymous_security_challenge_check.htm">Anonymous 
+		 Security Challenge Check</a> - new properties category </p>
+		<p class="tattabletext"><a href="../usingpropeditor/transaction_component_and_callback_settings.htm">Transaction 
+		 Component and Callback Settings </a>&#160;- new property: Transaction 
+		 Component External URL </p>
+		<p class="tattabletext"><a href="../usingpropeditor/repository_settings.htm">Repository 
+		 Settings</a> - new property: Anonymous Challenge Repository Implementation 
+		 Class </p>
+		<p class="tattabletext"><a href="../usingpropeditor/authentication_audit_and_error_settings.htm">Authentication 
+		 Audit and Error Settings</a> There are no new audits specifically 
+		 for this feature, but administrators can get information about 
+		 users who have authenticated using anonymous security challenges 
+		 by enabling the <span class="bold">Audit Successful Authentications</span> 
+		 setting.</p>
+		<p class="tattabletext">For more information, see &quot;Anonymous 
+		 smart credential authentication&quot; in the <span class="italic">Entrust 
+		 IdentityGuard Smart Credentials Guide</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Enhancements to detecting risk for adaptive authentication</span>&#160;</p>
+		<p class="tattabletext">Entrust IdentityGuard uses device reputation 
+		 data collected by using iovation SureScore™ 
+		 to track whether that device has been involved in fraud or suspicious 
+		 activity elsewhere. This integration adds another level of confidence 
+		 that the user and device requesting authentication are legitimate.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../riskbasedauth/using_external_risk_engine_data_for_rba_authentication.htm">Using 
+		 external risk engine data for RBA authentication</a> - New section 
+		 </p>
+		<p class="tattabletext">Updated topics:</p>
+		<p class="tattabletext"><a href="../machineauth/view_machine_secrets.htm">View 
+		 machine secrets</a> </p>
+		<p class="tattabletext"><a href="../riskbasedauth/setting_normal_and_enhanced_rba_policies.htm">Set 
+		 normal and enhanced RBA policies</a> </p>
+		<p class="tattabletext">Updated policies and properties</p>
+		<p class="tattabletext"><a href="../config_policies/external_risk_score_policies.htm">External 
+		 Risk Score policies</a> </p>
+		<p class="tattabletext"><a href="../usingpropeditor/risk_engine_configuration.htm">Risk 
+		 Engine Configuration (32)</a> </p>
+		<p class="tattabletext">For more information, see the <span style="font-style: italic;"><i>Entrust 
+		 IdentityGuard Device Fingerprint SDK Programming Guide</i></span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Support for new Entrust Datacard branded hardware 
+		 tokens</span>&#160;)</p>
+		<p class="tattabletext">This release expands support to a new set 
+		 of Entrust Datacard hardware tokens comparable to existing Entrust 
+		 tokens. <a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />More...</a></p>
+		<div class="droptext" id="POPUP652897436" style="display: none;">
+			<p class="tattabletext"><span class="bold">Entrust Datacard 
+			 OT Token</span>: An OATH-compliant, time-based token that 
+			 is comparable to the Entrust Mini-token OT.</p>
+			<p class="tattabletext"><span class="bold">Entrust Datacard 
+			 AT Token</span> (coming soon): An OATH-derivative, event and 
+			 time hybrid token that is comparable to the Entrust Mini-token 
+			 AT.</p>
+			<p class="tattabletext"><span class="bold">Entrust Datacard 
+			 CR Token</span> (coming soon): An OATH-compliant, time-based 
+			 token with support for OATH OCRA challenge/response and signature 
+			 modes. It has a keypad and is PIN-protected. It is comparable 
+			 to the Entrust Pocket Token and Entrust Flexi Token.</p>
+			<p class="tattabletext">The new Entrust Datacard tokens are 
+			 supported with the OATH token vendor configuration.</p>
+  </div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../tokenauth/entrust_datacard_otp_tokens.htm">Entrust Datacard 
+		 OTP tokens</a> - New section </p>
+		<p class="tattabletext">Updated topics:</p>
+		<p class="tattabletext"><a href="../tokenauth/hardware_token_support.htm">Supported 
+		 hardware tokens</a>&#160;</p>
+		<p class="tattabletext"><a href="../tokenauth/using_a_token.htm">Using 
+		 a token</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Support for TruCredential for smart card layout</span> 
+		 </p>
+		<p class="tattabletext">Datacard TruCredential is the Entrust Datacard 
+		 card enrollment and layout system. Entrust IdentityGuard makes 
+		 use of TruCredential smart card design templates and layout editing 
+		 features for those customers who want to design their own printable 
+		 smart cards. <a class="dropspot" href="javascript:TextPopup(this)" id="a21"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />More...</a> 
+		 n</p>
+		<div class="droptext" id="POPUP602257856" style="display: none;">
+			<p class="tattabletext">New Entrust IdentityGuard installations 
+			 should use Entrust Datacard TruCredential, which is sold, 
+			 installed, and licensed separately from Entrust IdentityGuard. 
+			 TruCredential replaces IDWorks (sales to be discontinued by 
+			 mid-2017) and AlphaCard (for which no new licenses are available). 
+			 Although IDWorks and AlphaCard will be supported for installed 
+			 systems, consider switching to TruCredential for next-generation 
+			 features and long-term support.</p>
+  </div></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">See 
+		 &quot;Smart cards&quot; the <span class="italic">Entrust IdentityGuard 
+		 Smart Credentials Guide</span> and more guidance in the <span 
+		 class="italic">Entrust IdentityGuard Print Module User Guide</span>. 
+		 </p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Support for issuing Windows TPM virtual smart cards</span> 
+		 </p>
+		<p class="tattabletext">This release introduces support for issuing 
+		 digital IDs to Microsoft Windows virtual smart cards running in 
+		 the Trusted Platform Module (TPM) hardware available on some Microsoft 
+		 Windows-based computers. Users derive the new credential from 
+		 existing smart cards. </p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">For 
+		 more information, see &quot;Derived smart credentials&quot; in 
+		 the <span class="italic">Entrust IdentityGuard Smart Credentials 
+		 Guide.</span></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">More secure activation of mobile soft tokens using 
+		 Android Samsung TEE</span> )</p>
+		<p class="tattabletext">A new secure transfer activation mode allows 
+		 Samsung Android devices to import the soft token seed in an encrypted 
+		 form directly into the Samsung KNOX Trusted Execution Environment 
+		 (TEE). This feature protects the soft token seed against compromised 
+		 Android devices during the activation process. This feature requires 
+		 Entrust IdentityGuard Self-Service Module 12.0, the Entrust IdentityGuard 
+		 Mobile Soft Token app version 3.2 and a compatible Samsung device.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../softtokenauth/enable_activation_and_use_of_soft_tokens_in_a_tee.htm">Enable 
+		 activation and use of soft tokens in a TEE</a> </p>
+		<p class="tattabletext">Users could see a request to accept a TEE 
+		 license, but otherwise they see no difference. There are no related 
+		 updates in the help or user guide for the Entrust IdentityGuard 
+		 Mobile Soft Token app.</p>
+		</td>
+	</tr>
+</table>
+<p>&#160;</p>
+
+  <p class="pparagraph">&#160;</p>
+  <div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a11','POPUP599310650');
+	TextPopupInit('a4','POPUP652154286');
+	TextPopupInit('a2','POPUP647206347');
+	TextPopupInit('a3','POPUP647482386');
+	TextPopupInit('a1','POPUP652897436');
+	TextPopupInit('a21','POPUP602257856');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

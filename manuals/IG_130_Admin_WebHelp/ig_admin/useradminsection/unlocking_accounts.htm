@@ -1,0 +1,429 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\Users.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Unlocking accounts</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("User administration\nManaging users\nUnlocking accounts");
+addAvenueInfo("r13_std","ig_admin/useradminsection/modifying_user_information.htm","ig_admin/useradminsection/suspend_or_activate_users.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"user_admnistration.htm\">User administration<\/a> > <a href=\"managing_users.htm\">Managing users<\/a> > Unlocking accounts<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_user_account" id="IX_user_account"></a><a name="IX_unlock" 
+															 id="IX_unlock"></a><a 
+	 name="XREF_93463_Unlocking_a_user" id="XREF_93463_Unlocking_a_user"></a>Unlocking 
+ accounts</h1>
+<p class="pparagraph"><a name="IX_unlocking" id="IX_unlocking"></a>A user’s 
+ authenticator may become locked if the user fails to authenticate to your 
+ system after a certain number of attempts. Locking out an authenticator 
+ ensures that an attacker cannot complete a brute force attack.</p>
+<p class="pparagraph">The number of times that users can enter an incorrect 
+ authentication before they are locked out of the system is defined by 
+ policy (see <a href="configuring_lockout_policies.htm">Configuring lockout 
+ policies</a>).</p>
+<p class="pparagraph">When locked out, users must either contact an administrator 
+ to reset their account, or wait until the lockout time expires (if lockout 
+ expiry is allowed by policy).</p>
+<p class="pparagraph">This topic contains the following procedures:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_prt_To_unlock_a_user_s">To 
+ unlock a user’s account and view their lockout count</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_62535_To_unlock_an">To 
+ unlock an administrative account</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_prt_To_unlock_multiple">To 
+ unlock accounts for multiple users simultaneously</a></p>
+<p class="prtproceduretitle"><a name="XREF_prt_To_unlock_a_user_s" id="XREF_prt_To_unlock_a_user_s"></a>To 
+ unlock a user’s account and view their lockout count</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the main menu, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">User Accounts</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">User 
+ Accounts</span>&#160;page appears.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="Users00378.jpg" id="image54" src="users00378.jpg" name="image54" width="552" height="207" border="0" /></p>
+</div>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">User Name or Alias</span>&#160;field, 
+ enter the user name or alias of the locked-out user.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+ In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Group</span> drop-down list, 
+ select the user’s group.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Go 
+ To Account</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">View 
+ Account</span>&#160;page appears.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> When a 
+ user is locked out, the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+								 text-decoration: none; ">Unlock Account</span>&#160;command 
+ appears for that user. If the user is not locked out, it does not appear.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Unlock.jpg" id="image55" src="ai-user_account-unlock.jpg" name="image55" width="552" height="289" border="0" /></p>
+</div>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>View 
+ the <span style="font-weight: bold;">Login Attempts Remaining</span> field. 
+ A zero and a red lock icon indicate that the user is locked out of at 
+ least one of their authenticators, and possibly all of them, depending 
+ on the lockout mode assigned to them. (See <a href="../config_policies/lockout_modes_and_examples.htm">Lockout 
+ modes and examples</a> for details.)</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Next 
+ to <span style="font-weight: bold;">Login Attempts Remaining</span>, click 
+ <span style="font-weight: bold;">Additional Details</span>&#160;to see 
+ the lockout counters for each authenticator. </p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The <span 
+	 style="font-weight: bold;">Additional Details</span>&#160;link might 
+ not be visible depending on the user’s lockout mode.</p>
+<p class="prpprocedureparagraph">The following example shows what you might 
+ see if the mode is <span class="bold">Lock Authenticator (Authenticator 
+ Counter)</span> and that the policy is to have the authenticator locked 
+ until unlocked by administrator. The authenticator that is locked out 
+ is highlighted and shows no authentication attempts remaining.</p>
+<div style="text-align: center; width: 46.802%;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Unlock_details.jpg" id="image56" src="ai-user_account-unlock_details.jpg" name="image56" width="213" height="198" border="0" /></p>
+</div>
+<p class="prpprocedureparagraph">The following example shows what you might 
+ see if the mode is <span class="bold">Lock Authenticator (Authenticator 
+ Counter)</span>, the policy is to have the authenticator locked only for 
+ a <span class="bold">Lockout period</span> of a specified number of minutes, 
+ and several authenticators are locked. The lockout periods for some of 
+ the authenticators have ended, and the time at which the authenticators 
+ were unlocked in highlighted in green. (The count of zero is not reset 
+ until the user authenticates successfully with the unlocked authenticator.) 
+ &#160;<span class="bold">Authenticator Locked Until</span> line is highlighted 
+ with green and displays the time at which the last lockout period for 
+ a one of the locked authenticators ends.</p>
+<p class="prpprocedureparagraph"><img src="../../ai-user_account-unlock_details_autounlocks.png" alt="" style="border: none;" width="500" height="203" border="0" /></p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span>Click 
+ </span><span class="bold">Unlock Account</span><span>.</span></p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ you see a dialog box that asks you&#160;to confirm that you want to unlock 
+ the account, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">OK</span>.</p>
+<p class="prpprocedureparagraph">The account becomes unlocked. Also, the 
+ user’s lockout counters are reset, as follows:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If your 
+ lockout policy has its <span style="font-weight: bold;">Lockout Mode</span>&#160;set 
+ to <span style="font-weight: bold;">Lock User (Authenticator Counter)</span>, 
+ or <span style="font-weight: bold;">Lock Authenticator (Authenticator 
+ Counter)</span>, then all the individual authenticator lockout counters 
+ are reset to their original values (as specified in the lockout policy).</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If your 
+ lockout policy has its <span style="font-weight: bold;">Lockout Mode</span>&#160;set 
+ to <span style="font-weight: bold;">Lock User (Global Counter),</span> 
+ then the global counter is reset to its original value (as specified in 
+ the lockout policy).</p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+ you are using the<span style="font-weight: bold;">&#160;Lock Authenticator 
+ (Authenticator Counter)</span>&#160;lockout mode, you see the following 
+ page:</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Unlock-multi-resetall.jpg" id="image57" src="ai-user_account-unlock-multi-resetall.jpg" name="image57" width="582" height="287" border="0" /></p>
+</div>
+<p class="prpprocedureparagraph">If you see a page like the one shown above, 
+ do one of the following:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span style="font-weight: bold;">Reset All Authenticators</span>&#160;and 
+ then click <span style="font-weight: bold;">Unlock Account.</span>&#160;The 
+ user account is unlocked and the user can begin using all of his authenticators 
+ again. Also, all of the user’s authenticators’ lockout counters are reset 
+ to their original values.</p>
+<p class="prpprocedureparagraph">OR</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ the authenticator that is locked, and any other authenticators whose lockout 
+ counters you want to reset, and click <span style="font-weight: bold;">Unlock 
+ Account</span>. The selected authenticators become unlocked and the user 
+ can use them again. Also, the counters for the selected authenticators 
+ are reset to their original values.</p>
+<p class="prtproceduretitle"><a name="XREF_62535_To_unlock_an" id="XREF_62535_To_unlock_an"></a>To 
+ unlock an administrative account</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Use this 
+ procedure if you have been locked out of the Administration interface. 
+ If you cannot complete this procedure for whatever reason, other options 
+ are:<br />
+<br />
+— Wait until the lockout time expires (if lockout expiry is allowed by 
+ policy).&#160;<br />
+— Have another administrator unlock the administrator account using the 
+ Administration interface. The administrator doing the unlocking must have 
+ a sufficiently powerful role. For more information about roles, see <a href="../config_roles/configuring_roles.htm">Configuring roles</a>.</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Master user shell. See <a href="../usingadmininterface/using_the_master_user_shell.htm">Using 
+ the Master user shell</a>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+ the following command:</p>
+<p class="cocode"><span class="output" style="font-family: 'Courier New'; 
+						 font-style: normal; font-weight: normal; font-size: 10.0pt; 
+						 color: #000000; letter-spacing: 0.00em; text-decoration: none; ">user 
+ set &lt;adminID&gt; -clearLock</span></p>
+<p class="prpprocedureparagraph">For example,</p>
+<p class="cocode"><span class="output" style="font-family: 'Courier New'; 
+						 font-style: normal; font-weight: normal; font-size: 10.0pt; 
+						 color: #000000; letter-spacing: 0.00em; text-decoration: none; ">user 
+ set igadmin -clearLock</span></p>
+<p class="prpprocedureparagraph">The administrator is now unlocked and 
+ can access the Administration interface.</p>
+<p class="prtproceduretitle"><a name="XREF_prt_To_unlock_multiple" id="XREF_prt_To_unlock_multiple"></a>To 
+ unlock accounts for multiple users simultaneously</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> You can 
+ also use this procedure to reset the lockout counts to their default values 
+ even when a user is not yet locked out.</p>
+<div>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521478111" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478112" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the main menu, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">User Accounts</span>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Find Accounts</span> tab.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="Users00387.jpg" id="image58" src="users00387.jpg" name="image58" width="552" height="272" border="0" /></p>
+</div>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Locked</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To 
+ specify how many search results are displayed per page, select a number 
+ from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Showing results per page</span>&#160;drop-down 
+ list.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Find 
+ Accounts</span>.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Search 
+ Results</span>&#160;page displays all users with locked user accounts.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts-search_results-locked_users.jpg" id="image59" src="ai-user_account-find_accounts-search_results-locked_users.jpg" name="image59" width="510" height="134" border="0" /></p>
+</div>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ the check box beside each of the users you want to unlock, or select the 
+ check box beside <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+						 text-decoration: none; ">User Name</span>&#160;to 
+ select every user.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Unlock 
+ Account</span>.</p>
+<p class="prpprocedureparagraph">The user accounts are unlocked and the 
+ users can again attempt to log in. Also note that all lockout counters 
+ for the selected users—both per-authenticator counters and global counters—are 
+ reset to their original values. For more information about lockout counters, 
+ see the description of the <span style="font-weight: bold;">Lockout Mode</span>&#160;setting 
+ in the section <a href="../config_policies/ip_geolocation_policies.htm">IP/Geolocation 
+ policies</a>.</p>
+<p class="pparagraph">You can also unlock users using bulk operations. 
+ For more information, see <a href="managing_multiple_users_with_bulk_operations.htm">Managing 
+ multiple users with bulk operations</a>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+	TextPopupInit('a3','POPUP521478111');
+	TextPopupInit('a4','POPUP521478112');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

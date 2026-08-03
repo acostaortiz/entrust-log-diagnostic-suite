@@ -1,0 +1,474 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\knowledgebasedauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring knowledge-based question policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nKnowledge-based authentication\nConfiguring knowledge-based authentication policies\nConfigure knowledge-based Q&A policies");
+addAvenueInfo("r13_std","ig_admin/knowledgebasedauth/setting_question_and_answer_q_a_as_an_authentication_method.htm","ig_admin/knowledgebasedauth/configuring_knowledge-based_authentication_policies.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"knowledge-based_authentication.htm\">Knowledge-based authentication<\/a> > <a href=\"configuring_knowledge-based_authentication_policies.htm\">Configuring knowledge-based authentication policies<\/a> > Configure knowledge-based Q&amp;A policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_34186_Setting_knowledge" id="XREF_34186_Setting_knowledge"></a>Configure 
+ knowledge-based Q&amp;A policies</h1>
+<p class="pparagraph">Use the <span class="bold" style="font-weight: bold; 
+									 letter-spacing: 0.00em; text-decoration: none; ">Policies</span>&#160;pages 
+ of the Administration interface to set the number of questions to ask 
+ and the expected accuracy of the answers.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> For more 
+ information about using the Entrust IdentityGuard APIs to program the 
+ challenges to present to your users, see the <span style="font-style: italic;">Entrust 
+ IdentityGuard Programming Guide</span>.<br />
+For information about choosing questions and answers for maximum security, 
+ see <a href="creating_good_questions.htm">Creating good questions</a>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Entrust 
+ IdentityGuard does not limit the number of characters permitted in a user 
+ response. Some Entrust IdentityGuard applications that use knowledge-based 
+ authentication do impose limits. For example, by default, Entrust IdentityGuard 
+ Self-Service Module limits responses to 40 characters. SSM Administrators 
+ can change this setting. The maximum number of characters allowed is 255.</p>
+<p class="prtproceduretitle"><a name="XREF_44280_To_view_password" id="XREF_44280_To_view_password"></a>To 
+ view knowledge-based policy</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Policies</span> 
+ on the menu bar.</p>
+<p class="prpprocedureparagraph">A list of all policies appears on the 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">List 
+ Policies</span> tab.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ a policy name to view its policy information.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">View 
+ Policy</span> page appears and lists all policy settings.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Policy 
+ Category</span>, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+								 text-decoration: none; ">Knowledge-Based 
+ Q&amp;A</span> from the list.</p>
+<p class="prpprocedureparagraph">The Knowledge-Based policies appear.</p>
+<p class="prtproceduretitle">To change knowledge-based Q&amp;A policy</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find 
+ the policy to change.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">View Policy</span>&#160;page, click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Edit 
+ Policy</span>.</p>
+<p class="prpprocedureparagraph">An editable version of the settings appears.&#160;</p>
+
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Edit the policy settings as required. Select 
+ a policy in the list to see its description.</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Total 
+ Maximum Size in Kilobytes</a></span></p>
+<div class="droptext" id="POPUP493771834" style="display: none;">
+	<p class="RefItemBody">Sets the maximum storage space (in KB) 
+	 that all questions and answers related to a user can use. A setting 
+	 of 0 disables knowledge-based authentication.</p>
+	<p class="RefItemBody">To determine the correct size for your 
+	 system, consider what sorts of questions and answers you need to ask 
+	 each user in order to properly authenticate them.</p>
+	<p class="RefItemBody">Default: 5</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Q&amp;A Pairs</a></span></p>
+<div class="droptext" id="POPUP493810474" style="display: none;">
+	<p class="RefItemBody">Sets the maximum number of questions 
+	 and their paired answers Entrust IdentityGuard can store for a user. 
+	 A setting of 0 disables knowledge-based authentication.</p>
+	<p class="RefItemBody">When setting the maximum number of questions 
+	 consider:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>your 
+	 storage space (more questions means more room is required in the repository 
+	 to store the values)</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>your 
+	 users (more questions mean your users have to remember more answers)</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>increased 
+	 security (the less often a question is asked of a user, the more difficult 
+	 it is for an attacker to impersonate the user)</p>
+	<p class="RefItemBody">Default: 25</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Q&amp;A Challenge Size</a></span></p>
+<div class="droptext" id="POPUP491757990" style="display: none;">
+	<p class="RefItemBody">Sets the default number of questions 
+	 your application presents to users during a knowledge-based challenge. 
+	 This must be greater than or equal to 1. It cannot be greater than 
+	 the number of questions stored.</p>
+	<p class="RefItemBody">For more information, see <a href="setting_the_number_of_questions_asked.htm#XREF_90424_Setting_the_number">Setting 
+	 the number of questions asked</a>.</p>
+	<p class="RefItemBody">Default: 3</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><span 
+	 class="bold">Minimum Q&amp;A Challenge Size</span> </a></p>
+<div class="droptext" id="POPUP528981766" style="display: none;">
+	<p class="RefItemBody">Sets the minimum number of questions 
+	 your application must present to users during a knowledge-based challenge. 
+	 The number must be greater than zero, less than or equal to the number 
+	 set in the <span class="bold">Default Q&amp;A Challenge Size</span>&#160;policy.</p>
+	<p class="nonote"><span class="bold">Note</span>: To work with the 
+	 <span class="bold">Entrust IdentityGuard Radius proxy</span>,<span 
+	 class="bold"> </span>the <span class="bold">Minimum Q&amp;A Challenge 
+	 Size</span> must be set to 1. For more information about the Radius 
+	 proxy and configuring it, see <a href="../config_radius_proxy/configuring_the_entrust_identityguard_radius_proxy.htm#XREF_58945_Configuring_the">Configuring 
+	 the Entrust IdentityGuard Radius proxy</a>.</p>
+	<p class="RefItemBody">Default: 3</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><span 
+	 class="bold">Maximum Q&amp;A Challenge Size</span> </a></p>
+<div class="droptext" id="POPUP529037973" style="display: none;">
+	<p class="RefItemBody">Sets the maximum number of questions 
+	 your application can present to users during a knowledge-based challenge. 
+	 The number must be greater than or equal to the number set in the 
+	 <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Default Q&amp;A Challenge Size</span> 
+	 policy.</p>
+	<p class="RefItemBody">Default: 3</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><span 
+	 class="bold">Disable Challenge Retention</span> </a></p>
+<div class="droptext" id="POPUP530126870" style="display: none;">
+	<p class="RefItemBody">Enable this setting if you want to replace 
+	 the challenge (namely, the set of questions) each time a challenge 
+	 is requested. Users who answer a challenge incorrectly will have a 
+	 new challenge presented to them for the next attempt.</p>
+	<p class="RefItemBody">Deselect it if you want to retain the 
+	 challenge for the duration of the <span style="font-weight: bold;">Q&amp;A 
+	 Challenge Lifetime</span>. Users who answer a challenge incorrectly 
+	 will have the same challenge presented to them for all subsequent 
+	 attempts until they are locked out or until the challenge lifetime 
+	 is exceeded. After the challenge lifetime is exceeded, a new challenge 
+	 is presented.</p>
+	<p class="RefItemBody">Default: No</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Q&amp;A 
+ Challenge Lifetime</a></span></p>
+<div class="droptext" id="POPUP530523867" style="display: none;">
+	<p class="RefItemBody">Set it to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Unlimited</span>&#160;to 
+	 have the challenge (namely, the set of questions) last an unlimited 
+	 amount of time.</p>
+	<p class="RefItemBody">Set it to a number of seconds to limit 
+	 the lifetime. If it is not answered in the lifetime, a new challenge 
+	 is generated.</p>
+	<p class="RefItemBody">Default: Unlimited</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Update 
+ Lockout Count for Replaced Challenge</a></span></p>
+<div class="droptext" id="POPUP530632460" style="display: none;">
+	<p class="RefItemBody">When set to Yes, the lockout count is 
+	 increased when a Q&amp;A challenge is replaced because:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>a 
+	 user does not answer a challenge in the allotted time (as defined 
+	 by the Q&amp;A Challenge Lifetime setting) causing a new challenge 
+	 to be requested by the client application</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>a 
+	 user restarts the client application without answering the challenge, 
+	 causing a new challenge to be requested by the client application</p>
+	<p class="RefItemBody">When set to No, the lockout count is 
+	 not increased in the above-mentioned scenarios.</p>
+	<p class="nonote"><span class="bold">Note</span>: The lockout count 
+	 is always increased when a user enters an incorrect challenge response, 
+	 regardless of how you configure this setting.</p>
+	<p class="RefItemBody">Default: Yes</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Number of Wrong Answers Allowed</a></span></p>
+<div class="droptext" id="POPUP531682376" style="display: none;">
+	<p class="RefItemBody">Sets the default number of wrong answers allowed. 
+	 The value must be less than the number of questions presented, and 
+	 less than or equal to <span class="bold" style="font-weight: bold; 
+								 letter-spacing: 0.00em; text-decoration: none; ">Maximum 
+	 Number of Wrong Answers Allowed</span>. A value of 0 means all questions 
+	 must be answered correctly. Your application can override this policy.</p>
+	<p class="RefItemBody">For more information, see <a href="set_the_number_of_correct_answers_required.htm">Set 
+	 the number of correct answers required</a>.</p>
+	<p class="RefItemBody">Default: 0</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Wrong Answers Allowed</a></span></p>
+<div class="droptext" id="POPUP531745610" style="display: none;">
+	<p class="RefItemBody">Sets an upper limit to how far your application 
+	 can override the value set by the <span class="bold">Default Number 
+	 of Wrong Answers Allowed</span>&#160;policy. The value must be less 
+	 than the number of questions presented, and greater than or equal 
+	 to the <span class="bold">Default Number of Wrong Answers Allowed</span>&#160;policy. 
+	 A value of zero means all questions must be answered correctly.</p>
+	<p class="RefItemBody">For more information, see <a href="set_the_number_of_correct_answers_required.htm">Set 
+	 the number of correct answers required</a>.</p>
+	<p class="RefItemBody">Default: 0</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a13"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Inexact 
+ Match Allowed for an Answer </a></span></p>
+<div class="droptext" id="POPUP531823190" style="display: none;">
+	<p class="RefItemBody">Determines if inexact answers are allowed and 
+	 the map file used. Selecting the policy means use the map file; deselecting 
+	 it means answers must be exact. </p>
+	<p class="RefItemBody">For more information, see <a href="allowing_inexact_answers.htm">Allow 
+	 inexact answers</a>&#160;and <a href="editing_the_map_file.htm">Edit 
+	 the word map file</a>.</p>
+	<p class="RefItemBody">Default: Yes</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a14"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />External 
+ Provider</a></span></p>
+<div class="droptext" id="POPUP531874096" style="display: none;">
+	<p class="RefItemBody">Sets&#160;the name of an external Q&amp;A provider 
+	 integrated with Entrust IdentityGuard to provide and manage question 
+	 and answer pairs for knowledge-based authentication. For more information 
+	 about integrating an external QA provider, see the <span class="FM_Emphasis" 
+	 style="font-style: italic;">Entrust IdentityGuard Programming Guide</span>, 
+	 and <a href="using_external_q_a_data_for_entrust_identityguard_authentication.htm">Using 
+	 external Q&amp;A data for Entrust IdentityGuard authentication</a>.</p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Save 
+ Changes</span>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+	TextPopupInit('a3','POPUP493771834');
+	TextPopupInit('a4','POPUP493810474');
+	TextPopupInit('a5','POPUP491757990');
+	TextPopupInit('a6','POPUP528981766');
+	TextPopupInit('a7','POPUP529037973');
+	TextPopupInit('a8','POPUP530126870');
+	TextPopupInit('a9','POPUP530523867');
+	TextPopupInit('a10','POPUP530632460');
+	TextPopupInit('a11','POPUP531682376');
+	TextPopupInit('a12','POPUP531745610');
+	TextPopupInit('a13','POPUP531823190');
+	TextPopupInit('a14','POPUP531874096');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

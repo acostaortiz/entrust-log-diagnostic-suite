@@ -1,0 +1,567 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\certauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring certificate authentication policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nCertificate authentication\nConfiguring certificate authentication\nConfigure certificate authentication policies");
+addAvenueInfo("r13_std","ig_admin/certauth/configuring_certificate_authentication.htm","ig_admin/certauth/administering_user_certificates.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"certificate_authentication.htm\">Certificate authentication<\/a> > <a href=\"configuring_certificate_authentication.htm\">Configuring certificate authentication<\/a> > Configure certificate authentication policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_36124_Configuring" id="XREF_36124_Configuring"></a>Configure certificate authentication policies</h1>
+<p class="pparagraph">To configure the policies governing certificate authentication, complete the following procedures:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_16924_To_set_the">To set the authentication types policies for certificate authentication</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_37588_To_set_the">To set the certificate authentication policies</a></p>
+
+<p class="prtproceduretitle"><a name="XREF_16924_To_set_the" id="XREF_16924_To_set_the"></a>To set the authentication types policies for certificate authentication</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Perform this procedure only if you are setting up explicit certificate authentication. You do not need to do &#160;it if you are using certificate authentication as part of risk-based authentication.</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Policies</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From the list of policies that appears on the <span style="font-weight: bold;">List Results</span>&#160;screen, select the policy to modify.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span style="font-weight: bold;">View Policy</span>&#160;screen, select <span style="font-weight: bold;">Authentication Types</span>&#160;from the <span style="font-weight: bold;">Policy Category</span>&#160;drop-down menu.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Check that <span style="font-weight: bold;">Certificate</span>&#160;appears in the list of authentication types for <span style="font-weight: bold;">Normal Security Authentication Types</span> and <span style="font-weight: bold;">Enhanced Security Authentication Types</span>.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-Policies-view_Policy_cert_auth_type.jpg" id="image8" src="ai-policies-view_policy_cert_auth_type.jpg" width="552" height="301" border="0" name="image8" /></p>
+</div>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If <span style="font-weight: bold;">Certificate</span>&#160;is not in the list, click <span style="font-weight: bold;">Edit Policy</span>.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select <span style="font-weight: bold;">Certificate</span>&#160;in the <span style="font-weight: bold;">Not Included</span> list.</p>
+
+<div style="text-align: left;"><img alt="AI-Policies-edit_policy-auth_types-cert.jpg" id="image9" src="ai-policies-edit_policy-auth_types-cert.jpg" width="552" height="188" border="0" name="image9" /></div>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click the right arrow between the <span style="font-weight: bold;">Not Included</span>&#160;and <span style="font-weight: bold;">Included</span>&#160;list boxes to move <span style="font-weight: bold;">Certificate</span>&#160;to the <span style="font-weight: bold;">Included</span> list box.</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Save Changes</span>.</p>
+
+<p class="prtproceduretitle"><a name="XREF_37588_To_set_the" id="XREF_37588_To_set_the"></a>To set the certificate authentication policies</p>
+<div>
+
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521478111" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478112" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the main menu, click <span style="font-weight: bold;">Policies</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Policies</span>&#160;page appears.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click the name of the policy you want to edit.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Policy</span> page appears.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span style="font-weight: bold;">View Policy</span>&#160;screen, select <span style="font-weight: bold;">Certificate Authentication</span>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">Policy Category</span>&#160;drop-down list, select</p>
+
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Certificate Authentication View Policy</span> screen appears.</p>
+<p class="prpprocedureparagraph"><img src="../../ai_policy_certauth.png" alt="" style="border: none;" border="0" /></p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Edit Policy</span>.</p>
+
+<p class="prpprocedureparagraph">An editable version of the settings appears.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Edit the policies as required. Select a policy in the list to see its description.</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Hash 
+ Algorithm</a></span></p>
+<div class="droptext" id="POPUP621803514" style="display: none;">
+	<p class="RefItemBody">Sets the hash algorithm used by the client 
+	 when calculating the response to a certificate challenge. </p>
+	<p class="RefItemBody">The choices are:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>SHA-256</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>SHA-1</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>MD5</p>
+	<p class="RefItemBody">Default: SHA-256</p>
+	<p class="nonote"><span style="font-weight: bold;">Note:</span> This 
+	 policy is used only for explicit certificate authentication.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Challenge 
+ Size</a></span></p>
+<div class="droptext" id="POPUP617516293" style="display: none;">
+	<p class="RefItemBody">This is the length of the challenge in 
+	 bytes.</p>
+	<p class="RefItemBody">Default: 32 bytes</p>
+	<p class="nonote"><span class="FM_bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Note</span>: The 
+	 minimum value allowed for this policy is 32, and the maximum is 1000.</p>
+	<p class="nonote"><span style="font-weight: bold;">Note:</span> This 
+	 policy is used only for explicit certificate authentication.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Disable 
+ Challenge Retention</a></span></p>
+<div class="droptext" id="POPUP620192127" style="display: none;">
+	<p class="RefItemBody">Enable this setting if you want to replace 
+	 the certificate challenge (namely, the data to be signed by the user) 
+	 each time a challenge is requested. Users who answer (sign) a challenge 
+	 incorrectly will have a new challenge presented to them for the next 
+	 attempt.</p>
+	<p class="RefItemBody">Deselect it if you want to retain the 
+	 challenge for the duration of the <span style="font-weight: bold;">Certificate 
+	 Challenge Lifetime</span>. Users who answer a challenge incorrectly 
+	 will have the same challenge presented to them for all subsequent 
+	 attempts until they are locked out or until the challenge lifetime 
+	 is exceeded. After the challenge lifetime is exceeded, a new challenge 
+	 is presented.</p>
+	<p class="RefItemBody">Default: No</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Certificate 
+ Challenge Lifetime</a></span></p>
+<div class="droptext" id="POPUP616488736" style="display: none;">
+	<p class="RefItemBody">Set it to <span class="FM_bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Unlimited</span>&#160;to 
+	 have the certificate challenge last an unlimited amount of time.</p>
+	<p class="RefItemBody">Set it to a number of seconds to limit 
+	 the lifetime. If it is not answered in the lifetime, a new challenge 
+	 is generated.</p>
+	<p class="RefItemBody">Default: Unlimited</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Update 
+ Lockout for Replaced Challenge</a></span></p>
+<div class="droptext" id="POPUP623842777" style="display: none;">
+	<p class="RefItemBody">When set to Yes, the lockout count is 
+	 increased when a certificate challenge is replaced because:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>a 
+	 user does not answer a certificate challenge in the allotted time 
+	 (as defined by the Certificate Challenge Lifetime setting) causing 
+	 a new challenge to be requested by the client application</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>a 
+	 user restarts the client application without answering the certificate 
+	 challenge, causing a new challenge to be requested by the client application</p>
+	<p class="RefItemBody">When set to No, the lockout count is 
+	 not increased in the above-mentioned scenarios.</p>
+	<p class="nonote"><span class="bold">Note:</span> The lockout count 
+	 is always increased when a user enters an incorrect challenge response, 
+	 regardless of how you configure this setting.</p>
+	<p class="RefItemBody">Default: Yes</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ Identity Assured Authentication</a> </span></p>
+<div class="droptext" id="POPUP580303043" style="display: none;">
+	<p class="RefItemBody">Specifies whether security challenges 
+	 for authentication can be delivered to the mobile smart credential 
+	 app.</p>
+	<p class="RefItemBody">For more information, see &quot;Mobile 
+	 smart credentials&quot; in the <span class="italic">Entrust IdentityGuard 
+	 Smart Credential Guide</span>.</p>
+	<p class="RefItemBody">Default: Yes</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ Identity Assured Transaction Verification</a></span></p>
+<div class="droptext" id="POPUP608291366" style="display: none;">
+	<p class="RefItemBody">Specifies whether security challenges 
+	 for transactions can be delivered to the mobile smart credential app.</p>
+	<p class="RefItemBody">For more information, see &quot;Mobile 
+	 smart credentials&quot; in the <span class="italic">Entrust IdentityGuard 
+	 Smart Credential Guide</span><span class="FM_hyperlink" style="font-family: Syntax; 
+										 color: #0000ff;">.</span></p>
+	<p class="RefItemBody">Default: Yes</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ Identity Assured Signing</a></span></p>
+<div class="droptext" id="POPUP582109148" style="display: none;">
+	<p class="RefItemBody">Specifies whether security challenges 
+	 for digital signing can be delivered to the mobile smart credential 
+	 app.</p>
+	<p class="RefItemBody">For more information, see &quot;Mobile 
+	 smart credentials&quot; in the <span class="italic">Entrust IdentityGuard 
+	 Smart Credential Guide</span>.</p>
+	<p class="RefItemBody">Default: Yes</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a13"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Disable 
+ Certificate Policy OID Check</a></span></p>
+<div class="droptext" id="POPUP618788352" style="display: none;">
+	<p class="RefItemBody">Specifies whether Entrust IdentityGuard 
+	 checks the policy certificate object IDs&#160;(OID) in a certificate.</p>
+	<p class="RefItemBody">By default, when Entrust IdentityGuard 
+	 performs certificate validation against a smart credential digital 
+	 ID (when a user performs a smart credential login to Self-Service 
+	 or an Identity Assured operation), it checks to ensure that the certificate 
+	 contains one of the PIV OIDs associated with the card holder digital 
+	 ID. This ensures that the card digital ID is not being used for these 
+	 operations.</p>
+	<p class="RefItemBody">Set this policy to Yes to disable this 
+	 check. Disabling the check is required when, for example, Entrust 
+	 IdentityGuard is configured so that the PIV OIDs are not included 
+	 in the card holder digital IDs of the users.</p>
+	<p class="RefItemBody">Default: No</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a14"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ Self-Signed User Certificates</a></span></p>
+<div class="droptext" id="POPUP609762961" style="display: none;">
+	<p class="RefItemBody">Specifies whether self-signed certificates 
+	 can be registered against a user. Self-signed certificates do not 
+	 have corresponding CA certificates, so validation does not include 
+	 revocation checking.</p>
+	<p class="RefItemBody">Default: No</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a15"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ User Certificates Signed by Unregistered CAs</a></span></p>
+<div class="droptext" id="POPUP614581292" style="display: none;">
+	<p class="RefItemBody">Specifies whether non-self-signed certificates 
+	 can be registered when they are not issued by a Registered CA.</p>
+	<p class="RefItemBody">Default: No</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a16"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ User Certificates Signed by Registered CAs</a></span></p>
+<div class="droptext" id="POPUP613252220" style="display: none;">
+	<p class="RefItemBody">Specifies a list of Registered CAs from 
+	 which signed user certificates are allowed. If this policy is used, 
+	 a user can have only certificates issued by the Registered CAs selected 
+	 (highlighted) in this list. </p>
+	<p class="RefItemBody">This list of CA certificates is active 
+	 only if <span style="font-weight: bold;">Allow User Certificates Signed 
+	 by Any Registered CA</span> is not selected.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a17"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ User Certificates Signed by Unmanaged CA</a>s</span></p>
+<div class="droptext" id="POPUP482636653" style="display: none;">
+	<p class="RefItemBody">When set to <span class="bold">Yes</span>, 
+	 this policy setting permits certificate authentication as part of 
+	 risk-based authentication (RBA) with user certificates signed by unmanaged 
+	 CAs.</p>
+	<p class="RefItemBody">When enabled, this policy setting has 
+	 the same effect as the following 3 settings.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Allow 
+	 Self-Signed User Certificates = No</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Allow 
+	 User Certificates Signed by Unregistered CAs = No</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Allow 
+	 User Certificates Signed by Registered CAs = No registered CAs are 
+	 allowed</p>
+	<p class="RefItemBody">When set to <span class="bold">No</span>, 
+	 this policy setting overrides the 3 settings described previously, 
+	 so certificate-based RBA requires that users have certificates signed 
+	 by a Managed CA and is not permitted with user certificates signed 
+	 by unmanaged CAs.</p>
+	<p class="RefItemBody">Default: Yes</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a18"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ User Certificates Signed by Managed CAs</a></span></p>
+<div class="droptext" id="POPUP612501940" style="display: none;">
+	<p class="RefItemBody">Specifies a list of Managed CAs from 
+	 which signed user certificates are allowed. If this policy is used, 
+	 a user can have only certificates issued by Managed CAs that are selected 
+	 (highlighted) in the list.</p>
+	<p class="RefItemBody">This list of CA certificates is active 
+	 only if <span style="font-weight: bold;">Allow User Certificates Signed 
+	 by Any Managed CA</span> is not selected.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a19"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Certificates Per User</a></span></p>
+<div class="droptext" id="POPUP622738630" style="display: none;">
+	<p class="RefItemBody">Use this policy to place an upper limit 
+	 on the number of number of certificates each user can have. </p>
+	<p class="RefItemBody">You might want to limit the number to 
+	 limit the repository space each user requires for their certificates.</p>
+	<p class="RefItemBody">Default: 10</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a20"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Automatically 
+ Delete Old User Certificates</a></span></p>
+<div class="droptext" id="POPUP615529282" style="display: none;">
+	<p class="RefItemBody">Enable this policy to automatically delete 
+	 the least recently used certificates when new user certificates are 
+	 registered during authentication.</p>
+	<p class="RefItemBody">Certificates are deleted only if the 
+	 user already has the maximum number of certificates allowed when the 
+	 new one is added.</p>
+	<p class="RefItemBody">When certificates are deleted, deletions 
+	 start with the least recently used expired certificates, followed 
+	 by the least recently used certificates that have not expired.</p>
+	<p class="RefItemBody">Default: Yes</p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Save Changes</span>.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+	TextPopupInit('a3','POPUP521478111');
+	TextPopupInit('a4','POPUP521478112');
+	TextPopupInit('a5','POPUP621803514');
+	TextPopupInit('a6','POPUP617516293');
+	TextPopupInit('a7','POPUP620192127');
+	TextPopupInit('a8','POPUP616488736');
+	TextPopupInit('a9','POPUP623842777');
+	TextPopupInit('a10','POPUP580303043');
+	TextPopupInit('a11','POPUP608291366');
+	TextPopupInit('a12','POPUP582109148');
+	TextPopupInit('a13','POPUP618788352');
+	TextPopupInit('a14','POPUP609762961');
+	TextPopupInit('a15','POPUP614581292');
+	TextPopupInit('a16','POPUP613252220');
+	TextPopupInit('a17','POPUP482636653');
+	TextPopupInit('a18','POPUP612501940');
+	TextPopupInit('a19','POPUP622738630');
+	TextPopupInit('a20','POPUP615529282');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

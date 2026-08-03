@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Import the Federation Module Web certificate</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nConfiguring SAML authentication to the Administration interface\nConfigure SAML login to the Administration  interface\nImport the Federation Module Web certificate");
+addAvenueInfo("Untitled","ig_admin/config_adminsso/generate_a_saml_certificate_to_be_used_by_entrust_identityguard_server.htm","ig_admin/config_adminsso/import_all_ca_certificates.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/useradminsection1.htm#TOC_System_administration\">System administration<\/a> > <a href=\"saml_authentication_to_the_administration_interface.htm\">Configuring SAML authentication to the Administration interface<\/a> > <a href=\"configuring_saml.htm\">Configure SAML login to the Administration  interface<\/a> > Import the Federation Module Web certificate<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_92494_Import_the"></a>Import the Federation Module’s 
+ Web certificate (if you copied it)</h1>
+<p class="prpprocedureparagraph">Complete this procedure f you copied the 
+ Federation Module’s Web certificate (<span class="output" style="font-family: Courier; 
+											 font-size: 10.0pt;"><font size="2" style="font-size:10pt;">igfederation.cer) 
+ </font></span>(see <a href="prerequisites.htm">Prerequisites for configuring 
+ SAML login to Administration</a>&#160;for details). The Web certificate 
+ is used to enable SSL communication between the Entrust IdentityGuard 
+ Server and the Federation Module. It is not used for SAML communication.</p>
+<p class="prpprocedureparagraph">If you instead copied the CA certificate 
+ that signed the Federation Module’s Web certificate, skip this procedure.</p>
+<p class="prtproceduretitle"><a name="XREF_92494_Import_the1"></a>To import 
+ the Federation Module’s Web certificate (if you copied it)</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Change 
+ to the keytool directory. The utility is located in:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>UNIX or 
+ Linux: <span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 10.0pt; color: #000000; 
+				 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">$IG_HOME/jre&lt;version&gt;/bin</font></span>&#160;</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Windows: 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;$IG_HOME&gt;\jre&lt;version&gt;\bin</font></span>&#160;</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter 
+ the following command:</p>
+<p class="cocode">keytool –import –alias &lt;alias&gt; -file &lt;filename&gt; 
+ -keystore &lt;keystore&gt; -storepass &lt;storepass&gt;</p>
+<p class="prpprocedureparagraph">where:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;alias&gt;</font></span>&#160;is 
+ an alias you want to give to the certificate. Example: <span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">igfm</font></span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;filename&gt;</font></span>&#160;is 
+ the path and location of the certificate file. Example: <span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">c:\IDPdata\igfederation.cer</font></span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;keystore&gt;</font></span>&#160;is 
+ the path and name of the keystore file where you want to store the keys 
+ associated with the certificate. You can re-use the Entrust IdentityGuard 
+ Server’s keystore, by default <span class="output" style="font-family: Courier; 
+									 font-style: normal; font-weight: normal; 
+									 font-size: 10.0pt; color: #000000; 
+									 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;$IG_HOME&gt;\etc\keystore</font></span>, 
+ or you can specify a new keystore path and name. If you specify a new 
+ keystore, it will be created when you execute the command. Supported keystore 
+ file extensions are: JKS, JCK (for a JCEKS type of store), and P12 (for 
+ a PKCS#12 type of store). If no file extension is provided, JKS is used.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;storepass&gt;</font></span>&#160;is 
+ password for the keystore. If you are using the Entrust IdentityGuard 
+ Server’s keystore, the password is <span class="output" style="font-family: Courier; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">entrust</font></span>&#160;by 
+ default. If you are creating a new keystore as part of this command, select 
+ a password of your choice.</p>
+<p class="prpprocedureparagraph">Example:</p>
+<p class="cocode">keytool –import –alias igfm -file &quot;C:\IDPdata\igfederation.cer&quot; 
+ -keystore &quot;C:\Program Files\Entrust\IdentityGuard\identityguard102\etc\keystore&quot; 
+ -storepass entrust</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

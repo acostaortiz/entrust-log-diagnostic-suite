@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Configuring a managed CA (Microsoft CA)</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 9: Configure a managed CA\nConfiguring a managed CA (Microsoft CA)");
+addAvenueInfo("Untitled","ig_admin/enablingme/configuring_a_managed_ca_security_manager_ca.htm","ig_admin/enablingme/step_10_add_a_digital_id_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobileenrollmentsection.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > <a href=\"step_9_configure_a_managed_ca.htm\">Step 9: Configure a managed CA<\/a> > Configuring a managed CA (Microsoft CA)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_96709_Configuring_a"></a>Configuring a managed CA (Microsoft 
+ CA)</h1>
+<p class="pparagraph">Follow the instructions to configure a Microsoft 
+ managed CA. This involves specifying the Microsoft CA’s host name or IP 
+ address as well as a few other pieces of information, in Entrust IdentityGuard.</p>
+<p class="prtproceduretitle">To configure a Microsoft managed CA</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface. For details, 
+ see <a href="../usingadmininterface/logging_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging 
+ in and out of the Administration interface</a>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the top menu, click <span style="font-weight: bold;">Certificates</span>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">List Managed CAs</span>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Create Managed CA</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">Managed CA Name</span> field, enter 
+ a globally unique friendly name for the CA.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For 
+ the <span style="font-weight: bold;">Vendor</span>, select <span style="font-weight: bold;">Microsoft</span>.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">PKI Host</span>&#160;field, enter 
+ the fully qualified host name or IP address of the computer hosting your 
+ Microsoft CA. </p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">Directory Host</span>&#160;field, 
+ enter the fully qualified domain name or IP address of the computer running 
+ the LDAP directory that your Microsoft CA is using. This might be the 
+ same computer as the Microsoft CA.</p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">LDAP Port</span>&#160;field, enter 
+ the port on which the LDAP directory service is running. If you do not 
+ specify a port, the default is used (389).&#160;Ignore the <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">LDAP 
+ User</span>, <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+					 text-decoration: none; ">LDAP Password</span>, and 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">LDAP 
+ Uses SSL</span>&#160;options. They apply only to Entrust CAs. </p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Enable 
+ <span style="font-weight: bold;">Publish CRL After Revocation</span>&#160;if 
+ you want to have your Certificate Revocation List (CRL) republished immediately 
+ after you revoke a user’s certificate through the Entrust IdentityGuard 
+ Administration interface. The CRL will be updated immediately with the 
+ newly revoked certificate, and Entrust IdentityGuard clients will instantly 
+ no longer trust it. If you leave <span style="font-weight: bold;">Publish 
+ CRL After Revocation</span>&#160;disabled, then the CRL is published on 
+ a scheduled interval defined in your CA, typically once every 24 hours, 
+ so there may be a delay between the time the certificate is revoked, and 
+ the time your clients no longer trust it.</p>
+<p class="prpprocedureparagraph">There are benefits and drawbacks to enabling 
+ <span style="font-weight: bold;">Publish CRL After Revocation</span>. 
+ The benefit, as mentioned earlier, is that revocations take immediate 
+ effect; the drawback is that there is an increased load on the CA because 
+ it will be republishing its CRL more frequently.</p>
+<p class="prpprocedureparagraph">Entrust recommends that you enable <span 
+	 style="font-weight: bold;">Publish CRL After Revocation</span>&#160;unless 
+ you are experiencing performance issues.</p>
+<p class="prpprocedureparagraph">The default is deselected.</p>
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">CA Common Name</span>&#160;field, 
+ enter the common name of the CA. You can find it by going to your CA computer, 
+ opening the Windows Server Manager, and looking under <span style="font-weight: bold;">Roles</span>&#160;&gt; 
+ <span style="font-weight: bold;">Active Directory Certificate Services</span>. 
+ It is the item with the green check mark (<img alt="servermanager_caicon00902.jpg" 
+												 id="image12" src="servermanager_caicon00902.jpg" 
+												 style="margin-bottom: -6.750pt;" 
+												 width="24" height="23" 
+												 border="0" />)that contains 
+ folders for<span style="font-weight: bold;"> Revoked Certificates</span>,<span 
+	 style="font-weight: bold;">&#160;Issued Certificates</span>, and so 
+ on.</p>
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Leave 
+ the <span style="font-weight: bold;">PIV Content Signer Algorithm</span> 
+ as&#160;is. This setting is for smart credentials.</p>
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If 
+ you are using SCEP, select the <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">SCEP 
+ Enabled</span>&#160;check box, and then complete&#160;the SCEP fields 
+ as follows:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">SCEP Security Store (.p12)</span>&#160;field, 
+ browse for the <span class="output">IGSCEPadministrator.p12</span>. You 
+ should have created this Security Store in <a href="step_7_create_scep_credentials.htm#XREF_56463_Creating_SCEP">Step 
+ 7: Create SCEP credentials</a>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">SCEP Security Store Password </span>and 
+ <span style="font-weight: bold;">Confirm SCEP Security Store Password</span>&#160;fields, 
+ enter the password for <span class="output">IGSCEPadministrator.p12</span>.</p>
+<p class="prprocedurestep">14.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Enable 
+ <span style="font-weight: bold;">Publish Delta CRL After Revocation</span>&#160;if 
+ you want to publish a&#160;list of only those certificates revoked since 
+ the last time the Certificate Revocation List (CRL) was published (either 
+ on the scheduled interval or on demand using the <span style="font-weight: bold;">Publish 
+ CRL After Revocation</span>&#160;option).&#160;For more information, see 
+ <span class="hyperlink" style="font-family: Syntax;"><a href="configuring_a_managed_ca_security_manager_ca.htm#XREF_30535_10_Enable_Publish">Step&#160;12</a></span>.</p>
+<p class="prpprocedureparagraph">Your page looks similar to the following. 
+ </p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="ig_webmin_createmanagedca_ms.jpg" 
+											 id="image13" src="ig_webmin_createmanagedca_ms.jpg" 
+											 width="512" height="385" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">15.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Create Managed CA</span>.</p>
+<p class="prprocedurestep">16.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Your 
+ CA appears in the list. Leave the page open and proceed to the next section.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="ig_webmin_listcas_ms.jpg" 
+											 id="image14" src="ig_webmin_listcas_ms.jpg" 
+											 width="488" height="125" border="0" /> 
+	 </p>
+</div>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

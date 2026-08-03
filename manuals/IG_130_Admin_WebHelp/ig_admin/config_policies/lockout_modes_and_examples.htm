@@ -1,0 +1,213 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_policies.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Lockout modes and examples</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nPolicies quick reference\nLockout policies\nLockout modes and examples");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"policies_quick_reference.htm\">Policies quick reference<\/a> > <a href=\"lockout_policies.htm\">Lockout policies<\/a> > Lockout modes and examples<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_25733_Lockout_modes_and" id="XREF_25733_Lockout_modes_and"></a>Lockout 
+ modes and examples</h1>
+<p class="pparagraph">A lockout mode is the logic that Entrust IdentityGuard 
+ uses tor calculate whether to lock out the user. There are three lockout 
+ modes:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Lock 
+ Authenticator (Authenticator Counter)</span>&#160;</p>
+<p class="liplistparagraph">Choose this option if you want to use individual 
+ lockout counters for each authenticator. With each failed authentication 
+ attempt with a specific authenticator, the number of remaining attempts 
+ that are allowed with it is reduced by one. If the counter reaches zero, 
+ the user is locked out and cannot attempt further authentications with 
+ <span style="font-style: italic;">that authenticator</span>. If the user 
+ supplies correct authentication credentials at any time prior to the counter 
+ reaching zero, the counter for the authenticator that was used is reset 
+ to its original value.</p>
+<p class="liplistparagraph">For example, assume you have set lockout counters 
+ for grids and tokens to three and four, respectively. A user (Bob) then 
+ attempts to authenticate twice with a grid, and three times with a token, 
+ and all of these attempts fail. The lockout counters are consequently 
+ decreased to one (for grid) and one (for token). On his next attempt, 
+ Bob supplies incorrect grid coordinates. This causes the grid’s lockout 
+ count to reach zero and Bob is locked out for grid authentication. He 
+ still has one more chance to authenticate using his token. If Bob had 
+ supplied correct grid coordinates, then the counter for the grid would 
+ be reset to three, but the counter for the token would remain at one.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Lock 
+ User (Authenticator Counter)</span>&#160;</p>
+<p class="liplistparagraph">This is the default policy setting, and it 
+ was the only option available prior to Entrust IdentityGuard 10.1.</p>
+<p class="liplistparagraph">With this option, as with the previous option, 
+ there are individual counters for each authenticator. Unlike the previous 
+ option, if any one of the individual counters reaches zero, the user is 
+ locked out of <span style="font-style: italic;">all authenticators</span>. 
+ If the user supplies correct authentication credentials at any time prior 
+ to the counter reaching zero, then the counter for the authenticator that 
+ was used is reset to its original value.</p>
+<p class="liplistparagraph">For example, assume you have set lockout counters 
+ for grids and Q&amp;A to three and three, respectively. A user (Alice) 
+ then attempts to authenticate once with a grid, and twice with Q&amp;A, 
+ and all of these attempts fail. The allowed remaining attempts have decreased 
+ to two (for grid) and one (for Q&amp;A). On her next authentication attempt, 
+ Alice supplies another incorrect Q&amp;A answer. This causes the Q&amp;A 
+ lockout count to reach zero. With this policy setting, Alice is locked 
+ out from using Q&amp;A <span style="font-style: italic;">and</span> her 
+ grid. If, however, Alice had supplied a correct Q&amp;A answer, then the 
+ counter for Q&amp;A would be reset to three. The counter for grid would 
+ remain as-is.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Lock 
+ User (Global Counter)</span>&#160;</p>
+<p class="liplistparagraph">Choose this option to have a single, global, 
+ lockout counter for all authenticators. With each failed authentication 
+ attempt with any authenticator, the global number of remaining attempts 
+ that are allowed is reduced by one. If the global counter reaches zero, 
+ the user is locked out and cannot attempt further authentications with 
+ <span style="font-style: italic;">any authenticator</span>. If the user 
+ supplies correct authentication credentials for any authenticator before 
+ the counter reaches zero, then the lockout counter is reset back to its 
+ original value.</p>
+<p class="liplistparagraph">For example, assume you have set the global 
+ lockout counter to allow five consecutive incorrect authentication attempts. 
+ A user (Bob) then attempts to authenticate twice with a grid, and twice 
+ with a token, and all these attempts fail. The global counter is down 
+ to one remaining attempt. On his next login, Bob supplies incorrect grid 
+ coordinates. This causes the lockout counter to reach zero. Bob is locked 
+ out of his grid and token. If, however, Bob had supplied correct grid 
+ coordinates, the global lockout counter would have been reset to five.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

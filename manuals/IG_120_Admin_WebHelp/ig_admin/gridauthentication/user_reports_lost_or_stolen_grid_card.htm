@@ -1,0 +1,241 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\gridauthentication.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>User reports lost or stolen grid card</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nGrid authentication\nSample operational scenarios for grid cards and tokens\nUser reports lost or stolen grid card");
+addAvenueInfo("Untitled02","ig_admin/gridauthentication/sample_operational_scenarios_for_grid_cards_and_tokens.htm","ig_admin/tokenauth/tokenauth.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"gridauthentication.htm\">Grid authentication<\/a> > <a href=\"sample_operational_scenarios_for_grid_cards_and_tokens.htm\">Sample operational scenarios for grid cards and tokens<\/a> > User reports lost or stolen grid card<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>User reports lost or stolen grid card</h1>
+<p class="pparagraph">It is not uncommon for users to lose or misplace their grid cards, and your organizational policies should encourage them to report a loss as soon as they notice. Entrust IdentityGuard allows administrators to deactivate a lost or stolen grid card and assign a new one easily and quickly.</p>
+<p class="prtproceduretitle">To find user of lost or stolen grid card</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Administration interface (see <a href="../usingadmininterface/logging_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging in and out of the Administration interface</a>).</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the main menu, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">User Accounts</span> on the main menu.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Type in the <span style="font-weight: bold;">User Name or Alias</span>, and select the user’s <span style="font-weight: bold;">Group</span>, if the user name or Alias is not unique.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Go Account</span>.</p>
+
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">View Account</span> page for the user appears.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Continue with the procedure <a href="#XREF_12637_To_cancel_the_lost">To cancel the lost or stolen grid card</a>.</p>
+
+<p class="prtproceduretitle"><a name="XREF_12637_To_cancel_the_lost" id="XREF_12637_To_cancel_the_lost"></a>To cancel the lost or stolen grid card</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Authentication Types</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">&#160;in the</span> <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">User Account</span> <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">view</span>, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Cards</span>.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select the serial number of the grid card you want to cancel.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="IX_lost_or_stolen" id="IX_lost_or_stolen"></a><a name="IX_canceled_grid_card_1" id="IX_canceled_grid_card_1"></a><a name="IX_canceled_2" id="IX_canceled_2"></a>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Edit Card</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Edit Card</span>&#160;page appears.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">State</span>&#160;drop-down list, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Canceled</span>. If the user believes he will be able to locate the grid card by tomorrow (the user forgot the grid card at home, for instance), then see <a href="#XREF_35711_To_put_the_lost">To put the lost grid card on hold</a>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Save Changes</span>.<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">&#160;</span></p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>When prompted, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">OK</span> to confirm the cancellation.</p>
+
+<p class="prpprocedureparagraph">The grid card is now canceled. It is still accessible through the user’s account page as well as through a grid card search until it is deleted.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Take note of the user’s <span style="font-weight: bold;">Group</span> before proceeding to the next step.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Continue with the procedure <a href="#XREF_22517_To_assign_a_new">To assign a new grid card</a>.</p>
+
+<p class="prtproceduretitle"><a name="XREF_22517_To_assign_a_new" id="XREF_22517_To_assign_a_new"></a>To assign a new grid card</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the Administration interface menu at the top of the window, click <span style="font-weight: bold;">Cards</span>.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">List Unassigned Cards</span>.</p>
+
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Search Options</span> page appears.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select the user’s <span style="font-weight: bold;">Group</span> from the pull down list.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Search</span>.</p>
+
+<p class="prpprocedureparagraph">A list of all unassigned grid cards created for the user’s group appears.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select a grid card by clicking the <span style="font-weight: bold;">Serial Number</span>&#160;of the grid card. Make sure you have the printed grid card showing that serial number in your inventory.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span style="font-weight: bold;">Card Details</span>&#160;page, click <span style="font-weight: bold;">Assign Card</span>.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span style="font-weight: bold;">Select an account</span>&#160;screen, type the <span style="font-weight: bold;">User Name</span>&#160;of the user you are assigning the new grid card to.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Next</span>.</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select the <span style="font-weight: bold;">Initial Card State</span>&#160;you want the grid card to be in when you send it to the user. <span style="font-weight: bold;">Pending</span>&#160;is the default. The grid card state is changed to <span style="font-weight: bold;">Current</span>&#160;when the user successfully authenticates with it.</p>
+
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Select the <span style="font-weight: bold;">Card Lifetime</span>.</p>
+
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Optional. Check the box labeled <span style="font-weight: bold;">Use the following comments instead of those assigned to the preproduced card</span>. Type a note about the circumstances of the replacement grid card in the <span style="font-weight: bold;">Comments</span> box.</p>
+
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Assign Card</span>.</p>
+
+<p class="prpprocedureparagraph">The confirmation screen appears.</p>
+
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">OK</span>.</p>
+
+<p class="prprocedurestep">14.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Continue with the procedure <a href="#XREF_86528_To_send_a_new_card">To send a new grid card to the user</a>.</p>
+
+<p class="prtproceduretitle"><a name="XREF_86528_To_send_a_new_card" id="XREF_86528_To_send_a_new_card"></a>To send a new grid card to the user</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Get the grid card with the serial number you just assigned out of inventory.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Package and send the grid card using security precautions necessary based on</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>the location of the user: If the user is sitting on the same floor in the same building, you could call the user to pick it up. If the user is overseas, you must to package the grid card for shipment.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>your method of getting the grid card to the user. If you are sending the grid card within your building or within your city, you may choose to put it in an interoffice mailer. If you are sending the grid card overseas, you may need to package it for shipment with a courier.</p>
+
+<p class="prtproceduretitle"><a name="XREF_35711_To_put_the_lost" id="XREF_35711_To_put_the_lost"></a>To put the lost grid card on hold</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">View Account</span>&#160;page for your user, under <span style="font-weight: bold;">Authentication Types</span>, select <span style="font-weight: bold;">Cards</span>.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Edit Card</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select the grid card in the Current state (if the user has not yet used the grid card, it is in the Pending state) and click <span style="font-weight: bold;">Edit Card</span>.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">Edit a user’s card</span>&#160;screen, select <span style="font-weight: bold;">Hold</span>&#160;from the <span style="font-weight: bold;">State</span> drop-down list.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Save Changes</span>.</p>
+
+<p class="prpprocedureparagraph">If the user finds the grid card within, for example, 24 hours, then repeat this procedure and change the state of the grid card back to <span style="font-weight: bold;">Current</span>.</p>
+<p class="prpprocedureparagraph">If the user has not found the grid card within the time frame set within your organization, follow the procedure <a href="#XREF_12637_To_cancel_the_lost">To cancel the lost or stolen grid card</a>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

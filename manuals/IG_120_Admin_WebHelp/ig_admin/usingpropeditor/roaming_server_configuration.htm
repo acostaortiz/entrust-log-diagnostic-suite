@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Roaming Server Configuration</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nRoaming Server Configuration (52)");
+addAvenueInfo("Untitled02","ig_admin/usingpropeditor/risk_engine_configuration.htm","ig_admin/usingpropeditor/saml_idp_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Roaming Server Configuration (52)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Roaming Server Configuration</h1>
+<p class="pparagraph">These properties configure one or more Entrust Authority Roaming Servers that are used when registering or importing user credentials for smart credential identity assured operations.</p>
+<p class="pparagraph">These properties are used in the migration of Roaming Server digital IDs to Entrust IdentityGuard smart credentials. For more information, see the <span class="italic">Entrust TruePass to Entrust IdentityGuard Migration Guide</span>.</p>
+<p class="RefItemTitle">Configuration Instances</p>
+<p class="RefItemBody">You can create multiple Roaming Server configuration instances.</p>
+<p class="RefItemBody">To create a new instance, enter a unique label in the empty field and click <span class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none;">Add</span>. The other properties appear. The name replaces the {0} placeholder.</p>
+<p class="RefItemBody">To use multiple Roaming Servers that are mapped to Entrust IdentityGuard groups, give each Roaming Server the name of a group when you create it. This means that you could have configuration instances named, for example, <span style="font-family: Courier;">marketing</span>, <span style="font-family: Courier;">development</span>, and <span style="font-family: Courier;">humanresources</span>,</p>
+<p class="nonote"><span class="bold">Note:</span> To use the group mapping feature, user IDs must include the group name at login. For more information, see the <span class="italic">Entrust TruePass to Entrust IdentityGuard Migration Guide</span>.</p>
+<p class="lip2list2paragraph">To delete an instance, select it in the list and click <span class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none;">Remove</span>.</p>
+<p class="lip2list2paragraph">There is no default configuration.</p>
+<p class="RefItemTitle">Host</p>
+<p class="RefItemBody"><span class="output">identityguard.roamingserver.{0}.host</span></p>
+<p class="RefItemBody"><span class="propname">S</span>pecifies the host name of the Roaming Server.</p>
+<p class="RefItemTitle">Port</p>
+<p class="RefItemBody"><span class="output">identityguard.roamingserver.{0}.port</span></p>
+<p class="RefItemBody"><span class="propname">Sp</span>ecifies the port number used by the Roaming Server.</p>
+<p class="RefItemTitle">Roaming Server Attribute</p>
+<p class="RefItemBody"><span class="output">identityguard.roamingserver.{0}.attribute</span></p>
+<p class="RefItemBody"><span class="propname">Sp</span>ecifies the name of the LDAP Directory attribute that Roaming Server is using. It must be the same as the <span class="bold">User id attribute name</span> configured in the Entrust Authority Roaming Server Configuration application.</p>
+<p class="RefItemTitle">Group</p>
+<p class="RefItemBody"><span class="output">identityguard.roamingserver.{0}.group</span></p>
+<p class="RefItemBody">Specifies the Entrust IdentityGuard group that will use this Roaming Server configuration instance.</p>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

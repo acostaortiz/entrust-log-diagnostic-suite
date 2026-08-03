@@ -1,0 +1,263 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Securing the LDAP connection with SSL</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nConfiguring an LDAP directory\nSecure the LDAP connection with SSL");
+addAvenueInfo("Untitled02","ig_admin/config_igserver/using_a_search_base.htm","ig_admin/config_igserver/suspending_disabled_and_expired_ldap_users.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"configuring_an_ldap_directory.htm\">Configuring an LDAP directory<\/a> > Secure the LDAP connection with SSL<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_61223_Post_installation" id="XREF_61223_Post_installation"></a>Secure 
+ the LDAP connection with SSL</h1>
+<p class="pparagraph"><a name="IX_securing_the_LDAP" id="IX_securing_the_LDAP"></a>During 
+ installation, if you chose not to use an SSL connection to the LDAP repository, 
+ you can reconfigure the connection to use SSL later. First, you update 
+ the Entrust IdentityGuard key store, and then use the Properties Editor 
+ to change applicable properties.</p>
+<p class="pparagraph">Before you begin, ensure that you have:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>an LDAP 
+ repository that supports SSL</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>an SSL 
+ certificate for your LDAP server</p>
+<p class="liplistparagraph">This certificate must include a host name (not 
+ IP address) in the <span class="output">subject</span>&#160;or <span class="output">subjectAltName</span>&#160;fields. 
+ If you try to use an IP address, host name validation of the LDAP server 
+ is not performed properly.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>permissions 
+ to update Entrust IdentityGuard properties</p>
+<p class="pparagraph">There are two ways to reconfigure the connection 
+ to use SSL: Choose one.</p>
+<p class="pparagraph"><a name="IX_importing_the_SSL_1" id="IX_importing_the_SSL_1"></a><a 
+	 name="IX_importing_the_SSL" id="IX_importing_the_SSL"></a><span class="bold">Method 
+ 1:</span> <span class="bold">Import the LDAP server's SSL certificate 
+ into the Entrust IdentityGuard key store.</span> </p>
+<p class="pparagraph">Do this so that Entrust IdentityGuard can communicate 
+ with the LDAP server. Entrust IdentityGuard uses this certificate when 
+ establishing a connection to verify the identity of the LDAP server. Use 
+ one of the following procedures:</p>
+<p class="pparagraph">If your installation uses the embedded Tomcat Java 
+ application server, see <a href="../config_security/import_a_trusted_certificate.htm">Import 
+ a trusted certificate</a>.</p>
+<p class="pparagraph">OR</p>
+<p class="pparagraph"><span class="bold">Method 2:</span> <span class="bold">Import 
+ the certificate of the CA that issued your LDAP server's SSL certificate.</span></p>
+<p class="pparagraph">Complete the following steps:</p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Import the CA certificate that issued the 
+ directory server’s certificate. </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If your 
+ installation uses the embedded Tomcat Java application server, you can 
+ use the Key Store Management interface to import the certificate. See 
+ <a href="../config_security/import_a_trusted_certificate.htm">Import a 
+ trusted certificate</a>. </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If your 
+ installation uses WebSphere or WebLogic, import the certificate using 
+ the keytool utility or other key store management capabilities in your 
+ environment. See &quot;To import the LDAP SSL certificate or the CA certificate 
+ using the keytool utility&quot; below..</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Edit 
+ the properties so that Entrust IdentityGuard connects to the LDAP server 
+ using SSL. See &quot;To update the Entrust IdentityGuard properties file 
+ for LDAP SSL&quot; below.</p>
+<p class="pparagraph">&#160;</p>
+<p class="prtproceduretitle"><a name="XREF_26144_Reconfiguring_LDAP" id="XREF_26144_Reconfiguring_LDAP"></a><a 
+	 name="Import_the_LDAP_SSL_cert"></a>To import the LDAP SSL certificate 
+ (or the CA certificate that signed the LDAP SSL certificate) using the 
+ keytool utility</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Copy 
+ the LDAP server certificate (or the CA certificate) to the server hosting 
+ Entrust IdentityGuard.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ a command line on the server, change to the&#160;directory that contains 
+ the keytool utility. The keytool utility is located in <span class="output">&lt;$IG_HOME&gt;\jdk&lt;version&gt;\bin</span>&#160;(Windows) 
+ and <span class="output">$IG_HOME/jdk&lt;version&gt;/bin</span> (UNIX).</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> When using 
+ WebSphere or WebLogic, the location of the keytool is <span class="output">&lt;application_server_root&gt;/&lt;JAVA_version&gt;/jre/bin</span>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+ the following command:</p>
+<p class="cocode">keytool -importcert -alias ldapssl -keystore &lt;path_to_keystore&gt; 
+ -file &lt;path_to_ldap_ssl_cert_file&gt; -storepass entrust</p>
+<p class="prpprocedureparagraph">Where:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;path_to_keystore&gt;</span> is:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>for UNIX, 
+ <span class="output">$IG_HOME/etc/keystore</span></p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>for Microsoft 
+ Windows, <span class="output">&lt;$IG_HOME&gt;\etc\keystore</span></p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> For versions 
+ of Entrust IdentityGuard installed using an existing application server, 
+ this is the path to the trust store you entered during installation.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;path_to_ldap_ssl_cert_file&gt;</span>&#160;is the 
+ file in which you stored the directory server’s certificate.</p>
+<p class="liplistparagraph">This variable could also be used as <span class="output">&lt;path_to_cert_file&gt;</span>&#160;for 
+ importing the CA certificate.</p>
+<p class="liplistparagraph">The certificate file must be in a format supported 
+ by the keytool you are using. The keytool shipped with Entrust IdentityGuard 
+ supports binary and base-64 PEM encoded certificates.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>When 
+ prompted to answer whether or not you trust the certificate, review the 
+ displayed details, and if they are correct, answer <span class="output">yes</span>.</p>
+<p class="prtproceduretitle">To update the Entrust IdentityGuard properties 
+ file for LDAP SSL</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start 
+ the Entrust IdentityGuard Properties Editor. (See <a href="../usingpropeditor/logging_in_and_out_of_the_properties_editor.htm">Log 
+ in or out of the Properties Editor</a>.)</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the <span style="font-weight: bold;">Table of Contents</span>, click <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">LDAP 
+ Directory Server Settings</span>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the LDAP directory pane, modify the URL in the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">LDAP 
+ URL</span>&#160;field to add an SSL port, for example 636 below:</p>
+<p class="cocode">identityguard.ldap.url=ldap://myldapserver:636/ou=users,dc=myserver,dc=com</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">SSL 
+ LDAP Connection</span>, select <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">True</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Validate 
+ &amp; Save</span>.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Restart 
+ the Entrust IdentityGuard server service.</p>
+<p class="pparagraph">You now have a secure SSL connection between Entrust 
+ IdentityGuard and your LDAP repository.</p>
+<p class="pparagraph">For information about SSL certificates, see <a href="../config_security/managing_certificates_in_the_key_store.htm">Managing 
+ certificates in the key store</a>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

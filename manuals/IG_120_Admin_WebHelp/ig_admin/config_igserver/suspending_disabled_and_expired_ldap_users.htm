@@ -1,0 +1,249 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Suspending disabled and expired LDAP users</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nConfiguring an LDAP directory\nSuspend disabled and expired LDAP users");
+addAvenueInfo("Untitled02","ig_admin/config_igserver/securing_the_ldap_connection_with_ssl.htm","ig_admin/config_igserver/mapping_contact_info_from_an_ldap_directory.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"configuring_an_ldap_directory.htm\">Configuring an LDAP directory<\/a> > Suspend disabled and expired LDAP users<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_suspend_disabled_LDAP" id="IX_suspend_disabled_LDAP"></a><a name="IX_suspend_expired_LDAP" id="IX_suspend_expired_LDAP"></a><a name="IX_suspend_expired_users" id="IX_suspend_expired_users"></a><a name="IX_suspend_disabled_users" id="IX_suspend_disabled_users"></a><a name="XREF_80744_Disabled_and" id="XREF_80744_Disabled_and"></a>Suspend disabled and expired LDAP users</h1>
+<p class="pparagraph">Entrust IdentityGuard can be set to automatically detect when users are disabled or expired in the LDAP user repository. You can choose to suspend disabled users or expired users, or both.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Entrust IdentityGuard users whose accounts are disabled or expired in the directory still count toward the Entrust IdentityGuard&#160;Users license count.</p>
+<p class="pparagraph">When these features are configured (by setting the <span style="font-weight: bold;">Disabled Account Attribute</span> and <span style="font-weight: bold;">Expired Account Attribute</span> properties in <a href="adding_a_new_ldap_repository.htm">Add a new LDAP repository</a>), Entrust IdentityGuard automatically sets the user’s state to “disabled in repository” or “expired in repository,” as appropriate.</p>
+<p class="pparagraph">There are four policies you can configure to govern the behavior of Entrust IdentityGuard with respect to disabled and suspended users. See <a href="../useradminsection/configuring_repository_data_policies.htm">Configure repository data policies</a> for information and the procedure for their use.</p>
+<p class="pparagraph">When a user has been suspended using one of the Entrust IdentityGuard user interfaces, you can use Entrust IdentityGuard to reactivate the user. If the user has been suspended because it is either “disabled in repository” or “expired in repository,” the only way to reactivate them is to re-enable them in the repository. For more information about suspended users, see <a href="../useradminsection/suspending_and_activating_users.htm">Suspend or activate users</a>.</p>
+<p class="pparagraph">The operation of these features varies by repository. The expired and disabled user features are described in the following table.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> In the following table, “not supported” means that the particular function is not supported in the standard Entrust IdentityGuard implementation, often because there is not a standard way to mark the records as expired or disabled in the given directory. In many cases, you can create your own properties to add this support based on the directory attributes you use to mark an account as disabled or expired.</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+<col style="width: 14.3%;" />
+<col style="width: 25.932%;" />
+<col style="width: 59.768%;" />
+<tr class="t1st">
+<th style="vertical-align: Top;">
+<p class="tahtableheader">Repository</p>
+</th>
+<th style="vertical-align: Top;">
+<p class="tahtableheader">What Entrust IdentityGuard supports:</p>
+</th>
+<th style="vertical-align: Top;">
+<p class="tahtableheader">Details</p>
+</th>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Active Directory</p>
+<p class="tattabletext">ADAM/AD LDS</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Account disabled: <span style="font-weight: bold;">userAccountControl</span>&#160;attribute</p>
+<p class="tattabletext">Account expired: <span style="font-weight: bold;">accountExpires</span> attribute</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext"><span style="font-weight: bold;">userAccountControl</span>: This attribute is a bit mask. A user account is disabled if and only if ((userAccountControl &amp; 0x0002) != 0). See <span class="WWWhyperlink" style="font-family: Syntax; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #0000ff; letter-spacing: 0.00em; text-decoration: underline;"><a href="http://support.microsoft.com/kb/305144">http://support.microsoft.com/kb/305144</a></span>&#160;for more information.</p>
+<p class="tattabletext"><span style="font-weight: bold;">accountExpires</span>: This attribute uses syntax 2.5.5.16. A value of 0 or MAX_LONG (0X7FFFFFFFFFFFFFFF) means the account never expires.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Sun ONE</p>
+<p class="tattabletext">Red Hat</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Account disabled: <span style="font-weight: bold;">nsaccountlock</span> attribute</p>
+<p class="tattabletext">Account expired: not supported</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext"><span style="font-weight: bold;">nsaccountlock:</span> Sun ONE uses the terms active and inactive rather than enabled/disabled.</p>
+<p class="tattabletext">Making a Sun ONE or Red Hat user inactive adds the following attributes to their entry:</p>
+
+<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">nsaccountlock</span>&#160;is <span style="font-family: Courier;">true</span></p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">IBM Tivoli</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Account disabled: <span style="font-weight: bold;">ibm-pwdAccountLocked</span>&#160;attribute</p>
+<p class="tattabletext">Account expired: not supported</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext"><span style="font-weight: bold;">ibm-pwdAccountLocked:</span>&#160;There are many attributes that could be used to mean the user’s account is disabled, but this one is being used by Entrust IdentityGuard to mark a user as active or suspended.</p>
+<p class="tattabletext">When <span style="font-weight: bold;">ibm-pwdAccountLocked</span>&#160;is set to <span style="font-family: Courier;">TRUE</span>, in the LDAP repository, the user is prevented from authenticating.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Novell eDirectory</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Account disabled: <span style="font-weight: bold;">loginDisabled</span> attribute</p>
+<p class="tattabletext">Account expired: <span style="font-weight: bold;">loginExpirationTime</span>&#160;attribute</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext" style="font-weight: bold;">loginDisabled:&#160;Users are disabled when this attribute is <span style="font-family: Courier;">TRUE</span>. Users are enabled when this attribute is <span style="font-family: Courier;">FALSE</span> or missing.</p>
+<p class="tattabletext" style="font-weight: bold;">loginExpirationTime:&#160;This attribute is the date after which users cannot log in</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">OpenLDAP</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Account disabled: not supported</p>
+<p class="tattabletext">Account expired: not supported</p>
+</td>
+<td class="last" style="vertical-align: Top;">&#160;</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Oracle Internet Directory</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Account disabled: <span style="font-weight: bold;">orclIsEnabled</span> attribute</p>
+<p class="tattabletext">Account expired: <span style="font-weight: bold;">orclActiveStartDate</span>&#160;and <span style="font-weight: bold;">orclActiveEndDate</span>&#160;attributes</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext"><span style="font-weight: bold;">orclIsEnabled:</span>&#160;When the user is enabled, this attribute is missing or contains the string <span style="font-family: Courier;">ENABLED</span>.<br />
+When the user is disabled, this attribute contains the string <span style="font-family: Courier;">DISABLED</span>.</p>
+<p class="tattabletext"><span style="font-weight: bold;">orclActiveStartDate</span>&#160;and <span style="font-weight: bold;">orclActiveEndDate:</span>&#160;These attributes are the start and end time of the accounts active state.<br />
+Syntax: GeneralizedTime syntax</p>
+</td>
+</tr>
+</table>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> If your LDAP directory implementation uses different directory attributes than those listed in the table above, you can change the properties. See <a href="../usingpropeditor/ldap_directory_server_settings.htm#XREF_90180_LDAP_directory">LDAP Directory Server Settings</a>&#160;and <a href="adding_a_new_ldap_repository.htm#XREF_94083_Adding_a_new_LDAP">Add a new LDAP repository</a> for the property information and instructions.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

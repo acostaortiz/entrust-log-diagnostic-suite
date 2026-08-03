@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Authentication Audit and Error Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nAuthentication Audit and Error Settings (12)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/audits_to_database_configuration.htm","ig_admin/usingpropeditor/biometric_vendor_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Authentication Audit and Error Settings (12)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_error_properties"></a><a name="IX_audit_properties_6"></a><a 
+	 name="XREF_54931_Authentication"></a>Authentication Audit and Error 
+ Settings</h1>
+<p class="pparagraph">These properties control Entrust IdentityGuard messages 
+ related to authentication operations, primarily those dealing with risk-based 
+ authentication. See <a href="../config_logging/configuring_authentication_audits.htm#XREF_65817_Configuring">Configuring 
+ authentication audits</a>&#160;for more details and to view a snapshot 
+ of the properties.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Successful Authentications</a></span></p>
+<div class="droptext" id="POPUP731734022" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.authentication.audit.success</span></p>
+	<p class="lip2list2paragraph">Determines whether audit messages (AUD6000) 
+	 are written when a user successfully authenticates using any authentication 
+	 method.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Challenge Requests That Return Challenge</a></span></p>
+<div class="droptext" id="POPUP731895267" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.authentication.audit.challenge</span></p>
+	<p class="lip2list2paragraph">Determines whether audit messages (AUD6012) 
+	 are written when your risk-based authentication policies issue a second-factor 
+	 authentication challenge.</p>
+	<p class="lip2list2paragraph">Default: <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">False</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Challenge Requests That Return Authenticated</a></span></p>
+<div class="droptext" id="POPUP732069514" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.authentication.audit.authenticated</span></p>
+	<p class="lip2list2paragraph">Determines whether audit messages (AUD6013) 
+	 are written when your risk-based authentication policies authenticate 
+	 a user without a second-factor authentication challenge.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Authentications Where The User Does Not Exist</a></span></p>
+<div class="droptext" id="POPUP732393323" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.authentication.audit.usernotexist</span></p>
+	<p class="lip2list2paragraph">Determines whether audit messages are 
+	 written when authentication fails because the user does not exist. 
+	 This can track failed login attempts due to, for example, misspelled 
+	 user names.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Knowledge-Based Questions That Are Answered Incorrectly</a></span></p>
+<div class="droptext" id="POPUP732415540" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.authentication.audit.incorrectlyansweredquestions</span></p>
+	<p class="lip2list2paragraph">Determines whether audit messages (AUD6014) 
+	 are written when a user incorrectly answers a knowledge-based question. 
+	 The incorrectly-answered question is included in the audit message.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Include 
+ Location Information In Authentication Audits</a></span></p>
+<div class="droptext" id="POPUP732899391" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.authentication.audit.includelocation</span></p>
+	<p class="lip2list2paragraph">Determines whether audit messages for 
+	 risk-based authentication should include IP location information when 
+	 available.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Include 
+ Lockout Information In Authentication Errors</a></span></p>
+<div class="droptext" id="POPUP733229934" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.authentication.audit.includelockout</span></p>
+	<p class="lip2list2paragraph">Determines whether error messages for 
+	 risk-based authentication should include lockout information when 
+	 available.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP731734022');
+	TextPopupInit('a2','POPUP731895267');
+	TextPopupInit('a3','POPUP732069514');
+	TextPopupInit('a4','POPUP732393323');
+	TextPopupInit('a5','POPUP732415540');
+	TextPopupInit('a6','POPUP732899391');
+	TextPopupInit('a7','POPUP733229934');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

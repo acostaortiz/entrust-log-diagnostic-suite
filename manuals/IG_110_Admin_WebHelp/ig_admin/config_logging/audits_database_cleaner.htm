@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_logging.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Audits database cleaner</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring logging and auditing\nConfiguring an audit database\nAudits database cleaner");
+addAvenueInfo("Untitled","ig_admin/config_logging/audit_queuing.htm","ig_admin/config_reporting/config_reporting.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_logging.htm\">Configuring logging and auditing<\/a> > <a href=\"configuring_an_audit_database1.htm\">Configuring an audit database<\/a> > Audits database cleaner<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_35162_Audits_database"></a>Audits database cleaner</h1>
+<p class="pparagraph">Your audit database will get large very quickly, 
+ especially if your filter is set to write all or most of the audits generated 
+ to your database.</p>
+<p class="pparagraph">To administer your database for best performance, 
+ you should plan on removing the oldest audit data records at regular intervals. 
+ You can set the system to automatically delete old audit records from 
+ your database by enabling the cleaner in the Properties Editor. You can 
+ also set the maximum age of audit records, and how often to check for 
+ and delete old audit records.</p>
+<p class="pparagraph">Entrust IdentityGuard properties for cleaning the 
+ audit database include those shown in the following table. </p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 18.544%;" />
+	<col style="width: 81.456%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">Cleaner 
+		 property</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">What 
+		 it does:</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Audit 
+		 Removal Enabled</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Turns 
+		 on the automatic audit record cleaner. Set this property to True 
+		 if you want to automatically delete records older than the age 
+		 specified.</p>
+		<p class="tattabletext">If you do not turn on the cleaner by setting 
+		 this property to True, then the rest of the properties in this 
+		 table are unavailable in the Properties Editor.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Audit 
+		 Removal Interval</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">This 
+		 is the interval between automatic checks for old audit records.</p>
+		<p class="tattabletext">The default interval if you do not set 
+		 one is 24 hours.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Audit 
+		 Removal Age</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">This 
+		 is the age, in days, of the oldest records you want kept in the 
+		 audit database.</p>
+		<p class="tattabletext">If you do not specify, the default age 
+		 is 180 days, or approximately 6 months.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Audit 
+		 Removal Export Enabled</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Turns 
+		 on exporting to a file when audits are removed from the database.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Audit 
+		 Removal Export Directory</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">When 
+		 you delete the old audit records from your database, Entrust IdentityGuard 
+		 archives them. You can delete them later, when you are sure you 
+		 do not need them.</p>
+		<p class="tattabletext">This property is the path name of the directory 
+		 to which the deleted audit records are exported.</p>
+		<p class="tattabletext">If you do not specify a path, Entrust IdentityGuard 
+		 exports the deleted records to <span style="font-family: Courier; 
+												 font-size: 9.0pt;">&lt;$IG_HOME&gt;</span><span 
+		 style="font-family: Courier;">/export/audits</span>.</p></td>
+	</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

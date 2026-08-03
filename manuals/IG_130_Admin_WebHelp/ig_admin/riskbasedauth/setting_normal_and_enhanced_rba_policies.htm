@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\riskbasedauth.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Setting normal and enhanced RBA policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nRisk-based authentication\nConfiguring risk-based authentication policies\nSet normal and enhanced RBA policies");
+addAvenueInfo("r13_std","ig_admin/riskbasedauth/view_the_risk-based_authentication_poloicy.htm","ig_admin/riskbasedauth/configuring_ip_geolocation_policies.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"risk-based_authentication.htm\">Risk-based authentication<\/a> > <a href=\"configuring_risk-based_authentication_policies.htm\">Configuring risk-based authentication policies<\/a> > Set normal and enhanced RBA policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1>Set normal and enhanced RBA policies</h1>
+<p class="pparagraph">When you set the normal and enhanced RBA policies, 
+ you are setting the risk-based tests to run, and how the test results 
+ are interpreted.</p>
+<p class="pparagraph">There are four possible results for each test:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>test passes: 
+ test is run and passes</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>test fails: 
+ test is run and does not pass</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>test does 
+ not fail: either the test is not run (usually because data required for 
+ the test was not provided) or the test is run and it passes</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>test does 
+ not pass: either the test is not run (usually because data required for 
+ the test was not provided) or the &#160;test is run and it fails</p>
+<p class="pparagraph">The results of the combinations of tests you set 
+ determines whether the user is authenticated, challenged using another 
+ authentication type, or rejected. You can set these tests results to:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Authenticate 
+ the user if one or more tests pass.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Challenge 
+ the user, even if all RBA tests pass.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Reject 
+ the user if any test fails, if a specific tests fails, or if a specific 
+ combination of tests fail.</p>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Explanation 
+ of how the policy works</a></p>
+<div class="droptext" id="POPUP599052314" style="display: none;">
+	<p class="pparagraph">The following policy screen displays the default 
+	 settings for authenticating and rejecting risk-based authentication 
+	 attempts.</p>
+	<div style="text-align: left;">
+		<p class="pparagraph"><img alt="AI-Policies-View_Policy_RBA_defaults.jpg" id="image01" src="ai-policies-view_policy_rba_defaults.jpg" name="image01" width="552" height="476" border="0" /></p>
+	</div>
+	<p class="pparagraph">Each policy is a list of expressions. For example, 
+	 in the screen displayed here, the Reject User policy at the Normal 
+	 Security Level uses four expressions; <span style="font-weight: bold;">IP 
+	 Blacklist test fails</span>, <span style="font-weight: bold;">Country 
+	 Blacklist test fails</span>, <span style="font-weight: bold;">Velocity 
+	 test fails,</span>&#160;and <span style="font-weight: bold;">Certificate 
+	 Validation test fails</span>.</p>
+	<p class="pparagraph">With the default settings, at least one of the 
+	 tests must produce the specified result to reject the user authentication 
+	 attempt.</p>
+	<p class="pparagraph">When checking RBA policy, Entrust IdentityGuard 
+	 runs the tests in the following order:</p>
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Try 
+	 to match the <span style="font-weight: bold;">Reject User</span>&#160;policy. 
+	 If there is a match, the user authentication request is rejected.</p>
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Try 
+	 to match the <span style="font-weight: bold;">Authenticate User</span>&#160;policy. 
+	 If there is a match, the user authentication is successful.</p>
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+	 neither the <span class="bold">Reject User</span> nor the <span class="bold">Authenticate 
+	 User</span> policy match the RBA test results, the user is given another 
+	 second-factor authentication challenge of a different type.</p>
+</div>
+<p class="pparagraph">You can set risk-based authentication policies using 
+ the Administration interface as shown in this section, or you can set 
+ them using Master user shell commands. See <a href="setting_rba_policies_in_the_master_user_shell.htm#XREF_12150_Creating_RBA">Setting 
+ RBA policies in the Master user shell</a>.</p>
+<p class="prtproceduretitle"><a name="XREF_14249_To_change_risk" id="XREF_14249_To_change_risk"></a>To 
+ change the risk-based authentication policy for Normal and Enhanced security 
+ levels</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Locate 
+ the policy to edit. See <a href="view_the_risk-based_authentication_poloicy.htm">View 
+ the risk-based authentication policy</a>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">View Policy</span>&#160;page, click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Edit 
+ Policy</span>.</p>
+<p class="prpprocedureparagraph">An editable version of the settings appear. 
+ There are two policies, <span style="font-weight: bold;">Reject User</span>&#160;and 
+ <span style="font-weight: bold;">Authenticate User</span>, for the <span 
+	 style="font-weight: bold;">Normal Security Level</span>&#160;and two 
+ corresponding polices for the <span style="font-weight: bold;">Enhanced 
+ Security Level</span>.</p>
+<p class="prpprocedureparagraph"><span><img alt="AI-Policies-edit_policy_RBA.jpg" id="image11" src="../../ai-policies-edit_policy_rba.png" name="image11" width="600" height="623" border="0" /></span></p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a 
+	 name="XREF_82043_2_Define_the" id="XREF_82043_2_Define_the"></a>Define 
+ the <span style="font-weight: bold;">Reject User</span>&#160;policy for 
+ the <span style="font-weight: bold;">Normal Security Level</span>. Do 
+ one of the following:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ a test expression from the list. Choose one of <span style="font-weight: bold;">Test 
+ 1</span>, <span style="font-weight: bold;">Test 2</span>, <span style="font-weight: bold;">Test 
+ 3</span><span>, or </span><span class="bold">Test 4</span>. Click <span 
+	 style="font-weight: bold;">Modify Test</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Add New Test</span>.</p>
+<p class="liplistparagraph">The test expression is expanded to show the 
+ individual tests that are part of the test expression.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ the individual tests you want to include in the <span style="font-weight: bold;">Reject 
+ Users</span> test expression.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a 
+	 name="XREF_89687_6_Select_the_tests" id="XREF_89687_6_Select_the_tests"></a>For 
+ each test selected, make a selection from the drop-down list. The choices 
+ are <span style="font-weight: bold;">passes</span>, <span style="font-weight: bold;">fails</span>, 
+ <span style="font-weight: bold;">does not pass</span>, and <span style="font-weight: bold;">does 
+ not fail</span>. Follow these guidelines:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you 
+ set, for example, <span style="font-weight: bold;">IP Authentication</span>&#160;to 
+ fail, then the rule will be met if <span style="font-style: italic;">any</span>&#160;of 
+ the four tests under <span style="font-weight: bold;">IP Authentication</span>&#160;fails.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you 
+ set, for example, all four of the IP authentication sub-tests individually 
+ to fail, then all of the tests must fail in order for the rule to be met.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you 
+ set, for example, a sub-test to fail, and this sub-test is not run during 
+ the course of Entrust IdentityGuard’s RBA processing, the test returns 
+ a null (not a fail), which causes the rule not to be met (since the test 
+ must <span style="font-style: italic;">fail</span>&#160;in order for the 
+ rule to be met).</p>
+<p class="liplistparagraph">A sub-test might not be run based on certain 
+ preliminary IP checks. For details, see <a href="preliminary_checks_and_how_they_affect_subsequent_tests.htm#XREF_99872_Dependencies">Preliminary 
+ checks and how they affect subsequent tests</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you 
+ want to ensure that a null result on a sub-test does not affect whether 
+ your rule is met or not, use the <span class="bold">does not pass</span>&#160;and 
+ <span class="bold">does not fail</span>&#160;options instead.</p>
+<p class="prpprocedureparagraph"><span><img alt="AI-Policies-edit_policy_RBA-_edit_normal_reject.jpg" id="image21" src="../../ai-policies-edit_policy_rba-_edit_normal_reject.png" name="image21" border="0" /></span></p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Repeat 
+ <span class="hyperlink" style="font-family: Syntax;"><a href="#XREF_82043_2_Define_the">Step&#160;3</a></span>&#160;to 
+ <span class="hyperlink" style="font-family: Syntax;"><a href="#XREF_89687_6_Select_the_tests">Step&#160;5</a></span>&#160;for 
+ the <span style="font-weight: bold;">Authenticate User</span>&#160;tests 
+ in the <span style="font-weight: bold;">Normal Security Level</span>.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Repeat 
+ <span class="hyperlink" style="font-family: Syntax;"><a href="#XREF_82043_2_Define_the">Step&#160;3</a></span>&#160;to 
+ <span class="hyperlink" style="font-family: Syntax;"><a href="#XREF_89687_6_Select_the_tests">Step&#160;5</a></span>&#160;for 
+ the <span style="font-weight: bold;">Reject User</span>&#160;tests in 
+ the <span style="font-weight: bold;">Enhanced Security Level</span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The policy 
+ you set for the enhanced security level is equal to or stronger than the 
+ normal level policy. Any rejection at the normal level also causes a rejection 
+ at the enhanced level.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Repeat 
+ <span class="hyperlink" style="font-family: Syntax;"><a href="#XREF_82043_2_Define_the">Step&#160;3</a></span>&#160;to 
+ <span class="hyperlink" style="font-family: Syntax;"><a href="#XREF_89687_6_Select_the_tests">Step&#160;5</a></span>&#160;for 
+ the <span style="font-weight: bold;">Authenticate User</span>&#160;tests 
+ in the <span style="font-weight: bold;">Enhanced Security Level</span>.</p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Save 
+ Changes</span>.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP599052314');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

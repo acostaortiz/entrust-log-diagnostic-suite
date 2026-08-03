@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Certificate Audit Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nCertificate Audit Settings (11)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/card_export_settings.htm","ig_admin/usingpropeditor/challenge_cache_settings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Certificate Audit Settings (11)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_checking_2"></a><a name="IX_audit_properties_5"></a><a 
+	 name="IX_audit_properties_4"></a><a name="IX_checking_1"></a><a name="IX_audit_properties_3"></a><a 
+	 name="IX_audit_properties_2"></a>Certificate Audit Settings</h1>
+<p class="pparagraph">These properties control the Entrust IdentityGuard 
+ periodic certificate audit mechanism. Certificate auditing sends notifications 
+ when certificates are nearing expiry. For more information, see <a href="../certauth/auditing_user_certificates.htm">Audit 
+ user certificates</a>.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Certificate 
+ Auditing Enabled</a></span></p>
+<div class="droptext" id="POPUP738174589" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.certificate.enabled</span><a 
+	 name="IX_license_1"></a></p>
+	<p class="lip2list2paragraph">Enables or disables certificate auditing.</p>
+	<p class="nonote"><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Attention</span>: 
+	 This property must be enabled on only one Entrust IdentityGuard server 
+	 at any time. The Entrust IdentityGuard server chosen must be able 
+	 to see all of the data in the system.</p>
+	<p class="lip2list2paragraph">Default: True</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><span class="bold">Certificate 
+ Audit Interva</span>l</a></p>
+<div class="droptext" id="POPUP728872578" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.certificate.interval</span></p>
+	<p class="lip2list2paragraph">Sets the number of hours between certificate 
+	 audit checks.</p>
+	<p class="lip2list2paragraph">Default: 12</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><span class="bold">Certificate 
+ Audit Expiry Day Limit</span> </a></p>
+<div class="droptext" id="POPUP738219483" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.certificate.limit</span></p>
+	<p class="lip2list2paragraph">When only a set number of days remain 
+	 before a certificate expires, Entrust IdentityGuard generates an audit 
+	 message.&#160;This property specifies how many days must remain before 
+	 the message is generated. For example, if set to 10,&#160;Entrust 
+	 IdentityGuard generates the message when only 10 days remain before 
+	 the certificate&#160;expires.</p>
+	<p class="lip2list2paragraph">Default: 30</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Certificate 
+ KeyStore</a></span></p>
+<div class="droptext" id="POPUP738221894" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.certificate.keystore</span></p>
+	<p class="lip2list2paragraph">Specifies the location of the keystore 
+	 file containing the Entrust IdentityGuard certificates. If no location 
+	 is specified, the keystore specified by the system property <span 
+	 class="output">javax.net.ssl.keyStore</span> is used and if that does 
+	 not exist, the truststore specified by the system property <span class="output">javax.net.ssl.trustStore</span> 
+	 is used. Normally this property should be left blank.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Certificate 
+ KeyStore Type</a></span></p>
+<div class="droptext" id="POPUP738357388" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.certificate.keystoretype</span></p>
+	<p class="lip2list2paragraph">Specifies the type of keystore containing 
+	 Entrust IdentityGuard certificates used when a non-default keystore 
+	 is specified by the <span class="output">identityguard.audit.certificate.keystore</span> 
+	 property.</p>
+	<p class="lip2list2paragraph">Allowed values: JKS, PKCS12</p>
+</div>
+
+
+</div>
+<p class="tattabletext">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP738174589');
+	TextPopupInit('a2','POPUP728872578');
+	TextPopupInit('a3','POPUP738219483');
+	TextPopupInit('a4','POPUP738221894');
+	TextPopupInit('a5','POPUP738357388');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

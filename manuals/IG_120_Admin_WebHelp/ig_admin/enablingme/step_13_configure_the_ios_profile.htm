@@ -1,0 +1,182 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Step 13: Configure the iOS profile</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 13: Configure the iOS profile");
+addAvenueInfo("Untitled02","ig_admin/enablingme/step_12_configure_digital_id_policies.htm","ig_admin/enablingme/step_14_mirror_password_rules.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobile-enrollment-for-digital-ids.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > Step 13: Configure the iOS profile<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_97521_Configure_iOS" id="XREF_97521_Configure_iOS"></a>Step 13: Configure the iOS profile</h1>
+<p class="pparagraph">This step is optional, and applies only to iOS.</p>
+<p class="pparagraph">You can customize what users see, and what they are permitted to do, when they install an iOS profile containing your CA certificate, or CA certificate chain. This profile is created during the mobile enrollment process, when users are asked to download your CA certificate.</p>
+<p class="pparagraph">Follow the instructions below.</p>
+<p class="prtproceduretitle">To customize iOS certificate download options</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In an XML editor, open <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">trustedcertchain.mobileconfig</span> located here:</p>
+
+<p class="cocode">&lt;SSM_ROOT&gt;\webapps\server\IdentityGuardSelfService\WEB-INF\xml</p>
+<p class="prpprocedureparagraph">where <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">&lt;SSM_ROOT&gt;</span> is the installation directory for the Self-Service Module.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Edit the items in bold to reflect those of your organization.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="enablingME00929.jpg" id="image24" src="enablingme00929.jpg" width="440" height="416" border="0" name="image24" /></p>
+</div>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">PayloadDescription</span>: A description of the iOS profile being installed.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">PayloadDisplayName:</span> <span class="output" style="font-family: Courier; font-size: 9.0pt;"></span>The name of the profile that is displayed on the user’s iOS device.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">PayloadIdentifier:</span> By convention, a dot delimited string that uniquely identifies the iOS profile. This is the string by which profiles are differentiated. If a profile is installed that matches the identifier of another profile, it overrides it (instead of being added).</p>
+
+<p class="liplistparagraph">It is recommended that you leave <span class="output">PayloadIdentifier</span>&#160;at its default. The only reason to change it is if your environment includes multiple Self-Service Modules, and each is communicating with a distinct CA hierarchy, and users’ certificates are signed by these different CAs. If this is your scenario, then you must create <span class="output">PayloadIdentifier</span>&#160;values that are specific to each Self-Service Module/CA hierarchy. If you do not make this configuration, then during the CA certificate download, the different profiles (and therefore, CA certificates) will overwrite each other.</p>
+<p class="liplistparagraph">If your environment includes multiple Self-Service Modules, but they are communicating with a single CA hierarchy, then there is no need to set different <span class="output">PayloadIdentifier</span> values.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> If you are using Administration Services instead of Self-Service Module, the above applies to Administration Services.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">PayloadOrganization:</span> The name of your organization.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">PayloadRemovalDissallowed:</span> If <span class="output">True</span>, users are unable to remove the CA profile from their device. Default: <span class="output">False</span>.</p>
+
+<p class="prpprocedureparagraph">Below is an example of how an organization might configure the file.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="enablingME00932.jpg" id="image25" src="enablingme00932.jpg" width="537" height="410" border="0" name="image25" /></p>
+</div>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Save the file.</p>
+
+<p class="prpprocedureparagraph">There is no need to restart the Self-Service Module.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Import all CA certificates</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nConfiguring SAML authentication to the Administration interface\nConfigure SAML login to the Administration  interface\nImport all CA certificates");
+addAvenueInfo("r13_std","ig_admin/config_adminsso/import_the_federation_module_web_certificate.htm","ig_admin/config_adminsso/enable_the_saml_policy_through_the_administration_interface.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > <a href=\"saml_authentication_to_the_administration_interface.htm\">Configuring SAML authentication to the Administration interface<\/a> > <a href=\"configure_saml_login_to_the_authentication_interface.htm\">Configure SAML login to the Administration  interface<\/a> > Import all CA certificates<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_29575_4_xxxxxxxxxxImport" id="XREF_29575_4_xxxxxxxxxxImport"></a>Import 
+ all CA certificates</h1>
+<p class="pparagraph">If you copied any CA certificates (<span class="output" 
+	 style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">idpca.crt</font></span> and any others<span class="output" 
+	 style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">)</font></span> as instructed in <a href="prerequisites.htm">Prerequisites 
+ for configuring SAML login to Administration</a>, you must import all 
+ these files to a keystore on the Entrust IdentityGuard Server.</p>
+<p class="prtproceduretitle">To import all CA certificates</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>In 
+ the Java keytool utility, enter the following command:</p>
+<p class="cocode">keytool –import -trustcacerts –alias &lt;alias&gt; -file 
+ &lt;filename&gt; -keystore &lt;keystore&gt; -storepass &lt;storepass&gt;</p>
+<p class="prpprocedureparagraph">where:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: 'Courier New'; font-style: normal; 
+	 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+	 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;alias&gt;</font></span>&#160;is an alias of 
+ the CA certificate. For example: <span class="output" style="font-family: 'Courier New'; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">idpca</font></span>&#160;</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: 'Courier New'; font-style: normal; 
+	 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+	 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;filename&gt;</font></span>&#160;is the path 
+ and filename of the CA certificate. For example, <span class="output" 
+														 style="font-family: 'Courier New'; 
+														 font-style: normal; 
+														 font-weight: normal; 
+														 font-size: 10.0pt; 
+														 color: #000000; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">C:\IDPdata\idpca.crt</font></span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: 'Courier New'; font-style: normal; 
+	 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+	 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;keystore&gt;</font></span>&#160;is the path 
+ and name of the keystore file where you want to store the keys associated 
+ with the CA certificate. Example:</p>
+<p class="lip2list2paragraph"><span class="output" style="font-family: 'Courier New'; 
+									 font-style: normal; font-weight: normal; 
+									 font-size: 10.0pt; color: #000000; 
+									 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;$IG_HOME&gt;\etc\keystore</font></span>&#160;</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-family: 'Courier New'; font-style: normal; 
+	 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+	 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;storepass&gt;</font></span>&#160;is password 
+ for the keystore. If you are using the Entrust IdentityGuard Server’s 
+ keystore, the password is <span class="output" style="font-family: 'Courier New'; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+								 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">entrust</font></span>&#160;by 
+ default. If you are using a different keystore, enter its password.</p>
+<p class="prpprocedureparagraph">Example:</p>
+<p class="cocode">keytool –import -trustcacerts –alias idpca -file &quot;C:\IDPdata\idpca.crt&quot; 
+ -keystore &quot;C:\Program Files\Entrust\IdentityGuard\identityguard102\etc\<br />
+keystore&quot; -storepass entrust</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

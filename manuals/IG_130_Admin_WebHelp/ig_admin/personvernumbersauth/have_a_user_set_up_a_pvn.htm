@@ -1,0 +1,189 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\personvernumbersauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Have a user set up a PVN</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nPersonal verification numbers\nProvide PVNs to users\nHave a user set up a PVN");
+addAvenueInfo("r13_std","ig_admin/personvernumbersauth/provide_pvns_to_users.htm","ig_admin/outofbandauth/out-of-band_otp_authentication.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"personal_verification_numbers.htm\">Personal verification numbers<\/a> > <a href=\"provide_pvns_to_users.htm\">Provide PVNs to users<\/a> > Have a user set up a PVN<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_43722_Having_a_user_set" id="XREF_43722_Having_a_user_set"></a>Have 
+ a user set up a PVN</h1>
+<p class="pparagraph">Using the Administration API, you can design your 
+ application so that new users supply their own PVN. The API applies the 
+ PVN rules set by policy. This removes the requirement for administrators 
+ to get involved in PVN creation and distribution and keeps the PVN confidential. 
+ </p>
+<p class="nonote"><span class="bold">Note:</span> The only Entrust IdentityGuard 
+ policy that affects the actual PVN value is PVN Length (default 4). Any 
+ other PVN requirements (for example, rules to prevent reuse of the same 
+ PVN, or prevent use of simple sequences like 1234) would need to be enforced 
+ by the client application. </p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The Radius 
+ proxy does not support the creation of new PVNs. If users access your 
+ application through a VPN, administrators must assign users their PVNs. 
+ PVN updates are supported through PAP only. (For details, on Radius protocols, 
+ see the <span class="italic" style="font-style: italic; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Entrust IdentityGuard Installation 
+ Guide</span>.)</p>
+<p class="pparagraph">Users who do not have a PVN when first challenged 
+ to supply one, can assign themselves a PVN. In order to do this, the user 
+ must first successfully pass the second-factor authentication challenge.</p>
+<p class="pparagraph">Consider the following scenario:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>A user 
+ is required to provide a PVN value as part of grid authentication; however, 
+ one was not assigned by an administrator. The user is prompted to compose 
+ a numeric value of a specified length to use as the PVN.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>During 
+ authentication, the user enters that number in the <span style="font-weight: bold;">New 
+ PVN</span>&#160;and <span style="font-weight: bold;">Confirm PVN</span>&#160;fields 
+ and enters the requested grid coordinates. Entrust IdentityGuard verifies 
+ the entries as follows.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If the 
+ grid response is correct and if the new PVN is valid, the user is assigned 
+ the new PVN value and the grid authentication succeeds. From then on, 
+ the user must provide a PVN with all future grid authentications.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If the 
+ grid response is incorrect, the new PVN is not assigned and the grid authentication 
+ fails. The user must try again.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If the 
+ grid response is correct but the new PVN value was not numeric or not 
+ the correct length, the new PVN is not assigned and the grid authentication 
+ fails. The user must try again.</p>
+<p class="pparagraph">This scenario applies to the token and OTP authentication 
+ methods as well.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

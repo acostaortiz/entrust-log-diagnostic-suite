@@ -1,0 +1,390 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>SMS Server Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nSMS Server Configuration (23)");
+addAvenueInfo("Untitled02","ig_admin/usingpropeditor/smart_credential_expiry_notification_settings.htm","ig_admin/usingpropeditor/configuring_the_sms_gateway_url_for_a_sms_provider_other_than.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > SMS Server Configuration (23)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_h2_SMS_Server" id="XREF_h2_SMS_Server"></a>SMS Server 
+ Configuration</h1>
+<p class="pparagraph">Your application can automate the delivery of information 
+ using a text (SMS) message to a mobile&#160;phone. Using the following 
+ properties, you can set up an SMS server.&#160;Support for Clickatell 
+ and TeleSign SMS service providers is built into Entrust IdentityGuard, 
+ however, you can configure these settings for other third-party service 
+ providers. Properties in this section are required for Clickatell support. 
+ They are not required for TeleSign support. For more information, see 
+ <a href="configuring_the_sms_gateway_url_for_a_sms_provider_other_than.htm">Configuring 
+ the SMS Gateway URL for a SMS provider other than Clickatell or TeleSign</a>.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instances</a></span></p>
+<div class="droptext" id="POPUP689339699" style="display: none;">
+	<p class="lip2list2paragraph">Provides a list of SMS Server configurations.</p>
+	<p class="lip2list2paragraph">To create a new instance, enter a unique 
+	 name in the empty field and click <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">Add</span>. 
+	 The other properties appear. The name replaces the {0} placeholder.</p>
+	<p class="lip2list2paragraph">To delete an instance, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+							 text-decoration: none; ">Remove</span>.</p>
+	<p class="lip2list2paragraph">There is no default configuration.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Gateway URL</a></span></p>
+<div class="droptext" id="POPUP689266203" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.sms.{0}.url</span></p>
+	<p class="lip2list2paragraph">The URL used as an API to deliver SMS 
+	 messages through the use of an SMS gateway. While you can use any 
+	 SMS service provider, Clickatell and TeleSign are built in to Entrust 
+	 IdentityGuard.</p>
+	<p class="lip2list2paragraph">Clickatell:</p>
+	<p class="co3code3">https://api.clickatell.com/http/sendmsg?user=USERNAME&amp;password=PASSWORD&amp;api_id=API_ID&amp;to=TO_PHONE&amp;text=MSG_TEXT&amp;from=FROM_ID</p>
+	<p class="lip2list2paragraph">TeleSign does not use this property.</p>
+	<p class="nonote"><span class="bold">Note:</span> The uppercase characters 
+	 are replaced by values gathered from the rest of this configuration.</p>
+	<p class="nonote"><span class="bold">Note:</span> If you are sending 
+	 a one-time-password through a proxy that requires basic authentication, 
+	 specify the user name and password in the gateway URL. For example:<br />
+	<span class="output" style="font-family: Courier; font-size: 9.pt; 
+			 color: #; letter-spacing: .em;">https://</span><span class="outputbold" 
+	 style="font-family: Courier; font-size: 9.pt; color: #; letter-spacing: .em;">myuser:mypass</span><span 
+	 class="output" style="font-family: Courier; font-size: 9.pt; color: #; 
+	 letter-spacing: .em;">@example.com/http/sendmsg?user=USERNAME&amp;password=PASSWORD&amp;api_id=API_ID&amp;to=TO_PHONE&amp;text=MSG_TEXT&amp;from=FROM_ID</span></p>
+	<p class="lip2list2paragraph">To configure the SMS Gateway URL for 
+	 a different SMS service provider, see <span class="hyperlink" style="font-family: Syntax; 
+												 color: #ff; letter-spacing: .em;"><a href="../../IG_Properties_REF/SMSServerConfigSettings/Configuring_the_SMS_Gateway_URL_for_a_SMS_provider_other_than.htm#XREF_h3_Configuring_the_SMS">Configuring 
+	 the SMS Gateway URL for a SMS provider other than Clickatell or TeleSign</a></span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />User 
+ Name</a></span></p>
+<div class="droptext" id="POPUP688380958" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.sms.{0}.userid</span></p>
+	<p class="lip2list2paragraph">Specifies the SMS service provider user 
+	 name to use when logging in to the service. The user name and password 
+	 are provided when you register for the SMS service provider.</p>
+	<p class="lip2list2paragraph">The value replaces USERNAME in the <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">SMS 
+	 Gateway URL</span> setting.</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Password</a></span></p>
+<div class="droptext" id="POPUP688351707" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.sms.{0}.password</span></p>
+	<p class="lip2list2paragraph">Specifies the SMS service provider password 
+	 to use when logging in to the service. The user name and password 
+	 are provided when you register for the SMS service provider.</p>
+	<p class="lip2list2paragraph">The value replaces PASSWORD in the <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">SMS 
+	 Gateway URL</span> setting.</p>
+	<p class="lip2list2paragraph">Select <span style="font-weight: bold;">Encrypt</span> 
+	 to encrypt the password.</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />API 
+ ID</a></span></p>
+<div class="droptext" id="POPUP690486217" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.sms.{0}.apiid</span></p>
+	<p class="lip2list2paragraph">Specifies the API Identification obtained 
+	 from the SMS service provider. (For Clickatell, it is listed under 
+	 the API Connections on Clickatell Central.)</p>
+	<p class="lip2list2paragraph">The value replaces API_ID in the <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">SMS 
+	 Gateway URL</span> setting</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />From 
+ Label In The SMS Message</a></span></p>
+<div class="droptext" id="POPUP690820580" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.sms.{0}.from</span></p>
+	<p class="lip2list2paragraph">Sets the <span style="font-weight: bold;">From</span> 
+	 label in the SMS message sent by Entrust IdentityGuard.</p>
+	<p class="lip2list2paragraph">For Clickatell, the <span style="font-weight: bold;">From</span> 
+	 label is the Sender ID registered with Clickatell. The value replaces 
+	 FROM_ID in the <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+							 text-decoration: none; ">SMS Gateway URL</span> 
+	 setting</p>
+	<p class="nonote"><span class="bold">Note:</span> If the contents of 
+	 the From field is invalid, the message is still delivered. No error 
+	 message is generated, but your Clickatell account manager may receive 
+	 an email notice, as an anti-spam precaution, indicating that messages 
+	 are coming from an invalid sender.</p>
+	<p class="lip2list2paragraph">TeleSign does not use this property.</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Prepend 
+ Digits for SMS Recipients</a></span></p>
+<div class="droptext" id="POPUP623647841" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.sms.{0}.prependdigit</span></p>
+	<p class="lip2list2paragraph">SMS service providers require that all 
+	 SMS recipients follow a universal numbering standard (E.164).</p>
+	<p class="lip2list2paragraph">This property defines a digit (country 
+	 code) to add to the beginning of all contact numbers using this configured 
+	 out-of-band delivery mechanism. Use this property if the user contact 
+	 information does not include the country code.</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Unicode Encoding</a></span></p>
+<div class="droptext" id="POPUP689127530" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.sms.{0}.unicode</span></p>
+	<p class="lip2list2paragraph">If the SMS message contains any characters 
+	 outside of the Basic Latin character set (Unicode Latin-1 Supplement 
+	 characters, for example), set this property to <span class="bold">True</span>.</p>
+	<p class="lip2list2paragraph">This imposes a shorter limit on SMS messages: 
+	 messages containing more than 70 characters might be divided and sent 
+	 as several messages.</p>
+	<p class="attnattention"><span class="bold" style="font-weight: bold; 
+									 letter-spacing: .em; text-decoration: none; ">Attention</span>: 
+	 If a Unicode message is sent to a network that does not support Unicode 
+	 messages, the message is not delivered. There is no error message 
+	 when this occurs. You must verify with your SMS service provider that 
+	 Unicode is supported for the end user before enabling this feature.</p>
+	<p class="lip2list2paragraph">TeleSign does not use this property.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Message Maximum Fragments</a></span></p>
+<div class="droptext" id="POPUP691696397" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.sms.{0}.maxfragments</span></p>
+	<p class="lip2list2paragraph">Sets the maximum number of messages that 
+	 will be sent when a long SMS message is split.</p>
+	<p class="lip2list2paragraph">This property is used only when <span 
+	 style="font-weight: bold;">SMS Message Fragmentation</span>is set 
+	 to <span class="output">True</span>.</p>
+	<p class="lip2list2paragraph">TeleSign does not use this property.</p>
+	<p class="lip2list2paragraph">Default: 5</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Message Fragmentation Split Characters</a></span></p>
+<div class="droptext" id="POPUP625817450" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.sms.SMS 
+	 Server.splitchars</span></p>
+	<p class="lip2list2paragraph">Sets which characters are used to decide 
+	 where a message is split. To specify more than one split character, 
+	 separate each with a space. The following special characters are supported:</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">\s</span> 
+	 (space)</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">\t</span> 
+	 (tab)</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">\n</span> 
+	 (new line)</p>
+	<p class="lip2list2paragraph">The default is to split at whitespace 
+	 characters (spaces, tabs, and new lines). If the message does not 
+	 contain a split character, the message is split at the maximum message 
+	 size.</p>
+	<p class="lip2list2paragraph">This property is used only when <span 
+	 style="font-weight: bold;">SMS Message Maximum Fragmentation </span>is 
+	 set to <span style="font-family: Courier;">True</span>.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP689339699');
+	TextPopupInit('a2','POPUP689266203');
+	TextPopupInit('a3','POPUP688380958');
+	TextPopupInit('a4','POPUP688351707');
+	TextPopupInit('a5','POPUP690486217');
+	TextPopupInit('a6','POPUP690820580');
+	TextPopupInit('a7','POPUP623647841');
+	TextPopupInit('a8','POPUP689127530');
+	TextPopupInit('a9','POPUP691696397');
+	TextPopupInit('a10','POPUP625817450');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

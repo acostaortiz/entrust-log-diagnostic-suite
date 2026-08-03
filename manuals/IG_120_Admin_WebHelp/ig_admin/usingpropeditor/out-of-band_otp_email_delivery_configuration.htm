@@ -1,0 +1,346 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Out-of-Band OTP Email Delivery Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nOut-of-Band OTP Email Delivery Configuration (24)");
+addAvenueInfo("Untitled02","ig_admin/usingpropeditor/managed_ca_configuration.htm","ig_admin/usingpropeditor/out-of-band_otp_sms_delivery_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Out-of-Band OTP Email Delivery Configuration (24)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_email_delivery" id="IX_email_delivery"></a><a name="IX_configuring_email_1" id="IX_configuring_email_1"></a><a name="IX_configuring_email" id="IX_configuring_email"></a><a name="IX_configuring_OTP_delivery" id="IX_configuring_OTP_delivery"></a><a name="IX_email" id="IX_email"></a><a name="XREF_38690_Out_of_Band_Email" id="XREF_38690_Out_of_Band_Email"></a>Out-of-Band OTP Email Delivery Configuration</h1>
+<p class="pparagraph">Your application can automate the delivery of one-time passwords using email, a text message to a cell phone, or voice message to a standard phone or cell phone. Using the following properties, you can set up delivery of the OTP by email.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instances</a></span></p>
+<div class="droptext" id="POPUP595349288" style="display: none;">
+	<p class="lip2list2paragraph">Provides a list of email configurations.</p>
+	<p class="lip2list2paragraph">To create a new instance. enter a unique 
+	 service name in the empty field and click <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">Add</span>. 
+	 The other properties appear. The name replaces the {0} placeholder.</p>
+	<p class="lip2list2paragraph">To delete an instance, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+							 text-decoration: none; ">Remove</span>.</p>
+	<p class="lip2list2paragraph">There is no default configuration.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery Class Name</a></span></p>
+<div class="droptext" id="POPUP593218574" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.javamail.{0}.impl</span></p>
+	<p class="lip2list2paragraph">Sets the Entrust IdentityGuard Java class 
+	 used for email. When you select <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">JavaMail</span>, 
+	 this sets this class:</p>
+	<p class="lip2list2paragraph"><span class="output">com.entrust.identityGuard.common.oobDelivery.otp.javamail.OTPJavaMailDelivery</span></p>
+	<p class="lip2list2paragraph">If you select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: .em; 
+														 text-decoration: none; ">Custom</span>, 
+	 enter a valid Java class name in the field that appears. (Used only 
+	 in highly advanced deployments.)</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery Configuration Display Name</a></span></p>
+<div class="droptext" id="POPUP592984428" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.javamail.{0}.displayname</span></p>
+	<p class="lip2list2paragraph">The name you use to identify this delivery 
+	 mechanism.</p>
+	<p class="lip2list2paragraph">This is the name you see in the Administration 
+	 interface when associating the user contact information to the delivery 
+	 method.</p>
+	<p class="lip2list2paragraph">Default: the instance name</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery SMTP Server</a></span></p>
+<div class="droptext" id="POPUP592146373" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.javamail.{0}.smtp</span></p>
+	<p class="lip2list2paragraph">Select the SMTP Server from the drop-down 
+	 list.</p>
+	<p class="lip2list2paragraph">This list of servers is defined using 
+	 the SMTP Server properties. See <a href="smtp_server_configuration.htm">SMTP 
+	 Server Configuration (22)</a>.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery Template File</a></span></p>
+<div class="droptext" id="POPUP593325123" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.javamail.{0}.template</span></p>
+	<p class="lip2list2paragraph">Provides the location of the JavaMail 
+	 template. Entrust IdentityGuard provides a default template. The template 
+	 files are <span class="output">igsample_email_template.txt</span><span 
+	 class="output" style="font-family: Courier; font-size: 9.pt; color: #; 
+	 letter-spacing: .em;">.</span></p>
+	<p class="lip2list2paragraph">You can configure the template as required 
+	 in a text editor. This template is used by Entrust IdentityGuard to 
+	 create each message sent to a user.</p>
+	<p class="lip2list2paragraph">In the default case, this property should 
+	 contain the following, depending on whether you are running on Windows 
+	 or UNIX:</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on 
+	 Windows: <span class="output">&lt;$IG_HOME&gt;\etc\templates\oob\igsample_email_template.txt</span></p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on 
+	 UNIX: <span class="output">$IG_HOME/etc/templates/oob/igsample_email_template.txt</span></p>
+	<p class="nonote"><span class="bold">Note:</span> Another template 
+	 is available for html delivery; it is called igsample_<span class="output" 
+	 style="font-family: Courier; font-size: 9.pt; color: #; letter-spacing: .em;">email_template.html.</span> 
+	 The HTML formatted email is displayed along with the text version, 
+	 and displayed as determined by the email client.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery Subject</a></span></p>
+<div class="droptext" id="POPUP592792155" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.javamail.{0}.subject</span></p>
+	<p class="lip2list2paragraph">Provides the text for the subject field 
+	 of the email.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery From Address</a></span></p>
+<div class="droptext" id="POPUP592103920" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.javamail.{0}.fromaddress</span></p>
+	<p class="lip2list2paragraph">Provides the sender’s email address. 
+	 Typically, this is an address within your organization.</p>
+	<p class="lip2list2paragraph">Default: the server’s SMTP address</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery Reply To Address</a></span></p>
+<div class="droptext" id="POPUP592068933" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.javamail.{0}.replyto</span></p>
+	<p class="lip2list2paragraph">Provides the reply-to email address. 
+	 Typically, this is an address within your organization that handles 
+	 customer problems and questions, and that is different than the From 
+	 address.</p>
+	<p class="lip2list2paragraph">This property is optional.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ BCC Address</a></span></p>
+<div class="droptext" id="POPUP592032463" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.javamail.{0}.bcc</span></p>
+	<p class="lip2list2paragraph">If supplied, all out-of-band emails are 
+	 copied to this email address. The recipient of the one time password 
+	 (OTP) does not see this address.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Separate 
+ Message Per One-Time Password</a></span></p>
+<div class="droptext" id="POPUP536058756" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.javamail.{0}.separatemessageperotp</span></p>
+	<p class="lip2list2paragraph">If <span style="font-weight: bold;">True</span>, 
+	 and if multiple OTPs are allowed by policy, each OTP is delivered 
+	 in its own email message.</p>
+	<p class="lip2list2paragraph">If this property is <span style="font-weight: bold;">False</span>, 
+	 all OTPs are sent in one email message.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Include 
+ Transaction Details</a></span></p>
+<div class="droptext" id="POPUP542842160" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.javamail.{0}.includetransactiondetails</span></p>
+	<p class="lip2list2paragraph">Specifies how transaction details will 
+	 be sent.</p>
+	<p class="lip2list2paragraph">The options are:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">First</span>&#160;– 
+	 The first message contains the transaction details, along with a one-time 
+	 password. The following messages each contain only an OTP.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Separate</span>&#160;– The first message contains the 
+	 transaction details, and the following messages each contain an OTP.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">All</span> – 
+	 The transaction details are included in each message sent, along with 
+	 an OTP.</p>
+	<p class="lip2list2paragraph">Default: First</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP595349288');
+	TextPopupInit('a2','POPUP593218574');
+	TextPopupInit('a3','POPUP592984428');
+	TextPopupInit('a4','POPUP592146373');
+	TextPopupInit('a5','POPUP593325123');
+	TextPopupInit('a6','POPUP592792155');
+	TextPopupInit('a7','POPUP592103920');
+	TextPopupInit('a8','POPUP592068933');
+	TextPopupInit('a9','POPUP592032463');
+	TextPopupInit('a10','POPUP536058756');
+	TextPopupInit('a11','POPUP542842160');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

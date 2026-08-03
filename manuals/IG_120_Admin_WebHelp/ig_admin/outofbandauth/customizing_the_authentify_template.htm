@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\outofbandauth.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Customizing the Authentify template</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nOut-of-band one-time password authentication\nConfigure delivery of OTPs in voice messages\nCustomize the Authentify template");
+addAvenueInfo("Untitled02","ig_admin/outofbandauth/configuring_the_voice_message_service_for_oob_otp_delivery.htm","ig_admin/outofbandauth/authentify_international_telephone_number_rules.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"outofbandauth.htm\">Out-of-band one-time password authentication<\/a> > <a href=\"configuring_out-of-band_otp_delivery_in_voice_messages.htm\">Configure delivery of OTPs in voice messages<\/a> > Customize the Authentify template<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_16894_Authentify_template" id="XREF_16894_Authentify_template"></a>Customize 
+ the Authentify template</h1>
+<p class="pparagraph">Authentify requests require an XML template file. 
+ Entrust IdentityGuard includes an Authentify template file that you can 
+ use: <span class="output" style="font-family: Courier; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; ">authentify_template.xml</span>. By 
+ default, the file is found in the following location:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on Windows: 
+ <span class="output">&lt;$IG_HOME&gt;\etc\templates\oob\</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on UNIX: 
+ <span class="output">$IG_HOME/etc/templates/oob/</span></p>
+<p class="pparagraph">Entrust IdentityGuard uses the values set in the 
+ related properties, such as the account name and password, to populate 
+ fields in the XML request. It then adds the user’s telephone number, PVN, 
+ and automatically generated one-time password. You can edit the template 
+ file to change how the fields are arranged.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Before 
+ editing the template, save a copy of the original.</p>
+<p class="nonote"><span class="bold">Note:</span> If you are required to 
+ work with configuration files directly in Microsoft Windows, ensure that 
+ file extensions are visible. See <a href="../../ensure_that_file_extensions_are_visible_in_windows_explorer.htm">Ensure 
+ that file extensions are visible in Windows Explorer</a>.</p>
+<p class="pparagraph">Authentify uses an XML template file, with variables 
+ filled in with the user name and OTP, for example. After Authentify receives 
+ this XML request, the automated phone message is sent quickly, often in 
+ seconds (though the pause can be as long as a minute). The user receiving 
+ the call follows the voice prompts and supplies a PVN, either through 
+ the keypad or by speaking it, and writes down the OTP given. The user 
+ then enters the OTP and the PVN to complete the step-up authentication.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Authentify 
+ messages require the person answering the call to provide a confirmation 
+ number. Entrust IdentityGuard expects the personal verification number 
+ (PVN) as confirmation, so Authentify is not available to users who are 
+ not assigned a PVN. For more information about the PVN, see <a href="../personvernumbersauth/personal_verification_number_overview.htm">Personal 
+ verification number overview</a>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> This is 
+ a sample scenario based on a standard Authentify template. You may be 
+ using a different template, so the sequence events of described here should 
+ be used as an example only.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>User Email Delivery Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nUser Email Delivery Configuration (28)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/unrecognized_and_custom_properties.htm","ig_admin/usingpropeditor/user_sms_delivery_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > User Email Delivery Configuration (28)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_82396_Smart_Credential"></a>User Email Delivery Configuration</h1>
+<p class="pparagraph">Your application can automate the delivery of smart 
+ credential information using email. Using the following properties, you 
+ can set up delivery the card PIN and unblock response, for example, through 
+ email. For more details, see “Configuring smart credential email delivery” 
+ in the <span class="italic">Entrust IdentityGuard Smart Credentials Guide</span>.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instances</a></span><span class="bold"><a name="XREF_step_Configuration" 
+															 id="XREF_step_Configuration"></a></span></p>
+<div class="droptext" id="POPUP541894652" style="display: none;">
+	<p class="lip2list2paragraph">Provides a list of email configurations.</p>
+	<p class="lip2list2paragraph">To create a new instance, enter a unique 
+	 service name in the empty field and click <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">Add</span>. 
+	 The other properties appear. The name replaces the {0} placeholder.</p>
+	<p class="lip2list2paragraph">To delete an instance, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+							 text-decoration: none; ">Remove</span>.</p>
+	<p class="lip2list2paragraph">There is no default configuration.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery Class Name</a></span></p>
+<div class="droptext" id="POPUP541123093" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.user.delivery.smtp.{0}.impl</span></p>
+	<p class="lip2list2paragraph">Sets the Entrust IdentityGuard Java class 
+	 used for email. When you select <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">Email</span>, 
+	 this sets this class:</p>
+	<p class="lip2list2paragraph">com.entrust.identityGuard.common.smartCredentialDelivery.email.SmartCredentialEmailDelivery</p>
+	<p class="lip2list2paragraph">If you select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: .em; 
+														 text-decoration: none; ">Custom</span>, 
+	 enter a valid Java class name in the field that appears. (Used only 
+	 in highly advanced deployments.)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery Configuration Display Name</a></span></p>
+<div class="droptext" id="POPUP541104301" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.user.delivery.smtp.{0}.displayname</span></p>
+	<p class="lip2list2paragraph">The name you use to identify this delivery 
+	 mechanism.</p>
+	<p class="lip2list2paragraph">This is the name you see in the Administration 
+	 interface when associating the user contact information to the delivery 
+	 method.</p>
+	<p class="lip2list2paragraph">Default: the instance name</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery Configuration Type</a></span></p>
+<div class="droptext" id="POPUP599600120" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.user.delivery.smtp.{0}.type</span></p>
+	<p class="lip2list2paragraph">The content of the delivery email. Options 
+	 include:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Grid</span>&#160;– Used to deliver a grid to a user.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Password</span>&#160;– Used to deliver a password.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">PVN</span>&#160;– 
+	 Used to deliver a PVN.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Token</span>&#160;– 
+	 Used to deliver soft token information.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Token Activate</span>&#160;– Used to deliver a mobile soft 
+	 token QR code and password to a user.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">User</span>&#160;– 
+	 Used to deliver</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">User Temporary PIN</span>&#160;– Used to deliver a temporary PIN.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Smart Credential Activate</span>&#160;– Used to deliver smart credential 
+	 information.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Smart Credential PIN</span>&#160;– Used to deliver the smart card 
+	 PIN to the user.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Smart Credential Unblock</span>&#160;– Used to deliver the unblock code 
+	 to the user.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Smart Credential</span>&#160;– Used to deliver any details about 
+	 the smart credential to the end user or administrator. For instance, 
+	 it can be used to send an email with the building access number to 
+	 the facility manager.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery SMTP Server</a></span></p>
+<div class="droptext" id="POPUP541070184" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.user.delivery.smtp.{0}.smtp</span></p>
+	<p class="lip2list2paragraph">Select the SMTP Server from the drop-down 
+	 list.</p>
+	<p class="lip2list2paragraph">This list of servers is defined using 
+	 the SMTP Server properties. See <a href="smtp_server_configuration.htm">SMTP 
+	 Server Configuration (22)</a>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery Template File</a></span></p>
+<div class="droptext" id="POPUP536319378" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.user.delivery.smtp.{0}.template</span></p>
+	<p class="lip2list2paragraph">Provides the location of the Email template. 
+	 Entrust IdentityGuard provides three sample email templates for email 
+	 regarding smart credentials:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>igsample_email_cardpin_template.txt</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>igsample_email_unblockresponse_template.txt</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>igsample_email_expirynotification_template.txt</p>
+	<p class="lip2list2paragraph">You can configure the templates as required 
+	 in a text editor. This template is used by Entrust IdentityGuard to 
+	 create each message sent to a user. For more information, see the 
+	 Entrust IdentityGuard Smart Credentials </p>
+	<p class="lip2list2paragraph">For both Windows and UNIX, the value 
+	 is <span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 9.pt; color: #; letter-spacing: .em; 
+				 text-decoration: none; ">$identityguard.home/etc/templates/smartCredentials/&lt;template&gt;</span></p>
+	<p class="lip2list2paragraph">where <span class="output" style="font-family: Courier; 
+												 font-style: normal; font-weight: normal; 
+												 font-size: 9.pt; color: #; 
+												 letter-spacing: .em; text-decoration: none; ">&lt;template&gt;</span>is 
+	 the name of your template. IdentityGuard automatically replaces <span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 9.pt; color: #; letter-spacing: .em; text-decoration: none; ">$identityguard.home</span> 
+	 with the correct value.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery EGrid</a></span></p>
+<div class="droptext" id="POPUP600538469" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.user.delivery.smtp.{0}.subject</span></p>
+	<p class="lip2list2paragraph">This property will be supported in a 
+	 future release.</p>
+	<p class="lip2list2paragraph">Specifies the EGrid to be emailed to 
+	 the user.</p>
+	<p class="lip2list2paragraph">Default: No EGrid</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery Subject</a></span></p>
+<div class="droptext" id="POPUP538723722" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.user.delivery.smtp.{0}.subject</span></p>
+	<p class="lip2list2paragraph">Provides the text for the subject field 
+	 of the email.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery To Address Type</a></span></p>
+<div class="droptext" id="POPUP600619618" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.user.delivery.smtp.{0}.totype</span></p>
+	<p class="lip2list2paragraph">The type of email address you want to 
+	 use. Options include:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Variable</span> – The email address is pulled from 
+	 an enrollment attribute. For example, the Enterprise sample definition 
+	 includes <span class="output" style="font-family: Courier; font-size: 9.pt; 
+					 color: #; letter-spacing: .em;">emailaddress</span>as 
+	 an enrollment attribute for email. During enrollment, that user’s 
+	 email address is collected and stored under the <span class="output" 
+															 style="font-family: Courier; 
+															 font-size: 9.pt; 
+															 color: #; 
+															 letter-spacing: .em;">emailaddress</span> 
+	 enrollment attribute for their smart credential.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Constant</span>&#160;– This is a “hard coded” email 
+	 address that is used for all emails of this type. For example, facilitymanager@company.com. 
+	 You must define that specific email address in the <span class="bold" 
+	 style="letter-spacing: .em;">Email Delivery To Address</span> setting.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery From Address</a></span></p>
+<div class="droptext" id="POPUP539050162" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.user.delivery.smtp.{0}.fromaddress</span></p>
+	<p class="lip2list2paragraph">Provides the sender’s email address. 
+	 Typically, this is an address within your organization.</p>
+	<p class="lip2list2paragraph">Default: the server’s SMTP address</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Email 
+ Delivery To Address</a></span></p>
+<div class="droptext" id="POPUP539606769" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.user.delivery.smtp.{0}.to</span></p>
+	<p class="lip2list2paragraph">Provides the destination of the email. 
+	 This is dependent on your selection of the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: .em; 
+														 text-decoration: none; ">Email 
+	 Delivery To Address Type</span> setting above.</p>
+	<p class="lip2list2paragraph">If you selected:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Variable</span>&#160;– The value of this property is 
+	 a variable name of one of the smart credential enrollment values. 
+	 The value of that variable is used as the destination address.</p>
+	<p class="lip2list2paragraph">For example, the Enterprise.xml sample 
+	 definition includes <span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 9.pt; color: #; letter-spacing: .em; 
+								 text-decoration: none; ">emailaddress 
+	 </span>as a variable for email.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Constant</span> – The value specified for this 
+	 property is used as the destination address. For example, facilitymanager@company.com.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Include 
+ Registration Password</a></span></p>
+<div class="droptext" id="POPUP602596322" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.user.delivery.smtp.{0}.registrationPassword</span></p>
+	<p class="lip2list2paragraph">If set to true, a registration password 
+	 is created and included in the email notification when it is delivered.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP541894652');
+	TextPopupInit('a2','POPUP541123093');
+	TextPopupInit('a3','POPUP541104301');
+	TextPopupInit('a4','POPUP599600120');
+	TextPopupInit('a5','POPUP541070184');
+	TextPopupInit('a6','POPUP536319378');
+	TextPopupInit('a7','POPUP600538469');
+	TextPopupInit('a8','POPUP538723722');
+	TextPopupInit('a9','POPUP600619618');
+	TextPopupInit('a10','POPUP539050162');
+	TextPopupInit('a11','POPUP539606769');
+	TextPopupInit('a12','POPUP602596322');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

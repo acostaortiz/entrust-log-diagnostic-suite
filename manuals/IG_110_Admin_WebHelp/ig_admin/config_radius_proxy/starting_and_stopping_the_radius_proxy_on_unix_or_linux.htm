@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_radius_proxy.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Starting and stopping the Radius proxy on UNIX or Linux</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring the Entrust IdentityGuard Radius proxy\nStarting and stopping the Radius proxy\nStarting and stopping the Radius proxy on UNIX or Linux");
+addAvenueInfo("Untitled","ig_admin/config_radius_proxy/starting_and_stopping_the_radius_proxy.htm","ig_admin/config_radius_proxy/starting_and_stopping_the_radius_proxy_on_windows.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_radius_proxy.htm\">Configuring the Entrust IdentityGuard Radius proxy<\/a> > <a href=\"starting_and_stopping_the_radius_proxy.htm\">Starting and stopping the Radius proxy<\/a> > Starting and stopping the Radius proxy on UNIX or Linux<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_75986_Managing_the"></a>Starting and stopping the Radius 
+ proxy on UNIX or Linux</h1>
+<p class="pparagraph">Complete one of the following procedures to start 
+ or stop the Radius proxy on UNIX or Linux:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_12708_To_start_and_stop">To start 
+ and stop the Radius proxy on UNIX or Linux</a></p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_91898_To_start_and_stop">To start 
+ and stop Entrust IdentityGuard and the Radius proxy together on UNIX or 
+ Linux</a></p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_92436_To_start_and_stop">To start 
+ and stop the Radius proxy with the Linux service command</a></p>
+<p class="prtproceduretitle"><a name="XREF_12708_To_start_and_stop"></a>To 
+ start and stop the Radius proxy on UNIX or Linux</p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in as the UNIX or Linux user that belongs 
+ to the UNIX or Linux group that was specified during the installation. 
+ </p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Navigate to the <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">$IG_HOME</span>&#160;directory 
+ and enter: </p>
+<p class="cocode">. ./env_settings.sh</p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter the following command at the command 
+ prompt </p>
+<p class="cocode">igradius.sh &lt;command&gt;</p>
+<p class="prpprocedureparagraph">where <span class="output" style="font-family: Courier; 
+											 font-size: 10.0pt;">&lt;command&gt;</span>&#160;is 
+ one of the options in the following table: </p>
+<table class="Entrust_table" width="44.894%" cellspacing="0px">
+	<col style="width: 24.489%;" />
+	<col style="width: 75.511%;" />
+	<tr class="t1st">
+		<th><p class="tahtableheader">Command</p></th>
+		<th><p class="tahtableheader">Description</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">start</p></td>
+		<td class="last"><p class="tattabletext">Starts the Radius proxy.</p>
+		<p class="tattabletext">Entrust IdentityGuard generates audits 
+		 that you can use to determine if the services started successfully 
+		 or failed to start. You will not see an error message if the service 
+		 fails to start.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">stop</p></td>
+		<td class="last"><p class="tattabletext">Stops the Radius proxy.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">status</p></td>
+		<td class="last"><p class="tattabletext">Tells you if the Radius 
+		 proxy is running. If it is running, Entrust IdentityGuard displays 
+		 the process ID number.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">restart</p></td>
+		<td class="last"><p class="tattabletext">Stops and restarts the 
+		 Radius proxy.</p></td>
+	</tr>
+</table>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>When the 
+ Entrust IdentityGuard Radius proxy starts, it checks that at least one 
+ VPN client and one resource (external authentication or Radius server) 
+ are defined and that each server referred to by a client exists. If that 
+ is not the case, it issues an error to the logs and the Radius proxy exits.</p>
+<p class="prtproceduretitle"><a name="XREF_91898_To_start_and_stop"></a>To 
+ start and stop Entrust IdentityGuard and the Radius proxy together on 
+ UNIX or Linux</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in as the UNIX or Linux user that belongs to the UNIX or Linux group that 
+ was specified during the installation. </p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From <span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">$IG_HOME</span>, 
+ source the environment settings file by entering: </p>
+<p class="cocode">. ./env_settings.sh</p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter one of these commands at the command 
+ prompt followed by one of the options in the following table. </p>
+<p class="cocode">igservice.sh identityguard</p>
+<p class="cocode">igservice.sh igradius</p>
+<p class="cocode">igservice.sh all</p>
+<table class="Entrust_table" width="36.615%" cellspacing="0px">
+	<col style="width: 27.765%;" />
+	<col style="width: 72.235%;" />
+	<tr class="t1st">
+		<th><p class="tahtableheader">Command</p></th>
+		<th><p class="tahtableheader">Description</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">start</p></td>
+		<td class="last"><p class="tattabletext">Starts the specified service.</p>
+		<p class="tattabletext">Entrust IdentityGuard does not display 
+		 an error message if the service fails to start. Check the logs 
+		 to determine if startup failed.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">stop</p></td>
+		<td class="last"><p class="tattabletext">Stops the specified service.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">status</p></td>
+		<td class="last"><p class="tattabletext">Tells you if the specified 
+		 service is running.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">restart</p></td>
+		<td class="last"><p class="tattabletext">Stops and restarts the 
+		 specified service.</p></td>
+	</tr>
+</table>
+<p class="prpprocedureparagraph">For example, to restart Entrust IdentityGuard 
+ and the Radius proxy on installations of Entrust IdentityGuard with embedded 
+ Tomcat, enter:</p>
+<p class="cocode">igservice.sh all restart</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>In versions 
+ of Entrust IdentityGuard installed on an existing application server, 
+ you can use any of these commands for the Radius proxy; however, only 
+ the status command is available for Entrust IdentityGuard.</p>
+<p class="prtproceduretitle"><a name="XREF_92436_To_start_and_stop"></a>To 
+ start and stop the Radius proxy with the Linux service command</p>
+<p class="prpprocedureparagraph">You can also use the Linux service command 
+ to start and stop the Entrust IdentityGuard Radius proxy. </p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter this command at the command prompt followed 
+ by one of the options in the following table:</p>
+<p class="cocode">service igradius</p>
+<table class="Entrust_table" width="37.075%" cellspacing="0px">
+	<col style="width: 24.691%;" />
+	<col style="width: 75.309%;" />
+	<tr class="t1st">
+		<th><p class="tahtableheader">Command</p></th>
+		<th><p class="tahtableheader">Description</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">start</p></td>
+		<td class="last"><p class="tattabletext">Starts the specified services.</p>
+		<p class="tattabletext">Entrust IdentityGuard does not display 
+		 an error message if the service fails to start. Check the logs 
+		 to determine if startup failed.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">stop</p></td>
+		<td class="last"><p class="tattabletext">Stops the specified service.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">status</p></td>
+		<td class="last"><p class="tattabletext">Tells you if the specified 
+		 service is running.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">restart</p></td>
+		<td class="last"><p class="tattabletext">Stops and restarts the 
+		 specified service.</p></td>
+	</tr>
+</table>
+<p class="prpprocedureparagraph">If you run the <span class="output">service 
+ igradius</span><span class="output" style="font-family: Courier; font-size: 10.0pt;"> 
+ </span>command as root, the service automatically switches to the UNIX 
+ or Linux user ID originally used to install Entrust IdentityGuard.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

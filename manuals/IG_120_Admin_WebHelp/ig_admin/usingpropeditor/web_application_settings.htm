@@ -1,0 +1,510 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Web Application Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nWeb Application Settings (3)");
+addAvenueInfo("Untitled02","ig_admin/usingpropeditor/vpn_server_configuration.htm","ig_admin/usingpropeditor/ws-security_audit_settings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Web Application Settings (3)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_60394_Web_application" id="XREF_60394_Web_application"></a>Web Application Settings</h1>
+<p class="pparagraph"><a name="IX_bulk_operations" id="IX_bulk_operations"></a><a name="IX_properties_1" id="IX_properties_1"></a><a name="IX_Properties_editor" id="IX_Properties_editor"></a><a name="IX_Administration_interface" id="IX_Administration_interface"></a><a name="IX_properties" id="IX_properties"></a>The Web application settings reflect the URLs for the Administration interface and the Properties Editor, and they control Administration interface features, such as bulk operations and the policy cache. These settings are also used to configure single sign-on to the Administration interface using SAML or smart credentials and to configure a Delegation Administrator for the Administration interface.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Properties 
+ Editor URL</a></span></p>
+<div class="droptext" id="POPUP706777621" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.preditor.url</span></p>
+	<p class="lip2list2paragraph">Contains the URL of the Properties Editor. 
+	 It is set during installation configuration and cannot be edited.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Administration 
+ Interface URL</a></span></p>
+<div class="droptext" id="POPUP706972415" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.webadmin.url</span></p>
+	<p class="lip2list2paragraph">Contains the URL of the Administration 
+	 interface. It is set during installation configuration and cannot 
+	 be edited.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Administration 
+ Interface Smart Credential URL</a></span></p>
+<div class="droptext" id="POPUP707069464" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.webadmin.certificateLogin.url</span></p>
+	<p class="lip2list2paragraph">Specifies the URL used to access the 
+	 Administration interface when logging in with a smart credential. 
+	 Set this property if you set the property <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">Enable 
+	 Certificate Log In to the Administration Interface </span>to <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">True</span>.</p>
+	<p class="lip2list2paragraph">This URL should be the same as the Administration 
+	 interface URL, except for the port number.</p>
+	<p class="lip2list2paragraph">The servlet container must be configured 
+	 to require SSL client authentication at that port. For example, the 
+	 <span class="output">server.xml</span> file in Tomcat Servlet Container 
+	 could have a connector at port 8450 configured with <span class="output">clientAuth=true</span>, 
+	 and this URL could be set to <span class="output">https://hostname.com:8450/IdentityGuardAdmin</span></p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Bulk 
+ File In Memory Threshold</a></span></p>
+<div class="droptext" id="POPUP707131180" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.webadmin.bulk.inMemoryThreshold</span></p>
+	<p class="lip2list2paragraph">Sets the maximum amount of memory used 
+	 for bulk operations in the Administration interface. Entrust IdentityGuard 
+	 writes large bulk files to disk and caches them when they exceed the 
+	 set size. Enter a value in bytes. The default is 148576 bytes (1 MB).</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Bulk 
+ File Maximum Size</a></span></p>
+<div class="droptext" id="POPUP707735971" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.webadmin.bulk.maxFileSize</span></p>
+	<p class="lip2list2paragraph">Sets the maximum size in bytes of files 
+	 imported for bulk operations in the Administration interface. Enter 
+	 a value in bytes.</p>
+	<p class="lip2list2paragraph">If you attempt to load a bulk file that 
+	 exceeds the set limit, the Administration interface cancels the operation 
+	 and displays an error message.</p>
+	<p class="lip2list2paragraph">Default: 52428800 (50 MB)</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><b>C</b>ertificate 
+ File Maximum Size</a></span></p>
+<div class="droptext" id="POPUP707950792" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.webadmin.maxCertFileSize</span></p>
+	<p class="lip2list2paragraph">Specifies the maximum size (in bytes) 
+	 for a certificate file that can be uploaded using the Administration 
+	 interface.</p>
+	<p class="lip2list2paragraph">The certificate file must be kept in 
+	 memory on the server until the upload process is complete, so it is 
+	 recommended that you do not make this value very high.</p>
+	<p class="lip2list2paragraph">Default: 20 kbytes</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Cache 
+ Policy Settings</a></span></p>
+<div class="droptext" id="POPUP707958965" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.webadmin.cachePolicies</span></p>
+	<p class="lip2list2paragraph">Determines if policies are saved in memory 
+	 until the Administrator logs out or re-authenticates. Setting this 
+	 to <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+				 text-decoration: none; ">False</span> can slow performance.</p>
+	<p class="lip2list2paragraph">Default: True</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Direct 
+ Connection to Administration API</a></span></p>
+<div class="droptext" id="POPUP708240947" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.webadmin.directConnection</span></p>
+	<p class="lip2list2paragraph">Determines if the Administration interface 
+	 and Properties Editor services establish a direct connection to the 
+	 Administration API (<span class="bold" style="font-weight: bold; letter-spacing: .em; 
+								 text-decoration: none; ">True</span>) 
+	 or connects via SOAP (<span class="bold" style="font-weight: bold; 
+								 letter-spacing: .em; text-decoration: none; ">False</span>).</p>
+	<p class="nonote"><span class="bold">Note:</span> If you are configuring 
+	 a replica, and you select <span style="font-weight: bold;">Primary 
+	 </span>(to use the primary server’s administration service), then 
+	 this parameter is set to <span style="font-weight: bold;">False</span>.</p>
+	<p class="lip2list2paragraph">Default: True</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Enable 
+ Certificate Log In to Administration interface</a></span></p>
+<div class="droptext" id="POPUP578497883" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.webadmin.certificateLogin.enabled</span></p>
+	<p class="lip2list2paragraph">Set to <span style="font-weight: bold;">True 
+	 </span>to enable administrators to log into the Administration interface 
+	 using smart credentials. For more information, see <a href="../config_adminsso/smart_credential_authentication_to_the_administration_interface.htm">Configuring 
+	 smart credential authentication to the Administration interface</a>.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Password 
+ Login Prompt</a></p>
+<div class="droptext" id="POPUP578703170" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.webadmin.offerpasswordlogin</span></p>
+	<p class="lip2list2paragraph">Determines whether the password login 
+	 prompt (user name and password text boxes) are shown to a user who 
+	 is configured to use smart credential or SAML login to the Entrust 
+	 IdentityGuard Administration interface. </p>
+	<p class="lip2list2paragraph">Set to <span class="bold">True</span> 
+	 to have the user name and password prompts visible as a backup authentication 
+	 method when a user cannot complete smart credential or SAML login.</p>
+	<p class="lip2list2paragraph">Set to <span class="bold">False</span> 
+	 to not show the password login prompt.</p>
+	<p class="lip2list2paragraph">Default: True</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Enable 
+ Token Activation using QR Codes</a></span></p>
+<div class="droptext" id="POPUP708328889" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.webadmin.tokenActivateQRCode</span></p>
+	<p class="lip2list2paragraph">Determines whether the Entrust IdentityGuard 
+	 Web Administration interface displays user token activation QR Codes 
+	 for tokens that support QR Code activation. If <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">True</span>, 
+	 the Web Administration interface displays QR Codes. If <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">False</span>, 
+	 the Web Administration interface does not display QR Codes.</p>
+	<p class="lip2list2paragraph">For more information, see “Administrative 
+	 creation and activation of mobile soft tokens - automatic entry of 
+	 activation information” in the Entrust IdentityGuard Smart Credentials 
+	 Guide.</p>
+	<p class="lip2list2paragraph">Default: True</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><b>I</b>dentityGuard 
+ Self-Service Activation Address</a></span></p>
+<div class="droptext" id="POPUP708525097" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.webadmin.ssmActivationAddress</span></p>
+	<p class="lip2list2paragraph">(Optional) Specifies the IdentityGuard 
+	 Self-Service Address used for soft token and mobile smart credential 
+	 activation.</p>
+	<p class="lip2list2paragraph">This property is required for online 
+	 activation of a soft token through the Administration interface.</p>
+	<p class="lip2list2paragraph">This property is optional for QR code 
+	 activation of a mobile soft token through the Administration interface. 
+	 If specified, this value is included in the soft token activation 
+	 QR code. For more information, see “Administrative creation and activation 
+	 of mobile soft tokens - automatic entry of activation information” 
+	 in the Entrust IdentityGuard Smart Credentials Guide.</p>
+	<p class="lip2list2paragraph">Example value: <span class="output">ssm.example.com:8445/igst</span></p>
+	<p class="lip2list2paragraph">This address should be short both for 
+	 ease of entry when users need to enter it manually and because the 
+	 QR code data can contain a maximum of 250 characters (for activation, 
+	 code, serial number, and this URL).</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a13"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SAML 
+ Single Sign-On Enabled</a></span></p>
+<div class="droptext" id="POPUP708600356" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.SAML.enabled</span></p>
+	<p class="lip2list2paragraph">Set to <span style="font-weight: bold;">True 
+	 </span>to enable administrators to have single sign-on between Federation 
+	 Manager and the Administration interface. For more information, see 
+	 <a href="../usingadmininterface/saml_login_to_the_administration_interface.htm">SAML 
+	 login to the Administration interface</a>.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a14"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SAML 
+ Single Sign-On Login Auto-Redirect</a></span></p>
+<div class="droptext" id="POPUP708664195" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.SAML.autoRedirect</span></p>
+	<p class="lip2list2paragraph">Set to <span style="font-weight: bold;">True 
+	 </span>if you want users to be redirected to the Federation Module’s 
+	 SAML login page when they attempt to access the Administration interface.</p>
+	<p class="lip2list2paragraph">Set to <span style="font-weight: bold;">False 
+	 </span>to have a <span style="font-weight: bold;">SAML Single Sign-On 
+	 </span>link appear at the bottom of the Administration interface’s 
+	 login page. This link takes users to the Federation Module’s SAML 
+	 login page. See <a href="../config_adminsso/how_the_saml_login_works_with_the_administration_interface.htm">How 
+	 SAML login works with the Administration interface</a> for details.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a15"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SAML 
+ Log Level</a></span></p>
+<div class="droptext" id="POPUP712374844" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.logger.org.springframework.security</span></p>
+	<p class="lip2list2paragraph">Defines the logging level for SAML logs.</p>
+	<p class="lip2list2paragraph">The message level can be one of <span 
+	 class="outputbold">ALL</span>,<span class="outputbold">DEBUG</span>, 
+	 <span class="outputbold">INFO</span>, <span class="outputbold">WARN</span>, 
+	 <span class="outputbold">ERROR</span>, <span class="outputbold">FATAL</span><span 
+	 class="bold" style="font-family: Courier; letter-spacing: .em;"> </span>and 
+	 <span class="outputbold">OFF</span>, where <span class="bold" style="font-family: Courier; 
+														 letter-spacing: .em;">ALL 
+	 </span>produces the most messages and <span class="outputbold">FATAL</span><span 
+	 class="bold" style="font-family: Courier; letter-spacing: .em;"> </span>the 
+	 least. This sets the lowest level of message to show; for example, 
+	 <span class="outputbold">WARN</span><span class="bold" style="font-family: Courier; 
+												 letter-spacing: .em;"> 
+	 </span>provides messages of <span class="outputbold">WARN</span>, 
+	 <span class="outputbold">ERROR</span><span class="bold" style="font-family: Courier; 
+												 letter-spacing: .em;"> 
+	 </span>and <span class="outputbold">FATAL</span> status.</p>
+	<p class="lip2list2paragraph">Select <span class="outputbold">OFF</span> 
+	 to stop all messages.</p>
+	<p class="lip2list2paragraph">Default: OFF</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a16"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Delegation 
+ Administrator User ID</a></span></p>
+<div class="droptext" id="POPUP712661270" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.delegation.userid</span></p>
+	<p class="lip2list2paragraph">Specifies the user ID for the delegation 
+	 administrator account that is used to log in to the Administration 
+	 interface using SAML or smart credentials.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a17"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Delegation 
+ Administrator Password</a></span></p>
+<div class="droptext" id="POPUP712688682" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.delegation.password</span></p>
+	<p class="lip2list2paragraph">The password for the delegation administrator 
+	 account specified under <span style="font-weight: bold;">Delegation 
+	 Administrator User ID</span>.</p>
+	<p class="lip2list2paragraph">Select <span style="font-weight: bold;">Encrypt</span> 
+	 to encrypt the password.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a18"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Delegation 
+ Administrator Password Length</a></span></p>
+<div class="droptext" id="POPUP713513982" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.delegation.password.length</span></p>
+	<p class="lip2list2paragraph">Specifies the maximum length of the password. 
+	 This length is respected when the password is auto-updated. If you 
+	 do not specify anything, the maximum length is the length specified 
+	 in the Entrust IdentityGuard password policy.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a19"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Delegation 
+ Administrator Password Auto Update</a></span></p>
+<div class="droptext" id="POPUP713784176" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.delegation.password.update</span></p>
+	<p class="lip2list2paragraph">Set to <span style="font-weight: bold;">True 
+	 </span>if you want the delegation administrator password to be auto-updated 
+	 with a system-generated one when it expires. If you set the password 
+	 to <span style="font-weight: bold;">Password Never Expires </span>(when 
+	 setting up the delegation administrator account), set the <span style="font-weight: bold;">Delegation 
+	 Administrator Password Auto Update</span> setting to <span style="font-weight: bold;">False</span>.</p>
+	<p class="lip2list2paragraph">Default: True</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a20"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Delegation 
+ Administrator Password Auto Update Interval</a></span></p>
+<div class="droptext" id="POPUP714113646" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.delegation.password.update.interval</span></p>
+	<p class="lip2list2paragraph">Specifies the interval, in seconds, after 
+	 which the password is checked to see if it is close to its expiry. 
+	 The password is updated prior to expiry.</p>
+	<p class="lip2list2paragraph">Default: 3600 seconds (1 hour)</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP706777621');
+	TextPopupInit('a2','POPUP706972415');
+	TextPopupInit('a3','POPUP707069464');
+	TextPopupInit('a4','POPUP707131180');
+	TextPopupInit('a5','POPUP707735971');
+	TextPopupInit('a6','POPUP707950792');
+	TextPopupInit('a7','POPUP707958965');
+	TextPopupInit('a8','POPUP708240947');
+	TextPopupInit('a9','POPUP578497883');
+	TextPopupInit('a10','POPUP578703170');
+	TextPopupInit('a11','POPUP708328889');
+	TextPopupInit('a12','POPUP708525097');
+	TextPopupInit('a13','POPUP708600356');
+	TextPopupInit('a14','POPUP708664195');
+	TextPopupInit('a15','POPUP712374844');
+	TextPopupInit('a16','POPUP712661270');
+	TextPopupInit('a17','POPUP712688682');
+	TextPopupInit('a18','POPUP713513982');
+	TextPopupInit('a19','POPUP713784176');
+	TextPopupInit('a20','POPUP714113646');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

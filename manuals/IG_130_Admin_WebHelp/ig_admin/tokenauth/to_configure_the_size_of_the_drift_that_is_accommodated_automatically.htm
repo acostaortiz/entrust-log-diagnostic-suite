@@ -1,0 +1,225 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>To configure the size of the drift that is accommodated automatically</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nToken authentication\nAdminister assigned tokens\nCorrect token drift (synchronizing a token)\nConfigure the drift window and fix token drift\nTo configure the size of the drift that is accommodated automatically");
+addAvenueInfo("r13_std","ig_admin/tokenauth/configuring_the_drift_window_and_fixing_token_drift.htm","ig_admin/tokenauth/to_fix_minor_drift_by_synchronizing_the_token.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"token_authentication.htm\">Token authentication<\/a> > <a href=\"administering_assigned_tokens.htm\">Administer assigned tokens<\/a> > <a href=\"correcting_token_drift_synchronizing_a_token.htm\">Correct token drift (synchronizing a token)<\/a> > <a href=\"configuring_the_drift_window_and_fixing_token_drift.htm\">Configure the drift window and fix token drift<\/a> > To configure the size of the drift that is accommodated automatically<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>To configure the size of the drift that is accommodated automatically</h1>
+<p class="prtproceduretitle">To configure the size of the drift that is 
+ accommodated automatically</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Find 
+ the <span class="output">entrusttoken.conf</span>&#160;file (or an equivalent 
+ file with a different name). If the file does not exist, create it as 
+ a text file. The default location is:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>on Linux, 
+ <span class="output">$IG_HOME/etc/</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>on Microsoft 
+ Windows, <span class="output">&lt;$IG_HOME&gt;\etc\</span></p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Add 
+ one of the following entries to the file:</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 15.12%;" />
+	<col style="width: 84.88%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">Token 
+		 type</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Add...</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Event-based 
+		 tokens</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext" 
+														 style="font-family: 'Courier New';"><span 
+		 class="output">automaticResetEventWindow=&lt;size&gt;</span></p>
+		<p class="tattabletext">where <span class="output">&lt;size&gt;</span>&#160;is 
+		 the number of token responses that Entrust IdentityGuard searches 
+		 during a normal authentication operation to find a token response 
+		 that matches what the user entered.</p>
+		<p class="tattabletext">Rules for allowable <span class="output">&lt;size&gt;</span> 
+		 values:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>must 
+		 be an integer divisible by 10</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>minimum 
+		 10, maximum 200</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>must 
+		 be smaller than the value set in the <span class="output">resetEventWindow</span>&#160;parameter</p>
+		<p class="tattabletext" style="font-family: 'Courier New';"><span 
+		 class="output">automaticResetEventWindow=50</span></p>
+		<p class="tattabletext">The default is 10.</p>
+		<p class="tattabletext">The larger the event window, the greater&#160;the 
+		 risk of someone being able to guess the dynamic token password. 
+		 Larger event windows can also make authentication slower.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Time-based 
+		 tokens</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext" 
+														 style="font-family: 'Courier New';"><span 
+		 class="output">maxTimeSteps=&lt;timestep&gt;</span></p>
+		<p class="tattabletext">where <span class="output" style="font-family: 'Courier New'; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">&lt;timestep&gt;</font></span>&#160;is 
+		 a number of 30-second time steps that Entrust IdentityGuard searches 
+		 in both positive and negative directions during a normal authentication 
+		 operation to find a token response that matches what the user 
+		 entered.</p>
+		<p class="tattabletext">One timestep = 30 seconds.</p>
+		<p class="tattabletext">Examples:</p>
+		<p class="tattabletext"><span class="output">maxTimeSteps=10</span> 
+		 (10 X 30 = 300 seconds = 5 minutes)<br />
+		<span class="output">maxTimeSteps=120</span> (120 X 30 = 3600 seconds 
+		 = 1 hour)</p>
+		<p class="tattabletext">The default is 10 (5 minutes).</p>
+		<p class="tattabletext">The maximum is 120 (1 hour). </p>
+		<p class="tattabletext">As the clock window is set larger, the 
+		 risk of someone being able to guess the dynamic token password 
+		 increases.</p>
+		<p class="tattabletext">Exactly how long a response is valid depends 
+		 on how much of the time window had elapsed the last time the user 
+		 authenticated. Therefore, a token response can be said to be valid 
+		 for at least <span class="output">maxTimeSteps</span> X 30 and 
+		 at most (<span class="output">maxTimeSteps</span> + 1) X 30.</p>
+		<p class="tantablenote"><span class="bold">Note</span>: Although 
+		 this is atypical, some tokens (for example, OATH tokens) might 
+		 use different time-step values such as 60 seconds.</p></td>
+	</tr>
+</table>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Save 
+ the file.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

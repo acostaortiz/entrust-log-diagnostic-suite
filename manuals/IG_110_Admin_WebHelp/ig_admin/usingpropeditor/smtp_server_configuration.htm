@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>SMTP Server Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nSMTP Server Configuration (22)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/sms_server_configuration.htm","ig_admin/usingpropeditor/snmp_settings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > SMTP Server Configuration (22)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_configuring_6"></a><a name="IX_properties_16"></a><a name="IX_configuring_5"></a><a 
+	 name="XREF_48177_SMTP_Server"></a>SMTP Server Configuration</h1>
+<p class="pparagraph">To use the Entrust IdentityGuard OTP email feature&#160;and 
+ to enable user email delivery and audit email delivery, you must configure 
+ an SMTP or&#160;SMTPS server.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instance</a></span></p>
+<div class="droptext" id="POPUP630274715" style="display: none;">
+	<p class="lip2list2paragraph">Provides a list of SMTP configurations.</p>
+	<p class="lip2list2paragraph">To create a new instance. enter a unique 
+	 service name in the empty field and click <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">Add</span>. 
+	 The other properties appear. The name replaces the {0} placeholder.</p>
+	<p class="lip2list2paragraph">To delete an instance, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+							 text-decoration: none; ">Remove</span>.</p>
+	<p class="lip2list2paragraph">There is no default configuration.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMTP 
+ or SMTPS</a></span></p>
+<div class="droptext" id="POPUP698083229" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.smtp.{0}.usesmtp</span></p>
+	<p class="lip2list2paragraph">Choose either SMTP or SMTPS for this 
+	 instance.</p>
+	<p class="lip2list2paragraph">There is no default.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMTP 
+ Server Host</a></span></p>
+<div class="droptext" id="POPUP697904183" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.smtp.{0}.mail.smtp.host</span></p>
+	<p class="lip2list2paragraph">This property specifies the SMTP server 
+	 to connect to. This can be a host name or an IP address.</p>
+	<p class="nonote"><span class="bold">Note:</span> This property is 
+	 not used if this server is an SMTPS server.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMTP 
+ Server Port</a></span></p>
+<div class="droptext" id="POPUP697258557" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">mail.smtp.port</span></p>
+	<p class="lip2list2paragraph">Optional. This property specifies the 
+	 SMTP port.</p>
+	<p class="lip2list2paragraph">Default: 25</p>
+	<p class="nonote"><span class="bold">Note:</span> This property is 
+	 not used if this server is an SMTPS server.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMTPS 
+ Server Host</a></span></p>
+<div class="droptext" id="POPUP697224804" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.smtp.{0}.mail.smtps.host</span></p>
+	<p class="lip2list2paragraph">This property specifies the SMTPS server 
+	 to connect to. This can be a host name or an IP address.</p>
+	<p class="nonote"><span class="bold">Note:</span> This property is 
+	 not used if this server is an SMTP server.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMTPS 
+ Server Port</a></span></p>
+<div class="droptext" id="POPUP697011711" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">mail.smtps.port</span></p>
+	<p class="lip2list2paragraph">Optional. This property specifies the 
+	 SMTPS port.</p>
+	<p class="lip2list2paragraph">Default: 465</p>
+	<p class="nonote"><span class="bold">Note:</span> This property is 
+	 not used if this server is an SMTP server.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Perform 
+ SMTP User-based Authentication</a></span></p>
+<div class="droptext" id="POPUP696089489" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.smtp.{0}.mail.smtp.auth</span></p>
+	<p class="lip2list2paragraph">If this property is <span style="font-family: Courier;">true</span>, 
+	 Entrust IdentityGuard attempts to authenticate the user to the SMTPS 
+	 server.</p>
+	<p class="lip2list2paragraph">This property only applies if an SMTPS 
+	 server is being used.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+	<p class="nonote"><span style="font-weight: bold;">Note: Perform SMTPS 
+	 User-based Authentication </span>and <span style="font-weight: bold;">Perform 
+	 SMTP User-based Authentication </span>are mutually exclusive. They 
+	 cannot both be <span class="bold">true</span><span style="font-family: Courier;"> 
+	 </span>at the same time.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Perform 
+ SMTPS User-based Authentication</a></span></p>
+<div class="droptext" id="POPUP696055012" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.smtp.{0}.mail.smtps.auth</span></p>
+	<p class="lip2list2paragraph">If this property is <span style="font-family: Courier;">true</span>, 
+	 Entrust IdentityGuard attempts to authenticate the user to the SMTP 
+	 server.</p>
+	<p class="lip2list2paragraph">This property only applies if an SMTP 
+	 server is being used.</p>
+	<p class="lip2list2paragraph">Default: <span style="font-family: Courier;">false</span></p>
+	<p class="nonote"><span class="bold">Note:</span><span style="font-weight: bold;"> 
+	 Perform SMTPS User-based Authentication </span>and <span style="font-weight: bold;">Perform 
+	 SMTP User-based Authentication </span>are mutually exclusive. They 
+	 cannot both be <span class="bold">true</span><span style="font-family: Courier;"> 
+	 </span>at the same time.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />User 
+ Name for SMTP/SMTPS User-based Authentication</a></span></p>
+<div class="droptext" id="POPUP696355948" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.smtp.{0}.mail.smtp.user</span></p>
+	<p class="lip2list2paragraph">This property specifies the user name 
+	 for SMTPS or SMTP authentication, and is used if SMTP or SMTPS user-based 
+	 authentication is enabled.</p>
+	<p class="lip2list2paragraph">Example: <span class="output">IGtest12@gmail.com</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Password 
+ for SMTP/SMTPS User-based Authentication</a></span></p>
+<div class="droptext" id="POPUP696312238" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.smtp.{0}.mail.smtp.password</span></p>
+	<p class="lip2list2paragraph">The password used to authenticate the 
+	 SMTP or SMTPS user to the SMTP/SMTPS server, and is used if SMTP or 
+	 SMTPS user-based authentication is enabled.</p>
+	<p class="lip2list2paragraph">Select <span style="font-weight: bold;">Encrypt</span> 
+	 to encrypt the password when storing it.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />From 
+ Email Address</a></span></p>
+<div class="droptext" id="POPUP696098986" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.smtp.{0}.mail.smtp.from</span></p>
+	<p class="lip2list2paragraph">This property is mandatory. This is the 
+	 email address associated with the account from which all Entrust IdentityGuard 
+	 messages are sent.</p>
+	<p class="lip2list2paragraph">Example: <span class="output">igadmin@anybank.com</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Enable 
+ Debug Logging</a></span></p>
+<div class="droptext" id="POPUP695452378" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.smtp.{0}.debug</span></p>
+	<p class="lip2list2paragraph">Set this property to <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">True 
+	 </span>to enable javamail debug logging.</p>
+	<p class="lip2list2paragraph">When javamail debug logging is enabled, 
+	 detailed information about email messages—including the email message 
+	 content—is output to your application server’s log file, or to the 
+	 screen (if you are using the Master user shell). For example, if you 
+	 run the command <span class="output">user otp deliver jsmith “Home 
+	 Email</span>” in the Master user shell, the content of “Home Email” 
+	 is displayed on-screen when <span class="bold" style="letter-spacing: .em;">Enable 
+	 Debug Logging </span>is <span class="bold" style="letter-spacing: .em;">True</span>. 
+	 Since email messages may contain sensitive information, such as OTPs, 
+	 only enable debug logging temporarily for troubleshooting purposes.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP630274715');
+	TextPopupInit('a2','POPUP698083229');
+	TextPopupInit('a3','POPUP697904183');
+	TextPopupInit('a4','POPUP697258557');
+	TextPopupInit('a5','POPUP697224804');
+	TextPopupInit('a6','POPUP697011711');
+	TextPopupInit('a7','POPUP696089489');
+	TextPopupInit('a8','POPUP696055012');
+	TextPopupInit('a9','POPUP696355948');
+	TextPopupInit('a10','POPUP696312238');
+	TextPopupInit('a11','POPUP696098986');
+	TextPopupInit('a12','POPUP695452378');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_security.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Updating the master keys and repositories</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nManaging keys and passwords\nUpdating the master keys and repositories");
+addAvenueInfo("Untitled02","ig_admin/config_security/recovering_from_hardware_changes_when_the_master_keys_were_bound.htm","ig_admin/config_security/updating_the_hsm_password.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"managing_keys_and_passwords.htm\">Managing keys and passwords<\/a> > Updating the master keys and repositories<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_53515_Updating_the" id="XREF_53515_Updating_the"></a>Updating the master keys and repositories</h1>
+<p class="pparagraph">Master keys are used to protect all sensitive information in the repositories. If&#160;you think that this protection may be compromised—perhaps an unauthorized person has learned the master user passwords—you should do the following:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Change all your master user passwords. See the <span style="font-style: italic;">Entrust IdentityGuard Master User Shell Reference</span> for instructions.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Update the master keys on the primary and replica system. See the <span style="font-style: italic;">Entrust IdentityGuard Master User Shell Reference</span> for instructions.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Do a bulk re-encryption of all repository data, as described in <a href="#XREF_50060_To_update_the">To update the repository</a>.</p>
+
+<p class="pparagraph">Even if there is no security breach, updating encryption keys on a regular basis is good policy. In this case, just update the master keys without doing a bulk re-encryption. Entrust IdentityGuard will gradually apply the new keys to repository data as it changes.</p>
+<p class="pparagraph">Follow the instructions below to update the master keys and repositories. These instructions work regardless of where the master keys are stored—either in software, on the Entrust IdentityGuard server, or on a Hardware Security Module (HSM).</p>
+<p class="prtproceduretitle"><a name="XREF_46735_To_update_the" id="XREF_46735_To_update_the"></a>To update the master keys</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Stop all Entrust IdentityGuard services on the primary and replica systems. For instructions, see the <span style="font-style: italic;">Entrust IdentityGuard Installation Guide</span>.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Back up Entrust IdentityGuard. For instructions, see the <span style="font-style: italic;">Entrust IdentityGuard Installation Guide</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the primary server:</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Master user shell.&#160;See <a href="../usingadmininterface/using_the_master_user_shell.htm#XREF_32785_Using_the_master">Using the Master user shell</a>.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Do not log in to the Master user shell.&#160;All master users must be logged out before the master keys can be updated.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter the command</p>
+
+<p class="cocode">system keyupdate</p>
+<p class="prspsubprocedureparagraph">Or, to add a reason for the update, enter:</p>
+<p class="cocode">system keyupdate -reason &lt;text&gt;</p>
+<p class="prspsubprocedureparagraph">The text is added to audit message AUD116.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter the three master user passwords when Entrust IdentityGuard prompts for them.</p>
+
+<p class="prpprocedureparagraph">Entrust IdentityGuard generates new master keys and updates the master key file (.enc) on the primary system.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Back up the new master key file (.enc).</p>
+
+<p class="prpprocedureparagraph">Entrust IdentityGuard services cannot start and master users cannot log in without the new master key file.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Copy the master key file (.enc) from the primary system onto each replica system.&#160;</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If the master keys are stored on an HSM, and different HSMs are used by different replicas, replicate the master keys from the primary server’s HSM to all replica HSMs. HSMs offer dedicated tools to perform this key replication. Consult your HSM vendor’s documentation for details.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Re-initialize the replica systems like this:</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Master user shell on the replica systems.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter the command:</p>
+
+<p class="cocode"><span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">i</span>nit -replica -overwrite</p>
+<p class="liplistparagraph">For details on the prompts that appear, see the replica section in the <span class="italic" style="font-style: italic; letter-spacing: 0.00em; text-decoration: none;">Entrust IdentityGuard Installation Guide</span>.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you want to bind the key protection file to the replica system, enter the command:</p>
+
+<p class="cocode">system bind</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start all Entrust IdentityGuard services on the primary and replica systems.</p>
+
+<p class="pparagraph">After you update the master keys, Entrust IdentityGuard gradually applies the new keys to repository content by securing new or updated data with the new master keys.</p>
+<p class="pparagraph">Alternatively, you can force an immediate bulk update of all protected data in the repository, as described in the following procedure.</p>
+<p class="prtproceduretitle"><a name="XREF_50060_To_update_the" id="XREF_50060_To_update_the"></a>To update the repository</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To force a bulk update of the repository, enter this command in the Master user shell on the primary system</p>
+
+<p class="cocode">system repositoryupdate -start</p>
+<p class="prpprocedureparagraph">where <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">-start</span> begins the process.</p>
+<p class="prpprocedureparagraph">There are additional parameters available:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">-status</span> is an optional parameter that provides a small status report</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">-continue</span>&#160;is an optional parameter that instructs the process to continue even when errors occur</p>
+
+<p class="prpprocedureparagraph">If you do not include a parameter with this command, Entrust IdentityGuard displays just a status report.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> You do not need to enter this command on more than one Entrust IdentityGuard machine.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="FM_Procnum"><span style="word-spacing: normal; font: 6.0pt 'Times New Roman';">&#160;</span></span>If you need to stop a bulk re-encryption at any time, enter:</p>
+
+<p class="cocode">system repositoryupdate -stop</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To resume a bulk re-encryption that was stopped, enter:</p>
+
+<p class="cocode">system repositoryupdate -resume</p>
+<p class="pparagraph">This command applies to any Entrust IdentityGuard database or LDAP repository, and any file-based repositories used for preproduced cards or unassigned tokens.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

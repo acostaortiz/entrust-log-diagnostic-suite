@@ -1,0 +1,199 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configure self-administration for WatchdataQRO tokens</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addAvenueInfo("Untitled02","ig_admin/tokenauth/configure_watchdataqro_token_self-registration.htm","ig_admin/tokenauth/unlock_a_watchdataqro_token.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("Configure self-administration for WatchdataQRO tokens<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Configure self-administration for WatchdataQRO tokens</h1>
+<p class="pparagraph">Complete this procedure if you are using Entrust IdentityGuard Self-Service Module and you users to be able to administer their own WatchdataQRO tokens through your Self-Service Web site.</p>
+<p class="pparagraph">The procedure is the same as for self-administration for other types of hardware tokens, with the following exceptions:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>WatchdataQRO tokens must be auto-assigned to users (that is, a specific token must be assigned to a specific user by an administrator before it is given to the user</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If you created groups for uninitialized and initialized tokens (as recommended in <a href="create_groups_for_initialized_and_uninitialized_tokens.htm">Create groups for&#160;uninitialized and initialized tokens</a>), specify the tokens should be assigned from an alternate group, which is the group of initialized tokens.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>token synchronization is not applicable to this type of token because it has neither a clock nor an event timer that could get out of sync</p>
+
+<p class="prtproceduretitle">To configure self-administration of Watchdata QRO tokens</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log in to Self-Service Module Configuration interface.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click <span style="font-weight: bold;">Administration</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From the <span class="bold">Table of Contents</span>, select <span class="bold">Hardware</span>&#160;<span style="font-weight: bold;">Token Self Administration</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold">Hardware</span>&#160;<span style="font-weight: bold;">Token Self-Administration</span> section appears.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To configure Self-Service self-administration actions for WatchdataQRO tokens, answer the following questions in the <span class="bold">Hardware Token Self-Administration</span>&#160;section. For details about the other configuration options in this section, see "Configure hardware token self-administration" in the <span class="italic">Entrust IdentityGuard Self-Service Module Installation and Configuration Guide</span>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span class="bold">Do you want to allow users to request a new hardware token if they do not already have a token?</span></p>
+
+<p class="liplistparagraph">Select <span class="italic"></span><span class="bold">Yes</span><span class="italic">,</span></p>
+<p class="liplistparagraph"><span class="italic"><img src="../../ssm-self-admin_watchdataqro_token404824192.png" alt="" style="border: none;" width="600" height="585" border="0" /></span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span class="bold">1. Select the groups whose users are allowed to request new hardware tokens from the list below. This list contains all Entrust IdentityGuard groups.</span></p>
+
+<p class="lip2list2paragraph">Select Entrust IdentityGuard user groups to which you want to offer WatchdataQRO tokens..</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span class="bold">2. Do you want to override the default hardware token distribution settings or, if applicable, those that were established for self-registration?</span></p>
+
+<p class="lip2list2paragraph">Select <span class="bold">No</span> if you have configured self-registration for WatchdataQRO tokens, and you want the same settings to apply when users administer tokens after registration. In this scenario, no further configuration is required to support the WatchdataQRO tokens. Go to step 5.</p>
+<p class="lip2list2paragraph">Select <span class="bold">Yes</span> if you have not configured self-registration for these tokens, or if you want the settings to be different for users who request tokens after they have already registered.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span class="bold">1.Should a hardware token automatically be assigned to a user? If No, then it is up to a human administrator to manually choose a hardware token for a user.</span></p>
+
+<p class="lip2list2paragraph">Select <span class="bold">Yes</span>. When a user requests a token in Self-Service, Self-Service Module selects the next available token of the type specified as the preferred hardware token vendor. Self-Service Module sends an email to the administrator requesting a token for the user, and specifies the serial number of the token that should be delivered. That specific token must be initialized and delivered to the user.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span class="bold">2. Select a preferred hardware token vendor</span>:</p>
+
+<p class="lip2list2paragraph">Select <span class="bold">watchdata</span>.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span class="bold">3. Would you like to force users to activate their hardware tokens using self-administration? If No, users can start using their hardware tokens as soon as they receive them.</span></p>
+
+<p class="lip2list2paragraph">Select <span class="bold">Yes</span> if you want users to perform an authentication in Self-Service to activate the token. This setting assigns the tokens in the <span class="bold">hold-pending</span> state, and requires that users select the Self-Administration action <span class="bold">I'd like to activate my hardware token so I can start using it</span> to change the token to the <span class="bold">current</span> state, after which it can be used for authentication.</p>
+<p class="lip2list2paragraph">If you select <span style="font-weight: bold;">No</span>, tokens are assigned in the <span class="bold">pending</span> state and users can start using their tokens when they receive them.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span class="bold">4. If an unassigned token associated with the user's group is not available, select an alternate group from which the token can be obtained.</span></p>
+
+<p class="lip2list2paragraph">From the drop-down list, select the group you created to store initialized tokens. In this example, the group is <span class="output">W_initialized</span>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If you want users to be able to request a additional WatchadataQRO tokens, select <span class="bold">Yes</span> under <span class="bold">Do you want to allow users to request a hardware token eve if they currently have a usable token?</span> Follow the configuration advice in step 4 to configure behavior for this scenario..</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click <span style="font-weight: bold;">Validate &amp; Save</span>.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Restart the Self-Service Module service to have the changes take effect.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

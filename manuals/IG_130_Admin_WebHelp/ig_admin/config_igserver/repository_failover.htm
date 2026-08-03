@@ -1,0 +1,208 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Repository failover</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nConfiguring repository failover\nFailover scenarios\nRepository failover");
+addAvenueInfo("r13_std","ig_admin/config_igserver/server_hot-standby_and_load-balancing.htm","ig_admin/config_igserver/radius_server_failover.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"configuring_repository_failover.htm\">Configuring repository failover<\/a> > <a href=\"failover_scenarios.htm\">Failover scenarios<\/a> > Repository failover<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Repository failover</h1>
+<p class="pparagraph">You can configure repository failover to ensure there 
+ are backups if the primary repository fails. To configure failover, use 
+ the Properties Editor to specify multiple repository URLs—either LDAP-compliant 
+ directories or databases—in the Entrust IdentityGuard properties file. 
+ </p>
+<p class="pparagraph">There are two repository failover scenarios: </p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>local</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>geographically dispersed</p>
+<h2>Local repository failover</h2>
+<p class="pparagraph">In this scenario, the users are usually in one office 
+ or city. You can use two databases or two LDAP-compliant directories in 
+ this scenario, but using one of each is not recommended.</p>
+<p class="pparagraph">There is a primary repository and a secondary repository. 
+ The two repositories are kept synchronized. If the primary repository 
+ fails, traffic is redirected to the secondary repository.</p>
+<p class="pparagraph">The following illustration provides an example of 
+ a local repository failover scenario.</p>
+<p class="pparagraph"><img src="../../failover_repository_local.png" alt="" 
+							 style="border: none;" border="0" /></p>
+<p class="pparagraph">&#160;</p>
+<h2>Geographically-dispersed repository failover</h2>
+<p class="pparagraph">This scenario demonstrates how you can deploy failover 
+ for Entrust IdentityGuard users in two different cities (for example, 
+ Los Angeles and New York). The Entrust IdentityGuard server in each city 
+ is connected to its own repository. If the repository in Los Angeles fails, 
+ the Entrust IdentityGuard server in Los Angeles can connect to the New 
+ York repository.</p>
+<p class="pparagraph"><span class="bold">Standard multi-site failover configuration</span></p>
+<p class="pparagraph">In the standard configuration, each Entrust IdentityGuard 
+ server works from its own repository, but the two repositories must be 
+ perfect replicas of each other.</p>
+<p class="pparagraph">Note that when you use geographically-dispersed Entrust 
+ IdentityGuard servers, both servers can perform authentication tasks, 
+ but the primary Entrust IdentityGuard server must provide the Administration 
+ services.</p>
+<p class="pparagraph">The following illustration provides an example of 
+ a standard geographically-dispersed failover scenario. The solid lines 
+ show the normal operating connections, and the dotted lines show possible 
+ failover connections.</p>
+<p class="pparagraph"><img src="../../failover_repository_geog.png" alt="" 
+							 style="border: none;" border="0" /></p>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph"><span class="bold">Advanced multi-site failover configuration</span></p>
+<p class="pparagraph">You can also set up separate storage for user, unassigned 
+ token, and preproduced grid data, either in the same repository or in 
+ separate repositories.</p>
+<p class="pparagraph">One site must maintain the master repository containing 
+ all of the data for the full Entrust IdentityGuard system. The secondary 
+ repository maintains its own local data, which must be uploaded to the 
+ master repository at regular intervals.</p>
+<p class="pparagraph">In this more advanced configuration, the master repository 
+ contains all of the data and policy information, while the secondary repository 
+ contains only local data. This allows high availability without worrying 
+ about the same data being changed in both repositories. Organizational 
+ procedures ensure that the local data in each site is read-only from the 
+ other site, while maintaining all the data from the entire Entrust IdentityGuard 
+ system in the master repository.</p>
+<p class="pparagraph">The following illustration provides an example of 
+ an advanced multi-site failover scenario. In this example, users in Los 
+ Angeles would still have access to their applications and be able to authenticate 
+ using the New York server. </p>
+<p class="pparagraph"><img src="../../failover_repository_partitions.png" 
+							 alt="" style="border: none;" border="0" /></p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

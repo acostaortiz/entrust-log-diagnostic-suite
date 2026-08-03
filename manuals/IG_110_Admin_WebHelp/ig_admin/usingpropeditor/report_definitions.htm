@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Report Definitions</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nReport Definitions (45)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/radius_server_configuration.htm","ig_admin/usingpropeditor/repository_settings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Report Definitions (45)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_defining_reports"></a><a name="IX_configuring_properties_1"></a><a 
+	 name="XREF_14536_Report_Settings"></a>Report Definitions</h1>
+<p class="pparagraph">The Entrust IdentityGuard reporting feature includes 
+ the basic set of reports to generate. You can use the existing reports 
+ and you can create your own.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instances</a></span></p>
+<div class="droptext" id="POPUP661880252" style="display: none;">
+	<p class="lip2list2paragraph">Sets the report name. Choose one of the 
+	 existing reports or create your own. </p>
+	<p class="lip2list2paragraph">To create a new report, enter a unique 
+	 name in the empty field and click <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Add</span>. 
+	 The other properties appear. The report name replaces the {0} placeholder.</p>
+	<p class="nonote"><span style="font-weight: bold;">Note:</span>&#160;Creating 
+	 your own templates requires knowledge of JasperReports, and they have 
+	 to be compiled before you can use them.</p>
+	<p class="lip2list2paragraph">To delete a report, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Remove</span>.</p>
+	<p class="nonote"><span style="font-weight: bold;">Note:</span> You 
+	 cannot remove built-in reports.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Report 
+ Data Source</a></span></p>
+<div class="droptext" id="POPUP683657312" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.report.{}.datasource</span></p>
+	<p class="lip2list2paragraph">When you use one of the predefined reports, 
+	 the data source is automatically selected for you.</p>
+	<p class="lip2list2paragraph">If you define a new report, enter the 
+	 data source here. The choices are:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Audits</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Cards</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Certificates</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Digital 
+	 Ids</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Smart 
+	 Credentials</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Tokens</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Unassigned 
+	 Cards</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Unassigned 
+	 Smart Credentials</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Unassigned 
+	 Tokens</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Users</p>
+	<p class="lip2list2paragraph">Default: none</p>
+	<p class="nonote"><span class="bold">Note:</span> This is a mandatory 
+	 setting; you must select a value.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Report 
+ Display Name</a></span></p>
+<div class="droptext" id="POPUP698422695" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.report.{}.displayname</span></p>
+	<p class="lip2list2paragraph">Sets the name to be displayed for your 
+	 report in the Administration interface, in the Master user shell <span 
+	 class="output">report get</span> response, and optionally, in your 
+	 client application. The maximum <span style="font-weight: bold;">Report 
+	 Display Name </span>length is 255 characters.</p>
+	<p class="lip2list2paragraph">By default, the display name is the <span 
+	 style="font-weight: bold;">Configuration Instance</span>.</p>
+	<p class="nonote"><span class="bold">Note:</span> The <span style="font-weight: bold;">Report 
+	 Display Name </span>must be unique across all Entrust IdentityGuard 
+	 instances.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Report 
+ Information</a></span></p>
+<div class="droptext" id="POPUP698442838" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.report.{}.helpmessage</span></p>
+	<p class="lip2list2paragraph">Use this property to define information 
+	 to be displayed in the Administration interface.</p>
+	<p class="lip2list2paragraph">A message you define here can also be 
+	 displayed in your client application, if desired. Including a message 
+	 is recommended because it communicates report information to other 
+	 administrators who may choose to run it.</p>
+	<p class="lip2list2paragraph">Maximum length: 248 characters</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Report 
+ Template Name</a></span></p>
+<div class="droptext" id="POPUP706372976" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.report.{}.templatename</span></p>
+	<p class="lip2list2paragraph">When you use one of the built-in reports, 
+	 this template file name is selected for you.</p>
+	<p class="lip2list2paragraph">If you define a new report, enter the 
+	 report template name here. The report template name cannot include 
+	 the path; the path is always the path defined in the <span style="font-weight: bold;">Report 
+	 Template Directory</span> property.</p>
+	<p class="lip2list2paragraph">The maximum length of the template filename 
+	 is 64 characters. &#160;If an extension is not specified, the <span 
+	 style="font-family: Courier;">.jasper</span> extension is automatically 
+	 appended.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allowable 
+ Report Formats</a></span></p>
+<div class="droptext" id="POPUP706390020" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.report.{}.formats</span></p>
+	<p class="lip2list2paragraph">This is the output format for the report. 
+	 The choices are:</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Portable 
+	 Document Format (PDF)</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Comma 
+	 Separated Values (CSV)</p>
+	<p class="lip2list2paragraph">When you use one of the predefined reports, 
+	 the output format is automatically selected for you.</p>
+	<p class="lip2list2paragraph">Default: All report formats</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Generated Reports</a></span></p>
+<div class="droptext" id="POPUP706421633" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.report.{}.maxinstances</span></p>
+	<p class="lip2list2paragraph">Use this property to define how many 
+	 copies of the report to keep in the output directory. When the limit 
+	 is reached, the oldest copy is deleted. This includes all existing 
+	 formats of the report (both PDF and CSV may be present), and the metadata 
+	 file.</p>
+	<p class="lip2list2paragraph">A value of (zero) means there is no limit.</p>
+	<p class="lip2list2paragraph">Default: 25</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Records</a></span></p>
+<div class="droptext" id="POPUP697509445" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.report.{}.maxrecords</span></p>
+	<p class="lip2list2paragraph">Use this property to define how many 
+	 records to process in creating this report. When the limit is reached, 
+	 processing stops, and the report output is truncated.</p>
+	<p class="lip2list2paragraph">If the report is truncated, a message 
+	 is added to the report, and an audit message is logged.</p>
+	<p class="lip2list2paragraph">A value of (zero) means there is no limit. 
+	 <span style="font-weight: bold;">Maximum Number of Records</span>must 
+	 be an integer.</p>
+	<p class="lip2list2paragraph">Default:</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Generation Time</a></span></p>
+<div class="droptext" id="POPUP692727416" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.report.{}.maxtime</span></p>
+	<p class="lip2list2paragraph">Use this property to define how much 
+	 time, in minutes, to allow for processing this report. When the limit 
+	 is reached, Entrust IdentityGuard attempts to stop the report generation.</p>
+	<p class="lip2list2paragraph">An audit message is added to the audit 
+	 log if <span style="font-weight: bold;">Maximum Generation Time</span> 
+	 is reached.</p>
+	<p class="lip2list2paragraph">A value of (zero) means there is no limit. 
+	 <span style="font-weight: bold;">Maximum Generation Time </span>must 
+	 be an integer.</p>
+	<p class="lip2list2paragraph">Default:60 minutes</p>
+	<p class="nonote"><span class="bold">Note:</span> The stopping time 
+	 for report generation will be approximately equal to the maximum time 
+	 you set here. Report generation will not stop at exactly the time 
+	 specified.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP661880252');
+	TextPopupInit('a2','POPUP683657312');
+	TextPopupInit('a3','POPUP698422695');
+	TextPopupInit('a4','POPUP698442838');
+	TextPopupInit('a5','POPUP706372976');
+	TextPopupInit('a6','POPUP706390020');
+	TextPopupInit('a7','POPUP706421633');
+	TextPopupInit('a8','POPUP697509445');
+	TextPopupInit('a9','POPUP692727416');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Mobile Facial Recognition licenses</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nManaging licenses\nHow license counting works\nMobile Facial Recognition licenses");
+addAvenueInfo("r13_std","ig_admin/config_licenses/biometrics_licenses.htm","ig_admin/config_licenses/display_license_information.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"managing_licenses.htm\">Managing licenses<\/a> > <a href=\"how_license_counting_works.htm\">How license counting works<\/a> > Mobile Facial Recognition licenses<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Mobile Facial Recognition licenses</h1>
+<p class="pparagraph"><span class="italic">Currently, this feature is supported 
+ only in the Android and iOS versions of the Entrust IdentityGuard mobile 
+ apps. </span></p>
+<p class="pparagraph"><span class="bold">This license is not required for 
+ Face ID on iPhone X and later models of iPhone.</span></p>
+<p class="pparagraph">Entrust IdentityGuard keeps track of the number of 
+ users licensed to use facial recognition biometrics with mobile soft tokens 
+ and mobile smart credentials. The feature is used as an alternative to 
+ a PIN.</p>
+<p class="pparagraph"><span class="bold">For mobile soft tokens</span>, 
+ one license makes the feature available for all of the user's soft tokens. 
+ If any of the soft tokens requires a PIN, the same protection (PIN, or 
+ one of the PIN alternatives, face recognition or fingerprint recognition) 
+ is used for all of the tokens in the app. Face recognition is used to 
+ unlock the app for use.</p>
+<p class="nonote"><span class="bold">Note:</span> A user can enable only 
+ one biometric PIN alternative at a time. That means that a user can enable 
+ either face recognition or fingerprint recognition (Fingerprint ID in 
+ the Android app, Touch ID in the iOS app), but not both.</p>
+<p class="pparagraph"><span class="bold">For mobile smart credentials</span>, 
+ one license makes the feature available for all of the user's smart credentials, 
+ however, it is up to the identity provider policy settings to dictate 
+ whether face recognition is permitted in place of a PIN to enable use 
+ of the smart credential. For users, this means that to authenticate with 
+ some smart credential identities they must enter a PIN and for others 
+ they might be able to use face recognition.</p>
+<p class="nonote"><span class="bold">Notes:</span> <br />
+A user can enable only one biometric PIN alternative at a time. That means 
+ that a user can enable either face recognition or fingerprint recognition 
+ (Fingerprint ID in the Android app, Touch ID in the iOS app), but not 
+ both .<br />
+<br />
+iPhone X does not support Touch ID and the Entrust IdentityGuard Mobile 
+ Smart Credential app uses the iPhone X native Face ID feature. Use of 
+ Face ID on iPhone X does not require a Mobile Facial Recognition license. 
+ Due to the requirements of the underlying technology, use of iPhone X 
+ Face ID is controlled by the Smart Credential policy, <span style="font-weight: bold;">Mobile 
+ Smart Credential Allow Fingerprint Authentication</span>. For iOS devices 
+ that support both touch ID and facial recognition (pre-iPhone X), the 
+ facial recognition feature is enabled using the Smart Credential policy 
+ <span style="font-weight: bold;">Mobile Smart Credential Allow Facial 
+ Authentication</span> and does require a license &#160;&#160;</p>
+<p class="pparagraph">The tracking is performed as follows:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>When a 
+ user who already has an active mobile soft token or mobile smart credential 
+ enables the <span class="bold">Use Face Recognition</span> setting in 
+ the app, a license is consumed. If a user has both a soft token app and 
+ a smart credential app, one license is consumed for each app with the 
+ feature enabled.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If a user 
+ creates additional soft tokens or registers additional smart credentials, 
+ there is no change to the license count. The feature is available for 
+ all soft tokens or smart credentials held in the app.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>When all 
+ of a user's mobile soft tokens are deleted from Entrust IdentityGuard, 
+ the Mobile Facial Recognition license count decreases by one for the license 
+ associated with the soft token app. The same is true for smart credentials 
+ and the smart credential app.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>When a 
+ user who had mobile soft tokens or mobile smart credentials in an app 
+ protected with facial recognition is deleted from Entrust IdentityGuard, 
+ the Mobile Facial Recognition license count is decreased by one.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Canceling 
+ all soft tokens or smart credentials for a user does not decrease the 
+ license count. To decrease the license count, all of the user's mobile 
+ soft tokens or mobile smart credentials must be deleted, or the user who 
+ is licensed to use the facial recognition feature of the mobile app must 
+ be deleted from the system.</p>
+<p class="nonote"><span class="bold">Note:</span> Once a user has been 
+ licensed to use the mobile facial recognition feature, the user can continue 
+ to use the feature even if 1) the policy that governs that user is edited 
+ to disallow use of facial recognition, or 2) the user is moved to a group 
+ whose policy does not allow facial recognition. However, after the last 
+ of the user's soft tokens or mobile smart credentials has been deleted 
+ and the license returned, any new soft tokens or smart credentials created 
+ are governed by the user's current group policy settings </p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

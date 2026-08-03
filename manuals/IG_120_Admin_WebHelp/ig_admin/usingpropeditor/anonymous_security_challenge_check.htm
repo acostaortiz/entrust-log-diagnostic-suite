@@ -1,0 +1,234 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+ <title>Anonymous Security Challenge Check</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nAnonymous Security Challenge Check (55)");
+addAvenueInfo("Untitled02","ig_admin/usingpropeditor/properties_quick_reference.htm","ig_admin/usingpropeditor/audit_email_delivery_settings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Anonymous Security Challenge Check (55)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1>Anonymous Security Challenge Check</h1>
+<p class="pparagraph">These properties control scheduling of the Anonymous 
+ Security Challenge Check, which checks the age of all anonymous security 
+ challenges that Entrust IdentityGuard has created. It removes them if 
+ they are older than the configured maximum age, or older than the lifetime 
+ they were given by policy when Entrust IdentityGuard created them. Before 
+ an anonymous security challenge is removed, a user can authenticate the 
+ anonymous challenge by signing it with an assigned certificate or a smart 
+ credential. Only when a user does this does Entrust IdentityGuard determine 
+ which user has authenticated the anonymous challenge.</p>
+<p class="pparagraph">For more information, see &quot;<span>Anonymous smart 
+ credential authentication&quot;</span> in the <span class="italic">Entrust 
+ IdentityGuard Smart Credentials Guide</span>.</p>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Anonymous 
+ Challenge Check Enabled</a></p>
+<div class="droptext" id="POPUP609289000" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.anonymouschallenge.check.enable</span></p>
+	<p class="RefItemBody">This property enables or disables the Anonymous 
+	 Challenge Check. If True, Anonymous Challenge Check is enabled. The 
+	 default is False.</p>
+</div>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Age</a></p>
+<div class="droptext" id="POPUP609262295" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.anonymouschallenge.check.age</span></p>
+	<p class="RefItemBody">This property specifies the maximum age (in 
+	 seconds) the Anonymous Challenge Check allows. When Anonymous Challenge 
+	 Check is enabled, challenges older than this value are removed from 
+	 the database. Entrust IdentityGuard also removes challenges if they 
+	 are older than the lifetime specified by the <span class="bold">Certificate 
+	 Challenge Lifetime</span> policy (in the <span class="bold">Certificate 
+	 Authentication</span> policy category) &#160;when it was created. 
+	 The default value is one month (in seconds). It cannot be less than 
+	 one second. </p>
+</div>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Start 
+ Time</a></p>
+<div class="droptext" id="POPUP609241364" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.anonymouschallenge.check.start</span></p>
+	<p class="RefItemBody">This property specifies the local time of day 
+	 at which the Anonymous Challenge Check begins, using a 24 hour clock 
+	 (hh:mm:ss). By default the check begins at midnight. </p>
+</div>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Stop 
+ Time</a></p>
+<div class="droptext" id="POPUP609227398" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.anonymouschallenge.check.stop</span></p>
+	<p class="RefItemBody">This property specifies the local time of day 
+	 at which the Anonymous Challenge Check ends, using a 24 hour clock 
+	 (hh:mm:ss). By default, the check ends at 06:00:00 (hh:mm:ss). </p>
+</div>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Wait 
+ TIme</a></p>
+<div class="droptext" id="POPUP609191734" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.anonymouschallenge.check.days</span></p>
+	<p class="RefItemBody">This property specifies the number of days the 
+	 Anonymous Challenge Check waits before it repeats the check for expired 
+	 challenges. The default is 1 day. If set to zero, the Anonymous Challenge 
+	 Check runs continuously between the configured start and stop times. 
+	 </p>
+</div>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Priority</a></p>
+<div class="droptext" id="POPUP609175730" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.anonymouschallenge.check.priority</span></p>
+	<p class="RefItemBody">This property specifies the priority at which 
+	 the Anonymous Challenge Check will run. The default is Minimum Priority. 
+	 </p>
+</div>
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Rate</a></p>
+<div class="droptext" id="POPUP609139806" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.anonymouschallenge.check.maxrate</span></p>
+	<p class="RefItemBody">This property specifies the maximum rate at 
+	 which Entrust IdentityGuard reads anonymous challenges in the database 
+	 to check for expired anonymous challenges. The rate can be set to 
+	 a value that corresponds to the capabilities of the database. The 
+	 default value processes challenges at a rate no greater than 10 per 
+	 second on average.</p>
+</div>
+<p class="RefItemTitle">&#160;</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a7','POPUP609289000');
+	TextPopupInit('a6','POPUP609262295');
+	TextPopupInit('a5','POPUP609241364');
+	TextPopupInit('a4','POPUP609227398');
+	TextPopupInit('a3','POPUP609191734');
+	TextPopupInit('a2','POPUP609175730');
+	TextPopupInit('a1','POPUP609139806');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring failover and high availability</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nConfiguring repository failover\nConfigure failover and high availability");
+addAvenueInfo("Untitled02","ig_admin/config_igserver/failover_overview.htm","ig_admin/config_igserver/mitigating_performance_degradation_when_a_secondary_repository.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"configuring_repository_failover.htm\">Configuring repository failover<\/a> > Configure failover and high availability<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_92149_Configuring" id="XREF_92149_Configuring"></a>Configure failover and high availability</h1>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For instructions on setting up failover for a directory repository (LDAP), see <a href="#XREF_23814_Configuring">To configure failover and high availability for a directory repository</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For instructions on setting up failover for a database repository, see <a href="#XREF_25369_To_configure">To configure failover and high availability for a database repository</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For instructions on setting up failover for Radius servers, see <a href="../config_radius_server/configuring_radius_server_for_failover_and_high_availability.htm#XREF_h2_Using_the_Entrust">Configuring Radius server for failover and high availability</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For instructions on setting up failover for external authentication, especially when using a domain controller, see <a href="../externalauth/configuring_external_authentication_failover_and_high.htm#XREF_13968_Configuring">Configuring external authentication failover and high availability (Kerberos)</a>.</p>
+
+<p class="prtproceduretitle"><a name="XREF_23814_Configuring" id="XREF_23814_Configuring"></a>To configure failover and high availability for a directory repository</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Entrust IdentityGuard Properties Editor. (See <a href="../usingpropeditor/logging_in_and_out_of_the_properties_editor.htm">Log in or out of the Properties Editor</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span style="font-weight: bold;">Table of Contents</span>, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">LDAP Directory Server Settings</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Configuration Instances</span>&#160;drop-down list, select the instance you want to set up for failover.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">LDAP URL</span>&#160;field, enter additional directory or search base URLs. Each URL is delimited by a space. If there are spaces in the URL, encode them as %20.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. Enter a number in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Primary Directory Server Maximum Reconnect Interval</span>&#160;field. This sets the maximum time in hours between attempts to reconnect to the primary directory (the first directory URL defined) when the current in-use directory is not the primary. The default is 24.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. Enter a number in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Directory Server Connection Test Interval</span>&#160;field. In a high-availability setup where directory connections are pooled, this sets the time in seconds to wait between tests to see if a directory connection is still valid. A setting of 0 means the directory is tested each time it is pulled from the pool. The default is 0.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. Change other settings related to credentials, timing, and connection pooling, if required. Any change applies to every directory in the URL list. For an explanation of each property and their defaults, see <a href="../usingpropeditor/ldap_directory_server_settings.htm#XREF_90180_LDAP_directory">LDAP Directory Server Settings</a>.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The LDAP credentials and principal specified must work for all directories listed.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate &amp; Save</span>.</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log out of the Properties Editor and restart the Entrust IdentityGuard server service after making all property changes.</p>
+
+<p class="prtproceduretitle"><a name="XREF_25369_To_configure" id="XREF_25369_To_configure"></a>To configure failover and high availability for a database repository</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Entrust IdentityGuard Properties Editor. (See <a href="../usingpropeditor/logging_in_and_out_of_the_properties_editor.htm">Log in or out of the Properties Editor</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span style="font-weight: bold;">Table of Contents</span>, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">JDBC Database Settings</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Configuration Instances</span>&#160;drop-down list, select the instance you want to set up for failover.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">JDBC Driver URL</span>&#160;field, enter additional database URLs. Each URL is delimited by a space. If there are spaces in the URL, encode them as %20.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. Enter a number in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Primary Database Maximum Reconnect Interval</span>&#160;field. This sets the maximum time in hours between attempts to reconnect to the primary database (the first database URL defined) when the current in-use database in use is not the primary. The default is 24.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Table For Testing Database Connections</span>&#160;drop-down list, pick the database type used for the Entrust IdentityGuard repository. This identifies the table to use for testing the connection. All pooled connections are tested prior to being used to ensure they are still valid. Connections are only tested if the number of seconds set in <a href="#XREF_66697_7_Optional_Enter_a"><span class="hyperlink" style="font-family: Syntax; font-style: normal; font-weight: normal; color: #0000ff; letter-spacing: 0.00em; text-decoration: none;">Step&#160;7</span></a> have elapsed.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="XREF_66697_7_Optional_Enter_a" id="XREF_66697_7_Optional_Enter_a"></a>Optional. Enter a number in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Database Connection Test Interval</span>&#160;field. In a high-availability setup where database connections are pooled, this sets the time in seconds to wait between tests to see if a database connection is still valid. A setting of 0 means the database is tested each time it is pulled from the pool. The default is 0.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. Change other settings related to credentials, timing, and connection pooling, if required; but note that any change applies to every database in the URL list. For an explanation of each property and their defaults, see <a href="../usingpropeditor/jdbc_database_settings.htm#XREF_78672_JDBC_database">JDBC Database Settings</a>.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The credentials specified must work for all databases listed.</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate &amp; Save</span>.</p>
+
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Log out of the Properties Editor and restart the Entrust IdentityGuard server service after making all property changes.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

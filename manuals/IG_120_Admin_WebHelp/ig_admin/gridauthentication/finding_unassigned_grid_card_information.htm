@@ -1,0 +1,197 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\gridauthentication.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Finding unassigned grid card information</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nGrid authentication\nAdministering unassigned grid cards\nFind unassigned grid card information");
+addAvenueInfo("Untitled02","ig_admin/gridauthentication/administering_unassigned_grid_cards.htm","ig_admin/gridauthentication/exporting_grid_card_information.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"gridauthentication.htm\">Grid authentication<\/a> > <a href=\"administering_unassigned_grid_cards.htm\">Administering unassigned grid cards<\/a> > Find unassigned grid card information<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_62650_Finding_unassigned" id="XREF_62650_Finding_unassigned"></a>Find unassigned grid card information</h1>
+<p class="pparagraph"><a name="IX_unassigned_cards" id="IX_unassigned_cards"></a>Use the following procedure to search for unassigned grid cards.</p>
+<p class="prtproceduretitle"><a name="XREF_66850_To_display" id="XREF_66850_To_display"></a>To find unassigned grid card information</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Administration interface (see <a href="../usingadmininterface/logging_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging in and out of the Administration interface</a>).</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the main menu, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Cards</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">List Unassigned Cards</span> tab.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter your search criteria:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find a grid card with a specific serial number, type the serial number in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Serial Number</span><span style="font-weight: bold;">&#160;</span>field. (You cannot use a wildcard character when searching for unassigned grid cards.)</p>
+
+<p class="liplistparagraph">You can also enter card ranges. Examples of valid inputs are:</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>5,7,9</p>
+
+<p class="lip2list2paragraph">Displays cards with serial numbers 5, 7, and 9.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>5-9</p>
+
+<p class="lip2list2paragraph">Displays cards with serial numbers between 5 and 9, inclusive.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>5-</p>
+
+<p class="lip2list2paragraph">Displays cards with serial numbers 5 and higher.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>-5</p>
+
+<p class="lip2list2paragraph">Displays cards with serial numbers 5 and lower.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>5,7-9,11-</p>
+
+<p class="lip2list2paragraph">Displays cards with serial numbers 5, 7, 8, 9, and 11 and higher.</p>
+<p class="liplistparagraph">To find all unassigned grid cards, leave the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Serial Number</span><span style="font-weight: bold;">&#160;</span>field blank.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find grid cards associated with a specific group or groups, select the groups from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Groups</span> list.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To find grid cards created within a certain date range, select a date from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Creation Date</span> list.</p>
+
+<p class="liplistparagraph"><a name="IX_grid_cards_2" id="IX_grid_cards_2"></a><a name="IX_custom_date_range_2" id="IX_custom_date_range_2"></a>If you select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Custom date range</span>, choose a date range using the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">From</span>&#160;and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">To</span>&#160;drop-down lists (day, month, year). You can also click the calendar icons to select dates.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Showing results per page</span>&#160;drop-down list, select the number of search results you want to appear per page.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Search</span>&#160;button.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Search Results</span>&#160;page appears.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="gridauthentication00543.jpg" id="image9" src="gridauthentication00543.jpg" width="552" height="246" border="0" name="image9" /></p>
+</div>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>For complete details for a grid card, click the grid card serial number.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

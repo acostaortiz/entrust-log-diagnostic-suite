@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Use a proxy server with the TeleSign SMS service provider</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nOut-of-band one-time password authentication\nConfigure delivery of OTPs in SMS messages\nConfigure the SMS delivery mechanism\nUse a proxy server with the TeleSign SMS service provider");
+addAvenueInfo("r13_std","ig_admin/outofbandauth/configuring_the_sms_delivery_mechanism.htm","ig_admin/outofbandauth/customize_the_sms_message_template.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"out-of-band_otp_authentication.htm\">Out-of-band one-time password authentication<\/a> > <a href=\"configuring_out-of-band_otp_delivery_in_sms_messages.htm\">Configure delivery of OTPs in SMS messages<\/a> > <a href=\"configuring_the_sms_delivery_mechanism.htm\">Configure the SMS delivery mechanism<\/a> > Use a proxy server with the TeleSign SMS service provider<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1>Use a proxy server with the TeleSign SMS service provider</h1>
+<p class="pparagraph"><span class="italic">This is an optional procedure.</span></p>
+<p class="pparagraph">If your organization uses a proxy server to send 
+ messages to the TeleSign SMS service provider, <span style="font-size: 11.0pt; 
+														 font-family: Calibri, sans-serif; 
+														 mso-ascii-theme-font: minor-latin; 
+														 mso-fareast-font-family: Calibri; 
+														 mso-fareast-theme-font: minor-latin; 
+														 mso-hansi-theme-font: minor-latin; 
+														 mso-bidi-font-family: 'Times New Roman'; 
+														 mso-bidi-theme-font: minor-bidi; 
+														 color: #1F497D; 
+														 mso-ansi-language: EN-US; 
+														 mso-fareast-language: EN-US; 
+														 mso-bidi-language: AR-SA;"><font size="3" color="#1f497d" style="font-size:11.000000pt;">add 
+ the proxy configuration to the Java startup options for your Entrust IdentityGuard 
+ installation. Complete the steps appropriate for your installation's operating 
+ system.</font></span></p>
+<p class="prtproceduretitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />&#160;To 
+ <span style="font-size: 11.0pt; font-family: Calibri, sans-serif; mso-ascii-theme-font: minor-latin; 
+		 mso-fareast-font-family: Calibri; mso-fareast-theme-font: minor-latin; 
+		 mso-hansi-theme-font: minor-latin; mso-bidi-font-family: 'Times New Roman'; 
+		 mso-bidi-theme-font: minor-bidi; color: #1F497D; mso-ansi-language: EN-US; 
+		 mso-fareast-language: EN-US; mso-bidi-language: AR-SA;"><font size="3" color="#1f497d" style="font-size:11.000000pt;">add a 
+ TeleSIgn SMS proxy configuration to the Java startup options on Windows</font></span></a></p>
+<div class="droptext" id="POPUP633245567" style="display: none;">
+	<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Stop 
+	 the Entrust IdentityGuard Server service.</p>
+	<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Modify 
+	 the Java system properties for Entrust IdentityGuard in the Window 
+	 registry. They are found in the Tomcat settings for Entrust IdentityGuard. 
+	 <span style="color: rgb(23, 43, 77); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; 
+			 font-size: 14px; font-variant-ligatures: normal; font-variant-caps: normal; 
+			 font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; 
+			 text-indent: 0px; widows: 2; -webkit-text-stroke-width: 0px; 
+			 background-color: #ffffff; text-decoration-style: initial; 
+			 text-decoration-color: initial; display: inline	 ! important ; 
+			 float: none;">You can find the registry entry by searching 
+	 the Windows registry for Dcatalina.base.</span> </p>
+	<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Append 
+	 the following lines to the end of the registry entry:</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To 
+	 include the proxy server, enter the following setting:</p>
+	<p class="cocode">-Dhttps.proxyHost=&lt;host&gt; -Dhttps.proxyPort=&lt;port&gt;</p>
+	<p class="prspsubprocedureparagraph">where</p>
+	<p class="prspsubprocedureparagraph"><span class="output">&lt;host&gt;</span> 
+	 is the name of the computer that hosts the proxy server.</p>
+	<p class="prspsubprocedureparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the port used for proxy server communication.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To 
+	 exclude localhost, machine name, and repositories, enter the following 
+	 setting:</p>
+	<p class="cocode">-Dhttps.nonProxyHosts=localHost</p>
+	<p class="cocode">&#160;</p>
+	<p class="prpprocedureparagraph"><span class="bold">Example with TeleSign 
+	 proxy server settings added</span> (bold text):</p>
+	<p class="cocode">-Dcatalina.base=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;</p>
+	<p class="cocode">-Djava.library.path=C:\Program Files\Entrust\IdentityGuard\identityguard&lt;version&gt;\lib\win64</p>
+	<p class="cocode">-Dcatalina.home=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;</p>
+	<p class="cocode">-Djava.endorsed.dirs=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;\common\endorsed</p>
+	<p class="cocode">-Didentityguard.home=C:\Program Files\Entrust\IdentityGuard\identityguard&lt;version&gt;</p>
+	<p class="cocode">-Djavax.net.ssl.trustStore=C:\Program Files\Entrust\IdentityGuard\identityguard&lt;version&gt;\etc\keystore</p>
+	<p class="cocode">-Dcatalina.base=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;</p>
+	<p class="cocode">-Djava.library.path=C:\Program Files\Entrust\IdentityGuard\identityguard&lt;version&gt;\lib\win64</p>
+	<p class="cocode">-Dcatalina.home=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;</p>
+	<p class="cocode">-Djava.endorsed.dirs=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;2\common\endorsed</p>
+	<p class="cocode">-Didentityguard.home=C:\Program Files\Entrust\IdentityGuard\identityguard&lt;version&gt;</p>
+	<p class="cocode">-Djavax.net.ssl.trustStore=C:\Program Files\Entrust\IdentityGuard\identityguard&lt;version&gt;\etc\keystore</p>
+	<p class="cocode">-Djava.io.tmpdir=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;\temp</p>
+	<p class="cocode">-XX:MaxPermSize=192M</p>
+	<p class="cocode"><span class="outputbold">-Dhttps.proxyHost=proxy.mycorp.com 
+	 -Dhttps.proxyPort=443 -Dhttps.nonProxyHosts=localHost</span></p>
+	<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Restart 
+	 the Entrust IdentityGuard Server service.</p>
+	<p>&#160;</p>
+</div>
+<p class="prtproceduretitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />&#160;To 
+ <span style="font-size: 11.0pt; font-family: Calibri, sans-serif; mso-ascii-theme-font: minor-latin; 
+		 mso-fareast-font-family: Calibri; mso-fareast-theme-font: minor-latin; 
+		 mso-hansi-theme-font: minor-latin; mso-bidi-font-family: 'Times New Roman'; 
+		 mso-bidi-theme-font: minor-bidi; color: #1F497D; mso-ansi-language: EN-US; 
+		 mso-fareast-language: EN-US; mso-bidi-language: AR-SA;"><font size="3" color="#1f497d" style="font-size:11.000000pt;">add a 
+ TeleSign SMS proxy configuration to the Java startup options on Linux</font></span></a></p>
+<div class="droptext" id="POPUP633182284" style="display: none;">
+	<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Stop 
+	 the Entrust IdentityGuard Server service.</p>
+	<p class="prprocedurestep" 
+												 style="background-color: #ffffff; 
+												 color: rgb(23, 43, 77); 
+												 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; 
+												 font-size: 14px; font-variant-ligatures: normal; 
+												 font-variant-caps: normal; 
+												 font-weight: 400; letter-spacing: normal;">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Modify 
+	 <span class="output">/opt/entrust/identityguard&lt;release&gt;/env_settings.sh</span>.</p>
+	<p class="prprocedurestep" style="
+color:rgb(23, 43, 77);
+font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI' , Roboto, Oxygen, Ubuntu, 'Fira Sans' , 'Droid Sans' , 'Helvetica Neue' , sans-serif;
+font-size:14px;
+font-variant-ligatures:normal;
+font-variant-caps:normal;
+font-weight:400;
+letter-spacing:normal;
+text-align:start; margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Look 
+	 for the line &quot;IG_CUSTOM=&quot;</p>
+	<p class="prprocedurestep" style="
+color:rgb(23, 43, 77);
+font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI' , Roboto, Oxygen, Ubuntu, 'Fira Sans' , 'Droid Sans' , 'Helvetica Neue' , sans-serif;
+font-size:14px;
+font-variant-ligatures:normal;
+font-variant-caps:normal;
+font-weight:400;
+letter-spacing:normal;
+text-align:start; margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Change 
+	 it to:&#160;&#160;IG_CUSTOM=<span class="outputbold">-Dhttps.proxyHost=&lt;host&gt; 
+	 -Dhttps.proxyPort=&lt;port&gt;</span></p>
+	<p class="prpprocedureparagraph">where</p>
+	<p class="prpprocedureparagraph"><span class="output">&lt;host&gt;</span> 
+	 is the name of the computer that hosts the proxy server.</p>
+	<p class="prpprocedureparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the port used for proxy server communication.</p>
+	<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To 
+	 exclude localhost, machine name, and repositories, enter the following 
+	 setting:</p>
+	<p class="cocode">-Dhttps.nonProxyHosts=localHost</p>
+	<p class="prpprocedureparagraph"><span class="bold">Example with TeleSign 
+	 proxy server settings added</span> (bold text):</p>
+	<p class="cocode">-Dcatalina.base=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;</p>
+	<p class="cocode">-Djava.library.path=C:\Program Files\Entrust\IdentityGuard\identityguard&lt;version&gt;\lib\win64</p>
+	<p class="cocode">-Dcatalina.home=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;</p>
+	<p class="cocode">-Djava.endorsed.dirs=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;\common\endorsed</p>
+	<p class="cocode">-Didentityguard.home=C:\Program Files\Entrust\IdentityGuard\identityguard&lt;version&gt;</p>
+	<p class="cocode">-Djavax.net.ssl.trustStore=C:\Program Files\Entrust\IdentityGuard\identityguard102\etc\keystore</p>
+	<p class="cocode">-Dcatalina.base=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;</p>
+	<p class="cocode">-Djava.library.path=C:\Program Files\Entrust\IdentityGuard\identityguard&lt;version&gt;\lib\win64</p>
+	<p class="cocode">-Dcatalina.home=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;</p>
+	<p class="cocode">-Djava.endorsed.dirs=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;\common\endorsed</p>
+	<p class="cocode">-Didentityguard.home=C:\Program Files\Entrust\IdentityGuard\identityguard&lt;version&gt;</p>
+	<p class="cocode">-Djavax.net.ssl.trustStore=C:\Program Files\Entrust\IdentityGuard\identityguard&lt;version&gt;\etc\keystore</p>
+	<p class="cocode">-Djava.io.tmpdir=C:\Program Files\Entrust\IdentityGuard\apache-tomcat&lt;version&gt;\temp</p>
+	<p class="cocode">-XX:MaxPermSize=192M</p>
+	<p class="cocode"><span class="outputbold">-Dhttps.proxyHost=proxy.mycorp.com 
+	 -Dhttps.proxyPort=443 -Dhttps.nonProxyHosts=localHost</span></p>
+	<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Restart 
+	 the Entrust IdentityGuard Server service.</p>
+	<p>&#160;</p>
+</div>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a2','POPUP633245567');
+	TextPopupInit('a1','POPUP633182284');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

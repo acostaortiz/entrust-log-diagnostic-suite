@@ -1,0 +1,260 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_policies.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Repository Data policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nPolicies quick reference\nRepository Data policies");
+addAvenueInfo("r13_std","ig_admin/config_policies/personal_verification_number_policies.htm","ig_admin/config_policies/risk-based_authentication_policies.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"policies_quick_reference.htm\">Policies quick reference<\/a> > Repository Data policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_29954_Repository_data" id="XREF_29954_Repository_data"></a>Repository 
+ Data policies</h1>
+<p class="pparagraph">These policies set the behavior of the connection 
+ to the LDAP user data repositories. For details about configuring the 
+ properties that allow getting disabled and expired settings directly from 
+ the LDAP repository, see <a href="../config_igserver/suspend_disabled_or_expired_ldap_users.htm">Suspending 
+ disabled and expired LDAP users</a>.</p>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ Creation if User Disabled in Repository</a></p>
+<div class="droptext" id="POPUP480504449" style="display: none;">
+	<p class="RefItemBody">Set this policy to <span class="bold">Yes</span>&#160;if 
+	 you want to allow creation of a user in Entrust IdentityGuard whose 
+	 directory entry is disabled&#160;(in either an Entrust IdentityGuard 
+	 LDAP repository or a synchronized Active Directory repository). </p>
+	<p class="RefItemBody">This may be useful if you are moving 
+	 a user from one repository to another. The user may already be disabled 
+	 in one repository, but you will still be allowed to create the user 
+	 in another.</p>
+	<p class="RefItemBody">Default: No&#160;</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><span 
+	 class="bold">Allow Creation if User Expired in Repository</span></a></p>
+<div class="droptext" id="POPUP545272081" style="display: none;">
+	<p class="RefItemBody">Set this policy to <span class="bold">Yes</span>&#160;if 
+	 you want to allow creation of a user in Entrust IdentityGuard whose 
+	 directory entry is expired&#160;(in either an Entrust IdentityGuard 
+	 LDAP repository or a synchronized Active Directory repository). </p>
+	<p class="RefItemBody">Default: No&#160;(not selected)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ Authentication if User Disabled in Repository</a></span></p>
+<div class="droptext" id="POPUP545850998" style="display: none;">
+	<p class="RefItemBody">Set this policy to <span class="bold">Yes</span>&#160;if 
+	 you want to allow users to continue to be able to authenticate if 
+	 their user record is disabled in the LDAP user repository (either 
+	 an Entrust IdentityGuard LDAP repository or a synchronized Active 
+	 Directory repository). If you set this policy to <span class="bold">No</span>, 
+	 the user is treated as suspended in Entrust IdentityGuard.</p>
+	<p class="nonote"><span style="font-weight: bold;">Note</span>: This 
+	 setting does not apply if the LDAP user record is being used for external 
+	 authentication. When external authentication is enabled, and the user’s 
+	 record is disabled, their first-factor external authentication attempt 
+	 will always fail regardless of how this setting is configured, and 
+	 no second-factor challenge (such as a grid challenge) will be presented. 
+	 For more on external authentication, see <a href="../externalauth/externalauth.htm">External 
+	 authentication</a>.</p>
+	<p class="RefItemBody">Default: No (not selected)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ Authentication if User Expired in Repository</a></span></p>
+<div class="droptext" id="POPUP544134397" style="display: none;">
+	<p class="RefItemBody">Set this policy to <span class="bold">Yes</span>&#160;if 
+	 you want to allow users to continue to be able to authenticate if 
+	 their user record is expired in the LDAP user repository (either an 
+	 Entrust IdentityGuard LDAP repository or a synchronized Active Directory 
+	 repository). If you set this policy to <span class="bold">No</span>, 
+	 the user is treated as suspended in Entrust IdentityGuard.</p>
+	<p class="nonote"><span style="font-weight: bold;">Note</span>: This 
+	 setting does not apply if the LDAP user record is being used for external 
+	 authentication. When external authentication is enabled, and the user’s 
+	 record is expired, their first-factor external authentication attempt 
+	 will always fail regardless of how this setting is configured, and 
+	 no second-factor challenge (such as a grid challenge) will be presented. 
+	 For more on external authentication, see <a href="../externalauth/externalauth.htm">External 
+	 authentication</a>.</p>
+	<p class="RefItemBody">Default: No (not selected)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ authentication if User Orphaned in Repository</a></span></p>
+<div class="droptext" id="POPUP432681729" style="display: none;">
+	<p class="RefItemBody">Set 
+	 this policy to <span class="bold">Yes</span>&#160;if you want to allow 
+	 users to continue to be able to authenticate even if their user record 
+	 is orphaned after a synchronization operation with an Active Directory 
+	 user repository. When this policy is set to <span class="bold">No</span>, 
+	 the user is treated similarly to a suspended user in Entrust IdentityGuard.</p>
+	<p class="nonote"><span class="bold">Note:</span> This property is 
+	 used only with the Active Directory synchronization feature.</p>
+	<p class="RefItemBody">Default: No (not selected)</p>
+</div>
+
+
+</div>
+<p>&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP480504449');
+	TextPopupInit('a2','POPUP545272081');
+	TextPopupInit('a3','POPUP545850998');
+	TextPopupInit('a4','POPUP544134397');
+	TextPopupInit('a5','POPUP432681729');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

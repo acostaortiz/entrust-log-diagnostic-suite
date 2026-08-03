@@ -1,0 +1,204 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_radius_proxy.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Reading VPN challenge strings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring the Entrust IdentityGuard Radius proxy\nCustomizing VPN challenge strings\nReading VPN challenge strings");
+addAvenueInfo("Untitled02","ig_admin/config_radius_proxy/understanding_challenge_string_syntax.htm","ig_admin/config_radius_proxy/editing_vpn_challenge_strings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_radius_proxy.htm\">Configuring the Entrust IdentityGuard Radius proxy<\/a> > <a href=\"customizing_vpn_challenge_strings.htm\">Customizing VPN challenge strings<\/a> > Reading VPN challenge strings<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_35660_Understanding_VPN" id="XREF_35660_Understanding_VPN"></a>Reading VPN challenge strings</h1>
+<p class="pparagraph">The token challenge string is the most complex because it is the only one to use all eight parameters. This section explains the token challenge string by breaking the message syntax into its component parts. After you understand the token challenge string, the other three challenge string types are easy to understand. See also</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="token_challenge_string.htm#XREF_80092_Token_challenge">Token challenge string</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="grid_challenge_string.htm#XREF_94093_Grid_challenge">Grid challenge string</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="otp_challenge_string.htm#XREF_11160_OTP_challenge">OTP challenge string</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="q_a_challenge_string.htm#XREF_62985_Q_A_challenge">Q&amp;A challenge string</a></p>
+
+<p class="pparagraph">The message is constructed in the order in which the parameters are organized. The parameters work together to build meaningful sentences.</p>
+<p class="pparagraph">The syntax and default content for the token message is:</p>
+<p class="cocode">Enter</p>
+<p class="cocode">{3, choice, 0#| 1# your PVN and}</p>
+<p class="cocode">{4, choice, 0# a response from your Entrust IdentityGuard Token| 1# your temporary PIN}</p>
+<p class="cocode">{5, choice, 0#|1# with serial number {0} or {1} or your temporary PIN|2# with serial number {0} or {1}|3# with serial number {0} or your temporary PIN|4# with serial number {0}}</p>
+<p class="cocode">{7, choice, 0#.|1# using the token challenge {2}.}</p>
+<p class="cocode">{6, choice, 0#|1# You must also update your PVN twice in succession.}</p>
+<p class="pparagraph">This is how to interpret it:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Parameter 3 deals with a PVN. If a PVN is required, it must be entered first, so parameter 3 begins the message. It has two choices:</p>
+
+<p class="liplistparagraph">0 - 0 indicates that no PVN is required. For the default token message above, no text is displayed.</p>
+<p class="liplistparagraph">1 - indicates that a PVN is required. In the default token message above, the following text is displayed: “your PVN and”. (This makes sense when combined with the rest of the parameters.)</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Parameter 4: There are two choices:</p>
+
+<p class="liplistparagraph">0 - the user has a token, so begin to ask for the user to enter token information.</p>
+<p class="liplistparagraph">1 - the user does not have a token, so ask for a temporary PIN instead.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Parameter 5 continues the message creation where parameter 4 left off. It has five choices:</p>
+
+<p class="liplistparagraph">0 - the user only has a temporary PIN, so display no text.</p>
+<p class="liplistparagraph">1 - the user has two tokens (current and pending), and a temporary PIN, so ask the user to enter a response from a token with one of two serial numbers or to enter a temporary PIN.</p>
+<p class="liplistparagraph">2 - the user has two tokens (current and pending), but no temporary PIN, so ask the user to enter a response from a token with one of two serial numbers.</p>
+<p class="liplistparagraph">3 - the user has either a current or pending token and a temporary PIN, ask the user to enter a response from the token matching the given serial number or to enter a temporary PIN.</p>
+<p class="liplistparagraph">4 - the user has either a current or pending token, and no temporary PIN, so ask the user to enter a response from the token matching the given serial number.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Parameter 7 applies to challenge-response tokens only. It has two choices:</p>
+
+<p class="liplistparagraph">0 - there is no token, or the token is only a response-only token, so end the sentence with a period</p>
+<p class="liplistparagraph">1 - the token is a challenge-response token, so present the token challenge supplied by Entrust IdentityGuard, and end the sentence with a period.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Parameter 6 deals with PVN updates. It has two choices:</p>
+
+<p class="liplistparagraph">0 - a PVN is required for authentication, but does not need updating. The message is complete.</p>
+<p class="liplistparagraph">1 - a PVN is required for authentication and it needs updating, so ask the user to enter a new PVN value twice.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Parameters {0}, {1}, and {2} are used as placeholders for token-related values.</p>
+
+<p class="pparagraph">There are many possible messages that Entrust IdentityGuard can generate for tokens using the default syntax.</p>
+<p class="pparagraph">Here are two scenarios:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Assume the user is new and has a temporary PIN, no token and no PVN. In this case, the message would be brief:</p>
+
+<p class="FM_concodenarrow">Enter your temporary PIN.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Assume the user has two challenge-response tokens (current and pending), a PVN that needs updating, but not a temporary PIN. In this case, the message would span two sentences and include substitutions for serial numbers and the token challenge:</p>
+
+<p class="FM_concodenarrow">Enter your PVN and a response from your Entrust IdentityGuard Token with serial number 0753886898 or 0753886899 using the token challenge 52535488. You must also update your PVN twice in succession (PVN size: 6).</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

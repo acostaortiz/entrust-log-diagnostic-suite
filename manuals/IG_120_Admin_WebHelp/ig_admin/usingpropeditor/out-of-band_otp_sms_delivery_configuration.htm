@@ -1,0 +1,566 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Out-of-Band OTP SMS Delivery Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nOut-of-Band OTP SMS Delivery Configuration (26)");
+addAvenueInfo("Untitled02","ig_admin/usingpropeditor/out-of-band_otp_email_delivery_configuration.htm","ig_admin/usingpropeditor/out-of-band_otp_voice_delivery_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Out-of-Band OTP SMS Delivery Configuration (26)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_SMS_delivery" id="IX_SMS_delivery"></a><a name="IX_configuring_SMS_1" 
+															 id="IX_configuring_SMS_1"></a><a 
+	 name="IX_configuring_SMS" id="IX_configuring_SMS"></a><a name="IX_configuring_OTP_delivery_2" 
+	 id="IX_configuring_OTP_delivery_2"></a><a name="IX_SMS" id="IX_SMS"></a><a 
+	 name="XREF_h2_Out_of_Band_OTP_SMS" id="XREF_h2_Out_of_Band_OTP_SMS"></a>Out-of-Band 
+ OTP SMS Delivery Configuration</h1>
+<p class="pparagraph">Your application can automate the delivery of one-time 
+ passwords using a text (SMS) message to a cell phone. Using the following 
+ properties, you can set up delivery of the OTP by SMS messages through 
+ the Clickatell™, TeleSign® or a custom SMS delivery service. For more 
+ details, see <a href="../outofbandauth/configuring_the_sms_delivery_mechanism.htm">Configure 
+ the SMS delivery mechanism</a>.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instances<a name="XREF_Configuration_Instances" id="XREF_Configuration_Instances"></a></a></span></p>
+<div class="droptext" id="POPUP616937372" style="display: none;">
+	<p class="lip2list2paragraph">Provides a list of SMS configurations.</p>
+	<p class="lip2list2paragraph">To create a new instance, enter a unique 
+	 name in the empty field and click <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">Add</span>. 
+	 The other properties appear. The name replaces the {0} placeholder.</p>
+	<p class="lip2list2paragraph">To delete an instance, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+							 text-decoration: none; ">Remove</span>.</p>
+	<p class="lip2list2paragraph">There is no default configuration.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Delivery Class Name</a></span></p>
+<div class="droptext" id="POPUP594113305" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.impl</span><br />
+	Sets the Entrust IdentityGuard Java class used for communicating with 
+	 the SMS delivery provider. Select Clickatell, TeleSign, or Custom.<br />
+	If you choose <span style="font-weight: bold;">Custom</span>, you must 
+	 program your own SMS delivery implementation.<br />
+	Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Delivery Configuration Display Name</a></span></p>
+<div class="droptext" id="POPUP615566170" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.displayname</span></p>
+	<p class="lip2list2paragraph">The name you use to identify this delivery 
+	 mechanism.</p>
+	<p class="lip2list2paragraph">This is the name you see in the Administration 
+	 interface when associating the user contact information to the delivery 
+	 method.</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Gateway URL</a></span></p>
+<div class="droptext" id="POPUP617155964" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.url</span></p>
+	<p class="lip2list2paragraph">The URL used as an API to deliver SMS 
+	 messages through the use of an SMS gateway.</p>
+	<p class="lip2list2paragraph">Examples:</p>
+	<p class="co3code3">https://api.clickatell.com/http/sendmsg?user=USERNAME&amp;password=PASSWORD&amp;api_id=API_ID&amp;to=TO_PHONE&amp;text=MSG_TEXT&amp;from=FROM_ID</p>
+	<p class="co3code3">https://api.telesign.com/http/sendmsg?user=USERNAME&amp;password=PASSWORD&amp;api_id=API_ID&amp;to=TO_PHONE&amp;text=MSG_TEXT&amp;from=FROM_ID</p>
+	<p class="nonote"><span class="bold">Note:</span> If you are sending 
+	 a one-time-password through a proxy that requires basic authentication, 
+	 specify the user name and password in the gateway URL. For example:<br />
+	<span class="output">https://<span class="outputbold" style="font-family: Courier; 
+										 font-size: 9.pt; color: #; letter-spacing: .em;">myuser:mypass</span>@example.com/http/sendmsg?user=USERNAME&amp;password=PASSWORD&amp;api_id=API_ID&amp;to=TO_PHONE&amp;text=MSG_TEXT&amp;from=FROM_ID</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />User 
+ Name</a></span></p>
+<div class="droptext" id="POPUP623274130" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.userid</span></p>
+	<p class="lip2list2paragraph">Specifies the Clickatell user name, TeleSign 
+	 customer ID, or custom user ID to use when logging in to the service. 
+	 The user name and password are provided by the SMS delivery provider 
+	 when you register for their services.</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Password</a></span></p>
+<div class="droptext" id="POPUP622728050" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.password</span></p>
+	<p class="lip2list2paragraph">Specifies the password to use when logging 
+	 in to the service. The user name or customer ID and password are provided 
+	 by the SMS delivery provider when you register for their services.</p>
+	<p class="lip2list2paragraph">Select <span style="font-weight: bold;">Encrypt</span> 
+	 to encrypt the password.</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Clickatell 
+ API ID</a></span></p>
+<div class="droptext" id="POPUP620804355" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.apiid</span></p>
+	<p class="lip2list2paragraph">Specifies the API Identification obtained 
+	 from Clickatell. (It is listed under the API Connections on Clickatell 
+	 Central.)</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />From 
+ Label in the SMS Message</a></span></p>
+<div class="droptext" id="POPUP623070629" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.from</span></p>
+	<p class="lip2list2paragraph">Sets the <span style="font-weight: bold;">From</span> 
+	 label in the SMS message sent by Entrust IdentityGuard.</p>
+	<p class="lip2list2paragraph">For Clickatell: The <span style="font-weight: bold;">From</span> 
+	 label is the Sender ID registered with Clickatell.</p>
+	<p class="nonote"><span class="bold">Note:</span> If the contents of 
+	 the From field is invalid, the message is still delivered. No error 
+	 message is generated, but your Clickatell account manager may receive 
+	 an email notice, as an anti-spam precaution, indicating that messages 
+	 are coming from an invalid sender.</p>
+	<p class="lip2list2paragraph">For TeleSign, the <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">From</span> 
+	 label is not used.</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Separate 
+ Message Per One-Time Password</a></span></p>
+<div class="droptext" id="POPUP622095787" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.separatemessageperotp</span></p>
+	<p class="lip2list2paragraph">When sending multiple one-time passwords 
+	 over SMS, the delivery mechanism can separate them into several messages, 
+	 rather than grouping all of the OTPs into one message.</p>
+	<p class="lip2list2paragraph">Default: True</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Include 
+ Transaction Details</a></span></p>
+<div class="droptext" id="POPUP624225181" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.includetransactiondetails</span></p>
+	<p class="lip2list2paragraph">Specifies how transaction details will 
+	 be sent.</p>
+	<p class="lip2list2paragraph">The options are:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">First</span>&#160;– 
+	 The first message contains the transaction details, along with a one-time 
+	 password. The following messages each contain only an OTP.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Separate</span>&#160;– The first message contains the 
+	 transaction details, and the following messages each contain an OTP.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">All</span> – 
+	 The transaction details are included in each message sent, along with 
+	 an OTP.</p>
+	<p class="lip2list2paragraph">Default: First</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Delivery Template File</a></span></p>
+<div class="droptext" id="POPUP622656596" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.template</span></p>
+	<p class="lip2list2paragraph">Specifies the location of the SMS message 
+	 template file.</p>
+	<p class="lip2list2paragraph">The template file provides the body of 
+	 the SMS message sent to the user.</p>
+	<p class="lip2list2paragraph">The default template is in the following 
+	 location:</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">$IG_HOME/etc/templates/oob/igsample_sms_template.txt</span></p>
+	<p class="lip2list2paragraph">For TeleSign, consider editing the default 
+	 template wording to accommodate the TeleSign limitation of one OTP 
+	 per message.</p>
+	<p class="lip2list2paragraph">Example of the modified file:</p>
+	<p class="co3code3"><span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 9.pt; color: #; letter-spacing: .em; 
+								 text-decoration: none; ">#if ($otp)</span></p>
+	<p class="co3code3"><span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 9.pt; color: #; letter-spacing: .em; 
+								 text-decoration: none; ">One-time password 
+	 is $otp[0]</span></p>
+	<p class="co3code3"><span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 9.pt; color: #; letter-spacing: .em; 
+								 text-decoration: none; ">#end</span></p>
+	<p class="co3code3"><span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 9.pt; color: #; letter-spacing: .em; 
+								 text-decoration: none; ">#if ($expiryDate)</span></p>
+	<p class="co3code3"><span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 9.pt; color: #; letter-spacing: .em; 
+								 text-decoration: none; ">Expires: $expiryDate</span></p>
+	<p class="co3code3"><span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 9.pt; color: #; letter-spacing: .em; 
+								 text-decoration: none; ">#else</span></p>
+	<p class="co3code3"><span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 9.pt; color: #; letter-spacing: .em; 
+								 text-decoration: none; ">Never Expires</span></p>
+	<p class="co3code3"><span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 9.pt; color: #; letter-spacing: .em; 
+								 text-decoration: none; ">#end</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Prepend 
+ Digits for SMS Recipients</a></span></p>
+<div class="droptext" id="POPUP623647841" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.sms.{0}.prependdigit</span></p>
+	<p class="lip2list2paragraph">SMS service providers require that all 
+	 SMS recipients follow a universal numbering standard (E.164).</p>
+	<p class="lip2list2paragraph">This property defines a digit (country 
+	 code) to add to the beginning of all contact numbers using this configured 
+	 out-of-band delivery mechanism. Use this property if the user contact 
+	 information does not include the country code.</p>
+	<p class="lip2list2paragraph">Default: none</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a13"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Unicode Encoding</a></span></p>
+<div class="droptext" id="POPUP627190499" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.unicode</span></p>
+	<p class="lip2list2paragraph">If the SMS message contains any characters 
+	 outside of the Basic Latin character set (Unicode Latin-1 Supplement 
+	 characters, for example), set this property to <span style="font-family: Courier;">True</span>.</p>
+	<p class="lip2list2paragraph">This imposes a shorter limit on SMS messages: 
+	 messages containing more than 70 characters might be divided and sent 
+	 as several messages.</p>
+	<p class="attnattention"><span class="bold" style="font-weight: bold; 
+									 letter-spacing: .em; text-decoration: none; ">Attention</span>: 
+	 Sending Unicode messages to a network that does not support such messages 
+	 will not generate an error: the message will be lost, without any 
+	 notifications that the message has not been delivered. You must verify 
+	 with Clickatell that Unicode is supported for the end user before 
+	 enabling this feature.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a14"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Message Fragmentation</a></span></p>
+<div class="droptext" id="POPUP627086101" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.fragmentation</span></p>
+	<p class="lip2list2paragraph">For Clickatell, set this property to 
+	 <span class="output" style="font-family: Courier; font-style: normal; 
+			 font-weight: normal; font-size: 9.pt; color: #; letter-spacing: .em; 
+			 text-decoration: none; ">True </span>to allow long SMS messages 
+	 to be divided into separate messages. By default, the message is split 
+	 at 160 characters (or 70 characters if the SMS Unicode Encoding property 
+	 is true). This limit is configurable through the <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">SMS 
+	 Message Fragmentation Character Limit</span> property.</p>
+	<p class="lip2list2paragraph">Set this property to <span style="font-family: Courier;">False</span> 
+	 to prevent long SMS messages from being divided into separate messages.</p>
+	<p class="lip2list2paragraph">If this property is set to <span style="font-family: Courier;">False</span>, 
+	 and the message is too long to be sent as a single message, no message 
+	 is sent, and an error is written to the log file.</p>
+	<p class="attnattention"><span class="bold" style="font-weight: bold; 
+									 letter-spacing: .em; text-decoration: none; ">Attention</span>: 
+	 TeleSign SMS messages cannot be fragmented. Only one OTP can be sent 
+	 in a message, so if a user requires multiple OTPs, they are sent in 
+	 multiple messages. The message length cannot exceed 140 characters. 
+	 If the message exceeds this length, the excess characters are discarded. 
+	 They are not sent in additional messages. No error message is logged.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a15"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Message Fragmentation Limit</a></span></p>
+<div class="droptext" id="POPUP626057832" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.fragmentationlimit</span></p>
+	<p class="lip2list2paragraph">Sets the maximum number of messages that 
+	 will be sent when a long SMS message is split.</p>
+	<p class="lip2list2paragraph">This property is used only when <span 
+	 style="font-weight: bold;">SMS Message Fragmentation </span>is set 
+	 to <span style="font-family: Courier;">True</span>.</p>
+	<p class="lip2list2paragraph">Default: 5</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a16"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Message Fragmentation Character Limit</a></span></p>
+<div class="droptext" id="POPUP625868847" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.oobdelivery.smsgateway.{0}.fragmentationcharlimit</span></p>
+	<p class="lip2list2paragraph">Sets the number of characters after which 
+	 a message is split. The default is 160 characters, unless the <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">SMS 
+	 Unicode Encoding </span>property is <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">True</span>, 
+	 in which case the limit is 70.</p>
+	<p class="lip2list2paragraph">For example, if an SMS message is 250 
+	 characters in total, and the <span class="bold" style="font-weight: bold; 
+										 letter-spacing: .em; text-decoration: none; ">SMS 
+	 Message Fragmentation Character Limit </span>is 100, then the message 
+	 is split into 3 messages: the first two containing 100 characters 
+	 each, and the last one containing 50 characters.</p>
+	<p class="lip2list2paragraph">This property is used only when <span 
+	 style="font-weight: bold;">SMS Message Fragmentation </span>is set 
+	 to <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+				 text-decoration: none; ">True</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a17"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Message Fragmentation Split Characters</a></span></p>
+<div class="droptext" id="POPUP625817450" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.sms.SMS 
+	 Server.splitchars</span></p>
+	<p class="lip2list2paragraph">Sets which characters are used to decide 
+	 where a message is split. To specify more than one split character, 
+	 separate each with a space. The following special characters are supported:</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">\s</span> 
+	 (space)</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">\t</span> 
+	 (tab)</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">\n</span> 
+	 (new line)</p>
+	<p class="lip2list2paragraph">The default is to split at whitespace 
+	 characters (spaces, tabs, and new lines). If the message does not 
+	 contain a split character, the message is split at the maximum message 
+	 size.</p>
+	<p class="lip2list2paragraph">This property is used only when <span 
+	 style="font-weight: bold;">SMS Message Maximum Fragmentation </span>is 
+	 set to <span style="font-family: Courier;">True</span>.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP616937372');
+	TextPopupInit('a2','POPUP594113305');
+	TextPopupInit('a3','POPUP615566170');
+	TextPopupInit('a4','POPUP617155964');
+	TextPopupInit('a5','POPUP623274130');
+	TextPopupInit('a6','POPUP622728050');
+	TextPopupInit('a7','POPUP620804355');
+	TextPopupInit('a8','POPUP623070629');
+	TextPopupInit('a9','POPUP622095787');
+	TextPopupInit('a10','POPUP624225181');
+	TextPopupInit('a11','POPUP622656596');
+	TextPopupInit('a12','POPUP623647841');
+	TextPopupInit('a13','POPUP627190499');
+	TextPopupInit('a14','POPUP627086101');
+	TextPopupInit('a15','POPUP626057832');
+	TextPopupInit('a16','POPUP625868847');
+	TextPopupInit('a17','POPUP625817450');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

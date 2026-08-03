@@ -1,0 +1,284 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Switch to a CA-signed certificate</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nManaging certificates in the key store\nManage certificates using the Key Store Management tab\nSwitch to a CA-signed certificate");
+addAvenueInfo("r13_std","ig_admin/config_security/check_for_certificates_nearing_expiry.htm","ig_admin/config_security/import_a_trusted_certificate.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"managing_certificates_in_the_key_store.htm\">Managing certificates in the key store<\/a> > <a href=\"manage_certificates_using_the_key_store_management_tab.htm\">Manage certificates using the Key Store Management tab<\/a> > Switch to a CA-signed certificate<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Switch to a CA-signed certificate</h1>
+<p class="pparagraph">This topic describes the steps in what is known as 
+ the certificate signing request (CSR) process, the process used to obtain 
+ and install a trusted certificate from a Certification Authority (CA).The 
+ same process is also used to update a CA-signed certificate that is nearing 
+ expiry.</p>
+<p class="pparagraph">When Entrust IdentityGuard is first installed, it 
+ creates a self-signed certificate that can be used for a proof-of-concept 
+ or demonstration installations, or until you get a certificate from a 
+ trusted Certificate Authority (CA) such as Entrust Certificate Services. 
+ </p>
+<p class="pparagraph">The self-signed certificate enables a SSL connection 
+ between the Entrust IdentityGuard Server and its clients, such as users' 
+ browsers and the Self-Service Module. Browsers do not implicitly trust 
+ self-signed certificates, and they display warnings (such as the one shown 
+ in the following screen capture) when users access the Entrust IdentityGuard 
+ web interfaces.</p>
+<p class="pparagraph"><img alt="ie-browserwarning.jpg" id="image3" src="../../ie-browserwarning.jpg" 
+							 name="image3" width="485" height="250" border="0" /></p>
+<p class="pparagraph">For production deployments, you should replace the 
+ self-signed certificate with a secure one that is signed by a CA such 
+ as Entrust. Entrust is a public CA that is trusted by all major browser 
+ vendors and mobile phone vendors.</p>
+<p class="prtproceduretitle">To switch to a CA-signed certificate</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log 
+ in to the Administration interface.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From 
+ the top menu, select <span class="bold">System</span>, then click the<span 
+	 class="bold"> </span><span class="bold">Key Store Management</span> 
+ tab.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Complete 
+ the following steps to generate a certificate signing request (CSR) to 
+ send to the CA.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ the <span class="bold">Generate CSR</span><span class="bold" style="font-weight: normal;"> 
+ tab</span></p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter 
+ the required information in the following information fields.</p>
+<p class="liplistparagraph"><span class="bold">Common name (FQDN, CN)</span>&#160;— This field displays the fully 
+ qualified domain name (FQDN) of your Entrust IdentityGuard Server, as 
+ shown&#160;in your current, self-signed <span class="bold">tomcat</span> 
+ certificate.</p>
+<p class="nonote"><span class="bold">Note:</span> Entrust Certificate Services 
+ also offer the option to get a wild card certificate, (something like 
+ *.mycompany.com). Such a CA certificate can be used on any server that 
+ is located in your domain.</p>
+<p class="prspsubprocedureparagraph"><img src="../../cn_keystore_management_value.png" alt="" style="border: none;" width="604" height="133" border="0" /></p>
+<p class="liplistparagraph"><span class="bold">Organization (O)</span>&#160;— Enter the name of your organization.</p>
+<p class="liplistparagraph"><span class="bold">Organizational Unit (OU)</span>&#160;— Enter the name of your organizational 
+ unit.</p>
+<p class="liplistparagraph"><span class="bold">Locality (L)</span>&#160;— Enter the city or other locality 
+ where the organization associated with this Entrust IdentityGuard server 
+ deployment is located.</p>
+<p class="liplistparagraph"><span class="bold">State / Province (ST)</span>&#160;— Enter the state, province, or 
+ territory..</p>
+<p class="liplistparagraph"><span class="bold">Country (C)</span>&#160;— Enter the 2-character code for 
+ the country.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold">Generate CSR</span>. The CSR is generated. A popup 
+ window appears.</p>
+<p class="prspsubprocedureparagraph"><img src="../../generate_csr_popup.png" alt="" style="border: none;" width="474" height="348" border="0" /></p>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Select 
+ <span class="bold">Open with</span>, and click <span class="bold">OK</span>. 
+ The CSR file opens in Notepad.</p>
+<p class="prspsubprocedureparagraph"><img src="../../csrtext.png" alt="" style="border: none;" width="469" height="282" border="0" /></p>
+<p class="prspsubprocedureparagraph">Leave the Notepad file open. Its contents 
+ are used in the next procedure.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Obtain 
+ a CA-signed certificate from a Certification Authority (CA). The steps 
+ that follow describe how to obtain a CA-signed certificate from Entrust 
+ Certificate Services. If you are using a different CA, follow the steps 
+ they provide.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Go 
+ to Entrust Certificate Services <span style="font-family: Syntax; text-decoration: underline; "><u><a 
+	 href="https://www.entrust.com/ssl-certificates/" target="_blank">https://www.entrust.com/ssl-certificates/</a></u></span> 
+ and select the type of certificate you want to purchase.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Follow 
+ the on-screen instructions to purchase the certificate, following these 
+ guidelines:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>When prompted 
+ for a CSR, copy-and-paste the contents of the CSR file you created in 
+ step 3 into the field provided, and then click <span 
+	 class="bold">Next</span>. You must include the <span class="output">---Begin 
+ Certificate Request---&#160;</span>and<span class="output"> ---End Certificate 
+ Request---</span>&#160;lines. </p>
+<p class="prspsubprocedureparagraph">If your CSR is valid, a confirmation 
+ page appears showing the fully qualified domain name that you specified 
+ when creating the CSR (for example, <span class="output">ig.example.com</span>). 
+ If it is not correct, re-create the CSR with the correct information.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>When prompted 
+ for contact information:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Specify 
+ different individuals as your Authorization, Technical, and Billing contacts. 
+ If you do not specify separate people, Entrust will contact you and ask 
+ you for this information.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>List 
+ yourself as the Authorization or Technical contact. Entrust sends the 
+ SSL certificate to these contacts. (The certificate is not sent to the 
+ Billing contact.)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Proceed 
+ through the remaining pages, providing information as necessary, until 
+ you reach the end. Record your order number to track your order.</p>
+<p class="liplistparagraph">Entrust Certificate Services processes the 
+ order and sends you an email with&#160;a link to a Web page where you 
+ can pick up your certificate. The process takes three to five business 
+ days.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Save 
+ the file or files to a location of your choice.</p>
+<p class="nonote"><span class="bold">Note:</span> If your CA offers you 
+ a choice of downloading individual certificates or a certificate chain 
+ bundle, select the bundle.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Use 
+ the Key Store Management interface to process the CSR Response. Complete 
+ the following steps:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log 
+ in to the Administration interface.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From 
+ the top menu, select <span class="bold">System</span>, then click the<span 
+	 class="bold"> Key Store Management</span>. tab.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ the <span class="bold">Process CSR Response</span> tab.</p>
+<p class="prspsubprocedureparagraph"><img src="../../process_csr.png" alt="" style="border: none;" border="0" /></p>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>On 
+ the <span class="bold">Certificate Upload</span> page, click <span class="bold">Browse</span> 
+ to navigate to the location of the file you received from the CA. It is 
+ either a complete certificate bundle with your signed server certificate 
+ plus the signing Root CA certificate and any required intermediate CA 
+ certificates, or it must be your signed server certificate after you have 
+ used the <span class="bold">Import Trusted Certificate</span> tab to individually 
+ upload the Root CA certificate and any required intermediate certificates. 
+ </p>
+<p class="nonote"><span class="bold">Note:</span> If your CA offers you 
+ a choice of downloading individual certificates or a certificate chain 
+ bundle, select the bundle.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold">Import CSR Response</span>.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Restart 
+ the Entrust IdentityGuard server service.</p>
+<p class="prpprocedureparagraph">The new tomcat alias, now with a CA-signed 
+ certificate, appears in the key store.</p>
+<p class="prpprocedureparagraph">The CA-signed certificate allows web browsers 
+ to implicitly trust your website. </p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

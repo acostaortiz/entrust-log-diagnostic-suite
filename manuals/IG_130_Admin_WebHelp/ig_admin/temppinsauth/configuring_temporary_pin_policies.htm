@@ -1,0 +1,327 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\temppinsauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring temporary PIN policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nTemporary PIN authentication\nConfiguring temporary PIN authentication\nConfigure temporary PIN policies");
+addAvenueInfo("r13_std","ig_admin/temppinsauth/configuring_temporary_pins_overview.htm","ig_admin/temppinsauth/administering_temporary_pins.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"temppinsauth.htm\">Temporary PIN authentication<\/a> > <a href=\"configuring_temporary_pins_overview.htm\">Configuring temporary PIN authentication<\/a> > Configure temporary PIN policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_76854_Setting_up" id="XREF_76854_Setting_up"></a>Configure temporary PIN policies</h1>
+<p class="pparagraph">Temporary PINS are used with grid or token authentication, so for your users to authenticate with temporary PINs, you must first configure your policies to allow grid authentication (<a href="../gridauthentication/configuring_grid_card_policies.htm">Configuring grid card policies</a>) or token authentication (<a href="../tokenauth/configuring_token_policies.htm">Configuring token policies</a>). Then you configure the Temporary PIN policies.</p>
+<p class="pparagraph"><a name="IX_policies_6" id="IX_policies_6"></a>The temporary PIN policies represent the rules for creating temporary PINs and controlling their content.</p>
+<p class="prtproceduretitle"><a name="XREF_81499_To_configure_card" id="XREF_81499_To_configure_card"></a>To configure temporary PIN policies</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the main menu, click <span style="font-weight: bold;">Policies</span>.</p>
+
+<p class="prpprocedureparagraph">A list of all policies appears on the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">List Policies</span>&#160;tab.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="temppinsauth00829.jpg" id="image0" src="temppinsauth00829.jpg" width="552" height="138" border="0" name="image0" /></p>
+</div>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click a policy name to view its information.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Policy</span>&#160;page appears.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="temppinsauth00832.jpg" id="image1" src="temppinsauth00832.jpg" width="552" height="457" border="0" name="image1" /></p>
+</div>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">Policy Category</span>&#160;drop-down list, select <span style="font-weight: bold;">Temporary PIN</span>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Edit Policy</span>.</p>
+
+<p class="prpprocedureparagraph">An editable version of the settings appears.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Edit the policies as required. Select a policy in the list to see its description.</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Number 
+ of Characters Per Cell</a></span></p>
+<div class="droptext" id="POPUP555533242" style="display: none;">
+	<p class="RefItemBody">Sets the number of characters in a temporary 
+	 PIN cell. This is typically only one cell, in which case, this is 
+	 the length of a temporary PIN. The allowed range is 1 to 20.</p>
+	<p class="RefItemBody">Default: 8</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Cell 
+ Alphabet</a></span></p>
+<div class="droptext" id="POPUP626145285" style="display: none;">
+	<p class="RefItemBody">Sets what characters to use for the temporary 
+	 PIN. The default character set eliminates the most commonly confused 
+	 characters (such as 0 and O) and only includes uppercase characters. 
+	 This setting in conjunction with the cell replacement setting improves 
+	 usability.</p>
+	<p class="RefItemBody">For more information about the cell alphabet, 
+	 see <a href="../gridauthentication/cell_alphabet.htm#XREF_51506_Cell_alphabet">Cell 
+	 alphabet</a>.</p>
+	<p class="RefItemBody">Default: 0 1 2 3 4 5 6 7 8 9 C D E F 
+	 H J K M N P Q R T V W X Y</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Cell 
+ Replacements</a></span></p>
+<div class="droptext" id="POPUP553382695" style="display: none;">
+	<p class="RefItemBody">Sets what characters can replace other 
+	 characters. The default list of replacement-character pairs includes 
+	 the most commonly confused characters and enforces case insensitivity 
+	 by including lowercase characters as replacements for the corresponding 
+	 uppercase characters.</p>
+	<p class="RefItemBody">For more information about cell replacements, 
+	 see <a href="../gridauthentication/cell_replacements.htm#XREF_46336_Cell_replacements">Cell 
+	 replacements</a>.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Challenge 
+ Size</a></span></p>
+<div class="droptext" id="POPUP553444205" style="display: none;">
+	<p class="RefItemBody">Sets the number of cells used with the 
+	 temporary PIN. Typically, you use one cell with multiple characters; 
+	 for example, with <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Number of Characters 
+	 Per Cell</span>&#160;at 8 and <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Challenge 
+	 Size</span> at 1, you simulate a standard password.</p>
+	<p class="RefItemBody">Default: 1</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Temporary 
+ PIN Lifetime</a></span></p>
+<div class="droptext" id="POPUP628624627" style="display: none;">
+	<p class="RefItemBody">Sets how long in hours, days or months a user 
+	 can use a temporary PIN before it expires. Unlimited or 0 indicates 
+	 the PIN does not expire. You should use either lifetime or maximum 
+	 uses to control usage of temporary PINs. There is a limit of 1,200 
+	 months, or 36,500 days, or 876,000 hours.</p>
+	<p class="RefItemBody">The activation window (period of time in which 
+	 a replacement grid card or token can be activated) is set independently. 
+	 By default, it is 30 days. See <a href="../config_policies/card_token_activation_policies.htm">Card/Token 
+	 Activation policies</a>.</p>
+	<p class="RefItemBody">Default: 24 hours</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Uses</a></span></p>
+<div class="droptext" id="POPUP628666058" style="display: none;">
+	<p class="RefItemBody">Sets how many times a temporary PIN can 
+	 be used within its lifetime. A setting of 0 (unlimited) means there 
+	 is no maximum. You should use either lifetime or maxuses to control 
+	 usage of temporary PINs.</p>
+	<p class="RefItemBody">Default: Unlimited</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Delete 
+ After Card or Token is Used</a></span></p>
+<div class="droptext" id="POPUP628725519" style="display: none;">
+	<p class="RefItemBody">Determines if Entrust IdentityGuard automatically 
+	 deletes a temporary PIN when a user successfully authenticates with 
+	 a card or token value.</p>
+	<p class="RefItemBody">Default: Yes</p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold">Save Changes</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Policy</span> page reappears.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+	TextPopupInit('a3','POPUP555533242');
+	TextPopupInit('a4','POPUP626145285');
+	TextPopupInit('a5','POPUP553382695');
+	TextPopupInit('a6','POPUP553444205');
+	TextPopupInit('a7','POPUP628624627');
+	TextPopupInit('a8','POPUP628666058');
+	TextPopupInit('a9','POPUP628725519');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

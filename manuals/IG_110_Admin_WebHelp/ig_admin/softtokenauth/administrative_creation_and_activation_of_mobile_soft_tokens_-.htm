@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\softtokenauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Administrative creation and activation of mobile soft tokens - manual entry</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nSoft token authentication\nAdministering soft tokens\nAdministrative creation and activation of mobile soft tokens - manual entry");
+addAvenueInfo("Untitled","ig_admin/softtokenauth/creating_and_activating_a_mobile_soft_token_using_the.htm","ig_admin/softtokenauth/administrative_creation_and_activation_of_mobile_soft_tokens_-1.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"softtokenauth.htm\">Soft token authentication<\/a> > <a href=\"administering_soft_tokens.htm\">Administering soft tokens<\/a> > Administrative creation and activation of mobile soft tokens - manual entry<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_39101_Administrative"></a>Administrative creation and 
+ activation of mobile soft tokens - manual entry</h1>
+<p class="pparagraph">If you do not use Entrust IdentityGuard Self-Service 
+ Module, or if users have problems with activating a soft token through 
+ self-service, use the following procedure to display the serial number 
+ and activation code that you can convey to the user by phone to activate 
+ the soft token.</p>
+<p class="prtproceduretitle"><a name="XREF_87997_To_create_a_soft"></a>To 
+ create and activate a soft token using manual information entry</p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="XREF_19559_1_Log_in_to_the"></a>Log 
+ in to the Administration interface (<a href="../usingadmininterface/logging_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging 
+ in and out of the Administration interface</a>) as someone with the <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">userTokenCreate</span>&#160;permission. 
+ </p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find the account of the user for whom you 
+ want to activate the soft token.</p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Account 
+ Information</span>&#160;page, under <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Authentication 
+ Types</span>, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Tokens</span>.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Soft_Token_Create.jpg" id="image7" src="ai-user_account-soft_token_create.jpg" width="392" height="139" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Create 
+ Soft Token</span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>If the 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Create 
+ Soft Token </span>button does not appear, it may be because: a) you do 
+ not have the userTokenCreate permission, b) the user already has a soft 
+ token in the pending or hold-pending state, c) you have not configured 
+ a soft token vendor, or d) you do not have soft token licenses.</p>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the page that appears, do the following:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optionally, fill 
+ out the<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; "> Token Set</span>&#160;field 
+ with a name for the set to which the token will belong.</p>
+<p class="liplistparagraph">Examples:</p>
+<p class="liplistparagraph">‘Bob’s BlackBerry Token’<br />
+‘Bob’s Home PC Token’<br />
+‘Alice Joint Account Token’<br />
+‘John Joint Account Token’</p>
+<p class="liplistparagraph">The token set name can be up to 255 characters. 
+ Token sets are mandatory if you want to allow the user account to have 
+ multiple usable tokens. See <a href="../tokenauth/token_set_overview_using_multiple_tokens.htm#XREF_11251_Token_tag_overview">Token 
+ set overview (using multiple tokens)</a>.&#160;</p>
+<p class="liplistparagraph">If the user does not require multiple usable 
+ tokens, a token set is optional. Without specifying a name, the token 
+ belongs to the set called <span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+								 text-decoration: none; ">unnamed</span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>If there 
+ is no <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Token Set</span>&#160;field, it is 
+ because the maximum number of token sets has been reached for the user. 
+ To increase this maximum, see <a href="..\tokenauth\Enabling_multiple_tokens_per_user_through_the_token_policy.htm#XREF_97293_Configuring_the">Enabling 
+ multiple tokens per user through the token policy</a>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optionally, select 
+ a token set from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Token Set</span> 
+ drop-down list, if a list appears. By selecting an existing token set, 
+ the token becomes related to all other tokens within the same set under 
+ the user’s account and progresses through the state transitions with them. 
+ For details, see <a href="..\tokenauth\How_token_sets_work.htm#XREF_31026_How_token_tags_work">How 
+ token sets work</a>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>If a token 
+ set is missing from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+								 text-decoration: none; ">Token Set</span>&#160;drop-down 
+ list, it is because this set is currently associated with a token in the 
+ pending state. After the token progresses to the current state, the set 
+ reappears in the list. <br />
+<br />
+If the<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; "> Token Set</span>&#160;drop-down 
+ list itself is missing, it is because there are either no existing sets 
+ defined for the user, or all existing sets are currently associated with 
+ tokens in the pending state.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If necessary, select 
+ a different state from the <span class="bold" style="font-weight: bold; 
+									 letter-spacing: 0.00em; text-decoration: none; ">Initial 
+ Token State</span>&#160;list. See <a href="../gridauthentication/grid_card_state_overview.htm#XREF_54456_Configuring">Grid 
+ card state overview</a>&#160;for details. (The information applies equally 
+ to soft tokens.)</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optionally, in 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Comments</span> field, enter a comment.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Create 
+ Soft Token</span>.</p>
+<p class="liplistparagraph">The user’s account page is updated with the 
+ soft token.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Soft_Token_Created.jpg" id="image8" src="ai-user_account-soft_token_created.jpg" width="559" height="163" border="0" /> 
+	 </p>
+</div>
+<p class="prpprocedureparagraph">You have now created a soft token in Entrust 
+ IdentityGuard and assigned it to a user. The next step is to activate 
+ it.</p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="XREF_78359_6_Click_Activate"></a>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Activate 
+ Token</span>. </p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>If the 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Activate 
+ Token</span>&#160;button is not visible, it may be because you do not 
+ have the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">userTokenActivate</span>&#160;permission. 
+ </p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Activate 
+ Token</span> screen appears.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Soft_Token_Activate.jpg" id="image9" src="ai-user_account-soft_token_activate.jpg" width="520" height="267" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Direct the user to enter the following information 
+ into their soft token application:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>serial number (listed on the <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Activate 
+ Token</span> screen, see above)</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>activation code (listed on the<span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; "> 
+ Activate Token</span> screen, see above)</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>One of the following:</p>
+<p 
+	 class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>the <span style="font-weight: bold;">Identity 
+ Provider address</span> (preferred)</p>
+<p class="lip2list2paragraph">If you are using the Self-Service Module, 
+ this is listed in the Self-Service Module’s Configuration interface, under 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Properties</span>&#160;&gt; 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Soft 
+ Token Transaction Component Settings</span>&#160;&gt; <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">Identity 
+ Provider Address.</span></p>
+<p class="lip2list2paragraph">If you are not using the Self-Service Module, 
+ this is the HTTPS URL where the <span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">config.json 
+ </span>file is hosted. For example, if the <span class="output" style="font-family: Courier; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">config.json</span>&#160;file 
+ is at <span class="output" style="font-family: Courier; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; ">https://www.example.com/config.json</span>, 
+ then the URL you must give the user is <span class="output" style="font-family: Courier; 
+												 font-style: normal; font-weight: normal; 
+												 font-size: 10.0pt; color: #000000; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">www.example.com</span>. 
+ By default the <span class="output" style="font-family: Courier; font-style: normal; 
+						 font-weight: normal; font-size: 10.0pt; color: #000000; 
+						 letter-spacing: 0.00em; text-decoration: none; ">config.json</span>&#160;file 
+ is available as part of self-service at the URL &lt;hostname&gt;:8445/igst. 
+ (The port 8445 may be different if the defaults were&#160;not used when 
+ Self-Service Module was installed.)</p>
+<p 
+	 class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>the <span style="font-weight: bold;">Identity 
+ Provider name</span>&#160;(only if the Identity Provider address is not 
+ available)</p>
+<p class="lip2list2paragraph">If you are using the Self-Service Module, 
+ this is listed in the Self-Service Module’s Configuration interface, under<span 
+	 style="font-weight: bold;"> Properties.</span></p>
+<p class="lip2list2paragraph">If you are not using the Self-Service Module, 
+ this can be any name you choose<span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">.</span></p>
+<p class="prpprocedureparagraph">If you supply the <span style="font-weight: bold;">Identity 
+ Provider name </span>rather than the <span style="font-weight: bold;">Identity 
+ Provider address</span>: </p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>there is no custom branding or color selection 
+ in the Entrust IdentityGuard Mobile ST app or Entrust IdentityGuard Desktop 
+ Soft Token.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>the mobile device cannot send the registration 
+ code automatically to Entrust IdentityGuard for immediate activation—the 
+ code is instead displayed on-screen</p>
+<p 
+	 class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>After the user enters the above information, 
+ have them select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+						 text-decoration: none; ">Save </span>in their 
+ soft token application.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">New 
+ PIN</span> screen appears if your policies enable PIN protection. Have 
+ the user specify a PIN and confirm it. This PIN is necessary to unlock 
+ the soft token application on subsequent use.</p>
+<p class="prpprocedureparagraph">If the <span class="bold" style="font-weight: bold; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">New 
+ PIN</span>&#160;screen does not appear, it is because the soft token is 
+ not PIN-enabled.</p>
+<p class="prpprocedureparagraph">The soft token application generates a 
+ registration code.</p>
+<p class="prpprocedureparagraph">The registration code is displayed only 
+ if registration cannot be completed automatically (for example, if the&#160;mobile 
+ device has no internet connection). </p>
+<p 
+	 class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If a registration code appears, have the user 
+ tell it to you,&#160;then enter it into the <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Registration 
+ Code</span> field, and then click <span style="font-weight: bold;">Activate 
+ Token</span>. </p>
+<p class="prpprocedureparagraph">If no registration code was displayed 
+ to the user, just click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+								 text-decoration: none; ">Activate Token</span>&#160;without 
+ entering a registration code. </p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Soft_Token_RegCode1.jpg" id="image10" src="ai-user_account-soft_token_regcode1.jpg" width="520" height="269" border="0" /> 
+	 </p>
+</div>
+<p class="pparagraph">You have now activated a soft token. The user can 
+ now use this token to authenticate.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

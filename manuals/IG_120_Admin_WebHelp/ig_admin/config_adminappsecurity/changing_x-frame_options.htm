@@ -1,0 +1,221 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_AdminAppSecurity.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Changing X-Frame options</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring security for administrative applications\nChanging X-Frame options");
+addAvenueInfo("Untitled02","ig_admin/config_adminappsecurity/overview_of_the_x-frame-options_directive_settings.htm","ig_admin/systemadminsection/system_administration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_adminappsecurity.htm\">Configuring security for administrative applications<\/a> > Changing X-Frame options<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_40625_Changing_X_Frame" id="XREF_40625_Changing_X_Frame"></a>Changing X-Frame options</h1>
+<p class="prtproceduretitle">To change the default X-FRAME-OPTIONS setting for the Administration interface</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Stop the Entrust IdentityGuard services.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Locate the <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">web.xm</span>l file for the Entrust IdentityGuard Administration interface and open it for editing. By default, this file is found in the following directory:</p>
+
+<p class="prpprocedureparagraph">$IG_HOME\services\admin\IdentityGuardAdmin\WEB-INF</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search for the following entry.</p>
+
+<p class="cocode">&lt;!-- &#160;Servlet Filter for adding the X-FRAME-OPTIONS directive --&gt;</p>
+<p class="cocode">&#160;&lt;filter&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&lt;filter-name&gt;X-FRAME-OPTIONS Filter&lt;/filter-name&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&lt;filter-class&gt; com.entrust.identityGuard.webadmin.XFrameOptionsFilter&lt;/filter-class&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&lt;init-param&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param-name&gt;X-Frame-Options&lt;/param-name&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param-value&gt;<span class="outputbold" style="font-family: Courier; font-style: normal; font-weight: bold; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">DENY</span>&lt;/param-value&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&lt;/init-param&gt;</p>
+<p class="cocode">&#160;&lt;/filter&gt;</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Change the <span class="output">&lt;param-value&gt;</span> from <span class="outputbold">DENY</span> to one of the following options:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">SAMEORIGIN</span> to allow the page to be rendered in a frame if the origin of the top-level browsing context is the same as the origin of the content containing the X-Frame-Options directive.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">ALLOW-FROM &lt;origin&gt;</span>&#160;to allow the page to be rendered in a frame only if the origin of the top-level browsing context is the same as the origin value supplied with the ALLOW-FROM setting.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> At the time of publication of this document, the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">ALLOW-FROM &lt;origin&gt;</span>&#160;option is not implemented by Google Chrome or Apple Safari browsers. This setting is not recommended if your user community uses either of these browsers.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you entered the parameter value <span class="bold">ALLOW-FROM &lt;origin&gt;</span> in the previous step, replace <span class="bold">&lt;origin&gt;</span>&#160;with the URL of the top-level Web page in the browsing context. For example, if <span class="output">https://ig.mycompany.com</span>&#160;contains the X-Frame-Options directive with the value <span class="output">ALLOW-FROM https://adminportal.mycompany.com</span>, the pages associated with <span class="output">https://ig.mycompany.com</span>&#160;can be framed only by pages that originate from the <span class="output">https://portal.mycompany.com</span>.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Save and close the file.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Restart the Entrust IdentityGuard services.</p>
+
+<p class="prtproceduretitle">To change the default X-FRAME-OPTIONS setting for the Properties Editor</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Stop the Entrust IdentityGuard services.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Locate the <span class="output">web.xml</span> file for the Entrust IdentityGuard Administration interface and open it for editing. By default, this file is found in the following directory:</p>
+
+<p class="prpprocedureparagraph">On Windows:</p>
+<p class="prpprocedureparagraph">$IG_HOME\services\admin\IdentityGuardPropertiesEditor\WEB-INF</p>
+<p class="prpprocedureparagraph">On UNIX:</p>
+<p class="prpprocedureparagraph">$IG_HOME/services/admin/IdentityGuardPropertiesEditor/WEB-INF</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Search for the following entry.</p>
+
+<p class="cocode">&lt;!-- Main Preditor Servlet: GET to retrieve language-based XML property template and POST to save changes --&gt;</p>
+<p class="cocode">&#160;&lt;servlet&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&lt;servlet-name&gt;Main Preditor Servlet&lt;/servlet-name&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&#160;&lt;servlet-class&gt;com.entrust.identityGuard.preditor.PropertiesEditorServlet&lt;/servlet-class&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&lt;init-param&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param-name&gt;supportedProperties&lt;/param-name&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param-value&gt;/xml/properties.xml&lt;/param-value&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&lt;/init-param&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&lt;init-param&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param-name&gt;X-Frame-Options&lt;/param-name&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&#160;<span style="font-family: 'Times New Roman'; font-size: 7.0pt;">&#160;&#160;&#160;</span><span style="font-family: 'Times New Roman'; font-size: 7.0pt;">&#160;&#160;&#160;</span>&#160;&#160;&#160;&#160;&lt;param-value&gt;<span class="outputbold" style="font-family: Courier; font-style: normal; font-weight: bold; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">DENY</span>&lt;/param-value&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&lt;/init-param&gt;</p>
+<p class="cocode">&#160;&#160;&#160;&lt;load-on-startup&gt;2&lt;/load-on-startup&gt;</p>
+<p class="cocode">&#160;&lt;/servlet&gt;</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Change the <span class="output">&lt;param-value&gt;</span> from <span class="outputbold">DENY</span> to one of the following options:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">SAMEORIGIN</span> to allow the page to be rendered in a frame if the origin of the top-level browsing context is the same as the origin of the content containing the X-Frame-Options directive.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">ALLOW-FROM &lt;origin&gt;</span>&#160;to allow the page to be rendered in a frame only if the origin of the top-level browsing context is the same as the origin value supplied with the ALLOW-FROM setting. Replace <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">&lt;origin&gt;</span>&#160;with the URL of the top-level Web page in the browsing context.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> At the time of publication of this document, the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">ALLOW-FROM &lt;origin&gt;</span>&#160;option is not implemented by Google Chrome or Apple Safari browsers. This setting is not recommended if your user community uses either of these browsers.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you entered the parameter value <span class="bold">ALLOW-FROM &lt;origin&gt;</span> in the previous step, replace <span class="bold">&lt;origin&gt;</span>&#160;with the URL of the top-level Web page in the browsing context. For example, if <span class="output">https://ig.mycompany.com</span>&#160;contains the X-Frame-Options directive with the value <span class="output">ALLOW-FROM https://adminportal.mycompany.com</span>, the pages associated with <span class="output">https://ig.mycompany.com</span>&#160;can be framed only by pages that originate from the <span class="output">https://portal.mycompany.com</span>.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Save and close the file.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Restart the Entrust IdentityGuard services.</p>
+
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

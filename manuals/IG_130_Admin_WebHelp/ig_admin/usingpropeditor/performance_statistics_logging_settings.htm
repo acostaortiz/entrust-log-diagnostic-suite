@@ -1,0 +1,379 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Performance Statistics Logging Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nPerformance Statistics Logging Settings (39)");
+addAvenueInfo("r13_std","ig_admin/usingpropeditor/out-of-band_otp_voice_delivery_configuration.htm","ig_admin/usingpropeditor/push_authentication_for_smart_credential_and_soft_token.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Performance Statistics Logging Settings (39)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_31860_WS_Security_Audit" id="XREF_31860_WS_Security_Audit"></a>Performance Statistics Logging Settings</h1>
+<p class="pparagraph">The Performance Statistics Logging properties control the logging of performance statistics and connection pool usage statistics that are gathered as the server is running. Changes to these properties are monitored based on the <span class="bold">Logging Configuration Refresh Interval property</span> (<span class="output">identityguard.refreshinterval</span>). You do not have to restart the Entrust IdentityGuard server for changes to these properties to take effect.</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Enable 
+ Performance Logging</a></span></p>
+<div class="droptext" id="POPUP632191852" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.estat.enabled</span></p>
+	<p class="RefItemBody">Set this property to <span style="font-weight: bold;">True 
+	 </span>to enable logging of Entrust IdentityGuard service performance 
+	 statistics.</p>
+	<p class="RefItemBody">When performance statistics logging is 
+	 enabled, data is logged to:</p>
+	<p class="RefItemBody">&lt;$IG_HOME&gt;/Log/identityguard_estat.log</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Services 
+ Enabled for Performance Logging</a></span></p>
+<div class="droptext" id="POPUP632245584" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.estat.enabledservices</span></p>
+	<p class="RefItemBody">If <span style="font-weight: bold;">Enable 
+	 Performance Logging</span> is set to true, use this property to specify 
+	 the list of services against which to log performance data.</p>
+	<p class="RefItemBody">Specify the services to monitor in a 
+	 space or comma-separated list. The list can contain one or more of 
+	 the following:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>ADMININTERFACE 
+	 - the Web Administration interface</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>ADMINSERVICE 
+	 - the Administration service</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>AUTHSERVICE 
+	 - the Authentication service</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>IGRADIUS 
+	 - the Entrust IdentityGuard Radius Proxy</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>PROPERTIESEDITOR 
+	 - the Properties Editor</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>SUPERSH 
+	 - the Master user shell</p>
+	<p class="RefItemBody">Unrecognized strings are ignored. If 
+	 no services are specified, the default list is used.</p>
+	<p class="RefItemBody">Default: ADMININTERFACE ADMINSERVICE 
+	 AUTHSERVICE</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Performance 
+ Logging Schedule</a></span></p>
+<div class="droptext" id="POPUP632259577" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.estat.schedule</span></p>
+	<p class="RefItemBody">If <span style="font-weight: bold;">Enable 
+	 Performance Logging</span> is set to true, use this property to specify 
+	 the number of seconds to wait between logging performance statistics. 
+	 In the default case, performance statistics are logged once every 
+	 6 seconds (1 minutes).</p>
+	<p class="RefItemBody">Default: 6</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Clear 
+ Performance Data</a></span></p>
+<div class="droptext" id="POPUP633368174" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.estat.clear</span></p>
+	<p class="RefItemBody">Set this property to <span style="font-weight: bold;">True</span> 
+	 to clear and reset performance statistics periodically.</p>
+	<p class="RefItemBody">Clearing and resetting performance statistics 
+	 periodically allows you to check system performance during specific 
+	 time intervals.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Clear 
+ Performance Data Schedule</a></span></p>
+<div class="droptext" id="POPUP789468094" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.estat.clearschedule</span></p>
+	<p class="RefItemBody">If <span style="font-weight: bold;">Clear 
+	 Performance Data</span>&#160;is enabled, use this property to set 
+	 the minimum time after logging to wait before clearing the data. A 
+	 value of 0 (zero) means the performance statistics are cleared after 
+	 every time they are logged.</p>
+	<p class="RefItemBody"><span>Default: 0</span></p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Enable 
+ radius VPN Request Table Logging</a></span></p>
+<div class="droptext" id="POPUP633686803" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.estat.igradiusvpnrequestenabled</span></p>
+	<p class="RefItemBody">Set to <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">True 
+	 </span>to log periodically the performance statistics for the internal 
+	 VPN Request table usage within the Entrust IdentityGuard Radius proxy.</p>
+	<p class="RefItemBody">If you change this setting, you must 
+	 restart the Entrust IdentityGuard Radius Server service.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Enable 
+ radius VPN State Information Table Logging</a></span></p>
+<div class="droptext" id="POPUP633728476" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.estat.igradiusstateinfoenabled</span></p>
+	<p class="RefItemBody">Set to <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">True 
+	 </span>to log periodically the performance statistics for the internal 
+	 VPN and Radius State Information table usage within the Entrust IdentityGuard 
+	 Radius proxy.</p>
+	<p class="RefItemBody">If you change this setting, you must 
+	 restart the Entrust IdentityGuard Radius Server service.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Connection 
+ Pool Logging Schedule</a></span></p>
+<div class="droptext" id="POPUP638227595" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.estat.pool.schedule</span></p>
+	<p class="RefItemBody">If <span style="font-weight: bold;">Enable 
+	 Connection Pool Logging </span>is set to <span style="font-weight: bold;">True</span>, 
+	 use this property to specify the number of seconds to wait between 
+	 logging connection pool usage statistics. In the default case, connection 
+	 pool usage statistics are logged once every 6 seconds (1 minutes).</p>
+	<p class="RefItemBody">Default: 6</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Clear 
+ Performance Data Schedule</a></span></p>
+<div class="droptext" id="POPUP637482059" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.estat.clearschedule</span></p>
+	<p class="RefItemBody">If <span style="font-weight: bold;">Clear 
+	 Performance Data </span>is enabled, use this property to set the minimum 
+	 time after logging to wait before clearing the data. A value of (zero) 
+	 means the performance statistics are cleared after every time they 
+	 are logged.</p>
+	<p class="RefItemBody">Default:</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Services 
+ Enabled for Connection Pool Logging</a></span></p>
+<div class="droptext" id="POPUP636054390" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.estat.pool.enabledservices</span></p>
+	<p class="RefItemBody">If <span style="font-weight: bold;">Enable 
+	 Connection Pool Logging</span> is set to <span style="font-weight: bold;">True</span>, 
+	 use this property to specify the list of services against which to 
+	 log connection pool usage data.</p>
+	<p class="RefItemBody">Specify the services to monitor in a 
+	 space or comma-separated list. The list can contain one or more of 
+	 the following:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>ADMININTERFACE 
+	 - the Web Administration interface</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>ADMINSERVICE 
+	 - the Administration service</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>AUTHSERVICE 
+	 - the Authentication service</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>IGRADIUS 
+	 - the Entrust IdentityGuard Radius Proxy</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>PROPERTIESEDITOR 
+	 - the Properties Editor</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>SUPERSH 
+	 - the Master user shell</p>
+	<p class="RefItemBody">Unrecognized strings are ignored. If 
+	 no services are specified, the default list is used.</p>
+	<p class="RefItemBody">Default: ADMININTERFACE ADMINSERVICE 
+	 AUTHSERVICE</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Clear 
+ Connection Pool Usage Data</a></span></p>
+<div class="droptext" id="POPUP637782302" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.estat.pool.clear</span></p>
+	<p class="RefItemBody">Set this property to <span style="font-weight: bold;">True 
+	 </span>to clear and reset connection pool usage statistics periodically.</p>
+	<p class="RefItemBody">Clearing and resetting connection pool 
+	 usage statistics periodically allows you to check the use of repository 
+	 connections during specific time intervals.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Clear 
+ Connection Pool Usage Data Schedule</a></span></p>
+<div class="droptext" id="POPUP638413467" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.estat.pool.clearschedule</span></p>
+	<p class="RefItemBody">If <span style="font-weight: bold;">Enable 
+	 Connection Pool Logging </span>is enabled, use this property to set 
+	 the minimum time after logging to wait before clearing the data. A 
+	 value of (zero) means the statistics are cleared after every time 
+	 they are logged.</p>
+	<p class="RefItemBody">Default:</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP632191852');
+	TextPopupInit('a2','POPUP632245584');
+	TextPopupInit('a3','POPUP632259577');
+	TextPopupInit('a4','POPUP633368174');
+	TextPopupInit('a5','POPUP789468094');
+	TextPopupInit('a6','POPUP633686803');
+	TextPopupInit('a7','POPUP633728476');
+	TextPopupInit('a8','POPUP638227595');
+	TextPopupInit('a9','POPUP637482059');
+	TextPopupInit('a10','POPUP636054390');
+	TextPopupInit('a11','POPUP637782302');
+	TextPopupInit('a12','POPUP638413467');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

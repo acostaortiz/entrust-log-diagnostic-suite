@@ -1,0 +1,226 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Mapping contact info from an LDAP directory</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nConfiguring an LDAP directory\nMap contact info from an LDAP directory");
+addAvenueInfo("Untitled02","ig_admin/config_igserver/suspending_disabled_and_expired_ldap_users.htm","ig_admin/config_logging/configuring_a_database.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"configuring_an_ldap_directory.htm\">Configuring an LDAP directory<\/a> > Map contact info from an LDAP directory<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1><a name="IX_mapping_from_LDAP" id="IX_mapping_from_LDAP"></a><a name="IX_map_contact_info" id="IX_map_contact_info"></a><a name="XREF_87465_Mapping_contact" id="XREF_87465_Mapping_contact"></a>Map contact info from an LDAP directory</h1>
+<p class="pparagraph">You can configure Entrust IdentityGuard to automatically map user contact information and the user’s full name directly from your LDAP directory.</p>
+<p class="pparagraph">The contact information you can map includes, but is not limited to:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>the user’s full name</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>one or more email addresses</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>one or more telephone numbers</p>
+
+<p class="pparagraph">You can set up automatic mapping of user contact info, or any information you choose to map into the contact info by following the steps in this procedure.</p>
+<p class="pparagraph">When contact information mapping is enabled, <a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />some differences&#160;appear in a user account.</a></p>
+<div class="droptext" id="POPUP618694628" style="display: none;">
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If the user account includes mapped information, a <span style="font-weight: bold;">More Details</span>&#160;control appears on the <span style="font-weight: bold;">View Account</span>&#160;screen. Click <span style="font-weight: bold;">More Details</span>&#160;to display where the information came from, and whether it has been modified since it was mapped from the directory.</p>
+
+<div>
+<p class="liplistparagraph"><img alt="ai-user_account-view_account-fullname_mapped.jpg" id="image11" src="ai-user_account-view_account-fullname_mapped.jpg" width="552" height="288" border="0" name="image11" /></p>
+</div>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> After you edit information that has been mapped, the information is not overwritten by mapping it again unless you delete it from the Entrust IdentityGuard user account.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>When you edit user contact info, the display includes a column showing whether the particular contact info entry has been mapped from the LDAP directory.</p>
+
+<div>
+<p class="liplistparagraph"><img alt="ai-user_account-edit_account-contact_info_two_mapped.jpg" id="image21" src="ai-user_account-edit_account-contact_info_two_mapped.jpg" width="552" height="314" border="0" name="image21" /></p>
+</div>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Editing mapped contact info does not change the original value stored in the attribute in the directory; it only changes the value saved in IdentityGuard.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The user’s full name is also mapped from the directory if the directory attribute is specified in the <a href="../usingpropeditor/ldap_directory_server_settings.htm#XREF_Full_Name_Attribute"><span class="hyperlink" style="font-family: Syntax; font-style: normal; font-weight: normal; color: #0000ff; letter-spacing: 0.00em; text-decoration: none;">“Full Name Attribute”</span></a>&#160;property, and this is noted on the <span style="font-weight: bold;">View Account</span> screen.</p>
+
+<div>
+<p class="liplistparagraph"><img alt="ai-user_account-view_account-fullname_mapped00023.jpg" id="image31" src="ai-user_account-view_account-fullname_mapped00023.jpg" width="552" height="285" border="0" name="image31" /></p>
+</div>
+<p>&#160;</p>
+</div>
+<p class="prtproceduretitle">&#160;</p>
+<p class="prtproceduretitle"><a name="XREF_15911_To_map_contact" id="XREF_15911_To_map_contact"></a>To map contact info from an LDAP directory</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Entrust IdentityGuard Properties Editor.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the <span style="font-weight: bold;">Table of Contents</span>, click <span class="bold">LDAP Contact Info Mapping Settings.</span></p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In <span class="bold">Configuration Instances</span>, enter a name that to identify a contact info type; <span style="font-family: Courier;">mail</span>, for example.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Add</span>.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><span><img alt="PE-LDAP-contact_info_mapping.jpg" id="image4" src="pe-ldap-contact_info_mapping.jpg" width="552" height="340" border="0" name="image4" /></span></p>
+</div>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In <span style="font-weight: bold;">Directory Attribute</span>, enter the directory attribute used for this type of information in the LDAP directory. Enter this attribute exactly as it appears in the directory schema; you cannot use the friendly name displayed in the directory vendor’s GUI.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In <span style="font-weight: bold;">Label</span>, enter the text you want users to see. Make the labels as specific as you can to help users distinguish between contact information entries.</p>
+
+<p class="prpprocedureparagraph">For multivalued attributes, you can specify the label with {0} to specify a numeric counter. If you specify <span style="font-weight: bold;">Label</span>&#160;as <span style="font-family: Courier;">Email {0}</span>, for example, a multivalued attribute generates contact information entries labeled <span style="font-weight: bold;">Email 1</span>, <span style="font-weight: bold;">Email 2</span>, and so on. If you map a multivalued attribute without specifying the {0}, only the first value of the attribute is mapped.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In <span style="font-weight: bold;">Delivery Configuration</span>, select from the drop-down list. The list contains any out-of-band delivery mechanisms you have defined. If you have not defined any, the only choice available is <span style="font-weight: bold;">NONE</span>.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> You define out-of-band delivery mechanisms in the Properties Editor. See:<br />
+- <a href="../usingpropeditor/out-of-band_otp_email_delivery_configuration.htm#XREF_38690_Out_of_Band_Email">Out-of-Band OTP Email Delivery Configuration</a><br />
+- <a href="../usingpropeditor/out-of-band_otp_voice_delivery_configuration.htm#XREF_h2_Out_of_band_OTP_Voice">Out-of-Band OTP Voice Delivery Configuration</a><br />
+- <a href="../usingpropeditor/out-of-band_otp_sms_delivery_configuration.htm#XREF_h2_Out_of_Band_OTP_SMS">Out-of-Band OTP SMS Delivery Configuration</a></p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Set <span style="font-weight: bold;">Default Contact Information</span>&#160;to <span style="font-weight: bold;">True</span>&#160;if the current configuration instance is to be used as the default contact info for out-of-band delivery when no specific contact info is given.</p>
+
+<p class="prpprocedureparagraph">When using a multivalued attribute, the first value is mapped to the user’s default contact information.</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Validate &amp; Save</span>.</p>
+
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the <span style="font-weight: bold;">Table of Contents</span>, click <span style="font-weight: bold;">LDAP Directory Server Settings</span>.</p>
+
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Scroll down to <span style="font-weight: bold;">Apply Contact Info Mappings</span>.</p>
+
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Enter the names of the <span style="font-weight: bold;">LDAP Contact Info Mapping Settings</span> you just defined. Use the exact spellings of the <span style="font-weight: bold;">Configuration Instances</span>, separated by commas.</p>
+
+<p class="prpprocedureparagraph">The order of the mapping settings is important; mappings are applied in the order they are listed here. That means that, depending on how you have defined the contact info mappings, contact info mappings early in the list may prevent the mappings specified in items that follow.</p>
+
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Validate &amp; Save</span>.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP618694628');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

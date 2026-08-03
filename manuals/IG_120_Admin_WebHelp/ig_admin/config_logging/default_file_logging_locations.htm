@@ -1,0 +1,212 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_logging.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+ <title>Default file logging locations</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring logging and auditing\nLogging overview\nDefault file logging locations");
+addAvenueInfo("Untitled02","ig_admin/config_logging/logging_overview.htm","ig_admin/config_logging/log_file_example.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"configuring_logging_and_auditing.htm\">Configuring logging and auditing<\/a> > <a href=\"logging_overview.htm\">Logging overview<\/a> > Default file logging locations<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Default file logging locations</h1>
+<p class="pparagraph">By default, all logging messages are written to files located in the <span class="output">&lt;$IG_HOME&gt;\logs</span>&#160;directory.</p>
+<table class="Entrust_table" cellspacing="0px" width="49.31%">
+<col style="width: 37.593%;" />
+<col style="width: 62.407%;" />
+<tr class="t1st">
+<th>
+<p class="tahtableheader">Log file&#160;name</p>
+</th>
+<th>
+<p class="tahtableheader">Contains</p>
+</th>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext">identityguard_system.log</p>
+<p class="tattabletext">identityguard_audit.log</p>
+</td>
+<td class="last">
+<p class="tattabletext">logs from the services</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext">igradius_system.log</p>
+<p class="tattabletext">igradius_audit.log</p>
+</td>
+<td class="last">
+<p class="tattabletext">logs from the Entrust IdentityGuard Radius proxy</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext">supersh_system.log</p>
+<p class="tattabletext">supersh_audit.log</p>
+</td>
+<td class="last">
+<p class="tattabletext">logs from the Master user shell</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext">igradius_startup.log</p>
+</td>
+<td class="last">
+<p class="tattabletext">Entrust IdentityGuard Radius errors generated during service startup before the logging system is initialized</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext">configpanel.log</p>
+<p class="tattabletext">configpanel_audit.log</p>
+</td>
+<td class="last">
+<p class="tattabletext">messages generated during configuration of Entrust IdentityGuard in Windows</p>
+<p class="tattabletext">configpanel.log also contains the results of an upgrade (Windows only)</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col">
+<p class="tattabletext">upgrade.log (UNIX only)</p>
+</td>
+<td class="last">
+<p class="tattabletext">contains the results of an upgrade</p>
+</td>
+</tr>
+</table>
+<p class="pparagraph">The default maximum size of the log files is 1000 KB. You can change the maximum size and location of these files by editing entries in the logging properties (see <a href="../usingpropeditor/audit_logging_appenders.htm#XREF_27548_Audit_logging">Audit Logging Appenders</a>&#160;and <a href="../usingpropeditor/system_logging_appenders.htm#XREF_82352_System_logging">System Logging Appenders</a>).</p>
+<p class="pparagraph">When the <a name="XREF_logs_maximum_size" id="XREF_logs_maximum_size"></a>log reaches the maximum, it rolls over. Entrust IdentityGuard closes the old log file, renames it, opens a new log file with the old name and continues logging in the new log file. However, if the log file is locked and it cannot be closed and renamed, Entrust IdentityGuard continues writing log entries to it until the lock is removed. This means some log files may exceed the maximum size specified.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

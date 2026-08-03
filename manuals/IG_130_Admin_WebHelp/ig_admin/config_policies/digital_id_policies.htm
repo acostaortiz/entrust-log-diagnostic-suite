@@ -1,0 +1,308 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_policies.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Digital ID policies</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nPolicies quick reference\nDigital ID policies");
+addAvenueInfo("r13_std","ig_admin/config_policies/certificate_authentication_policies.htm","ig_admin/config_policies/external_risk_score_policies.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"policies_quick_reference.htm\">Policies quick reference<\/a> > Digital ID policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_23515_Digital_ID_policies" id="XREF_23515_Digital_ID_policies"></a>Digital 
+ ID policies</h1>
+<p class="pparagraph">These policies set the parameters for digital IDs.</p>
+<p class="pparagraph">Digital IDs, which include one or more certificates 
+ can be used in the following ways:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>They can 
+ be encoded on mobile devices to allow VPN access and digital signing. 
+ For more information, see <a href="../mobileenrollmentsection/mobile-enrollment-for-digital-ids.htm">Mobile-enrollment-for-digital-IDs</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>They can 
+ be encoded on physical or software (mobile) smart credentials to enable 
+ a number of usage scenarios—from 
+ certificate authentication to Web-based applications to signing of authentication, 
+ transaction and digital signing challenges with mobile smart credential.</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Cancel 
+ Digital IDs When User is Deleted</a></span></p>
+<div class="droptext" id="POPUP631343538" style="display: none;">
+	<p class="RefItemBody">When set to <span style="font-weight: bold;">Yes</span>, 
+	 this policy indicates to revoke the certificates in the user’s digital 
+	 ID if the user is deleted from Entrust IdentityGuard. After certificates 
+	 are revoked, they&#160;can no longer be used for cryptographic operations 
+	 such as authentication and securing email. (New certificates can be 
+	 generated for the user, if need be.) You can revoke certificates through 
+	 Security Manager Administration. </p>
+	<p class="RefItemBody">Default: Yes</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Deactivate 
+ Digital ID in CA When Digital ID is Deleted</a></span></p>
+<div class="droptext" id="POPUP641540884" style="display: none;">
+	<p class="RefItemBody">Indicates whether Entrust IdentityGuard 
+	 automatically deactivates a user's digital ID after the user is deleted 
+	 from Entrust IdentityGuard.</p>
+	<p class="RefItemBody">After a digital ID is deactivated, it 
+	 can no longer be used for cryptographic operations such as authentication 
+	 and securing email.</p>
+	<p class="RefItemBody">Default: No</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Remove 
+ Digital ID From CA When Digital ID is Deleted</a></span></p>
+<div class="droptext" id="POPUP643420100" style="display: none;">
+	<p class="RefItemBody">Indicates whether Entrust IdentityGuard 
+	 automatically removes a user's digital ID after the user is deleted 
+	 from Entrust IdentityGuard.</p>
+	<p class="RefItemBody">After a digital ID is removed, it cannot 
+	 be restored.</p>
+	<p class="RefItemBody">Default: No</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Digital IDs per User</a></span></p>
+<div class="droptext" id="POPUP642852618" style="display: none;">
+	<p class="RefItemBody">Indicates the maximum number of digital 
+	 IDs a user is allowed to have. You may want to allow users to have 
+	 multiple digital IDs if they have multiple devices, such as a mobile 
+	 device, a laptop, and a smart card. These devices would each need 
+	 a separate digital ID for network access. For secure email digital 
+	 IDs, the user’s digital ID must be shared across devices so that each 
+	 device can decrypt the same email. </p>
+	<p class="RefItemBody">Default: 6</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Number of Client Types per Digital ID</a></span></p>
+<div class="droptext" id="POPUP642013650" style="display: none;">
+	<p class="RefItemBody">A client type is any piece of information 
+	 set by an Entrust IdentityGuard client and passed to Entrust IdentityGuard 
+	 server. For example, the Self-Service Module sets the client type 
+	 to a particular brand of mobile device. This policy can then limit 
+	 the number of devices on which a single digital ID can be enrolled. 
+	 </p>
+	<p class="RefItemBody">The client type values set by the Self-Service 
+	 Module are: <span class="FM_output" style="font-family: Courier; font-style: normal; 
+						 font-weight: normal; font-size: 10.0pt; color: #000000; 
+						 letter-spacing: 0.00em; text-decoration: none; ">android</span>, 
+	 <span class="FM_output" style="font-family: Courier; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; ">blackberry</span>, <span class="FM_output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">blackberryTablet</span>, 
+	 <span class="FM_output" style="font-family: Courier; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; ">iOS</span>, <span class="FM_output" 
+														 style="font-family: Courier; 
+														 font-style: normal; 
+														 font-weight: normal; 
+														 font-size: 10.0pt; 
+														 color: #000000; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">windowsPhone</span>. 
+	 These values are listed in the <span style="font-weight: bold;">Device 
+	 Type Value</span>&#160;property, available in the Self-Service Module’s 
+	 Configuration interface, under <span style="font-weight: bold;">Properties</span>&#160;&gt;<span 
+	 style="font-weight: bold;">&#160;Digital ID Device Type Settings</span>.</p>
+	<p class="RefItemBody">Default: 3</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow 
+ All Digital ID Configs</a></span></p>
+<div class="droptext" id="POPUP640544680" style="display: none;">
+	<p class="RefItemBody">Select this option to allow all Digital 
+	 ID configurations to be available for this policy.</p>
+	<p class="RefItemBody">Clear this option if you want to use 
+	 only specific Digital ID configurations you select in the <span style="font-weight: bold;">Allowed 
+	 Digital ID Configs </span>list.</p>
+	<p class="RefItemBody">Default: Yes</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allowed 
+ Digital ID Configs</a></span></p>
+<div class="droptext" id="POPUP569696153" style="display: none;">
+	<p class="RefItemBody">This policy indicates which digital ID 
+	 configurations&#160;can be used by Entrust IdentityGuard. Generally, 
+	 set this to <span style="font-weight: bold;">All Digital ID Configs</span>, 
+	 unless you want to restrict digital ID configurations to specific 
+	 groups of users. If this is the case, you must set up different user 
+	 groups (say Mobile and Smart Credential), and create separate policies 
+	 for each. One policy would have the mobile digital ID configuration&#160;enabled, 
+	 while the other would have the smart credential digital ID configuration&#160;enabled. 
+	 </p>
+	<p class="RefItemBody">Default: All Digital ID Configs.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP631343538');
+	TextPopupInit('a2','POPUP641540884');
+	TextPopupInit('a3','POPUP643420100');
+	TextPopupInit('a4','POPUP642852618');
+	TextPopupInit('a5','POPUP642013650');
+	TextPopupInit('a6','POPUP640544680');
+	TextPopupInit('a7','POPUP569696153');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

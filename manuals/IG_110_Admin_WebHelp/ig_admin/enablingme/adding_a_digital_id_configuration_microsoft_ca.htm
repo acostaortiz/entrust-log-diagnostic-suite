@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Adding a digital ID configuration (Microsoft CA)</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 10: Add a digital ID configuration\nAdding a digital ID configuration (Microsoft CA)");
+addAvenueInfo("Untitled","ig_admin/enablingme/adding_a_digital_id_configuration_security_manager_ca.htm","ig_admin/enablingme/step_11_add_a_scep_trusted_signer_certificate.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobileenrollmentsection.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > <a href=\"step_10_add_a_digital_id_configuration.htm\">Step 10: Add a digital ID configuration<\/a> > Adding a digital ID configuration (Microsoft CA)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_10405_Add_a_Microsoft"></a>Adding a digital ID configuration 
+ (Microsoft CA)</h1>
+<p class="pparagraph">You must create a digital ID configuration in Entrust 
+ IdentityGuard.&#160;Follow the instructions below.</p>
+<p class="prtproceduretitle">To create a digital ID configuration for use 
+ with a Microsoft CA</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the Entrust IdentityGuard Administration interface, on the <span style="font-weight: bold;">List 
+ Managed CAs</span>&#160;tab, click <span style="font-weight: bold;">msca</span>, 
+ or whatever your CA is called.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="ig_webmin_listcas_ms00918.jpg" 
+											 id="image19" src="ig_webmin_listcas_ms00918.jpg" 
+											 width="482" height="123" border="0" /> 
+	 </p>
+</div>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Managed 
+ CA Details</span> page appears.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>At 
+ the bottom, click <span style="font-weight: bold;">Create Digital ID Config</span>.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Choose 
+ Digital ID Config Template</span> page appears.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="ig_webmin_choosedigIDtempl_ms.jpg" id="image20" src="ig_webmin_choosedigidtempl_ms.jpg" width="475" height="254" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span style="font-weight: bold;">Mobile Enrollment for Network Access</span>. 
+ </p>
+<p class="prpprocedureparagraph">See <a href="../about/digital_id_types_and_formats.htm#XREF_59858_Digital_ID_types">Digital 
+ ID types and formats</a>&#160;for more information. </p>
+<p class="prpprocedureparagraph">The other options are for smart credentials, 
+ and do not apply.&#160;</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Next</span>. </p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Create 
+ Digital ID Config</span>&#160;page appears, with several fields and options 
+ pre-filled based on the template you chose.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Fill 
+ out each field as follows. </p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>Many of 
+ items below are used as the building blocks from which to construct the 
+ user’s digital ID.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Digital ID Config Name</span>: Enter a 
+ globally unique name that describes your digital ID configuration. For 
+ example, <span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 9.0pt; color: #000000; 
+				 letter-spacing: 0.00em; text-decoration: none; ">Network 
+ Access Digital ID Config</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Search Base</span>: Enter the search base 
+ associated with your Microsoft CA. </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">RDN Format</span>: Leave it at <span class="output">cn=&lt;igusername&gt; 
+ &lt;iggroup&gt; &lt;devicetype&gt;</span><span class="output" style="font-family: Courier; 
+												 font-size: 9.0pt;"> </span>unless 
+ you have a reason to change it. This field is used to calculate the first 
+ part of the user’s DN. (The second part of the DN consists of the search 
+ base.) </p>
+<p class="liplistparagraph">If you do decide to change the RDN format, 
+ ensure that you separate your variables with a space. For example, if 
+ your RDN format is:</p>
+<p class="cocode"><span class="output" style="font-family: Courier; font-style: normal; 
+						 font-weight: normal; font-size: 9.0pt; color: #000000; 
+						 letter-spacing: 0.00em; text-decoration: none; ">cn=&lt;uuid&gt; 
+ &lt;devicetype&gt;</span></p>
+<p class="liplistparagraph">separate<span class="output"> &lt;uuid&gt;</span>&#160;and 
+ <span class="output">&lt;devicetype&gt;</span> with a space.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Category</span>: Leave it at <span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">X.509</span>&#160;unless 
+ you have a reason to change it. Category defines the type of digital ID 
+ you are adding. </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">PKCS10 Certificate Stream Policy</span>: 
+ Leave it at the default of <span class="output">IGDualUsage</span>. This 
+ is the certificate template you created in <a href="step_6_configure_a_microsoft_certificate_template.htm#XREF_39202_Create_a">Step 
+ 6: Configure a Microsoft certificate template </a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Description</span>: Optionally, enter a 
+ description for the digital ID configuration.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under 
+ <span style="font-weight: bold;">Microsoft Certificate Templates</span>, 
+ leave the default of <span class="output">IGDualUsage</span>. This specifies 
+ the certificate template you created in <a href="step_6_configure_a_microsoft_certificate_template.htm#XREF_39202_Create_a">Step 
+ 6: Configure a Microsoft certificate template </a>.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Leave 
+ the <span style="font-weight: bold;">Subject Alt Names</span> section 
+ empty.</p>
+<p class="prpprocedureparagraph">The following image shows what a network 
+ access digital ID configuration might look like when configured with a 
+ Microsoft CA.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="ig_webmin_digidconfig_network_ms.jpg" 
+											 id="image21" src="ig_webmin_digidconfig_network_ms.jpg" 
+											 width="485" height="473" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Create Digital ID Config</span>.</p>
+<p class="pparagraph">Your managed CA page now includes your digital ID 
+ configuration at the bottom.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="ig_webmin_managedCAwithdigidconfig_ms.jpg" id="image22" src="ig_webmin_managedcawithdigidconfig_ms.jpg" width="502" height="131" border="0" /> 
+	 </p>
+</div>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

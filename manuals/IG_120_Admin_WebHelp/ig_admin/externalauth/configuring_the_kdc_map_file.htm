@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\externalauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring the KDC map file</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nExternal authentication\nConfiguring external authentication for a domain controller\nConfiguring the KDC map file");
+addAvenueInfo("Untitled02","ig_admin/externalauth/configuring_external_authentication_for_a_domain_controller.htm","ig_admin/externalauth/configuring_external_authentication_on_websphere.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"externalauth.htm\">External authentication<\/a> > <a href=\"configuring_external_authentication_for_a_domain_controller.htm\">Configuring external authentication for a domain controller<\/a> > Configuring the KDC map file<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_50789_Configuring_the" id="XREF_50789_Configuring_the"></a>Configuring the KDC map file</h1>
+<p class="pparagraph"><a name="IX_KDC_map_file" id="IX_KDC_map_file"></a>When you use a domain controller for external authentication, you need to map each realm to its Key Distribution Center (KDC) in the <span class="output">igkrb5.conf</span>&#160;file. On Windows, the KDC is the domain controller.</p>
+<p class="pparagraph">The <span class="output">igkrb5.conf</span> file, if it has been created, is located:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on UNIX in <span class="output">$IG_HOME/etc/</span></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on Microsoft Windows in <span class="output">&lt;$IG_HOME&gt;\etc\</span></p>
+
+<p class="pparagraph">If the <span style="font-family: Courier;">igkrb5.conf</span>&#160;file does not yet exist, copy <span class="output">igkrb.sample</span>&#160;to <span class="output">igkrb.conf</span>.</p>
+<p class="pparagraph"><span class="output">igkrb.sample</span> is located:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on UNIX in <span class="output">$IG_HOME/etc/</span></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on Microsoft Windows in <span class="output">&lt;$IG_HOME&gt;\etc\</span></p>
+
+<p class="prtproceduretitle"><a name="XREF_93897_To_edit_the_igkrb5" id="XREF_93897_To_edit_the_igkrb5"></a>To edit the igkrb5.conf file</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> For more information about syntax, refer to <span class="WWWhyperlink" style="font-family: Syntax; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #0000ff; letter-spacing: 0.00em; text-decoration: underline;"><a href="http://web.mit.edu/kerberos/krb5-1.5/krb5-1.5.1/doc/krb5-admin/krb5.conf.html">http://web.mit.edu/kerberos/krb5-1.5/krb5-1.5.1/doc/krb5-admin/krb5.conf.</a></span></p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="IX_igkrb5_conf_file" id="IX_igkrb5_conf_file"></a>Open <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">igkrb5.conf</span>&#160;in a text editor.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Using Kerberos syntax, map each realm to the server hosting the corresponding Kerberos Key Distribution Center (KDC).</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> For Windows Active Directory domains, the KDC is the domain controller.</p>
+<p class="prpprocedureparagraph">For example:</p>
+<p class="cocode">[realms]</p>
+<p class="cocode" style="text-indent: 20.250pt;">ENTRUST.COM = {</p>
+<p class="cocode">&#160;&#160;&#160;&#160;&#160;&#160;kdc = ig1.entrust.com</p>
+<p class="cocode">&#160;&#160;&#160;}</p>
+<p class="prpprocedureparagraph">Make sure to enter the realm name in uppercase characters.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Add other Kerberos-related settings as required. For example, you may want to change the default encryption key type. For Windows Server 2008, you require the following lines for the encryption key types:</p>
+
+<p class="cocode">default_tkt_enctypes = des-cbc-md5 des-cbc-crc rc4-hmac</p>
+<p class="cocode">default_tgs_enctypes = des-cbc-md5 des-cbc-crc rc4-hmac</p>
+<p class="cocode">permitted_enctypes = des-cbc-md5 des-cbc-crc rc4-hmac</p>
+<p class="attnattention"><span style="font-weight: bold;">Attention:</span> If you wish to support non-ASCII passwords when using Microsoft Active Directory Kerberos, you must use RC4 encryption. Ensure that you are running a Java Runtime Environment version that supports this.<br />
+<br />
+If you are using IBM WebSphere or BEA WebLogic application servers, check with your vendor to find out if non-ASCII passwords are supported.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Save your changes.</p>
+
+<p class="pparagraph">For an example of how to set up the KDC file for failover, see <a href="configuring_external_authentication_failover_and_high.htm#XREF_29624_To_set_up_failover">To set up failover when using Kerberos for external authentication</a>.</p>
+<p class="pparagraph">For an example of how to set up the <span class="output">igkrb5.conf</span> file, see the <span class="output" style="font-family: Courier; font-size: 10.0pt;"></span><span class="output">igkrb5.sample</span>&#160;file stored in the <span class="output" style="font-family: Courier; font-size: 10.0pt;">etc</span> directory where you installed Entrust IdentityGuard.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

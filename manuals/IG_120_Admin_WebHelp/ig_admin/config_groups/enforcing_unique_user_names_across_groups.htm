@@ -1,0 +1,162 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_groups.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Enforcing unique user names across groups</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nConfiguring groups\nEnforce unique user names across groups");
+addAvenueInfo("Untitled02","ig_admin/config_groups/deleting_a_group.htm","ig_admin/config_roles/config_roles.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > <a href=\"config_groups.htm\">Configuring groups<\/a> > Enforce unique user names across groups<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_56879_Enforcing_unique" id="XREF_56879_Enforcing_unique"></a>Enforce unique user names across groups</h1>
+<p class="pparagraph"><a name="IX_removing_group_from" id="IX_removing_group_from"></a><a name="IX_removing_from_login_page" id="IX_removing_from_login_page"></a><a name="IX_removing_group_drop_down" id="IX_removing_group_drop_down"></a><a name="IX_enforcing_unique" id="IX_enforcing_unique"></a><a name="IX_enforcing_unique_user" id="IX_enforcing_unique_user"></a>By default, Entrust IdentityGuard allows you to create users with the same user name, as long as they are in different groups. For example, Entrust IdentityGuard lets you create <span class="output">asmith</span>&#160;in <span class="output">groupA</span>&#160;even though an <span class="output">asmith</span>&#160;might already exist in <span class="output">groupb</span>. By contrast, Entrust IdentityGuard does not let you create&#160;two <span class="output">asmith</span>’s&#160;in the same group due to potential lookup conflicts.</p>
+<p class="pparagraph">This behavior—where two <span class="output" style="font-family: Courier; font-size: 10.0pt;"></span><span class="output">asmith</span>’s can co-exist in the same system under different groups—might not be desirable, because it forces users to specify their group when they log in. Having to specify a group may be confusing to users because they might not know what their group is. To fix this problem, Entrust IdentityGuard provides a setting that lets you enforce unique user names across all groups, thus preventing users from having to specify a group during login.</p>
+<p class="pparagraph">When unique user names are enforced, Entrust IdentityGuard will display a message indicating that the user name is already taken and that you must choose a different user name.</p>
+<p class="pparagraph">Other reasons to enforce unique user names (this list is not exhaustive):</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are using the Self-Service Module, and have enabled the feature that gives end-users the ability to create their own user entries in Entrust IdentityGuard, then enforcing unique user names prevents them from having to decide which group they want to be a part of when creating their user ID.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are using the Federation Module, and have enabled OpenID claimed identifiers, then enforcing unique user names prevents them from having to include their group in the claimed identifier. For example, Alice Smith can use <span class="output">https://www.example.com/user/asmith</span>&#160;as opposed to the longer <span class="output">https://www.example.com/user/group1/asmith</span>.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> If you only have one Entrust IdentityGuard group, there is no need to enforce unique user names because user names are always unique within the same group.</p>
+<p class="prtproceduretitle">To enforce unique user names across groups</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Open the Master user shell. For details, see the <span style="font-style: italic;">Entrust IdentityGuard Master User Shell Command Reference</span>.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter the following command:</p>
+
+<p class="cocode">system set –userNamesGloballyUnique true</p>
+<p class="prpprocedureparagraph">This command only affects user names created after this command is run.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

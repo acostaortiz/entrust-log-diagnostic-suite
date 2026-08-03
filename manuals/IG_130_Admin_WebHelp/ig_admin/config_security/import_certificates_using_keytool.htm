@@ -1,0 +1,197 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_security.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Import certificates using keytool</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nManaging certificates in the key store\nManage certificates using keytool\nImport certificates using keytool");
+addAvenueInfo("r13_std","ig_admin/config_security/switch_to_a_ca-signed_certificate_using_keytool.htm","ig_admin/config_security/managing_keys_and_passwords.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"managing_certificates_in_the_key_store.htm\">Managing certificates in the key store<\/a> > <a href=\"manage_certificates_using_keytool.htm\">Manage certificates using keytool<\/a> > Import certificates using keytool<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_72123_Importing" id="XREF_72123_Importing"></a>Import 
+ certificates using keytool</h1>
+<p class="pparagraph">To enable SSL, you may be instructed to import a 
+ certificate into Entrust IdentityGuard.</p>
+<div>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The following 
+ procedure uses the Java keytool utility. For details on the keytool commands 
+ and options, see <span style="font-family: Syntax; font-size: 10.0pt; 
+						 text-decoration: underline; "><a href="https://docs.oracle.com/en/java/javase/11/tools/keytool.html" 
+															 target="_blank">https://docs.oracle.com/en/java/javase/11/tools/keytool.html</a></span>.</p>
+</div>
+<p class="prtproceduretitle"><a name="XREF_79823_To_import_a" id="XREF_79823_To_import_a"></a>To 
+ import a certificate using keytool</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Copy 
+ the CA-signed certificate (.cer file) to the Entrust IdentityGuard server.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Change 
+ to the keytool directory. Depending on your Operating System, the utility 
+ is located in one of these directories:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Windows: 
+ <span class="output">&lt;$IG_HOME&gt;\jdk&lt;version&gt;\bin</span>&#160;</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Linux: 
+ <span class="output">$IG_HOME/jdk&lt;version&gt;/bin</span>&#160;</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a 
+	 name="XREF_97313_4_After_you" id="XREF_97313_4_After_you"></a>Import 
+ the certificate as follows:</p>
+<p class="cocode">keytool -importcert -alias &lt;alias&gt; -file &lt;cert_file&gt; 
+ -keystore &lt;path_to_keystore&gt; -storepass entrust</p>
+<p class="prpprocedureparagraph">Where:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;alias&gt;</span>&#160;is <span class="output" style="font-family: 'Courier New'; 
+														 font-size: 10.0pt;">tomcat</span>&#160;if 
+ the certificate you are importing is the Entrust IdentityGuard server 
+ certificate. For all other certificates, choose a descriptive alias. For 
+ example, if you are importing the Self-Service Module’s certificate,<span 
+	 class="output" style="font-family: 'Courier New'; font-size: 10.0pt;">&#160;</span>you 
+ can use <span class="output" style="font-family: 'Courier New'; font-size: 10.0pt;">igssm</span>&#160;as 
+ your alias or if importing the Print Module certificate, you can use <span 
+	 class="output" style="font-family: 'Courier New'; font-size: 10.0pt;">igpm</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;cert_file&gt;</span> is the full path and file 
+ name of your certificate.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;path_to_keystore&gt;</span>&#160;is <span class="output">&lt;$IG_HOME&gt;\etc\keystore</span>&#160;(Windows) 
+ or <span class="output">$IG_HOME/etc/keystore</span> (Linux).</p>
+<p class="prpprocedureparagraph">Example:</p>
+<p class="cocode">keytool -importcert -alias tomcat -file c:\igssm.cer 
+ -keystore &quot;c:\Program Files\Entrust\IdentityGuard\identityguard130\etc\keystore&quot; -storepass 
+ entrust</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ asked whether you want to trust the certificate, enter <span class="output">yes</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Restart 
+ the IdentityGuard server:</p>
+<p class="prpprocedureparagraph">You have now imported a certificate.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

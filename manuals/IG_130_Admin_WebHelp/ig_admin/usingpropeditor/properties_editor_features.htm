@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Properties Editor features</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nUsing the Properties Editor\nProperties Editor features");
+addAvenueInfo("r13_std","ig_admin/usingpropeditor/log_in_or_out_of_the_properties_editor.htm","ig_admin/config_igserver/config_igserver.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"using_the-properties_editor.htm\">Using the Properties Editor<\/a> > Properties Editor features<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_45662_Using_the" id="XREF_45662_Using_the"></a>Properties Editor features</h1>
+
+<h3>Navigation through properties categories</h3>
+<p class="pparagraph">The Properties Editor&#160;Table of Contents links you to every category of property that administrators can view and change. Click any entry in the Table of Contents to switch to that category.</p>
+<p class="pparagraph">Alternatively, you can scroll through all property categories. The Properties Editor&#160;is constructed as a single Web page for ease of use and accessibility.</p>
+<p class="pparagraph">Each group or category of related properties appears in its own pane. On any property category pane, click the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Table of Contents</span>&#160;button to return to the Table of Contents.</p>
+<p class="pparagraph">Each category pane includes an expand and collapse button in the top right corner. Click the expand and collapse button to reduce a property pane to just its title bar. Click it again to see all the properties in the pane.</p>
+<h3>View help about properties</h3>
+<p class="pparagraph">Each category pane provides general help about the category. Click the light bulb icon on the title bar to open the pane help Click it again to close it.</p>
+<p class="pparagraph">Each property on the pane has its own help. Click the question mark icon next to the property. This opens a pop-up window. To close the window, click the Close button (X) in the top right corner.</p>
+<p class="pparagraph"><img alt="PE-pane-example.jpg" id="image1" src="pe-pane-example.jpg" width="552" height="174" border="0" name="image1" /></p>
+<h3>Quickly add or edit file names</h3>
+<p class="pparagraph">Many properties require you to enter path names. Whenever possible, use the <span class="output" style="font-family: Courier New; font-size: 10.0pt;">$identityguard.home</span>&#160;variable to define the file path relative to the Entrust IdentityGuard home directory, rather than specifying the file location as an absolute path. This prevents problems due to typing errors, and saves you a lot of effort if your Entrust IdentityGuard home directory changes.</p>
+<p class="pparagraph">Alternatively, you can enter path names and other variables in the following format: <span class="output" style="font-family: Courier New; font-size: 10.0pt;">${identityguard.home}</span>.</p>
+<h3>Encrypt sensitive properties</h3>
+<p class="pparagraph">Some sensitive property values should be encrypted, for example, the database or LDAP password. Such properties include the <span class="bold">Encrypt</span>&#160;option, which is enabled by default.</p>
+<p class="pparagraph">If you need to change an encrypted value, replace it with a new clear text value. Make sure <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Encrypt</span>&#160;is enabled. Entrust IdentityGuard encrypts the value when you save the change. It is stored as an encrypted value in the properties file. Encrypted values for passwords or other sensitive data are not shown in the audit file.</p>
+<p class="pparagraph">The Properties Editor audit file includes:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>new properties added</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>properties removed</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>properties for which the value has changed</p>
+
+<h3>Save and validate changes</h3>
+<p class="pparagraph">Each property category pane includes the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate Only</span>&#160;button. When you change a property, you can click this button to verify the settings. The Properties Editor&#160;checks all property values, not just those values associated with the current property pane. A dialog box appears informing you if all settings are valid or not. If there is an error, the dialog lists the problem properties. The Properties Editor&#160;highlights any invalid properties in red.</p>
+<p class="pparagraph">Each property category pane includes the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate &amp; Save</span> button. When you want to save changes to one or more properties, click this button. The Properties Editor&#160;checks all property values. If there are no errors, a dialog box appears informing you of the settings you changed and prompts you to continue. Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">OK</span>&#160;to save the changes. This applies to all properties, not just those in the current pane. The page refreshes and the Table of Contents reappears.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> More than one administrator can use the Properties Editor&#160;simultaneously, so it is possible for a property to be set by more than one person. The Properties Editor&#160;does not save changes to any properties if someone else has made modifications since your Property Editor session began.</p>
+<h3>Discard, refresh or restore changes</h3>
+<p class="pparagraph">The Table of Contents includes the <span class="bold">Discard Changes</span>&#160;button. Click it to reset all properties to the values that are currently in effect. This reverses any changes you have made (but not saved) and reveals any changes made by other administrators who are simultaneously editing the properties. You are asked to confirm the action. Click <span class="bold">OK</span>&#160;to continue. This action also logs you out if the Properties Editor&#160;was idle longer than the idle timeout limit, and you must log back in after confirming the Discard Changes action.</p>
+<p class="pparagraph">The Properties Editor&#160;always keeps a backup of the previous property settings. After the Properties Editor&#160;is used at least once to make changes, the Table of Contents page also has a <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Restore From Backup</span>&#160;button that acts like a toggle. Click this button once to load the previous property settings and replace your new settings. Click it again to reverse the restore operation.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Step 18: Configure Self-Service Administration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 18: Configure Self-Service Administration");
+addAvenueInfo("Untitled","ig_admin/enablingme/step_17_configure_self-service_basics.htm","ig_admin/enablingme/step_19_configure_self-service_properties.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobileenrollmentsection.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > Step 18: Configure Self-Service Administration<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_28144_Configure_the_Self"></a>Step 18: Configure Self-Service 
+ Administration</h1>
+<p class="pparagraph">Add links for digital ID enrollment to the Self-Service 
+ Administration pages. Follow the instructions below.</p>
+<p class="prtproceduretitle">To add links</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Open 
+ the Self-Service Configuration interface (available from the <span style="font-weight: bold;">Start</span>&#160;menu 
+ on Windows or by entering <span class="output">https://&lt;SSM_host&gt;:8446/IdentityGuardSelfServiceConfig</span>&#160;in 
+ a browser). </p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the menu at the top, click <span style="font-weight: bold;">Administration</span>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the Table of Contents, click<span style="font-weight: bold;"> Digital 
+ ID Self-Administration</span>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Make 
+ the appropriate selections and click <span style="font-weight: bold;">Validate 
+ &amp; Save</span>. For details on each setting, see the <span style="font-style: italic;">Entrust 
+ IdentityGuard Self-Service Module Installation and Configuration Guide. 
+ </span>Most are self-explanatory.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. 
+ Test that the digital ID links were added, as follows:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Restart 
+ Self-Service (available from the Services panel on Windows, or by entering 
+ <span class="output">igselfservice.sh restart</span> from a command shell 
+ on UNIX).</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Self-Service application as <span class="output">mobileenroll</span>.</p>
+<p class="prspsubprocedureparagraph">The Self-Service application is available 
+ from the <span style="font-weight: bold;">Start</span>&#160;menu on Windows, 
+ or by entering <span class="output">https://&lt;SSM_host&gt;:8445/IdentityGuardSelfService</span>&#160;in 
+ a browser.</p>
+<p class="prpprocedureparagraph">The digital ID links should appear at 
+ the bottom. </p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>Although 
+ the links appear, digital ID enrollment may not work yet.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="ssm_app_selfadmin_digidlinks.jpg" 
+											 id="image38" src="ssm_app_selfadmin_digidlinks.jpg" 
+											 width="340" height="357" border="0" /> 
+	 </p>
+</div>
+<p class="prpprocedureparagraph">If the links do not appear, it may be 
+ because:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>You incorrectly 
+ configured the Self-Service account. It requires the appropriate permissions. 
+ See <a href="step_16_give_self-service_more_permissions.htm#XREF_27524_Give_Self_Service">Step 
+ 16: Give Self-Service more permissions</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>There 
+ is no digital ID configuration. The digital ID configuration is added 
+ in Entrust IdentityGuard, and then referenced by Self-Service. See <a href="step_10_add_a_digital_id_configuration.htm#XREF_58495_Add_a_digital_ID">Step 
+ 10: Add a digital ID configuration</a>&#160;and <a href="#XREF_28144_Configure_the_Self">Step 
+ 18: Configure Self-Service Administration</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The user 
+ who is logged in is in a group that is not allowed to see the digital 
+ ID configuration that you set up. This is configured through Entrust IdentityGuard 
+ policy. In the example below, you can see the <span class="output" style="font-family: Courier; 
+													 font-size: 9.0pt;">default</span>&#160;policy. 
+ This policy stipulates that users in the group <span class="output">mobileenroll</span>&#160;are 
+ allowed to view all digital ID configurations.</p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="ig_webmin_policy_digid00962.jpg" 
+											 id="image39" src="ig_webmin_policy_digid00962.jpg" 
+											 width="296" height="286" border="0" /> 
+	 </p>
+</div>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

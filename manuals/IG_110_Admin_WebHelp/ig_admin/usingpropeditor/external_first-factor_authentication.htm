@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>External First-Factor Authentication</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nExternal First-Factor Authentication (18)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/egrid_configuration.htm","ig_admin/usingpropeditor/external_q_a_provider_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > External First-Factor Authentication (18)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_configuring_external"></a><a name="IX_properties_13"></a><a 
+	 name="XREF_60691_External"></a>External First-Factor Authentication</h1>
+<p class="pparagraph">These properties let you set up external authentication. 
+ Typically, you would use external authentication as the first layer of 
+ a multifactor Entrust IdentityGuard authentication regime. When an instance 
+ is specified with an Entrust IdentityGuard group name, this sets the authentication 
+ resource to use for members of that group. This allows you to direct different 
+ groups to different authentication resources. For more information and 
+ to view snapshots of the properties, see <a href="../externalauth/external_authentication_overview.htm#XREF_84656_Completing_the">External 
+ authentication overview</a>. </p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instances</a></span></p>
+<div class="droptext" id="POPUP526458299" style="display: none;">
+	<p class="lip2list2paragraph">Lists all current external authentication 
+	 configurations. To create an external authentication instance for 
+	 a specific Entrust IdentityGuard group, enter a unique group name 
+	 in the empty field and click <span class="bold" style="font-weight: bold; 
+										 letter-spacing: .em; text-decoration: none; ">Add</span>. 
+	 From this point on, all other settings relate to that instance.</p>
+	<p class="attnattention"><span class="bold" style="font-weight: bold; 
+									 letter-spacing: .em; text-decoration: none; ">Attention</span>: 
+	 The group name is case-sensitive. For example, if your Entrust IdentityGuard 
+	 group name is <span class="output" style="font-family: Courier; font-style: normal; 
+						 font-weight: normal; font-size: 9.pt; color: #; 
+						 letter-spacing: .em; text-decoration: none; ">My 
+	 Group</span>, you must enter <span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">My Group</span> 
+	 into the <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+					 text-decoration: none; ">Configuration Instances </span>field, 
+	 not <span class="output" style="font-family: Courier; font-style: normal; 
+				 font-weight: normal; font-size: 9.pt; color: #; letter-spacing: .em; 
+				 text-decoration: none; ">my group</span> or any other 
+	 incorrect casing.</p>
+	<p class="lip2list2paragraph">The Default instance is used for all 
+	 users not assigned to a group for which a group-specific instance 
+	 is provided, or when group-specific external first-factor authentication 
+	 is not required.</p>
+	<p class="lip2list2paragraph">To delete an instance, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+							 text-decoration: none; ">Remove</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />External 
+ First-Factor Authentication Method</a></span></p>
+<div class="droptext" id="POPUP526487953" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.externalauth.impl</span></p>
+	<p class="lip2list2paragraph">Sets the resource used for external authentication. 
+	 Select an option from the drop-down list. The options are:</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>LDAP 
+	 External Authentication</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Domain 
+	 Controller External Authentication</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Kerberos 
+ Realm for Domain Controller Authentication</a></span></p>
+<div class="droptext" id="POPUP526502996" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.externalauth.kerberos.realm</span></p>
+	<p class="lip2list2paragraph">Domain controller authentication uses 
+	 the Kerberos protocol. You must provide the fully qualified domain 
+	 name of the server acting as the Kerberos realm or domain. Enter the 
+	 server name in uppercase characters unless your Kerberos server indicates 
+	 otherwise. For example: IGHOST.ENTRUST.COM.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Kerberos 
+ Realm Case Conversion for Domain Controller Authentication</a></span></p>
+<div class="droptext" id="POPUP531633120" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.externalauth.kerberos.realmcaseconvert</span></p>
+	<p class="lip2list2paragraph">Many Kerberos servers require realm names 
+	 to be in uppercase letters, which Entrust IdentityGuard does by default. 
+	 Set this to <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+						 text-decoration: none; ">False</span> to leave 
+	 the case unchanged.</p>
+	<p class="lip2list2paragraph">Default: True</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Kerberos 
+ User ID Case Conversion for Domain Controller Authentication</a></span></p>
+<div class="droptext" id="POPUP531664189" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.externalauth.kerberos.caseconvert</span></p>
+	<p class="lip2list2paragraph">Kerberos authentication is case-sensitive. 
+	 If the user enters an ID that does not match the case Kerberos expects, 
+	 the authentication fails. Use this property to convert the case of 
+	 the user ID.</p>
+	<p class="lip2list2paragraph">Select the conversion option from the 
+	 drop-down list:</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">No 
+	 Conversion</span> means leave the case as is.</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Lowercase</span> 
+	 means switch the case to all lowercase.</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Uppercase</span> 
+	 means switch the case to all uppercase.</p>
+	<p class="lip2list2paragraph"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">User 
+	 Principle Name (UPN) </span>means switch the user ID to the form id@DOMAIN 
+	 (for a domain controller).</p>
+	<p class="lip2list2paragraph">Default: No Conversion</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Expired 
+ Password Equals Successful Authentication (Kerberos)</a></span></p>
+<div class="droptext" id="POPUP531690741" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.externalauth.kerberos.allowexpired</span></p>
+	<p class="lip2list2paragraph">When set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">True</span>, 
+	 first-factor authentication succeeds even if the password used has 
+	 expired. Your Kerberos server must ensure the password is valid; that 
+	 is, any password failure should not succeed, just valid but expired 
+	 passwords.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Expired 
+ Password Equals Successful Authentication (LDAP)</a></span></p>
+<div class="droptext" id="POPUP569292570" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.externalauth.ldap.allowexpired</span></p>
+	<p class="lip2list2paragraph">When set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">True</span>, 
+	 first-factor authentication succeeds even if the password used has 
+	 expired. Your LDAP directory server must ensure the password is valid; 
+	 that is, any password failure should not succeed, just valid but expired 
+	 passwords.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><span class="bold">Expired 
+ Password Allows Change (LDAP)</span><a name="XREF_Expired_Password_Allows" 
+										 id="XREF_Expired_Password_Allows"></a></a></p>
+<div class="droptext" id="POPUP724883061" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.externalauth.ldap.passwordchange</span></p>
+	<p class="lip2list2paragraph">This setting controls what happens when 
+	 a user tries to authenticate using an expired LDAP password. (An LDAP 
+	 password can expire because an administrator has reset it, or because 
+	 it has reached the end of its lifetime.)</p>
+	<p class="lip2list2paragraph">When set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">True</span>, 
+	 Entrust IdentityGuard indicates that a password change is required, 
+	 and includes the password rules to which the new password must adhere.</p>
+	<p class="lip2list2paragraph">When set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">False</span>, 
+	 Entrust IdentityGuard indicates that a password change is required, 
+	 but cannot be effectuated. Users must change their LDAP password through 
+	 another means before Entrust IdentityGuard authentication can succeed.</p>
+	<p class="lip2list2paragraph">Default: False </p>
+	<p class="nonote"><span style="font-weight: bold;">Note 1:</span> If 
+	 this setting is <span class="bold">True</span>, the <span class="bold" 
+	 style="letter-spacing: .em;">Expired Password Equals Successful Authentication 
+	 (LDAP) </span>property must be set to <span class="bold" style="letter-spacing: .em;">False</span>.</p>
+	<p class="nonote"><span style="font-weight: bold;">Note 2</span>: Ensure 
+	 that your LDAP and Entrust IdentityGuard password rules are synchronized 
+	 to avoid scenarios where a password change is allowed by Entrust IdentityGuard 
+	 but prohibited by the LDAP server. Turn off any LDAP password rules 
+	 that cannot be enforced by Entrust IdentityGuard. For more information, 
+	 see . details on password rules, see <a href="../passwordauth/configuring_password_authentication_policies.htm">Configuring 
+	 password authentication policies</a>.</p>
+	<p class="nonote"><span style="font-weight: bold;">Note 3:</span>If 
+	 you are using Active Directory as your repository, and you want password 
+	 change to work, then SSL must be enabled between Active Directory 
+	 and the Entrust IdentityGuard server. For details on enabling SSL, 
+	 see <a href="../config_igserver/securing_the_ldap_connection_with_ssl.htm">Secure 
+	 the LDAP connection with SSL</a>.</p>
+	<p class="nonote"><span style="font-weight: bold;">Note 4:</span>If 
+	 you are using ADAM as your repository, and you want password change 
+	 to work, see configuration details in <a href="../externalauth/enable_password_change_with_adam.htm">Enable 
+	 password change with ADAM</a> .</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP526458299');
+	TextPopupInit('a2','POPUP526487953');
+	TextPopupInit('a3','POPUP526502996');
+	TextPopupInit('a4','POPUP531633120');
+	TextPopupInit('a5','POPUP531664189');
+	TextPopupInit('a6','POPUP531690741');
+	TextPopupInit('a7','POPUP569292570');
+	TextPopupInit('a8','POPUP724883061');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

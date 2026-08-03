@@ -1,0 +1,281 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="search-keywords" content="Samsung TEE" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Enable activation and use of soft tokens in a TEE</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nSoft token authentication\nConfiguring soft token policies\nEnable activation and use of soft tokens in a TEE");
+addAvenueInfo("Untitled02","ig_admin/softtokenauth/setting_soft_token_activation_policies_enabling_a_grace_period.htm","ig_admin/softtokenauth/enable_use_of_soft_tokens_on_an_unsecure_mobile_device.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"softtokenauth.htm\">Soft token authentication<\/a> > <a href=\"configuring_soft_token_policies.htm\">Configuring soft token policies<\/a> > Enable activation and use of soft tokens in a TEE<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Enable activation and use of soft tokens in a Trusted Execution Environment 
+ (TEE)</h1>
+<p class="pparagraph">A trusted execution environment (TEE) is a hardware-based 
+ container that is isolated from the main mobile operating system. This 
+ hardware isolation helps to prevent leaking sensitive data, such as the 
+ token seed, because that data never leaves the TEE.<span style="mso-spacerun: yes;">&#160;In 
+ addition</span>, by performing cryptographic operations within the TEE, 
+ mobile soft tokens can leverage the underlying FIPS 140-2 Level 1 certified 
+ cryptographic algorithms, providing a higher level of assurance.</p>
+<p class="pparagraph">Available on some mobile devices, the TEE can be 
+ enabled by a service provider or IT department. When available and enabled, 
+ the Entrust IdentityGuard Mobile Soft Token app can make use of the TEE 
+ for automatic online soft token activation and transaction verification..</p>
+<p class="pparagraph">Currently, this feature supports only the Samsung 
+ KNOX TEE and the Samsung OTP Framework within it, available on some Samsung 
+ mobile devices. Review the technical specifications of devices in your 
+ user population to determine if you can make use of this feature.</p>
+<p class="pparagraph">Each soft token stored in a TEE consumes one <a href="../config_licenses/tee_storage_for_soft_tokens.htm">TEE 
+ Storage for Soft Tokens</a> license.</p>
+<p class="pparagraph">There is no change to the user procedures when using 
+ the Entrust IdentityGuard Mobile Soft Token with this feature enabled, 
+ except that online activation is the only activation method that stores 
+ the token seed in the TEE.</p>
+<p class="pparagraph">A maximum of 6 soft tokens that can be stored in 
+ the Samsung KNOX TEE.</p>
+<p class="nonote"><span class="bold">Note:</span> This feature works with 
+ Entrust IdentityGuard Mobile Soft Token app version 3.1 or later.</p>
+<p class="prtproceduretitle">To enable storage of soft token in a TEE</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt; 
+	 <span class="bold">Administration Interface</span>.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;UNIX 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="liplistparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="liplistparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="liplistparagraph">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="liplistparagraph">or 
+	 other login scenarios, see </p>
+</div>
+
+
+</div>
+<p class="nonote"><span class="bold">Note:</span> Log in as a user with 
+ a role that includes these permissions: <span class="bold">policyGet</span>, 
+ and one of <span class="bold">policyCreate</span>, or <span class="bold">policySet</span>. 
+ See <a href="../config_roles/policy_permissions.htm#XREF_29108_Policy_permissions">Policy 
+ permissions</a> for details.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Select 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Policies</span> 
+ on the menu bar.</p>
+<p class="prpprocedureparagraph">A list of all policies appears on the 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">List 
+ Policies</span> tab.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ the name of the policy for which you want to enable this feature.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">View 
+ Policy</span> page for the selected policy appears.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From 
+ the <span class="bold">Policy Category</span> drop-down list, select <span 
+	 class="bold">Token</span>.</p>
+<p class="prpprocedureparagraph">The token policies appear.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Edit 
+ Policy</span>.</p>
+<p class="prpprocedureparagraph">An editable version of the settings appears.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From 
+ the drop-down list on the <span class="bold">Mobile Soft Token Trust Execution 
+ Environment</span> policy, select one of the following options </p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>This 
+ policy applies only to mobile soft tokens on Samsung mobile devices with 
+ the Samsung KNOX Trusted Execution Environment (TEE) enabled. When this 
+ policy is enabled, the mobile soft token is stored within the Trusted 
+ Execution Environment on the device. For more information, see <a href="enable_activation_and_use_of_soft_tokens_in_a_tee.htm">Enable 
+ storage of soft tokens in TEE</a>.</p>
+<p class="RefItemBody">Use of this feature requires license for each soft 
+ token stored in the TEE.</p>
+<p class="RefItemBody">Options are: </p>
+<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span class="bold">Secure 
+ Transfer</span>&#160;— 
+ Enable this option if you want to enforce activation of soft tokens within 
+ the TEE using the Dynamic Symmetric Key Provisioning Protocol (DSKPP). 
+ This protocol enhances the security of the soft token seed because the 
+ seed is generated <span style="font-family: Arial, sans-serif; mso-fareast-font-family: 'MS PGothic'; 
+						 mso-ansi-language: EN-US; mso-fareast-language: EN-US; 
+						 mso-bidi-language: AR-SA;">and encrypted by Entrust 
+ IdentityGuard using the public key of the user’s device. The seed can 
+ only be decrypted by the TEE of the device that initiated the activation</span>. 
+ One TEE license is consumed for each soft token activated and stored in 
+ the TEE.</p>
+<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span class="bold">Required</span> 
+ — A supported&#160;TEE 
+ must be used to store the soft token seed. If the mobile device does not 
+ have a supported TEE, the soft token cannot be activated on such a device. 
+ One TEE license is consumed for each soft token stored in the TEE.</p>
+<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span class="bold">Allowed</span>&#160;— If a supported TEE is present 
+ on the device, it should be used to store the soft token seed. Whether 
+ it is stored in the TEE is dependent on whether the user accepts the license 
+ request for the TEE and whether there is space available in the TEE. One 
+ TEE license is consumed for each soft token stored in the TEE. If the 
+ device does not have a supported TEE, then the seed can be stored in a 
+ protected file elsewhere on the device. </p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold">Save Changes</span>.</p>
+<p class="prpprocedureparagraph">Mobile soft tokens activated after this 
+ configuration use this new policy. To have the new policy apply to existing 
+ mobile soft tokens, users must delete the old soft tokens and recreate 
+ them.</p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">View 
+ Policy</span> page reappears.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

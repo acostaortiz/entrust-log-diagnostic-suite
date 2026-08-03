@@ -1,0 +1,215 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\gridauthentication.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Grid card state overview</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nGrid authentication\nGrid authentication overview\nGrid card state overview");
+addAvenueInfo("Untitled02","ig_admin/gridauthentication/grid_authentication_overview.htm","ig_admin/gridauthentication/grid_state_rules.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"gridauthentication.htm\">Grid authentication<\/a> > <a href=\"grid_authentication_overview.htm\">Grid authentication overview<\/a> > Grid card state overview<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1><a name="XREF_54456_Configuring" id="XREF_54456_Configuring"></a>Grid card and token state overview<a name="XREF_H1_Card_and_token_state" id="XREF_H1_Card_and_token_state"></a></h1>
+<p class="pparagraph">Grid cards, tokens, and soft tokens follow the same state progression and rules, so this section applies to all these authenticators.</p>
+<p class="pparagraph">These Entrust IdentityGuard authenticators begin in the Pending or Hold-pending state, and progress to the Current state when they are first used for authentication.</p>
+<p class="pparagraph"><a name="IX_rules" id="IX_rules"></a><a name="IX_state_rules" id="IX_state_rules"></a><a name="IX_grid_cards_and_tokens" id="IX_grid_cards_and_tokens"></a>After a user has been assigned a grid card or token, it can have any one of the following states at any given time.</p>
+<h3>Grid card and token states</h3>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" /><span class="bold">Pending</span></a></p>
+<div class="droptext" id="POPUP642668270" style="display: none;">
+<p class="liplistparagraph">Pending means that the grid card or token has not yet been used for authentication.</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Hold-pending</a></span></p>
+<div class="droptext" id="POPUP642869380" style="display: none;">
+<p class="liplistparagraph">Hold-pending means the grid card or token cannot be used to log in until it is moved into the Pending or Current state.</p>
+<p class="liplistparagraph"><a name="IX_grid_card_token_in_hold" id="IX_grid_card_token_in_hold"></a><a name="IX_hold_pending_1" id="IX_hold_pending_1"></a><a name="IX_hold_pending" id="IX_hold_pending"></a><a name="IX_hold_pending_token_state" id="IX_hold_pending_token_state"></a><a name="IX_hold_pending_grid_card" id="IX_hold_pending_grid_card"></a>The Hold-pending state is typically used for situations where your application wants to verify the user before letting them log in with their grid card or token. For example, a Web registration application might verify the user’s identity and then use the Administration API to change the grid card’s state from Hold-pending to Pending. When the grid is in the Pending state, the user can begin authenticating.</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Current</a></span></p>
+<div class="droptext" id="POPUP642867319" style="display: none;">
+<p class="liplistparagraph">Current means the grid card or token is currently in use.</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Hold</a></span></p>
+<div class="droptext" id="POPUP642901042" style="display: none;">
+<p class="liplistparagraph">Hold means the grid card or token cannot be used to log in.</p>
+<p class="liplistparagraph">It might have been put on hold by the administrator because it was reported lost or because the user requested that it be placed on hold. Or, it might switch to the Hold state automatically if either the <span style="font-weight: bold;">Least-used</span>&#160;or <span style="font-weight: bold;">Challenge Count Replacement</span>&#160;threshold is met. For more information see <a href="../config_policies/card_policies.htm#XREF_62220_Card_specification">Card policies</a>.</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Canceled</a></span></p>
+<div class="droptext" id="POPUP642908771" style="display: none;">
+<p class="liplistparagraph">Canceled means the grid card or token can no longer be used to authenticate.</p>
+<p class="liplistparagraph">Canceled grids and tokens are shown in the user account, and can never be used again. They cannot be changed to any other state, and they can never be assigned to any user again. To avoid seeing canceled grids or tokens in the Administration interface, you can delete them.</p>
+</div>
+<p class="lilistbullet">&#160;</p>
+<h3>Other terminology related to states</h3>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Active</a></span></p>
+<div class="droptext" id="POPUP642577007" style="display: none;">
+<p class="liplistparagraph">An active grid card or token is one that is in the Current or Pending state.</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Deleted</a></span></p>
+<div class="droptext" id="POPUP642562974" style="display: none;">
+<p class="liplistparagraph">A deleted grid card or token is one that an administrator has deleted from the system. Deletion removes the grid card or token &#160;completely from Entrust IdentityGuard. It cannot be re-assigned.</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Expired</a></span></p>
+<div class="droptext" id="POPUP642591821" style="display: none;">
+<p class="liplistparagraph">An expired grid card is one whose expiry date has passed.</p>
+<p class="liplistparagraph">When an authenticator expires, it is not automatically placed in the Canceled state; an administrator must cancel it manually.</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />superseded</a></span></p>
+<div class="droptext" id="POPUP642612021" style="display: none;">
+<p class="liplistparagraph">A superseded grid card or token is one in the Current or Hold state whose owner has been issued a newer grid card or token in the Pending state. As soon as the newer, pending grid card or token &#160;is used for authentication, it becomes current and the superseded authenticator is canceled.</p>
+<p class="liplistparagraph"><a name="IX_superseded_11" id="IX_superseded_11"></a><a name="IX_superseded1" id="IX_superseded1"></a><a name="IX_superseded_grid_card1" id="IX_superseded_grid_card1"></a>A user can continue to use a superseded grid card or token for a period of days set by policy. This period takes effect the moment a grid card or token is superseded. For more information see <a href="../config_policies/card_policies.htm#XREF_62220_Card_specification">Card policies</a>.</p>
+<p class="nonote"><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Note</span>: Tokens and soft tokens do not have a superseded date.</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Unassigned</a></span></p>
+<div class="droptext" id="POPUP642519945" style="display: none;">
+<p class="liplistparagraph">Though this is not considered a state, the administrator can unassign grid cards or tokens. (Soft tokens cannot be unassigned; they can only be deleted.) Unassigning a grid card or token from a user moves it back into the preproduced pool of grid cards or into the list of unassigned tokens. An unassigned grid card or token can be assigned to the same user again or to another user.</p>
+</div>
+<p class="pparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Valid</a></span></p>
+<div class="droptext" id="POPUP642483860" style="display: none;">
+<p class="liplistparagraph">A valid grid card or token is one that has not yet expired or been superseded.</p>
+</div>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a7','POPUP642668270');
+	TextPopupInit('a8','POPUP642869380');
+	TextPopupInit('a9','POPUP642867319');
+	TextPopupInit('a10','POPUP642901042');
+	TextPopupInit('a11','POPUP642908771');
+	TextPopupInit('a3','POPUP642577007');
+	TextPopupInit('a4','POPUP642562974');
+	TextPopupInit('a5','POPUP642591821');
+	TextPopupInit('a6','POPUP642612021');
+	TextPopupInit('a2','POPUP642519945');
+	TextPopupInit('a1','POPUP642483860');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

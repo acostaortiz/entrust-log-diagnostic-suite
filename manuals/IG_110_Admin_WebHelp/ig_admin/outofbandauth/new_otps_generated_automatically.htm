@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>New OTPs generated automatically</title>
+
+ <meta name="generator" content="Adobe RoboHelp 11" />
+ <meta name="Originator" content="ImportMif" />
+ <meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\outofbandauth.fm" />
+ <link rel="stylesheet" href="../../entrust.css" type="text/css" />
+
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("New OTPs generated automatically<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+ <p class="h3"><a name="XREF_37650_Automatically"></a>New OTPs generated automatically </p>
+ <p class="pparagraph">There&#160;are two choices for how out-of-band OTP generation works. </p>
+ <p class="pparagraph">In the default configuration, an OTP is sent to a&#160;user when the challenge is generated. This is effective in most cases, but can be a problem if,&#160;for example, users are often in areas with&#160;unreliable mobile phone coverage.&#160;You can configure Entrust IdentityGuard to deliver one or more OTPs after the user authenticates to ensure access to valid OTPs for subsequent logins.</p>
+ <p class="nonote"><span style="font-weight: bold;">Note: </span>Voice message delivery of OTPs does not support the delivery of multiple OTPs. If there are multiple OTPs, only the first is delivered.</p>
+ <p class="pparagraph">The behavior of OTP generation is controlled using the <span style="font-weight : bold; ">OTP Dynamic Refresh Enabled</span>&#160;policy. When new OTPs are generated to replenish the user’s list of OTPs, the expiry date of all of the OTPs is set to&#160;whichever is greater, the maximum of the new expiry date of the new OTPs&#160;or the current expiry date of existing OTPs.</p>
+ <p class="pparagraph">The following sections describe the two possible scenarios, assuming that OTP delivery is enabled. You can also send the OTPs manually, if necessary.OTP Dynamic Refresh Enabled=False</p>
+ <p class="pparagraph">Entrust IdentityGuard sends one or more OTPs if the user requires one when an OTP challenge is requested. New OTPs are generated if any one of the following statements is true:</p>
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The user has used the requisite number of OTPs as defined in the <span style="font-weight : bold; ">Dynamic OTP Refresh Threshold</span>&#160;policy. </p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The <span style="font-weight : bold; ">Always Generate New OTP for Every Challenge Request</span>&#160;policy is <span style="font-family : Courier; ">true.</span></p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Transaction details are required</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The user’s OTPs have expired.</p>
+
+ 
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>A user initiates an action that prompts an OTP challenge&#160;and an OTP is requested.</p>
+
+ 
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The user receives one or more OTPs, if required. The number of valid OTPs the user has used is compared to the <span style="font-weight : bold; ">Dynamic OTP Refresh Threshold</span>&#160;policy, and if the user has used the requisite number of OTPs, new OTPs are sent.&#160;</p>
+
+ 
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The user authenticates by entering an OTP into the application.</p>
+
+ 
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Entrust IdentityGuard deletes the OTP so that it cannot be used again.</p>
+
+ <p class="h4">OTP&#160;Dynamic Refresh Enabled=True</p>
+ <p class="pparagraph">Entrust IdentityGuard sends one or more OTPs if the user requires them after successful authentication. New OTPs are generated if any one of the following statements is true:</p>
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The user has no valid OTPs.</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The user’s OTPs have expired.</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The user has used the requisite number of OTPs as defined in the <span style="font-weight : bold; ">Dynamic OTP Refresh Threshold</span>&#160;policy. </p>
+
+ <p class="nonote"><span style="font-weight: bold;">Note: </span>This capability is not available if you are using Entrust IdentityGuard Radius first-factor authentication.</p>
+ 
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>A user initiates an action that prompts an OTP challenge and an OTP is requested.</p>
+
+ 
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The user authenticates by entering an OTP into the application. The user can enter any one of the unused OTPs.</p>
+
+ 
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Entrust IdentityGuard deletes the used OTP so that it cannot be used again.</p>
+
+ 
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Entrust IdentityGuard replenishes the user’s list of OTPs.</p>
+
+ <p class="nonote"><span style="font-weight: bold;">Note: </span>Even when <span style="font-weight : bold; ">OTP Dynamic Refresh Enabled</span>&#160;= <span style="font-family : Courier; ">True</span>, OTPs might be generated at the time of the authentication challenge, if:<br /><br />- The application specifies that OTPs are to be delivered.<br />- New OTPs were generated during the authentication request.<br />- An older version of the Entrust IdentityGuard API is being used.</p>
+ <p class="pparagraph">&#160;</p>
+ <div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_radius_proxy.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Supported two-step authentication methods and protocols</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("Supported two-step authentication methods and protocols<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<p class="h3">Supported two-step authentication methods and protocols</p>
+<p class="pparagraph">In 
+ two-step authentication, a user enters a user name and password in the 
+ first step, then second-factor challenge response in the second step. 
+ <a href="#XREF_75778_Supported">Table&#160;57</a>&#160;lists the authentication 
+ methods and protocols that are supported through the Entrust IdentityGuard 
+ Radius proxy for two-step authentication. </p>
+
+<table style="padding-left: 4.00pt; padding-top: 5.00pt; padding-right: 3.00pt; 
+		 padding-bottom: 3.00pt; margin-bottom: 16.00pt;" cellspacing="0" 
+		 width="553">
+	<caption class="tacwtablecaptionwide" style="font-family: 'Trebuchet MS';"><span 
+	 class="FM_Procnum">Table 57: </span><a name="XREF_75778_Supported"></a>Supported 
+	 two-step authentication methods and protocols using the Radius proxy</caption>
+	<tr style="height: 30.00pt;" bgcolor="#E5E5E5">
+		<th style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" bgcolor="#E5E5E5" 
+			 width="202"><p class="tahtableheader">First step</p></th>
+		<th style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" bgcolor="#E5E5E5" 
+			 width="183"><p class="tahtableheader">Second step</p></th>
+		<th style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" bgcolor="#E5E5E5" 
+			 width="84"><p class="tahtableheader">PAP</p></th>
+		<th style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" bgcolor="#E5E5E5" width="84"><p class="tahtableheader">CHAP</p>
+		<p class="tahtableheader">MS-CHAP</p></th>
+	</tr>
+	<tr style="height: 18.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="202"><p 
+			 class="tattabletext">Radius server</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="183"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="84"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="84"><p class="tattabletext">Yes</p></td>
+	</tr>
+	<tr style="height: 29.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="202"><p 
+			 class="tattabletext">External resource (LDAP directory or 
+		 Windows domain controller)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="183"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="84"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="84"><p class="tattabletext">No</p></td>
+	</tr>
+	<tr style="height: 18.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="202"><p 
+			 class="tattabletext">Entrust IdentityGuard password</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="183"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="84"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="84"><p class="tattabletext">Yes</p></td>
+	</tr>
+	<tr style="height: 29.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="202"><p 
+			 class="tattabletext">(NULL) No first-factor authentication</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="183"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="84"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="84"><p class="tattabletext">Yes</p></td>
+	</tr>
+	<tr style="height: 18.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="202"><p 
+			 class="tattabletext">One-time password (OTP)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="183"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="84"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="84"><p class="tattabletext">Yes</p></td>
+	</tr>
+	<tr style="height: 18.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="202"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="183"><p 
+			 class="tattabletext">Grid</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="84"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="84"><p class="tattabletext">Yes</p></td>
+	</tr>
+	<tr style="height: 29.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="202"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="183"><p 
+			 class="tattabletext">Token (response-only or challenge-response 
+		 mode)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="84"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="84"><p class="tattabletext">Yes 
+		 (Entrust tokens only)</p></td>
+	</tr>
+	<tr style="height: 40.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="202"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="183"><p 
+			 class="tattabletext">Mobile soft token (Entrust IdentityGuard 
+		 Mobile ST app)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="84"><p 
+			 class="tattabletext">N/A</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="84"><p class="tattabletext">N/A</p></td>
+	</tr>
+	<tr style="height: 18.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="202"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="183"><p 
+			 class="tattabletext">One-time password </p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="84"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="84"><p class="tattabletext">Yes</p></td>
+	</tr>
+	<tr style="height: 29.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="202"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="183"><p 
+			 class="tattabletext">Knowledge-based questions and answers</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="84"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="84"><p class="tattabletext">Yes</p></td>
+	</tr>
+	<tr style="height: 18.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="202"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="183"><p 
+			 class="tattabletext">Risk-based IP/Geolocation </p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="84"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="84"><p class="tattabletext">Yes</p></td>
+	</tr>
+	<tr style="height: 18.00pt;">
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="202"><p 
+			 class="tattabletext">&#160;</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="183"><p 
+			 class="tattabletext">One-time password (OTP)</p></td>
+		<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; 
+			 vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; 
+			 padding-right: 6.00pt; padding-bottom: 3.00pt;" width="84"><p 
+			 class="tattabletext">Yes</p></td>
+		<td style="border-bottom: solid 1px #000000; vertical-align: top; 
+			 padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; 
+			 padding-bottom: 3.00pt;" width="84"><p class="tattabletext">Yes</p></td>
+	</tr>
+</table>
+
+<p class="nonote"><span style="font-weight: bold;">Note: </span><a name="IX_update_password"></a><a 
+	 name="IX_update_PVN"></a>Grids, tokens, temporary PINs, and one-time 
+ passwords can also include a personal verification number.&#160;Second 
+ factor authentication using a mobile soft token does not use a PVN or 
+ a PIN (however, the app may be protected by a PIN if any of its soft token 
+ identities requires one). Only PAP supports PVN updates. </p>
+<p class="pparagraph">Instead of a grid or token response, a user can enter 
+ a temporary PIN.</p>
+<p class="pparagraph">You can choose NULL to skip first-factor authentication. 
+ However, it is recommended that if you choose NULL, an application-specific 
+ first-factor method is used to perform first-factor authentication. For 
+ example, configure the VPN server to perform first-factor authentication.</p>
+<p class="pparagraph">Only PAP supports password updates. Only PAP supports 
+ the cell replacement feature of Entrust IdentityGuard grids, one-time 
+ passwords, and temporary PINs; CHAP and MS-CHAP do not. The cell replacement 
+ feature allows certain characters to replace other characters. For example, 
+ “x” can replace “X”, and “B” can replace “8.”</p>
+<p class="pparagraph">For knowledge-based authentication, only a single 
+ question and answer are valid through the Radius proxy. The answer must 
+ be an exact match for CHAP and MS-CHAP.</p>
+<p class="pparagraph">You can also configure mutual authentication with 
+ the serial number replay feature of grids and tokens; image <a name="XREF_image_replay_mutual"></a>replay 
+ is not supported through the Radius proxy.</p>
+<p class="pparagraph">The Entrust IdentityGuard Mobile Soft Token app can 
+ be used for second-factor authentication. The app receives an authentication 
+ challenge and the user can respond by selecting <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Confirm</span>&#160;in 
+ the app (if the device is connected to the Internet, which is online mode) 
+ or by entering the security code generated by the app (classic mode).</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

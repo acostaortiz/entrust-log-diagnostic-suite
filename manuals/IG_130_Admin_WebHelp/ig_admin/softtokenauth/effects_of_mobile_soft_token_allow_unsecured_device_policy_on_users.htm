@@ -1,0 +1,310 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Effects of Mobile Soft Token Allow Unsecured Device policy on users</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nSoft token authentication\nConfiguring soft token policies\nEffects of enabling the Mobile Soft Token Allow Unsecured Device policy");
+addAvenueInfo("r13_std","ig_admin/softtokenauth/enable_use_of_soft_tokens_on_an_unsecure_mobile_device.htm","ig_admin/softtokenauth/enable_transaction_queuing.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"softtokenauth.htm\">Soft token authentication<\/a> > <a href=\"configuring_soft_token_policies.htm\">Configuring soft token policies<\/a> > Effects of enabling the Mobile Soft Token Allow Unsecured Device policy<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Effects of enabling the Mobile Soft Token Allow Unsecured Device policy</h1>
+<p>Read this topic if you are considering allowing users to have mobile soft tokens on mobile devices that have been rooted or jailbroken.</p>
+<p>Users of secure devices will see no changes in their use of the app.</p>
+<p>A user who created soft tokens when a mobile device was secure, but later unsecured the device, could end up with soft tokens that are unusable. The user should restore the device to a secure state or delete these soft tokens from the mobile device. The soft tokens should also be deleted from Entrust IdentityGuard. A user can do this through Self-Service or an administration can delete them using the Administrator interface.</p>
+<p>Specific behavior is described in the following tables.</p>
+<h3>Soft tokens created on a secure device that is subsequently rooted or jailbroken</h3>
+<table class="Entrust_table" cellspacing="0px" width="99.623%">
+<col style="width: 33.218%;" />
+<col style="width: 66.782%;" />
+<tr class="t1st">
+<td colspan="2" style="vertical-align: Top;">
+<p class="tahtableheader">Mobile Soft Token Allow Unsecured Device=<span class="bold">No</span> (default)</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tahtableheader">User action</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tahtableheader">What user will observe</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">App startup</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">Error message: One or more identities have been disabled because they cannot be used on an unsecured device. (If only one identity is governed by the policy, the identity is named in the message.)</p>
+<p class="tattabletext">A circle with a diagonal slash <img src="../../icn_mobile_apps_invalid_identity.png" alt="circle with diagonal slash" style="border: none;" width="20" height="20" border="0" /> appears next to the identity.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Attempt to use the disabled soft token or set it as the default identity.</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">Error message:This identity cannot be used on an unsecured device.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Attempt to get security code for default identity</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">If the unusable identity was the default identity, the app displays the Identity list, forcing the user to select a valid identity to use, if one is available.</p>
+<p class="tattabletext">An unusable identity cannot be selected as the default identity.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Any type of activation</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">Error message: This identity cannot be activated on an unsecured device.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Manual activation</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">Error message: Manual activation is not supported on an unsecured device.</p>
+</td>
+</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<table class="Entrust_table" cellspacing="0px" width="99.434%">
+<col style="width: 33.112%;" />
+<col style="width: 66.888%;" />
+<tr class="t1st">
+<td colspan="2" style="vertical-align: Top;">
+<p class="tahtableheader">If Mobile Soft Token Allow Unsecured Device=<span class="bold">Yes</span></p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tahtableheader">User action</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tahtableheader">What user will observe</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Manual activation</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">Error message: Manual activation is not supported on an unsecured device.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Any other action</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">No change</p>
+</td>
+</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<h3>Use of the app on unsecured devices</h3>
+<table class="Entrust_table" cellspacing="0px" width="99.246%">
+<col style="width: 33.555%;" />
+<col style="width: 66.445%;" />
+<tr class="t1st">
+<td colspan="2" style="vertical-align: Top;">
+<p class="tahtableheader">If Mobile Soft Token Allow Unsecured Device=<span class="bold">No</span> (default)</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tahtableheader">User action</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tahtableheader">What user will observe</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Activation:</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">Error message: This identity cannot be activated on an unsecured device.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Any other actions</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">App cannot be used for identities governed by this policy.</p>
+</td>
+</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<table class="Entrust_table" cellspacing="0px" width="99.057%">
+<col style="width: 33.619%;" />
+<col style="width: 66.381%;" />
+<tr class="t1st">
+<td colspan="2" style="vertical-align: Top;">
+<p class="tahtableheader">If Mobile Soft Token Allow Unsecured Device=<span class="bold">Yes</span></p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tahtableheader">User action</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tahtableheader">What user will observe</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Manual activation</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">Error message: Manual activation is not supported on an unsecured device.</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Any other action</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">No change</p>
+</td>
+</tr>
+</table>
+<p>&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

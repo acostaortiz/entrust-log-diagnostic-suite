@@ -1,0 +1,265 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\tokenauth.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring Entrust IdentityGuard for token authentication</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nToken authentication\nConfigure token authentication\nWorksheet for configuring token authentication");
+addAvenueInfo("Untitled02","ig_admin/tokenauth/token_set_overview_using_multiple_tokens.htm","ig_admin/tokenauth/storing_unassigned_token_information.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"tokenauth.htm\">Token authentication<\/a> > <a href=\"configuring_entrust_identityguard_for_token_authentication.htm\">Configure token authentication<\/a> > Worksheet for configuring token authentication<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_34328_Configuring" id="XREF_34328_Configuring"></a>Worksheet 
+ for configuring token authentication</h1>
+<div>
+<p class="nonote"><span class="bold">Tip:</span> Copy and save this worksheet 
+ in Microsoft Word or another word-processing application to track your 
+ progress and record configuration details. Be sure to keep your worksheet 
+ in a secure location.</p>
+</div>
+<p class="pparagraph">This worksheet describes the tasks involved in configuring 
+ Entrust IdentityGuard to support hardware token authentication. Tasks 
+ are performed in various Entrust IdentityGuard components, as indicated.</p>
+<p class="pparagraph">This worksheet uses the following abbreviations:</p>
+<p class="pparagraph">IG—Entrust IdentityGuard Server Administration interface</p>
+<p class="pparagraph">PE—Entrust IdentityGuard Properties Editor</p>
+<p class="pparagraph">SSM—Entrust IdentityGuard Self-Service Module Configuration 
+ interface</p>
+<p class="pparagraph">SSA—Self-Service application</p>
+
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 8.444%;" />
+	<col style="width: 58.222%;" />
+	<col style="width: 33.333%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">Task 
+		 done on...</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Task</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Details</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">IG</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tapstableprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Ensure 
+		 that Entrust IdentityGuard administrators have the required permissions 
+		 to complete token-related tasks</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../config_roles/token_permissions.htm#XREF_37917_Token_permissions">Token 
+		 permissions</a> and <a href="../config_roles/initial_roles.htm">Built-in 
+		 roles</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">PE</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tapstableprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Set 
+		 up a repository for unassigned token information. The repository 
+		 might have been created automatically as part of Entrust IdentityGuard 
+		 installation.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="storing_unassigned_token_information.htm">Store unassigned 
+		 token information</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">PE</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tapstableprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create 
+		 a token vendor instance for each token vendor whose tokens your 
+		 organization will be using.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="configuring_token_vendors.htm">Configure a token vendor</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">PE</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tapstableprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+		 Set the token challenge string used with VPN access if your users 
+		 will use tokens for VPN access.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../config_radius_proxy/customizing_vpn_challenge_strings.htm">Customizing 
+		 VPN challenge strings</a>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" rowspan="7" style="vertical-align: Top;"><p class="tattabletext">IG</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tapstableprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure 
+		 token-related policies.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="configuring_token_policies.htm">Configuring token policies</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tapstableprocedurestep" style=" margin-left: 40px; text-indent: -20px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;</span>For 
+		 each applicable policy, specify that token authentication should 
+		 be used. Also set the order of authenticators to be used, if users 
+		 governed by the policy have different types of authenticators.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a 
+		 href="file://T:/Server/11.0/Admin_Guide_RH/IG Server Admin Guide/IG_Admin/tokenauth/Configuring_token_authentication_policies.htm">Enable 
+		 use of token authentication in a policy</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tapstableprocedurestep" style=" margin-left: 40px; text-indent: -20px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;</span>Ensure 
+		 the applicable user groups have a policy that includes token authentication.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../config_groups/assigning_policies_to_groups.htm#XREF_11996_Assigning_policies">Assigning 
+		 policies to groups</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tapstableprocedurestep" style=" margin-left: 40px; text-indent: -20px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;</span>Set 
+		 token-related policies.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="configuring_token_policies1.htm">Configure token policies</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tapstableprocedurestep" style=" margin-left: 40px; text-indent: -20px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;</span>Set 
+		 token activation rules.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../gridauthentication/configuring_grid_card_or_token_activation_period_policies.htm">Configure 
+		 grid card or token activation period policies</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tapstableprocedurestep" style=" margin-left: 40px; text-indent: -20px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;</span>Load 
+		 your token data files.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="loading_the_token_data_file.htm">Load the token data file</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tapstableprocedurestep" style=" margin-left: 40px; text-indent: -20px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Assign 
+		 tokens to users.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a 
+		 href="file://T:/Server/11.0/Admin_Guide_RH/IG Server Admin Guide/IG_Admin/tokenauth/Assigning_tokens_to_users.htm">Assign 
+		 tokens to users</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">&#160;</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Distribute 
+		 tokens to users.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">See 
+		 the <span class="italic">Entrust Tokens Deployment Guide</span> 
+		 for various deployment models.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">&#160;</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Configure 
+		 your application to use token authentication.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">See 
+		 the <span class="italic">Entrust IdentityGuard Programming Guide</span>.</p></td>
+	</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

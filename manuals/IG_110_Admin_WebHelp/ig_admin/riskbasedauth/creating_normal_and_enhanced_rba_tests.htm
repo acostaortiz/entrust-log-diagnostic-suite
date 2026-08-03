@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\riskbasedauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Creating normal and enhanced RBA tests</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nRisk-based authentication\nMaster user shell commands for risk-based authentication\nSet RBA policies in the Master user shell\nCreate normal and enhanced RBA tests");
+addAvenueInfo("Untitled","ig_admin/riskbasedauth/setting_rba_policies_in_the_master_user_shell.htm","ig_admin/riskbasedauth/rba_policy_syntax.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"riskbasedauth.htm\">Risk-based authentication<\/a> > <a href=\"master_user_shell_commands_for_risk-based_authentication.htm\">Master user shell commands for risk-based authentication<\/a> > <a href=\"setting_rba_policies_in_the_master_user_shell.htm\">Set RBA policies in the Master user shell<\/a> > Create normal and enhanced RBA tests<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Create normal and enhanced RBA tests</h1>
+<p class="pparagraph">This section explains how to create RBA test expressions 
+ in the Master user shell. </p>
+<p class="pparagraph">There are four <span style="font-family: Courier;">policy 
+ rba set</span>&#160;command attributes to set authentication behavior 
+ under normal and enhanced security. The four policies are:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>normalReject</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>normalAuthenticated</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>enhancedReject</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>enhancedAuthentication</p>
+<p class="pparagraph">The default test expressions for normal and enhanced 
+ security are described in the following table. These expressions are equivalent 
+ to the defaults shown in the RBA policy screen in the Administration interface. 
+ To set these policies in the Administration interface, see <a href="setting_normal_and_enhanced_rba_policies.htm">Set 
+ normal and enhanced RBA policies</a>.</p>
+<table class="Entrust_table" cellspacing="0px" width="80.211%">
+	<col style="width: 15%;" />
+	<col style="width: 54.623%;" />
+	<col style="width: 30.377%;" />
+	<tr class="t1st">
+		<th><p class="tahtableheader">Policy</p></th>
+		<th><p class="tahtableheader">Default RBA expression</p></th>
+		<th><p class="tahtableheader">Description</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">normalReject</p></td>
+		<td class="t1Col"><p class="tattabletext"><span style="font-weight: bold;">FAIL</span>(IP_IPBLACKLIST)</p>
+		<p class="tattabletext"><span style="font-weight: bold;">FAIL</span>(IP_COUNTRYBLACKLIST</p>
+		<p class="tattabletext"><span style="font-weight: bold;">FAIL</span>(CERTAUTH_CERTVALID)</p></td>
+		<td class="last"><p class="tattabletext">A normal request will 
+		 be rejected if the IP blacklist or country blacklist checks fail 
+		 or if the certificate is not valid.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">normalAuthenticated</p></td>
+		<td class="t1Col"><p class="tattabletext"><span style="font-weight: bold;">PASS</span>(MACHINEAUTH) 
+		 + <span style="font-weight: bold;">NOTFAIL</span>(IP) + <span 
+		 style="font-weight: bold;">NOTFAIL</span>(CERTAUTH) + <span style="font-weight: bold;">NOTFAIL</span>(EXTERNAL_RISK)</p>
+		<p class="tattabletext"><span style="font-weight: bold;">PASS</span>(CERTAUTH) 
+		 + <span style="font-weight: bold;">NOTFAIL</span>(IP) + <span 
+		 style="font-weight: bold;">NOTFAIL</span>(MACHINEAUTH) + <span 
+		 style="font-weight: bold;">NOTFAIL</span>(EXTERNAL_RISK)</p></td>
+		<td class="last"><p class="tattabletext">A normal request will 
+		 be authenticated if machine authentication passes and none of 
+		 the other tests fail, or if certificate authentication passes 
+		 and none of the other tests fail.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">enhancedReject</p></td>
+		<td class="t1Col"><p class="tattabletext"><span style="font-weight: bold;">FAIL</span>(IP_VELOCITY)</p></td>
+		<td class="last"><p class="tattabletext">An enhanced request will 
+		 be rejected if the IP blacklist, country blacklist, or velocity 
+		 checks fail, or if a specified certificate is not valid.</p>
+		<p class="tattabletext">(The normal reject policy is enhanced with 
+		 the addition of the Velocity test.)</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">enhancedAuthenticated</p></td>
+		<td class="t1Col"><p class="tattabletext">&lt;empty list&gt;</p></td>
+		<td class="last"><p class="tattabletext">In the default case, an 
+		 enhanced request will never be authenticated.</p></td>
+	</tr>
+</table>
+<p class="pparagraph">For the enhanced mode, the test results are rejected 
+ if they match the enhanced reject policy or the normal reject policy. 
+ That is, any test condition that causes a failed authentication using 
+ the normal policy also causes authentication failure using the enhanced 
+ policy. The normal and enhanced authentication definitions can be equal 
+ in strength.</p>
+<p class="pparagraph">For the normal mode, the test results are authenticated 
+ if they match the normal authenticated policy or the enhanced authenticated 
+ policy. That is, if a test condition authenticates you for the enhanced 
+ policy, it will also authenticate you for the normal policy.</p>
+<p class="pparagraph">The following sections describe how to formulate 
+ the RBA policy commands in the Master user shell: </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="rba_policy_syntax.htm#XREF_30705_RBA_policy_syntax">RBA 
+ policy syntax</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="rba_expression_construction.htm#XREF_37995_RBA_expression">RBA 
+ expression construction</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="rba_tests_and_subtests.htm#XREF_28683_RBA_tests_and">RBA 
+ tests and subtests</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="the_add_and_remove_options.htm#XREF_18967_The_add_and_remove">The 
+ add and remove options</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="example_rba_policy_commands.htm#XREF_35956_To_set_RBA">Example 
+ RBA policy commands</a></p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

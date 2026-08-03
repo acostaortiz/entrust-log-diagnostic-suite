@@ -1,0 +1,383 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configure an audit database</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring logging and auditing\nConfigure an audit database");
+addAvenueInfo("r13_std","ig_admin/config_logging/load_the_entrust_identityguard_mib_into_your_snmp_manager.htm","ig_admin/config_logging/view_historical_audits_in_the_administration_interface.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"../config_logging/configuring_logging_and_auditing.htm\">Configuring logging and auditing<\/a> > Configure an audit database<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1>Configure an audit database<a name="XREF_79673_Configuring_an" id="XREF_79673_Configuring_an"></a><a 
+	 name="IX_for_audits" id="IX_for_audits"></a><a name="IX_audits_database" 
+													 id="IX_audits_database"></a><a 
+	 name="IX_storing_and_reporting" id="IX_storing_and_reporting"></a><a 
+	 name="XREF_59990_Configuring_audit" id="XREF_59990_Configuring_audit"></a></h1>
+<p class="pparagraph">By default Entrust IdentityGuard audits are written 
+ to syslog or to files, but you can also write the audits to a database 
+ for reporting later, and you can administer the audits in the database 
+ using properties that you set up and edit in the Properties Editor.</p>
+<p class="nonote"><span class="bold">Note:</span> Configuration &#160;of 
+ an audit database is a prerequisite for using the real-time Auditor Monitor. 
+ If you are not using the Audit Monitor, use of an audit database is optional.</p>
+<p class="pparagraph">The audit data is available for reporting as well, 
+ either through the Administration interface, or through the Master user 
+ shell.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> If your 
+ Entrust IdentityGuard installation uses a JDBC repository, you can use 
+ your existing repository for storing audits. Alternatively, you can set 
+ up a new JDBC database specifically for your audit data.<br />
+If your Entrust IdentityGuard installation uses an LDAP repository, you 
+ must install and configure a JDBC repository for your audit data.</p>
+<p class="pparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Fields 
+ in an audit database entry</a></p>
+<div class="droptext" id="POPUP728075175" style="display: none;">
+	<table class="Entrust_table" cellspacing="0px" width="90.521%">
+		<col style="width: 22.836%;" />
+		<col style="width: 82.675%;" />
+		<tr class="t1st">
+			<th style="vertical-align: Top;"><p class="tahtableheader">Field 
+			 name</p></th>
+			<th style="vertical-align: Top;"><p class="tahtableheader">Description</p></th>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">seqNo</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 audit sequence number. The sequence number is incremented 
+			 for each audit added.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">date</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 date the audit was generated.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">host</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 host of the Entrust IdentityGuard administration service&#160;that 
+			 generated the audit.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">level</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext"><span 
+			 style="font-family: 'Courier New';">INFO</span>, <span style="font-family: 'Courier New';">WARNING</span>, 
+			 or <span style="font-family: 'Courier New';">ERROR.</span></p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">code</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 numeric code of the audit. AUD5300 is entered in the database 
+			 as <span style="font-family: 'Courier New';">5300</span>, 
+			 for example.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">adminGroup</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 group of the administrator performing the operation.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">adminName</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 name of the administrator performing the operation.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">targetType</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 type of the target of the operation. Examples are <span style="font-family: 'Courier New';">USER</span>&#160;and 
+			 <span style="font-family: 'Courier New';">MASTER</span>.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">targetOp</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 operation performed on the target.&#160;Examples are <span 
+			 style="font-family: 'Courier New';">CREATE</span>&#160;and 
+			 <span style="font-family: 'Courier New';">DELETE</span>.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">targetGroup</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 Entrust IdentityGuard group the target belongs to.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">targetName</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 name of the target of the operation.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">targetSubname</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 subname of the target of the operation. If <span style="font-family: 'Courier New';">targetName</span>&#160;is 
+			 the name of a user with a token, for example, then the <span 
+			 style="font-family: 'Courier New';">targetSubname</span>&#160;is 
+			 the token serial number.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">service</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext"><span 
+			 style="font-family: 'Courier New';">SUPERSH</span>, <span 
+			 style="font-family: 'Courier New';">ADMINSERVICE</span>, <span 
+			 style="font-family: 'Courier New';">AUTHSERVICE</span>, <span 
+			 style="font-family: 'Courier New';">ADMININTERFACE</span>, 
+			 <span style="font-family: 'Courier New';">IGRADIUS</span>, 
+			 <span style="font-family: 'Courier New';">PROPERTIESEDITOR</span></p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">externalCode</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 application code of the external application.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">externalService</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 service name of the external application.</p></td>
+		</tr>
+		<tr class="t1Row">
+			<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">text</p></td>
+			<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+			 explanation text from the audit.</p></td>
+		</tr>
+	</table>
+	<p>&#160;</p>
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">To enable the writing of Entrust IdentityGuard audits 
+ to a database, and to choose the database to use, complete the following 
+ procedure.</p>
+<p class="prtproceduretitle">To configure writing audits to a database</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create 
+ a new database, if required. </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If your 
+ Entrust IdentityGuard installation uses a JDBC repository, you have the 
+ choice of using your existing repository for storing audits or setting 
+ up a new JDBC database specifically for your audit data.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If your 
+ Entrust IdentityGuard installation uses an LDAP repository, you must install 
+ and configure a JDBC repository for your audit data.</p>
+<p class="prpprocedureparagraph">See <a href="../config_logging/configuring_a_database.htm">Configuring 
+ a database</a>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start 
+ the Entrust IdentityGuard Properties Editor. (See <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">Log 
+ in or out of the Properties Editor</a>.)</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the <span style="font-weight: bold;">Table of Contents</span>, click <span 
+	 style="font-weight: bold;">Audits to Database Configuration</span>.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="PE-audit-to-db.jpg" id="image8" src="pe-audit-to-db.jpg" name="image8" width="552" height="441" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ there is more than one database configured, select the database to use 
+ from the <span style="font-weight: bold;">Audit Database Name</span> drop-down 
+ list.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Set<span 
+	 style="font-weight: bold;"> Write Audits to Database</span> to <span 
+	 style="font-weight: bold;">True</span>.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+ If you want to restrict the audits written to the database, in <span style="font-weight: bold;">Audits 
+ Database Filter,</span>&#160;enter a filter expression. </p>
+<p class="prpprocedureparagraph">Filtering is done by the audit code number. 
+ Enter a list of audit codes or code ranges to write to the database, separated 
+ by commas. All audits that match any one of the specified filter values 
+ are written to the database. If you do not specify a filter value, all 
+ audits are written to the database.For example, here are some valid audit 
+ database filters:</p>
+<p class="prspsubprocedureparagraph">-100 (all audit codes &lt;= 100)</p>
+<p class="prspsubprocedureparagraph">200-300 (all codes between 200 and 
+ 300)</p>
+<p class="prspsubprocedureparagraph">1000- (all audit codes &gt;= 1000)</p>
+<p class="prspsubprocedureparagraph">-100, 200-300,1000- (all audit codes 
+ &lt;= 100, between 200 and 300 inclusive, or &gt;= 1000)</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Do not 
+ use the “AUD” audit code prefix in the filter expression.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+ Set the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Audit Queue Is Blocking</span> 
+ setting. Entrust IdentityGuard maintains a queue of audits waiting to 
+ be written to the database. You can change the behavior of this queue 
+ through the Audit Queue Is Blocking setting.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">True</span>, 
+ requests to Entrust IdentityGuard are blocked until space becomes available 
+ in the audit queue.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If <span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">False</span>, 
+ the oldest audit in the queue is removed when the queue is full. This 
+ frees up space in the queue, ensuring that requests are not blocked.</p>
+<p class="liplistparagraph">The default is <span class="bold" style="font-weight: bold; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">True.</span></p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+ To enable automatic removal of old audits from the database, select <span 
+	 style="font-weight: bold;">True</span>&#160;under <span style="font-weight: bold;">Audit 
+ Removal Enabled</span>. This helps keep the database from becoming too 
+ large and affecting performance.</p>
+<p class="prpprocedureparagraph">When this option is enabled the following 
+ optional Audit Removal parameters can be configured:.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+ Enter the <span style="font-weight: bold;">Audit Removal Age</span>. This 
+ is the age, in days, of old audits to be deleted. If you do not specify 
+ an Audit Removal Age, the default value of 180 days (approximately 6 months) 
+ is used.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+ Enter the <span style="font-weight: bold;">Audit Removal Interval</span>. 
+ This is the interval, in hours, between checks for old audit records to 
+ delete. If Audit Removal is enabled, and you do not specify an Audit Removal 
+ Interval, the default value of 24 hours is used.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+ Set <span style="font-weight: bold;">Audit Removal Export Enabled</span>&#160;to 
+ <span style="font-weight: bold;">True</span>&#160;to send deleted audits 
+ to an export file.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) 
+ Enter the directory path in <span style="font-weight: bold;">Audit Removal 
+ Export Directory</span>. This directory is only used if Audit Removal 
+ Export Enabled is set to True. If you do not specify a path, exported 
+ audit files are written to <span style="font-family: 'Courier New'; font-size: 9.0pt;">&lt;$IG_HOME&gt;</span><span 
+	 style="font-family: 'Courier New';">/export/audits</span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> If you 
+ enter an invalid path for the <span style="font-weight: bold;">Audit Removal 
+ Export Directory</span>, the default location is used.</p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Validate 
+ &amp; Save</span>.</p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Restart 
+ the Entrust IdentityGuard services to have the changes take effect.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP728075175');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Audit Logging Appenders</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nAudit Logging Appenders (37)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/audit_email_delivery_settings.htm","ig_admin/usingpropeditor/audits_to_database_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Audit Logging Appenders (37)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_audit_logging_appenders"></a><a name="IX_configuring_audit"></a><a 
+	 name="XREF_27548_Audit_logging"></a>Audit Logging Appenders</h1>
+<p class="pparagraph">An appender defines where log messages are written 
+ and the format of those messages. For audit messages, Entrust IdentityGuard 
+ supports an appender for the Syslog protocol (AUDIT_SYSLOG) and a rolling 
+ file appender (AUDIT_FILELOG). For more details and to view a snapshot 
+ of the properties, see <a href="../config_logging/setting_audit_logging_properties.htm#XREF_52277_Setting_audit">Setting 
+ audit logging properties</a>. </p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />AUDIT_SYSLOG 
+ Implementation Class Name</a></span></p>
+<div class="droptext" id="POPUP722002471" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.appender.AUDIT_SYSLOG</span></p>
+	<p class="lip2list2paragraph">Defines the log4j appender to use for 
+	 audit logs. This should not be changed.</p>
+	<p class="lip2list2paragraph">This value should remain set to the default: 
+	 <span class="output">org.apache.log4j.net.SyslogAppender</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />AUDIT_SYSLOG 
+ Host Name</a></span></p>
+<div class="droptext" id="POPUP721547793" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.appender.AUDIT_SYSLOG.SyslogHost</span></p>
+	<p class="lip2list2paragraph">Defines the Syslog host to which logging 
+	 information is sent. You can use a colon to append a non-default port 
+	 number to the host.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />AUDIT_SYSLOG 
+ Facility</a></span></p>
+<div class="droptext" id="POPUP721519065" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.appender.AUDIT_SYSLOG.Facility</span></p>
+	<p class="lip2list2paragraph">Defines the Syslog facility used to audit 
+	 logs. Select the option from the drop-down list that best describes 
+	 what facility on the system originated the message.</p>
+	<p class="lip2list2paragraph">Default:LOCAL1</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />AUDIT_FILELOG 
+ Layout Implementation Class Name</a></span></p>
+<div class="droptext" id="POPUP721934539" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.appender.AUDIT_FILELOG.layout</span></p>
+	<p class="lip2list2paragraph">The log4j class that converts a logging 
+	 event into a message string to be printed in the logs.</p>
+	<p class="lip2list2paragraph">Default: <span class="output">org.apache.log4j.PatternLayout</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />AUDIT_SYSLOG 
+ Layout Pattern</a></span></p>
+<div class="droptext" id="POPUP721315232" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.appender.AUDIT_SYSLOG.layout.ConversionPattern</span></p>
+	<p class="lip2list2paragraph">Defines the format of the converted logging 
+	 event. Please see the log4j documentation for further information.</p>
+	<p class="lip2list2paragraph">Default: <span class="output">[%t] [%-5p] 
+	 [%c] %m%n</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />AUDIT_FILELOG 
+ Implementation Class Name</a></span></p>
+<div class="droptext" id="POPUP720234958" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.appender.AUDIT_FILELOG</span></p>
+	<p class="lip2list2paragraph">Defines the appender used if audit events 
+	 are logged to files.</p>
+	<p class="lip2list2paragraph">This value should remain set to the default: 
+	 <span class="output">org.apache.log4j.RollingFileAppender</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />AUDIT_FILELOG 
+ File Name</a></span></p>
+<div class="droptext" id="POPUP720148499" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.appender.AUDIT_FILELOG.File</span></p>
+	<p class="lip2list2paragraph">Defines the location of the audit log.</p>
+	<p class="lip2list2paragraph">Default:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>On 
+	 Windows<span class="output"> &lt;$IG_HOME&gt;\logs\audit.log</span></p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>On 
+	 UNIX<span class="output"> $IG_HOME/logs/audit.log</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />AUDIT_FILELOG 
+ Maximum File Size</a></span></p>
+<div class="droptext" id="POPUP720098963" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.appender.AUDIT_FILELOG.MaxFileSize</span></p>
+	<p class="lip2list2paragraph">Defines the maximum size in KB of a log 
+	 file before <a name="XREF_logs_rolling_over" id="XREF_logs_rolling_over"></a>rolling 
+	 over to a new empty file.</p>
+	<p class="lip2list2paragraph">Default: 1000</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />AUDIT_FILELOG 
+ Maximum Number of Backup Files</a></span></p>
+<div class="droptext" id="POPUP720062832" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.appender.AUDIT_FILELOG.MaxBackupIndex</span></p>
+	<p class="lip2list2paragraph">Defines the number of previous log files 
+	 to keep as a history.</p>
+	<p class="lip2list2paragraph">Default: 10</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />AUDIT_FILELOG 
+ Layout Implementation Class Name</a></span></p>
+<div class="droptext" id="POPUP722002472" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.appender.AUDIT_FILELOG.layout</span></p>
+	<p class="lip2list2paragraph">The log4j class that converts a logging 
+	 event into a message string to be printed in the logs.</p>
+	<p class="lip2list2paragraph">Default: <span class="output">org.apache.log4j.PatternLayout</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />AUDIT_FILELOG 
+ Layout Pattern</a></span></p>
+<div class="droptext" id="POPUP721272082" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.appender.AUDIT_FILELOG.layout.ConversionPattern</span></p>
+	<p class="lip2list2paragraph">Defines the format of the converted logging 
+	 event. Please see the log4j documentation for further information.</p>
+	<p class="lip2list2paragraph">Default: <span class="output">[%d] [%t] 
+	 [%-5p] [%c] %m%n</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />AUDIT_FILELOG 
+ Character Encoding</a></span></p>
+<div class="droptext" id="POPUP721231916" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">log4j.appender.AUDIT_FILELOG.encoding</span></p>
+	<p class="lip2list2paragraph">Defines the encoding method for the Audit 
+	 Filelog.</p>
+	<p class="lip2list2paragraph">The choices include many of the popular 
+	 encoding methods, UTF-8 and ASCII, for example. If this field is left 
+	 blank, Entrust IdentityGuard uses the Java default character encoding.</p>
+	<p class="lip2list2paragraph">Default: UTF-8</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP722002471');
+	TextPopupInit('a2','POPUP721547793');
+	TextPopupInit('a3','POPUP721519065');
+	TextPopupInit('a4','POPUP721934539');
+	TextPopupInit('a5','POPUP721315232');
+	TextPopupInit('a6','POPUP720234958');
+	TextPopupInit('a7','POPUP720148499');
+	TextPopupInit('a8','POPUP720098963');
+	TextPopupInit('a9','POPUP720062832');
+	TextPopupInit('a10','POPUP722002472');
+	TextPopupInit('a11','POPUP721272082');
+	TextPopupInit('a12','POPUP721231916');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

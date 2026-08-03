@@ -1,0 +1,348 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_roles.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Managed CA permissions</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nPermissions quick reference\nManaged CA permissions");
+addAvenueInfo("r13_std","ig_admin/config_roles/group_permissions.htm","ig_admin/config_roles/pacs_permissions.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"permissions_quick_reference.htm\">Permissions quick reference<\/a> > Managed CA permissions<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_h2_Managed_CA_permissions" id="XREF_h2_Managed_CA_permissions"></a>Managed CA permissions</h1>
+<p class="pparagraph">These permissions control the Managed Certification Authority (CA).</p>
+
+<table style="padding-left: 6.00pt; padding-top: 6.00pt; padding-right: 6.00pt; padding-bottom: 4.00pt; margin-bottom: 12.00pt;" cellspacing="0" width="553">
+<caption class="tacwtablecaptionwide">&#160;</caption>
+<tr style="height: 20.00pt;" bgcolor="#E5E5E5">
+<th style="border-right: solid 1px #000000; border-bottom: double 3px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159" bgcolor="#E5E5E5">
+<p class="tahtableheader">Permission</p>
+</th>
+<th style="border-right: solid 1px #000000; border-bottom: double 3px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134" bgcolor="#E5E5E5">
+<p class="tahtableheader">Dependencies</p>
+</th>
+<th style="border-bottom: double 3px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260" bgcolor="#E5E5E5">
+<p class="tahtableheader">Description</p>
+</th>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">digitalIdConfigCreate</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">digitalIdConfigGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Create a new digital ID configuration.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">digitalIdConfigDelete</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">digitalIdConfigGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Delete a digital ID configuration.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">digitalIdConfigGet</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">-</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Access to a digital ID configuration.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">digitalIdConfigList</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">digitalIdConfigGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">List all digital ID configurations.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">digitalIdConfigSet</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">digitalIdConfigGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Change a digital ID configuration.</p>
+</td>
+</tr>
+<tr style="height: 31.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">managedCaCertificateGet</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">-</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Retrieve the issuing CA certificate for a managed CA.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">managedCaCreate</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">managedCaGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Create a new Managed CA.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">managedCaDelete</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">managedCaGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Delete a Managed CA.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">managedCaGet</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">-</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Access to a Managed CA.</p>
+</td>
+</tr>
+<tr style="height: 53.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">managedCaIsCertRevoked</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">&#160;</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Invoke the admin API method managedCaIsCertRevoked, which is called to determine if a certificate issued by a managed CA is revoked.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">managedCaList</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">managedCaGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">List all Managed CAs.</p>
+</td>
+</tr>
+<tr style="height: 31.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">managedCaPivContentSign</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">managedCaGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Sign PIV content for a Managed CA.</p>
+</td>
+</tr>
+<tr style="height: 31.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">managedCaScepRaCertificateGet</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">-</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Retrieve a SCEP RA Certificate for a Managed CA.</p>
+</td>
+</tr>
+<tr style="height: 31.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">managedCaScepRaDecrypt</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">-</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Decrypt a SCEP message for a Managed CA.</p>
+</td>
+</tr>
+<tr style="height: 31.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">managedCaScepRaSignContent</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">-</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Sign a SCEP message for a Managed CA.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">managedCaSet</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">managedCaGet</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">Change a Managed CA.</p>
+</td>
+</tr>
+<tr style="height: 20.00pt;">
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="159">
+<p class="tattabletext">managedCaUserList</p>
+</td>
+<td style="border-right: solid 1px #000000; border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="134">
+<p class="tattabletext">-</p>
+</td>
+<td style="border-bottom: solid 1px #000000; vertical-align: top; padding-left: 6.00pt; padding-top: 3.00pt; padding-right: 6.00pt; padding-bottom: 3.00pt;" width="260">
+<p class="tattabletext">List users associated with the Managed CA.</p>
+</td>
+</tr>
+</table>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

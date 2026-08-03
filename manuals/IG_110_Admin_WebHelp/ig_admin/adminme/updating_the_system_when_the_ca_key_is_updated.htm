@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\adminME.fm" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Updating the system when the CA key is updated</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nAdministering digital IDs on mobile devices\nUpdate SCEP digital IDs when the CA key is updated");
+addAvenueInfo("Untitled","ig_admin/adminme/adminme.htm","ig_admin/adminme/synchronizing_digital_ids_for_secure_email.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobileenrollmentsection.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"adminme.htm\">Administering digital IDs on mobile devices<\/a> > Update SCEP digital IDs when the CA key is updated<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_69809_Updating_the"></a>Update SCEP digital IDs when 
+ the CA key is updated</h1>
+<p class="pparagraph">This section applies only to SCEP digital IDs (see 
+ <a href="../about/digital_id_types_and_formats.htm#XREF_59858_Digital_ID_types">Digital 
+ ID types and formats</a> for details).</p>
+<p class="pparagraph">If you update your CA key pair (for example, because 
+ it is approaching expiry), you must update your SCEP digital IDs immediately 
+ afterwards to take into account the CA’s new keys. Use of the following 
+ methods.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>There is 
+ no need to update the XAP credentials (which you would have created as 
+ part of the mobile enrollment configuration with a Security Manager CA). 
+ The XAP credentials are updated automatically by a background process.</p>
+<p class="prtproceduretitle">To update SCEP credentials (Method 1)</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Ensure 
+ you have updated your CA key pair. Consult the<span style="font-style: italic;">&#160;Security 
+ Manager Administration User Guide</span> or the Microsoft CA documentation 
+ for details.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Stop 
+ the Entrust IdentityGuard server using the Services panel (Windows) or 
+ using the <span class="output">identityguard.sh stop</span>&#160;command 
+ (UNIX). See the <span style="font-style: italic;">Entrust IdentityGuard 
+ Server Installation Guide</span> for details.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ your Entrust IdentityGuard server,&#160;log in to the Master user shell. 
+ See <a href="../usingadmininterface/using_the_master_user_shell.htm#XREF_32785_Using_the_master">Using 
+ the Master user shell</a>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+ the following command:</p>
+<p class="cocode">ca update &lt;name&gt; scepRa</p>
+<p class="prpprocedureparagraph">where </p>
+<p class="prpprocedureparagraph"><span class="output">&lt;name&gt;</span>&#160;is 
+ the friendly name of your CA. You can find this friendly name in the <span 
+	 style="font-weight: bold;">Managed CA Name</span>&#160;field in the 
+ Entrust IdentityGuard Administration interface. For details, see <a href="../enablingme/step_9_configure_a_managed_ca.htm#XREF_99182_Configure_a">Step 
+ 9: Configure a managed CA</a>.</p>
+<p class="prpprocedureparagraph">Your SCEP credentials are updated in the 
+ Entrust IdentityGuard repository.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start 
+ Entrust IdentityGuard server using the Services panel (Windows) or using 
+ the <span class="output">identityguard.sh start</span>&#160;command (UNIX). 
+ See the <span style="font-style: italic;">Entrust IdentityGuard Server 
+ Installation Guide</span> for details.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Restart 
+ the Self-Service Module. See the <span style="font-style: italic;">Entrust 
+ IdentityGuard Self-Service Module Installation and Configuration Guide</span> 
+ for details.</p>
+<p class="prtproceduretitle">To update SCEP credentials (Method 2)</p>
+<p class="prpprocedureparagraph"><span class="italic">This method applies 
+ only to Entrust CAs</span>.</p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create a new SCEP user and EPF (do not recover 
+ the existing SCEP user). Use different names for the user and EPF to distinguish 
+ them from the old ones. For instructions, see <a href="../enablingme/creating_a_scep_epf_file_security_manager_ca.htm#XREF_30597_Creating_a_SCEP">Creating 
+ a SCEP EPF file (Security Manager CA)</a>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Remove 
+ the old EPF and add the new one to the managed CA in Entrust IdentityGuard. 
+ See <a href="../enablingme/step_9_configure_a_managed_ca.htm#XREF_99182_Configure_a">Step 
+ 9: Configure a managed CA</a>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

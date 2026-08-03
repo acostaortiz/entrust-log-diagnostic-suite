@@ -1,0 +1,326 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>User SMS Delivery Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nUser SMS Delivery Configuration (29)");
+addAvenueInfo("r13_std","ig_admin/usingpropeditor/user_email_delivery_configuration.htm","ig_admin/usingpropeditor/vpn_server_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > User SMS Delivery Configuration (29)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_h2_Smart_credentials_SMS" id="XREF_h2_Smart_credentials_SMS"></a>User SMS Delivery Configuration</h1>
+<p class="pparagraph">Your application can automate the delivery of smart credential information using a text (SMS) message to a cell phone. Using the following properties, you can set up delivery the card PIN and unblock response, for example, through SMS. For more details, see “Configuring smart credential SMS delivery” in the <span class="italic">Entrust IdentityGuard Smart Credentials Guide</span>.</p>
+<p class="liplistparagraph">Configuration Instances</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Delivery Class Name</a></span></p>
+<div class="droptext" id="POPUP677852586" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.smartcredential.delivery.sms.{0}.impl</span></p>
+	<p class="RefItemBody">Sets the Entrust IdentityGuard Java class 
+	 used for communicating with SMS. When you select <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">SMS</span>, 
+	 this sets this class:</p>
+	<p class="co3code3"><span class="output" style="font-family: Courier; 
+								 font-style: normal; font-weight: normal; 
+								 font-size: 9.pt; color: #; letter-spacing: .em; 
+								 text-decoration: none; ">com.entrust.identityGuard.common.smartCredentialDelivery.sms.SmartCredentialSMSDelivery</span></p>
+	<p class="RefItemBody">If you choose <span style="font-weight: bold;">Custom</span>, 
+	 you must program your own SMS delivery implementation.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Delivery Configuration Display Name</a></span></p>
+<div class="droptext" id="POPUP678291778" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.smartcredential.delivery.sms.{0}.displayname</span></p>
+	<p class="RefItemBody">The name you use to identify this delivery 
+	 mechanism.</p>
+	<p class="RefItemBody">This is the name you see in the Administration 
+	 interface when associating the user contact information to the delivery 
+	 method.</p>
+	<p class="RefItemBody">Default: none</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Delivery Configuration Type</a></span></p>
+<div class="droptext" id="POPUP676152673" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.smartcredential.delivery.sms.{0}.type</span></p>
+	<p class="RefItemBody">The content of the SMS message. Options include:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Grid</span>&#160;– Used to deliver a grid to a user.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Password</span>&#160;– Used to deliver a password.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">PVN</span>&#160;– 
+	 Used to deliver a PVN.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Token</span>&#160;– 
+	 Used to deliver soft token information.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Token Activate</span>&#160;– Used to deliver a mobile soft 
+	 token QR code and password to a user.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">User</span>&#160;– 
+	 Used to deliver </p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">User Temporary PIN</span>&#160;– Used to deliver a temporary PIN.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Smart Credential Activate</span>&#160;– Used to deliver smart credential 
+	 information.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Smart Credential PIN</span>&#160;– Used to deliver the smart card 
+	 PIN to the user.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Smart Credential Unblock</span>&#160;– Used to deliver the unblock code 
+	 to the user.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Smart Credential</span>&#160;– Used to deliver any details about 
+	 the smart credential to the end user or administrator. For instance, 
+	 it can be used to send an email with the building access number to 
+	 the facility manager.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Delivery SMS Server</a></span></p>
+<div class="droptext" id="POPUP684763289" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.smartcredential.delivery.sms.{}.sms</span></p>
+	<p class="RefItemBody">Select the SMS Server from the drop-down 
+	 list.</p>
+	<p class="RefItemBody">This list of servers is defined using 
+	 the SMS Server Configuration properties.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Delivery Template File</a></span></p>
+<div class="droptext" id="POPUP685422082" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.smartcredential.delivery.sms.{0}.template</span></p>
+	<p class="RefItemBody">Provides the location of the SMS template. Entrust 
+	 IdentityGuard provides two sample SMS templates:</p>
+	<p class="RefItemBody"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>igsample_sms_cardpin_template.txt</p>
+	<p class="RefItemBody"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>igsample_sms_unblockresponse_template.txt</p>
+	<p class="RefItemBody">You can configure the templates as required 
+	 in a text editor. This template is used by Entrust IdentityGuard to 
+	 create each message sent to a user. See <a href="../outofbandauth/customize_the_sms_message_template.htm">Customize 
+	 the SMS message template</a>.</p>
+	<p class="RefItemBody">For both Windows and Linux, the value is <span 
+	 class="output">$identityguard.home/etc/templates/smartCredentials/&lt;template&gt;</span></p>
+	<p class="RefItemBody">where <span class="output">&lt;template&gt;</span><span 
+	 class="output" style="font-family: Courier; font-size: 9.pt; color: #; 
+	 letter-spacing: .em;"> </span>is the name of your template. Entrust 
+	 IdentityGuard automatically replaces <span class="output">$identityguard.home</span> 
+	 with the correct value.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Delivery To Address Type</a></span></p>
+<div class="droptext" id="POPUP685512128" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.smartcredential.delivery.sms.{0}.totype</span></p>
+	<p class="RefItemBody">The type of SMS delivery type you want 
+	 to use. Options include:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Variable</span> – This is a variable SMS, which 
+	 dynamically changes based on the smart credential enrollment value. 
+	 For example, if your definition includes <span class="output">smsaddress</span><span 
+	 class="output" style="font-family: Courier; font-size: 9.pt; color: #; 
+	 letter-spacing: .em;"> </span>as a variable for SMS, it uses the user’s 
+	 SMS address collected during enrollment and stored under the <span 
+	 class="output">smsaddress</span> variable for their smart credential.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Constant</span>&#160;– This is a hard coded SMS address 
+	 that is used for all SMS messages of this type. You must define that 
+	 specific SMS in the <span class="bold" style="letter-spacing: .em;">SMS 
+	 Delivery To Address</span> setting below.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMS 
+ Delivery To Address</a></span></p>
+<div class="droptext" id="POPUP685639788" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.smartcredential.delivery.sms.{0}.to</span></p>
+	<p class="RefItemBody">Provides the destination of the SMS message. 
+	 This is dependent on your selection of the <span class="bold" style="font-weight: bold; 
+														 letter-spacing: .em; 
+														 text-decoration: none; ">SMS 
+	 Delivery To Address Type</span> setting above.</p>
+	<p class="RefItemBody">If you selected:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold">Variable</span> – 
+	 The value of this property is a variable name of one of the smart 
+	 credential enrollment values. The value of that variable is used as 
+	 the destination address. For example, if your definition includes 
+	 <span class="output">smsaddress</span><span class="output" style="font-family: Courier; 
+												 font-size: 9.pt; color: #; 
+												 letter-spacing: .em;"> 
+	 </span>as a variable for sms, enter that variable here.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold">Constant</span>&#160;– 
+	 The value specified for this property is used as the destination sms.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP677852586');
+	TextPopupInit('a2','POPUP678291778');
+	TextPopupInit('a3','POPUP676152673');
+	TextPopupInit('a4','POPUP684763289');
+	TextPopupInit('a5','POPUP685422082');
+	TextPopupInit('a6','POPUP685512128');
+	TextPopupInit('a7','POPUP685639788');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

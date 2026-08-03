@@ -1,0 +1,356 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\riskbasedauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Setting IP/Geolocation options for individual users</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nRisk-based authentication\nAdministering IP blacklists\nSet IP/Geolocation options for individual users");
+addAvenueInfo("Untitled02","ig_admin/riskbasedauth/searching_for_users_by_location_history.htm","ig_admin/riskbasedauth/updating_ip_data_files.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"riskbasedauth.htm\">Risk-based authentication<\/a> > <a href=\"administering_ip_blacklists.htm\">Administering IP blacklists<\/a> > Set IP/Geolocation options for individual users<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_27048_Setting_IP" id="XREF_27048_Setting_IP"></a>Set IP/Geolocation options for individual users</h1>
+<p class="pparagraph">Administrators with applicable permissions can override several IP/Geolocation policy settings for individual users. Administrators can also edit location history lists and set up expected location lists for users.</p>
+<p class="pparagraph">This section includes:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_64179_To_view_IP">To locate IP/Geolocation information for a user</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_39930_To_edit_the">To delete location history entries for a user</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_96402_To_manage_the">To manage the expected location list for a user</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_64565_To_change_personal">To modify personal IP/Geolocation settings for a user</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_92301_To_add_a_location">To add a location from the Location History to the Personal Expected Location list</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_16695_To_convert_an_IP">To convert an IP address to a location</a></p>
+
+<p class="prtproceduretitle"><a name="XREF_64179_To_view_IP" id="XREF_64179_To_view_IP"></a>To locate IP/Geolocation information for a user</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt; 
+	 <span class="bold">Administration Interface</span>.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;UNIX 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="liplistparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="liplistparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="liplistparagraph">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="liplistparagraph">or 
+	 other login scenarios, see </p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">User Accounts</span> on the menu bar.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find a specific user in one of two ways:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>use the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Go To Account</span>&#160;tab (see <a href="../useradminsection/searching_for_user_information.htm#XREF_82818_Searching_for_user">To search for information about one user</a><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">)</span></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>use the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Find Accounts</span>&#160;tab (see <a href="../useradminsection/searching_for_user_information.htm#XREF_90670_To_get_a_list_of">To search for information about one or more users</a>)</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Account</span> page appears.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Authentication Types</span>&#160;on the user’s <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Account Information</span>&#160;pane, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Location</span>.</p>
+
+<p class="prpprocedureparagraph">The user’s location information appears.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="riskbasedauth00810.jpg" id="image8" src="riskbasedauth00810.jpg" width="555" height="385" border="0" name="image8" /></p>
+</div>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Location</span> policy settings are divided into three sections:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Location History</span>. This section lists the user’s recent location history. You can remove one or more entries from the list. (See <a href="#XREF_39930_To_edit_the">To delete location history entries for a user</a>.)</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Expected Locations</span>. This section lists information about the expected locations list that applies to the user. You can set up a personal expected location list for the user. (See <a href="#XREF_96402_To_manage_the">To manage the expected location list for a user</a>.)</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Personal IP/Geolocation Authentication Settings</span>. This section lists the current IP/Geolocation policy settings that apply to the user. You can override several policy settings or reinstate those policy settings. (See <a href="#XREF_64565_To_change_personal">To modify personal IP/Geolocation settings for a user</a>.)</p>
+
+<p class="prtproceduretitle"><a name="XREF_39930_To_edit_the" id="XREF_39930_To_edit_the"></a>To delete location history entries for a user</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Locate the IP/Geolocation information for the user (see <a href="#XREF_64179_To_view_IP">To locate IP/Geolocation information for a user</a>).</p>
+
+<p class="prpprocedureparagraph">You can delete one or more location entries.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To delete a location history entry, select its check box and click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Delete Locations</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">OK</span> to complete the deletion. (This operation cannot be undone.)</p>
+
+<p class="prtproceduretitle"><a name="XREF_96402_To_manage_the" id="XREF_96402_To_manage_the"></a>To manage the expected location list for a user</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Locate the IP/Geolocation information for the user and open the settings for editing (see <a href="#XREF_64179_To_view_IP">To locate IP/Geolocation information for a user</a>).</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Change Settings</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Edit Location Settings</span>&#160;page appears. The page has two sections: <span style="font-weight: bold;">Personal</span>&#160;<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Expected Location Information</span> and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Personal IP/Geolocation Authentication Settings</span>.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="riskbasedauth00813.jpg" id="image9" src="riskbasedauth00813.jpg" width="550" height="434" border="0" name="image9" /></p>
+</div>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To have a user use the group’s expected location list set by policy, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use Expected Locations in Policy</span> under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Personal Expected Location Information.</span></p>
+
+<p class="prpprocedureparagraph">If the user has a personal expected location list, and you select the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use Expected Locations in Policy</span> option to revert to the group’s expected location list, any entries in the personal list are lost once you save the changes.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To allow for the use of an expected location list for the user, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Override Policy Settings</span><span style="font-family: 'Times New Roman'; font-size: 12.0pt;">.</span></p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-User_Account-Edit_Account-add_location.jpg" id="image10" src="ai-user_account-edit_account-add_location.jpg" width="469" height="280" border="0" name="image10" /></p>
+</div>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To create an expected location list for the user, you need the <span style="font-weight: bold;">userSetExpectedLocations</span>&#160;permission and the <span style="font-weight: bold;">ipLocationGet</span>&#160;permission. Complete one or more of the following:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To add a location, enter as many details as possible under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Add Expected Location</span>. Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Add</span>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="IX_Lookup_IP_Address" id="IX_Lookup_IP_Address"></a>To get the location details for a IP address, enter the address in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">IP Address</span>&#160;field and click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Lookup IP Address</span>. Entrust IdentityGuard looks up the address in the IP data file and populates the applicable fields. Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Add</span>&#160;to add the location to the list.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="IX_All_Private_Addresses" id="IX_All_Private_Addresses"></a>To add all of your internal private addresses to the group’s expected location list, select the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">All Private Addresses</span>, Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Add</span>. This means that any user logging in from one of your private addresses passes the expected location test. Alternatively, you can enter a single private address in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">IP Address</span>&#160;field. Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Add</span>.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To delete a location, select its check box and click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Delete</span>. To reverse the deletion, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Restore</span>. (Using <span style="font-weight: bold;">Restore</span>&#160;returns the entire list to its original state before you began editing.)</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Save Changes</span>.</p>
+
+<p class="pparagraph">For more information about expected locations, see <a href="using_the_expected_ip_location_list.htm#XREF_94192_Checking_the">Using the expected IP location list</a>.</p>
+<p class="prtproceduretitle"><a name="XREF_64565_To_change_personal" id="XREF_64565_To_change_personal"></a>To modify personal IP/Geolocation settings for a user</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Locate the Location information for the user and open the settings for editing (see <a href="#XREF_64179_To_view_IP">To locate IP/Geolocation information for a user</a>).</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Change Settings</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Edit Location Settings</span>&#160;page appears. The page has two sections: <span style="font-weight: bold;">Personal</span>&#160;<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Expected Location Information</span> and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Personal IP/Geolocation Authentication Settings</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Move to the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Personal IP/Geolocation Authentication Settings</span>&#160;section. It lists three policies settings you can override at the user level. Each setting shows the actual policy setting in parentheses next to the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use Policy</span> option.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Maximum Location History Size,</span> do one of the following:</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To use the policy setting, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use Policy</span>.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To override the size of the list set in policy, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Set Size</span>&#160;and enter an integer in the empty field. A setting of 0 means no location history is kept.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Check Velocity</span>, do one of the following:</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To use the policy setting, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use Policy</span>.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Yes</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">&#160;to check velocity, regardless of the</span> policy setting.</p>
+
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Check IP Address in Location History</span>, do one of the following:</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>To use the policy setting, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use Policy</span>.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Yes</span>&#160;to check IP addresses in the location history, regardless of the policy setting.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Save Changes</span>.</p>
+
+<p class="pparagraph">For more information about these settings, see <a href="configuring_ip_geolocation_policies.htm#XREF_27331_Setting_IP">Configuring IP/Geolocation policies</a>.</p>
+<p class="prtproceduretitle"><a name="XREF_92301_To_add_a_location" id="XREF_92301_To_add_a_location"></a>To add a location from the Location History to the Personal Expected Location list</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Administration interface (<a href="../usingadmininterface/logging_in_and_out_of_the_administration_interface.htm#XREF_H2_Logging_in_to_the">Logging in and out of the Administration interface</a>).</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> This procedure requires that the administrator have at least the <span style="font-weight: bold;">userSetExpectedLocations</span>&#160;permission AND the <span style="font-weight: bold;">ipLocationGet</span>&#160;permission. To check that you have the required permissions, see <a href="../config_roles/finding_a_role.htm#XREF_73784_To_list_all_roles">To list all roles</a>.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">User Accounts</span> on the menu bar.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Find a specific user in one of two ways:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>use the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Go To Account</span>&#160;tab (see <a href="../useradminsection/searching_for_user_information.htm#XREF_82818_Searching_for_user">To search for information about one user</a><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">)</span></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>use the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Find Accounts</span>&#160;tab (see <a href="../useradminsection/searching_for_user_information.htm#XREF_90670_To_get_a_list_of">To search for information about one or more users</a>)</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">View Account</span> page appears.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Authentication Types</span>&#160;on the user’s <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Account Information</span>&#160;pane, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Location</span>.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="riskbasedauth00818.jpg" id="image11" src="riskbasedauth00818.jpg" width="552" height="321" border="0" name="image11" /></p>
+</div>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select one or more locations in the Location History, and click <span style="font-weight: bold;">Add to Expected</span>.</p>
+
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Add Expected Location</span> screen appears.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="riskbasedauth00821.jpg" id="image12" src="riskbasedauth00821.jpg" width="552" height="260" border="0" name="image12" /></p>
+</div>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Choose what parts of the location to include in the expected location.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Add</span>.</p>
+
+<p class="prpprocedureparagraph">The View Account page now shows the new entry or entries under Expected Locations.</p>
+<p class="prtproceduretitle"><a name="XREF_16695_To_convert_an_IP" id="XREF_16695_To_convert_an_IP"></a>To convert an IP address to a location</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the Administration interface, click <span style="font-weight: bold;">System</span>.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click the <span style="font-weight: bold;">IP Blacklist</span> tab.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Add New Range</span>.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-System-IP-add200824.jpg" id="image13" src="ai-system-ip-add200824.jpg" width="552" height="208" border="0" name="image13" /></p>
+</div>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter either the <span style="font-weight: bold;">Start Address</span>&#160;or the <span style="font-weight: bold;">End Address</span>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Lookup IP Address</span>. DO NOT CLICK the <span style="font-weight: bold;">Add</span> button.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">IP Location</span>&#160;screen appears. Note the location corresponding to the IP address.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Done</span>.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>When the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Add to the IP Blacklist</span>&#160;screen appears again, click <span style="font-weight: bold;">Done</span>&#160;to exit without adding the IP address.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

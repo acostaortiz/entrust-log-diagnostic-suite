@@ -1,0 +1,241 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Adding a digital ID configuration (Security Manager CA)</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 10: Add a digital ID configuration\nAdding a digital ID configuration (Security Manager CA)");
+addAvenueInfo("r13_std","ig_admin/enablingme/step_10_add_a_digital_id_configuration.htm","ig_admin/enablingme/adding_a_digital_id_configuration_microsoft_ca.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobile-enrollment-for-digital-ids.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > <a href=\"step_10_add_a_digital_id_configuration.htm\">Step 10: Add a digital ID configuration<\/a> > Adding a digital ID configuration (Security Manager CA)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_72896_Adding_a_digital" id="XREF_72896_Adding_a_digital"></a>Adding a digital ID configuration (Security Manager CA)</h1>
+<p class="pparagraph">You must create a digital ID configuration on Entrust IdentityGuard.</p>
+<p class="prtproceduretitle">To create a digital ID configuration for use with a Security Manager CA</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the Entrust IdentityGuard Administration interface, on the <span style="font-weight: bold;">List Managed CAs</span>&#160;tab, click <span style="font-weight: bold;">My CA</span>, or whatever your CA is called.</p>
+
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="ig_webmin_listcas00909.jpg" id="image15" src="ig_webmin_listcas00909.jpg" width="552" height="156" border="0" name="image15" /></p>
+</div>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Managed CA Details</span> page appears.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>At the bottom, click <span style="font-weight: bold;">Create Digital ID Config</span>.</p>
+
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Choose Digital ID Config Template</span> page appears.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="ig_webmin_choosedigIDtempl.jpg" id="image16" src="ig_webmin_choosedigidtempl.jpg" width="552" height="273" border="0" name="image16" /></p>
+</div>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a name="XREF_87601_3_Select_one_of" id="XREF_87601_3_Select_one_of"></a>Select one of the following templates:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Mobile Enrollment for Network Access</span></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold">Mobile Enrollment for iOS Network Access using P12</span>&#160;If you choose this template, you must set the Self-Service Configuration property <span class="bold">Use SCEP for Network Access Digital ID</span>&#160;to <span class="bold">False</span>, as described in <a href="step_19_configure_self-service_properties.htm#XREF_49476_To_configure">To configure digital ID device type settings (specifying SCEP for network access digital IDs)</a>, <span class="hyperlink" style="font-family: Syntax;"><a href="step_19_configure_self-service_properties.htm#XREF_45065_3_Fill_out_the">Step&#160;3</a></span>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Mobile Enrollment for Secure Email</span>&#160;</p>
+
+<p class="prpprocedureparagraph">If you are unsure of which template to select, see <a href="../about/digital_id_types_and_formats.htm#XREF_59858_Digital_ID_types">Digital ID types and formats</a>&#160;for more information.</p>
+<p class="prpprocedureparagraph">If you want both network access and email, you will have to create two digital ID configurations, one for each. For now, pick one.</p>
+<p class="prpprocedureparagraph">The other options are for smart credentials, so ignore them.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Next</span>.</p>
+
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Create Digital ID Config</span>&#160;page appears, with several fields and options pre-filled based on the template you chose.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Fill out each field as follows.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Many of items below are used as the building blocks from which to construct the user’s digital ID.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Many of the fields map to similar items in Security Manager, so if you need to learn more about them, consult the Security Manager documentation.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Digital ID Config Name</span>: Enter a globally unique name that describes your digital ID configuration. For example, <span class="output">Network Access Digital ID Config</span>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Search Base</span>: Enter the searchbase associated with your Security Manager CA. This information is in Security Manager’s <span class="output">entrust.ini</span>&#160;file, under <span class="output">SearchBase=</span>. Search bases are configured in Security Manager, so consult its documentation for details.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Certificate Type</span>: Leave it at the default unless you have a reason to change it. The defaults are: <span class="output">ent_twokeypair_p10</span>&#160;(for network access), and <span class="output">ent_skp_dualusage</span>&#160;(for secure email, and iOS network access using P12). Certificate types are configured in Security Manager, so consult its documentation for details.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">User Type</span>: Leave it at <span class="output" style="font-family: Courier New; font-style: normal; font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">Person</span>&#160;unless you have a reason to change it. User types are configured in Security Manager, so consult its documentation for details.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Role</span>: Leave it at End User unless you have a reason to change it. This role is configured in Security Manager, so consult its documentation for details. If you are using PKCS#12 digital IDs, this role must be the one with the user policy that has PKCS#12 export enabled. You will be enabling PKCS#12 export in a later step (<a href="step_15_configure_security_manager_policies.htm#XREF_34079_PKCS_12_only">Step 15: Configure Security Manager policies</a>).</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">RDN Format</span>: Leave it at <span class="output">cn=&lt;igusername&gt; &lt;iggroup&gt; &lt;devicetype&gt;</span>&#160;(network access and iOS network access using P12) or <span class="output" style="font-family: Courier New; font-size: 9.0pt;"></span><span class="output">cn=&lt;igusername&gt; &lt;iggroup&gt;</span>&#160;(secure email) unless you have a reason to change it. This field is used to calculate the first part of the user’s DN (called the RDN), which is in turn used to <span style="font-style: italic;">find</span>&#160;an existing user in Security Manager. By contrast, the <span style="font-weight: bold;">Variables</span>&#160;(below) tell Entrust IdentityGuard how to calculate the user’s DN to <span style="font-style: italic;">create</span> the user in Security Manager.</p>
+
+<p class="liplistparagraph">If you do decide to change the RDN format, ensure that you separate your variables with a space. For example, if your RDN format is:</p>
+<p class="co2code2"><span class="output" style="font-family: Courier New; font-style: normal; font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">cn=&lt;uuid&gt; &lt;devicetype&gt;</span></p>
+<p class="liplistparagraph">separate <span class="output">&lt;uuid&gt;</span>&#160;and <span class="output">&lt;devicetype&gt;</span> with a space.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Directory Mode</span>: This setting takes effect when Entrust IdentityGuard is creating a digital ID and controls how or if an entry is created in the Security Manager LDAP directory.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span style="font-weight: bold;">Perform Operation</span> (recommended). This means “create the directory entry or reuse an existing entry if needed”. This is the recommended option because it will always succeed.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span style="font-weight: bold;">Perform Operation (fail if not needed)</span>&#160;means “create the directory entry but do not reuse an existing entry”. The digital ID will not be created if the directory entry already exists.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span style="font-weight: bold;">Skip Operation (fail if needed)</span> means “Reuse an existing entry but do not create one if it does not already exist”. The digital ID will not be created if the directory entry does not already exist.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span style="font-weight: bold;">Skip Operation</span>&#160;means “Reuse an existing entry but do not create one if it does not already exist”. The digital ID will not be created if a directory entry is required.</p>
+
+<p class="lilistbullet" style="font-weight: bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Security Manager Group Membership:</span> <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">This setting indicates which Security Manager groups will be assigned to users with this digital ID configuration.&#160;There are two sub-options:</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">All Security Manager Groups</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">. This is the default. This option indicates that users are assigned all Security Manager groups that have been defined.</span></p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span style="font-weight: bold;">Choose Security Manager Groups</span>. This option allows you to specify one or more Security Manager groups to assign to the digital ID configuration.&#160;To add the group, enter its name exactly as it appears in Security Manager Administration and click <span style="font-weight: bold;">Add</span>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Category</span>: Leave it at X.509&#160;unless you have a reason to change it. Category defines the type of digital ID you are adding.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Recover User If Exists</span>: When this setting is enabled, users can enroll for digital IDs even if they already have an account in Security Manager. As a consequence, they can click the <span style="font-weight: bold;">I’d like to request a digital ID</span>&#160;link in Self-Service multiple times to recreate their digital ID over and over. When this setting is disabled, users cannot obtain a digital ID after they have an account Security Manager. The effect is that they can only request a digital ID once, during their initial enrollment.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> In Security Manager terminology, recreating a digital ID is called a ‘recovery’.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Create User If Does Not Exist</span>: When this setting is enabled, then when a user requests a digital ID, and they do not yet have an account in Security Manager, they will have an account created for them. When disabled, the&#160;digital ID request for this same user will fail, and no account will be created for them. The default is enabled (for network access and iOS network access using P12) and disabled (for secure email).</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">PKCS10 Certificate Stream Policy</span>: Leave it at the default unless you have a reason to change it. The defaults are: <span style="font-style: italic;">&lt;empty&gt;</span>(for secure email and iOS network access using P12), and <span class="output" style="font-family: Courier New; font-style: normal; font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">Verification_p10</span>&#160;(for network access). Certificate definitions are configured in Security Manager, so consult its documentation for details.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Description</span>: Optionally, enter a description for the digital ID configuration.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Leave the <span style="font-weight: bold;">Variables</span>&#160;section as-is. These variables are used to generate the user’s DN, which becomes part of the user entry in Security Manager, and also goes into the digital ID being created. Any variable in the <span style="font-weight: bold;">RDN Format</span>&#160;must exist in the <span style="font-weight: bold;">Variables</span>&#160;section. However, there can exist variables that do not exist in the <span style="font-weight: bold;">RDN Format</span>.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Leave the <span style="font-weight: bold;">Subject Alt Names</span> section empty.</p>
+
+<p class="prpprocedureparagraph">The following image shows what a network access digital ID configuration might look like.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="ig_webmin_digidconfig_network.jpg" id="image17" src="ig_webmin_digidconfig_network.jpg" width="585" height="506" border="0" name="image17" /></p>
+</div>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span style="font-weight: bold;">Create Digital ID Config</span>.</p>
+
+<p class="prpprocedureparagraph">Your Managed CA page now includes your digital ID configuration.</p>
+<div style="text-align: center;">
+<p class="prpprocedureparagraph"><img alt="ig_webmin_managedCAwithdigidconfig.jpg" id="image18" src="ig_webmin_managedcawithdigidconfig.jpg" width="596" height="144" border="0" name="image18" /></p>
+</div>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

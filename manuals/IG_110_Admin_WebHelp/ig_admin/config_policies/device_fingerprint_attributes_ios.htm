@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+ <title>Device fingerprint attributes iOS</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nPolicies quick reference\nMachine secret policies\nDevice fingerprint attributes iOS");
+addAvenueInfo("Untitled","ig_admin/config_policies/device_fingerprint_attributes_android.htm","ig_admin/config_policies/device_fingerprint_attributes_web.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"policies_quick_reference.htm\">Policies quick reference<\/a> > <a href=\"machine_secret_policies.htm\">Machine secret policies<\/a> > Device fingerprint attributes iOS<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Device fingerprint attributes iOS</h1>
+<p class="pparagraph">The table that follows lists the Apple iOS device 
+ attributes that can be used to create the device fingerprint for an iOS 
+ mobile device. The table shows the default settings for the attribute 
+ characteristics. For descriptions of these characteristics, see <a href="characteristics_of_device_fingerprint_attributes.htm">Characteristics 
+ of device fingerprint attributes</a>.</p>
+<p class="pparagraph">To collect and use these attributes for&#160;machine 
+ authentication or as part of risk-based authentication, you must create 
+ an application that gathers the attributes and passes them the Entrust 
+ IdentityGuard. For more information, see the <span class="italic">Entrust 
+ IdentityGuard Device Fingerprint SDK Programming Guide</span>.</p>
+<table class="Entrust_table" cellspacing="0px" width="61.076%">
+	<col style="width: 19.577%;" />
+	<col style="width: 13.041%;" />
+	<col style="width: 9.646%;" />
+	<col style="width: 10.535%;" />
+	<col style="width: 11.345%;" />
+	<col style="width: 14.495%;" />
+	<col style="width: 21.032%;" />
+	<tr class="t1st">
+		<td><p class="tahtableheader">Attribute Name</p></td>
+		<td><p class="tahtableheader">Type</p></td>
+		<td><p class="tahtableheader">Enabled</p></td>
+		<td><p class="tahtableheader">Change <br />
+		Threshold</p></td>
+		<td><p class="tahtableheader">Must Match</p></td>
+		<td><p class="tahtableheader">Non Matching <br />
+		Risk Points</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">accessibilityOptions</p></td>
+		<td class="t1Col"><p class="tattabletext">VARIABLE</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">0</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">bootTime</p></td>
+		<td class="t1Col"><p class="tattabletext">COUNTER</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA-</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">carrierName</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">carrierVOIP</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">deviceMachine</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">deviceModel</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">deviceName</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">diskSize</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">dynamicType</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">jailbroken</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">keyboards</p></td>
+		<td class="t1Col"><p class="tattabletext">LIST</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">0</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">languages</p></td>
+		<td class="t1Col"><p class="tattabletext">LIST</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">0-</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">locale</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">mobileCountryCode</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">2</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">osVersion</p></td>
+		<td class="t1Col"><p class="tattabletext">VERSION</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">screenHeight</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">screenScale</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">screenWidth</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">socialMediaAccounts</p></td>
+		<td class="t1Col"><p class="tattabletext">VARIABLE</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">timesoneOffset</p></td>
+		<td class="t1Col"><p class="tattabletext">VARIABLE</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">0</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">vendorId</p></td>
+		<td class="t1Col"><p class="tattabletext">CONSTANT</p></td>
+		<td class="t1Col"><p class="tattabletext">Yes</p></td>
+		<td class="t1Col"><p class="tattabletext">--NA--</p></td>
+		<td class="t1Col"><p class="tattabletext">No</p></td>
+		<td class="last"><p class="tattabletext">10</p></td>
+		
+	</tr>
+</table>
+<p>&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

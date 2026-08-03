@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Radius Proxy Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nRadius Proxy Configuration (15)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/performance_statistics_logging_settings.htm","ig_admin/usingpropeditor/radius_response_attribute_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Radius Proxy Configuration (15)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_configuring_1"></a><a name="IX_properties_10"></a><a name="XREF_76119_Radius_proxy"></a>Radius 
+ Proxy Configuration</h1>
+<p class="pparagraph">These properties reflect the setup of Entrust IdentityGuard 
+ Radius proxy made during installation and configuration.</p>
+<p class="pparagraph">Several groups of other properties control the associated 
+ Radius server, and its authentication methods, VPN connections, and challenge 
+ strings. For details about using and configuring the Radius proxy and 
+ to view a snapshot of the properties, see <a href="../config_radius_proxy/configuring_the_radius_proxy_configuration.htm#XREF_46761_Configuring_the">Configuring 
+ the Radius proxy configuration</a>.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Proxy URL</a></span></p>
+<div class="droptext" id="POPUP642156149" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.url</span></p>
+	<p class="lip2list2paragraph">Provides the URL of the Entrust IdentityGuard 
+	 server where the Radius proxy is running.</p>
+	<p class="lip2list2paragraph">If nothing is specified, Entrust IdentityGuard 
+	 uses the value of the Authentication Service HTTPS URL property. See 
+	 <a href="service_settings.htm">Service Settings 
+	 (2)</a>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Proxy Host</a></span></p>
+<div class="droptext" id="POPUP642015992" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.host</span></p>
+	<p class="lip2list2paragraph">Specifies the host that Entrust IdentityGuard 
+	 Radius proxy uses as its host when listening for incoming requests. 
+	 Normally this value should only be set if the Entrust IdentityGuard 
+	 host has multiple IP addresses and you want to use a non-default IP 
+	 address as the host address of Entrust IdentityGuard Radius.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Proxy Port</a></span></p>
+<div class="droptext" id="POPUP641323405" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.port</span></p>
+	<p class="lip2list2paragraph">Provides the port the Radius proxy listens 
+	 on for requests from the VPN.</p>
+	<p class="lip2list2paragraph">If you use a Radius server for first-factor 
+	 authentication and your VPN server recognizes different groups of 
+	 users, use this property to specify a series of ports (separated by 
+	 spaces) and use other properties to direct those groups to different 
+	 ports.</p>
+	<p class="lip2list2paragraph">Each port value must be an integer between 
+	 124 and 65535.</p>
+	<p class="lip2list2paragraph">No additional ports are needed for groups 
+	 for other first-factor authentication methods.</p>
+	<p class="lip2list2paragraph">Default: 1812</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Proxy Callback Host</a></span></p>
+<div class="droptext" id="POPUP641302904" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.callbackhost</span></p>
+	<p class="lip2list2paragraph">Specifies the host of the Entrust IdentityGuard 
+	 Radius proxy that handles callbacks from Entrust IdentityGuard when 
+	 it receives responses to online mobile soft token authentication challenges.</p>
+	<p class="lip2list2paragraph">If a value is not specified, the local 
+	 host name is used.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Proxy Callback Port</a></span></p>
+<div class="droptext" id="POPUP641357535" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.callbackport</span></p>
+	<p class="lip2list2paragraph">Specifies the port of the Entrust IdentityGuard 
+	 Radius proxy that handles callbacks from Entrust IdentityGuard when 
+	 it receives responses to mobile soft token authentication challenges.</p>
+	<p class="lip2list2paragraph">If a value is not specified, a random 
+	 port is used. The port is only used by and should only be accessible 
+	 from the Entrust IdentityGuard Server.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Callback 
+ Queue Check Interval</a></span></p>
+<div class="droptext" id="POPUP640567241" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.callback.checkinterval</span></p>
+	<p class="lip2list2paragraph">Specifies the interval, in seconds, between 
+	 checks for expired entries in the Entrust IdentityGuard Radius proxy 
+	 callback queue. The entries in this queue are for waiting for responses 
+	 from Entrust IdentityGuard online mobile soft token authentications.</p>
+	<p class="lip2list2paragraph">Authentication requests that have expired 
+	 are removed from the queue and they either fallback to classic token 
+	 authentication or fail due to timeout. The timeout interval is set 
+	 by the <a href="vpn_server_configuration.htm">VPN 
+	 Server Configuration property</a> TVS Callback Response Timeout.</p>
+	<p class="lip2list2paragraph">Accepts values between 2 and 1 seconds.</p>
+	<p class="lip2list2paragraph">Default: 1</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Number 
+ of Callback Worker Threads</a></span></p>
+<div class="droptext" id="POPUP641995994" style="display: none;">
+	<p class="lip2list2paragraph">The number of threads used by the Entrust 
+	 IdentityGuard Radius proxy to process callback requests from Entrust 
+	 IdentityGuard.</p>
+	<p class="lip2list2paragraph">Default: 5</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Enable 
+ Radius Message Logging</a></span></p>
+<div class="droptext" id="POPUP643335534" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.msglog.enabled</span></p>
+	<p class="lip2list2paragraph">If set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">True</span>, 
+	 Radius messages are logged to the file specified by the <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Radius 
+	 Message Log File </span>(identityguard.igradius.msglog.enabled) property.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Message Log File</a></span></p>
+<div class="droptext" id="POPUP643394714" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.msglog.file</span></p>
+	<p class="lip2list2paragraph">Provides the name of the file that logs 
+	 Radius messages. If the property does not provide an absolute path 
+	 name, the file is created in the following directory:</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>on 
+	 UNIX, <span class="output">$IG_HOME</span></p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>on 
+	 Windows, <span class="output">&lt;$IG_HOME&gt;</span></p>
+	<p class="lip2list2paragraph">If <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">Enable 
+	 Radius Message Logging </span>is set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">True 
+	 </span>but this property is not set or the file name is not valid, 
+	 Entrust IdentityGuard generates errors and sends them to the system 
+	 log.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Message Log Maximum Number of Entries</a></span></p>
+<div class="droptext" id="POPUP644135722" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.msglog.maxentries</span></p>
+	<p class="lip2list2paragraph">Specifies (approximately) the maximum 
+	 number of log entries after which Entrust IdentityGuard creates a 
+	 new log file for subsequent messages. Rollover to the new log file 
+	 also occurs when Entrust IdentityGuard Radius Proxy service is started.</p>
+	<p class="lip2list2paragraph">This setting is applied only if <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Enable 
+	 Radius Message Logging </span>is set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">True 
+	 </span>and a valid log file name is specified.</p>
+	<p class="lip2list2paragraph">Default: (no rollover)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Number 
+ of Worker Threads</a></span></p>
+<div class="droptext" id="POPUP639230881" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.numthreads</span></p>
+	<p class="lip2list2paragraph">Specifies how many worker threads the 
+	 Radius proxy uses to process incoming requests. Each thread has its 
+	 own connection to Entrust IdentityGuard.</p>
+	<p class="lip2list2paragraph">Default: 5</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Connection 
+ to Entrust IdentityGuard Timeout</a></span></p>
+<div class="droptext" id="POPUP643413968" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.igtimeout</span></p>
+	<p class="lip2list2paragraph">Specifies the number of milliseconds 
+	 that a request should wait for a response from Entrust IdentityGuard 
+	 before the connection times out. If , connections never timeout.</p>
+	<p class="lip2list2paragraph">Default: (no timeout)</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a13"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Message Queue Time</a></span></p>
+<div class="droptext" id="POPUP644422119" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.maxmessagequeuetime</span></p>
+	<p class="lip2list2paragraph">Specifies the maximum number of milliseconds 
+	 that a request to the Radius proxy can be queued. If the request is 
+	 queued longer than the specified time, the Radius proxy ignores the 
+	 request.</p>
+	<p class="lip2list2paragraph">It is recommended that you set the value 
+	 lower than the connection timeout used by the VPN server that calls 
+	 the Entrust IdentityGuard Radius proxy.</p>
+	<p class="lip2list2paragraph">Default: 1</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a14"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ Message Queue Size</a></span></p>
+<div class="droptext" id="POPUP644665807" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.maxmessagequeuesize</span></p>
+	<p class="lip2list2paragraph">Specifies the maximum number of requests 
+	 to the Radius proxy that can be queued. When the queue becomes full, 
+	 the Radius proxy removes the oldest queued requests when new requests 
+	 are processed.</p>
+	<p class="lip2list2paragraph">Default: 1</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP642156149');
+	TextPopupInit('a2','POPUP642015992');
+	TextPopupInit('a3','POPUP641323405');
+	TextPopupInit('a4','POPUP641302904');
+	TextPopupInit('a5','POPUP641357535');
+	TextPopupInit('a6','POPUP640567241');
+	TextPopupInit('a7','POPUP641995994');
+	TextPopupInit('a8','POPUP643335534');
+	TextPopupInit('a9','POPUP643394714');
+	TextPopupInit('a10','POPUP644135722');
+	TextPopupInit('a11','POPUP639230881');
+	TextPopupInit('a12','POPUP643413968');
+	TextPopupInit('a13','POPUP644422119');
+	TextPopupInit('a14','POPUP644665807');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

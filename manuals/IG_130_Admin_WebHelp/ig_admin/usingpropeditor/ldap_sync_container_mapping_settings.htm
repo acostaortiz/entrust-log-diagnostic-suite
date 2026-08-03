@@ -1,0 +1,230 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>LDAP Sync Container Mapping Settings</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nLDAP Sync Container Mapping Settings");
+addAvenueInfo("r13_std","ig_admin/usingpropeditor/ldap_directory_server_settings.htm","ig_admin/usingpropeditor/license_audit_settings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > LDAP Sync Container Mapping Settings<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>LDAP Sync Container Mapping Settings</h1>
+<p class="pparagraph" style="margin: 5pt 0pt 4pt; font-family: Arial; font-size: 10pt; 
+	 text-align: left; text-indent: 0px; font-style: normal; font-weight: normal; 
+	 color: #000000; letter-spacing: normal; line-height: 20px; font-variant: normal; 
+	 orphans: auto; text-transform: none; white-space: normal; widows: 1; 
+	 word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none; "><span 
+	 style="font-family: Arial; font-size: 10pt; font-style: normal; font-weight: normal; 
+	 color: #000000; letter-spacing: normal; line-height: 20px; font-variant: normal; 
+	 orphans: auto; text-transform: none; white-space: normal; widows: 1; 
+	 word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">These 
+ properties define the configuration for one or more LDAP repositories 
+ that are used to synchronize Entrust IdentityGuard account information 
+ with user accounts in Active Directory.</font></span></p>
+<p class="pparagraph" style="margin: 5pt 0pt 4pt; font-family: Arial; font-size: 10pt; 
+	 text-align: left; text-indent: 0px; font-style: normal; font-weight: normal; 
+	 color: #000000; letter-spacing: normal; line-height: 20px; font-variant: normal; 
+	 orphans: auto; text-transform: none; white-space: normal; widows: 1; 
+	 word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none; ">When 
+ Entrust IdentityGuard is configured to synchronize users in its database 
+ with an LDAP directory, notifications from the LDAP directory to Entrust 
+ IdentityGuard can be used to automatically propagate changes.</p>
+<p class="pparagraph" style="margin: 5pt 0pt 4pt; font-family: Arial; font-size: 10pt; 
+	 text-align: left; text-indent: 0px; font-style: normal; font-weight: normal; 
+	 color: #000000; letter-spacing: normal; line-height: 20px; font-variant: normal; 
+	 orphans: auto; text-transform: none; white-space: normal; widows: 1; 
+	 word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none; ">Notifications 
+ are supported for specific-containers (for example, ou=Marketing,ou=WestCoastUsers). 
+ These container settings are RDNs (relative distinguished names) that 
+ are relative to the context prefix in the LDAP URL property of the LDAP 
+ directory instance that uses this container mapping. For example, assuming 
+ ou=WestCoastUsers resides at the root (context prefix) of the LDAP directory, 
+ then the container name defined here should be ou=Marketing. If the LDAP 
+ directory instance container is defined at the root (that is, ou=WestCoastUsers 
+ is not part of the context prefix), then the container name defined here 
+ should be ou=Marketing,ou=WestCoastUsers. These settings define the possible 
+ mappings.</p>
+<p class="nonote"><span class="bold">Note:</span> Which sync container 
+ mapping settings actually apply to a particular LDAP directory sync configuration 
+ instance is specified with the LDAP Sync Apply Container Mappings property 
+ in the LDAP instance (see <a href="ldap_directory_server_settings.htm" 
+								 style="display: inline; font-size: 13.3333px; 
+								 font-family: Arial; color: rgb(0, 51, 102); 
+								 font-weight: bold; font-style: normal; 
+								 font-variant: normal; letter-spacing: normal; 
+								 line-height: 20px; orphans: auto; text-align: left; 
+								 text-indent: 0px; text-transform: none; 
+								 white-space: normal; widows: 1; word-spacing: 0px; 
+								 -webkit-text-stroke-width: 0px;">LDAP 
+ Directory Server Settings (5)</a>). The instance value should not contain 
+ spaces or commas and should not be set to the value ROOT.</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instances</a></span></p>
+<div class="droptext" id="POPUP588582729" style="display: none;">
+	<p class="RefItemBody">Lists all current configurations for LDAP synch 
+	 containers. </p>
+	<p class="RefItemBody">To create a new instance, enter a unique 
+	 name in the empty field and click <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Add</span>. 
+	 </p>
+	<p class="RefItemBody">To delete an instance, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">Remove</span>.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Name</a></span></p>
+<div class="droptext" id="POPUP588596566" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.sync.containerMapping.Level1.name</span></p>
+	<p class="RefItemBody">Specifies the container name relative 
+	 to the LDAP directory instance container that will use this mapping. 
+	 This must be the exact name of the container as it is defined in the 
+	 directory, for example: <span class="output">ou=Marketing,ou=WestCoastUsers</span>.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP588582729');
+	TextPopupInit('a2','POPUP588596566');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

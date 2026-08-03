@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>TLS version downgrade</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nOut-of-band one-time password authentication\nConfigure delivery of OTPs in SMS messages\nTLS version downgrade");
+addAvenueInfo("r13_std","ig_admin/outofbandauth/configuring_self-service_module_for_use_with_sms_messaging.htm","ig_admin/outofbandauth/administering_out-of-band_one-time_passwords.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"out-of-band_otp_authentication.htm\">Out-of-band one-time password authentication<\/a> > <a href=\"configuring_out-of-band_otp_delivery_in_sms_messages.htm\">Configure delivery of OTPs in SMS messages<\/a> > TLS version downgrade<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>TLS version downgrade</h1>
+<p class="pparagraph">By default, 
+ Entrust IdentityGuard server 13.0 and Self-Service Module 13.0 specify 
+ TLS1.2 as the protocol to use when connecting to external services that 
+ require TLS such as TeleSign and ClickaTell (Entrust IdentityGuard server), 
+ or notify.entrust.com (Self-Service Module).</p>
+<p class="pparagraph">In the unlikely case that your installation must 
+ connect with an external service that does not support TLS1.2, you can 
+ add support for the older versions, TLS1.0 and TLS1.1 as described in 
+ this procedure. You should be aware, however, that TLS 1.0 is vulnerable 
+ to man-in-the-middle attacks, and both TLS 1.0 and TLS 1.1 do not offer 
+ modern cipher modes that are key to providing robust encryption. </p>
+<p class="prtproceduretitle">Downgrade to TLS 1.0 or 1.1 on Linux</p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>In &lt;<span class="output">$IG_HOME&gt;</span>, 
+ locate the <span class="output">env_settings.sh</span> file. </p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Create a backup copy of the file. </p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Open the original file for editing.</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Locate the environment variable <span class="output">IG_CIPHER_OPTS</span>. 
+ That variable has a default value that ends with <span class="output">-Djdk.tls.client.protocols=TLSv1.2</span>.</p>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To add support for both TLS 1.0 and TLS 1.1, 
+ change the value to <span class="output">-Djdk.tls.client.protocols=TLSv1,TLSv1.1,TLSv1.2</span>.To 
+ add support for TLS 1.1 only,change the value to <span class="output">-Djdk.tls.client.protocols=TLSv1.1,TLSv1.2</span>.</p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Save the file.</p>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From the &lt;$<span class="output">IG_HOME&gt;/bin</span> 
+ directory, restart Entrust IdentityGuard using the following command: 
+ &#160;</p>
+<p class="cocode">../igservice.sh identityguard restart </p>
+<p class="prpprocedureparagraph">The new TLS protocol settings are used 
+ for all external services that require TLS connections.</p>
+<p class="prtproceduretitle">Downgrade to TLS 1.0 or 1.1 on Windows</p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Go to the <span class="output">bin</span> 
+ folder of the Tomcat server associated with your Entrust IdentityGuard 
+ installation. The default location is <span class="output">&quot;C:\Program 
+ Files\Entrust\IdentityGuard\apache-tomcat-&lt;version&gt;\bin&quot;</span>. 
+ </p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Create a backup copy of the <span class="output">service.bat</span> 
+ file. </p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Open the original <span class="output">service.bat</span> 
+ file for editing.</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Locate the following line: set &quot;IG_CIPHER_OPTS=-Djdk.tls.ephemeralDHKeySize=2048;-Djdk.tls.client.protocols=TLSv1.2&quot;</p>
+<p class="prprocedurestep">To add support for both TLS 1.0 and TLS 1.1, 
+ change the value to <span class="output">-Djdk.tls.client.protocols=TLSv1,TLSv1.1,TLSv1.2</span>.To 
+ add support for TLS 1.1 only,change the value to <span class="output">-Djdk.tls.client.protocols=TLSv1.1,TLSv1.2</span>.</p>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Save the file.</p>
+<p 
+	 class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Stop the Entrust IdentityGuard server using 
+ the Windows Services panel.</p>
+<p 
+	 class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>In a Windows command shell, run the following 
+ commands to remove the old file and install the updated file:</p>
+<p class="cocode">service.bat remove</p>
+<p class="cocode">service.bat install [IGHOME] [JDKHOME] </p>
+<p class="prpprocedureparagraph">where </p>
+<p class="prpprocedureparagraph"><span class="output">IGHOME</span> is 
+ the full path to the Entrust IdentityGuard installation directory </p>
+<p class="prpprocedureparagraph"><span class="output">JDKHOME</span> is 
+ the full path to the current JDK folder. The default location is <span 
+	 class="output">&quot;C:\Program Files\Entrust\IdentityGuard\jdk-&lt;version&gt;&quot;</span></p>
+<p 
+	 class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Start the Entrust IdentityGuard server using 
+ the Windows Services panel.</p>
+<p class="prpprocedureparagraph">The new TLS protocol settings are used 
+ for all external services that require TLS connections.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

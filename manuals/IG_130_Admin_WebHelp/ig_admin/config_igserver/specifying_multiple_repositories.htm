@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Specifying multiple repositories</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nSpecifying multiple repositories");
+addAvenueInfo("r13_std","ig_admin/config_igserver/enable_cached_challenges.htm","ig_admin/config_igserver/setting_up_user_grid_card_and_token_repositories.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > Specifying multiple repositories<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_73354_Configuring" id="XREF_73354_Configuring"></a><a name="XREF_64512_Setting_up" id="XREF_64512_Setting_up"></a>Specifying multiple repositories</h1>
+<p class="pparagraph"><a name="XREF_44504_Configuring" id="XREF_44504_Configuring"></a>You can store your Entrust IdentityGuard user data across more than one repository. The repositories can be of different types (LDAP directory/searchbase, database). This allows you complete flexibility in how you organize data. For example, you could have normal users of a group in an LDAP repository and all administrators of that group in a database repository. Conversely, you could decide to have the administrators in the LDAP repository and the users in a database repository. (For more information, see <a href="../config_groups/using_multiple_repositories_with_groups.htm#XREF_55286_Using_multiple">Using multiple repositories with groups</a>.)</p>
+<p class="pparagraph">In addition to having your users divided among multiple repositories, you can also store preproduced cards and unassigned tokens across multiple repositories.</p>
+<p class="pparagraph">Configuring multiple repositories does not provide high availability. To configure high availability and failover, refer to <a href="configuring_failover_and_high_availability.htm#XREF_92149_Configuring">Configuring failover and high availability</a>.</p>
+<p class="pparagraph">When you set up a second or subsequent repository:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>All of the configuration properties are inherited from the default repository.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Second and subsequent databases inherit the properties of the default database repository.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Second and subsequent LDAP repositories inherit the properties of the default LDAP repository.</p>
+
+<p class="pparagraph">The following table shows how the inheritance works.</p>
+<table class="Entrust_table" cellspacing="0px" width="81.381%">
+<col style="width: 30.05%;" />
+<col style="width: 34.142%;" />
+<col style="width: 35.808%;" />
+<tr class="t1st">
+<th style="vertical-align: Top;">
+<p class="tahtableheader">Default Repository property</p>
+</th>
+<th style="vertical-align: Top;">
+<p class="tahtableheader">Non-default repository property</p>
+</th>
+<th style="vertical-align: Top;">
+<p class="tahtableheader">Value of property is taken from:</p>
+</th>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Defined</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Defined</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">non-default repository</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Defined</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Not defined</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">default repository</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Not defined</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Defined</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">non-default repository</p>
+</td>
+</tr>
+<tr class="t1Row">
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Not defined</p>
+</td>
+<td class="t1Col" style="vertical-align: Top;">
+<p class="tattabletext">Not defined</p>
+</td>
+<td class="last" style="vertical-align: Top;">
+<p class="tattabletext">property default</p>
+</td>
+</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

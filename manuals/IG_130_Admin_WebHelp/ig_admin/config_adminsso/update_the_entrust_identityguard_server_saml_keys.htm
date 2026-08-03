@@ -1,0 +1,251 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\config_AdminSSO.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Update the Entrust IdentityGuard Server SAML keys</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System administration\nConfiguring SAML authentication to the Administration interface\nUpdate the Entrust IdentityGuard Server SAML keys");
+addAvenueInfo("r13_std","ig_admin/config_adminsso/test_saml_authentication_to_the_administration_interface.htm","ig_admin/config_adminsso/smart_credential_authentication_to_the_administration_interface.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../systemadminsection/system_administration.htm#TOC_System_administration\">System administration<\/a> > <a href=\"saml_authentication_to_the_administration_interface.htm\">Configuring SAML authentication to the Administration interface<\/a> > Update the Entrust IdentityGuard Server SAML keys<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_34788_Updating_the_SAML" id="XREF_34788_Updating_the_SAML"></a>Update 
+ the Entrust IdentityGuard Server’s SAML keys</h1>
+<p class="pparagraph">As part of your SAML configuration, you specified 
+ a SAML certificate to be used by Entrust IdentityGuard Server. This certificate’s 
+ keys are used to secure SAML messages bound for the Federation Module. 
+ If this certificate is scheduled to roll over soon, use this procedure 
+ to add a new certificate and keys to Entrust IdentityGuard.</p>
+<p class="prtproceduretitle">Generate a new SAML certificate and keys for 
+ Entrust IdentityGuard Server</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Generate 
+ and import a new SAML certificate and corresponding keys for use by the 
+ Entrust IdentityGuard Server. See <a href="generate_a_saml_certificate_to_be_used_by_entrust_identityguard_server.htm">Generate 
+ a SAML certificate to be used by Entrust IdentityGuard Server</a>&#160;for 
+ details.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>When 
+ importing the SAML keys to the keystore on the Entrust IdentityGuard Server, 
+ give the keys a unique alias such as <span class="output" style="font-family: Courier New; 
+											 font-style: normal; font-weight: normal; 
+											 font-size: 10.0pt; color: #000000; 
+											 letter-spacing: 0.00em; text-decoration: none; ">igsaml2</span> 
+ to distinguish them from any other SAML keys that may be present. You 
+ do not want to overwrite the old keys.</p>
+<p class="prtproceduretitle">Configure SAML SP key settings in the Properties 
+ Editor&#160;</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the Entrust IdentityGuard Server, log in to the Properties Editor. See 
+ <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">Log 
+ in or out of the Properties Editor</a>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the table of contents, click <span style="font-weight: bold;">SAML SP 
+ Keys Settings</span>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under 
+ <span style="font-weight: bold;">Configuration Instances</span>, enter 
+ a name for the new SAML certificate and corresponding keys.</p>
+<p class="prpprocedureparagraph">Example: <span class="output" style="font-family: Courier New; 
+												 font-style: normal; font-weight: normal; 
+												 font-size: 10.0pt; color: #000000; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">IG 
+ Server SAML Keys 2</span></p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under 
+ <span style="font-weight: bold;">Key Alias,</span>&#160;enter the alias 
+ of the new SAML certificate. The certificate’s corresponding keys will 
+ be used by the Entrust IdentityGuard Server to secure SAML messages for 
+ all the Federation Module deployments defined under<span style="font-weight: bold;">&#160;SAML 
+ IDP Settings</span>. For example, <span class="output" style="font-family: Courier New; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">igsaml2.</span></p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under 
+ <span style="font-weight: bold;">Key Password</span>, enter the password 
+ for the certificate specified under <span style="font-weight: bold;">Key 
+ Alias</span>. You would have specified this password when you imported 
+ the SAML certificate to the keystore using the keytool utility. If you 
+ did not specify a password for the certificate when you imported it, then 
+ enter the associated keystore password. If you are using the Entrust IdentityGuard 
+ Server’s default keystore, the password is <span class="output" style="font-family: Courier New; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; ">entrust</span>.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+ <span style="font-weight: bold;">Encrypt</span> to encrypt the password.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Validate &amp; Save</span>.</p>
+<p class="prpprocedureparagraph">You have now defined and loaded the new 
+ SAML certificate and keys. At this point, the Entrust IdentityGuard Server 
+ continues to use the old certificate and keys to secure its SAML messages 
+ to the Federation Module.</p>
+<p class="prtproceduretitle">Update the SP metadata on the Federation Module</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the Federation Module, open the <span class="output" style="font-family: Courier New; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 10.0pt; color: #000000; 
+										 letter-spacing: 0.00em; text-decoration: none; ">igfmconfig.bat</span>&#160;utility 
+ and run this command:</p>
+<p class="cocode">igfmconfig.bat setSAMLpartner &lt;PartnerEntityID&gt; 
+ -autoReloadMetadataEnabled true</p>
+<p class="cocode">[-verifymetadata true] -resetCacheDuration true</p>
+<p class="prpprocedureparagraph">For details on this command, see the &quot;Enabling 
+ auto-reloading of metadata (SAML)&quot; section of the <span style="font-style: italic;">Entrust 
+ IdentityGuard Federation Module Installation and Configuration Guide</span>.</p>
+<p class="prpprocedureparagraph">This command refreshes the Entrust IdentityGuard 
+ Server’s (SP’s) metadata, and consequently makes the Federation Module 
+ aware of both the old and new SAML certificates and keys.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Wait 
+ five minutes. This is the amount of time it takes before you can be sure 
+ the metadata is refreshed.</p>
+<p class="prtproceduretitle">Set a new default SAML key</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Go 
+ back to the Entrust IdentityGuard Server and log in to the Properties 
+ Editor. See <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">Log 
+ in or out of the Properties Editor</a>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the table of contents, click <span style="font-weight: bold;">SAML SP 
+ Keystore Settings</span> (near the bottom).</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Under 
+ <span style="font-weight: bold;">Default Signing Key Alias</span>, set 
+ the alias to the new SAML certificate alias. For example, <span class="output" 
+	 style="font-family: Courier New; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">igsaml2</span>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Validate &amp; Save</span>.</p>
+<p class="prpprocedureparagraph">The new certificate and keys are now used 
+ by the Entrust IdentityGuard Server to secure SAML messages. The old certificate 
+ is no longer used.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

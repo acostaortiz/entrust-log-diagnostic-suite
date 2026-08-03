@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Moving users from one repository to another</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nSpecifying multiple repositories\nMoving data between repositories\nMove users from one repository to another");
+addAvenueInfo("Untitled","ig_admin/config_igserver/preparing_the_new_data_repository.htm","ig_admin/config_igserver/moving_preproduced_grid_cards_from_one_repository_to_another.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"specifying_multiple_repositories.htm\">Specifying multiple repositories<\/a> > <a href=\"moving_data_between_repositories.htm\">Moving data between repositories<\/a> > Move users from one repository to another<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_38053_Moving_users_from"></a>Move users from one repository 
+ to another</h1>
+<p class="pparagraph">Moving users between repositories moves the user 
+ and all information associated with the user (grid cards, tokens, questions 
+ and answers, location history, and so on) There are two ways to move users 
+ between repositories; follow one of the procedures listed below. </p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>When you 
+ move users between repositories, their “disabled in repository”, “expired 
+ in repository”, and mapped contact info settings do not move with them.</p>
+<p class="pparagraph">Both methods work equally well, but if you prefer 
+ to keep your group names as they are, you should choose the method that 
+ changes the group definition.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_52455_changing_group">To move 
+ users from one repository to another by changing group membership</a></p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_21369_updating_group">To move 
+ users from one repository to another by updating the group definition</a></p>
+<p class="prtproceduretitle"><a name="XREF_52455_changing_group"></a>To 
+ move users from one repository to another by changing group membership</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>If you 
+ are moving user data to an LDAP repository, the users must already exist 
+ in the repository.<span style="font-size: 12.0pt;">&#160;</span></p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Master user shell. See <a href="../usingadmininterface/using_the_master_user_shell.htm#XREF_32785_Using_the_master">Using 
+ the Master user shell</a>.</p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Change the group membership of the users to 
+ a group that uses the destination repository.</p>
+<p class="prpprocedureparagraph">To move one user to another repository:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Associate the destination 
+ group with the destination repository by entering:</p>
+<p class="cocode">group create &lt;dest_group&gt; -repository &lt;dest_repository&gt;<span 
+	 style="font-size: 12.0pt;">&#160;</span></p>
+<p class="prspsubprocedureparagraph">For example: </p>
+<p class="cocode">group create newgroup -repository newrepository</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Change the group 
+ the user belongs to. Enter:</p>
+<p class="cocode">user set &lt;src_group&gt;/&lt;user_to_move&gt; -group 
+ &lt;dest_group&gt;<span style="font-family: 'Times New Roman'; font-size: 12.0pt;">&#160;</span></p>
+<p class="prspsubprocedureparagraph">For example: </p>
+<p class="cocode">user set oldgroup/joesmith -group newgroup</p>
+<p class="prpprocedureparagraph">Changing the user's group automatically 
+ moves the user information to the appropriate repository. </p>
+<p class="prpprocedureparagraph">To move multiple users, use the export 
+ and import capabilities.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Export the users 
+ from the source group to a file. Enter:</p>
+<p class="cocode">user list -group &lt;src_group&gt; [&lt;other search 
+ criteria&gt;] -export &lt;user_file&gt; </p>
+<p class="prspsubprocedureparagraph">For example:</p>
+<p class="cocode">user list -group oldgroup -export marketingusers</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Import the users 
+ into the destination group by entering:</p>
+<p class="cocode">user set -import &lt;user_file&gt; -group &lt;dest_group&gt; 
+ </p>
+<p class="prspsubprocedureparagraph">For example:</p>
+<p class="cocode">user set -import marketingusers -group newgroup</p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. After all users in the group have 
+ been moved, you can delete the source group. </p>
+<p class="cocode">group delete &lt;src_group&gt;</p>
+<p class="prpprocedureparagraph">For example:</p>
+<p class="cocode">group delete oldgroup</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Optional. Follow the instructions in <a href="removing_old_repository_definitions.htm">Remove 
+ old repository definitions</a>.</p>
+<p class="prtproceduretitle"><a name="XREF_21369_updating_group"></a>To 
+ move users from one repository to another by updating the group definition</p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Master user shell. See <a href="../usingadmininterface/using_the_master_user_shell.htm#XREF_32785_Using_the_master">Using 
+ the Master user shell</a>.</p>
+<p 
+	 class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Update the group definition of the group containing 
+ the users by adding another repository to the group’s repository list.</p>
+<p class="cocode">group set &lt;groupname&gt; -repository -add &lt;dest_repository&gt;</p>
+<p class="prpprocedureparagraph">Where:</p>
+<p class="prpprocedureparagraph"><span class="output">&lt;groupname&gt;</span>&#160;is 
+ the name of the group to which the repository is associated.</p>
+<p class="prpprocedureparagraph"><span class="output">&lt;dest_repository&gt;</span> 
+ is the name of the new repository.</p>
+<p class="prpprocedureparagraph">For example, assume that the group is 
+ currently associated with the repository called oldrepository:</p>
+<p class="cocode">group set marketinggroup -repository -add newrepository</p>
+<p class="prpprocedureparagraph">The group <span style="font-family: Courier;">marketinggroup</span>&#160;is 
+ now associated with both <span style="font-family: Courier;">oldrepository</span>&#160;and 
+ <span style="font-family: Courier;">newrepository</span>. </p>
+<p 
+	 class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To move the user or users to the new repository, 
+ choose one of the following:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To move one user to the new repository, enter:the 
+ following command:</p>
+<p class="cocode">user set &lt;group_name&gt;/&lt;user_to_move&gt; -repository 
+ &lt;dest_repository&gt;</p>
+<p class="prspsubprocedureparagraph">For example:</p>
+<p class="cocode">user set marketinggroup/susanwu -repository newrepository</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To move multiple users from <span class="output">&lt;src_repository&gt;</span>&#160;to 
+ <span class="output">&lt;dest_repository&gt;</span>, </p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Export the users 
+ from <span class="output">&lt;src_repository&gt;</span>&#160;to a file 
+ using the following command:</p>
+<p class="cocode">user list -group &lt;groupname&gt; [&lt;other search 
+ criteria&gt;] -export &lt;user_file&gt; </p>
+<p class="prspsubprocedureparagraph">For example:</p>
+<p class="cocode">user list -group marketinggroup -export marketingusers</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Import the users 
+ to <span style="font-family: Courier;">&lt;dest_repository&gt;</span>&#160;from 
+ the file you just created using the following command:</p>
+<p class="cocode">user set -import &lt;user_file&gt; -repository &lt;dest_repository&gt;<span 
+	 style="font-family: 'Times New Roman'; font-size: 12.0pt;">&#160;</span></p>
+<p class="prspsubprocedureparagraph">For example:</p>
+<p class="cocode">user set -import marketingusers -repository newrepository</p>
+<p 
+	 class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) After all users have been moved, 
+ you can update the group definition to reference only the destination 
+ repository. To do so, enter the following command:</p>
+<p class="cocode">group set &lt;groupname&gt; -repository -remove &lt;src_repository&gt; 
+ </p>
+<p class="prpprocedureparagraph">For example:</p>
+<p class="cocode">group set marketinggroup -repository -remove oldrepository</p>
+<p 
+	 class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>(Optional) Follow the instructions in <a href="removing_old_repository_definitions.htm">Remove 
+ old repository definitions</a>.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>LDAP Contact Info Mapping Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nLDAP Contact Info Mapping Settings (6)");
+addAvenueInfo("r13_std","ig_admin/usingpropeditor/knowledge-based_authentication_settings.htm","ig_admin/usingpropeditor/ldap_directory_server_settings.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > LDAP Contact Info Mapping Settings (6)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_contact_info_properties" id="IX_contact_info_properties"></a><a name="IX_mapping_properties_1" id="IX_mapping_properties_1"></a><a name="IX_mapping_properties" id="IX_mapping_properties"></a><a name="XREF_10429_LDAP_Contact_Info" id="XREF_10429_LDAP_Contact_Info"></a>LDAP Contact Info Mapping Settings</h1>
+<p class="pparagraph">These properties control mapping of user contact information from the LDAP user repository to Entrust IdentityGuard, including an Active Directory repository used with the Active Directory synchronization feature..</p>
+<div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instances</a></span></p>
+<div class="droptext" id="POPUP583139995" style="display: none;">
+	<p class="RefItemBody">Provides a name for the configuration 
+	 instance you are mapping.</p>
+	<p class="RefItemBody">You can create contact information mapping 
+	 configurations where each configuration includes a different directory 
+	 attribute to map.</p>
+	<p class="RefItemBody">To create a new instance, enter a unique 
+	 contact info mapping instance name in the empty field and click <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Add</span>. 
+	 The other properties appear. The name replaces the {0} placeholder.</p>
+	<p class="RefItemBody">To delete an instance, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+							 text-decoration: none; ">Remove</span>.</p>
+	<p class="RefItemBody">There is no default configuration.</p>
+	<p class="nonote"><span class="bold">Note:</span> Use configuration 
+	 instance names when specifying contact information mappings. See “Apply 
+	 Contact Info Mappings&quot; in<span class="hyperlink" style="font-family: Syntax; 
+										 color: #ff; letter-spacing: .em;"> 
+	 </span><a href="ldap_directory_server_settings.htm">LDAP 
+	 Directory Server Settings</a>. For more information, see <a href="../config_igserver/map_contact_info_from_an_ldap_directory.htm">Map 
+	 contact info from an LDAP directory</a>.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Directory 
+ Attribute</a></span></p>
+<div class="droptext" id="POPUP583266847" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.contactInfoMapping.{}.attribute</span></p>
+	<p class="RefItemBody">Specifies the directory attribute that 
+	 contains the contact information.</p>
+	<p class="RefItemBody">This must be the exact name of the attribute 
+	 as it is stored in the directory; for example, <span class="output">telephoneNumber</span>.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Label</a></span></p>
+<div class="droptext" id="POPUP583291338" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.contactInfoMapping.{}.label</span></p>
+	<p class="RefItemBody">Specifies a text label to display with 
+	 the contact information. This is the label the user sees in the application.</p>
+	<p class="RefItemBody">For multi-valued attributes, the label 
+	 may include the text {0} to insert a numeric counter. If, for example, 
+	 the label is set to <span class="output">Email {}</span>, then a multi-valued 
+	 attribute would generate contact information entries labeled <span 
+	 class="output">Email 1</span>, <span class="output">Email 2</span>, 
+	 and so on.</p>
+	<p class="RefItemBody">Contact information entries must have 
+	 a unique label. If a multi-valued attribute is mapped, but does not 
+	 include a {0} in the label, only the first value of the attribute 
+	 is mapped.</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Delivery 
+ Configuration</a></span></p>
+<div class="droptext" id="POPUP584452958" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.contactInfoMapping.{}.deliveryConfig</span></p>
+	<p class="RefItemBody">Contains the out-of-band delivery mechanisms. 
+	 Select the mechanism to use to deliver OTP challenge information using 
+	 the contact information defined in this mapping.</p>
+	<p class="RefItemBody">If no out-of-band delivery mechanisms 
+	 are defined, this property contains only one option: NONE.</p>
+	<p class="RefItemBody">Default: NONE</p>
+</div>
+
+
+</div><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Default 
+ Contact Information</a></span></p>
+<div class="droptext" id="POPUP584465764" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.ldap.contactInfoMapping.{}.default</span></p>
+	<p class="RefItemBody">Set this property to <span style="font-weight: bold;">True</span> 
+	 to mark this contact info mapping as the default mapping.</p>
+	<p class="RefItemBody">A user’s default contact information 
+	 is used when out-of-band delivery is requested, but no specific contact 
+	 information is specified.</p>
+	<p class="RefItemBody">If a multi-valued attribute is mapped 
+	 to a user’s default contact information, only the first value will 
+	 be used.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP583139995');
+	TextPopupInit('a2','POPUP583266847');
+	TextPopupInit('a3','POPUP583291338');
+	TextPopupInit('a4','POPUP584452958');
+	TextPopupInit('a5','POPUP584465764');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

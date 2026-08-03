@@ -1,0 +1,151 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\softtokenauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Setting soft token activation policies (enabling a grace period)</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nSoft token authentication\nConfiguring soft token policies\nEnable a grace period for soft token activation");
+addAvenueInfo("r13_std","ig_admin/softtokenauth/disable_pvns_on_soft_tokens.htm","ig_admin/softtokenauth/enable_use_of_soft_tokens_on_an_unsecure_mobile_device.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"softtokenauth.htm\">Soft token authentication<\/a> > <a href=\"configuring_soft_token_policies.htm\">Configuring soft token policies<\/a> > Enable a grace period for soft token activation<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_96871_Configuring" id="XREF_96871_Configuring"></a>Enable a grace period for soft token activation</h1>
+<p class="pparagraph">Optionally, you can set an interval of time (sometimes called a grace period) within which soft token users can continue to authenticate using only their first-factor credentials. The grace period begins the moment the soft token is created and assigned to the user in Entrust IdentityGuard, and ends a configurable number of days later. After the grace period lapses, users are forced to activate their soft tokens by using them for the first time to authenticate. </p>
+<h3>Why use a grace period with soft tokens?</h3>
+<p class="pparagraph">The grace period is principally used for other authenticators, namely physical grid cards and hardware tokens, to allow users to continue to log in while they wait for their physical grids or tokens to be delivered. With soft tokens, however, this wait time does not exist because a soft token is a software-only authenticator that users can download and begin using immediately. A soft token grace period is useful if a user is interrupted while activating a soft token, and is left with a soft token that is assigned but not yet activated, so it cannot yet be used to authenticate. The grace period allows users to continue to log in with first-factor authentication until they have time to complete the soft token activation.</p>
+<h3>Example of how a grace period might be useful for soft tokens</h3>
+<p class="pparagraph">Suppose a user begins the soft token activation but gets interrupted—maybe the phone rings, or they are distracted with something more important. The user decides to quit the activation process before supplying the necessary activation and registration codes. At this point, the user has a token that is created and assigned to them, but it is not activated, so it cannot be used for authentication. If a grace period is enabled, this user can continue to log in using first-factor credentials until the grace period lapses. The user has until the end of this grace period to complete the soft token activation.</p>
+<p class="nonote"><span class="bold">Note:</span> The grace period is not the same as the lifetime of the activation code. For more information, see the <a href="../config_policies/token_policies.htm">Token Activation Lifetime</a> policy.</p>
+<p class="pparagraph"><span>T</span>o enable a grace period, configure the activation policy, as described in <a href="../gridauthentication/configure_grid_card_or_token_activation_period_policies.htm#XREF_35720_Configuring">Configuring grid card or token activation period policies</a>. The instructions refer to grid and token authenticators, but are equally valid for soft tokens.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

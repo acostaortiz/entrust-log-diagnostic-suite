@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Radius Server Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nRadius Server Configuration (16)");
+addAvenueInfo("Untitled02","ig_admin/usingpropeditor/radius_response_attribute_configuration.htm","ig_admin/usingpropeditor/report_definitions.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Radius Server Configuration (16)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_configuring_2" id="IX_configuring_2"></a><a name="IX_properties_11" 
+															 id="IX_properties_11"></a><a 
+	 name="XREF_50848_Radius_server" id="XREF_50848_Radius_server"></a>Radius 
+ Server Configuration</h1>
+<p class="pparagraph">These properties configure one or more Radius servers 
+ to use with your VPN for first-factor authentication. You can have more 
+ than one address for a given server configuration (for failover purposes), 
+ but all addresses must share the same secret. For more details and to 
+ view a snapshot of the properties, see <a href="../config_radius_proxy/configuring_the_radius_proxy_for_vpn_servers.htm">Configuring 
+ the Radius proxy for VPN servers</a>.</p>
+<p class="pparagraph">Where it appears in properties in the following table, 
+ the {0} placeholder is replaced by the Radius server configuration instance 
+ name.</p>
+<p class="pparagraph">Typically, you create your Radius server setups using 
+ the Configuration Panel or a UNIX script, as described in the <span class="FM_Emphasis" 
+	 style="font-style: italic;">Entrust IdentityGuard Installation Guide</span>. 
+ You can add new servers or change existing settings using these properties.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration 
+ Instances</a></span></p>
+<div class="droptext" id="POPUP650478260" style="display: none;">
+	<p class="lip2list2paragraph">You can create multiple Radius server 
+	 configurations.</p>
+	<p class="lip2list2paragraph">To create a new Radius server instance, 
+	 enter a unique server label in the empty field and click <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">Add</span>. 
+	 The other properties appear. The name replaces the {0} placeholder.</p>
+	<p class="lip2list2paragraph">To use multiple Radius servers that are 
+	 mapped to Entrust IdentityGuard groups, give each Radius server the 
+	 name of a group when you create it. This means that you could have 
+	 Configuration instances named <span style="font-family: Courier;">marketing</span>, 
+	 <span style="font-family: Courier;">development</span>, and <span 
+	 style="font-family: Courier;">humanresources</span>, for example.</p>
+	<p class="nonote"><span class="bold">Note:</span> To use the group 
+	 mapping feature, user IDs must include the group name at login. For 
+	 more information, see <a href="../config_radius_server/creating_modifying_and_removing_radius_servers.htm">Creating, 
+	 modifying, and removing Radius servers</a>.</p>
+	<p class="lip2list2paragraph">To delete an instance, select it in the 
+	 list and click <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+							 text-decoration: none; ">Remove</span>.</p>
+	<p class="lip2list2paragraph">There is no default configuration.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Server Address</a></span></p>
+<div class="droptext" id="POPUP651216492" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.radius.{0}.address</span></p>
+	<p class="lip2list2paragraph">Provides the host name or IP address 
+	 (with an optional port setting) of one or more Radius servers. To 
+	 specify more than one Radius server (for failover purposes) add a 
+	 space between each entry.</p>
+	<p class="lip2list2paragraph">There is no default address.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Server Secret</a></span></p>
+<div class="droptext" id="POPUP651241703" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.radius.{0}.secret</span></p>
+	<p class="lip2list2paragraph">Provides the Radius server shared secret 
+	 used to protect communication between the Radius server and the Entrust 
+	 IdentityGuard Radius proxy.</p>
+	<p class="lip2list2paragraph">Select the <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">Encrypt 
+	 </span>option to have the secret encrypted when saved.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Timeout</a></span></p>
+<div class="droptext" id="POPUP651438622" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.{0}.radiustimeout</span></p>
+	<p class="lip2list2paragraph">Specifies the number of seconds that 
+	 the Radius proxy waits for a response from the Radius server.</p>
+	<p class="lip2list2paragraph">Default: 1</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Number of Retries</a></span></p>
+<div class="droptext" id="POPUP651629432" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.radius.test.radiusnumretries</span></p>
+	<p class="lip2list2paragraph">Specifies the number of times the Entrust 
+	 IdentityGuard Radius proxy will resend a message to a Radius server 
+	 if it does not receive a response. The value must be a non-negative 
+	 integer.</p>
+	<p class="lip2list2paragraph">Default:</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Proxy Requires Message-Authenticator</a></span></p>
+<div class="droptext" id="POPUP651708568" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.{0}.radiusrequiremsgauth</span></p>
+	<p class="lip2list2paragraph">If this property is set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">True</span>, 
+	 incoming messages from the Radius server must include the Message-Authenticator 
+	 attribute. If the attribute is not found, the message is ignored.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Radius 
+ Proxy Includes Message-Authenticator</a></span></p>
+<div class="droptext" id="POPUP651904704" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.igradius.{0}.radiusincludesmsgauth</span></p>
+	<p class="lip2list2paragraph">Specifies whether outgoing messages to 
+	 the Radius server must include the Message-Authenticator attribute. 
+	 Set this to <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+						 text-decoration: none; ">False </span>if the Radius 
+	 server does not understand the attribute and rejects messages as a 
+	 result.</p>
+	<p class="lip2list2paragraph">Default: True</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP650478260');
+	TextPopupInit('a2','POPUP651216492');
+	TextPopupInit('a3','POPUP651241703');
+	TextPopupInit('a4','POPUP651438622');
+	TextPopupInit('a5','POPUP651629432');
+	TextPopupInit('a6','POPUP651708568');
+	TextPopupInit('a7','POPUP651904704');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

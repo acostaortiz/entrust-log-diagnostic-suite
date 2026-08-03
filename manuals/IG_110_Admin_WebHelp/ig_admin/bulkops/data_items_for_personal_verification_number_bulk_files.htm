@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\bulkOps.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Data items for personal verification number bulk files</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nBulk file operations and data items\nData items for personal verification number bulk files");
+addAvenueInfo("Untitled","ig_admin/bulkops/personal_verification_number_bulk_operations.htm","ig_admin/bulkops/smart_credential_bulk_operations.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"bulk_file_operations_and_data_items.htm\">Bulk file operations and data items<\/a> > Data items for personal verification number bulk files<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_94925_Data_items_for"></a>Data items for personal verification 
+ number bulk files</h1>
+<p class="pparagraph">Each data item in a personal verification number 
+ bulk file must use the correct data type. </p>
+<table class="Entrust_table" cellspacing="0px" width="66.239%">
+	<col style="width: 15.66%;" />
+	<col style="width: 37.552%;" />
+	<col style="width: 46.788%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">Data 
+		 item name</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Data 
+		 type</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Description</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">userId</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Provides 
+		 a user’s full user ID, in group/username format. The group is 
+		 optional if user names are unique.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">pvn</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p>
+		<p class="tattabletext">The value must be either:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>all 
+		 numbers and must have the exact number of digits as defined by 
+		 policy</p>
+		<p class="taliptablelistparagraph">See <a href="file://T:/Server/11.0/Admin_Guide_RH/IG Server Admin Guide/IG_Admin/personvernumbersauth/Configuring_personal_verification_number_policies.htm#XREF_85178_Configuring">Configuring 
+		 personal verification number policies</a>.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+		 class="output">autogenerate</span><span class="output" style="font-family: Courier; 
+												 font-size: 10.0pt;"> </span>to 
+		 have Entrust IdentityGuard automatically generate a PVN for the 
+		 user</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Specifies 
+		 a PVN for the user, or has Entrust IdentityGuard automatically 
+		 generate a PVN for the user.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">changeRequired</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Boolean</p>
+		<p class="tattabletext"><span class="output">true</span><span class="output" 
+		 style="font-family: Courier; font-size: 10.0pt;"> </span>or<span 
+		 class="output" style="font-family: Courier; font-size: 10.0pt;"> 
+		 </span><span class="output">false</span></p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Determines 
+		 whether or not a user must change the PVN the next time they authenticate.</p>
+		<p class="tattabletext"><span style="font-weight: bold;">Note:</span>&#160;If 
+		 a PVN is provided along with this option, then policy determines 
+		 whether or not <span style="font-weight: bold;">changeRequired</span>&#160;can 
+		 be false; that is, an error is generated if policy says that the 
+		 PVN must be changed after creation or modification, and <span 
+		 style="font-weight: bold;">changeRequired</span>&#160;is set to 
+		 <span class="output">false</span>.</p>
+		<p class="tattabletext">On the other hand, if <span style="font-weight: bold;">changeRequired</span>&#160;on 
+		 modify is used without a PVN, then <span class="output">true</span>&#160;forces 
+		 a PVN update by the user and <span style="font-family: Courier;">false</span>&#160;cancels 
+		 any forced update currently in effect.</p></td>
+	</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

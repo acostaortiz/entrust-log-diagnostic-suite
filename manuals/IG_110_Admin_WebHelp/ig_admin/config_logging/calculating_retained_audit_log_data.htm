@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>Calculating retained audit log data</title>
+
+ <meta name="generator" content="Adobe RoboHelp 11" />
+ <meta name="Originator" content="ImportMif" />
+ <meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_logging.fm" />
+ <link rel="stylesheet" href="../../entrust.css" type="text/css" />
+
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("Calculating retained audit log data<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+ <p class="h3">Calculating retained audit log data</p>
+ <p class="pparagraph">In cases where a rolling file appender is used (AUDIT_FILELOG), you may want to change how much audit log data to keep, and how long to keep it. The properties that control this behavior are:</p>
+ 
+<p class="lilistbullet" style="font-weight : bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">AUDIT_FILELOG Maximum File Size</span></p>
+
+ 
+<p class="lilistbullet" style="font-weight : bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">AUDIT_FILELOG Maximum Number of Backup Files</span></p>
+
+ <p class="h4">Audit log file naming</p>
+ <p class="pparagraph">By default, <span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">AUDIT_FILELOG Maximum Number of Backup Files</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">&#160;is set to 10, but you can change the property to save any other number (</span><span class="bold" style="font-family : Courier; font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">n</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">) of backup files. This means that you have a maximum of </span><span class="bold" style="font-family : Courier; font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">n+1</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">&#160;audit log files on your system at any time. The file written to is always </span><span style="font-family : Courier; ">identityguard_audits.log</span>. When this file reaches the limit set by the <span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">AUDIT_FILELOG Maximum File Size</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">&#160;property, it is renamed </span><span style="font-family : Courier; ">identityguard_audits.log.1</span>, and a new <span style="font-family : Courier; ">identityguard_audits.log</span>&#160;file is created. With every new file created, the existing file numbers of all of the existing audit log files are incremented, until there is a series of files named:</p>
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>i<span style="font-family : Courier; ">dentityguard_audits.log</span>&#160;</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>i<span style="font-family : Courier; ">dentityguard_audits.log.1</span>&#160;</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>...</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span class="output" style="font-family : Courier; font-style : normal; font-weight : normal; font-size  : 10.0pt; color   : #000000; text-decoration : none; letter-spacing : 0.00em; "><font size="2" color="black" style="font-size:10.000000pt;">identityguard_audits.log.n</font></span>&#160;</p>
+
+ <p class="pparagraph"><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">When a full complement of audit files have been written, the oldest file, </span><span style="font-family : Courier; ">identityguard_system.log.n</span>&#160;is deleted, and all of the existing files are renamed, as described earlier.</p>
+ <p class="h4"><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">Amount of audit log data to retain in backups</span></p>
+ <p class="pparagraph"><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">The default for </span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">AUDIT_FILELOG Maximum File Size</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">&#160;is set to 1000 KB, which means that each audit log file is never larger than 1000 KB. With the </span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">AUDIT_FILELOG Maximum Number of Backup Files</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">&#160;set to 10, the default, you have a maximum of 10 backup files at any given time.</span></p>
+ <p class="pparagraph">Doing the calculation, if you retain the defaults set in Entrust IdentityGuard, you will have a maximum of 10 MB of audit log data backed up at any one time (10 * 1000&nbsp;KB.</p>
+ <p class="pparagraph">If your organization’s&#160;backup standards require that more (or less) audit log data be kept, you can modify these two properties to save the required volume of data.</p>
+ <p class="pparagraph">The amount of audit data generated depends on many factors, and may be difficult to estimate until the system has been running for a while. More audit data is generated during system setup, for instance, than you see after the system is in normal operation. </p>
+ <p class="pparagraph">There are two types of audit log events, authentication and administration.</p>
+ <p class="pparagraph">Administration audit events include login, logout, and all administration operations. Administration events are very dependent upon the number of users in the system and how frequently they login, because each user needs administrator attention now and then for such situations as:</p>
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>forgotten password</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>expired grid card or token</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>lost or misplaced grid card or token</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>lockout</p>
+
+ <p class="pparagraph">Factors that determine how much authentication audit data is generated include:</p>
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>How many users are registered in your system.</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>How often each user logs in to your system: If you are running an online banking operation, each user may log in only once or twice a week, whereas if this is a system used by employees every day, then each user probably logs in at least once a day.</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Whether or not successful authentications are logged: Unsuccessful authentications are always logged, but you can set Entrust IdentityGuard properties to also log successful authentications by setting <span style="font-weight : bold; ">Audit Successful Authentications</span>&#160;to <span style="font-weight : bold; ">True</span>. See <a href="../usingpropeditor/authentication_audit_and_error_settings.htm#XREF_54931_Authentication">Authentication Audit and Error Settings</a>. An authentication audit log, whether successful or not, generates 100-200 bytes of data. </p>
+
+ <p class="liplistparagraph">If you know how many unsuccessful authentications you have in your log each day, you can estimate the number of successful authentications you would be adding by changing this setting. The rule of thumb is that, for 100 login attempts, 95 attempts will be successful and 5 will be unsuccessful (19 times more successes than failures).</p>
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Whether or not other Entrust IdentityGuard authentication operations are logged: Each of these properties, if set to <span style="font-family : Courier; ">True</span>, increases the volume of audit log data written to the audit log file. See <a href="../usingpropeditor/authentication_audit_and_error_settings.htm#XREF_54931_Authentication">Authentication Audit and Error Settings</a>&#160;for details about the following Entrust IdentityGuard properties:</p>
+
+ 
+<p class="lilistbullet2" style="font-weight : bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Audit Challenge Requests that Return Challenge</p>
+
+ 
+<p class="lilistbullet2" style="font-weight : bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Audit Challenge Requests that Return Authenticated</p>
+
+ 
+<p class="lilistbullet2" style="font-weight : bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Audit Knowledge-Based Questions that are Answered Incorrectly</p>
+
+ 
+<p class="lilistbullet2" style="font-weight : bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Include Location Information in Authentication Audits</p>
+
+ 
+<p class="lilistbullet2" style="font-weight : bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Include Lockout Information in Authentication Errors</p>
+
+ <p class="h4">Calculating the amount of audit data backed up</p>
+ <p class="pparagraph">If your organization’s backup and archive processes require, for example, that you keep one month’s worth of audit logs, the easiest way to set your properties may be:</p>
+ 
+<p class="lilistbullet" style="font-weight : bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">Set </span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">AUDIT_FILELOG Maximum File Size</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; "> = one day’s worth of audit log data</span></p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">Set </span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">AUDIT_FILELOG Maximum Number of Backup Files</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">&#160;= 30 files (for 30 days, for example)</span></p>
+
+ <p class="pparagraph">To get a rough idea how much audit log data your organization generates in one day, perform the following administration event estimate, and one of the two procedures for estimating the amount of authentication audit log data that will be produced.</p>
+ <p class="nonote"><span style="font-weight: bold;">Note: </span>You may find that your organization generates too much audit log data each day to store a full day’s worth in just one file. If this is the case, decrease the amount of data per file (<span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">AUDIT_FILELOG Maximum File Size</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">) to a reasonable size, and increase the number of files (</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">AUDIT_FILELOG Maximum Number of Backup Files</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">) to make sure that you still backup the required amount of audit log data.</span></p>
+ <p class="pparagraph">After calculating the volume of data produced for administration events and authentication events, add the two numbers together to get an estimate of the amount of data generated each day, like this:</p>
+ <p class="pparagraph">administration events log data + authentication events&#160;log data = total audit log data</p>
+ <p class="prtproceduretitle">To calculate the volume of administration audit log data your system is generating each day</p>
+ 
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a name="XREF_89387_1_Assume_that_each"></a>Gather the following information:</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>the number of users logging in to your system</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>the number of times users log in every day</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>the number of times administrators log in and out</p>
+
+ 
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>the number of operations performed for users each day</p>
+
+ <p class="prpprocedureparagraph">Each user or administrator login and logout, and each administrator action generates an audit event.</p>
+ 
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Calculate the estimated number of administration audit events:</p>
+
+ <p class="prpprocedureparagraph">administration events&#160;log data = administration events * 150 bytes</p>
+ <p class="prpprocedureparagraph">Where:</p>
+ <p class="prpprocedureparagraph">150 is the approximate number of bytes per administration event</p>
+ <p class="FM_fcwfigurecaptionwide"><span class="FM_Procnum">Figure 17: </span>Calculate administration audit events</p>
+ <div align="left"><img alt="config_logging00079.jpg" style="width : 414.000pt; height : 112.500pt; " id="image1" src="config_logging00079.jpg" />
+ </div>
+ <p class="prtproceduretitle"><a name="XREF_17948_To_calculate"></a>To calculate the volume of authentication audit log data your system is generating each day</p>
+ 
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Gather the following data:</p>
+
+ 
+<p class="prsstsubstep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>the number of unsuccessful authentication attempts in one day</p>
+
+ <p class="nonote"><span style="font-weight: bold;">Note: </span>A rule of thumb is that there are about 5 failed authentications for every 100 attempts, so for 95 successful logins, there were probably about 5 unsuccessful attempts. This assumes that 19 of each 20 login attempts are successful.</p>
+ 
+<p class="prsstsubstep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>whether or not you are logging successful authentications</p>
+
+ 
+<p class="prsstsubstep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>whether or not you have set any of these Entrust IdentityGuard properties to <span style="font-weight : bold; ">True</span>:</p>
+
+ 
+<p class="lilistbullet2" style="font-weight : bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Audit Challenge Requests that Return Challenge</p>
+
+ 
+<p class="lilistbullet2" style="font-weight : bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Audit Challenge Requests that Return Authenticated</p>
+
+ 
+<p class="lilistbullet2" style="font-weight : bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Audit Knowledge-Based Questions that are Answered Incorrectly</p>
+
+ 
+<p class="lilistbullet2" style="font-weight : bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Include Location Information in Authentication Audits</p>
+
+ 
+<p class="lilistbullet2" style="font-weight : bold;"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Include Lockout Information in Authentication Errors</p>
+
+ 
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Calculate the estimated number of Administration audit events. (See <a href="#XREF_77946_Calculate">Calculate authentication audit events</a>.)</p>
+
+ <p class="prpprocedureparagraph">Unsuccessful log events = Successful log events/19</p>
+ <p class="prpprocedureparagraph">Authentication events&#160;log data = (Unsuccessful log events * 150 bytes) [* 2] [+ Successful log events * 150 bytes]</p>
+ <p class="prpprocedureparagraph">Where:</p>
+ <p class="prpprocedureparagraph">150 is the approximate number of bytes stored per event </p>
+ <p class="prpprocedureparagraph">19 is the approximate ratio of successful to unsuccessful logins (95/5)</p>
+ <p class="prpprocedureparagraph">[2] (optional) takes into account additional events logged. Use this factor only if any additional Entrust IdentityGuard properties listed in 1.c) above are set to True.</p>
+ <p class="prpprocedureparagraph">[Successful log events * 150] (optional) Include this parameter only if <span style="font-weight : bold; ">Audit Successful Authentications</span>&#160;is set to <span style="font-weight : bold; ">True</span>.</p>
+ <p class="FM_fcwfigurecaptionwide"><span class="FM_Procnum">Figure 18: </span><a name="XREF_77946_Calculate"></a>Calculate authentication audit events</p>
+ <div align="left"><img alt="config_logging00082.jpg" style="width : 414.750pt; height : 512.250pt; " id="image2" src="config_logging00082.jpg" />
+ </div>
+ <p class="prtproceduretitle">To calculate the value for <span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">AUDIT_FILELOG Maximum File Size</span></p>
+ 
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Add the administration events&#160;log data and authentication events&#160;log data calculated above to get the total memory required to store audit events generated each day:</p>
+
+ <p class="prpprocedureparagraph">audit events disk space required = administration events&#160;log data + authentication events log data</p>
+ <p class="prpprocedureparagraph">This is the daily memory requirement for audit log files on your installation. </p>
+ 
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Optional. If the daily space requirement is too large to be held in one file, decrease the <span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">Maximum File Size</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">&#160;</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">AUDIT_FILELOG Maximum File Size</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">&#160;and increase the</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; "> AUDIT_FILELOG Maximum Number of Backup Files</span><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">&#160;property to accommodate your backup requirements in a greater number of backup files.</span></p>
+
+ <p class="prpprocedureparagraph">The formula is:</p>
+ <p class="prpprocedureparagraph" style="font-weight : bold;"><span class="bold" style="font-weight : bold; text-decoration : none; letter-spacing : 0.00em; ">Audit events memory requirements = AUDIT_FILELOG Maximum File Size * AUDIT_FILELOG Maximum Number of Backup Files</span></p>
+ <p class="pparagraph">&#160;</p>
+ <div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Customize the EGrid Email Delivery template</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nGrid authentication\nCreate and send an eGrid using Administration interface\nCustomize the email template for EGrid delivery");
+addAvenueInfo("r13_std","ig_admin/gridauthentication/configure_delivery_of_egrids.htm","ig_admin/gridauthentication/generate_and_send_an_egrid.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"gridauthentication.htm\">Grid authentication<\/a> > <a href=\"create_and_send_an_egrid_using_admin_ui.htm\">Create and send an eGrid using Administration interface<\/a> > Customize the email template for EGrid delivery<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Customize the email template for EGrid delivery</h1>
+<p class="pparagraph">If your organization does not use Self-Service Module, 
+ which allows users to generate and manage their own EGrids, complete the 
+ following procedure to customize the email message used when delivering 
+ an EGrid generated from the Administration interface. This is an optional 
+ procedure.</p>
+<p class="pparagraph">A message template is used in email EGrid delivery. 
+ The template uses Velocity syntax. You can find the template file in the 
+ following location:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>on Windows</p>
+<p class="liplistparagraph" style="font-family: 'Courier New';"><span class="output">&lt;$IG_HOME&gt;\etc\templates\grids\</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>on Linux</p>
+<p class="liplistparagraph" style="font-family: 'Courier New';"><span class="output">$IG_HOME/etc/templates/grids/</span></p>
+<p class="pparagraph">You can modify the templates to meet your needs.</p>
+<p class="pparagraph">For information about Apache Velocity syntax, see 
+ <a href="http://velocity.apache.org/engine/2.2/user-guide.html" target="_blank">http://velocity.apache.org/engine/2.2/user-guide.html</a>.</p>
+<p class="pparagraph">Entrust IdentityGuard uses the values set in the 
+ <span style="font-weight: bold;">User Email Delivery Configuration</span> 
+ properties, such as <span class="bold">Email Delivery Subject</span>, 
+ to fill in fields in the message.</p>
+<p class="pparagraph">All email messages use the template named in the 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Email 
+ Delivery Template File</span>&#160;property. For EGrid delivery, the email 
+ template files are called:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output">igsample_email_grid_template.txt</span>&#160;</p>
+<p class="lilistbullet" style="font-family: 'Courier New';"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output">igsample_email_grid_template.html</span></p>
+<p class="pparagraph">Copy the template file before changing it for your 
+ application. You can customize the contents to add branding and standard 
+ messages or disclaimers. You must use UTF-8 as the character-encoding 
+ format for the email template.</p>
+<p class="pparagraph">You can use the optional HTML template to send both 
+ text and HTML messages if required. If you would like to send an HTML 
+ message to email clients able to read HTML, create a text template and 
+ an HTML template. Both are supplied when Entrust IdentityGuard is installed, 
+ as described above.</p>
+<p class="pparagraph">If you have both text and HTML templates, a MIME 
+ multi-part alternative message is sent with both text and HTML body parts. 
+ When the email message is received, character-based e-mail clients use 
+ the text template, while graphical e-mail clients like Microsoft Outlook 
+ can display the HTML formatted email message.</p>
+<p class="pparagraph">The template, which uses Apache Velocity for formatting, 
+ allows you to define placeholders that Entrust IdentityGuard replaces 
+ with the appropriate information when the message is sent:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output">$fullname</span>&#160;— 
+ The user's full name (If the user account does not include a&#160;full 
+ name, this will be the user name.)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output">$userid</span>&#160;— 
+ The Entrust IdentityGuard user name (without the group name)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output">$</span><span class="output" style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">gridSerialNumber</font></span><span 
+	 class="output">&#160;</span>— 
+ The unique serial number of the generated grid</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>placeholders 
+ for the actual grid content from the XSL file</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output">$gridExpiryDate</span>&#160;— 
+ The last date on which the grid can be used, if configured.</p>
+<p class="pparagraph">As an example, an email to John Smith to deliver 
+ an attached EGrid (PDF or image) could look something like this:</p>
+<p class="cocode">Hello John Smith,</p>
+<p class="cocode">Your grid with serial number 1234567 is attached.</p>
+<p class="cocode">Your grid expires on August 11, 2525.</p>
+<p class="pparagraph">Optionally, the EGrid can be shown directly in the 
+ body of the email instead of being delivered as an attachment.s</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

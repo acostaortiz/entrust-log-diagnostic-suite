@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\gridauthentication.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Grid card policies for passcode lists</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nGrid authentication\nConfiguring passcode list authentication\nGrid card policies for passcode lists");
+addAvenueInfo("Untitled","ig_admin/gridauthentication/configuring_passcode_list_authentication.htm","ig_admin/gridauthentication/api_operations_for_passcode_lists.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"gridauthentication.htm\">Grid authentication<\/a> > <a href=\"configuring_passcode_list_authentication.htm\">Configuring passcode list authentication<\/a> > Grid card policies for passcode lists<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_71205_Cardspec_attributes"></a>Grid card policies for 
+ passcode lists</h1>
+<p class="pparagraph"><a name="IX_configuring_passcodes"></a>A passcode 
+ list is a grid card with specific policies. The following table lists 
+ the grid card policies that govern the construction of a passcode list. 
+ The policies you need to use depend on whether you want to prompt users 
+ for codes in the list randomly or in a fixed order, such as first to last. 
+ </p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>Random 
+ order offers more security than a fixed order because it is harder for 
+ an attacker to guess the next challenge.</p>
+<p class="pparagraph"><a name="IX_passcode_prompt_order"></a>To prompt 
+ for the passcodes in a random order, set the grid card policies as listed 
+ in the Random column of the following table. To prompt in a fixed order, 
+ set the grid card policies as listed in the Fixed Order column. After 
+ you set the grid card policies, use the applicable API operations described 
+ in <a href="api_operations_for_passcode_lists.htm#XREF_81856_API_operations">API 
+ operations for passcode lists</a>.</p>
+<p class="pparagraph">To configure grid card policies, see <a href="configuring_grid_card_design_and_behavior_policies.htm#XREF_64679_Configuring_card">Configuring 
+ grid card design and behavior policies</a>. </p>
+<table class="Entrust_table" width="61.934%" cellspacing="0px">
+	<col style="width: 32.93%;" />
+	<col style="width: 47.801%;" />
+	<col style="width: 8.395%;" />
+	<col style="width: 10.874%;" />
+	<tr class="t1st">
+		<th><p class="tahtableheader">Policies</p></th>
+		<th><p class="tahtableheader">Explanation</p></th>
+		<th><p class="tahtableheader">Random</p></th>
+		<th><p class="tahtableheader">Fixed Order</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Number of Rows</p></td>
+		<td class="t1Col"><p class="tattabletext">Set this to the number 
+		 of one-time passcodes you want in the list.</p></td>
+		<td class="t1Col"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+		<td class="last"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Number of Columns</p></td>
+		<td class="t1Col"><p class="tattabletext">Set this to <span class="output" 
+		 style="font-family: Courier; font-style: normal; font-weight: normal; 
+		 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">1</span>.</p></td>
+		<td class="t1Col"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+		<td class="last"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Number of Characters 
+		 Per Cell</p></td>
+		<td class="t1Col"><p class="tattabletext">Set this to the length 
+		 of each passcode. For example, <span class="output" style="font-family: Courier; 
+												 font-style: normal; font-weight: normal; 
+												 font-size: 10.0pt; color: #000000; 
+												 letter-spacing: 0.00em; 
+												 text-decoration: none; ">8</span>.</p></td>
+		<td class="t1Col"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+		<td class="last"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Challenge Size</p>
+		<p class="tattabletext">Minimum Challenge Size</p>
+		<p class="tattabletext">Maximum Challenge Size</p></td>
+		<td class="t1Col"><p class="tattabletext">Set these attributes 
+		 to <span class="output" style="font-family: Courier; font-style: normal; 
+					 font-weight: normal; font-size: 10.0pt; color: #000000; 
+					 letter-spacing: 0.00em; text-decoration: none; ">1</span>. 
+		 The user is asked to enter just one passcode each time.</p></td>
+		<td class="t1Col"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+		<td class="last"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Challenge Generation 
+		 Algorithm</p></td>
+		<td class="t1Col"><p class="tattabletext">Set this to <span class="bold" 
+		 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Least-Used</span>. 
+		 This policy combined with the next five policies has the effect 
+		 of making each used cell unable to ever qualify for least used, 
+		 and when the last unused cell is used, the replacement criteria 
+		 is met.</p></td>
+		<td class="t1Col"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+		<td class="last">&#160;</td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Least-Used Cells Per 
+		 Challenge</p></td>
+		<td class="t1Col"><p class="tattabletext">Set this to <span class="output" 
+		 style="font-family: Courier; font-style: normal; font-weight: normal; 
+		 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">1</span>. 
+		 Only one cell is used each time.</p></td>
+		<td class="t1Col"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+		<td class="last">&#160;</td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Challenge Count Warning 
+		 Threshold</p></td>
+		<td class="t1Col"><p class="tattabletext">Type a number that is 
+		 less than the value for <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Number 
+		 of Rows</span>. </p></td>
+		<td class="t1Col"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+		<td class="last">&#160;</td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Challenge Count Replacement 
+		 Threshold</p></td>
+		<td class="t1Col"><p class="tattabletext">Type a number that is 
+		 equal to the value for <span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Number 
+		 of Rows</span>. </p></td>
+		<td class="t1Col"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+		<td class="last">&#160;</td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Least-Used Cell Warning 
+		 Threshold </p></td>
+		<td class="t1Col"><p class="tattabletext">Set this to <span class="output" 
+		 style="font-family: Courier; font-style: normal; font-weight: normal; 
+		 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">1</span>.</p></td>
+		<td class="t1Col"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+		<td class="last">&#160;</td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Least-Used Cell Replacement 
+		 Threshold </p></td>
+		<td class="t1Col"><p class="tattabletext">Set this to <span class="output" 
+		 style="font-family: Courier; font-style: normal; font-weight: normal; 
+		 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">1</span>. 
+		 When the last least-used cell (in this case, the last row) is 
+		 used, the grid card needs to be replaced.</p></td>
+		<td class="t1Col"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+		<td class="last">&#160;</td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col"><p class="tattabletext">Disable Anonymous</p></td>
+		<td class="t1Col"><p class="tattabletext">Deselect this option 
+		 for a fixed order.</p></td>
+		<td class="t1Col">&#160;</td>
+		<td class="last"><p class="tattabletext" style="text-align: center; 
+							 font-weight: bold; font-size: 14.0pt;">*</p></td>
+	</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

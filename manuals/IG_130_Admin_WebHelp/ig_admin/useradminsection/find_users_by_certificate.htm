@@ -1,0 +1,237 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Find users by certificate</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("User administration\nSearching for user information\nFind users by certificate");
+addAvenueInfo("r13_std","ig_admin/useradminsection/find_users_by_biometric.htm","ig_admin/useradminsection/find_users_by_smart_credential.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"user_admnistration.htm\">User administration<\/a> > <a href=\"searching_for_user_information.htm\">Searching for user information<\/a> > Find users by certificate<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Find users by certificate</h1>
+<p class="prtproceduretitle">To find users by certificate</p>
+<div>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log 
+ in to the Administration interface &#160;</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>In 
+ the main menu, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+							 text-decoration: none; ">User Accounts</span>. 
+ </p>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">User 
+ Accounts</span>&#160;page appears. </p>
+<div style="text-align: center;">
+	<p class="prpprocedureparagraph"><img alt="Users00306.jpg" id="image23" src="users00306.jpg" width="549" height="115" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Find Accounts</span>&#160;tab. </p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Specify 
+ as many of the search options as necessary to reduce the search results 
+ to the exact records you need.</p>
+</div>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_ce.jpg" id="image44" src="ai-user_account-find_accounts_-_ce.jpg" width="484" height="51" border="0" name="image44" /></p>
+</div>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To find users with certificates, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Has a certificate with the characteristics below</span>.</p>
+
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Certificate characteristics</span> pane appears.</p>
+<div style="text-align: left;">
+<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts_-_certificateFull.jpg" id="image45" src="ai-user_account-find_accounts_-_certificatefull.jpg" width="552" height="366" border="0" name="image45" /></p>
+</div>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To find users by the subject DN of certificates assigned to them, enter the DN in <span style="font-weight: bold;">Subject DN</span>.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To find users by the issuer DN of certificates assigned to them, enter the DN in <span style="font-weight: bold;">Issuer DN</span>.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To find users by their certificate serial number, enter the serial number in <span style="font-weight: bold;">Serial Number</span>.</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To find users by their certificate states, select the certificate states from the <span style="font-weight: bold;">States Include</span>&#160;and <span style="font-weight: bold;">States Don’t Include</span> lists.</p>
+
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>To find users with certificates that are self-signed, select <span style="font-weight: bold;">Yes</span>&#160;beside <span style="font-weight: bold;">Certificate is Self-Signed</span>.</p>
+
+<p class="prpprocedureparagraph">To find users with certificates that are not self-signed, select <span style="font-weight: bold;">No</span>&#160;beside <span style="font-weight: bold;">Certificate is Self-Signed</span>.</p>
+
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>To find users with certificates that were issued by an unregistered Certificate Authority (CA), select <span style="font-weight: bold;">Yes</span>&#160;beside <span style="font-weight: bold;">Issued by Unregistered CA</span>.</p>
+
+<p class="prpprocedureparagraph">To find users with certificates that were issued by a registered Certificate Authority (CA), select <span style="font-weight: bold;">No</span>&#160;beside <span style="font-weight: bold;">Issued by Unregistered CA</span>.</p>
+
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>To find users with certificates issued by a specific CA or CAs, select the CAs from the <span style="font-weight: bold;">Issued by</span> list.</p>
+
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>To find users by the date their certificate was issued, select a time frame from the <span style="font-weight: bold;">Issue Date</span> drop-down list.</p>
+
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Custom date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">From</span>&#160;and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">To</span>&#160;drop-down lists (day, month, year), or click the calendar icons to select dates.</p>
+
+<p class="prprocedurestep">14.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>To find users by the expiry date of their certificate, select a time frame from the <span style="font-weight: bold;">Expiry Date</span> drop-down list.</p>
+
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Custom date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">From</span>&#160;and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">To</span>&#160;drop-down lists (day, month, year), or click the calendar icons to select dates.</p>
+
+<p class="prprocedurestep">15.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>To find users by their the date their certificate was assigned to them, select a time frame from the <span style="font-weight: bold;">Assigned</span> drop-down list.</p>
+
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Custom date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">From</span>&#160;and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">To</span>&#160;drop-down lists (day, month, year), or click the calendar icons to select dates.</p>
+
+<p class="prprocedurestep">16.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>To find users by the date they last used their certificate, select a time frame from the <span style="font-weight: bold;">Last Used</span> drop-down list.</p>
+
+<p class="prpprocedureparagraph">If you select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Custom date range</span>, choose a date range from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">From</span>&#160;and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">To</span>&#160;drop-down lists (day, month, year), or click the calendar icons to select dates.</p>
+<div>
+<p class="prprocedurestep">17.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>To 
+ specify how many search results are displayed per page, select a number 
+ from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; 
+				 text-decoration: none; ">Showing results per page</span> 
+ drop-down list.</p>
+<p class="prprocedurestep">18.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Find 
+ Accounts</span>. </p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="Users00309.jpg" id="image24" src="users00309.jpg" width="364" height="37" border="0" /> 
+	 </p>
+</div>
+<p class="prpprocedureparagraph">The <span class="bold" style="font-weight: bold; 
+											 letter-spacing: 0.00em; text-decoration: none; ">Search 
+ Results</span> page displays all users that match your search criteria.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span><a name="IX_sort_results"></a>You 
+ can change the sort order of records in the <span class="bold" style="font-weight: bold; 
+													 letter-spacing: 0.00em; 
+													 text-decoration: none; ">Search 
+ Results</span>&#160;page. Click any column header to sort records by the 
+ values in that column.<br />
+Only the entries on the current page are sorted; if there are multiple 
+ pages of search results, only the one you are viewing is sorted.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="AI-User_Account-Find_Accounts-search_results.jpg" id="image25" src="ai-user_account-find_accounts-search_results.jpg" width="552" height="207" border="0" /> 
+	 </p>
+</div>
+</div>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

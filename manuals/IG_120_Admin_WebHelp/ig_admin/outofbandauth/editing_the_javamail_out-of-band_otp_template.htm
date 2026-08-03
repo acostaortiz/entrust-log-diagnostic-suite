@@ -1,0 +1,251 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\outofbandauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Editing the JavaMail out-of-band OTP template</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nOut-of-band one-time password authentication\nConfigure delivery of OTPs in email messages\nCustomize the JavaMail out-of-band OTP template");
+addAvenueInfo("Untitled02","ig_admin/outofbandauth/configuring_an_email_otp_service.htm","ig_admin/outofbandauth/configuring_out-of-band_otp_delivery_in_voice_messages.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"outofbandauth.htm\">Out-of-band one-time password authentication<\/a> > <a href=\"configuring_an_email_delivery_mechanism_for_one-time_passwords.htm\">Configure delivery of OTPs in email messages<\/a> > Customize the JavaMail out-of-band OTP template<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_28113_Editing_the" id="XREF_28113_Editing_the"></a>Customize the JavaMail out-of-band OTP template</h1>
+<p class="pparagraph">Message templates are used in both email and SMS OTP delivery. These templates use Velocity syntax and they are used to format the messages used to deliver OTPs to users. You can find the template files:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on Windows</p>
+
+<p class="liplistparagraph" style="font-family: Courier;"><span class="output">&lt;$IG_HOME&gt;\etc\templates\oob\</span></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>on UNIX</p>
+
+<p class="liplistparagraph" style="font-family: Courier;"><span class="output">$IG_HOME/etc/templates/oob/</span></p>
+<p class="pparagraph">You can modify the templates to meet your needs.</p>
+<p class="pparagraph">For information about Apache Velocity syntax, see <span style="color: #0000ff;"><a href="http://velocity.apache.org/engine/releases/velocity-1.5/user-guide.html" target="_blank">http://velocity.apache.org/engine/releases/velocity-1.5/user-guide.html</a></span>.</p>
+<p class="pparagraph">Entrust IdentityGuard uses the values set in the <span style="font-weight: bold;">Out-of-Band OTP Email Delivery Configuration</span> properties, such as <span class="bold">Email Delivery Subject</span>, to fill in fields in the message.</p>
+<p class="pparagraph">All email messages use the template named in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Email Delivery Template File</span>&#160;property. Entrust IdentityGuard includes an email template file that you can use. If you are installing Entrust IdentityGuard for the first time, the email template files are called:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">igsample_email_template.txt</span>&#160;</p>
+
+<p class="lilistbullet" style="font-family: Courier;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">igsample_email_template.html</span></p>
+
+<p class="pparagraph">Copy the template file before changing it for your application. You can customize the contents to add branding and standard messages or disclaimers. You must use UTF-8 as the character-encoding format for the email template.</p>
+<p class="pparagraph">You can use the optional HTML template to send both text and HTML messages if required. If you would like to send an HTML message to email clients able to read HTML, create a text template and an HTML template. Both are supplied when Entrust IdentityGuard is installed, as described above.</p>
+<p class="pparagraph">If you have both text and HTML templates, a MIME multi-part alternative message is sent with both text and HTML body parts. When the email message is received, character-based e-mail clients use the text template, while graphical e-mail clients like Microsoft Outlook can display the HTML formatted email message.</p>
+<p class="pparagraph">The template, which uses Apache Velocity for formatting, allows you to define placeholders that Entrust IdentityGuard replaces with the appropriate information when the message is sent:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">$fullname</span>&#160;— The user's full name (If the user account does not include a&#160;full name, this will be the user name.)</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">$username</span>&#160;— The Entrust IdentityGuard user name (without the group name)</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">$</span><span class="output" style="font-family: Courier; font-size: 10.0pt;">otp</span><span class="output">&#160;— The one-time password generated</span></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">$</span><span class="output" style="font-family: Courier;">otps</span><span class="output">&#160;— All of the one-time passwords</span></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">$</span><span class="output" style="font-family: Courier;">newOTPs</span><span class="output">&#160;— All of the OTPs created during this operation</span></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">$oldOTPs</span>&#160;— All of the OTPs existing before this operation</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">$operation</span>&#160;— is one of:</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="output">CHALLENGE</span>&#160;– The OTP delivery is being done as part of a challenge request.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="output">AUTHENTICATE</span>&#160;&#160;– The OTP delivery is being done as part of the authentication.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="output">ADMIN</span>&#160;&#160;– The OTP delivery is being done as part of a delivery request from an administrator</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">$expirydate</span>&#160;— The expiry date of the one-time passwords</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">$dynamicRefresh</span>&#160;— This value will return <span style="font-family: Courier;">True</span> if the dynamic refresh policy is enabled.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">$transactionDetails</span>&#160;— The details of the transaction that prompted the challenge</p>
+
+<p class="pparagraph">The <span class="output">$fullname</span>&#160;and <span class="output">$otp</span>&#160;placeholders are part of the default template:</p>
+<p class="cocode">Hello $fullname,</p>
+<p class="cocode">Your one-time password is $otp.</p>
+<p class="pparagraph">As an example, an OTP email to John Smith to deliver one OTP without transaction details could look something like this:</p>
+<p class="cocode">Hello John Smith,</p>
+<p class="cocode">Your One Time Password is 1A3D456H.</p>
+<p class="pparagraph">You can also define more complex scripting in the template to allow display of the transaction details and multiple OTPs. For example:</p>
+<p class="cocode">Hello $fullname,</p>
+<p class="cocode">&#160;</p>
+<p class="cocode">#if($transactionDetails)A</p>
+<p class="cocode">Your transaction details are:</p>
+<p class="cocode">#foreach ($key in $transactionDetails.keySet())</p>
+<p class="cocode">&#160;&#160;$key: $transactionDetails.get($key)</p>
+<p class="cocode">#end</p>
+<p class="cocode">&#160;</p>
+<p class="cocode">#if($otps)</p>
+<p class="cocode">#if($otps.size() &gt; 1)</p>
+<p class="cocode">If you agree with these transaction details, enter one of the following:</p>
+<p class="cocode">one-time passwords to confirm the transaction.</p>
+<p class="cocode">#foreach ($o in $otps)</p>
+<p class="cocode">&#160;&#160;$o</p>
+<p class="cocode">#end</p>
+<p class="cocode">#if($expiryDate)</p>
+<p class="cocode">These one-time passwords expire on $expiryDate.</p>
+<p class="cocode">#else</p>
+<p class="cocode">These one-time passwords never expire.</p>
+<p class="cocode">#end</p>
+<p class="cocode">#else</p>
+<p class="cocode">If you agree with these transaction details, enter the one-time</p>
+<p class="cocode">password $otp to confirm the transaction. &#160;Your one-time password</p>
+<p class="cocode">#if($expiryDate)</p>
+<p class="cocode">expires on $expiryDate.</p>
+<p class="cocode">#else</p>
+<p class="cocode">never expires.</p>
+<p class="cocode">#end</p>
+<p class="cocode">#end</p>
+<p class="cocode">#end</p>
+<p class="cocode">#else</p>
+<p class="cocode">#if($otps.size() &gt; 1)</p>
+<p class="cocode">Your one-time passwords are:</p>
+<p class="cocode">#foreach ($o in $otps)</p>
+<p class="cocode">&#160;&#160;$o</p>
+<p class="cocode">#end</p>
+<p class="cocode">#if($expiryDate)</p>
+<p class="cocode">These one-time passwords expire on $expiryDate.</p>
+<p class="cocode">#else</p>
+<p class="cocode">These one-time passwords never expire.</p>
+<p class="cocode">#end</p>
+<p class="cocode">#else</p>
+<p class="cocode">#if($expiryDate)</p>
+<p class="cocode">Your one-time password is $otp. &#160;It expires on $expiryDate.</p>
+<p class="cocode">#else</p>
+<p class="cocode">Your one-time password is $otp. &#160;It never expires.</p>
+<p class="cocode">#end</p>
+<p class="cocode">#end</p>
+<p class="cocode">#end</p>
+<p class="cocode">&#160;</p>
+<p class="cocode">Entrust IdentityGuard</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

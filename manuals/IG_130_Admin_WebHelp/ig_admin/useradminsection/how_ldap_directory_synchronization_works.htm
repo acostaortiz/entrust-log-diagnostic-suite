@@ -1,0 +1,252 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>How LDAP directory synchronization works</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("User administration\nCreating user accounts\nCreate users through LDAP synchronization with a database\nHow LDAP directory synchronization works");
+addAvenueInfo("r13_std","ig_admin/useradminsection/prerequisites_for_ldap_directory_synchronization.htm","ig_admin/useradminsection/limitations_of_the_ldap_directory_syncrhonization_feature.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"user_admnistration.htm\">User administration<\/a> > <a href=\"creating_user_accounts.htm\">Creating user accounts<\/a> > <a href=\"create_users_through_ldap_sync_with_a_database.htm\">Create users through LDAP synchronization with a database<\/a> > How LDAP directory synchronization works<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>How LDAP directory synchronization works</h1>
+<p class="pparagraph">The following sections describe the behavior of the 
+ LDAP directory synchronization feature when administrators or users perform 
+ various actions.</p>
+<h3>When you add a new user in an LDAP directory</h3>
+<p class="pparagraph">After you configure the LDAP directory synchronization 
+ feature as described in this section, you &#160;create Entrust IdentityGuard 
+ user accounts for new LDAP directory users as described in <a href="create_user_accounts_in_a_db_synced_with_ldap_repository.htm">Create 
+ new user accounts in a database synchronized with an LDAP repository</a> 
+ </p>
+<p class="pparagraph">Entrust IdentityGuard creates the user accounts and 
+ performs a first synchronization operation for the new user accounts. 
+ The Entrust IdentityGuard Account Information pages for synchronized accounts 
+ display synchronization information and have the <span class="bold">Sync 
+ Account</span> and <span class="bold">Unsync 
+ Account</span> option buttons.</p>
+<p class="pparagraph"><img src="../../ai-sync_info_in_ad_user_account_anno.png" alt="" style="border: none;" width="450" height="402" border="0" /></p>
+
+
+<h3>When users change their name or contact information through Self-Service 
+ or another client application</h3>
+<p class="pparagraph">Synchronized data is read only, but full name and 
+ contact info have corresponding Entrust IdentityGuard user attributes. 
+ If these attributes are changed by a user through Self-Service or changed 
+ by an administrator through the Entrust IdentityGuard Administration interface, 
+ updated values are retained in the Entrust IdentityGuard database. They 
+ are not overwritten by the LDAP directory values during subsequent synchronizations.</p>
+<h3>When a user account in the LDAP directory has expired or is suspended</h3>
+<p>If LDAP external authentication is being used, then even though the 
+ LDAP user has been enrolled in an Entrust IdentityGuard database, the 
+ expired or &#160;disabled status of the original LDAP account is still 
+ taken into account. What this means in practice is that if an LDAP user 
+ who has been enrolled as an Entrust IdentityGuard user uses external LDAP 
+ authentication, and their LDAP account has either expired or been disabled, 
+ then authentication will fail.</p>
+<h3>When you delete a user from the LDAP directory</h3>
+<p class="pparagraph">If the <span class="bold">LDAP Sync Background Thread 
+ Enabled</span> property is set to <span class="bold">True</span>, when 
+ a user is deleted from a synchronized LDAP directory container, Entrust 
+ IdentityGuard receives a notification and marks the user account as <span 
+	 class="bold">Orphaned in Repository</span>.</p>
+<p class="pparagraph"><img src="../../ai-users-deleted_user_acct_after_sync.png" alt="" style="border: none;" width="500" height="299" border="0" /></p>
+<p class="pparagraph">Entrust IdentityGuard does not automatically delete 
+ Entrust IdentityGuard user accounts because doing so would delete all 
+ authenticator data for the user and it cannot be recovered if the user 
+ account was deleted by mistake from the LDAP directory.</p>
+<h3>If a user account is moved to an LDAP directory location that is not 
+ synchronized</h3>
+<p class="pparagraph">If the <span class="bold">LDAP Sync Background Thread 
+ Enabled</span> property is set to <span class="bold">True</span>, when 
+ a user is moved to a different LDAP directory repository or to a node 
+ in the same directory that is not synchronized with Entrust IdentityGuard, 
+ the synchronization-related values in the account information are removed.</p>
+<p class="nonote"><b style="mso-bidi-font-weight: normal;">Note</b>: LDAP 
+ directory groups are not mapped to Entrust IdentityGuard groups at this 
+ time, therefore, automatic Entrust IdentityGuard group changes based on 
+ a user’s LDAP directory group changes are not supported.</p>
+<h3>If an Entrust IdentityGuard user account is moved to a different Entrust 
+ IdentityGuard repository</h3>
+<p>Several behaviors are possible depending to where the user account is 
+ moved.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If the 
+ user account is moved to an Entrust IdentityGuard LDAP repository from 
+ the database, all operational and user data related to synchronization 
+ with an external LDAP directory is removed.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If the 
+ user account is placed in an Entrust IdentityGuard database that does 
+ not have an LDAP Sync Directory configured, all operational and user data 
+ related to synchronization with an external LDAP directory is removed</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If the 
+ user account is moved to an Entrust IdentityGuard database with the same 
+ LDAP Sync Directory, the user remains synchronized.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If the 
+ user is placed in an Entrust IdentityGuard database repository with a 
+ different LDAP Sync Directory, the user account is synchronized at the 
+ time of the update. If the user account cannot be synchronized (for example, 
+ because the user does not exist in the new LDAP Sync Directory), the user 
+ is orphaned. The following audit message is written:</p>
+<p class="liplistparagraph"><span class="output">Unable to synchronize 
+ user default/john with unique user ID 119d0d80-699d-4e81-8e4e-5477e22ac1b3 
+ as the user cannot be found against the LDAP sync directory, the unique 
+ user ID will be removed and the user will be orphaned</span>.</p>
+<h3>When a user's account name changes in the LDAP directory</h3>
+<p class="pparagraph">If a user's account name (typically defined by the 
+ cn or uid attribute) 
+ is changed in the LDAP directory, the Entrust IdentityGuard user and synchronization 
+ data remain in place because the source unique user ID has not changed. 
+ The list of users that can be enrolled in Entrust IdentityGuard will include 
+ the new user name, however, creation of this user will fail because the 
+ ID already exists in Entrust IdentityGuard for the user. To work around 
+ this, the administrator must explicitly update the Entrust IdentityGuard 
+ user name. Automatic handling of LDAP directory user name changes is not 
+ currently supported. This might be considered in a future release.</p>
+<p class="nonote"><span class="bold">Note:</span> In the current release, 
+ the user name used for external authentication must be the same as the 
+ Entrust IdentityGuard user name. If the LDAP directory user name changes 
+ and it is not updated in Entrust IdentityGuard (or vice-versa), external 
+ authentication will fail for the user.</p>
+<h3>When you move the user's entry in the LDAP repository</h3>
+<p class="pparagraph">If you move a user to another LDAP container that 
+ is also synchronized, the user's DN (Sync) value is updated in Entrust 
+ IdentityGuard so it points to the new container. If you move the user 
+ to a different searchbase, the user is orphaned in the Entrust IdentityGuard 
+ database and will have to be re-enrolled from the new searchbase.</p>
+<h3>When a user activates a smart credential</h3>
+<p>The synchronized user data in the Entrust IdentityGuard database is 
+ a copy of what is in the LDAP directory, however, Entrust IdentityGuard 
+ makes real-time calls to the LDAP directory to validate a user's LDAP 
+ directory password and obtain user attributes for Entrust IdentityGuard 
+ RADIUS authentication and during smart credential activation.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

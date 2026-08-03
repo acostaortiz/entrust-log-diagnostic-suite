@@ -1,0 +1,176 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Creating a SCEP P12 file (Microsoft CA)</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 7: Create SCEP credentials\nCreate a SCEP P12 file (Microsoft CA)");
+addAvenueInfo("Untitled02","ig_admin/enablingme/creating_a_scep_epf_file_security_manager_ca.htm","ig_admin/enablingme/step_8_create_xap_credentials.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobile-enrollment-for-digital-ids.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > <a href=\"step_7_create_scep_credentials.htm\">Step 7: Create SCEP credentials<\/a> > Create a SCEP P12 file (Microsoft CA)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_54603_Creating_a_SCEP" id="XREF_54603_Creating_a_SCEP"></a>Create a SCEP P12 file (Microsoft CA)</h1>
+<p class="pparagraph">Complete the following procedure to create a SCEP P12 file.</p>
+<p class="prtproceduretitle">To create a SCEP P12 (Microsoft CA)</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log in to the Master user shell. See <a href="../usingadmininterface/using_the_master_user_shell.htm#XREF_32785_Using_the_master">Using the Master user shell</a>.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>To create the P12 file, use the following command syntax:</p>
+
+<p class="cocode">ca microsoft p12 -dn &lt;dn_of_certificate&gt; -certTemplates “&lt;name_of_template&gt;” -p12 &lt;name_of_cert&gt;.p12 -caCommonName &lt;common_name_of_CA&gt; -host &lt;fully_qualified_name_of_CA_host&gt; -dirHost &lt;fully_qualified_name_of_diectory_host&gt; -dirLdapPort &lt;port_number_of_ldap_directory&gt;</p>
+<p class="prpprocedureparagraph">Where:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">&lt;dn_of_certificate&gt;</span>&#160;is the distinguished name that you want to have appear in the certificate. The DN can be anything you like, for example, <span class="output" style="font-family: Courier; font-size: 9.0pt;">cn=IGSCEPadministrator</span>. However, as a best practice, it is recommended you use a DN that incorporates your Windows domain. For example, if your domain is <span class="output" style="font-family: Courier; font-size: 9.0pt;">mydep.myco.com</span>, then an appropriate CN might be <span class="output" style="font-family: Courier; font-size: 9.0pt;">cn=IGSCEPadministrator,dc=mydep,dc=myco,dc=com</span>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">&lt;name_of_template&gt;</span>&#160;is <span class="output">IG Dual Usage</span>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">&lt;name_of_cert&gt;.p12</span>&#160;is the name of the PKCS#12 file that the IG Dual Usage key and certificate will be stored in after it is created. This guide assumes you used <span class="output" style="font-family: Courier; font-size: 9.0pt;"></span><span class="output">IGSCEPadministrator.p12</span>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">&lt;common_name_of_CA&gt;</span>&#160;is the common name of the CA. You can find it by opening the Windows Server Manager, and looking under <span style="font-weight: bold;">Roles</span>&#160;&gt; <span style="font-weight: bold;">Active Directory Certificate Services</span>. It is the item with the green check mark (<img alt="servermanager_caicon00889.jpg" id="image6" src="servermanager_caicon00889.jpg" style="margin-bottom: -6.750pt;" width="24" height="23" border="0" name="image6" />)that contains folders for <span style="font-weight: bold;">Revoked Certificates</span>, <span style="font-weight: bold;">Issued Certificates</span>, and so on.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">&lt;fully_qualified_name_of_CA_host&gt;</span>&#160;is the fully qualified domain name (FQDN) of the machine where the CA is installed. You can find the FQDN by going to the CA computer, opening Windows explorer, and navigating to <span style="font-weight: bold;">Computer</span>&#160;&gt; <span style="font-weight: bold;">Properties</span>. The FQDN is listed next to <span style="font-weight: bold;">Full computer name</span>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">&lt;fully_qualified_name_of_directory_host&gt;</span>&#160;is the fully qualified domain name of the computer hosting the directory.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="output">&lt;port_number_of_ldap_directory&gt;</span>&#160;is the port used to contact the LDAP directory—389, by default. If you are using the default port, there is no need to specify it.</p>
+
+<p class="prpprocedureparagraph">An example of this command is:</p>
+<p class="cocode">ca microsoft p12 -dn cn=IGSCEPadministrator,dc=mydep,dc=myco,dc=com -certTemplates “IG Dual Usage” -p12 c:/IGSCEPadministrator.p12 -caCommonName msca -host exampleca.mydep.myco.com -dirHost exampledir.mydep.myco.com</p>
+<p class="attnattention"><span style="font-weight: bold;">Attention:</span> Use / in paths. Do not use quotes or \.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust IdentityGuard prompts you to provide a password for the PKCS#12 file.</p>
+
+<p class="prpprocedureparagraph">Specify a password for the PKCS#12 file.</p>
+<p class="prpprocedureparagraph">You will need to enter this password again when you add your CA’s information to Entrust IdentityGuard, in a later step.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

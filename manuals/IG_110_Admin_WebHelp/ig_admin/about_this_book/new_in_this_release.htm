@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>New in this release</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("About this guide\nNew in this release");
+addAvenueInfo("Untitled","ig_admin/about_this_book/about_this_book.htm","ig_admin/about_this_book/revision_informationtable_1_revisions_in_this_documentdocument.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "about_this_book.htm");
+document.write("<a href=\"about_this_book.htm\">About this guide<\/a> > New in this release<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1>New in this release</h1>
+<p>This topic leads you to information related to the main new features 
+ of this release. For more specifications about the release, see the <span 
+	 class="italic">Entrust IdentityGuard Server Release Notes</span>.</p>
+
+
+<p>&#160;</p>
+<h2>Release 11.0</h2>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 42.879%;" />
+	<col style="width: 57.121%;" />
+	<tr class="t1st">
+		<td style="vertical-align: Top;"><p class="tahtableheader">Feature</p></td>
+		<td style="vertical-align: Top;"><p class="tahtableheader">This 
+		 feature is documented in the following topics</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><b 
+		 style="font-weight: normal;"><span class="bold">Synchronization 
+		 of user accounts in Active Directory and Entrust IdentityGuard 
+		 databases</span> </b></p>
+		<p class="tattabletext">With this release, Entrust IdentityGuard 
+		 supports synchronization between Microsoft Active Directory user 
+		 data and&#160;Entrust IdentityGuard user data stored in a database. 
+		 The feature is configured in Entrust IdentityGuard and requires 
+		 no schema or other changes in the Active Directory environment.&#160;</p>
+		<p class="tattabletext"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />More...</a></p>
+		<div class="droptext" id="POPUP474434243" style="display: none;">
+			<p class="tattabletext">Users added in Active Directory can 
+			 be displayed in an enrollment list that an administrator can 
+			 then use to create Entrust IdentityGuard accounts. User accounts 
+			 created this way or already existing in Entrust IdentityGuard 
+			 can then be synchronized with Active Directory. During a synchronization 
+			 operation, user names, contact information and expired or 
+			 disable status in Active Directory can be updated in the Entrust 
+			 IdentityGuard database.&#160;Synchronization can be performed 
+			 automatically through Active Directory notifications or on 
+			 demand by an administrator.&#160;</p>
+			<p class="tattabletext">The synchronized user data in the Entrust 
+			 IdentityGuard database is a copy of what is in Active Directory, 
+			 however, Entrust IdentityGuard makes real-time calls to Active 
+			 Directory to validate a user's Active Directory password and 
+			 obtain user attributes for Entrust IdentityGuard Radius authentication 
+			 and during smart credential activation.</p>
+  </div>
+		
+		</td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../useradminsection/synchronize_users_with_active_directory.htm">Synchronize 
+		 Active Directory users with an Entrust IdentityGuard database</a></p>
+		<p class="tattabletext"><a href="../useradminsection/searching_for_user_information.htm">Searching 
+		 for user information</a> (within procedure:&quot;To find users 
+		 by whether their accounts have been orphaned after synchronization 
+		 with Active Directory&quot;</p>
+		<p class="tattabletext">New properties </p>
+		<p class="tattabletext"><a href="../usingpropeditor/ldap_directory_server_settings.htm">LDAP 
+		 Directory Server Settings</a></p>
+		<p class="tattabletext"><a href="../usingpropeditor/ldap_sync_container_mapping_settings.htm">LDAP 
+		 Sync Container Mapping Settings</a></p>
+		<p class="tattabletext">New policy:</p>
+		<p class="tattabletext"><a href="../config_policies/repository_data_policies.htm">Repository 
+		 Data policies</a>: Allow authentication if User Orphaned in Repository</p>
+		<p class="tattabletext">Corresponding policy commands are documented 
+		 in the <span class="italic">Entrust IdentityGuard Master User 
+		 Shell Command Reference</span>.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>user 
+		 list: Active Directory synchronization attribute</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>use 
+		 set -group -syncGroup</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>user 
+		 enroll list</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Enhancements to risk-based authentication</span></p>
+		<p class="tattabletext">This release features enhancements to the 
+		 machine authentication portion of risk-based authentication (RBA). 
+		 Previously, Entrust IdentityGuard depended on a customer application 
+		 to deliver a machine nonce and sequence nonce from a user's browser 
+		 to test whether there was an exact match that would allow machine 
+		 authentication. Today, many users delete cookies from their browsers, 
+		 causing machine authentication to fail and forcing them to re-authenticate.</p>
+		<p class="tattabletext">The new Entrust IdentityGuard Device Fingerprint 
+		 SDK helps you add new data capture capabilities&#160;to your client 
+		 applications to deliver a more comprehensive and flexible &quot;device 
+		 fingerprint&quot;. <a class="dropspot" href="javascript:TextPopup(this)" id="a21"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />More...</a></p>
+		<div class="droptext" id="POPUP4746784011" style="display: none;">
+			<p class="tattabletext">The device fingerprint is based on 
+			 a number of attributes of the user's browser, Android device, 
+			 or iOS device, with allowances for some change in some attributes. 
+			 Within Entrust IdentityGuard,&#160;new Machine Secret policies 
+			 related to the device fingerprint allow you to specify which 
+			 collected attributes should be used in the device fingerprint, 
+			 specify the degree of change (if any) allowed for each attribute, 
+			 and assign each attribute a relative weight based on the potential 
+			 risk posed by a change in that attribute.</p>
+			<p class="tattabletext">In addition, if you set Machine Secret 
+			 policies to require use of nonce values, the Device Fingerprint 
+			 SDK provides that ability to store the machine nonce and sequence 
+			 nonce to various storage locations to improve their robustness 
+			 and protect against a user deleting this information when 
+			 they delete browser cookies. Use of nonce values is optional 
+			 with this release due to the enhanced device fingerprinting 
+			 capabilities.</p>
+  </div>
+		
+		<p class="tattabletext">For more information, see the <span style="font-style: italic;"><i>Entrust 
+		 IdentityGuard Device Fingerprint SDK Programming Guide</i></span>, 
+		 and the &quot;Machine authentication&quot; and &quot;Risk-based 
+		 authentication&quot; sections of the <span style="font-style: italic;"><i>Entrust 
+		 IdentityGuard Server Administration Guide</i></span>.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../machineauth/configure_a_device_fingerprint.htm">Configure 
+		 the device fingerprint policies</a></p>
+		<p class="tattabletext"><a href="../config_policies/machine_secret_policies.htm">Machine 
+		 secret policies</a></p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a href="../config_policies/device_fingerprint_attributes_android.htm">Device 
+		 fingerprint attributes Android</a></p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a href="../config_policies/device_fingerprint_attributes_ios.htm">Device 
+		 fingerprint attributes iOS</a></p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a href="../config_policies/device_fingerprint_attributes_web.htm">Device 
+		 fingerprint attributes Web</a></p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a href="../config_policies/characteristics_of_device_fingerprint_attributes.htm">Characteristics 
+		 of device fingerprint attributes</a></p>
+		<p class="tattabletext">Corresponding policy commands are documented 
+		 in the <span class="italic">Entrust IdentityGuard Master User 
+		 Shell Command Reference</span>.</p>
+		<p class="tattabletext">See also the<span class="italic"> Entrust 
+		 IdentityGuard Device Fingerprint SDK Programming Guide.</span></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><b>New 
+		 security policies to control usage of mobile apps on unsecured 
+		 devices</b></p>
+		<p class="tattabletext"><b style="font-weight: normal;">T</b>he 
+		 Entrust IdentityGuard mobile applications (Entrust IdentityGuard 
+		 Mobile Smart Credential version 3.0 or later and Entrust IdentityGuard 
+		 Mobile Soft Token version 3.1 or later) app can now optionally 
+		 be run on unsecured devices, that is, on Android devices that 
+		 have been rooted or iOS devices that have been jailbroken. New 
+		 smart credential and token policies in Entrust IdentityGuard support 
+		 optional use of this feature.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../softtokenauth/enable_use_of_soft_tokens_on_an_unsecure_mobile_device.htm">Enable 
+		 use of soft tokens on unsecured mobile devices</a></p>
+		<p class="tattabletext"><a href="../softtokenauth/effects_of_mobile_soft_token_allow_unsecured_device_policy_on_users.htm">Effects 
+		 of enabling the Mobile Soft Token Allow Unsecured Device policy</a></p>
+		<p class="tattabletext"><a href="../config_policies/smart_credential_policies.htm">Smart 
+		 Credential policies</a></p>
+		<p class="tattabletext"><a href="../config_policies/token_policies.htm">Token 
+		 policies</a></p>
+		<p class="tattabletext">Corresponding policy commands are documented 
+		 in the <span class="italic">Entrust IdentityGuard Master User 
+		 Shell Command Reference</span>.</p>
+		<p class="tattabletext">For information about setting the smart 
+		 credential policy, see &quot;Set policies for mobile smart credentials&quot; 
+		 in the <span class="italic">Entrust IdentityGuard Smart Credentials 
+		 Guide</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Storage of mobile soft token seed in Trusted Execution 
+		 Environment (TEE)</span></p>
+		<p class="tattabletext">The Entrust IdentityGuard Mobile Soft Token 
+		 version 3.1 introduces the capability to&#160;store mobile soft 
+		 tokens in the isolated hardware of a mobile device. This provides 
+		 enhanced security for the soft token seed. &#160;A new optional 
+		 Entrust IdentityGuard Soft Token policy (<b>Mobile Soft Token 
+		 Trusted Execution Environment</b>) supports this feature.&#160;</p>
+		<p class="tattabletext"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />More...</a></p>
+		<div class="droptext" id="POPUP474916236" style="display: none;">
+			<p class="tattabletext">Currently, only the Samsung KNOX TEE 
+			 is supported on Samsung devices on which the TEE has been 
+			 enabled. Review the technical specifications of Samsung devices 
+			 in your user population to determine if you can make use of 
+			 this feature.&#160;</p>
+			<p class="tattabletext">Use of this feature requires one TEE 
+			 Storage for Soft Tokens license for each soft token stored 
+			 in the TEE.</p>
+  </div>
+		
+		</td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../softtokenauth/enable_storage_of_soft_tokens_in_tee.htm">Enable 
+		 storage of soft tokens in a TEE</a></p>
+		<p class="tattabletext"><a href="../config_licenses/entrust_identityguard_licenses_overview.htm">Entrust 
+		 IdentityGuard licenses overview</a></p>
+		<p class="tattabletext"><a href="../config_licenses/tee_storage_for_soft_tokens.htm">TEE 
+		 Storage for Soft Tokens</a></p>
+		<p class="tattabletext"><a href="../config_policies/token_policies.htm">Token 
+		 policies</a></p>
+		<p class="tattabletext">Corresponding policy commands are documented 
+		 in the <span class="italic">Entrust IdentityGuard Master User 
+		 Shell Command Reference</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Support for Touch ID on Mobile Smart Credential app</span></p>
+		<p class="tattabletext"><span>Users of the Entrust IdentityGuard 
+		 Mobile Smart Credential app (version 3.0 or later) can take advantage 
+		 of the iOS Touch ID feature instead of a PIN to unlock the app 
+		 and to authenticate security challenges. A new Smart Credential 
+		 policy, <b>Mobile Smart Credential Allow Fingerprint Authentication</b>, 
+		 enables optional support of this feature. &#160;User procedures 
+		 are documented in the app help and user guide.</span></p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">New 
+		 policy described in <a href="../config_policies/smart_credential_policies.htm">Smart 
+		 Credential policies</a>.</p>
+		<p class="tattabletext">Also described in &quot;Set policies for 
+		 mobile smart credentials&quot; in the <span class="italic">Entrust 
+		 IdentityGuard Smart Credentials Guide</span>.</p>
+		<p class="tattabletext">Updated Mobile Smart Credential user documents 
+		 and help will be available with the 3.1 release of the Entrust 
+		 IdentityGuard Mobile Smart Credentials app.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Licensing changes</span></p>
+		<p class="tattabletext">In previous releases of Entrust IdentityGuard,&#160;feature-specific 
+		 licenses were counted for each authenticator created. Entrust 
+		 IdentityGuard now associates most licenses with a user account 
+		 so a user can have more than one of a licensed type of authenticator, 
+		 for example, multiple soft tokens use only one license. This change 
+		 applies to all license types except Biometrics and the new license 
+		 type, TEE Storage for Soft Tokens.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../config_licenses/entrust_identityguard_licenses_overview.htm">Entrust 
+		 IdentityGuard licenses overview</a></p>
+		<p class="tattabletext"><a href="../config_licenses/how_license_counting_works.htm">How 
+		 license counting works</a> (Per user licence counting except for 
+		 Biometrics and TEE Storage for Soft Tokens.)</p>
+		<p class="tattabletext"><a href="../config_licenses/tee_storage_for_soft_tokens.htm">TEE 
+		 Storage for Soft Tokens</a></p>
+		<p class="tattabletext"><a href="../config_licenses/forcing_a_license_audit.htm">Force 
+		 a license audit</a></p>
+		<p class="tattabletext"><a href="../config_igserver/partitions_and_the_global_policy_licensing.htm">Partitions 
+		 and the global policy (licensing)</a></p>
+		<p class="tattabletext"><a href="../config_igserver/how_user_and_licensed-item_counting_works_when_partitions_are.htm">How 
+		 license counting works in partitions</a></p>
+		<p class="tattabletext">Corresponding updates the <span class="italic">Entrust 
+		 IdentityGuard Master User Shell Command Reference</span>:</p>
+		<p class="tattabletext"><span class="output">system license check</span></p>
+		<p class="tattabletext"><span class="output">system license delete</span></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Support for smart credential PIN unblock on Microsoft 
+		 Windows 8 and later</span></p>
+		<p class="tattabletext">Changes to Microsoft Windows 8 (and later 
+		 operating systems) required changes to the way smart credential 
+		 PIN unblock works in a Windows login scenario.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">See 
+		 &quot;Enable smart credential PIN unblock through Windows&quot; 
+		 in the <span class="italic">Entrust IdentityGuard Smart Credentials 
+		 Guide</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Support for external smart credential login to the 
+		 Administration interface</span></p>
+		<p class="tattabletext">Entrust IdentityGuard supports login to 
+		 the Administration interface with smart credentials. In this release, 
+		 the feature is enhanced to allow administrators to log in with 
+		 smart credentials created by a smart credential issuer other than 
+		 Entrust IdentityGuard.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../config_adminsso/enable_the_smart_credential_policy_for_smart_credential_login.htm">Enable 
+		 the smart credential policy for smart credential login</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">This 
+		 guide now incorporates the following documents:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Entrust 
+		 IdentityGuard Mini Token Administration Guide</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Entrust 
+		 IdentityGuard Pocket Token Administration Guide</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../tokenauth/entrust_mini_tokens.htm">Entrust Mini Tokens</a></p>
+		<p class="tattabletext"><a href="../tokenauth/entrust_pocket_tokens.htm">Entrust 
+		 Pocket Tokens</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 class="bold">Registered smart credentials and server-side smart 
+		 credentials</span></p>
+		<p class="tattabletext">This release exposes some new smart credential 
+		 policies that will not be supported until a future release.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="../config_policies/smart_credential_policies.htm">Smart 
+		 Credential policies</a></p>
+		<p class="tattabletext">Allow Server-Side Smart Credentials</p>
+		<p class="tattabletext">Allow Registered Smart Credentials.</p></td>
+	</tr>
+</table>
+<p>&#160;</p>
+
+  <p class="pparagraph">&#160;</p>
+  <div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP474434243');
+	TextPopupInit('a21','POPUP4746784011');
+	TextPopupInit('a3','POPUP474916236');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

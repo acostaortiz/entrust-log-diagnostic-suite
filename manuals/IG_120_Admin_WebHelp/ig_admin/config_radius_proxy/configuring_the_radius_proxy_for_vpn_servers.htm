@@ -1,0 +1,502 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_radius_proxy.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring the Radius proxy for VPN servers</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring the Entrust IdentityGuard Radius proxy\nConfiguring the Radius proxy for VPN servers");
+addAvenueInfo("Untitled02","ig_admin/config_radius_proxy/configuring_the_radius_proxy_configuration.htm","ig_admin/config_radius_proxy/configuring_the_radius_proxy_for_eap_wireless_support.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_radius_proxy.htm\">Configuring the Entrust IdentityGuard Radius proxy<\/a> > Configuring the Radius proxy for VPN servers<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_81987_Configuring_a" id="XREF_81987_Configuring_a"></a><a name="XREF_h2_Using_the_Entrust" id="XREF_h2_Using_the_Entrust"></a>Configuring the Radius proxy for VPN servers</h1>
+<p class="pparagraph"><a name="IX_on_UNIX" id="IX_on_UNIX"></a>You can configure one or more VPN connections for use with the Entrust IdentityGuard Radius proxy.</p>
+<p class="pparagraph">Depending on your policy settings for authentication and your client application, you can use a Radius server, an external authentication resource, or an Entrust IdentityGuard password for first-factor authentication. You can also set the Radius proxy to bypass first-factor authentication, or to bypass second-factor authentication if users do not yet exist in Entrust IdentityGuard, or if users belong to a configurable set of LDAP or Entrust IdentityGuard groups.</p>
+<p class="pparagraph">You can also associate specific predefined VPN group names with existing Entrust IdentityGuard group names. If this is something you are considering, read <a href="configuring_the_radius_proxy_for_groups.htm#XREF_75640_Using_the_Entrust">Configuring the Radius proxy for groups</a>&#160;before you begin to configure the Radius proxy.</p>
+<p class="attnattention"><span style="font-weight: bold;">Attention:</span> Entrust IdentityGuard rejects any VPN server configuration that creates an explicit or implied duplicate VPN server and port combination. An explicit duplicate occurs when you specify the same port more than once for the same VPN server. An implied duplicate occurs if you use the default port more than once for the same VPN server.</p>
+<p class="pparagraph">Use the Properties Editor to set up and modify any VPN connections used by the Radius proxy.</p>
+<p class="pparagraph">Use the following procedures:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_35504_To_configure_the">To configure VPN connections</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_25652_To_modify_a_VPN">To modify a VPN connection</a></p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="#XREF_76066_To_remove_a_VPN">To remove a VPN connection</a></p>
+
+<p class="prtproceduretitle"><a name="XREF_35504_To_configure_the" id="XREF_35504_To_configure_the"></a>To configure VPN connections</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to the Entrust IdentityGuard Properties Editor. </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Windows</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;&gt; 
+	 <span style="font-weight: bold;">All Programs </span>&gt; <span style="font-weight: bold;">Entrust 
+	 </span>&gt; <span style="font-weight: bold;">IdentityGuard </span>&gt;<span 
+	 class="bold"> Properties Editor</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 the <span class="bold">Log In</span>&#160;page, enter your administrator 
+	 name in <span style="font-weight: bold;">Userid</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 your password in <span style="font-weight: bold;">Password</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 a group name in the <span style="font-weight: bold;">Group</span>&#160;field. 
+	 </p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+	 <span style="font-weight: bold;">Log In</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Complete 
+	 the second-factor challenge, if presented.</p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />UNIX</a></p>
+<div class="droptext" id="POPUP630334575" style="display: none;">
+	<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 the URL of your Properties Editor web application in a Web browser. 
+	 It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardPropertiesEditor</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="prspsubprocedureparagraph"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="prspsubprocedureparagraph"><span class="output">&lt;port&gt;</span> 
+	 is the administration port you selected during configuration</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+	 the <span class="bold">Log In</span>&#160;page, enter your administrator 
+	 name in <span style="font-weight: bold;">Userid</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 your password in <span style="font-weight: bold;">Password</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enter 
+	 a group name in the <span style="font-weight: bold;">Group</span>&#160;field. 
+	 </p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+	 <span style="font-weight: bold;">Log In</span>.</p>
+	<p class="prprocedurestep" style=" margin-left: 70px;">f.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Complete 
+	 the second-factor challenge, if presented.</p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the Table of Contents, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Server Configuration</span>.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the empty field below <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Configuration Instances</span>, type a unique instance name and click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Add</span>.</p>
+
+<p class="prpprocedureparagraph">This provides a unique label used by Entrust IdentityGuard to refer to this server. The label can be anything you choose, such as the name of your VPN server or the name of a VPN user group.</p>
+<p class="prpprocedureparagraph">The pane expands to reveal available VPN properties. Most properties include default settings. Only the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Host</span>&#160;and <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Shared Secret</span>&#160;properties are required. Others are required depending on which first-factor authentication&#160;method you intend to use.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Host</span>&#160;field, enter&#160;a host name using a VPN server host&#160;name or IP address, or a range of IP addresses in a CIDR. You can specify multiple hosts in a space-separated list.&#160;All hosts specified in a single configuration instance share the same configuration details, for example, the same VPN Shared Secret, and the same port number, if specified</p>
+
+<p class="prpprocedureparagraph">For more information about specifying multiple VPN hosts, including using ranges of IP addresses, see <a href="../usingpropeditor/vpn_server_configuration.htm#XREF_51155_VPN_server">VPN Server Configuration</a>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Proxy Port Used By VPN</span>&#160;field, type the Entrust IdentityGuard Radius port to be used by all the VPN servers defined in this instance.</p>
+
+<p class="prpprocedureparagraph">The default is the port you set in the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Proxy Port</span>&#160;field of the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Proxy Configuration</span>&#160;pane (see <a href="configuring_the_radius_proxy_configuration.htm#XREF_46761_Configuring_the">Configuring the Radius proxy configuration</a>). If you enter a specific port here, any communication from this VPN server uses that port only. Enter a specific port if you want the current VPN configuration and port to apply to an Entrust IdentityGuard group, as determined by the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Entrust IdentityGuard User Group</span> property.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you are using Radius attributes to differentiate VPN instances, configure the following settings:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Attribute ID Used to Identify the VPN</span>&#160;– Specify the numerical Radius attribute ID (for example, 30 for CALLER-STATION-ID)&#160;used&#160;in the initial request to identify the VPN Server associated with this configuration. If this setting is specified, the associated attribute type and expression properties should also be configured.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">The Type of the Radius Attribute ID Used to Identify the VPN</span>&#160;– Specify the type of Radius attribute comparison to perform to identify the VPN Server associated with this configuration. There are 2 options: STRING and HEX. HEX should be used if the values from the Radius request message are sent in binary form. The default is STRING.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">The Value of the Radius Attribute ID Used to Identify the VPN</span>&#160;– Specify the value for the Radius attribute ID above. The value can be a wildcard-based expression that allows pattern matching (for example, *test* or A0*D4). This value should be represented as a string or using hexadecimal characters (for example, A0B1C2D3).&#160;All expressions are case insensitive.</p>
+
+<p class="prpprocedureparagraph">For more information about these properties, see <a href="../usingpropeditor/vpn_server_configuration.htm#XREF_51155_VPN_server">VPN Server Configuration</a>.</p>
+<p class="prpprocedureparagraph">Entrust IdentityGuard Radius proxy identifies a VPN server by its host name, the Radius port to which it sends messages, and the Radius Attribute ID value supplied by the initial Radius message.</p>
+<p class="prpprocedureparagraph">For all those VPN server configurations that match the host name, Entrust IdentityGuard Radius Proxy goes through the following selection process, and the first matching VPN server configuration that is found is used for the request.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If a port and Radius Attribute ID value are specified in the VPN server configuration, a check for a match is performed on both.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If a port is specified in the VPN server configuration and a Radius Attribute ID value is not, a check for a match is performed on the port.</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If a Radius Attribute ID value is specified in the VPN server configuration and a port is not, a check for a match is performed on the Radius Attribute ID value</p>
+
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If a port and Radius Attribute ID value are not specified in the configuration, a match is found.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If you have already defined Entrust IdentityGuard user groups, you can set a specific Entrust IdentityGuard group for use with the current VPN server in the <span style="font-weight: bold;">Entrust IdentityGuard</span> <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">User Group</span>&#160;field.</p>
+
+<p class="prpprocedureparagraph">Group names are useful if you want to associate different first-factor authentication methods with specific groups.</p>
+<p class="prpprocedureparagraph">You do not need to enter a group name if the names of users are unique in your system; Entrust IdentityGuard determines the correct group. See <a href="../config_groups/matching_a_group_to_a_user.htm#XREF_28996_Matching_a_group">Matching a group to a user</a> for an explanation.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Shared Secret</span>&#160;field, type the VPN server secret. This secret must match the server secret already set for the VPN server. Leave the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Encrypted</span>&#160;option selected so that Entrust IdentityGuard stores an encrypted version of the secret.</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Application Name</span>&#160;field, specify the application name sent to Entrust IdentityGuard in authentication requests. If no name is specified, the default name is used&#160;(<span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">Entrust IdentityGuard Radius/&lt;vpnname&gt;</span>&#160;where <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">&lt;vpnname&gt;</span> is the name of this VPN definition).</p>
+
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>In the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Character Set</span>&#160;field, select the character set used to decode user names sent by the VPN server and to encode messages sent back to the server. Select one of the options: <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">UTF-8</span>&#160;or <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">ISO-8859-1</span>.</p>
+
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Proxy Converts Backslash</span>&#160;to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>&#160;if you need to conform VPN user names that include a backslash to work with Entrust IdentityGuard. When enabled, it converts group and user name pairs in the form “group\name” coming through the Radius proxy into the form “group/name.”</p>
+
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Proxy Converts At Sign</span>&#160;to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>&#160;if you need to conform VPN user names that include the @ character to work with Entrust IdentityGuard. When enabled, converts group and user name pairs in the form “name@group” coming through the Radius proxy into the form “group/name.”</p>
+
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span style="font-weight: bold;">Radius Proxy Removes Group for 3rd-party Radius</span>&#160;to <span style="font-weight: bold;">True</span>&#160;to have the group stripped out of the user ID before the request is forwarded to a third-party Radius server for first-factor authentication.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> If <span class="bold">Radius Proxy Removes Group for IdentityGuard</span>&#160;is set to <span class="bold">True</span>, the VPN server must use the PAP protocol, and user names in Entrust IdentityGuard must be unique across all Entrust IdentityGuard groups.</p>
+<p class="nonote"><span class="bold">Note:</span> If set to <span class="bold">True</span>, this property works as intended only if group names do not include a backslash (\) or at-sign (@) character.</p>
+
+<p class="prprocedurestep">14.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius Proxy Removes Group for IdentityGuard</span>&#160;to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>&#160;to have the group stripped out of the user ID before the request is forwarded to Entrust IdentityGuard.</p>
+
+<p class="prpprocedureparagraph">Set this property to <span class="bold">True</span>&#160;only if your domain group names and Entrust IdentityGuard group names do not match.</p>
+<p class="nonote"><span class="bold">Note:</span> If set to <span class="bold">True</span>, this property works as intended only if group names do not include a backslash (\) or at-sign (@) character.</p>
+
+<p class="prprocedurestep">15.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Skip Second-Factor Authentication for Non-existent Users</span>&#160;to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>&#160;if you want users who do not yet exist in Entrust IdentityGuard to log in without being prompted for Entrust IdentityGuard authentication. The default setting is false, and generates an error is a user tries to log in without an Entrust IdentityGuard second-factor authenticator.</p>
+
+<p class="prprocedurestep">16.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Skip Second-Factor Authentication for Users Without Active Grids or Tokens</span>&#160;to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>&#160;if you expect delays between the time you create the users in Entrust IdentityGuard, and the time they receive or activate the grids&#160;or tokens. When set to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>, users who have accounts but who do not have an active grid, token, or other authenticator are allowed to log in.</p>
+
+<p class="prprocedurestep">17.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use</span> <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Timeout</span>&#160;to set the number of seconds that the Radius proxy waits for a response from the VPN server.</p>
+
+<p class="prprocedurestep">18.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use</span> <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Maximum Number of VPN Outstanding Requests</span>&#160;to set the size of the VPN state table.</p>
+
+<p class="prprocedurestep">19.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Request Timeout</span>&#160;to specify how many seconds the Entrust IdentityGuard Radius proxy should queue responses for previous requests. Responses are queued to handle any VPN requests that are retransmitted by the VPN server. This value should be larger than the retransmit interval set in the VPN server. The default value is 10 seconds.</p>
+
+<p class="prprocedurestep">20.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Incoming Messages from VPN Server Require Message-Authenticator</span>&#160;to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>&#160;if you want incoming messages from the VPN server to include the <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">Message-Authenticator</span><span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">&#160;</span>attribute.</p>
+
+<p class="prprocedurestep">21.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Outgoing Messages to VPN Server Require Message-Authenticator</span>&#160;to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">False</span> if the VPN server does not understand the <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">Message-Authenticator</span> attribute and rejects messages as a result.</p>
+
+<p class="prprocedurestep">22.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span style="font-weight: bold;">Allow ACL Download Requests from VPN Server</span>&#160;to <span style="font-weight: bold;">True</span>&#160;if you want to allow the passthrough of access control list (ACL) requests from the VPN Server to the respective Radius server. The resulting ACL produced by the Radius server is sent to the VPN server.</p>
+
+<p class="prprocedurestep">23.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use IP Risk Based Authentication</span>&#160;to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>, if you want the Radius proxy to apply risk-based authentication to users accessing Entrust IdentityGuard through a VPN server.</p>
+
+<p class="prprocedurestep">24.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>When risk-based authentication is in effect, <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">IP Risk Based Authentication Security Level</span>&#160;sets the security level. Choose <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Normal</span>&#160;or <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Enhanced</span>. See <a href="../riskbasedauth/risk-based_authentication_overview.htm#XREF_28747_Risk_based">Risk-based authentication overview</a> for more information&#160;about risk-based authentication.</p>
+
+<p class="prprocedurestep">25.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><a name="XREF_62186_44_In_IP_Address" id="XREF_62186_44_In_IP_Address"></a>In <span style="font-weight: bold;">IP Address Radius Attribute ID</span>, select the Radius attribute ID to use to read the client IP address in Radius Access-Request and Access-Response messages. The client IP address is used for risk-based authentication. For more information about risk-based authentication, see <a href="../riskbasedauth/riskbasedauth.htm#XREF_51121_Configuring_and">Configuring and using risk-based authentication</a>.</p>
+
+<p class="prpprocedureparagraph">The IP address encapsulated in the Radius attribute must be a dot notation value encoded as a string. The default selection for this property is <span style="font-weight: bold;">TUNNEL-CLIENT-ENDPOINT (66)</span>.</p>
+
+<p class="prprocedurestep">26.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><a name="XREF_28249_26_Under_First" id="XREF_28249_26_Under_First"></a>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">First-Factor Authentication Method</span>, select the method of first-factor authentication applied to your VPN users through the Entrust IdentityGuard Radius proxy.</p>
+
+<p class="lilistbullet" style="font-weight: bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Radius</p>
+
+<p class="liplistparagraph">To authenticate users through a Radius server, select <span style="font-weight: bold;">Radius</span>. This is the default setting.</p>
+
+<p class="lilistbullet" style="font-weight: bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">External</span></p>
+
+<p class="liplistparagraph">To use external authentication (either an LDAP directory or domain controller), select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">External</span>. See <a href="../externalauth/external_authentication_overview.htm#XREF_84656_Completing_the">External authentication overview</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Entrust IdentityGuard</span>&#160;<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Password</span></p>
+
+<p class="liplistparagraph">To use Entrust IdentityGuard password authentication, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Entrust IdentityGuard</span>&#160;<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Password</span>. See <a href="../passwordauth/password_authentication_overview.htm#XREF_34893_Password">Password authentication overview</a>.</p>
+<p class="liplistparagraph">Password authentication through Radius supports the PAP, CHAP, and MSCHAP (v1 and v2) protocols when passwords are stored encrypted, not hashed. See <a href="../passwordauth/configuring_password_authentication_policies.htm#XREF_70863_Configuring">Configuring password authentication policies</a>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> When using EAP-MSCHAPv2 protocol, only response-only token authentication (TOKENRO) is allowed, and it must be allowed in Entrust IdentityGuard. See <a href="../config_policies/ip_geolocation_policies.htm#XREF_49686_Authentication">IP/Geolocation policies</a> for more information.</p>
+
+<p class="lilistbullet" style="font-weight: bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust IdentityGuard Token</p>
+
+<p class="liplistparagraph">To use token authentication, select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Entrust IdentityGuard</span>&#160;<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Token</span>. See <a href="../tokenauth/Token_authentication_overview.htm#XREF_48756_Using_tokens_for">Token authentication overview</a>.&#160;Mobile soft tokens cannot be used for first-factor authentication.</p>
+
+<p class="lilistbullet" style="font-weight: bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust IdentityGuard One-Time Password</p>
+
+<p class="liplistparagraph">To use Entrust IdentityGuard OTP authentication, select <span style="font-weight: bold;">Entrust IdentityGuard One-Time Password</span>. See <a href="../outofbandauth/out-of-band_one-time_password_overview.htm#XREF_42654_One_time_password">Out-of-band one-time password overview</a> for more information about OTP authentication.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> When using Radius first-factor authentication with OTPs, the <span style="font-weight: bold;">OTP Dynamic Refresh Enabled</span>&#160;policy must be set to <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">True</span>&#160;to ensure that new OTPs can be delivered. In this scenario, however, new OTPs cannot be delivered to replenish expired OTPs before authentication, so you must ensure that users have an OTP assigned before their first attempt to authenticate with an OTP. This also applies to newly created users.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> If you use OTP for first-factor authentication, you cannot set OTP as a second-factor authenticator.</p>
+
+<p class="lilistbullet" style="font-weight: bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">No First-Factor Authentication</span></p>
+
+<p class="liplistparagraph">To bypass first-factor authentication (which assumes users are already authenticated), select <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">No First-Factor Authentication.</span></p>
+<p class="liplistparagraph">In this case, users must authenticate with a second-factor authentication method of some kind. This includes users who are not yet registered or activated, or who do not yet have their grid card or token.</p>
+
+<p class="prprocedurestep">27.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If you have already configured Radius server, it appears in the <span style="font-weight: bold;">Radius Server</span>&#160;drop-down list. If users will authenticate using a Radius server (<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">First-Factor Authentication Method</span>&#160;is set to <span style="font-weight: bold;">Radius</span>), select the Radius server from the drop-down list.</p>
+
+<p class="prpprocedureparagraph">If you select <span style="font-weight: bold;">User’s Group is Radius Server</span>, the group name from the user’s user ID is used as the name of the Radius server to be used for first-factor authentication.</p>
+<p class="prpprocedureparagraph">If you have not yet configured a Radius server, see <a href="../config_radius_server/creating_modifying_and_removing_radius_servers.htm#XREF_18132_To_configure_a">To configure a Radius server</a>.</p>
+
+<p class="prprocedurestep">28.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set the <span style="font-weight: bold;">Convert Group to Lower Case</span>&#160;property to <span style="font-weight: bold;">True</span>&#160;to convert the user’s group name to lower case before using it to select the third-party Radius server to use for first-factor authentication. The default setting is <span style="font-weight: bold;">False</span>.</p>
+
+<p class="prpprocedureparagraph">Radius server names are case-sensitive and group names are not, so this features ensures that the group name can match the Radius server name.</p>
+
+<p class="prprocedurestep">29.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Use the <span style="font-weight: bold;">Displaced Server</span>&#160;property to specify an existing Radius authentication server that you are planning to eventually remove from your system after all users have migrated to Entrust IdentityGuard.</p>
+
+<p class="prpprocedureparagraph">It is against this server that non-Entrust IdentityGuard users continue to authenticate during the transition to Entrust IdentityGuard.</p>
+<p class="prpprocedureparagraph">If you select a server in this property, authentication is forwarded to the old Radius server when a user does not yet exist in Entrust IdentityGuard.</p>
+
+<p class="prprocedurestep">30.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span style="font-weight: bold;">Only Perform First-factor Authentication</span>&#160;to <span style="font-weight: bold;">True</span>&#160;if you want users to be authenticated after successfully answering the first-factor challenge.&#160;This option must&#160;be set to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">False</span>&#160;if&#160;<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">No First Factor Authentication</span> is specified (<a href="#XREF_28249_26_Under_First"><span class="hyperlink" style="font-family: Syntax; font-style: normal; font-weight: normal; color: #0000ff; letter-spacing: 0.00em; text-decoration: none;">Step&#160;26</span></a>).&#160;Also, this option must&#160;be set to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">False</span>&#160;if <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Entrust IdentityGuard Token</span> is specifie d (<a href="#XREF_28249_26_Under_First"><span class="hyperlink" style="font-family: Syntax; font-style: normal; font-weight: normal; color: #0000ff; letter-spacing: 0.00em; text-decoration: none;">Step&#160;26</span></a>)&#160;and you want users to&#160;authenticate with MST TVS token authentication online mode (which can be used only for second-factor authentication). See <a href="#XREF_51574_33_If_you_use"><span class="hyperlink" style="font-family: Syntax; font-style: normal; font-weight: normal; color: #0000ff; letter-spacing: 0.00em; text-decoration: none;">Step&#160;33</span></a>. For more information, see <a href="../usingpropeditor/vpn_server_configuration.htm#XREF_51155_VPN_server">VPN Server Configuration</a> for details.</p>
+
+<p class="prprocedurestep">31.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Allowable Entrust IdentityGuard Second-Factor Authentication Methods</span>, select which second-factor authentication methods are valid through the Radius proxy. The authentication methods you select must be allowed by Entrust IdentityGuard policy to be available. See <a href="../config_policies/ip_geolocation_policies.htm#XREF_49686_Authentication">IP/Geolocation policies</a>&#160;for more information.</p>
+
+<p class="prpprocedureparagraph">It can be one of the following, or you can select them all (this is the default):</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Grid</span>&#160;</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Token</span>&#160;(including mobile soft tokens (using the Entrust IdentityGuard Mobile ST app)</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">OTP</span>&#160;</p>
+
+<p class="liplistparagraph">Out-of-band delivery must be configured and available.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-weight: bold;">Q&amp;A</span>&#160;</p>
+
+<p class="liplistparagraph">If you are using Q&amp;A, only one question is used, and Entrust IdentityGuard policy must be set to allow authentication using a single question.</p>
+
+<p class="prprocedurestep">32.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">PVN Required</span>&#160;to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>&#160;if you want users to enter a PVN to access their first-factor authenticator. Soft tokens can be protected with a PIN, making a PVN&#160;unnecessary.</p>
+
+<p class="prprocedurestep">33.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><a name="XREF_51574_33_If_you_use" id="XREF_51574_33_If_you_use"></a>If your users will perform second-factor authentication using mobile soft tokens in online mode (which uses the Mobile Transaction Verification Service),&#160;configure the following settings:&#160;</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use MST TVS for Token Authentication</span>&#160;– Set to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>&#160;to allow mobile soft token-based authentication using online mode&#160;(with an option to fallback to classic mode).</p>
+
+<p class="liplistparagraph">Online mode is used when a user has an Internet connection.&#160;It allows the user to select the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Confirm</span>&#160;button in the Entrust IdentityGuard Mobile ST app to respond to the authentication challenge. Classic mode is used when the user’s device does not have an Internet connection and times out or if the user does not respond to the online request before it expires.&#160;Classic mode is also used when a user does not have any mobile soft tokens that can perform online authentication.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> To perform authentication transactions, mobile soft tokens require a <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Transaction Verification with Soft Tokens</span>&#160;license (in addition to the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Soft Tokens license</span>). For more information, see <a href="../config_licenses/config_licenses.htm#XREF_15498_Configuring_the">Managing licenses</a>.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">MST TVS Online Fallback</span>&#160;– Set to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>&#160;to allow users to manually enter the OTP if they do not have an Internet connection&#160;(to use online mode) or if the user does not respond to the online request before it expires.&#160;If this property is set to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">False</span>, no fallback authentication method is offered&#160;and the user must authenticate using online authentication.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default MST TVS Online Token Challenge Summary Message</span>&#160;– Enter the message you want users to see when presented with a soft token authentication challenge. The default message is "User {0}&#160;wants to authenticate", where the Entrust IdentityGuard user ID is substituted for {0}.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">TVS Callback Response Timeout</span>&#160;– Specify the time, in seconds, that Entrust IdentityGuard Radius waits for a response from Entrust IdentityGuard. This value should be less than the overall VPN timeout for a request to complete processing. If the challenge lifetime policy defined by Entrust IdentityGuard is less&#160;than this value, this value is set to the value in the policy. The default is 60 seconds.</p>
+
+<p class="liplistparagraph">To configure this property you need to consider the overall VPN request timeout derived from constraints imposed by the type of VPN server you are using.</p>
+<p class="liplistparagraph"><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Example</span>:</p>
+<p class="liplistparagraph">You have a VPN server that fails an authentication request after 50&#160;seconds, you might change this property from the default 60 seconds to 35 seconds.</p>
+<p class="liplistparagraph">The VPN request timeout is 10 seconds.</p>
+<p class="liplistparagraph">The VPN makes a maximum of 5 request attempts.</p>
+<p class="liplistparagraph">The overall VPN request timeout is 50 seconds.</p>
+<p class="liplistparagraph">You need to allow the user time to try authenticating with the fallback method (enter an OTP response manually). Set this value to 35&#160;seconds so this timeout value plus the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Callback Queue Check Interval</span>&#160;(which can be configured to be between 2 and 10 seconds), is a few&#160;seconds less than the 50 second limit imposed by the VPN server.</p>
+
+<p class="prprocedurestep">34.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use EAP for Authentication</span>&#160;to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>&#160;and pick an option under <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Type of EAP Protocol Supported</span> to use the EAP protocol supported with the VPN server.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> When using EAP-MSCHAPv2 protocol, only TOKENRO authentication is allowed, and it must be allowed in Entrust IdentityGuard. See <a href="../config_policies/ip_geolocation_policies.htm#XREF_49686_Authentication">IP/Geolocation policies</a> for more information.</p>
+
+<p class="prprocedurestep">35.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>The <span style="font-weight: bold;">Type of EAP Protocol Supported</span>&#160;specifies which EAP protocol is supported by the VPN server. The choices are <span style="font-weight: bold;">PEAPv0 with MSCHAPV2</span>&#160;and <span style="font-weight: bold;">PEAPv1 with EAP-GTC</span>.</p>
+
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Type of EAP Protocol Supported</span>&#160;property is available only if you set the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use EAP for Authentication</span>&#160;property to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> PEAP is Protected EAP.</p>
+<p class="prpprocedureparagraph">When using <span style="font-weight: bold;">PEAPv1 with EAP-GTC</span>, the authentication type used is determined by the <span style="font-weight: bold;">Allowable Entrust IdentityGuard Second-Factor Authentication Methods</span>&#160;property.</p>
+<p class="prpprocedureparagraph"><span style="font-weight: bold;">EAP-MSCHAPv2</span>&#160;supports only response-only tokens. For support of challenge-response tokens and all other second-factor authentication methods, use EAP-GTC.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Allowable Entrust IdentityGuard Second-Factor Authentication Methods</span>&#160;property is not used when you select EAP-MSCHAPv2.</p>
+
+<p class="prprocedurestep">36.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Include MPPE Keys Flag</span> property determines whether both the mppe recv and mppe send keys are included in the Access-Accept returned during a successful eap authentication. The default is False.</p>
+
+<p class="prprocedurestep">37.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>The <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Use PEAP V1 Flag</span>&#160;determines whether to user the PEAP V1 Label when calculating the mppe recv and mppse send keys. The default is False.</p>
+
+<p class="prprocedurestep">38.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Use the following properties to customize the authentication challenge messages that are displayed to users. The messages must follow a set syntax. For information about the syntax and construction of challenge messages, see <a href="customizing_vpn_challenge_strings.htm#XREF_81548_Customizing_VPN">Customizing VPN challenge strings</a>.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> All of the default challenge and retry messages must use fewer than 250 characters.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default Grid Challenge Message</span>&#160;sets the challenge message presented to VPN users when they must authenticate with a grid.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default Token Challenge Message</span>&#160;sets the challenge message presented to VPN users when they must authenticate with a token.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default One-Time Password Challenge Message</span>&#160;sets the challenge message presented to VPN users when they must authenticate with an OTP.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default Q&amp;A Challenge Message</span>&#160;sets the challenge message presented to VPN users when they must authenticate with questions.</p>
+
+<p class="prprocedurestep">39.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>The <span style="font-weight: bold;">Single Challenge for Password Update</span>&#160;property sets whether the user will be challenged once for the new password or twice. If this property is <span style="font-weight: bold;">True</span>, the user is challenged just once, and must enter the new password twice in the same response, for example, <span class="output" style="font-family: Courier; font-style: normal; font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none;">newpasswordnewpassword</span>.</p>
+
+<p class="prpprocedureparagraph">If this property is set to <span style="font-weight: bold;">False</span>, the user is prompted twice, once to enter the new password, and again to confirm the new password.</p>
+
+<p class="prprocedurestep">40.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Use the following properties to customize the messages that are displayed to users when they update their passwords.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> All of the default messages must use fewer than 250 characters.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default Password Update Message</span> sets the message to display if the user needs to update their password.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default Password Update Verify Message</span>&#160;sets the message to display when prompting the user for confirmation of their new password.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Default Password Failure Message sets the message to display if the user’s password change fails.</p>
+
+<p class="prprocedurestep">41.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>If you set <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Separate Challenge for PVN Update</span>&#160;to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>, &#160;users&#160;are prompted for the new PVN and confirmation in separate challenges. The default is <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">False</span>, which means that Entrust IdentityGuard expects the challenge response, the new PVN, and confirmation of the new PVN all in one string. See <a href="../usingpropeditor/vpn_server_configuration.htm#XREF_Separate_Challenge_for">Separate Challenge for PVN Update</a> for details.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> All of the default challenge and retry messages must use fewer than 250 characters.</p>
+
+<p class="prprocedurestep">42.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Use the following properties to customize the messages that are&#160;displayed to users when they update their PVNs:</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> These messages must use fewer than 250 characters.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default PVN Update Message</span>&#160;is the default message to display when prompting the user to change their PVN.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default PVN Update Verify Message</span>&#160;is the default message to display when prompting the user to confirm their new PVN. This string is only used if Separate Challenge for PVN Update is set to True.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default PVN Failure Message</span>&#160;is the default message to display when the user’s two PVNs do not match.</p>
+
+<p class="prprocedurestep">43.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Use the following properties to customize these messages that are displayed to users. These messages an be any free-form string.:</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> All of the default challenge and retry messages must use fewer than 250 characters.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default Grid Retry Message</span>&#160;sets the message to display if the user enters an invalid response to the grid challenge.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default Token Retry Message</span>&#160;sets the message to display if the user enters an invalid response to the token challenge. <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default One-Time Password Retry Message</span>&#160;sets the message to display if the user enters an invalid response to the OTP challenge.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Default Q&amp;A Retry Message</span>&#160;sets the message to display if the user enters an invalid response to the question-and-answer challenge.</p>
+
+<p class="prprocedurestep">44.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span style="font-weight: bold;">Custom Error Message</span>&#160;is the string to display with the new challenge when a user enters an invalid response.</p>
+
+<p class="prprocedurestep">45.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Use the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Custom Error Messages Properties File</span>&#160;property to specify a file with customized error messages that will replace the default ones for this VPN server instance. With this property you can&#160;update or localize error messages so users will see them in a language other than the default, English. To support several languages, create multiple properties files, and associate each one with its own VPN server configuration instance. For more information, see <a href="customizing_error_messages.htm#XREF_80315_Customizing_and">Customizing error messages</a>.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> Customization of error messages is set&#160;for each server configuration instance. Users cannot select the language of the messages they see.</p>
+
+<p class="prprocedurestep">46.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Use <span style="font-weight: bold;">Additional Radius Response Attributes</span>&#160;to define mappings for the Radius response attributes to include in the Radius message upon successful authentication.</p>
+
+<p class="prpprocedureparagraph">In <span style="font-weight: bold;">Radius Response Attribute Group</span>, make a selection from the drop-down list. The list contains the attributes you configured using the <span style="font-weight: bold;">Radius Response Attribute Configuration</span> properties.</p>
+<p class="prpprocedureparagraph">Choose a mapping value from the next drop-down list. If you are using an LDAP repository, you can include LDAP attributes found at user entries by selecting <span style="font-weight: bold;">Custom</span> and entering the LDAP attribute name.</p>
+<p class="prpprocedureparagraph">For more information about using the Radius response attributes, see <a href="configuring_the_radius_response_attributes.htm#XREF_27953_Configuring_the">Configuring the Radius response attributes</a>.</p>
+
+<p class="prprocedurestep">47.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><a name="XREF_71232_47_xxxxxxxxxxxxUse" id="XREF_71232_47_xxxxxxxxxxxxUse"></a>Use <span class="bold">Authorization expression</span>&#160;to define a set of LDAP or Entrust IdentityGuard groups to which the user must belong in order to be granted access to the requested resource. Entrust IdentityGuard performs this authorization check immediately after first-factor authentication (if second-factor authentication is disabled), or second-factor authentication (if second-factor authentication is enabled). For syntax and examples, see "Authorization expression syntax and examples" in <a href="../usingpropeditor/vpn_server_configuration.htm">VPN Server Configuration (19)</a>.</p>
+
+<p class="prprocedurestep">48.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><a name="XREF_98734_48_xxxxxxxxxUse" id="XREF_98734_48_xxxxxxxxxUse"></a>Use <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Skip Second-Factor Authentication for Users That Have Been Authorized</span>&#160;in conjunction with <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Authorization expression</span>. If <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">True</span>, users who have been successfully authorized against your authorization expression skip second-factor authentication. If <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">False</span>, users who are successfully authorized cannot skip second-factor authentication.</p>
+
+<p class="nonote"><span style="font-weight: bold;">Note:</span> If <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Skip Second-Factor [...]</span> setting is disabled, it is because a) the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">First-Factor Authentication Method</span><span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">&#160;property</span> is set to <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Radius</span>, or b) the&#160;<span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Authorization Expression</span> has not been set.</p>
+
+<p class="prprocedurestep">49.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate &amp; Save</span>.</p>
+
+<p class="prprocedurestep">50.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Log out of the Properties Editor.</p>
+
+<p class="prprocedurestep">51.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Restart Entrust IdentityGuard and the Radius proxy.</p>
+
+<p class="prtproceduretitle"><a name="XREF_25652_To_modify_a_VPN" id="XREF_25652_To_modify_a_VPN"></a>To modify a VPN connection</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Entrust IdentityGuard Properties Editor. (See <a href="../usingpropeditor/logging_in_and_out_of_the_properties_editor.htm#XREF_34072_Logging_in_and_out">Logging in and out of the Properties Editor</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the Table of Contents, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Server Configuration.</span></p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select the name of a VPN server from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Configuration Instances</span>, drop-down list.</p>
+
+<p class="prpprocedureparagraph">The VPN server settings appear in the property fields.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Change the property settings as required. For a complete list of properties, see <a href="../usingpropeditor/vpn_server_configuration.htm#XREF_51155_VPN_server">VPN Server Configuration</a>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Validate &amp; Save</span>.</p>
+
+<p class="prtproceduretitle"><a name="XREF_76066_To_remove_a_VPN" id="XREF_76066_To_remove_a_VPN"></a>To remove a VPN connection</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start the Entrust IdentityGuard Properties Editor. (See <a href="../usingpropeditor/logging_in_and_out_of_the_properties_editor.htm#XREF_34072_Logging_in_and_out">Logging in and out of the Properties Editor</a>.)</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the Table of Contents, click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">VPN Server Configuration.</span></p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select the name of a VPN server from the <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Configuration Instances</span>, drop-down list.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Remove</span>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">OK</span> on the prompt dialog box.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP521422358');
+	TextPopupInit('a2','POPUP630334575');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

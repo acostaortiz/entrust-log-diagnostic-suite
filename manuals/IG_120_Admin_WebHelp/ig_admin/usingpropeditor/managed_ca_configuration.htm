@@ -1,0 +1,259 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Managed CA Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nManaged CA Configuration (27)");
+addAvenueInfo("Untitled02","ig_admin/usingpropeditor/license_audit_settings.htm","ig_admin/usingpropeditor/out-of-band_otp_email_delivery_configuration.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Managed CA Configuration (27)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_71225_Managed_CA" id="XREF_71225_Managed_CA"></a>Managed CA Configuration</h1>
+<p class="pparagraph">When you deploy smart credentials, you might need to configure a managed Certification Authority (CA). See "Setting up a managed CA" in the <span class="italic">Entrust IdentityGuard Smart Credentials Guide</span>.</p>
+<p class="pparagraph">These properties control how Entrust IdentityGuard works with a managed CA when issuing X.509-based digital identities for smart credentials, mobile devices, and other resources.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Managed 
+ CA Manager Enabled</a></span></p>
+<div class="droptext" id="POPUP591873019" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.managedca.manager.enabled</span></p>
+	<p class="lip2list2paragraph">Determines if the managed CA manager 
+	 is enabled. If <span class="output" style="font-family: Courier; font-style: normal; 
+							 font-weight: normal; font-size: 9.pt; color: #; 
+							 letter-spacing: .em; text-decoration: none; ">True</span>, 
+	 the manager starts at system startup and automatically manages the 
+	 administrative identities configured for managed CAs.</p>
+	<p class="lip2list2paragraph">Management of identities ensures that 
+	 the keys or certificates they contain are always current. Always enable 
+	 this property on the primary Entrust IdentityGuard server. It can 
+	 be disabled on a replica server.</p>
+	<p class="lip2list2paragraph">Default: True.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Managed 
+ CA Manager Interval</a></span></p>
+<div class="droptext" id="POPUP591846408" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.managedca.manager.interval</span></p>
+	<p class="lip2list2paragraph">Sets the interval in hours at which the 
+	 managed CA manager confirms the identities configured for managed 
+	 CAs. This check also occurs at system startup.</p>
+	<p class="lip2list2paragraph">The default interval is 24 hours.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Initial 
+ XAP Connection Pool Size</a></span></p>
+<div class="droptext" id="POPUP591654291" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.managedca.xap.connections.initial</span></p>
+	<p class="lip2list2paragraph">Sets the initial size of the XAP connection 
+	 pool.</p>
+	<p class="lip2list2paragraph">Entrust IdentityGuard maintains a connection 
+	 pool for each configured managed Entrust CA. It allocates more connections 
+	 as needed up to the maximum set by <span class="bold" style="font-weight: bold; 
+												 letter-spacing: .em; text-decoration: none; ">Maximum 
+	 XAP Connection Pool Size</span>. More connections allow more concurrent 
+	 processing of XAP operations, but they require more resources.</p>
+	<p class="lip2list2paragraph">The default initial size is 4.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Maximum 
+ XAP Connection Pool Size</a></span></p>
+<div class="droptext" id="POPUP591569523" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.managedca.xap.connections.maximum</span></p>
+	<p class="lip2list2paragraph">Controls the maximum size of the XAP 
+	 connection pool. Entrust IdentityGuard dynamically allocates XAP connections 
+	 as needed up to the maximum set by this property.</p>
+	<p class="lip2list2paragraph">The default maximum is 20.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />XAP 
+ Connection Idle Timeout</a></span></p>
+<div class="droptext" id="POPUP593151440" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.managedca.xap.connections.idletimeout</span></p>
+	<p class="lip2list2paragraph">Sets the idle timeout in minutes for 
+	 XAP connections. If a connection to a managed CA is idle for longer 
+	 than the value of this property, the connection closes.</p>
+	<p class="lip2list2paragraph">When set to 0, idle connections are never 
+	 dropped.</p>
+	<p class="lip2list2paragraph">The idle timeout value is only checked 
+	 when Entrust IdentityGuard sends a XAP message to the managed CA; 
+	 therefore, XAP connections with the CA may be open for longer than 
+	 the idle timeout period, but will be closed and refreshed when a subsequent 
+	 XAP operation is performed with the CA.</p>
+	<p class="lip2list2paragraph">When using an Entrust CA located behind 
+	 a firewall, it is recommended that the idle timeout be set to a value 
+	 less than the idle timeout of the firewall.</p>
+	<p class="lip2list2paragraph">The default idle timeout is 30 minutes.</p>
+</div>
+
+
+</div><div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />XAP 
+ Connection Socket Timeout</a></span></p>
+<div class="droptext" id="POPUP593819306" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.managedca.xap.connections.sockettimeout</span></p>
+	<p class="lip2list2paragraph">Sets the socket timeout in seconds for 
+	 XAP connections. When set, read attempts on an XAP connection only 
+	 block for the specified number of seconds.</p>
+	<p class="lip2list2paragraph">The default socket timeout is 60 seconds.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP591873019');
+	TextPopupInit('a2','POPUP591846408');
+	TextPopupInit('a3','POPUP591654291');
+	TextPopupInit('a4','POPUP591569523');
+	TextPopupInit('a5','POPUP593151440');
+	TextPopupInit('a6','POPUP593819306');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

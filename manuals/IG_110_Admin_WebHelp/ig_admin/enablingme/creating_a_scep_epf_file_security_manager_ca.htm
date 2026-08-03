@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Creating a SCEP EPF file (Security Manager CA)</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 7: Create SCEP credentials\nCreate a SCEP EPF file (Security Manager CA)");
+addAvenueInfo("Untitled","ig_admin/enablingme/step_7_create_scep_credentials.htm","ig_admin/enablingme/creating_a_scep_p12_file_microsoft_ca.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobileenrollmentsection.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > <a href=\"step_7_create_scep_credentials.htm\">Step 7: Create SCEP credentials<\/a> > Create a SCEP EPF file (Security Manager CA)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_30597_Creating_a_SCEP"></a>Create a SCEP EPF file (Security 
+ Manager CA)</h1>
+<p class="pparagraph">You can complete this step using the Security Manager 
+ Administration GUI or using the Entrust IdentityGuard command line. Complete 
+ the procedure using the method you prefer.</p>
+<p class="prtproceduretitle"><a name="XREF_30007_To_create_the_SCEP"></a>To 
+ create the SCEP EPF using Security Manager Administration</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Before 
+ you begin, understand that you must create one SCEP administrative user 
+ (and corresponding EPF) for each CA in your system. (There is no such 
+ requirement for the XAP user and EPF that you created in <a href="creating_an_xap_credential_epf_file.htm#XREF_34264_Create_a_XAP">Creating 
+ an XAP credential (EPF file)</a>.)</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a 
+	 name="XREF_64060_1_Create_the_SCEP"></a>Create the SCEP user, as follows:</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in to Security Manager Administration. For details, see the <span style="font-style: italic;">Entrust 
+ Authority Security Manager Administration User Guide</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>From 
+ the menu bar, click <span style="font-weight: bold;">Users</span>&#160;&gt; 
+ <span style="font-weight: bold;">New User</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">New User</span> dialog box, complete 
+ the following information:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">First Name</span>&#160;– Enter <span class="output" style="font-family: Courier; 
+														 font-size: 9.0pt;">IGSCEP</span>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Last Name</span>&#160;– Enter <span class="output" style="font-family: Courier; 
+														 font-size: 9.0pt;">Administrator</span>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Create profile</span> – Select the check box to enable 
+ this option. (This indicates to create the Entrust Security Store.) </p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="sma_newuser_scep.jpg" id="image3" 
+											 src="sma_newuser_scep.jpg" 
+											 width="332" height="391" border="0" /> 
+	 </p>
+</div>
+<p 
+	 class="prsstsubstep">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click the <span style="font-weight: bold;">General</span> 
+ tab and select<span style="font-weight: bold;">&#160;End User </span>&#160;– from the <span style="font-weight: bold;">User 
+ role</span> drop-down list.</p>
+<p 
+	 class="prsstsubstep">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click the <span style="font-weight: bold;">Certificate 
+ Info</span> tab and complete the following actions:</p>
+<p 
+	 class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Select <span style="font-weight: bold;">Default</span>&#160;from 
+ the <span style="font-weight: bold;">Certificate Type</span> list.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">OK</span>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Provide 
+ your password to authorize the user creation.</p>
+<p class="prspsubprocedureparagraph">The <span style="font-weight: bold;">Create 
+ profile </span>dialog box appears. </p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Complete 
+ the following information on the <span class="bold">Create profile</span> 
+ dialog box.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold">Name</span>&#160;– 
+ Enter IGSCEPadministrator</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold">Location</span> – 
+ Enter C:\authdata\manager\epf</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Enter 
+ a password for the user profile, and then confirm it.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ <span class="bold">OK</span>.</p>
+<div style="text-align: left;">
+	<p class="prpprocedureparagraph"><img alt="sma_createprofile_scep.jpg" 
+											 id="image4" src="sma_createprofile_scep.jpg" 
+											 width="325" height="261" border="0" /> 
+	 </p>
+</div>
+<p class="prpprocedureparagraph">You have now created an IGSCEP Administrator 
+ user and a corresponding EPF.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Copy 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; ">IGSCEPadministrator.epf</span>&#160;from 
+ <span class="output" style="font-family: Courier; font-style: normal; 
+		 font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; 
+		 text-decoration: none; ">C:\authdata\manager\epf</span>&#160;to 
+ the Entrust IdentityGuard server computer.</p>
+<p class="prtproceduretitle"><a name="XREF_27451_To_create_the_SCEP"></a>To 
+ create the SCEP EPF using the command line</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create 
+ the SCEP user, as described in <a href="#XREF_64060_1_Create_the_SCEP"><span 
+	 class="hyperlink" style="font-family: Syntax; font-style: normal; 
+	 font-weight: normal; color: #0000ff; letter-spacing: 0.00em; text-decoration: none; ">Step&#160;2</span></a>&#160;in 
+ <a href="#XREF_30007_To_create_the_SCEP">To create the SCEP EPF using 
+ Security Manager Administration</a>. </p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>When creating 
+ this user, DO NOT click the <span style="font-weight: bold;">Create profile 
+ </span>link. </p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>When 
+ this page appears, record the reference number and authorization code. 
+ </p>
+<div style="text-align: right;">
+	<p class="prpprocedureparagraph"><img alt="sma_refnumauthcode_scep.jpg" 
+											 id="image5" src="sma_refnumauthcode_scep.jpg" 
+											 width="247" height="149" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">OK</span>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ Entrust IdentityGuard,&#160;log in to the Master user shell. See <a href="../usingadmininterface/using_the_master_user_shell.htm#XREF_32785_Using_the_master">Using 
+ the Master user shell</a>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>At 
+ the <span class="output" style="font-family: Courier; font-style: normal; 
+			 font-weight: normal; font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; ">Master&lt;n&gt;&#160;&gt;</span> 
+ prompt, enter a command in this syntax:</p>
+<p class="cocode">ca entrust epf –refnum &lt;refnum&gt; -authcode &lt;authcode&gt; 
+ -epf &lt;filename&gt; -password &lt;epf_pass&gt; -host &lt;CA_host&gt; 
+ [-pkixCmpPort &lt;pkix_port&gt;]-dirHost &lt;dir_host&gt; [-dirLdapPort 
+ &lt;ldap_port&gt;]</p>
+<p class="prpprocedureparagraph">Or, if&#160;you have already set up a&#160;Managed 
+ CA in Entrust IdentityGuard, use this syntax:</p>
+<p class="cocode">ca entrust epf –refnum &lt;refnum&gt; -authcode &lt;authcode&gt; 
+ -epf &lt;filename&gt; -password &lt;epf_pass&gt; -ca &lt;Managed_CA&gt;</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;refnum&gt;</span> is the reference number you recorded 
+ earlier.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;authcode&gt;</span> is the authorization code you 
+ recorded earlier.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;filename&gt;</span> is the path and file&#160;name 
+ of the EPF that will be created. </p>
+<p class="liplistparagraph">In this guide, <span class="output">c:/IGSCEPadministrator.epf</span> 
+ is used.</p>
+<p class="attnattention"><span style="font-weight: bold;">Attention: </span>Use 
+ / in paths. Do not use quotes or \.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;epf_pass&gt;</span> is a password that you want 
+ to define for the EPF.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;Managed_CA&gt;</span><span class="italic">&#160;is 
+ the friendly name of the CA, as it appears in the Entrust IdentityGuard 
+ Administration interface, under </span><span class="italic" style="font-weight: bold;">Certificates</span><span 
+	 class="italic">&#160;&gt; </span><span class="italic" style="font-weight: bold;">List 
+ Managed CAs</span><span class="italic">&#160;&gt; </span><span class="italic" 
+	 style="font-weight: bold;">Managed CA Name</span><span class="italic">. 
+ Use double-quotes if there are spaces in the name. You may not have created 
+ a managed CA yet, in which case you cannot use this option. </span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;CA_host&gt;</span>&#160;is the host name or IP 
+ address of the Security Manager server. This host name is listed in Security 
+ Manager’s <span class="output">entrust.ini</span><span class="output" 
+														 style="font-family: Courier; 
+														 font-size: 9.0pt;"> 
+ </span>file under <span class="output">Authority=</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;pkix_port&gt;</span>&#160;is the PKIX-CMP port 
+ of Security Manager. If you are using the default port of 829, there is 
+ no need to specify<span class="output" style="font-family: Courier; font-size: 9.0pt;"> 
+ </span><span class="output">–pkixCmpPort</span>&#160;parameter. This port 
+ is listed in Security Manager’s entrust.ini file under <span class="output" 
+	 style="font-family: Courier; font-size: 9.0pt;">Authority=.</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;dir_host&gt;</span>&#160;is the host name or IP 
+ of Security Manager’s LDAP directory server. This host name is listed 
+ in Security Manager’s <span class="output">entrust.ini</span>&#160;file, 
+ under <span class="output">Server=</span>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 class="output">&lt;ldap_port&gt;</span><span class="output" style="font-family: Courier; 
+													 font-size: 9.0pt;"> 
+ </span>is the LDAP port for the directory. If you are using the default 
+ LDAP port, 389, there is no need to specify the <span class="output">–dirLdapPort</span> 
+ parameter. This port is listed in Security Manager’s entrust.ini file, 
+ under Server=.</p>
+<p class="prpprocedureparagraph">Examples:</p>
+<p class="cocode">ca entrust epf –refnum 03765392 –authcode P9P4-3PB7-YF4G 
+ –epf c:/IGSCEPadministrator.epf –password Pazzw0rd@ -host 10.4.168.38 
+ –dirHost 10.4.168.38</p>
+<p class="prpprocedureparagraph">or</p>
+<p class="cocode">ca entrust epf –refnum 03765392 –authcode P9P4-3PB7-YF4G 
+ –epf c:/IGSCEPadministrator.epf –password Pazzw0rd@ -ca “My CA”</p>
+<p class="prpprocedureparagraph">Wait while the EPF is created. When the<span 
+	 class="output" style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 9.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "> 
+ Master&#160;&gt;</span>&#160;prompt appears again, it means that the EPF 
+ creation succeeded</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

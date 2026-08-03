@@ -1,0 +1,477 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_radius_proxy.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configure Entrust IdentityGuard authentication methods for the Radius proxy</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring the Entrust IdentityGuard Radius proxy\nRadius proxy configuration overview\nConfigure Entrust IdentityGuard authentication methods for the Radius proxy");
+addAvenueInfo("r13_std","ig_admin/config_radius_proxy/supported_authentication_methods_and_protocols.htm","ig_admin/config_radius_proxy/radius_proxy_integration_overview.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"configuring_the_entrust_identityguard_radius_proxy.htm\">Configuring the Entrust IdentityGuard Radius proxy<\/a> > <a href=\"radius_proxy_configuration_overview.htm\">Radius proxy configuration overview<\/a> > Configure Entrust IdentityGuard authentication methods for the Radius proxy<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_39496_Configuring" id="XREF_39496_Configuring"></a>Configure 
+ Entrust IdentityGuard authentication methods for the Radius proxy</h1>
+<p class="pparagraph">The following procedures describe the steps required 
+ to configure the Entrust IdentityGuard authentication methods that are 
+ supported by the Entrust IdentityGuard Radius proxy.</p>
+<p class="prtproceduretitle">To configure password authentication</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ Entrust IdentityGuard policy, configure the password policies.</p>
+<p class="prpprocedureparagraph">Configure how the password is stored, 
+ based on whether you are using the PAP protocol, or the CHAP or MS-CHAP 
+ protocols.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create 
+ passwords for each user.</p>
+<p class="prtproceduretitle">To configure one-time password authentication</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure 
+ a default out-of-band delivery mechanism.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ Entrust IdentityGuard policy, configure the one-time password policies.</p>
+<p class="prpprocedureparagraph">Enable user accounts to receive one-time 
+ passwords.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Create 
+ contact information for each user, and assign the default out-of-band 
+ delivery method to that contact information.</p>
+<p class="prtproceduretitle">To configure knowledge-based authentication</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ Entrust IdentityGuard policy, configure the knowledge-based policies. 
+ Set the minimum Q&amp;A challenge size to 1.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ applicable, edit the word map file.</p>
+<p class="prtproceduretitle">To configure risk-based IP/Geolocation authentication</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure 
+ the VPN to transmit the client IP address within the Radius attribute, 
+ 66-Tunnel Client Endpoint.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ Entrust IdentityGuard policy, disable machine authentication from the 
+ risk-based authentication policies.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Set 
+ the Entrust IdentityGuard properties to enable IP risk-based authentication. 
+ Set the <span style="font-weight: bold;">IP Address Radius Attribute ID</span>&#160;property.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> With 10.2 
+ FP1 Patch 194848 and later, Entrust IdentityGuard checks IP address against 
+ the IP blacklist (if one is defined) even when Entrust IdentityGuard is 
+ configured for first factor authentication only.</p>
+<p class="prtproceduretitle"><a name="To_configure_one-step_multi-factor__password_and_token_OTP__authentication_"></a>To 
+ configure one-step multi-factor (password and token OTP) authentication 
+ </p>
+<p class="nonote"><span class="bold">Note:</span> This Radius authentication 
+ method is SWIFT-compliant.</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure 
+ token authentication.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Enable 
+ users to enter both their Entrust IdentityGuard password or external authentication 
+ password and their token OTP in the same step, configure the following 
+ settings in the Properties Editor, <span class="bold">VPN Configuration 
+ Settings</span> category:</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 50%;" />
+	<col style="width: 50%;" />
+	<tr class="t1st">
+		<td style="vertical-align: top;"><p class="tahtableheader">Property 
+		 name and description</p></td>
+		<td style="vertical-align: top;"><p class="tahtableheader">Required 
+		 setting</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />First-Factor 
+ Authentication Method</a></span></p>
+<div class="droptext" id="POPUP689976095" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.igradius.vpn.{}.firstfactortype</span></p>
+	<p class="RefItemBody">Determines which type of first-factor authentication 
+	 to use through the Radius proxy. The choices are <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">Radius</span>, 
+	 <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+			 text-decoration: none; ">External</span>, <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: .em; 
+															 text-decoration: none; ">Entrust 
+	 IdentityGuard Password</span>, <span class="bold" style="font-weight: bold; 
+											 letter-spacing: .em; text-decoration: none; ">Entrust 
+	 IdentityGuard Token </span>or <span class="bold" style="font-weight: bold; 
+										 letter-spacing: .em; text-decoration: none; ">No 
+	 First-Factor Authentication</span> where:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Radius</span> – Users are authenticated using 
+	 a Radius server.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">External</span>&#160;– Users are authenticated using 
+	 an LDAP directory or a Windows domain controller. (See <a href="../usingpropeditor/external_first-factor_authentication.htm">External 
+	 First-Factor Authentication</a>, and <a href="../externalauth/external_authentication_overview.htm">External 
+	 authentication overview</a>.)</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Entrust IdentityGuard Password</span>&#160;– Users are authenticated using 
+	 an Entrust IdentityGuard password. (Also see <a href="../passwordauth/password_authentication_overview.htm">Password 
+	 authentication overview</a>)</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Entrust IdentityGuard Token</span>&#160;– Users are authenticated with 
+	 a valid token response from any hardware or software token supported 
+	 by Entrust IdentityGuard. If you choose this option, you cannot add 
+	 any second-factor authentication. This is also called “one-step token 
+	 authentication.” (Also see <a href="../tokenauth/overview_of_token_authentication.htm">Overview 
+	 of token authentication</a>.)</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">Entrust IdentityGuard One-Time Password</span>&#160;– First-factor authentication will 
+	 be performed using OTPs delivered out-of-band. (Also see <a href="../outofbandauth/out-of-band_one-time_password_overview.htm">Out-of-band 
+	 one-time password overview</a>.)</p>
+	<p class="nonote"><span class="bold">Note:</span> When using Radius 
+	 first-factor authentication with OTPs, the <span style="font-weight: bold;">OTP 
+	 Dynamic Refresh Enabled </span>policy must be set to <span class="bold">True</span><span 
+	 style="font-family: Courier;"> </span>to ensure that new OTPs can 
+	 be delivered.</p>
+	<p class="nonote"><span class="bold">Note:</span> If you use OTP for 
+	 first-factor authentication, you cannot set OTP as a second-factor 
+	 authenticator.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">Mobile Smart Credential</span>&#160;– Users are authenticated through 
+	 push authentication using the Entrust IdentityGuard Mobile Smart Credential 
+	 app. When mobile smart credential push authentication is used for 
+	 first-factor authentication, second-factor authentication is not used.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span 
+	 class="bold" style="letter-spacing: .em;">No First-Factor Authentication</span>&#160;– First-factor authentication has 
+	 already occurred outside of Entrust IdentityGuard and the user is 
+	 ready for second-factor authentication. (In this case, second-factor 
+	 authentication by some means is required. This includes cases where 
+	 a user is not yet registered or activated, or does not have a card 
+	 or token.)</p>
+	<p class="RefItemBody">Do not select <span style="font-weight: bold;">No 
+	 First-Factor Authentication </span>if you want the Radius proxy to 
+	 perform risk-based authentication (<span style="font-weight: bold;">Use 
+	 IP Risk-Based Authentication</span>= <span style="font-weight: bold;">True</span>). 
+	 For risk-based authentication to occur through the Radius proxy, first-factor 
+	 authentication must be enabled.</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: top;"><p class="tattabletext">Entrust 
+		 IdentityGuard password or External</p>
+		<p class="tattabletext">If Entrust IdentityGuard password is used, 
+		 this configuration also supports the password change workflow 
+		 if a user's password requires updating.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Only 
+ Perform First-Factor Authentication</a></span></p>
+<div class="droptext" id="POPUP693659310" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.igradius.vpn.{}.firstfactoronly</span></p>
+	<p class="RefItemBody">If this property is set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">True</span>, 
+	 the user is authenticated after successful first-factor authentication 
+	 and is not shown a second-factor challenge.</p>
+	<p class="RefItemBody">If <span style="font-weight: bold;">First-Factor 
+	 Authentication Method</span> is set to <span style="font-weight: bold;">No 
+	 First Factor Authentication </span>this property must be set to <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">False</span>.</p>
+	<p class="RefItemBody">If <span style="font-weight: bold;">First-Factor 
+	 Authentication Method</span> is set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">Entrust 
+	 IdentityGuardToken</span>, this property must be set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">True</span>. 
+	 Users must enter the token response manually, Use of MST TVS token 
+	 authentication (by which a user of the Entrust IdentityGuard Mobile 
+	 Soft Token app selects <span class="bold" style="font-weight: bold; 
+									 letter-spacing: .em; text-decoration: none; ">Confirm 
+	 </span>to authenticate) is not supported for first-factor authentication.</p>
+	<p class="RefItemBody">MST TVS token authentication can be used 
+	 only as a second-factor authentication method.</p>
+	<p class="RefItemBody">If this property is set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">True</span>, 
+	 the <span style="font-weight: bold;">Allowable Entrust IdentityGuard 
+	 Second-Factor Authentication Methods</span> property is disabled.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: top;"><p class="tattabletext">False</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allowable 
+ Entrust IdentityGuard Second-Factor Authentication Methods</a></span></p>
+<div class="droptext" id="POPUP700099785" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.igradius.vpn.{0}.allowedsecondfactortype</span></p>
+	<p class="RefItemBody">This property specifies which second-factor 
+	 authentication methods are valid through the Entrust IdentityGuard 
+	 Radius proxy; that is, Entrust IdentityGuard chooses the second-factor 
+	 authentication based on this property.</p>
+	<p class="RefItemBody">Select one or more of the following:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Grid</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Token&#160;– If Token is used for first-factor 
+	 authentication, second-factor authentication is disabled. This option 
+	 supports authentication with mobile soft tokens (using the Entrust 
+	 IdentityGuard Mobile Soft Token app).</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>OTP&#160;– OTP is not allowed for second-factor 
+	 authentication if it is used for first-factor authentication.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Mobile 
+	 Smart Credential&#160;– 
+	 If Mobile Smart Credential is used for first-factor authentication, 
+	 second-factor authentication is disabled. This option support push 
+	 authentication using the Entrust IdentityGuard Mobile Smart Credential 
+	 app.</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Q&amp;A 
+	 (Question and Answer)</p>
+	<p class="RefItemBody">Default: Any authentication method can be used 
+	 for second factor, considering the constraints described above.</p>
+	<p class="nonote"><span class="bold">Note:</span> If you are setting 
+	 up multiple VPNs, each can have different second-factor authentication 
+	 methods. That is, you can set up VPN1 with Grid, for example, and 
+	 VPN2 with Token.</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: top;"><p class="tattabletext">Token</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />PVN 
+ Required</a></span></p>
+<div class="droptext" id="POPUP700151975" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.igradius.vpn.{}.pvnrequired</span></p>
+	<p class="RefItemBody">This property can override PVN policy 
+	 set by the <span class="bold" style="letter-spacing: .em;">Authentication 
+	 Types Requiring a PVN </span>policy attribute (see <a href="../config_policies/personal_verification_number_policies.htm">Personal 
+	 Verification Number policies</a>).</p>
+	<p class="RefItemBody">When set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">True</span>, 
+	 a PVN is required during Radius authentication through VPN for any 
+	 authentication method that supports PVN, regardless of how the policy 
+	 is set.</p>
+	<p class="RefItemBody">When set to <span class="bold" style="font-weight: bold; 
+													 letter-spacing: .em; 
+													 text-decoration: none; ">False 
+	 </span>(the default), the PVN policy setting determines if a PVN is 
+	 required.</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: top;"><p class="tattabletext">False</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: top;"><div>
+
+<p class="RefItemTitle"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Use 
+ MST TVS for Token Authentication</a></span></p>
+<div class="droptext" id="POPUP669458560" style="display: none;">
+	<p class="RefItemBody">Specifies whether mobile soft tokens (in the 
+	 Entrust IdentityGuard Mobile Soft Token app) can be used for push 
+	 authentication (transaction verification) challenges. Set to <span 
+	 class="bold" style="font-weight: bold; letter-spacing: .em; text-decoration: none; ">True 
+	 </span>to allow mobile soft token push authentication challenges (by 
+	 which users select <span class="bold" style="font-weight: bold; letter-spacing: .em; 
+								 text-decoration: none; ">Confirm </span>in 
+	 the app to authenticate).</p>
+	<p class="RefItemBody">This authentication method can be used only 
+	 for second-factor authentication.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: top;"><p class="tattabletext">False</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: top;"><div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Enable 
+ One-Step Multi-Factor Authentication</a></p>
+<div class="droptext" id="POPUP644054394" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.igradius.vpn.{}.onestepmfa.enabled</span></p>
+	<p class="RefItemBody">This property allows a VPN to send both factors 
+	 of a multi-factor authentication in the same password field. If enabled, 
+	 the External and Entrust IdentityGuard password first-factor authentication 
+	 types are allowed, second-factor authentication must be enabled, and 
+	 the only type of second-factor authentication that is allowed is TOKEN.</p>
+	<p class="RefItemBody">Default: False </p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: top;"><p class="tattabletext">True</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: top;"><div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />OTP Length for One-Step 
+ Multi-Factor Authentication</a></p>
+<div class="droptext" id="POPUP644070765" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.igradius.vpn.{}.onestepmfa.otplen</span></p>
+	<p class="RefItemBody">This property specifies the number of digits 
+	 in the OTPs that are received as the second part of a one-step multi-factor 
+	 authentication request from a VPN. The value for this field is only 
+	 meaningful if the <span class="bold">One-Step Multi-Factor Authentication</span> 
+	 property is enabled. The value is typically 6 or 8. The same number 
+	 of digits applies to all token OTPs that use this VPN Server Configuration 
+	 instance.</p>
+</div>
+
+
+</div></td>
+		<td class="last" style="vertical-align: top;"><p class="tattabletext">6 
+		 or 8 (characters). The OTP length must be the same for all tokens 
+		 that will use this configuration instance.</p></td>
+	</tr>
+</table>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Save 
+ the changes to the properties.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span>Restart 
+ the Entrust IdentityGuard server service to have the properties changes 
+ take effect.</span></p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP689976095');
+	TextPopupInit('a2','POPUP693659310');
+	TextPopupInit('a3','POPUP700099785');
+	TextPopupInit('a4','POPUP700151975');
+	TextPopupInit('a5','POPUP669458560');
+	TextPopupInit('a6','POPUP644054394');
+	TextPopupInit('a7','POPUP644070765');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

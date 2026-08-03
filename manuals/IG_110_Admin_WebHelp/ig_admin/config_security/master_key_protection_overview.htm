@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_security.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Master key protection overview</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring keys, passwords, and SSL\nMaster key protection overview");
+addAvenueInfo("Untitled","ig_admin/config_security/config_security.htm","ig_admin/config_security/binding_and_unbinding_the_master_keys.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_security.htm\">Configuring keys, passwords, and SSL<\/a> > Master key protection overview<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_10814_mXn_grid_challenges"></a>Master key protection 
+ overview</h1>
+<p class="pparagraph">Master keys protect any encrypted information stored 
+ in the repository. This includes card grids, temporary PINs, question 
+ and answer values, authentication secrets, and more.</p>
+<p class="pparagraph">Entrust IdentityGuard uses master keys for encryption 
+ and creating message authentication codes (MAC), which protect data integrity.</p>
+<p class="pparagraph">For all information stored in the Entrust IdentityGuard 
+ repository, MACs are created using HMAC-SHA256 to prevent unauthorized 
+ modification of the data. Sensitive information stored in the Entrust 
+ IdentityGuard repository is also encrypted using AES-256. The protection 
+ keys are stored securely on the Entrust IdentityGuard system and bound 
+ to the host. Optionally, your organization can use a Hardware Security 
+ Module (HSM) to store Entrust IdentityGuard’s master keys. For more information, 
+ see <a href="updating_the_hsm_password.htm#XREF_27047_Updating_the_HSM">Updating 
+ the HSM password</a>&#160;and the <span class="italic" style="font-style: italic; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Entrust 
+ IdentityGuard Installation Guide</span>.</p>
+<p class="pparagraph">The Master keys are stored in a master key (.enc) 
+ file. It contains the encrypted versions of the master users’ keys. </p>
+<p class="pparagraph">Keys in the master key file are protected as follows:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>the master keys are wrapped by an encryption 
+ key</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>the encryption key is encrypted by keys derived 
+ from each of the three master user passwords</p>
+<p class="pparagraph">Another file, the key protection file, (.kpf) allows 
+ Entrust IdentityGuard services to access the master keys without administrator 
+ intervention. Also see <a href="binding_and_unbinding_the_master_keys.htm#XREF_11648_Enabling_system">Binding 
+ and unbinding the master keys</a>.</p>
+<p class="pparagraph"><a name="IX_key_protection_file_1"></a>Master users 
+ have the option of binding or unbinding the key protection (<span class="output" 
+	 style="font-family: Courier; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; ">.kpf</span>) 
+ file. When you bind the key protection file, Entrust IdentityGuard uses 
+ machine-specific information when creating the key protection file, so 
+ as to create a file that is valid only on that machine. This allows for 
+ additional security because an attacker cannot take the key files to another 
+ computer and use them there. However, this does affect your load-balancing, 
+ failover deployment, and your Entrust IdentityGuard computer if you change 
+ hardware parts. Changing hardware parts may require you to rebind the 
+ password file.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

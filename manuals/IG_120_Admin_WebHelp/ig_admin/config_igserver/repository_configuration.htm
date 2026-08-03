@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Repository configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nUsing partitions\nOther operational plans before using partitions\nRepository configuration");
+addAvenueInfo("Untitled02","ig_admin/config_igserver/other_operational_plans_before_using_partitions.htm","ig_admin/config_igserver/repository_access.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"using_partitions.htm\">Using partitions<\/a> > <a href=\"other_operational_plans_before_using_partitions.htm\">Other operational plans before using partitions<\/a> > Repository configuration<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Repository configuration</h1>
+<p class="pparagraph">To avoid problems, imagine that an Entrust IdentityGuard server in Toronto and another Entrust IdentityGuard in Dallas have the same repository naming conventions. That is, the default database configuration that is named “database” internally point to the same replicated data set in both Toronto and Dallas.</p>
+<p class="pparagraph">Problems could arise if, for example, the Entrust IdentityGuard Toronto has the following configuration:</p>
+<p class="cocode" style="margin-bottom: 3.000pt;"># URL to connect to the Primary DB server for Toronto user data.</p>
+<p class="cocode" style="margin-bottom: 3.000pt;">identityguard.jdbc.url=jdbc:db2://torontouser.toronto.com:50000/IG</p>
+<p class="cocode" style="margin-bottom: 3.000pt;"># URL to connect to the replicas of the dallas information</p>
+<p class="cocode" style="margin-bottom: 3.000pt;">identityguard.jdbc.url.Dallas=jdbc:db2://dallasdata.toronto.com:50000/IG</p>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">While Entrust IdentityGuard <span style="font-size: 9.0pt;">Dallas</span> has this configuration:</p>
+<p class="cocode"># URL to connect to the Dallas DB server for Dallas user data.</p>
+<p class="cocode">identityguard.jdbc.url=jdbc:db2://dallasusers.dallas.com:50000/IG</p>
+<p class="cocode"># URL to connect to the replicas of the Toronto information</p>
+<p class="cocode">identityguard.jdbc.url.toronto=jdbc:db2://torontodata.losangeles.com:50000/IG</p>
+<p class="pparagraph" style="text-indent: 12.000pt; margin-bottom: 3.000pt; font-family: Courier; font-size: 9.0pt;">&#160;</p>
+<p class="pparagraph">In this scenario, group XYZ could be defined to point to user repository “database”. In Toronto, a user created in group A would be placed in the Toronto database. In Dallas, a user created in group XYZ would be placed in the Dallas database. A search for users in group XYZ performed in Toronto would not find the user created in Dallas, and a search for users in group XYZ performed in Dallas would not find the user created in Toronto.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\MEsection\enablingME.fm" />
+<meta name="generator" content="Adobe RoboHelp 11" />
+<title>Step 22: Test the mobile enrollment configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Mobile enrollment for digital IDs\nEnabling mobile enrollment of digital IDs\nStep 22: Test the mobile enrollment configuration");
+addAvenueInfo("Untitled","ig_admin/enablingme/step_21_restart_the_self-service_module.htm","ig_admin/enablingme/step_23_add_users.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../mobileenrollmentsection/mobileenrollmentsection.htm\">Mobile enrollment for digital IDs<\/a> > <a href=\"enablingme.htm\">Enabling mobile enrollment of digital IDs<\/a> > Step 22: Test the mobile enrollment configuration<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_76455_Test_the_mobile"></a>Step 22:&#160;Test the mobile 
+ enrollment configuration</h1>
+<p class="pparagraph">Test the configuration with the <span class="output">mobileenroll 
+ </span>user you created earlier.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>The instructions 
+ below assume you want PKCS#12 digital IDs. If you are using SCEP, see 
+ instead the ”iPad – network access” section of the <span style="font-style: italic;">Entrust 
+ IdentityGuard Self-Service Module User Guide</span>.</p>
+<p class="prtproceduretitle">To test mobile enrollment</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Obtain 
+ a supported mobile device. </p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the mobile device, open a browser window and go to the Self-Service site 
+ at <span class="output">https://&lt;SSMHost&gt;:8445/IdentityGuardSelfService</span>. 
+ (In a real deployment, you could email this URL to your users so that 
+ they do not have to type it in.)</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Log 
+ in as <span class="output">mobileenroll</span>.</p>
+<p class="prpprocedureparagraph">The Self-Service site appears.</p>
+<div style="text-align: right;">
+	<p class="prpprocedureparagraph"><img alt="ssm_app_selfadmin_digidlinks00977.jpg" 
+											 id="image45" src="ssm_app_selfadmin_digidlinks00977.jpg" 
+											 width="344" height="358" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click<span 
+	 style="font-weight: bold;">&#160;I’d like to request a digital ID 
+ for secure email </span>or<span style="font-weight: bold;">&#160;I’d like 
+ to request a digital ID for network access</span>.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Please 
+ confirm the following</span> page appears.</p>
+<div style="text-align: right;">
+	<p class="prpprocedureparagraph"><img alt="ssm_app_pleaseconfirm.jpg" 
+											 id="image46" src="ssm_app_pleaseconfirm.jpg" 
+											 width="443" height="163" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the <span style="font-weight: bold;">Please confirm the following</span>&#160;page, 
+ click <span style="font-weight: bold;">Yes</span>.</p>
+<p class="prpprocedureparagraph">The <span style="font-weight: bold;">Digital 
+ ID For Secure Email</span>&#160;or <span style="font-weight: bold;">Digital 
+ ID for Network Access </span>page appears.</p>
+<div style="text-align: right;">
+	<p class="prpprocedureparagraph"><img alt="ssm_app_downloadcacert.jpg" 
+											 id="image47" src="ssm_app_downloadcacert.jpg" 
+											 width="552" height="347" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Download CA Certificate</span> to install 
+ the CA certificate on the device. The download will include a chain of 
+ CA certificates, if you have a CA hierarchy. Installation steps are device-specific. 
+ See the <span style="font-style: italic;">Self-Service Module User Guide</span>&#160;for 
+ examples.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ you are on a BlackBerry device, click the Back/Return arrow button on 
+ the device to return to the <span style="font-weight: bold;">Digital ID 
+ For Secure Email</span>&#160;or <span style="font-weight: bold;">Digital 
+ ID for Network Access</span>&#160;page. All other devices return the user 
+ to this page automatically after downloading the CA certificate.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">New Password</span>&#160;and <span 
+	 style="font-weight: bold;">Confirm Password</span>&#160;fields, specify 
+ a password for the digital ID and click <span style="font-weight: bold;">Next</span>.</p>
+<p class="prpprocedureparagraph">A page appears where you can download 
+ the digital ID.</p>
+<div style="text-align: right;">
+	<p class="prpprocedureparagraph"><img alt="ssm_app_downloaddigid.jpg" 
+											 id="image48" src="ssm_app_downloaddigid.jpg" 
+											 width="372" height="198" border="0" /> 
+	 </p>
+</div>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Download Digital ID</span>. Install the 
+ digital ID on the device. As with the CA certificate, installation steps 
+ are device-specific. See the <span style="font-style: italic;">Self-Service 
+ Module User Guide</span> for a few examples.</p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Done</span> in Self-Service after you 
+ have installed the digital ID.</p>
+<p class="prpprocedureparagraph">You are returned to the main Self-Service 
+ page.</p>
+<div style="text-align: right;">
+	<p class="prpprocedureparagraph"><img alt="ssm_app_selfadmin_digidlinks00986.jpg" 
+											 id="image49" src="ssm_app_selfadmin_digidlinks00986.jpg" 
+											 width="389" height="352" border="0" /> 
+	 </p>
+</div>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

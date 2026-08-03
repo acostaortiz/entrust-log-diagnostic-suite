@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_radius_proxy.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Supported wireless authentication protocols</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring the Entrust IdentityGuard Radius proxy\nConfiguring the Radius proxy for EAP (wireless support)\nSupported wireless authentication protocols");
+addAvenueInfo("Untitled","ig_admin/config_radius_proxy/configuring_the_radius_proxy_for_eap_wireless_support.htm","ig_admin/config_radius_proxy/wireless_authentication_using_the_radius_proxy.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_radius_proxy.htm\">Configuring the Entrust IdentityGuard Radius proxy<\/a> > <a href=\"configuring_the_radius_proxy_for_eap_wireless_support.htm\">Configuring the Radius proxy for EAP (wireless support)<\/a> > Supported wireless authentication protocols<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_93844_Supported_wireless"></a>Supported wireless authentication 
+ protocols</h1>
+<p class="pparagraph"><a name="IX_protocols_2"></a><a name="IX_protocols_1"></a><a 
+	 name="IX_EAP_1"></a><a name="IX_wireless_protocols"></a>Entrust IdentityGuard 
+ supports the following EAP protocols through the Radius proxy:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>EAP-GTC</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>EAP-MSCHAPv2</p>
+<p class="pparagraph">Not all Entrust IdentityGuard authentication methods 
+ are available through the Radius proxy for these protocols. The following 
+ table lists the authentication methods and protocols that are supported 
+ through the Radius proxy for wireless authentication.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>Not all 
+ clients can display the challenge message sent by the Radius proxy. Do 
+ not configure grid, token (challenge-response mode), or knowledge-based 
+ authentication if your wireless access clients cannot display challenge 
+ messages. </p>
+<h3>Supported wireless authentication methods and protocols using the Radius 
+ proxy</h3>
+<table class="Entrust_table" width="39.335%" cellspacing="0px">
+	<col style="width: 50.185%;" />
+	<col style="width: 15.442%;" />
+	<col style="width: 34.374%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">Authentication 
+		 method</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">EAP-GTC</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">EAP-MSCHAPv2</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Token 
+		 (response-only mode)</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Yes</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Yes 
+		 (Entrust tokens only)</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Token 
+		 (challenge-response)</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Yes</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">No</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Grid</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Yes</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">No</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">One-time 
+		 password</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Yes</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">No</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Knowledge-based 
+		 questions and answers</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Yes</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">No</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Mutual</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Yes</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">No</p></td>
+	</tr>
+</table>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>Token, 
+ grid, and one-time password can also include a personal verification number 
+ (PVN). Only EAP-GTC supports PVN updates.</p>
+<p class="pparagraph">A user can enter a temporary PIN in place of a grid 
+ or token.</p>
+<p class="pparagraph">Only serial number replay (grid or token) is supported 
+ for mutual authentication.</p>
+<p class="pparagraph">For knowledge-based authentication, only a single 
+ question and answer are valid through the Radius proxy. </p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Audit Email Delivery Settings</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nAudit Email Delivery Settings (42)");
+addAvenueInfo("Untitled","ig_admin/usingpropeditor/properties_quick_reference.htm","ig_admin/usingpropeditor/audit_logging_appenders.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > Audit Email Delivery Settings (42)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_properties_23"></a><a name="XREF_30390_Audit_Email"></a>Audit 
+ Email Delivery Settings</h1>
+<p class="pparagraph">These properties control what information is audited 
+ when a call is made to the Administration Service and a WS-Security header 
+ is provided in the SOAP message.</p>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Delivery Email Enabled</a></span></p>
+<div class="droptext" id="POPUP716932251" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.smtp.enabled</span></p>
+	<p class="lip2list2paragraph">Enables audit email delivery for selected 
+	 audits. Audit email delivery is set for each Entrust IdentityGuard 
+	 service, including Master user shell, Authentication, Administration, 
+	 Administration interface, Radius proxy, and Properties Editor.</p>
+	<p class="lip2list2paragraph">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Email Delivery Server</a></span></p>
+<div class="droptext" id="POPUP716913584" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.smtp.name</span></p>
+	<p class="lip2list2paragraph">Specifies the SMTP server that is used 
+	 to send audit email messages. You must configure an SMTP server.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Email Delivery Subject</a></span></p>
+<div class="droptext" id="POPUP716906210" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.smtp.subject</span></p>
+	<p class="lip2list2paragraph">Specifies the text of the subject line 
+	 of audit email messages.</p>
+	<p class="lip2list2paragraph">Default: Entrust IdentityGuard Audit</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Email Delivery Template File</a></span></p>
+<div class="droptext" id="POPUP716875142" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.smtp.body</span></p>
+	<p class="lip2list2paragraph">Specifies the location of the email template 
+	 file. The template file provides the body of the audit email messages.</p>
+	<p class="lip2list2paragraph">Default: <span class="output">$identityguard.home/etc/templates/smtp/audit.txt</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Email Delivery To Address</a></span></p>
+<div class="droptext" id="POPUP716398112" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.smtp.to</span></p>
+	<p class="lip2list2paragraph">Specifies the address of the email account 
+	 to which audit email messages should be sent. At least on of the To, 
+	 CC, or BCC addresses must be specified.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Email Delivery CC Address</a></span></p>
+<div class="droptext" id="POPUP716469842" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.smtp.cc</span></p>
+	<p class="lip2list2paragraph">Specifies the address of the email account 
+	 to which audit email messages should be copied. At least on of the 
+	 To, CC, or BCC addresses must be specified.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Email Delivery BCC Address</a></span></p>
+<div class="droptext" id="POPUP716029081" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.smtp.bcc</span></p>
+	<p class="lip2list2paragraph">Specifies the address of the email account 
+	 to which audit email messages should be copied without showing the 
+	 email address. At least on of the To, CC, or BCC addresses must be 
+	 specified.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Email Delivery From Address</a></span></p>
+<div class="droptext" id="POPUP716006309" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.smtp.from</span></p>
+	<p class="lip2list2paragraph">Specifies the email address of the sender. 
+	 Typically, this is an address of an email account in your organization.</p>
+	<p class="lip2list2paragraph">Default: email address of the SMTP server.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Audit 
+ Email Delivery ReplyTo Address</a></span></p>
+<div class="droptext" id="POPUP715856677" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.smtp.replyto</span></p>
+	<p class="lip2list2paragraph">Specifies the email address to which 
+	 replies to audit emails should be sent. If you do not want users to 
+	 reply to the email address of the sender, specify a different email 
+	 address in this property.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="liplistparagraph"><span class="bold"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />SMTP 
+ Audit Filter</a></span></p>
+<div class="droptext" id="POPUP718719673" style="display: none;">
+	<p class="lip2list2paragraph"><span class="output">identityguard.audit.smtp.filter</span></p>
+	<p class="lip2list2paragraph">A comma-separated list of audits to be 
+	 delivered by SMTP. Each entry is either an audit code or a range of 
+	 audit codes. If no value is specified, the default audit filter is 
+	 used to determine which audits to send as traps.</p>
+	<p class="lip2list2paragraph">Audits can be specified in ranges. Valid 
+	 values include:</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">-1</span> 
+	 (all audit with codes &lt;= 1)</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">2-3</span> 
+	 (all codes between 2 and 3)</p>
+	<p class="lip2list2paragraph"><span class="output" style="font-family: Courier; 
+										 font-style: normal; font-weight: normal; 
+										 font-size: 9.pt; color: #; letter-spacing: .em; 
+										 text-decoration: none; ">1-</span> 
+	 (all codes greater than or equal to 1)</p>
+	<p class="nonote"><span class="bold">Note:</span> The AUD audit code 
+	 prefix is not used in this property.</p>
+	<p class="lip2list2paragraph">Default: See default list of audits in 
+	 <a href="../config_logging/audited_event_reference.htm">Audited 
+	 event reference</a>.</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a1','POPUP716932251');
+	TextPopupInit('a2','POPUP716913584');
+	TextPopupInit('a3','POPUP716906210');
+	TextPopupInit('a4','POPUP716875142');
+	TextPopupInit('a5','POPUP716398112');
+	TextPopupInit('a6','POPUP716469842');
+	TextPopupInit('a7','POPUP716029081');
+	TextPopupInit('a8','POPUP716006309');
+	TextPopupInit('a9','POPUP715856677');
+	TextPopupInit('a10','POPUP718719673');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

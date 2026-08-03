@@ -1,0 +1,357 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_radius_proxy.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring the Radius response attributes</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring the Entrust IdentityGuard Radius proxy\nConfiguring the Radius proxy for groups\nConfiguring the Radius response attributes");
+addAvenueInfo("r13_std","ig_admin/config_radius_proxy/using_external_authentication_for_first-factor_authentication.htm","ig_admin/config_radius_proxy/replacing_your_radius_authentication_with_entrust_identityguard.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"configuring_the_entrust_identityguard_radius_proxy.htm\">Configuring the Entrust IdentityGuard Radius proxy<\/a> > <a href=\"configuring_the_radius_proxy_for_groups.htm\">Configuring the Radius proxy for groups<\/a> > Configuring the Radius response attributes<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_Radius_Response" id="IX_Radius_Response"></a><a name="IX_configuring_for_return" 
+	 id="IX_configuring_for_return"></a><a name="IX_configure_VPN_attribute" 
+											 id="IX_configure_VPN_attribute"></a><a 
+	 name="XREF_27953_Configuring_the" id="XREF_27953_Configuring_the"></a>Configuring 
+ the Radius response attributes</h1>
+<p class="pparagraph">You can configure the Radius proxy to return Active 
+ Directory and LDAP attributes such as user group in VPN responses upon 
+ successful authentication.</p>
+<p class="prtproceduretitle">In this scenario:</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>A user 
+ authenticates to Entrust IdentityGuard Radius proxy using either external 
+ authentication (with an Active Directory or LDAP repository) or an Entrust 
+ IdentityGuard-specific authentication type (Entrust IdentityGuard password 
+ or token-based authentication with an Active Directory or LDAP repository) 
+ as their first-factor authentication method.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust 
+ IdentityGuard Radius proxy sends the user’s authentication request using 
+ either their LDAP or Kerberos login, or their Entrust IdentityGuard token 
+ or password credentials. The authentication request also includes a list 
+ of attributes to return from the Active Directory or LDAP repository, 
+ and some predefined Entrust IdentityGuard user information—specifically 
+ the Entrust IdentityGuard group name—if the authentication is successful.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If 
+ the authentication request is successful Entrust IdentityGuard Radius 
+ proxy extracts and returns attributes from the authentication result and 
+ includes these values within one or more Radius Attributes, including 
+ Vendor-specific attributes. These attributes are returned in the response 
+ of a successful first-factor authentication.</p>
+<p class="prpprocedureparagraph">If first-factor authentication is disabled 
+ or is using an authentication method that does not access the Entrust 
+ IdentityGuard repository (a third-party Radius implementation, for example), 
+ the attributes are returned in the response of a successful second-factor 
+ authentication. The resultant Radius message (Response Type) is returned 
+ to the VPN that requested the authentication.</p>
+<p class="prtproceduretitle">To configure the Radius proxy to return attributes 
+ in Radius responses</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Start 
+ the Entrust IdentityGuard Properties Editor. (See <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">Log 
+ in or out of the Properties Editor</a>.)</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure 
+ a VPN connection if you do not already have one. See <a href="configuring_the_radius_proxy_for_vpn_servers.htm#XREF_35504_To_configure_the">To 
+ configure VPN connections</a>. Skip the following properties:</p>
+<p class="lilistbullet" style="font-weight: bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>IP 
+ Address Radius Attribute ID</p>
+<p class="lilistbullet" style="font-weight: bold;"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Additional 
+ Radius Response Attributes</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure 
+ a Radius server, if you do not already have one set up. See <a href="../config_radius_server/creating_modifying_and_removing_radius_servers.htm">To 
+ configure a Radius server</a>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Configure 
+ the Radius response attributes. See the property definitions in <a href="#XREF_31120_To_configure_the">To 
+ configure the Radius response attributes</a>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Save 
+ the changes and restart the Entrust IdentityGuard server and Radius Proxy 
+ services.</p>
+<p class="prtproceduretitle"><a name="XREF_31120_To_configure_the" id="XREF_31120_To_configure_the"></a>To 
+ configure the Radius response attributes</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On 
+ the Properties Editor <span style="font-weight: bold;">Table of Contents</span>, 
+ click <span style="font-weight: bold;">Radius Response Attribute Configuration</span>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ the <span style="font-weight: bold;">Configuration Instances</span>&#160;property, 
+ enter a unique name for this Radius response attribute configuration. 
+ Click <span style="font-weight: bold;">Add</span>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ <span style="font-weight: bold;">Radius Attribute ID</span>, select the 
+ type of Radius attribute you are specifying in this configuration instance.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>In 
+ <span style="font-weight: bold;">Radius Attribute Value Type</span>, select 
+ the Radius attribute value type from the list. Set this property based 
+ on the <span style="font-weight: bold;">Radius Attribute ID</span>&#160;you 
+ set. The default is <span style="font-weight: bold;">STRING</span>. The 
+ choices are:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">STRING</span>&#160;(character sequence, 
+ must be no more than 253 bytes; not necessarily null terminated)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">IP (V4) ADDRESS</span>&#160;(a 4-byte IP 
+ address in network-byte order; for example, 10.4.160.61)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">INTEGER</span> (a 4-byte value in big-endian 
+ order)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">DATE</span>&#160;(a 4-byte value in big-endian 
+ order; the number of seconds since 00:00:00 GMT - January 1st, 1970)</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+	 style="font-weight: bold;">BINARY</span>&#160;(a byte sequence of 
+ length less than 253 bytes — used for VSA’s that do not conform to FRC 
+ 2865)</p>
+<p class="prpprocedureparagraph">If the expected attribute does not match 
+ one of the formats described (IP address, integer, date, or binary), select 
+ <span style="font-weight: bold;">STRING</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Use 
+ the <span style="font-weight: bold;">Radius Attribute Format</span> property 
+ to specify the format of the values that are returned.</p>
+<p class="prpprocedureparagraph">The value of this property is interpreted 
+ using the Java MessageFormat class where {0} represents the value to format 
+ (the data object Entrust IdentityGuard is searching for). This can be 
+ the <span style="font-weight: bold;">Entrust IdentityGuard Group Name</span>&#160;or 
+ any predefined LDAP attribute name. Static (hard-coded) values may be 
+ included by removing any reference to {0}. The default value is {0}.</p>
+<p class="prpprocedureparagraph">The following rules apply to static and 
+ non-static values. Examples of both types of values are shown.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If the 
+ value type is a string, the format encoder expects a string value.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>non-static 
+ = <span class="output">‘CN={0}’</span> </p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>static 
+ = <span class="output">‘This is a string’</span>&#160;</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If the 
+ value type is an IP address, the format encoder expects a dot notation 
+ string value representing an IP address.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>non-static 
+ = <span class="output">'{0}'</span> </p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>static 
+ = <span class="output">'10.4.123.23'</span> </p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If the 
+ value type is an integer, the format encoder expects a string value representing 
+ the integer.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>non-static 
+ = <span class="output">'{0}'</span>&#160;</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>static 
+ = <span class="output">'3423'</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If the 
+ value type is a date, the format encoder expects a string value representing 
+ the date expressed as an integer.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>non-static 
+ = <span class="output">'{0}'</span> </p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>static 
+ = <span class="output">'132456323'</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>If the 
+ value type is binary, the format encoder will expect a hexadecimal string 
+ value representing the actual binary data.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>non-static 
+ = <span class="output">'{0}'</span> </p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>static 
+ = <span class="output">'A2ED341E5D'</span></p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The 
+ <span style="font-weight: bold;">Radius Attribute Return as Multiple Attributes 
+ Flag</span>&#160;property specifies a flag that determines whether attributes 
+ with multiple values are returned in the same Radius attribute, or a separate 
+ Radius attribute for each value.</p>
+<p class="prpprocedureparagraph">Set this property to <span style="font-weight: bold;">True</span>&#160;if 
+ you want the attributes to be returned in separate Radius attributes rather 
+ than being concatenated and sent in one Radius attribute.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The 
+ <span style="font-weight: bold;">Radius Attribute Multi-Value Delimiter</span>&#160;property 
+ specifies the delimiter to use when returning multi-valued attributes 
+ in one Radius attribute.</p>
+<p class="prpprocedureparagraph">If the <span style="font-weight: bold;">Radius 
+ Attribute Return as Multiple Attributes Flag</span>&#160;property is <span 
+	 style="font-weight: bold;">True</span>, this property is ignored.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The 
+ <span style="font-weight: bold;">Radius Vendor-Specific Attribute Vendor 
+ Code</span>&#160;property is required if the <span style="font-weight: bold;">Radius 
+ Attribute ID</span>&#160;property is set to <span style="font-weight: bold;">VENDOR-SPECIFIC</span>.</p>
+<p class="prpprocedureparagraph">This property is the vendor code as specified 
+ in IETF RFC 1007. See <span class="WWWhyperlink" style="font-family: Syntax; 
+							 font-style: normal; font-weight: normal; font-size: 10.0pt; 
+							 color: #0000ff; letter-spacing: 0.00em; text-decoration: underline; "><a 
+	 href="http://www.iana.org/assignments/enterprise-numbers">www.iana.org</a></span>&#160;for 
+ the up-to-date list of SMI Network Management Private Enterprise Codes. 
+ Enter the code that corresponds to the equipment vendor you are using.</p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The 
+ <span style="font-weight: bold;">Radius Vendor-Specific Attribute Conforms 
+ to RFC2138 Flag</span>&#160;is also required if the <span style="font-weight: bold;">Radius 
+ Attribute ID</span>&#160;property is set to <span style="font-weight: bold;">VENDOR-SPECIFIC 
+ (26)</span>.</p>
+<p class="prpprocedureparagraph">This property specifies whether the <span 
+	 style="font-weight: bold;">Vendor-Specific Attribute</span>&#160;conforms 
+ to the format recommended in RFC 2138. RFC 2138 format contains a specific 
+ vendor attribute number, its length, and the value.</p>
+<p class="prpprocedureparagraph">If this property is set to <span style="font-weight: bold;">False</span>, 
+ then the <span style="font-weight: bold;">Radius Attribute Value Type</span>&#160;property 
+ must be set to <span style="font-weight: bold;">BINARY</span>, and the 
+ <span style="font-weight: bold;">Radius Attribute Format</span>&#160;property 
+ then represents the value specified for the <span style="font-weight: bold;">Vendor-Specific 
+ Attribute</span>. This must be a hexadecimal value (of the format 12AB34...) 
+ up to a maximum of 249 bytes.</p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>The 
+ <span style="font-weight: bold;">Radius Vendor-Specific Attribute Number</span>&#160;property 
+ is required if the <span style="font-weight: bold;">Radius Attribute ID</span>&#160;property 
+ is set to <span style="font-weight: bold;">VENDOR-SPECIFIC (26)</span>, 
+ and <span style="font-weight: bold;">Radius Vendor-Specific Attribute 
+ Conforms to RFC2138 Flag</span>&#160;is set to <span style="font-weight: bold;">True</span>.</p>
+<p class="prpprocedureparagraph">This property represents the vendor attribute 
+ number (a value between 0 and 255). This value is set by the vendor. Check 
+ the equipment documentation for this attribute number.</p>
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Validate</span>, and correct any errors.</p>
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">Table of Contents</span>.</p>
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ <span style="font-weight: bold;">VPN Server Configuration</span>.</p>
+<p class="prprocedurestep">14.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Scroll 
+ to the bottom of this property grouping, to the <span style="font-weight: bold;">Additional 
+ Radius Response Attributes</span> property.</p>
+<p class="prprocedurestep">15.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Use 
+ <span style="font-weight: bold;">Additional Radius Response Attributes</span>&#160;to 
+ define mappings for the Radius response attributes to include in the Radius 
+ message upon successful authentication.</p>
+<p class="prpprocedureparagraph">In <span style="font-weight: bold;">Radius 
+ Attribute Instance</span>, make a selection from the drop-down list. The 
+ list contains the attributes you configured using the <span style="font-weight: bold;">Radius 
+ Response Attribute Configuration</span> properties.</p>
+<p class="prpprocedureparagraph">Choose a mapping value from the next drop-down 
+ list. If you are using an LDAP repository, you can also choose <span style="font-weight: bold;">Custom</span> 
+ to define a custom mapping.</p>
+<p class="prprocedurestep">16.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Validate 
+ &amp; Save</span>.</p>
+<p class="prprocedurestep">17.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Restart 
+ Entrust IdentityGuard service and the Radius proxy.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

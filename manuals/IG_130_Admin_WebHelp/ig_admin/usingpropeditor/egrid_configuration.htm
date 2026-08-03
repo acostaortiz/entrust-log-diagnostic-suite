@@ -1,0 +1,321 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\usingPropEditor.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>EGrid Configuration</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nProperties quick reference\nEGrid Configuration (30)");
+addAvenueInfo("r13_std","ig_admin/usingpropeditor/disallowed_password_settings.htm","ig_admin/usingpropeditor/external_first-factor_authentication.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"properties_quick_reference.htm\">Properties quick reference<\/a> > EGrid Configuration (30)<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+
+
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_26637_IP_Location" id="XREF_26637_IP_Location"></a>EGrid 
+ Configuration</h1>
+<p class="pparagraph">Use these properties to specify the type and content 
+ of eGrids, which are grid cards in the form of an electronic file.</p>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a10"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Configuration Instances</a></p>
+<div class="droptext" id="POPUP647423076" style="display: none;">
+	<p class="RefItemBody">Provides a list of EGrid configurations.</p>
+	<p class="RefItemBody">To create a new instance, enter a unique name 
+	 in the empty field and click <span class="bold">Add</span>. The other 
+	 properties appear. The name replaces the {0} placeholder.</p>
+	<p class="RefItemBody">To delete an instance, select it in the list 
+	 and click <span class="bold">Remove</span>.</p>
+	<p class="RefItemBody">There is no default configuration.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a11"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />EGrid Type</a></p>
+<div class="droptext" id="POPUP647387115" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.egrid.{0}.type</span></p>
+	<p class="RefItemBody">Specifies the EGrid format. It can be one of 
+	 the following:</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>PDF</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Text</p>
+	<p class="RefItemList"><span style="font-family:'Microsoft Sans Serif'" >•</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span><span>Image</span></p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a9"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />EGrid 
+ Template</a></p>
+<div class="droptext" id="POPUP647377253" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.egrid.{0}.template</span></p>
+	<p class="RefItemBody">Specifies the template that defines the contents 
+	 of the EGrid. If not specified, the default format is used. For information 
+	 about customizing the size, format and content of the EGrid, see &quot;Customizing 
+	 eGrids&quot; in the <span class="italic">Self-Service Module Customization 
+	 Guide</span>.</p>
+	<p class="RefItemBody">Default: $IG_home/etc/templates/grids/egrid.xsl</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a8"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />EGrid Title</a></p>
+<div class="droptext" id="POPUP647351033" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.egrid.{0}.title</span></p>
+	<p class="RefItemBody">Specifies the title of the EGrid. This property 
+	 is optional.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a7"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />EGrid Author</a></p>
+<div class="droptext" id="POPUP647321167" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.egrid.{0}.author</span></p>
+	<p class="RefItemBody">Specifies the author of the EGrid. This property 
+	 is optional.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a6"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />EGrid Creator</a></p>
+<div class="droptext" id="POPUP647302513" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.egrid.{0}.creator</span></p>
+	<p class="RefItemBody">Specifies the user who created the EGrid. This 
+	 property is optional.</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a5"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />PDF 
+ EGrid Password Protected</a></p>
+<div class="droptext" id="POPUP647300217" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.egrid.{0}.passwordProtected</span></p>
+	<p class="RefItemBody">Specifies whether PDF EGrids are password protected. 
+	 If you set this property to true, the Password policy <span class="bold">CHAP/MS-CHAP 
+	 Compatibility</span> must be set to <span class="bold">Yes</span>.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow Printing of 
+ PDF EGrids</a></p>
+<div class="droptext" id="POPUP647262128" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.egrid.{0}.allowPrint</span></p>
+	<p class="RefItemBody">Specifies whether PDF EGrids can be printed.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow Copying of 
+ PDF EGrids</a></p>
+<div class="droptext" id="POPUP647242571" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.egrid.{0}.allowCopyContent</span></p>
+	<p class="RefItemBody">Specifies whether EGrid contents can be copied.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow Editing of 
+ EGrids</a></p>
+<div class="droptext" id="POPUP647240215" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.egrid.{0}.allowEditContent</span></p>
+	<p class="RefItemBody">Specifies whether EGrid contents can be edited.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Allow Edit Annotations 
+ of EGrids</a></p>
+<div class="droptext" id="POPUP647167599" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.egrid.{0}.allowEditAnnotations</span></p>
+	<p class="RefItemBody">Specifies whether EGrid annotations can be edited.</p>
+	<p class="RefItemBody">Default: False</p>
+</div>
+
+
+</div>
+<div>
+
+<p class="RefItemTitle"><a class="dropspot" href="javascript:TextPopup(this)" id="a12"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />Use 
+ AES-128 for PDF Encryption</a></p>
+<div class="droptext" id="POPUP655303270" style="display: none;">
+	<p class="RefItemBody"><span class="output">identityguard.egrid.{0}.pdf.encryptionAES</span></p>
+	<p class="RefItemBody">Specifies whether to use AES-128 as the encryption 
+	 algorithm for password-protected EGrids. The default value is <span 
+	 class="bold">True</span>, which sets the password-protected EGrid 
+	 encryption algorithm to RC4.</p>
+	<p class="RefItemBody">Default: True</p>
+</div>
+
+
+</div>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a10','POPUP647423076');
+	TextPopupInit('a11','POPUP647387115');
+	TextPopupInit('a9','POPUP647377253');
+	TextPopupInit('a8','POPUP647351033');
+	TextPopupInit('a7','POPUP647321167');
+	TextPopupInit('a6','POPUP647302513');
+	TextPopupInit('a5','POPUP647300217');
+	TextPopupInit('a4','POPUP647262128');
+	TextPopupInit('a3','POPUP647242571');
+	TextPopupInit('a2','POPUP647240215');
+	TextPopupInit('a1','POPUP647167599');
+	TextPopupInit('a12','POPUP655303270');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

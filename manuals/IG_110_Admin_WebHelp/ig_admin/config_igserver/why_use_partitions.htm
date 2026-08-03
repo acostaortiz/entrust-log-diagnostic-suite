@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_igserver.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Why use partitions</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring repositories\nUsing partitions\nWhy use partitions?");
+addAvenueInfo("Untitled","ig_admin/config_igserver/using_partitions.htm","ig_admin/config_igserver/partitions_and_the_global_policy_licensing.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_igserver.htm\">Configuring repositories<\/a> > <a href=\"using_partitions.htm\">Using partitions<\/a> > Why use partitions?<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_75000_Partitions_overview"></a>Why use partitions?</h1>
+<p class="pparagraph">Partitions are generally used to overcome the problem 
+ of duplicate serial numbers or user numbers that can arise when your system 
+ includes multiple, replicated Entrust IdentityGuard systems, typically 
+ in different geographic locations.</p>
+<p class="pparagraph">Here is an overview of how replication and partitions 
+ work.</p>
+<p class="pparagraph">Suppose you have one Entrust IdentityGuard server 
+ in Toronto with a repository, and another Entrust IdentityGuard server 
+ in South America with another repository. Although the systems are separate, 
+ they share a single Users&#160;license, and a single Soft Tokens&#160;license. 
+ This is called the global policy (explained in greater detail later in 
+ <a href="partitions_and_the_global_policy_licensing.htm#XREF_43390_Partitions_and">Partitions 
+ and the global policy (licensing)</a>).</p>
+<p class="pparagraph">The Toronto repository is replicated nightly to the 
+ South American repository, at which time the Entrust IdentityGuard calculates 
+ the total number of users and soft tokens created across both systems 
+ and updates the licenses accordingly. If users, grid cards, and soft tokens 
+ are created in both Toronto and South America during the day, then it 
+ is possible (and even likely) that there will be users created in Toronto 
+ who will have the same user numbers as those created in South America. 
+ Similarly, there will be cards created in Toronto that will have the same 
+ serial numbers as those created in South America. Finally, there may be 
+ soft tokens created in Toronto that have the same serial number as those 
+ created in South America. (Note that the chances of soft token duplication 
+ are low because soft token serial numbers are randomly generated and quite 
+ long. By contrast, user and card numbers are not random at all—they are 
+ incremented by one after each successive user or grid creation—making 
+ the chance of duplication very high.) </p>
+<p class="pparagraph">Duplicate user, card, or soft tokens present no problem 
+ during the day, because the user numbers and serial numbers are stored 
+ in separate Toronto and South American repositories. However, when the 
+ nightly repository replication occurs, this duplication results in a replication 
+ failure.</p>
+<p class="pparagraph">To avoid the problem of duplicate user numbers and 
+ serial numbers, you can use partitions, which allow you to allocate ranges 
+ of grid and user numbers to specific user groups. For example, Toronto 
+ users might be allocated user numbers 1 - 50,000, while South American 
+ users might be allocated user numbers 50,001 - 100,000. </p>
+<p class="pparagraph">Other than avoiding replication failure, partitions 
+ are also useful when you want to split users or cards serial numbers into 
+ different groups so they are generated in a more predictable way.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

@@ -1,0 +1,658 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configure a delivery method for soft token activation information</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("Configure a delivery method for soft token activation information<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Configure delivery methods for soft token activation information</h1>
+<p class="pparagraph">Use one or more of the following procedures to configure&#160;delivery 
+ of soft token activation information to users through the Administration 
+ interface. If you complete all of the procedures, you will have enabled 
+ Entrust IdentityGuard for all possible administrator-assisted delivery 
+ methods described in <a href="admin-assisted_automatic_creation_and_activation_of_msts.htm">Admin-assisted 
+ automatic creation and activation of mobile soft tokens</a> and the <span 
+	 class="bold">Activate Token</span> page in the Administration interface 
+ would look like this:</p>
+<p class="pparagraph"><img alt="AI-User_Account-Soft_Token_Create_QRCode.jpg" id="image11" src="ai-user_account-soft_token_create_qrcode.jpg" name="image11" width="494" height="418" border="0" /></p>
+<p class="prtproceduretitle">To configure delivery of soft token information 
+ through a QR code at a help desk</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log 
+ in to the IdentityGuard Properties Editor as an administrator. See <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">To 
+ log in to the Properties Editor</a>.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>From 
+ the table of contents, select <span class="bold" style="font-weight: bold; 
+									 text-decoration: none; ">Web Application 
+ Settings</span>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Set<span 
+	 class="bold"> Enable Token Activation using QR Codes</span>&#160;to 
+ <span class="bold" style="font-weight: bold; text-decoration: none; ">True</span>&#160;(the 
+ default setting) to have the QR code displayed in the Administration interface 
+ (where users who are present can scan it using their mobile devices).</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Validate 
+ &amp; Save</span>.</p>
+<p class="prpprocedureparagraph">A confirmation dialog box appears.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold" style="font-weight: bold; text-decoration: none; ">OK</span> 
+ to confirm.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Restart 
+ the Entrust IdentityGuard Server service.</p>
+<p class="prtproceduretitle">User steps for activating a mobile soft token 
+ through a QR code at a help desk</p>
+<p 
+	 class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>When a user is physically present at a help 
+ desk, the administrator navigates to the <span class="bold">Token Activation</span> 
+ page.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The 
+ user opens the Entrust IdentityGuard Mobile Soft Token app on their mobile 
+ device.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The 
+ user scans the QR code displayed in the Administration interface.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The 
+ user enters the activation password displayed in the Administration interface. 
+ </p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The 
+ user selects <span class="bold">Activate</span> in the app to complete 
+ the activation.</p>
+<p class="prtproceduretitle">To configure delivery of soft token activation 
+ information by email or SMS from the Admin UI</p>
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Decide 
+ what information you want to include in the email and, if required, customize 
+ copies of the TXT and HTML format email templates appropriately.</p>
+<p class="prpprocedureparagraph">The sample templates for this use case 
+ are</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output">igsample_email_tokenactivate_template.txt</span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output">igsample_email_tokenactivate_template.html</span>. 
+ </p>
+<p class="prpprocedureparagraph">They are located in <span class="output">$IG_HOME/etc/templates/tokens</span>.</p>
+<p class="nonote"><span class="bold">Note</span>: Entrust IdentityGuard 
+ provides templates in both TXT and HTML formats. A best practice is to 
+ customize both versions. In the configuration instance, specify the .txt 
+ version because all email clients can process and display plain text. 
+ When there is a corresponding template of the same name but with an .html 
+ extension (in the same folder), Entrust IdentityGuard automatically creates 
+ a MIME multi-part alternative message using the txt template and the html 
+ template. Most email clients can display the HTML but for email clients 
+ that cannot, the text content is displayed.</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log 
+ in to the IdentityGuard Properties Editor as an administrator. See <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">To 
+ log in to the Properties Editor</a>.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Specify 
+ the following settings:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Web 
+ Application Settings</span></p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">IdentityGuard 
+ Self-Service Activation Address</span>&#160;– If you have Self-Service 
+ Module in your implementation, enter the URL of the Self-Service website. 
+ If specified, the value is included in the soft token activation QR Code.</p>
+<p class="lip2list2paragraph">Example address: <span class="output">ssm.example.com:8445/igst</span></p>
+<p class="nonote"><span class="bold">Note:</span> This Administrator-assisted 
+ procedure assumes you do not have a Self-Service website, however, configure 
+ this setting if you use Self-Service Module and still want to offer administrative 
+ activation of soft tokens.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">SMTP Server Configuration</span>&#160;– This is required 
+ to&#160;send activation information by email.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Configuration instances</span>&#160;– Create a new configuration 
+ instance with a descriptive name such as <span class="output">For Soft 
+ Token Activation</span> and configure the settings. For information about 
+ the settings, see <a href="../usingpropeditor/smtp_server_configuration.htm">SMTP 
+ Server Configuration</a>).</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; text-decoration: none; ">User 
+ Email Delivery Configuration</span></p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Configuration instances</span>&#160;– Create a new configuration 
+ instance with a descriptive name such as <span class="output">ST Activation 
+ Info</span> and configure the following settings for it.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Email 
+ Delivery Configuration Type</span>&#160;– Select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Token 
+ Activate</span>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Email Delivery Template File</span>&#160;– Specify the 
+ TXT version of the email template you want to use (from Step 1).</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Email Delivery Subject</span>: Specify a subject line 
+ like &quot;Activation information for your Mobile Soft Token&quot;.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Include Registration Password</span>&#160;– Set to <span 
+	 class="bold">True</span>.</p>
+<p class="prspsubprocedureparagraph">For information about the other settings, 
+ see <a href="../usingpropeditor/user_email_delivery_configuration.htm">User 
+ Email Delivery Configuration</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">SMS Server Configuration</span>&#160;– This is required 
+ to send activation information in a&#160;text message.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Configuration instances</span>&#160;– Create a new configuration 
+ instance and configure the settings. For information about the settings, 
+ see <a href="../usingpropeditor/sms_server_configuration.htm">SMS Server 
+ Configuration</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">User SMS Delivery Configuration</span>&#160;– If you 
+ plan to send activation information by SMS message, create a new configuration 
+ instance and configure the following settings:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">SMS 
+ Delivery Configuration Type</span>&#160;– Select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Token 
+ Activate</span>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">SMS 
+ Delivery Template File</span>&#160;– Specify <span class="output" style="font-family: 'Courier New'; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">igsample_sms_tokenactivate_template.txt</font></span>&#160;or 
+ a custom template. The sample SMS template is located in <span class="output" 
+	 style="font-family: 'Courier New'; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">$IG_HOME/etc/templates</font></span>.</p>
+<p class="prspsubprocedureparagraph">For information about the other settings, 
+ see, <a href="../usingpropeditor/user_sms_delivery_configuration.htm">User 
+ SMS delivery configuration property settings</a>.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To 
+ enable delivery of activation information in a QR code with a password, 
+ in addition to the settings in <span class="hyperlink" style="font-family: Syntax;"><a 
+	 href="#XREF_12777_2_To_enable">Step&#160;2</a></span>, specify the 
+ following settings:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Web 
+ Application Settings</span></p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Enable 
+ Token Activation using QR Codes</span>&#160;– Set to <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">True</span>&#160;(the 
+ default setting) to have the QR code displayed in the Administration interface 
+ (where users who are present can scan it using their mobile devices).</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">User 
+ Email Delivery Configuration</span>&#160;</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Email 
+ Delivery Enable QR Code Attachment</span>&#160;– Set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">True</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Validate 
+ &amp; Save</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold">OK</span> on the confirmation dialog box.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If 
+ required, customize the appropriate delivery message:&#160;</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">igsample_email_tokenactivate_template.html</font></span>&#160;or</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">igsample_sms_tokenactivate_template.txt</font></span> 
+ </p>
+<p class="prpprocedureparagraph">The message templates&#160;are located 
+ in <span class="output" style="font-family: 'Courier New'; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">$IG_HOME/etc/templates/tokens</font></span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The .txt 
+ and .html versions of the templates must be located in the same directory.</p>
+<p class="prpprocedureparagraph">The default email template covers sending 
+ activation&#160;information in all 3 possible ways: through an online 
+ activation link, as a QR code, and full details for manual entry. Remove 
+ parts of the text for any method you do not want to use.&#160;For example, 
+ if you send a QR code, for added security, you might want to send the 
+ password that is required to use it by another means.</p>
+<p class="prpprocedureparagraph">The configuration is complete. Use the 
+ activation procedure to create and activate mobile soft tokens through 
+ the Administration interface as needed. See <a href="create_and_activate_a_soft_token_in_admin_ui.htm">Create 
+ and activate a soft token in the Admin UI</a>.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Restart 
+ Entrust IdentityGuard Server service.</p>
+
+
+
+
+<h2>Configure delivery of activation information by SMS</h2>
+<p class="prtproceduretitle">To configure a delivery method for soft token 
+ activation information</p>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log in to the IdentityGuard Properties Editor as an 
+ administrator. See <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">To 
+ log in to the Properties Editor</a>.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><a 
+	 name="XREF_12777_2_To_enable3" id="XREF_12777_2_To_enable3"></a>To 
+ enable delivery of the online activation link by email, specify the following 
+ settings:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Web 
+ Application Settings</span></p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">IdentityGuard 
+ Self-Service Activation Address</span>&#160;– If you have Self-Service 
+ Module in your implementation, enter the URL of the Self-Service website. 
+ If specified, the value is included in the soft token activation QR Code.</p>
+<p class="lip2list2paragraph">Example address: <span class="output" style="font-family: 'Courier New'; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">ssm.example.com:8445/igst</font></span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">SMTP Server Configuration</span>&#160;– This is required 
+ to &#160;send activation information by email.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Configuration instances</span>&#160;– Create a new configuration 
+ instance and configure the settings. For information about the settings, 
+ see <a href="../usingpropeditor/smtp_server_configuration.htm">SMTP Server 
+ Configuration</a>).</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">User 
+ Email Delivery Configuration</span>&#160;– If you plan to send activation 
+ information by email, create a new configuration instance and configure 
+ the following settings:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Email 
+ Delivery Configuration Type</span>&#160;– Select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Token 
+ Activate</span>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Email Delivery Template File</span>&#160;– Specify <span 
+	 class="output" style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">igsample_email_tokenactivate_template.txt</font></span>&#160;or 
+ a custom template. The sample email templates are located in <span class="output" 
+	 style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">$IG_HOME/etc/templates/tokens</font></span>.</p>
+<p class="nonote"><span class="bold">Note</span>: Entrust IdentityGuard 
+ provides templates in both TXT and HTML formats. A best practice is to 
+ specify the .txt version because all email clients can process and display 
+ plain text. When there is a corresponding template of the same name but 
+ with an .html extension, Entrust IdentityGuard automatically creates a 
+ MIME multi-part alternative message using the txt template and the html 
+ template. Most email clients can display the HTML but for email clients 
+ that cannot, the text content is displayed.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Email Delivery Subject</span>: Specify a subject line 
+ like &quot;Activation information for your Mobile Soft Token&quot;.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Include Registration Password</span>&#160;– Set to <span 
+	 class="bold">True</span>.</p>
+<p class="prspsubprocedureparagraph">For information about the other settings, 
+ see <a href="../usingpropeditor/user_email_delivery_configuration.htm">User 
+ Email Delivery Configuration</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">SMS Server Configuration</span>&#160;– This is required 
+ to &#160;send activation information in a &#160;text message.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Configuration instances</span>&#160;– Create a new configuration 
+ instance and configure the settings. For information about the settings, 
+ see <a href="../usingpropeditor/sms_server_configuration.htm">SMS Server 
+ Configuration</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">User SMS Delivery Configuration</span>&#160;– If you 
+ plan to send activation information by SMS message, create a new configuration 
+ instance and configure the following settings:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">SMS 
+ Delivery Configuration Type</span>&#160;– Select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Token 
+ Activate</span>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">SMS 
+ Delivery Template File</span>&#160;– Specify <span class="output" style="font-family: 'Courier New'; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">igsample_sms_tokenactivate_template.txt</font></span>&#160;or 
+ a custom template. The sample SMS template is located in <span class="output" 
+	 style="font-family: 'Courier New'; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">$IG_HOME/etc/templates</font></span>.</p>
+<p class="prspsubprocedureparagraph">For information about the other settings, 
+ see, <a href="../usingpropeditor/user_sms_delivery_configuration.htm">User 
+ SMS delivery configuration property settings</a>.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To 
+ enable delivery of activation information in a QR code with a password, 
+ in addition to the settings in <span class="hyperlink" style="font-family: Syntax;"><a 
+	 href="#XREF_12777_2_To_enable">Step&#160;2</a></span>, specify the 
+ following settings:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Web 
+ Application Settings</span></p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Enable 
+ Token Activation using QR Codes</span>&#160;– Set to <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">True</span>&#160;(the 
+ default setting) to have the QR code displayed in the Administration interface 
+ (where users who are present can scan it using their mobile devices).</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">User 
+ Email Delivery Configuration</span>&#160;</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Email 
+ Delivery Enable QR Code Attachment</span>&#160;– Set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">True</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Validate 
+ &amp; Save</span>.</p>
+<p class="prspsubprocedureparagraph">A confirmation dialog box appears.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">OK</span> 
+ to confirm.</p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>If 
+ required, customize the appropriate delivery message:&#160;</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">igsample_email_tokenactivate_template.html</font></span>&#160;or</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">igsample_sms_tokenactivate_template.txt</font></span> 
+ </p>
+<p class="prpprocedureparagraph">The message templates&#160;are located 
+ in <span class="output" style="font-family: 'Courier New'; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">$IG_HOME/etc/templates/tokens</font></span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The .txt 
+ and .html versions of the templates must be located in the same directory.</p>
+<p class="prpprocedureparagraph">The default email template covers sending 
+ activation&#160;information in all 3 possible ways: through an online 
+ activation link, as a QR code, and full details for manual entry. Remove 
+ parts of the text for any method you do not want to use.&#160;For example, 
+ if you send a QR code, for added security, you might want to send the 
+ password that is required to use it by another means.</p>
+<p class="prpprocedureparagraph">The configuration is complete. Use the 
+ activation procedure to create and activate mobile soft tokens through 
+ the Administration interface as needed. See <a href="create_and_activate_a_soft_token_in_admin_ui.htm">Create 
+ and activate a soft token in the Admin UI</a>.</p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Restart 
+ Entrust IdentityGuard Server service.</p>
+<p class="pparagraph">SMS activation procedure</p>
+<p class="pparagraph">&#160;</p>
+<p class="prtproceduretitle">To configure a delivery method for soft token 
+ activation information</p>
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Log in to the IdentityGuard Properties Editor as an 
+ administrator. See <a href="../usingpropeditor/log_in_or_out_of_the_properties_editor.htm">To 
+ log in to the Properties Editor</a>.</p>
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><a 
+	 name="XREF_12777_2_To_enable" id="XREF_12777_2_To_enable"></a>To enable 
+ delivery of the online activation link by email, specify the following 
+ settings:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Web 
+ Application Settings</span></p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">IdentityGuard 
+ Self-Service Activation Address</span>&#160;– If you have Self-Service 
+ Module in your implementation, enter the URL of the Self-Service website. 
+ If specified, the value is included in the soft token activation QR Code.</p>
+<p class="lip2list2paragraph">Example address: <span class="output" style="font-family: 'Courier New'; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">ssm.example.com:8445/igst</font></span></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">SMTP Server Configuration</span>&#160;– This is required 
+ to &#160;send activation information by email.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Configuration instances</span>&#160;– Create a new configuration 
+ instance and configure the settings. For information about the settings, 
+ see <a href="../usingpropeditor/smtp_server_configuration.htm">SMTP Server 
+ Configuration</a>).</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">User 
+ Email Delivery Configuration</span>&#160;– If you plan to send activation 
+ information by email, create a new configuration instance and configure 
+ the following settings:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Email 
+ Delivery Configuration Type</span>&#160;– Select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Token 
+ Activate</span>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Email Delivery Template File</span>&#160;– Specify <span 
+	 class="output" style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">igsample_email_tokenactivate_template.txt</font></span>&#160;or 
+ a custom template. The sample email templates are located in <span class="output" 
+	 style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">$IG_HOME/etc/templates/tokens</font></span>.</p>
+<p class="nonote"><span class="bold">Note</span>: Entrust IdentityGuard 
+ provides templates in both TXT and HTML formats. A best practice is to 
+ specify the .txt version because all email clients can process and display 
+ plain text. When there is a corresponding template of the same name but 
+ with an .html extension, Entrust IdentityGuard automatically creates a 
+ MIME multi-part alternative message using the txt template and the html 
+ template. Most email clients can display the HTML but for email clients 
+ that cannot, the text content is displayed.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Email Delivery Subject</span>: Specify a subject line 
+ like &quot;Activation information for your Mobile Soft Token&quot;.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Include Registration Password</span>&#160;– Set to <span 
+	 class="bold">True</span>.</p>
+<p class="prspsubprocedureparagraph">For information about the other settings, 
+ see <a href="../usingpropeditor/user_email_delivery_configuration.htm">User 
+ Email Delivery Configuration</a></p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">SMS Server Configuration</span>&#160;– This is required 
+ to &#160;send activation information in a &#160;text message.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold">Configuration instances</span>&#160;– Create a new configuration 
+ instance and configure the settings. For information about the settings, 
+ see <a href="../usingpropeditor/sms_server_configuration.htm">SMS Server 
+ Configuration</a>.</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold">User SMS Delivery Configuration</span>&#160;– If you 
+ plan to send activation information by SMS message, create a new configuration 
+ instance and configure the following settings:</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">SMS 
+ Delivery Configuration Type</span>&#160;– Select <span class="bold" style="font-weight: bold; 
+														 letter-spacing: 0.00em; 
+														 text-decoration: none; ">Token 
+ Activate</span>.</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">SMS 
+ Delivery Template File</span>&#160;– Specify <span class="output" style="font-family: 'Courier New'; 
+													 font-style: normal; 
+													 font-weight: normal; 
+													 font-size: 10.0pt; 
+													 color: #000000; letter-spacing: 0.00em; 
+													 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">igsample_sms_tokenactivate_template.txt</font></span>&#160;or 
+ a custom template. The sample SMS template is located in <span class="output" 
+	 style="font-family: 'Courier New'; font-style: normal; font-weight: normal; 
+	 font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">$IG_HOME/etc/templates</font></span>.</p>
+<p class="prspsubprocedureparagraph">For information about the other settings, 
+ see, <a href="../usingpropeditor/user_sms_delivery_configuration.htm">User 
+ SMS delivery configuration property settings</a>.</p>
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>To 
+ enable delivery of activation information in a QR code with a password, 
+ in addition to the settings in <span class="hyperlink" style="font-family: Syntax;"><a 
+	 href="#XREF_12777_2_To_enable">Step&#160;2</a></span>, specify the 
+ following settings:</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Web 
+ Application Settings</span></p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Enable 
+ Token Activation using QR Codes</span>&#160;– Set to <span class="bold" 
+															 style="font-weight: bold; 
+															 letter-spacing: 0.00em; 
+															 text-decoration: none; ">True</span>&#160;(the 
+ default setting) to have the QR code displayed in the Administration interface 
+ (where users who are present can scan it using their mobile devices).</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">User 
+ Email Delivery Configuration</span>&#160;</p>
+<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span><span 
+	 class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Email 
+ Delivery Enable QR Code Attachment</span>&#160;– Set to <span class="bold" 
+	 style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">True</span>.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">Validate 
+ &amp; Save</span>.</p>
+<p class="prspsubprocedureparagraph">A confirmation dialog box appears.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">OK</span> 
+ to confirm.</p>
+<p class="prprocedurestep">14.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>If 
+ required, customize the appropriate delivery message:&#160;</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">igsample_email_tokenactivate_template.html</font></span>&#160;or</p>
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span><span 
+	 class="output" style="font-size: 10.0pt;"><font size="2" style="font-size:10pt;">igsample_sms_tokenactivate_template.txt</font></span> 
+ </p>
+<p class="prpprocedureparagraph">The message templates&#160;are located 
+ in <span class="output" style="font-family: 'Courier New'; font-style: normal; 
+			 font-weight: normal; font-size: 10.0pt; color: #000000; letter-spacing: 0.00em; 
+			 text-decoration: none; "><font size="2" color="black" style="font-size:10.000000pt;">$IG_HOME/etc/templates/tokens</font></span>.</p>
+<p class="nonote"><span style="font-weight: bold;">Note:</span> The .txt 
+ and .html versions of the templates must be located in the same directory.</p>
+<p class="prpprocedureparagraph">The default email template covers sending 
+ activation&#160;information in all 3 possible ways: through an online 
+ activation link, as a QR code, and full details for manual entry. Remove 
+ parts of the text for any method you do not want to use.&#160;For example, 
+ if you send a QR code, for added security, you might want to send the 
+ password that is required to use it by another means.</p>
+<p class="prpprocedureparagraph">The configuration is complete. Use the 
+ activation procedure to create and activate mobile soft tokens through 
+ the Administration interface as needed. See <a href="create_and_activate_a_soft_token_in_admin_ui.htm">Create 
+ and activate a soft token in the Admin UI</a>.</p>
+<p class="prprocedurestep">15.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Restart 
+ Entrust IdentityGuard Server service.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

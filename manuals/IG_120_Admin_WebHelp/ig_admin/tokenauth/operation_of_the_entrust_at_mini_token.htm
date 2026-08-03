@@ -1,0 +1,180 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Operation of the Entrust AT Mini Token</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nToken authentication\nEntrust Mini Tokens\nOperation of the Entrust AT Mini Token");
+addAvenueInfo("Untitled02","ig_admin/tokenauth/understanding_the_entrust_ot_and_at_mini_tokens.htm","ig_admin/tokenauth/user_procedures_for_entrust_minitokens.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"tokenauth.htm\">Token authentication<\/a> > <a href=\"entrust_mini_tokens.htm\">Entrust Mini Tokens<\/a> > Operation of the Entrust AT Mini Token<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1>Operation of the Entrust AT Mini Token</h1>
+<p class="pparagraph">An AT token is often referred to as a hybrid token. This is because the token dynamic password is generated using a combination of two elements, an event value and a time value, as shown below:</p>
+<p class="cocode">Event value (E) + Time Value (T) = Token Password</p>
+<p class="pparagraph">Or, to shorten it:</p>
+<p class="cocode">E + T = TP</p>
+<p class="nonote"><span class="bold">Note:</span> There is also a random data value added to each token password calculation: Event + Time + Random data = token password. For simplicity, and because it does not play a role in authentication drift, the random component is not included in this discussion.</p>
+<p class="pparagraph">A new event value is generated each time the user presses the token button. A new time value is generated automatically by the token every 128 seconds. The token password displayed to the user is a combination of the event value and the time value.</p>
+<p class="pparagraph">If the user presses the token button five times within the 128 second time window the TP calculation is:</p>
+<p class="cocode">E<span class="subscript">1</span> + T<span class="subscript">1</span> = TP<span class="subscript">1</span></p>
+<p class="cocode">E<span class="subscript">2</span> + T<span class="subscript">1</span> = TP<span class="subscript">2</span></p>
+<p class="cocode">E<span class="subscript">3</span> + T<span class="subscript">1</span> = TP<span class="subscript">3</span></p>
+<p class="cocode">E<span class="subscript">4</span> + T<span class="subscript">1</span> = TP<span class="subscript">4</span></p>
+<p class="cocode">E<span class="subscript">5</span> + T<span class="subscript">1</span> = TP<span class="subscript">5</span></p>
+<p class="pparagraph">If the user presses the button a sixth time after the 128 second time window has closed, and a new time value has been generated, the resulting token password calculation is:</p>
+<p class="cocode">E<span class="subscript">6</span> + T<span class="subscript">2</span> = TP<span class="subscript">6</span></p>
+<h3>Why does the token password still work for authentication even if the token button is pressed a number of times between logins?</h3>
+<p class="pparagraph">The server is expecting a certain TP based on the last TP the user entered. This expected number is calculated as:</p>
+<p class="cocode">TP = (last event calculation + 1) + (current time calculation)</p>
+<p class="pparagraph">For example, if the user authenticated with E<span class="subscript">6</span> + T<span class="subscript">2</span> = TP<span class="subscript">6</span> at the last login, the Entrust IdentityGuard server expects E<span class="subscript">6</span>+1 + T(current time) = TP<span class="subscript">7</span>.</p>
+<p class="pparagraph">Two things can cause the user’s token password to be different than expected.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The user presses the token button multiple times between logins, changing the expected event value.</p>
+
+<p class="nonote"><span class="bold">Note:</span> To avoid the generation of token passwords through an inadvertent press of the button, the token button is designed so that it must be held down for approximately two seconds to generate a new TP.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The time value generated by the token may drift from the corresponding time value generated by the Entrust IdentityGuard server if there is a long period of time between authentications. (This is very uncommon.)</p>
+
+<p class="pparagraph">To account for event or time drift, the IdentityGuard server has a preset drift window of 10 TP values. A drift window is the variance from the expected TP value that the Entrust IdentityGuard server allows. A drift window of 10 means that the Entrust IdentityGuard server will accept a TP that is a combination of the next 10 expected event values plus the next 10 expected time values.</p>
+<p class="nonote"><span class="bold">Note:</span> The Entrust IdentityGuard administrator can lengthen the event value drift window, but security is reduced by doing this.</p>
+<p class="pparagraph">Each time a user authenticates successfully, the next anticipated TP and drift window are automatically reset to begin at this successfully authenticated TP.</p>
+<h3>If someone presses the button and steals token passwords, how long are they valid?</h3>
+<p class="pparagraph">The length of time token passwords are valid is governed by the event value drift window and the time value drift window. Assuming that the initial drift window settings of 10 are maintained, the TP values will be accepted by the Entrust IdentityGuard server until either of the following conditions occur:</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>The OTP contains an event value that is 11 or more beyond the last login.</p>
+
+<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>21.3 minutes has elapsed since the token was pressed to create the value.</p>
+
+<p class="pparagraph">The Entrust IdentityGuard server is expecting a TP that contains an event value generated within 10 presses of the token button since the last login. A TP generated after 10 presses (11 and up) contains an event value in the TP calculation that is outside the drift window, so it is not accepted.</p>
+<p class="pparagraph">The Entrust IdentityGuard server is expecting a TP that contains a time value that is within 10 time values of the current Entrust IdentityGuard server clock calculation. A new time value calculation is generated every 128 seconds. Therefore, assuming that the user presses the button during the first second of a new time value window of 128 seconds, the TP generated will be valid for a maximum period of 21.3 minutes. (128 seconds x 10) = 21.3 minutes</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

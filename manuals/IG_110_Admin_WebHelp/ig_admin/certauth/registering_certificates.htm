@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\certauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Registering certificates</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nCertificate authentication\nAbout certificates\nRegistering certificates");
+addAvenueInfo("Untitled","ig_admin/certauth/ca_certificates.htm","ig_admin/certauth/revocation_checking_of_ca_certificates.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authsection1.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"certauth.htm\">Certificate authentication<\/a> > <a href=\"about_certificates.htm\">About certificates<\/a> > Registering certificates<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_57822_Registering"></a>Registering certificates</h1>
+<p class="pparagraph">There are two ways in which a user certificate can 
+ be registered</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>using the administration interface</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>as part of &#160;risk-based authentication.</p>
+<p class="pparagraph">When the user certificate is assigned in the Administration 
+ interface, it can be used for either method of certificate authentication.</p>
+<p class="pparagraph">When the certificate is assigned to the user by another 
+ method, you must load the certificate into Entrust IdentityGuard before 
+ it can be used for authentication.</p>
+<p class="pparagraph">You can load certificates one at a time or in bulk 
+ using the Administration interface or the Master user shell. See <a href="../bulkops/creating_a_bulk_file.htm#XREF_60767_Creating_and_using">Creating 
+ a bulk file</a>&#160;and <a href="../bulkops/data_items_for_certificate_bulk_operations.htm#XREF_79579_Data_items_for">Data 
+ items for certificate bulk operations</a>&#160;for information about loading 
+ certificates in bulk.</p>
+<p class="pparagraph">By default, the Certificate Authentication policy 
+ Maximum Number of Certificates per User dictates that each user can have 
+ a maximum of 10 certificates If you try to assign certificates when the 
+ user is already at their maximum, then an error message is returned. You 
+ can change the default value in the Policies section of the Administration 
+ interface.</p>
+<p class="pparagraph">User certificates must be globally unique. If you 
+ attempt to load a certificate that does not have a unique issuer DN and 
+ serial number, Entrust IdentityGuard returns an error message</p>
+<p class="pparagraph">When you are using risk-based certificate authentication, 
+ the user can register a certificate as part of authentication. There are 
+ two ways this can happen, as described below.</p>
+<p class="pparagraph">In the first case, the certificate is included in 
+ the challenge request; whether for RBA authentication or another type. 
+ The certificate is registered against the user if the user is authenticated 
+ successfully. A common scenario for this kind of certificate authentication 
+ follows:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The user is using client-authenticated SSL to 
+ the application.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The application uses the user's certificate from 
+ the SSL session to perform a risk-based authentication.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Because the application does not recognize the 
+ certificate—it is not yet registered to the user—the user is presented 
+ with an Entrust IdentityGuard challenge.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The user answers the challenge.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The application returns the user response and 
+ the user certificate to Entrust IdentityGuard.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Entrust IdentityGuard registers the user certificate 
+ to the user.</p>
+<p class="pparagraph">The certificate can also be registered to a user 
+ during the authentication challenge if the following conditions are true:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>The user authenticated successfully using other 
+ RBA components (machine authentication or IP/Geo authentication, for example).</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>A certificate specified as an RBA parameter is 
+ valid but not registered.</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>the <span style="font-family: Courier;">GenericChallengeParms.registerCertificate</span>&#160;flag 
+ was specified as <span style="font-family: Courier;">true</span>.</p>
+<p class="pparagraph">In the second RBA mode of registration, the user 
+ must have an explicit authenticator available (token, grid, question and 
+ answer, or OTP, for example) in order to register new user certificates, 
+ and the application performing authentication must be able to handle the 
+ challenge.</p>
+<p class="pparagraph">When registering certificates in the RBA modes, if 
+ the maximum number of certificates has been reached (see <a href="../config_policies/certificate_authentication_policies.htm#XREF_Maximum_Number_of">Maximum 
+ Number of Certificates per User</a>), existing user certificates are deleted 
+ automatically if the <span style="font-weight: bold;">Automatically Delete 
+ Old User Certificates</span>&#160;policy is set. See <a href="../config_policies/certificate_authentication_policies.htm#XREF_Automatically_Delete_Old">Automatically 
+ Delete Old User Certificates</a>.</p>
+<p class="pparagraph">When automatically deleting certificates, certificates 
+ are deleted in this order:</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>expired certificates, starting with the least-recently 
+ used certificates</p>
+<p 
+	 class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>non-expired certificates, starting with least-recently 
+ used certificates</p>
+<p class="pparagraph">Certificate deletions continue until the number of 
+ certificates registered against the user is fewer than the maximum number 
+ of certificates allowed. If certificates cannot be deleted, an error is 
+ returned.</p>
+<p class="pparagraph">When registering a user certificate, an error is 
+ returned if the user certificate issuer DN and serial number is not globally 
+ unique.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

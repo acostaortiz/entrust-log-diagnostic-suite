@@ -1,0 +1,173 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\biometricauth.fm" />
+ <meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Biometric enrollment overview</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nBiometric authentication\nBiometric enrollment overview");
+addAvenueInfo("Untitled02","ig_admin/biometricauth/biometric_authentication.htm","ig_admin/biometricauth/overview_of_authenticating_with_fingerprint_biometrics.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"biometric_authentication.htm\">Biometric authentication<\/a> > Biometric enrollment overview<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><span style="font-family: Syntax; font-weight: normal; font-size: 10.0pt;"><a name="XREF_65507_Entrust" id="XREF_65507_Entrust"></a></span>Biometric enrollment overview</h1>
+<p class="pparagraph">Currently, the only supported scenario for biometric authentication is the use of fingerprint biometrics for login to Windows computers using Entrust IdentityGuard Desktop for Microsoft Windows.</p>
+<p class="pparagraph">Enrollment for biometric authentication works as follows:</p>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>An administrator gives Alice, a user, a fingerprint scanner to plug in to a USB port on her Windows computer along with a software installation package to set up&#160;the Entrust IdentityGuard Desktop client application. The administrator tells her to&#160;use this installer to install both the desktop client and the fingerprint enrollment client, so she can enroll fingerprints for biometric authentication.</p>
+
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Alice runs the installer, specifying that both the desktop client and the fingerprint enrollment client should be installed.</p>
+
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>During the installation, the installer launches Alice’s default browser and opens her company’s self-service website. The installer provides a brief description of what she should do on the website.</p>
+
+<p class="attnattention"><span style="font-weight: bold;">Attention:</span> As noted on the installer screen, users may complete the installer first and then enroll their fingerprints. However, it is important that they enroll their fingerprints before they lock their desktop (or before it locks automatically after a period of inactivity). If the desktop locks before the user’s fingerprints are enrolled, the user may be unable to log in to the Windows desktop.</p>
+
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Alice logs in to the self-service website and then clicks the self-administration action <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">I’d like to enroll for fingerprint biometric authentication</span>.</p>
+
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On the new web page that appears, Alice clicks <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Capture Fingerprint Data</span>.</p>
+
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>On Alice’s desktop, the fingerprint enrollment client starts. It shows a pair of hands with ovals around the tips of the index fingers. These are the recommended fingers to enroll, but users can select other fingers to enroll or they can enroll fingers specified by the administrator.</p>
+
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Following the on-screen instructions, Alice clicks a finger on the screen image, and then places the fingertip of her corresponding finger on the fingerprint scanner. After a few seconds, a green border appears around the fingerprint image and a progress bar shows that the fingerprint is partially enrolled.</p>
+
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Alice removes her finger from the scanner and places the same finger on the scanner two more times, until 3 images have been captured. When three images have been scanned, a check mark appears on the image of the enrolled finger</p>
+
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Alice repeats the enrollment steps for as two more fingers, and then clicks <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Done</span>.</p>
+
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>The fingerprint enrollment client closes. Alice clicks <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none;">Next</span>&#160;on the installer and completes the installation.</p>
+
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;</span>Alice can now log in to her computer using her enrolled fingerprints, as described in <a href="overview_of_authenticating_with_fingerprint_biometrics.htm#XREF_97227_Authenticating">Overview of authenticating with fingerprint biometrics</a>.</p>
+
+<p class="prpprocedureparagraph">or</p>
+<p class="prpprocedureparagraph">If the Entrust IdentityGuard&#160;Biometric policy is configured to require administrator approval of enrolled fingerprints, the administrator will let Alice know when she can begin using her enrolled fingerprints for biometric authentication on her Windows computer.</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

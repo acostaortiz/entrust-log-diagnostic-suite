@@ -1,0 +1,378 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configure the device fingerprint policies</title>
+<link rel="StyleSheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nMachine authentication\nConfigure the device fingerprint policies");
+addAvenueInfo("r13_std","ig_admin/machineauth/configure_machine_authentication_policies.htm","ig_admin/machineauth/view_machine_secrets.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"machine_authentication.htm\">Machine authentication<\/a> > Configure the device fingerprint policies<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 13.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<h1>Configure the device fingerprint policies</h1>
+
+<p class="prtproceduretitle">To configure device fingerprint policies for 
+ machine authentication</p>
+<div>
+
+<p class="prprocedurestep">1.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Log 
+ in to the Entrust IdentityGuard Administration interface as the administrator. 
+ </p>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a4"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;the 
+ Windows computer where Entrust IdentityGuard is installed</a></p>
+<div class="droptext" id="POPUP521422358" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Select 
+	 <span class="bold">S</span><span style="font-weight: bold;">tart</span>&#160;and 
+	 expand <span style="font-weight: bold;">Entrust </span>&#160;<span 
+	 style="font-weight: bold;">IdentityGuard</span> in the list of applications. 
+	 Select <span class="bold">Administration Interface</span>.<span> For 
+	 other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+<p class="prpprocedureparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a2"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />On&#160;Linux 
+ or from a remote client</a></p>
+<div class="droptext" id="POPUP521478110" style="display: none;">
+	<p class="lilistbullet"><span style="font-family:'Microsoft Sans Serif'" >●</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Enter 
+	 the URL of your Administration interface web application in a Web 
+	 browser. It has this form:</p>
+	<p class="cocode">https://&lt;hostname&gt;:&lt;port&gt;/IdentityGuardAdmin</p>
+	<p class="prspsubprocedureparagraph">Where:</p>
+	<p class="RefItemTitle"><span class="output">&lt;hostname&gt;</span> 
+	 is the host name you selected during configuration</p>
+	<p class="RefItemTitle"><span class="output">&lt;port&gt;</span> is 
+	 the administration port you selected during configuration</p>
+	<p class="RefItemTitle">If you cannot find the correct URL, see&#160;<a href="../usingadmininterface/locating_your_administration_interface_url.htm">Locate 
+	 your Administration interface URL</a>.</p>
+	<p class="RefItemTitle"><span>For other login scenarios, see <a href="../usingadmininterface/log_in_and_out_of_the_administration_interface.htm">Log 
+	 in and out of the Administration interface</a>.</span></p>
+</div>
+
+
+</div>
+<p class="prprocedurestep">2.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>In 
+ the main menu, click <span style="font-weight: bold;">Policies</span>.</p>
+<p class="prpprocedureparagraph">A list of all policies appears on the 
+ <span class="bold" style="font-weight: bold; letter-spacing: 0.00em; text-decoration: none; ">List 
+ Policies</span>&#160;tab.</p>
+<p class="prprocedurestep">3.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ the name of the policy you want to configure.</p>
+<p class="prprocedurestep">4.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>On 
+ the <span class="bold">View Policy</span> page, from the <span style="font-weight: bold;">Policy 
+ Category</span> drop-down list, select <span style="font-weight: bold;">Machine 
+ Secret</span>.</p>
+<p class="prprocedurestep">5.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ <span style="font-weight: bold;">Edit Policy</span>.</p>
+<p class="prpprocedureparagraph">An editable version of the settings appears.</p>
+<p class="prprocedurestep">6.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To 
+ include a user's device information (collected through your client application) 
+ as part of the machine secret, enable the <span class="bold">Device Fingerprint 
+ Required</span> policy.</p>
+<p class="prprocedurestep">7.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>To 
+ specify which device attributes should be used to calculate the device 
+ fingerprint, complete the following steps:</p>
+<p class="nonote"><span class="bold">Note:</span> Your client application 
+ must collect the device attributes that you select.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">a.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Select 
+ a device platform from the <span class="bold">Platform</span> drop-down 
+ list.</p>
+<p class="prspsubprocedureparagraph"><img src="../../ai-policies_mach_secret_devfgrprtattr_list.png" alt="" style="border: none;" border="0" /></p>
+<p class="prspsubprocedureparagraph">Entrust IdentityGuard displays the 
+ list of attributes for the device platform you selected.</p>
+<p class="prspsubprocedureparagraph">By default, all attributes are enabled, 
+ and all have a non-matching risk points value of 10.</p>
+<p class="prspsubprocedureparagraph">To understand the values under each 
+ column heading in the grid of device attributes, read <a href="../config_policies/characteristics_of_device_fingerprint_attributes.htm">Characteristics 
+ of device fingerprint attributes</a>.</p>
+<p class="prspsubprocedureparagraph"><img src="../../ai-policies_mach_secret_devfgrprtattr_grid.png" alt="" style="border: none;" border="0" /></p>
+<p class="prprocedurestep" style=" margin-left: 70px;">b.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Click 
+ the check boxes in the <span class="bold">Enabled</span> column to clear 
+ or select attributes until you have the set that you want to include in 
+ the device fingerprint. Your application must collect the enabled attributes 
+ from user devices to use it in the device fingerprint calculation.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">c.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>For 
+ the attributes for which a change threshold is applicable (those that 
+ have a text box in the <span class="bold">Change Threshold</span> column), 
+ edit the value as required. The 
+ change threshold is a number that represents how much the attribute can 
+ change from one user authentication attempt to the next without incurring 
+ risk. <a class="dropspot" href="javascript:TextPopup(this)" id="a3"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />More...</a></p>
+<div class="droptext" id="POPUP594787541" style="display: none;">
+	<p class="liplistparagraph">If the value obtained during a new authentication 
+	 attempt is greater than the change threshold (when compared to the 
+	 value from the last authentication attempt), the user authentication 
+	 attempt incurs risk for this attribute. The value of each enabled 
+	 attribute is considered when determining an overall risk score. If 
+	 that risk score is greater than the risk limit policy setting (<span 
+	 class="bold">Normal Security Device Fingerprint Risk Limit</span> 
+	 or <span class="bold">Enhanced Security Device Fingerprint Risk Limit</span>), 
+	 the user fails machine authentication. This characteristic is not 
+	 configurable for CONSTANT type attributes.</p>
+</div>
+
+<p class="prspsubprocedureparagraph">The following section provides detailed 
+ guidance.</p>
+<p class="liplistparagraph"><a class="dropspot" href="javascript:TextPopup(this)" id="a1"><img class="Twisties" alt="" style="border: none; display: none;" src="../../hotspot_minus.png" /><img class="Twisties" alt="" style="border: none;" src="../../hotspot_plus.png" />How 
+ the change threshold is calculated for each attribute type</a> 
+ </p>
+<div class="droptext" id="POPUP594143689" style="display: none;">
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>For 
+	 an attribute of <span class="bold">CONSTANT</span> type, the change 
+	 threshold should be very low. Change to this type of attribute is 
+	 rare, and often would indicate that a user is trying to authenticate 
+	 from a different device (for example, a computer with a new operating 
+	 system is essentially a different computer).</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>For 
+	 an attribute of <span class="bold">LIST</span> type, the change threshold 
+	 value represents the number changes to the list through addition or 
+	 deletion of items since the last time a user authenticated. A change 
+	 to the name of a list item would count as 2 changes (deletion of the 
+	 item with its old name and addition of an item with its new name).</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>For 
+	 an attribute of <span class="bold">VARIABLE</span> type, the change 
+	 threshold value is&#160;the number of characters that have changed. 
+	 To construct the previous value of an attribute from the current value, 
+	 each addition, subtraction, or movement of a character counts as one 
+	 change. If the number of required changes exceeds the change threshold, 
+	 then risk is incurred.</p>
+	<p class="lilistbullet2"><span  >–</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>For 
+	 an attribute of <span class="bold">VERSION</span> type, the change 
+	 threshold is a dotted numeric string like the attribute value itself. 
+	 For example, if the change threshold is 1.2, it means that if the 
+	 major version of the software associated with the attribute (for example, 
+	 the operating system) increases by more than one and the minor version 
+	 increases by more than 2, it incurs risk. With the 1.2 change threshold 
+	 setting, the other numbers in the operating system version (that might 
+	 represent a build number, for example) would be ignored. Those numbers 
+	 could change by any amount without incurring risk<span style="color: rgb(34, 34, 34); 
+															 font-family: Verdana, Arial, sans-serif; 
+															 font-size: 14.08px; 
+															 line-height: normal; 
+															 orphans: auto; 
+															 -webkit-text-stroke-width: 0px; 
+															 display: inline	 ! important ; 
+															 float: none; 
+															 background-color: rgb(252, 253, 253);">.</span></p>
+</div>
+<p class="prprocedurestep" style=" margin-left: 70px;">d.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Clear 
+ or select check boxes in the <span class="bold">Must Match</span> column, 
+ as required.</p>
+<p class="prspsubprocedureparagraph">A 
+ check mark indicates that the attribute value obtained during a new authentication 
+ attempt must match the value obtained for the last successful authentication 
+ attempt. Failure to do so results in the user failing machine authentication. 
+ Otherwise, if <span class="bold">Must Match</span> is not checked, and 
+ the associated attribute does not match, the total risk score is incremented 
+ by the number of risk points shown in the <span class="bold">Non-Matching 
+ Risk Points</span> for that attribute. This score is normalized to be 
+ out of 100 as follows:</p>
+<p class="cocode" style="color: rgb(34, 34, 34); letter-spacing: normal; 
+	 line-height: normal; orphans: auto; text-align: start; text-indent: 0px; 
+	 background-color: rgb(252, 253, 253);"><code style="widows: 1; -webkit-text-stroke-width: 0px;">Total 
+ Risk Score = (Total Risk Points of Failing Attributes / Maximum Risk Points 
+ of All Enabled Attributes) * 100</code></p>
+<p class="prspsubprocedureparagraph"><code style="color: rgb(34, 34, 34); 
+											 letter-spacing: normal; line-height: normal; 
+											 orphans: auto; text-align: start; 
+											 text-indent: 0px; widows: 1; 
+											 -webkit-text-stroke-width: 0px; 
+											 background-color: rgb(252, 253, 253);">T</code>he 
+ total risk is then compared against a defined risk limit, either the one 
+ for the NORMAL security level or the one for the ENHANCED security level 
+ depending on which level is being used for authentication. If the overall 
+ risk score is greater than the corresponding risk limit, then the user 
+ fails machine authentication. Note that the risk limit for the enhanced 
+ security level must always be less than or equal to that for the normal 
+ security level.</p>
+<p class="prprocedurestep" style=" margin-left: 70px;">e.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Assign 
+ a <span class="bold">Non Matching Risk Points</span> value to each attribute, 
+ as required.</p>
+<p class="prspsubprocedureparagraph">Initially, 
+ all attributes have the same value: 10. You can change the values if you 
+ believe that some attributes represent greater risk than others.</p>
+<p class="liplistparagraph">For example, browser version might be updated 
+ frequently so change in that attribute might represent very little risk. 
+ Change in an operating system, however, is rare and may mean that the 
+ authentication attempt is coming from a different computer. For this attribute, 
+ you might increase the Non Matching Risk Points value.</p>
+<p class="prprocedurestep">8.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Repeat 
+ the previous step for any other device platforms you support.</p>
+<p class="prprocedurestep">9.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></span>Set 
+ the <span class="bold">Normal Security Device Fingerprint Risk Limit</span>, 
+ which is the maximum total number of non-matching risk points allowed 
+ before a user's machine authentication attempt fails. This setting is 
+ used if your client application calls for authentication with the Normal 
+ security level.</p>
+<p class="prpprocedureparagraph">A zero value (the default) means that 
+ no risk is allowed and a device fingerprint must exactly match the one 
+ used for the last successful authentication.</p>
+<p class="nonote"><span class="bold">Note:</span> This value cannot be 
+ lower than the value of <span class="bold">Enhanced Security Device Fingerprint 
+ Risk Limit</span>.</p>
+<p class="prprocedurestep">10.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Set 
+ the <span class="bold">Enhanced Security Device Fingerprint Risk Limit</span>. 
+ It is like the setting described in the previous step, except that it 
+ is used when your client application calls for authentication with the 
+ Enhanced security level.</p>
+<p class="prpprocedureparagraph">A zero value &#160;(the default) means 
+ that no risk is allowed and a device fingerprint must exactly match the 
+ one used for the last successful authentication.</p>
+<p class="nonote"><span class="bold">Note:</span> This value cannot be 
+ higher than the value of <span class="bold">Normal Security Device Fingerprint 
+ Risk Limit</span>.</p>
+<p class="prprocedurestep">11.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>If 
+ required, increase the value of the <span class="bold">Total Maximum Size 
+ in Kilobytes</span> for the machine secret information. This policy sets 
+ the maximum storage space (in KB) for each user’s machine secrets, which 
+ could include sequence nonce, machine nonce, application data and a device 
+ fingerprint. A setting of 0 disables storage of machine secrets, which 
+ is equivalent to turning off machine authentication.</p>
+<p class="prprocedurestep">12.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Edit 
+ other Machine Secret or related policies, as required. For descriptions 
+ of other policies in this section, see <a href="../config_policies/machine_secret_policies.htm">Machine 
+ secret policies</a>.</p>
+<p class="prpprocedureparagraph">For descriptions of related policies, 
+ see <a href="../config_policies/machine_secret_policies.htm">Machine secret 
+ policies</a> and <a href="../config_policies/risk-based_authentication_policies.htm">Risk-Based 
+ Authentication policies</a>.</p>
+<p class="prprocedurestep">13.<span style='word-spacing:normal; font:6.0pt "Times New Roman"'><font size="1" style="font-size:6pt;">&nbsp;&nbsp;</font></span>Click 
+ <span class="bold">Save Changes</span>.</p>
+
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="JavaScript1.2">//<![CDATA[
+	if( typeof( TextPopupInit ) != 'function' ) TextPopupInit = new Function();
+	TextPopupInit('a4','POPUP521422358');
+	TextPopupInit('a2','POPUP521478110');
+	TextPopupInit('a3','POPUP594787541');
+	TextPopupInit('a1','POPUP594143689');
+//]]></script>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

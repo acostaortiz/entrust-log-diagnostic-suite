@@ -1,0 +1,232 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\authsection\tokenauth.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Configuring the drift window and fixing token drift</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Authentication methods\nToken authentication\nAdminister assigned tokens\nCorrect token drift (synchronizing a token)\nConfigure the drift window and fix token drift");
+addAvenueInfo("Untitled02","ig_admin/tokenauth/ensuring_the_token_configuration_file_is_assigned.htm","ig_admin/tokenauth/to_configure_the_size_of_the_drift_that_is_accommodated_automatically.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../authsection1/authentication_methods.htm#TOC_Authentication_methods\">Authentication methods<\/a> > <a href=\"tokenauth.htm\">Token authentication<\/a> > <a href=\"administering_assigned_tokens.htm\">Administer assigned tokens<\/a> > <a href=\"correcting_token_drift_synchronizing_a_token.htm\">Correct token drift (synchronizing a token)<\/a> > Configure the drift window and fix token drift<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_71784_Fixing_token_clock" id="XREF_71784_Fixing_token_clock"></a>Configure&#160;the 
+ drift window and fix token drift</h1>
+<p class="pparagraph">The following table describes drift-based tasks you 
+ might want to perform.</p>
+<table class="Entrust_table" cellspacing="0px" width="100%">
+	<col style="width: 73.417%;" />
+	<col style="width: 26.583%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">I want 
+		 to...</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Instructions</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext" 
+															 style="font-weight: bold;">Reset 
+		 new tokens when they are created or activated</p>
+		<p class="tattabletext">To avoid having token drift issues with 
+		 new tokens, enable the <span class="bold" style="font-family: Calibri; 
+										 font-size: 11.0pt;">Reset Token 
+		 When Token is Created or Activated</span> <span style="font-family: Calibri; 
+														 font-size: 11.0pt;">policy. 
+		 This policy resets&#160;the time or event counter, or both&#160;(depending 
+		 on&#160;whether you are using time-based or event-based tokens)&#160;</span>on 
+		 first authentication after the token is assigned to a user (for 
+		 hardware tokens) or when it is created and activated (for soft 
+		 tokens).</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a 
+		 href="file://T:/Server/11.0/Admin_Guide_RH/IG Server Admin Guide/IG_Admin/tokenauth/Configuring_token_policies1.htm#XREF_36038_To_configure_token">To 
+		 configure token policies</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext" 
+															 style="font-weight: bold;">Increase 
+		 the allowable event or clock drift window within which users’ 
+		 token responses are valid</p>
+		<p class="tattabletext">By default, Entrust IdentityGuard automatically 
+		 accommodates token event drift of up to 10 events, and clock drift 
+		 up to 5 minutes. If it is common for your users’ event-based tokens 
+		 to have the buttons pressed multiple times between authentications, 
+		 or if it is common for your time-based tokens’ clocks to drift 
+		 more than 5 minutes from the actual time, then you can set Entrust 
+		 IdentityGuard to automatically correct for token drift greater 
+		 than 10 events or 5 minutes. With a larger event or clock window, 
+		 the need to synchronize tokens is reduced. (For more on synchronization, 
+		 see the next table cell.)</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="to_configure_the_size_of_the_drift_that_is_accommodated_automatically.htm">To 
+		 configure the size of the drift that is accommodated automatically</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext" 
+															 style="font-weight: bold;">Fix 
+		 token drift by synchronizing the token to the server</p>
+		<p class="tattabletext">By default, if the token event drift exceeds 
+		 10 events, or the clock drift exceeds 5 minutes, then the token 
+		 can no longer be used for authentication. To fix this problem, 
+		 an administrator can synchronize the token. During a synchronize 
+		 operation, the token’s event count or clock is synchronized with 
+		 the one on the Entrust IdentityGuard server.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><a href="to_fix_minor_drift_by_synchronizing_the_token.htm">To fix 
+		 minor drift by synchronizing the token</a></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext" 
+															 style="font-weight: bold;">Fix 
+		 token drift that I could not fix through a sync operation</p>
+		<p class="tattabletext">By default, when an administrator synchronizes 
+		 a token, Entrust IdentityGuard searches 100 future events, or 
+		 an amount of time before and after the current time to find a 
+		 token response that matches what the user entered. If the drift 
+		 exceeds these amounts, the <span style="font-weight: bold;">Synchronize 
+		 Token</span> operation does not work.</p>
+		<p class="tattabletext">To fix this problem, you have two options:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Option 
+		 1: Increase the window of time or the number of events that Entrust 
+		 IdentityGuard searches during a synchronize operation, and then 
+		 try the synchronize operation again (this option works for tokens 
+		 and soft tokens).</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Option 
+		 2: Delete the token and create a new one (this option works for 
+		 soft tokens only).</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">For 
+		 Option 1, see <a href="to_fix_large_drift_by_increasing_the_size_of_the_event_or_clock_window.htm">To 
+		 fix large drift by increasing the size of the event or clock window</a>.</p>
+		<p class="tattabletext">For Option 2, see <a href="deleting_a_token.htm">Delete 
+		 a token</a>.</p></td>
+	</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

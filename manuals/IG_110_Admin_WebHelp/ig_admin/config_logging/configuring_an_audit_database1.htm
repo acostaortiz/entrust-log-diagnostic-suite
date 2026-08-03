@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\configsection\config_logging.fm" />
+ <meta name="generator" content="Adobe RoboHelp 11" />
+<title>Configuring an audit database</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("System configuration\nConfiguring logging and auditing\nConfiguring an audit database");
+addAvenueInfo("Untitled","ig_admin/config_logging/load_the_entrust_identityguard_mib_into_your_snmp_manager.htm","ig_admin/config_logging/setting_up_the_audits_database.htm");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../configsectionfirst/configsectionfirst.htm#TOC_System_configuration\">System configuration<\/a> > <a href=\"config_logging.htm\">Configuring logging and auditing<\/a> > Configuring an audit database<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 11.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="IX_for_audits"></a><a name="IX_audits_database"></a><a name="IX_storing_and_reporting"></a><a 
+	 name="XREF_59990_Configuring_audit"></a>Configuring an audit database</h1>
+<p class="pparagraph">By default Entrust IdentityGuard audits are written 
+ to syslog or to files, but you can also write the audits to a database 
+ for reporting later, and you can administer the audits in the database 
+ using properties that you can set up and edit in the Properties Editor.</p>
+<p class="pparagraph">The audit data is available for reporting as well, 
+ either from the Administration interface, or from the Master user shell.</p>
+<p class="nonote"><span style="font-weight: bold;">Note: </span>If your 
+ Entrust IdentityGuard installation uses a JDBC repository, you can use 
+ your existing repository for storage of audits, or you can set up a new 
+ JDBC database specifically for your audit data.<br />
+If your Entrust IdentityGuard installation uses an LDAP repository, then 
+ you must install and configure a JDBC repository for your audit data.</p>
+<p class="pparagraph">An audit database entry includes the fields shown 
+ in the following table.</p>
+<table class="Entrust_table" width="54.186%" cellspacing="0px">
+	<col style="width: 22.836%;" />
+	<col style="width: 77.164%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">Field 
+		 name</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Description</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">seqNo</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 audit sequence number. The sequence number is incremented for 
+		 each audit added.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">date</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 date the audit was generated.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">host</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 host of the Entrust IdentityGuard administration service&#160;that 
+		 generated the audit.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">level</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 style="font-family: Courier;">INFO</span>, <span style="font-family: Courier;">WARNING</span>, 
+		 or <span style="font-family: Courier;">ERROR.</span></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">code</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 numeric code of the audit. AUD5300 is entered in the database 
+		 as <span style="font-family: Courier;">5300</span>, for example.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">adminGroup</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 group of the administrator performing the operation.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">adminName</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 name of the administrator performing the operation.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">targetType</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 type of the target of the operation. Examples are <span style="font-family: Courier;">USER</span>&#160;and 
+		 <span style="font-family: Courier;">MASTER</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">targetOp</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 operation performed on the target.&#160;Examples are <span style="font-family: Courier;">CREATE</span>&#160;and 
+		 <span style="font-family: Courier;">DELETE</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">targetGroup</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 Entrust IdentityGuard group the target belongs to.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">targetName</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 name of the target of the operation.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">targetSubname</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 subname of the target of the operation. If <span style="font-family: Courier;">targetName</span>&#160;is 
+		 the name of a user with a token, for example, then the <span style="font-family: Courier;">targetSubname</span>&#160;is 
+		 the token serial number.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">service</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext"><span 
+		 style="font-family: Courier;">SUPERSH</span>, <span style="font-family: Courier;">ADMINSERVICE</span>, 
+		 <span style="font-family: Courier;">AUTHSERVICE</span>, <span 
+		 style="font-family: Courier;">ADMININTERFACE</span>, <span style="font-family: Courier;">IGRADIUS</span>, 
+		 <span style="font-family: Courier;">PROPERTIESEDITOR</span></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">externalCode</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 application code of the external application.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">externalService</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 service name of the external application.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">text</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">The 
+		 explanation text from the audit.</p></td>
+	</tr>
+</table>
+<p class="pparagraph">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a href="../../#" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>

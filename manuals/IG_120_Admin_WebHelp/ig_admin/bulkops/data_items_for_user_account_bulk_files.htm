@@ -1,0 +1,380 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Originator" content="ImportMif" />
+<meta name="OriginalFile" content="T:\Server\10.2FP1\Administration_Guide\POC_with_docissue11_as_base\useradminsection\bulkOps.fm" />
+<meta name="generator" content="Adobe RoboHelp 2015" />
+<title>Data items for user account bulk files</title>
+<link rel="stylesheet" href="../../entrust.css" type="text/css" />
+ <script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+-->
+</style>
+<script type="text/javascript" language="javascript1.2" src="../../whmsg.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript" src="../../whver.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whutils.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whproxy.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whlang.js" charset="utf-8"></script>
+<script type="text/javascript" language="javascript1.2" src="../../whtopic.js" charset="utf-8"></script>
+
+</head>
+
+<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.gbWhTopic)
+{
+	var strUrl = document.location.href;
+	var bc = 0;
+	var n = strUrl.toLowerCase().indexOf("bc-");
+	if(n != -1)
+	{
+		document.location.replace(strUrl.substring(0, n));
+		bc = strUrl.substring(n+3);
+	}
+
+	if (window.addTocInfo)
+	{
+	addTocInfo("Reference\nBulk file operations and data items\nData items for user account bulk files");
+addAvenueInfo("Untitled02","ig_admin/bulkops/user_account_bulk_operations.htm","");
+addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
+
+	}
+	if (window.writeBtnStyle)
+		writeBtnStyle();
+
+	if (window.writeIntopicBar)
+		writeIntopicBar(1);
+
+	
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../../index.htm", "", ">", "Home", "../about_this_book/about_this_book.htm");
+document.write("<a href=\"../../reference.htm\">Reference<\/a> > <a href=\"bulk_file_operations_and_data_items.htm\">Bulk file operations and data items<\/a> > Data items for user account bulk files<\/p>");
+
+}
+else
+	if (window.gbIE4)
+		document.location.reload();
+
+onLoadHandler = function()
+{
+  if (window.setRelStartPage)
+	{
+	setTimeout("setRelStartPage('../../index.htm');", 1)
+
+    setTimeout("UpdateBreadCrumbsMarker();", 1);
+	}
+}
+
+if (window.addEventListener){  
+	window.addEventListener('load', onLoadHandler, false);   
+} else if (window.attachEvent){  
+	window.attachEvent('onload', onLoadHandler);  
+}
+
+function onSetStartPage()
+{
+  autoSync(1);
+  sendSyncInfo();
+  sendAveInfoOut();
+}
+//-->
+//]]></script>
+<script type="text/javascript" src="../../ehlpdhtm.js" language="JavaScript1.2"></script>
+<div style="width: 100%; position: relative;" id="header">
+	<table cellspacing="0" width="100%">
+		<col style="width: 11.698%;" />
+		<col style="width: 88.302%;" />
+		<tr>
+			<td><img alt="" src="../../entrust_logo_ontransparent_nc.png" style="border: none;" border="0" /></td>
+			<td>
+   <p class="pparagraph">IdentityGuard Server 
+			 12.0 Administration Guide</p></td>
+		</tr>
+	</table>
+</div>
+
+
+<h1><a name="XREF_96402_Data_items_for" id="XREF_96402_Data_items_for"></a>Data 
+ items for user account bulk files</h1>
+<p class="pparagraph">Each data item in a user account bulk file must use 
+ the correct data type.</p>
+<p class="pparagraph">For more information about creating, editing and 
+ validating bulk files, see <a href="bulkops.htm">Perform bulk operations</a>.</p>
+<p class="pparagraph">&#160;</p>
+<table class="Entrust_table" cellspacing="0px" width="76.284%">
+	<col style="width: 21.122%;" />
+	<col style="width: 28.746%;" />
+	<col style="width: 50.132%;" />
+	<tr class="t1st">
+		<th style="vertical-align: Top;"><p class="tahtableheader">Data 
+		 item name</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Data 
+		 type</p></th>
+		<th style="vertical-align: Top;"><p class="tahtableheader">Description</p></th>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">userId</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Provides 
+		 a user’s full user ID, in group/username format. The group is 
+		 optional if user names are unique within your system.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">alias</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">list 
+		 of strings</p>
+		<p class="tattabletext">Separate aliases by a semicolon (;). For 
+		 example:</p>
+		<p class="tattabletext" style="font-family: Courier;"><span class="output">alias1;alias2;alias3</span></p>
+		<p class="tattabletext">If a semicolon is part of the alias name, 
+		 prefix it with a backslash (\). For example:</p>
+		<p class="tattabletext"><span class="output">alias1;alias2\;id;alias3</span> 
+		 <span class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span>means 
+		 alias1, alias2;id, and alias3.</p>
+		<p class="tattabletext"><span class="bold" style="font-weight: bold; 
+										 letter-spacing: 0.00em; text-decoration: none; ">Note:</span> 
+		 Alternatively, you can include the alias data item more than once 
+		 in a single entry if the alias header is repeated multiple times.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Provides 
+		 a user with one or more aliases.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">fullName</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Provides 
+		 the user’s full name. For example, <span class="output">Alice 
+		 Grey</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">group</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Provides 
+		 a user’s group.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">accessGroup</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">list 
+		 of strings</p>
+		<p class="tattabletext">Separate user access groups by a semicolon 
+		 (;). For example:</p>
+		<p class="tattabletext" style="font-family: Courier;"><span class="output">ag1;ag2;ag3</span></p>
+		<p class="tattabletext">If a semicolon is part of the user access 
+		 groups name, prefix it with a backslash (\). For example:</p>
+		<p class="tattabletext"><span class="output">ag1;ag2\;id;ag3</span> 
+		 means user access group 1,and so on.</p>
+		<p class="tattabletext"><span class="bold">Note:</span> Alternatively, 
+		 you can include the user access groups data item more than once 
+		 in a single entry if the user access groups header is repeated 
+		 multiple times.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">A 
+		 list of all access groups.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">addAccessGroups</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Boolean</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Indicates 
+		 whether &#160;the accessGroup list should be added to the current 
+		 list of access groups.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">removeAccessGroups</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Boolean</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Indicates 
+		 whether the accessGroup list should be removed from the current 
+		 list of access groups. If both addAccessGroups and removeAccessGroups 
+		 are set to true, addAccessGroups is used.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">usePolicyForAccessGroups</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Boolean</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Enables 
+		 or disables the access group override policy. Note that when creating 
+		 or modifying users with access groups, this parameter must always 
+		 be present and set to false. Exception: You can set this parameter 
+		 to true and leave accessGroup empty. This allows the combination 
+		 of users being processed with some users having usePolicyForAccessGroups 
+		 set to true and some having it set to false.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">userState</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p>
+		<p class="tattabletext"><span class="output">active</span> <span 
+		 class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span>or 
+		 <span class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span><span 
+		 class="output">suspended</span></p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Provides 
+		 the state of the user.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">suspendReason</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Provides 
+		 the reason why the user is suspended. The data item <span class="output">userState</span><span 
+		 class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span>must 
+		 be set to<span class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;suspended</span>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">userActivationDaysToExpiry</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">integer</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Specifies 
+		 how long (in days) a user can use just first-factor authentication 
+		 until forced to use second- factor authentication.</p>
+		<p class="tattabletext">The number of days is calculated from the 
+		 current date.</p>
+		<p class="tattabletext">Note: The <span style="font-weight: bold;">userActivationCode</span>&#160;string 
+		 must contain the number of days (numdays)</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">userActivationCode</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p>
+		<p class="tattabletext">Contains one of four values:</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+		 class="output">notset</span>&#160;— 
+		 There is no forced activation date.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+		 class="output">activated</span>&#160;— 
+		 The user is activated.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+		 class="output">usepolicy</span>&#160;— 
+		 The user has as many days to activate as defined by policy.</p>
+		<p class="talitablelist"><span style="font-family:'Symbol'">&#183;</span><span style='word-spacing:normal; font:6.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span 
+		 class="output">numdays</span> — 
+		 Uses the number of days as specified in the <span class="output">userActivationDaysToExpiry</span> 
+		 column.</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Specifies 
+		 how long a user can use just first-factor authentication until 
+		 forced to use second- factor authentication.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">role</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">list 
+		 of string</p>
+		<p class="tattabletext">Separate role names by a semicolon (;). 
+		 For example:</p>
+		<p class="tattabletext" style="font-family: Courier;"><span class="output">role1;role2;role3;</span></p>
+		<p class="tattabletext">If a semicolon is part of the role name, 
+		 prefix it with a backslash (\). For example:</p>
+		<p class="tattabletext"><span class="output">role1;role2\;help;role3</span> 
+		 <span class="output" style="font-family: Courier; font-size: 10.0pt;">&#160;</span>means 
+		 role1, role2;help, and role3</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Specifies 
+		 the name of a role or names of roles to assign to the user. The 
+		 role or roles must already exist.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">repository</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Specifies 
+		 the repository the user’s information is stored in. A blank field 
+		 is ignored.</p>
+		<p class="tattabletext">See <a href="../config_igserver/config_igserver.htm#XREF_15498_Configuring_the">Configuring 
+		 repositories</a>.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">questions</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">semicolon 
+		 (;) separated list of questions</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Used 
+		 to set and modify question and answer values.</p>
+		<p class="tattabletext">If <span style="font-family: Courier;">questions</span>&#160;is 
+		 not specified, then <span style="font-family: Courier;">answers</span>, 
+		 <span class="output">mergeQA</span>, and <span class="output">removeQA</span> 
+		 are ignored.</p>
+		<p class="tattabletext">If <span class="output">removeQA</span>&#160;is 
+		 false, then the number of questions must match the number of answers.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">answers</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">semicolon 
+		 (;) separated list of answers</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Used 
+		 to set and modify question and answer values.</p>
+		<p class="tattabletext">If <span class="output">removeQA</span>&#160;is 
+		 <span style="font-family: Courier;">false</span>, then the number 
+		 of questions must match the number of answers.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">mergeQA</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Boolean</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">If 
+		 <span style="font-family: Courier;">true</span>, contents of <span 
+		 style="font-family: Courier;">questions</span>&#160;and <span 
+		 style="font-family: Courier;">answers</span>&#160;are added to 
+		 existing list of questions and answers.</p>
+		<p class="tattabletext">If <span style="font-family: Courier;">false</span>, 
+		 contents of <span style="font-family: Courier;">questions</span>&#160;and 
+		 <span style="font-family: Courier;">answers</span> replace existing 
+		 list.</p>
+		<p class="tattabletext">If <span class="output">mergeQA</span>&#160;is 
+		 <span class="output">true</span>, <span class="output">removeQA</span>&#160;is 
+		 ignored.</p>
+		<p class="tattabletext">Default: <span class="output">false</span></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">removeQA</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">Boolean</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">If 
+		 <span style="font-family: Courier;">true</span>, specified questions 
+		 are removed from user’s list of questions.</p>
+		<p class="tattabletext">If <span class="output">removeQA</span>&#160;is 
+		 <span class="output">true</span>, the <span class="output">answer</span>&#160;column 
+		 is ignored.</p>
+		<p class="tattabletext">Default: <span class="output">false</span></p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">comment</p></td>
+		<td class="t1Col" style="vertical-align: Top;"><p class="tattabletext">string</p></td>
+		<td class="last" style="vertical-align: Top;"><p class="tattabletext">Assigns 
+		 a comment to a user.</p></td>
+	</tr>
+</table>
+<p class="pparagraph" style="margin-bottom: 3.000pt; font-family: Courier; 
+	 font-size: 9.0pt;">&#160;</p>
+<p class="pparagraph">&#160;</p>
+<div style="width: 100%; position: relative;" id="footer">
+	<br />
+	
+	<table style="border-top-style: Double; border-top-width: 4px;" cellspacing="0" 
+			 width="86.256%">
+		<col style="width: 25.748%;" />
+		<col style="width: 74.252%;" />
+		<tr>
+			<td style="vertical-align: middle;"><span class="hyperlink"><a 
+			 href="javascript:;" onclick="window.open('http://go.entrust.com/documentation-feedback?product=IdentityGuard+Server&amp;release=11.0&amp;guide=Administration+Guide&amp;page=' + encodeURIComponent(window.location.pathname), '_blank')">Report 
+			 errors or omissions</a></span></td>
+			<td style="vertical-align: middle;">
+   <p class="pparagraph"><a href="../about_this_book/documentation_feedback.htm"><img src="../../icn_question.png" alt="" style="border: none;" width="15" height="15" border="0" /></a> </p></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" language="javascript1.2">//<![CDATA[
+<!--
+if (window.writeIntopicBar)
+	writeIntopicBar(0);
+
+
+highlightSearch();
+//-->
+//]]></script>
+</body>
+</html>
