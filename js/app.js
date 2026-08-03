@@ -140,6 +140,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getActiveClientProfile() {
+    const toolbarVal = dom?.filterClientSelect?.value || document.getElementById('filter-client-select')?.value;
+    if (toolbarVal && toolbarVal !== 'ALL') {
+      const matchByToolbar = state.clientProfiles.find(c => c.name.toLowerCase() === toolbarVal.toLowerCase());
+      if (matchByToolbar) return matchByToolbar;
+      return {
+        name: toolbarVal,
+        platform: 'Entrust IdentityGuard OnPremise',
+        version: 'Release 13.0',
+        build: 'General',
+        contact: 'Departamento de TI',
+        engineer: 'Tomás Acosta'
+      };
+    }
+
     return state.clientProfiles.find(c => c.id === state.activeClientId) || state.clientProfiles[0] || {
       name: 'Cliente General',
       platform: 'Entrust IdentityGuard OnPremise',
@@ -150,31 +164,143 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  function renderRegisteredClientsList() {
+    const listContainer = document.getElementById('registered-clients-list');
+    if (!listContainer) return;
+
+    if (!state.clientProfiles || state.clientProfiles.length === 0) {
+      listContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:8px;">No hay clientes registrados.</div>';
+      return;
+    }
+
+    let html = '';
+    state.clientProfiles.forEach(c => {
+      const isActive = c.id === state.activeClientId;
+      html += `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:${isActive ? 'rgba(56, 189, 248, 0.15)' : 'var(--bg-secondary)'}; border:1px solid ${isActive ? 'var(--it-blue)' : 'var(--border-color)'}; padding:8px 12px; border-radius:6px;">
+          <div>
+            <span style="font-weight:700; color:var(--text-main);">🏢 ${escapeHtml(c.name)}</span>
+            <span style="font-size:0.75rem; color:var(--text-muted); margin-left:8px;">(${escapeHtml(c.platform)} - ${escapeHtml(c.version)})</span>
+            ${isActive ? '<span style="font-size:0.7rem; background:#0284c7; color:#fff; padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:600;">ACTIVO</span>' : ''}
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="btn btn-primary" style="padding:2px 8px; font-size:0.75rem;" onclick="window.selectActiveClientGlobal('${c.id}');">Usar</button>
+            <button type="button" class="btn" style="padding:2px 8px; font-size:0.75rem; color:#ef4444; border-color:rgba(239, 68, 68, 0.4);" onclick="window.deleteClientProfileGlobal('${c.id}');">🗑️ Eliminar</button>
+          </div>
+        </div>
+      `;
+    });
+    listContainer.innerHTML = html;
+  }
+
+  window.selectActiveClientGlobal = function(clientId) {
+    state.activeClientId = clientId;
+    const currentClient = getActiveClientProfile();
+    populateClientSessionSelectors();
+    showAnalysisStatus(false, `🏢 Sesión de Cliente Cambiada: ${currentClient.name}`, `Plataforma: ${currentClient.platform} | Versión: ${currentClient.version} (${currentClient.build})`);
+  };
+
+  window.deleteClientProfileGlobal = function(clientId) {
+    const clientToDelete = state.clientProfiles.find(c => c.id === clientId);
+    if (!clientToDelete) return;
+
+    if (!confirm(`¿Está seguro de que desea eliminar el perfil del cliente "${clientToDelete.name}"?`)) {
+      return;
+    }
+
+    state.clientProfiles = state.clientProfiles.filter(c => c.id !== clientId);
+
+    if (state.activeClientId === clientId) {
+      state.activeClientId = state.clientProfiles[0]?.id || null;
+    }
+
+    try {
+      localStorage.setItem('custom_client_profiles_v3', JSON.stringify(state.clientProfiles));
+    } catch(e) {
+      console.warn('LocalStorage error:', e);
+    }
+
+    populateClientSessionSelectors();
+    showAnalysisStatus(false, `🗑️ Cliente Eliminado: ${clientToDelete.name}`, `El perfil del cliente ha sido removido exitosamente.`);
+  };
+
   function populateClientSessionSelectors() {
     const headerSelect = document.getElementById('active-client-session-select');
-    const toolbarSelect = dom.filterClientSelect;
+    const toolbarSelect = document.getElementById('filter-client-select');
 
     if (headerSelect) {
       headerSelect.innerHTML = '';
-      state.clientProfiles.forEach(c => {
+      (state.clientProfiles || []).forEach(c => {
         const opt = document.createElement('option');
         opt.value = c.id;
         opt.textContent = `🏢 ${c.name} (${c.version})`;
         headerSelect.appendChild(opt);
       });
-      headerSelect.value = state.activeClientId;
+      if (state.activeClientId) headerSelect.value = state.activeClientId;
     }
 
     if (toolbarSelect) {
+      const currentVal = toolbarSelect.value || 'ALL';
       toolbarSelect.innerHTML = '<option value="ALL">🏢 Todos los Clientes</option>';
-      state.clientProfiles.forEach(c => {
+      (state.clientProfiles || []).forEach(c => {
         const opt = document.createElement('option');
         opt.value = c.name;
         opt.textContent = `🏢 ${c.name}`;
         toolbarSelect.appendChild(opt);
       });
+      toolbarSelect.value = currentVal;
     }
+
+    renderRegisteredClientsList();
   }
+
+  function saveClientProfileGlobal() {
+    const nameInput = document.getElementById('client-input-name');
+    const platformInput = document.getElementById('client-input-platform');
+    const versionInput = document.getElementById('client-input-version');
+    const buildInput = document.getElementById('client-input-build');
+    const contactInput = document.getElementById('client-input-contact');
+    const engineerInput = document.getElementById('client-input-engineer');
+
+    const name = nameInput ? nameInput.value.trim() : '';
+    const platform = platformInput ? platformInput.value : 'Entrust IdentityGuard OnPremise';
+    const version = versionInput ? versionInput.value : 'Release 13.0';
+    const build = (buildInput && buildInput.value.trim()) ? buildInput.value.trim() : 'General';
+    const contact = (contactInput && contactInput.value.trim()) ? contactInput.value.trim() : 'Departamento de TI';
+    const engineer = (engineerInput && engineerInput.value.trim()) ? engineerInput.value.trim() : 'Tomás Acosta';
+
+    if (!name) {
+      alert('Por favor ingrese el nombre del cliente u organización.');
+      return;
+    }
+
+    const newId = 'client-' + Date.now();
+    const newProfile = { id: newId, name, platform, version, build, contact, engineer };
+
+    if (!state.clientProfiles) state.clientProfiles = [];
+    state.clientProfiles.push(newProfile);
+    state.activeClientId = newId;
+
+    try {
+      localStorage.setItem('custom_client_profiles_v3', JSON.stringify(state.clientProfiles));
+    } catch(e) {
+      console.warn('No se pudo guardar en localStorage:', e);
+    }
+
+    populateClientSessionSelectors();
+
+    const modal = document.getElementById('client-modal');
+    if (modal) modal.classList.remove('active');
+
+    if (nameInput) nameInput.value = '';
+    if (buildInput) buildInput.value = '';
+    if (contactInput) contactInput.value = '';
+
+    showAnalysisStatus(false, `✅ ¡Nuevo Perfil de Cliente Registrado!`, `Se configuró a ${name} (${version}) como el cliente activo para análisis e informes.`);
+    alert(`¡Perfil de Cliente Creado Exitosamente!\n\nCliente: ${name}\nPlataforma: ${platform}\nVersión: ${version} (${build})\n\nTodos los informes de diagnóstico generados serán dirigidos a este cliente.`);
+  }
+
+  window.saveClientProfileGlobal = saveClientProfileGlobal;
 
   function initClientProfilesModule() {
     loadClientProfiles();
@@ -205,44 +331,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    window.saveClientProfileGlobal = function() {
-      const name = document.getElementById('client-input-name')?.value.trim();
-      const platform = document.getElementById('client-input-platform')?.value || 'Entrust IdentityGuard OnPremise';
-      const version = document.getElementById('client-input-version')?.value || 'Release 13.0';
-      const build = document.getElementById('client-input-build')?.value.trim() || 'General';
-      const contact = document.getElementById('client-input-contact')?.value.trim() || 'Departamento de TI';
-      const engineer = document.getElementById('client-input-engineer')?.value.trim() || 'Tomás Acosta';
-
-      if (!name) {
-        alert('Por favor ingrese el nombre del cliente u organización.');
-        return;
-      }
-
-      const newId = 'client-' + Date.now();
-      const newProfile = { id: newId, name, platform, version, build, contact, engineer };
-
-      state.clientProfiles.push(newProfile);
-      state.activeClientId = newId;
-      localStorage.setItem('custom_client_profiles_v3', JSON.stringify(state.clientProfiles));
-
-      populateClientSessionSelectors();
-
-      const modal = document.getElementById('client-modal');
-      if (modal) modal.classList.remove('active');
-
-      const nameInput = document.getElementById('client-input-name');
-      if (nameInput) nameInput.value = '';
-      const buildInput = document.getElementById('client-input-build');
-      if (buildInput) buildInput.value = '';
-      const contactInput = document.getElementById('client-input-contact');
-      if (contactInput) contactInput.value = '';
-
-      showAnalysisStatus(false, `✅ ¡Nuevo Perfil de Cliente Registrado!`, `Se configuró a ${name} (${version}) como el cliente activo para análisis e informes.`);
-      alert(`¡Perfil de Cliente Creado Exitosamente!\n\nCliente: ${name}\nPlataforma: ${platform}\nVersión: ${version} (${build})\n\nTodos los informes de diagnóstico generados serán dirigidos a este cliente.`);
-    };
-
     if (btnSaveClient) {
-      btnSaveClient.addEventListener('click', window.saveClientProfileGlobal);
+      btnSaveClient.addEventListener('click', saveClientProfileGlobal);
     }
   }
 
@@ -335,32 +425,79 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('exec-report-modal');
     if (!container || !modal) return;
 
-    const activeClient = getActiveClientProfile();
+    // Resolver de forma estricta el cliente destinatario activo
+    const toolbarVal = dom.filterClientSelect?.value;
+    let activeClient = null;
+
+    if (toolbarVal && toolbarVal !== 'ALL') {
+      activeClient = state.clientProfiles.find(c => c.name.toLowerCase() === toolbarVal.toLowerCase()) || {
+        name: toolbarVal,
+        platform: 'Entrust IdentityGuard OnPremise',
+        version: 'Release 13.0',
+        build: 'General',
+        contact: 'Departamento de Ciberseguridad & TI',
+        engineer: 'Tomás Acosta'
+      };
+    } else {
+      activeClient = getActiveClientProfile();
+    }
+
     const dateStr = new Date().toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'medium' });
     const totalCount = state.logs.length;
     const criticalLogs = state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
-    const warningLogs = state.logs.filter(l => l.level === 'WARN');
+    const warningLogs = state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING');
+    const infoLogs = state.logs.filter(l => l.level === 'INFO');
     const healthVal = dom.healthIndex ? dom.healthIndex.textContent : '98%';
 
-    // Extraer incidentes principales con sus diagnósticos
+    // Extraer incidentes para la tabla (Hasta 50 eventos principales)
     let incidentsHtml = '';
-    const logsToInclude = criticalLogs.length > 0 ? criticalLogs.slice(0, 10) : state.logs.slice(0, 5);
+    const logsToInclude = criticalLogs.length > 0 ? criticalLogs.slice(0, 50) : state.logs.slice(0, 20);
 
     logsToInclude.forEach((log, idx) => {
       const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message);
       incidentsHtml += `
-        <tr>
-          <td style="padding:10px; border:1px solid #cbd5e1; font-weight:bold; color:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#dc2626' : '#0284c7'};">#${idx + 1} (${log.level})</td>
-          <td style="padding:10px; border:1px solid #cbd5e1; font-family:monospace; font-size:12px;">${escapeHtml(log.service)}</td>
-          <td style="padding:10px; border:1px solid #cbd5e1;">
+        <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+          <td style="padding:10px; border:1px solid #cbd5e1; font-weight:bold; color:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#dc2626' : '#0284c7'}; font-size:12px;">#${idx + 1} (${log.level})</td>
+          <td style="padding:10px; border:1px solid #cbd5e1; font-family:monospace; font-size:11px; color:#0f172a;">${escapeHtml(log.service)}</td>
+          <td style="padding:10px; border:1px solid #cbd5e1; font-size:12px;">
             <strong>${escapeHtml(diag.title)}</strong><br>
-            <span style="font-size:12px; color:#475569;">${escapeHtml(diag.meaning)}</span>
+            <span style="font-size:11px; color:#475569;">${escapeHtml(diag.meaning)}</span>
           </td>
-          <td style="padding:10px; border:1px solid #cbd5e1; font-size:12px; color:#b91c1c;">${escapeHtml(diag.rootCause)}</td>
-          <td style="padding:10px; border:1px solid #cbd5e1; font-size:12px; white-space:pre-line;">${escapeHtml(diag.remediation)}</td>
+          <td style="padding:10px; border:1px solid #cbd5e1; font-size:11px; color:#b91c1c; font-weight:600;">${escapeHtml(diag.rootCause)}</td>
+          <td style="padding:10px; border:1px solid #cbd5e1; font-size:11px; white-space:pre-line; color:#047857;">${escapeHtml(diag.remediation)}</td>
         </tr>
       `;
     });
+
+    // Frecuencia de códigos de error 520xxx / AUDxxx
+    const codeCounts = {};
+    state.logs.forEach(l => {
+      const codeMatch = l.message.match(/(520\d{4}|AUD\d+)/i);
+      if (codeMatch) {
+        const code = codeMatch[1].toUpperCase();
+        codeCounts[code] = (codeCounts[code] || 0) + 1;
+      }
+    });
+
+    let topCodesHtml = '';
+    const sortedCodes = Object.entries(codeCounts).sort((a, b) => b[1] - a[1]);
+
+    if (sortedCodes.length > 0) {
+      sortedCodes.slice(0, 8).forEach(([code, count]) => {
+        const sampleMsg = state.logs.find(l => l.message.includes(code))?.message || '';
+        const diag = window.knowledgeBaseEngine.diagnoseLog(sampleMsg);
+        topCodesHtml += `
+          <tr>
+            <td style="padding:8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d;">${code}</td>
+            <td style="padding:8px; border:1px solid #cbd5e1; font-size:12px;">${escapeHtml(diag.title)}</td>
+            <td style="padding:8px; border:1px solid #cbd5e1; font-size:12px; text-align:center; font-weight:bold; color:#dc2626;">${count} veces</td>
+            <td style="padding:8px; border:1px solid #cbd5e1; font-size:11px; color:#475569;">${escapeHtml(diag.rootCause)}</td>
+          </tr>
+        `;
+      });
+    } else {
+      topCodesHtml = `<tr><td colspan="4" style="padding:10px; text-align:center; color:#64748b;">No se registraron patrones numéricos recurrentes.</td></tr>`;
+    }
 
     container.innerHTML = `
       <div style="background:#fff; color:#0f172a; padding:30px; font-family:'Segoe UI', Arial, sans-serif; border-radius:8px;">
@@ -368,61 +505,61 @@ document.addEventListener('DOMContentLoaded', () => {
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #0a3d6d; padding-bottom:15px; margin-bottom:20px;">
           <div>
             <h1 style="color:#0a3d6d; margin:0; font-size:22px; font-weight:bold;">IT SERVICIOS DE VENEZUELA</h1>
-            <h3 style="color:#475569; margin:4px 0 0 0; font-size:14px; font-weight:normal;">INFORME DE DIAGNÓSTICO PRELIMINAR DE INCIDENTES & AUDITORÍA ENTRUST</h3>
+            <h3 style="color:#475569; margin:4px 0 0 0; font-size:14px; font-weight:normal;">INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES & AUDITORÍA ENTRUST</h3>
           </div>
           <div style="text-align:right; font-size:12px; color:#64748b;">
             <strong>Fecha de Emisión:</strong> ${dateStr}<br>
             <strong>Elaborado por:</strong> ${escapeHtml(activeClient.engineer)} — IT Servicios<br>
-            <strong>Estatus:</strong> PRELIMINAR / ATENCIÓN REQUERIDA
+            <strong>Estatus:</strong> DOCUMENTO OFICIAL / SOPORTE TÉCNICO
           </div>
         </div>
 
         <!-- Ficha Técnica del Cliente Destinatario -->
-        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #0a3d6d; padding:14px 18px; margin-bottom:20px; border-radius:6px; display:grid; grid-template-columns: 1fr 1fr; gap:16px; font-size:12px;">
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:5px solid #0a3d6d; padding:14px 18px; margin-bottom:20px; border-radius:6px; display:grid; grid-template-columns: 1fr 1fr; gap:16px; font-size:12px;">
           <div>
             <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">Cliente Destinatario:</div>
-            <div style="font-size:16px; font-weight:bold; color:#0a3d6d; margin-top:2px;">🏢 ${escapeHtml(activeClient.name)}</div>
+            <div style="font-size:17px; font-weight:bold; color:#0a3d6d; margin-top:2px;">🏢 ${escapeHtml(activeClient.name)}</div>
             <div style="margin-top:4px;"><strong>Dirigido a:</strong> ${escapeHtml(activeClient.contact)}</div>
-            <div><strong>Ingeniero Responsable:</strong> ${escapeHtml(activeClient.engineer)} — IT Servicios de Venezuela</div>
+            <div><strong>Ingeniero Responsable:</strong> ${escapeHtml(activeClient.engineer)} — Soporte IT Servicios</div>
           </div>
           <div>
             <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">Entorno & Servidor Entrust:</div>
             <div style="font-size:14px; font-weight:bold; color:#0f172a; margin-top:2px;">🛡️ ${escapeHtml(activeClient.platform)}</div>
             <div style="margin-top:4px;"><strong>Versión & Build:</strong> ${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</div>
-            <div><strong>Tipo de Informe:</strong> <span style="color:#dc2626; font-weight:bold;">Diagnóstico de Incidentes & Seguridad</span></div>
+            <div><strong>Alcance del Análisis:</strong> <span style="color:#dc2626; font-weight:bold;">Diagnóstico de logs e incidentes observados</span></div>
           </div>
         </div>
 
         <!-- Resumen Ejecutivo Metrics -->
-        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:15px; margin-bottom:25px; background:#f8fafc; padding:15px; border-radius:6px; border:1px solid #e2e8f0;">
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:15px; margin-bottom:25px; background:#f1f5f9; padding:15px; border-radius:6px; border:1px solid #cbd5e1;">
           <div style="text-align:center;">
-            <div style="font-size:11px; color:#64748b; text-transform:uppercase;">Índice de Salud</div>
+            <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Índice de Salud</div>
             <div style="font-size:24px; font-weight:bold; color:#0a3d6d;">${healthVal}</div>
           </div>
           <div style="text-align:center;">
-            <div style="font-size:11px; color:#64748b; text-transform:uppercase;">Total Eventos</div>
+            <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
             <div style="font-size:24px; font-weight:bold; color:#0f172a;">${totalCount}</div>
           </div>
           <div style="text-align:center;">
-            <div style="font-size:11px; color:#64748b; text-transform:uppercase;">Incidentes Críticos</div>
+            <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Incidentes Críticos</div>
             <div style="font-size:24px; font-weight:bold; color:#dc2626;">${criticalLogs.length}</div>
           </div>
           <div style="text-align:center;">
-            <div style="font-size:11px; color:#64748b; text-transform:uppercase;">Alertas de Auditoría</div>
+            <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Alertas Auditoría</div>
             <div style="font-size:24px; font-weight:bold; color:#d97706;">${warningLogs.length}</div>
           </div>
         </div>
 
-        <!-- Tabla de Incidentes -->
-        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px;">1. Hallazgos y Diagnóstico Técnico de Fallas</h3>
-        <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:13px;">
+        <!-- Tabla I: Incidentes & Diagnósticos -->
+        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">1. Hallazgos y Diagnóstico Técnico de Incidentes (${logsToInclude.length} registros)</h3>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
           <thead>
-            <tr style="background:#e0f2fe; color:#0a3d6d; text-align:left;">
-              <th style="padding:8px; border:1px solid #cbd5e1;">Nivel</th>
-              <th style="padding:8px; border:1px solid #cbd5e1;">Servicio / API</th>
-              <th style="padding:8px; border:1px solid #cbd5e1;">Evento & Significado</th>
-              <th style="padding:8px; border:1px solid #cbd5e1;">Causa Raíz Probable</th>
-              <th style="padding:8px; border:1px solid #cbd5e1;">Remediación Inmediata</th>
+            <tr style="background:#0a3d6d; color:#ffffff; text-align:left;">
+              <th style="padding:10px; border:1px solid #0a3d6d; width:110px;">Nivel</th>
+              <th style="padding:10px; border:1px solid #0a3d6d; width:130px;">Servicio / API</th>
+              <th style="padding:10px; border:1px solid #0a3d6d;">Evento & Significado</th>
+              <th style="padding:10px; border:1px solid #0a3d6d;">Causa Raíz Probable</th>
+              <th style="padding:10px; border:1px solid #0a3d6d;">Remediación Inmediata</th>
             </tr>
           </thead>
           <tbody>
@@ -430,17 +567,45 @@ document.addEventListener('DOMContentLoaded', () => {
           </tbody>
         </table>
 
-        <!-- Firma y Cierre -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:40px; padding-top:20px; border-top:1px solid #cbd5e1;">
+        <!-- Tabla II: Análisis de Frecuencia de Errores -->
+        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">2. Análisis Estadístico de Errores Reincidentes (520xxx / AUDxxx)</h3>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
+          <thead>
+            <tr style="background:#e0f2fe; color:#0a3d6d; text-align:left;">
+              <th style="padding:8px; border:1px solid #cbd5e1; width:110px;">Código</th>
+              <th style="padding:8px; border:1px solid #cbd5e1;">Descripción del Evento</th>
+              <th style="padding:8px; border:1px solid #cbd5e1; text-align:center; width:110px;">Reincidencias</th>
+              <th style="padding:8px; border:1px solid #cbd5e1;">Diagnóstico Frecuente</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${topCodesHtml}
+          </tbody>
+        </table>
+
+        <!-- Sección III: Recomendaciones Técnicas -->
+        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">3. Recomendaciones Técnicas y Plan de Acción Preventivo</h3>
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:16px; border-radius:6px; font-size:12px; line-height:1.6; margin-bottom:30px;">
+          <ul style="margin:0; padding-left:20px; color:#334155;">
+            <li><strong>Mantenimiento de Conexión a Base de Datos:</strong> Verificar los parámetros de tiempo de espera (Timeout) y el pool de conexiones en el repositorio de identidades para prevenir los errores de autenticación repetidos.</li>
+            <li><strong>Revisión de Parches y Release Notes:</strong> Validar la aplicación de los parches oficializados para la versión <strong>${escapeHtml(activeClient.version)}</strong> según la documentación administrativa de Entrust.</li>
+            <li><strong>Gestión de Ciclo de Vida de Tokens:</strong> Capacitar a los usuarios finales en la renovación oportuna de tokens OTP / Grid Cards e inspeccionar políticas de expiración en la consola de administración.</li>
+            <li><strong>Monitoreo de Logs en Tiempo Real:</strong> Mantener activo el monitoreo de alertas de auditoría (eventos <code>AUDxxx</code>) para detectar con antelación intentos no autorizados de acceso.</li>
+          </ul>
+        </div>
+
+        <!-- Firma y Cierre Oficial -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; padding-top:20px; border-top:2px solid #0a3d6d;">
           <div>
-            <p style="font-size:12px; color:#475569; margin:0;">
-              <strong>Suite de Diagnostico</strong> — Entrust IdentityGuard OnPremise Module<br>
-              Confidencial — Para uso exclusivo del Departamento de TI y Operaciones.
+            <p style="font-size:11px; color:#475569; margin:0;">
+              <strong>Suite de Diagnóstico</strong> — Entrust IdentityGuard OnPremise & IDaaS Cloud<br>
+              Confidencial — Para uso exclusivo del cliente <strong>${escapeHtml(activeClient.name)}</strong>.
             </p>
           </div>
-          <div style="text-align:center; min-width:240px;">
-            <div style="border-bottom:1px solid #0f172a; padding-bottom:4px; margin-bottom:4px; font-weight:bold; color:#0f172a;">Departamento de Soporte</div>
-            <div style="font-size:11px; color:#64748b;">IT Servicios de Venezuela</div>
+          <div style="text-align:center; min-width:260px;">
+            <div style="border-bottom:1px solid #0f172a; margin-bottom:6px; height:35px;"></div>
+            <strong style="font-size:12px; color:#0a3d6d;">Departamento de Soporte IT Servicios de Venezuela</strong><br>
+            <span style="font-size:11px; color:#64748b;">Ing. ${escapeHtml(activeClient.engineer)}</span>
           </div>
         </div>
       </div>

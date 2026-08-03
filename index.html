@@ -414,56 +414,66 @@
 
   <!-- MODAL CREACIÓN Y REGISTRO DE PERFIL DE CLIENTE -->
   <div class="modal-overlay" id="client-modal">
-    <div class="modal-content" style="max-width: 680px;">
+    <div class="modal-content" style="max-width: 720px;">
       <div class="card-header">
-        <div class="card-title text-cyan">🏢 Registrar Perfil de Cliente & Entorno Entrust</div>
+        <div class="card-title text-cyan">🏢 Gestión de Perfiles de Clientes & Entornos Entrust</div>
         <button class="btn" id="btn-close-client-modal" onclick="document.getElementById('client-modal').classList.remove('active');">✖ Cerrar</button>
       </div>
 
       <p class="text-muted" style="font-size:0.85rem; margin-bottom:16px;">
-        Define los datos oficiales del cliente y la versión de su servidor Entrust para asociar sus logs y personalizar el Informe de Diagnóstico Técnico.
+        Define o elimina los datos oficiales del cliente y la versión de su servidor Entrust para dirigir los análisis e informes técnicos.
       </p>
 
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
-        <div>
-          <label class="diag-label">Nombre del Cliente / Organización *</label>
-          <input type="text" class="form-control" id="client-input-name" placeholder="Ej. Banco Mercantil C.A.">
+      <div style="background:var(--bg-primary); border:1px solid var(--border-color); padding:16px; border-radius:8px; margin-bottom:20px;">
+        <div class="card-title" style="font-size:0.95rem; margin-bottom:12px; color:var(--it-blue);">➕ Registrar Nuevo Cliente / Entorno</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+          <div>
+            <label class="diag-label">Nombre del Cliente / Organización *</label>
+            <input type="text" class="form-control" id="client-input-name" placeholder="Ej. Banco Mercantil C.A.">
+          </div>
+          <div>
+            <label class="diag-label">Plataforma Entrust *</label>
+            <select class="form-control" id="client-input-platform">
+              <option value="Entrust IdentityGuard OnPremise">Entrust IdentityGuard OnPremise</option>
+              <option value="Entrust IDaaS Cloud">Entrust IDaaS Cloud</option>
+              <option value="Entrust Hybrid (OnPremise + Cloud)">Entrust Híbrido (OnPremise + Cloud)</option>
+            </select>
+          </div>
+          <div>
+            <label class="diag-label">Versión del Servidor *</label>
+            <select class="form-control" id="client-input-version">
+              <option value="Release 13.0">Release 13.0 (Diciembre 2020)</option>
+              <option value="Release 12.0">Release 12.0 (Marzo 2017)</option>
+              <option value="Release 11.0">Release 11.0 (Noviembre 2015)</option>
+              <option value="IDaaS Cloud v2026">IDaaS Cloud v2026</option>
+            </select>
+          </div>
+          <div>
+            <label class="diag-label">Build / Compilación / Issue</label>
+            <input type="text" class="form-control" id="client-input-build" placeholder="Ej. 13.0.12.4 / Issue 5">
+          </div>
+          <div>
+            <label class="diag-label">Departamento Destinatario</label>
+            <input type="text" class="form-control" id="client-input-contact" placeholder="Ej. Depto. de Ciberseguridad & TI">
+          </div>
+          <div>
+            <label class="diag-label">Ingeniero Responsable</label>
+            <input type="text" class="form-control" id="client-input-engineer" value="Tomás Acosta" placeholder="Ej. Tomás Acosta">
+          </div>
         </div>
-        <div>
-          <label class="diag-label">Plataforma Entrust *</label>
-          <select class="form-control" id="client-input-platform">
-            <option value="Entrust IdentityGuard OnPremise">Entrust IdentityGuard OnPremise</option>
-            <option value="Entrust IDaaS Cloud">Entrust IDaaS Cloud</option>
-            <option value="Entrust Hybrid (OnPremise + Cloud)">Entrust Híbrido (OnPremise + Cloud)</option>
-          </select>
-        </div>
-        <div>
-          <label class="diag-label">Versión del Servidor *</label>
-          <select class="form-control" id="client-input-version">
-            <option value="Release 13.0">Release 13.0 (Diciembre 2020)</option>
-            <option value="Release 12.0">Release 12.0 (Marzo 2017)</option>
-            <option value="Release 11.0">Release 11.0 (Noviembre 2015)</option>
-            <option value="IDaaS Cloud v2026">IDaaS Cloud v2026</option>
-          </select>
-        </div>
-        <div>
-          <label class="diag-label">Build / Compilación / Issue</label>
-          <input type="text" class="form-control" id="client-input-build" placeholder="Ej. 13.0.12.4 / Issue 5">
-        </div>
-        <div>
-          <label class="diag-label">Departamento Destinatario</label>
-          <input type="text" class="form-control" id="client-input-contact" placeholder="Ej. Depto. de Ciberseguridad & TI">
-        </div>
-        <div>
-          <label class="diag-label">Ingeniero de Soporte Responsable</label>
-          <input type="text" class="form-control" id="client-input-engineer" value="Tomás Acosta" placeholder="Ej. Tomás Acosta">
+        <div class="flex-between mt-4">
+          <span class="text-muted font-mono" style="font-size:0.75rem;">* Requeridos para el informe técnico</span>
+          <button type="button" class="btn btn-primary" id="btn-save-client-profile" onclick="window.saveClientProfileGlobal();">💾 Guardar Perfil de Cliente</button>
         </div>
       </div>
 
-      <div class="flex-between mt-4">
-        <span class="text-muted font-mono" style="font-size:0.75rem;">* Datos requeridos para la carátula e informe técnico</span>
-        <button class="btn btn-primary" id="btn-save-client-profile" onclick="window.saveClientProfileGlobal();">💾 Guardar Perfil de Cliente</button>
+      <div style="border-top:1px solid var(--border-color); padding-top:14px;">
+        <div class="card-title" style="font-size:0.95rem; margin-bottom:10px; color:var(--text-main);">📋 Clientes Registrados Actualmente (Administrar / Eliminar)</div>
+        <div id="registered-clients-list" style="max-height: 200px; overflow-y: auto; display:flex; flex-direction:column; gap:8px;">
+          <!-- Lista inyectada dinámicamente -->
+        </div>
       </div>
+
     </div>
   </div>
 
@@ -485,10 +495,10 @@
   </footer>
 
   <!-- Scripts JavaScript -->
-  <script src="js/kb-database.js?v=7.0"></script>
-  <script src="js/manuals-engine.js?v=7.0"></script>
-  <script src="js/log-parser.js?v=7.0"></script>
-  <script src="js/app.js?v=7.0"></script>
+  <script src="js/kb-database.js?v=9.0"></script>
+  <script src="js/manuals-engine.js?v=9.0"></script>
+  <script src="js/log-parser.js?v=9.0"></script>
+  <script src="js/app.js?v=9.0"></script>
 
 </body>
 </html>
