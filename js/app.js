@@ -420,7 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function generateExecutiveReport() {
+  function generateExecutiveReport(onlyCatalogErrors = false) {
     const container = document.getElementById('exec-report-container');
     const modal = document.getElementById('exec-report-modal');
     if (!container || !modal) return;
@@ -443,15 +443,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const dateStr = new Date().toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'medium' });
-    const totalCount = state.logs.length;
-    const criticalLogs = state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
-    const warningLogs = state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING');
-    const infoLogs = state.logs.filter(l => l.level === 'INFO');
+    const targetLogs = onlyCatalogErrors 
+      ? state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || /(520\d{4}|AUD\d+|IDaaS|SAML)/i.test(l.message))
+      : state.logs;
+
+    const totalCount = targetLogs.length;
+    const criticalLogs = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
+    const warningLogs = targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING');
+    const infoLogs = targetLogs.filter(l => l.level === 'INFO');
     const healthVal = dom.healthIndex ? dom.healthIndex.textContent : '98%';
+
+    const reportTitleText = onlyCatalogErrors 
+      ? 'INFORME DE DIAGNÓSTICO EXCLUSIVO DE ERRORES IDENTITYGUARD [520xxx / IDaaS]'
+      : 'INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES & AUDITORÍA ENTRUST';
+
+    const reportScopeText = onlyCatalogErrors
+      ? 'Filtro Exclusivo: Catálogo de Errores 520xxx y Fallos IDaaS Detectados'
+      : 'Diagnóstico General de Logs e Incidentes';
 
     // Extraer incidentes para la tabla (Hasta 50 eventos principales)
     let incidentsHtml = '';
-    const logsToInclude = criticalLogs.length > 0 ? criticalLogs.slice(0, 50) : state.logs.slice(0, 20);
+    const logsToInclude = criticalLogs.length > 0 ? criticalLogs.slice(0, 50) : targetLogs.slice(0, 25);
 
     logsToInclude.forEach((log, idx) => {
       const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message);
@@ -471,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Frecuencia de códigos de error 520xxx / AUDxxx
     const codeCounts = {};
-    state.logs.forEach(l => {
+    targetLogs.forEach(l => {
       const codeMatch = l.message.match(/(520\d{4}|AUD\d+)/i);
       if (codeMatch) {
         const code = codeMatch[1].toUpperCase();
@@ -483,7 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sortedCodes = Object.entries(codeCounts).sort((a, b) => b[1] - a[1]);
 
     if (sortedCodes.length > 0) {
-      sortedCodes.slice(0, 8).forEach(([code, count]) => {
+      sortedCodes.slice(0, 10).forEach(([code, count]) => {
         const sampleMsg = state.logs.find(l => l.message.includes(code))?.message || '';
         const diag = window.knowledgeBaseEngine.diagnoseLog(sampleMsg, code);
         topCodesHtml += `
@@ -505,12 +517,12 @@ document.addEventListener('DOMContentLoaded', () => {
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #0a3d6d; padding-bottom:15px; margin-bottom:20px;">
           <div>
             <h1 style="color:#0a3d6d; margin:0; font-size:22px; font-weight:bold;">IT SERVICIOS DE VENEZUELA</h1>
-            <h3 style="color:#475569; margin:4px 0 0 0; font-size:14px; font-weight:normal;">INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES & AUDITORÍA ENTRUST</h3>
+            <h3 style="color:#475569; margin:4px 0 0 0; font-size:14px; font-weight:normal;">${reportTitleText}</h3>
           </div>
           <div style="text-align:right; font-size:12px; color:#64748b;">
             <strong>Fecha de Emisión:</strong> ${dateStr}<br>
             <strong>Elaborado por:</strong> ${escapeHtml(activeClient.engineer)} — IT Servicios<br>
-            <strong>Estatus:</strong> DOCUMENTO OFICIAL / SOPORTE TÉCNICO
+            <strong>Estatus:</strong> DOCUMENTO OFICIAL / INFORME EXCLUSIVO
           </div>
         </div>
 
@@ -526,7 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">Entorno & Servidor Entrust:</div>
             <div style="font-size:14px; font-weight:bold; color:#0f172a; margin-top:2px;">🛡️ ${escapeHtml(activeClient.platform)}</div>
             <div style="margin-top:4px;"><strong>Versión & Build:</strong> ${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</div>
-            <div><strong>Alcance del Análisis:</strong> <span style="color:#dc2626; font-weight:bold;">Diagnóstico de logs e incidentes observados</span></div>
+            <div><strong>Alcance del Análisis:</strong> <span style="color:#dc2626; font-weight:bold;">${reportScopeText}</span></div>
           </div>
         </div>
 
@@ -537,7 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div style="font-size:24px; font-weight:bold; color:#0a3d6d;">${healthVal}</div>
           </div>
           <div style="text-align:center;">
-            <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
+            <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Errores Analizados</div>
             <div style="font-size:24px; font-weight:bold; color:#0f172a;">${totalCount}</div>
           </div>
           <div style="text-align:center;">
@@ -551,7 +563,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <!-- Tabla I: Incidentes & Diagnósticos -->
-        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">1. Hallazgos y Diagnóstico Técnico de Incidentes (${logsToInclude.length} registros)</h3>
+        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">1. Hallazgos y Diagnóstico Técnico de Errores [520xxx / IDaaS] (${logsToInclude.length} registros)</h3>
         <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
           <thead>
             <tr style="background:#0a3d6d; color:#ffffff; text-align:left;">
@@ -587,10 +599,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">3. Recomendaciones Técnicas y Plan de Acción Preventivo</h3>
         <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:16px; border-radius:6px; font-size:12px; line-height:1.6; margin-bottom:30px;">
           <ul style="margin:0; padding-left:20px; color:#334155;">
+            <li><strong>Atención Prioritaria de Errores 520xxx:</strong> Ejecutar la verificación de cuentas de usuario bloqueadas y desbloquearlas mediante la Consola de Administración de Entrust.</li>
             <li><strong>Mantenimiento de Conexión a Base de Datos:</strong> Verificar los parámetros de tiempo de espera (Timeout) y el pool de conexiones en el repositorio de identidades para prevenir los errores de autenticación repetidos.</li>
             <li><strong>Revisión de Parches y Release Notes:</strong> Validar la aplicación de los parches oficializados para la versión <strong>${escapeHtml(activeClient.version)}</strong> según la documentación administrativa de Entrust.</li>
             <li><strong>Gestión de Ciclo de Vida de Tokens:</strong> Capacitar a los usuarios finales en la renovación oportuna de tokens OTP / Grid Cards e inspeccionar políticas de expiración en la consola de administración.</li>
-            <li><strong>Monitoreo de Logs en Tiempo Real:</strong> Mantener activo el monitoreo de alertas de auditoría (eventos <code>AUDxxx</code>) para detectar con antelación intentos no autorizados de acceso.</li>
           </ul>
         </div>
 
@@ -638,6 +650,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dom.btnCloseEntrustModal?.addEventListener('click', () => dom.entrustErrorsModal.classList.remove('active'));
     dom.btnCloseEntrustModal2?.addEventListener('click', () => dom.entrustErrorsModal.classList.remove('active'));
+
+    document.getElementById('btn-gen-report-for-detected-520')?.addEventListener('click', () => {
+      if (dom.entrustErrorsModal) dom.entrustErrorsModal.classList.remove('active');
+      generateExecutiveReport(true);
+    });
 
     dom.btnGoToAnalyzer520?.addEventListener('click', () => {
       dom.entrustErrorsModal.classList.remove('active');
