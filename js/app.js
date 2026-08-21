@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function downloadExecutiveReportPdf() {
-    const element = document.getElementById('exec-report-document') || document.getElementById('exec-report-container');
+    const element = document.getElementById('exec-report-container');
     if (!element) return;
 
     const activeClient = getActiveClientProfile();
@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
       margin:       [8, 8, 8, 8],
       filename:     `Informe_Entrust_${clientSanitized}_${dateStamp}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, logging: false, windowWidth: 800 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
       jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' },
       pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', 'h3', 'div[style*="border"]'] }
     };
@@ -610,7 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </table>`;
 
     container.innerHTML = `
-      <div id="exec-report-document" style="max-width:800px; margin:0 auto; width:100%; box-sizing:border-box; background:#fff; color:#0f172a; padding:24px; font-family:'Segoe UI', Arial, sans-serif; border-radius:8px;">
+      <div id="exec-report-document" style="width:100%; box-sizing:border-box; background:#fff; color:#0f172a; padding:20px; font-family:'Segoe UI', Arial, sans-serif; border-radius:8px;">
         <!-- Header Informe -->
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #0a3d6d; padding-bottom:15px; margin-bottom:20px;">
           <div>
