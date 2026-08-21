@@ -420,6 +420,118 @@ class KnowledgeBase {
         sectionTitle: 'Código [5201010]: PIN Does Not Match Challenge'
       },
       {
+        id: 'KB-ENTRUST-5205079',
+        title: 'Entrust IdentityGuard: Fallo de Autenticación / Credenciales Inválidas',
+        category: 'Entrust OnPremise / Autenticación',
+        severity: 'ERROR',
+        pattern: /(5205079)/i,
+        meaning: 'Fallo recurrente en el proceso de verificación de identidad. El usuario o la aplicación cliente envió credenciales o valores de autenticación no válidos.',
+        rootCause: 'Intentos de inicio de sesión con contraseñas o tokens caducados, usuario bloqueado en LDAP/Active Directory o clave de API desactualizada.',
+        remediation: '1. Verifique en la consola de administración de Entrust si las cuentas afectadas superaron el límite de reintentos fallidos.\n2. Revise el estado del usuario en el directorio LDAP y desbloquee la cuenta.\n3. Valide los parámetros de autenticación en la aplicación cliente integradora.',
+        riskLevel: 'Medio (Error de Autenticación Reincidente)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5205079',
+        sectionTitle: 'Código [5205079]: User Authentication Failure'
+      },
+      {
+        id: 'KB-ENTRUST-5205139',
+        title: 'Entrust IdentityGuard: Usuario o Alias No Encontrado',
+        category: 'Entrust OnPremise / Gestión de Usuarios',
+        severity: 'ERROR',
+        pattern: /(5205139|Unable to find a user for user name or alias)/i,
+        meaning: 'El subsistema de gestión de identidades de Entrust no pudo localizar la entidad del usuario o su alias en la base de datos ni en el almacén LDAP.',
+        rootCause: 'El nombre de usuario o alias especificado en la solicitud no existe en el repositorio de identidades o no ha sido sincronizado.',
+        remediation: '1. Verifique que el usuario o alias esté registrado y activo en el directorio LDAP/Active Directory.\n2. Ejecute una sincronización de repositorios desde la consola de administración de IdentityGuard.\n3. Compruebe la ortografía del nombre de usuario o alias enviado por la aplicación.',
+        riskLevel: 'Medio (Usuario Inexistente)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5205139',
+        sectionTitle: 'Código [5205139]: Unable to find a user for user name or alias'
+      },
+      {
+        id: 'KB-ENTRUST-5203000',
+        title: 'Entrust IdentityGuard: Sesión de Autenticación Expirada',
+        category: 'Entrust OnPremise / Gestión de Sesiones',
+        severity: 'WARN',
+        pattern: /(5203000)/i,
+        meaning: 'La transacción o sesión de desafío (challenge) expiró antes de recibir la respuesta de autenticación del usuario.',
+        rootCause: 'Tiempo de espera (timeout) de sesión excedido en el portal o aplicación integradora mientras el usuario ingresaba su credencial.',
+        remediation: '1. Ajuste los parámetros de tiempo de vida de la sesión (Session Timeout) en el Editor de Propiedades de IdentityGuard.\n2. Solicite al usuario iniciar una nueva transacción de autenticación sin demoras prolongadas.',
+        riskLevel: 'Bajo (Timeout de Sesión)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5203000',
+        sectionTitle: 'Código [5203000]: Authentication Session Timeout'
+      },
+      {
+        id: 'KB-ENTRUST-5203016',
+        title: 'Entrust IdentityGuard: Cuenta de Usuario Bloqueada (Too Many Failed Attempts)',
+        category: 'Entrust OnPremise / Control de Acceso',
+        severity: 'ERROR',
+        pattern: /(5203016)/i,
+        meaning: 'La cuenta del usuario fue bloqueada automáticamente por exceder el número máximo de reintentos fallidos de autenticación permitidos.',
+        rootCause: 'Múltiples reintentos fallidos consecutivos de contraseña, PIN o tarjetas Grid por parte del usuario o un ataque de fuerza bruta.',
+        remediation: '1. Desbloquee la cuenta del usuario desde la Consola de Administración de IdentityGuard.\n2. Verifique la causa de los reintentos y, si es necesario, proceda al blanqueo o restablecimiento de su credencial.',
+        riskLevel: 'Alto (Cuenta Bloqueada por Reintentos Fallidos)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5203016',
+        sectionTitle: 'Código [5203016]: User Account Locked'
+      },
+      {
+        id: 'KB-ENTRUST-5202340',
+        title: 'Entrust IdentityGuard: Fallo de Autorización de Aplicación Cliente',
+        category: 'Entrust OnPremise / Integración API',
+        severity: 'ERROR',
+        pattern: /(5202340)/i,
+        meaning: 'La aplicación cliente o canal integrador fue rechazado al intentar consumir las APIs web de Entrust IdentityGuard.',
+        rootCause: 'Clave de API de aplicación cliente (Client Shared Secret) incorrecta, certificado caducado o IP de origen no autorizada.',
+        remediation: '1. Verifique las credenciales de la aplicación cliente en la consola de administración de Entrust.\n2. Revise la lista de Direcciones IP autorizadas en la política del canal de integración.',
+        riskLevel: 'Alto (Fallo de Autorización de Canal API)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5202340',
+        sectionTitle: 'Código [5202340]: Client Application Authorization Failure'
+      },
+      {
+        id: 'KB-ENTRUST-5203020',
+        title: 'Entrust IdentityGuard: Contraseña de Usuario Expirada',
+        category: 'Entrust OnPremise / Políticas de Contraseñas',
+        severity: 'WARN',
+        pattern: /(5203020)/i,
+        meaning: 'La contraseña o secreto del usuario ha vencido según la política de caducidad vigente.',
+        rootCause: 'Cumplimiento del tiempo límite de validez de la contraseña establecido en la política de grupo de Entrust.',
+        remediation: '1. Inste al usuario a realizar el cambio de contraseña a través del portal de autoservicio.\n2. Restablezca la vigencia de la clave en el directorio LDAP/Active Directory.',
+        riskLevel: 'Medio (Contraseña Expirada)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5203020',
+        sectionTitle: 'Código [5203020]: Password Policy Violation / Expired'
+      },
+      {
+        id: 'KB-ENTRUST-5207677',
+        title: 'Entrust IdentityGuard: Fallo de Comunicación con Proxy RADIUS',
+        category: 'Entrust OnPremise / Proxy RADIUS',
+        severity: 'ERROR',
+        pattern: /(5207677)/i,
+        meaning: 'Perdida de conectividad o tiempo de espera agotado en la comunicación entre el Agente RADIUS y el Servicio de Autenticación de Entrust.',
+        rootCause: 'Servicio RADIUS detenido, puerto UDP 1812/1813 bloqueado en firewall o timeout de respuesta.',
+        remediation: '1. Verifique que el servicio `identityguard-radius` esté activo.\n2. Compruebe las reglas de firewall y la conectividad de red entre el concentrador VPN y el servidor Entrust.',
+        riskLevel: 'Crítico (Fallo de Proxy RADIUS)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5207677',
+        sectionTitle: 'Código [5207677]: RADIUS Proxy Communication Failure'
+      },
+      {
+        id: 'KB-ENTRUST-5209525',
+        title: 'Entrust IdentityGuard: Fallo de Despacho Notificación Push / Soft Token',
+        category: 'Entrust OnPremise / Soft Tokens & Push',
+        severity: 'ERROR',
+        pattern: /(5209525)/i,
+        meaning: 'El servidor no pudo entregar la transacción o la notificación Push MFA al dispositivo móvil del usuario.',
+        rootCause: 'Dispositivo del usuario sin señal/internet, token de notificación caducado o fallo en la pasarela Apple APNS / Google FCM.',
+        remediation: '1. Verifique que el dispositivo móvil del usuario tenga acceso a internet.\n2. En la consola de administración, valide el estado del Soft Token y re-asócielo al dispositivo si es necesario.',
+        riskLevel: 'Alto (Fallo de Notificación Push MFA)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5209525',
+        sectionTitle: 'Código [5209525]: Push Notification Delivery Failure'
+      },
+      {
         id: 'KB-ENTRUST-5202013',
         title: 'Entrust IdentityGuard: ID de Usuario o Contraseña Inválida',
         category: 'Entrust OnPremise / Autenticación',
@@ -501,11 +613,33 @@ class KnowledgeBase {
     }
   }
 
-  diagnoseLog(logText) {
-    if (!logText) return null;
+  diagnoseLog(logText, targetCode) {
+    if (!logText && !targetCode) return null;
+    const searchText = logText || (targetCode ? `[${targetCode}]` : '');
+
+    // Si se especificó un código objetivo, buscar primero la regla que coincida de forma estricta con ese código
+    if (targetCode) {
+      const specRule = this.rules.find(r => r.id === `KB-ENTRUST-${targetCode}` || r.pattern.test(`[${targetCode}]`));
+      if (specRule) {
+        return {
+          matched: true,
+          ruleId: specRule.id,
+          title: specRule.title,
+          category: specRule.category,
+          severity: specRule.severity,
+          meaning: specRule.meaning,
+          rootCause: specRule.rootCause,
+          remediation: specRule.remediation,
+          riskLevel: specRule.riskLevel,
+          manualVersion: specRule.manualVersion,
+          sectionId: specRule.sectionId,
+          sectionTitle: specRule.sectionTitle
+        };
+      }
+    }
 
     for (const rule of this.rules) {
-      if (rule.pattern.test(logText)) {
+      if (rule.pattern.test(searchText)) {
         return {
           matched: true,
           ruleId: rule.id,
@@ -524,9 +658,9 @@ class KnowledgeBase {
     }
 
     // Diagnóstico Heurístico Entrust OnPremise AUDxxxx (Sin mensajes de "Consulte el manual")
-    const audMatch = logText.match(/\[(AUD\d+)\]\s*(.*)/i);
+    const audMatch = searchText.match(/\[(AUD\d+)\]\s*(.*)/i);
     if (audMatch) {
-      const audCode = audMatch[1].toUpperCase();
+      const audCode = targetCode || audMatch[1].toUpperCase();
       const audDetail = audMatch[2] ? audMatch[2].trim() : 'Evento de auditoría en la plataforma Entrust.';
       return {
         matched: true,
@@ -545,9 +679,10 @@ class KnowledgeBase {
     }
 
     // Diagnóstico Heurístico Entrust OnPremise 520xxx (Remediación técnica explícita)
-    const entrustMatch = logText.match(/\[(520\d{4})\]\s*(.*)/);
+    const regexToUse = targetCode ? new RegExp('\\[(' + targetCode + ')\\]\\s*(.*)', 'i') : /\[(520\d{4})\]\s*(.*)/;
+    const entrustMatch = searchText.match(regexToUse) || searchText.match(/\[(520\d{4})\]\s*(.*)/);
     if (entrustMatch) {
-      const code = entrustMatch[1];
+      const code = targetCode || entrustMatch[1];
       const detail = entrustMatch[2] ? entrustMatch[2].trim() : 'Error en la transacción de autenticación/administración.';
 
       let causeText = 'Fallo reportado por el servidor de autenticación/administración de Entrust IdentityGuard.';

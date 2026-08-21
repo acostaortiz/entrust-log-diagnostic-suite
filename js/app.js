@@ -485,7 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sortedCodes.length > 0) {
       sortedCodes.slice(0, 8).forEach(([code, count]) => {
         const sampleMsg = state.logs.find(l => l.message.includes(code))?.message || '';
-        const diag = window.knowledgeBaseEngine.diagnoseLog(sampleMsg);
+        const diag = window.knowledgeBaseEngine.diagnoseLog(sampleMsg, code);
         topCodesHtml += `
           <tr>
             <td style="padding:8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d;">${code}</td>
