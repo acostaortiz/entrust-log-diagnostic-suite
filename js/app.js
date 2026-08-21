@@ -542,23 +542,46 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
 
-        <!-- Resumen Ejecutivo Metrics -->
-        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:15px; margin-bottom:25px; background:#f1f5f9; padding:15px; border-radius:6px; border:1px solid #cbd5e1;">
-          <div style="text-align:center;">
-            <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Índice de Salud</div>
-            <div style="font-size:24px; font-weight:bold; color:#0a3d6d;">${healthVal}</div>
+        <!-- Resumen Ejecutivo Metrics & Gráfico de Severidad -->
+        <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; margin-bottom:25px; align-items:center;">
+          <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; background:#f1f5f9; padding:15px; border-radius:6px; border:1px solid #cbd5e1;">
+            <div style="text-align:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
+              <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Índice de Salud</div>
+              <div style="font-size:24px; font-weight:bold; color:#0a3d6d;">${healthVal}</div>
+            </div>
+            <div style="text-align:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
+              <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
+              <div style="font-size:24px; font-weight:bold; color:#0f172a;">${totalCount}</div>
+            </div>
+            <div style="text-align:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
+              <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Incidentes Críticos</div>
+              <div style="font-size:24px; font-weight:bold; color:#dc2626;">${criticalLogs.length}</div>
+            </div>
+            <div style="text-align:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
+              <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Alertas Auditoría</div>
+              <div style="font-size:24px; font-weight:bold; color:#d97706;">${warningLogs.length}</div>
+            </div>
           </div>
-          <div style="text-align:center;">
-            <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Errores Analizados</div>
-            <div style="font-size:24px; font-weight:bold; color:#0f172a;">${totalCount}</div>
-          </div>
-          <div style="text-align:center;">
-            <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Incidentes Críticos</div>
-            <div style="font-size:24px; font-weight:bold; color:#dc2626;">${criticalLogs.length}</div>
-          </div>
-          <div style="text-align:center;">
-            <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Alertas Auditoría</div>
-            <div style="font-size:24px; font-weight:bold; color:#d97706;">${warningLogs.length}</div>
+
+          <!-- Gráfico Visual de Distribución por Severidad -->
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:14px; border-radius:6px; text-align:center;">
+            <div style="font-size:11px; font-weight:bold; color:#0a3d6d; text-transform:uppercase; margin-bottom:8px;">🍩 Distribución por Severidad</div>
+            <div style="display:flex; justify-content:center; align-items:center; gap:12px;">
+              <div style="width:90px; height:90px; border-radius:50%; background:conic-gradient(
+                #dc2626 0% ${totalCount > 0 ? (criticalLogs.length / totalCount) * 100 : 0}%, 
+                #f59e0b ${totalCount > 0 ? (criticalLogs.length / totalCount) * 100 : 0}% ${totalCount > 0 ? ((criticalLogs.length + warningLogs.length) / totalCount) * 100 : 0}%, 
+                #0284c7 ${totalCount > 0 ? ((criticalLogs.length + warningLogs.length) / totalCount) * 100 : 0}% 100%
+              ); display:flex; align-items:center; justify-content:center;">
+                <div style="width:50px; height:50px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold; color:#0a3d6d;">
+                  ${totalCount}
+                </div>
+              </div>
+              <div style="text-align:left; font-size:10px; line-height:1.5;">
+                <div><span style="display:inline-block; width:10px; height:10px; background:#dc2626; border-radius:2px; margin-right:4px;"></span> <strong>CRITICAL/ERROR:</strong> ${totalCount > 0 ? Math.round((criticalLogs.length / totalCount) * 100) : 0}%</div>
+                <div><span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border-radius:2px; margin-right:4px;"></span> <strong>WARN (Auditoría):</strong> ${totalCount > 0 ? Math.round((warningLogs.length / totalCount) * 100) : 0}%</div>
+                <div><span style="display:inline-block; width:10px; height:10px; background:#0284c7; border-radius:2px; margin-right:4px;"></span> <strong>INFO:</strong> ${totalCount > 0 ? Math.round((infoLogs.length / totalCount) * 100) : 0}%</div>
+              </div>
+            </div>
           </div>
         </div>
 
