@@ -871,6 +871,16 @@ body.dark-theme .text-cyan { color: #38bdf8; }
     margin: 0 !important;
     padding: 0 !important;
     background: #ffffff !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  #exec-report-document {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
   }
 
   /* Garantizar colores de las barras de severidad y cajas */
