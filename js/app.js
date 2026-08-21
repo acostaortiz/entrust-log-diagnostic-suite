@@ -511,26 +511,46 @@ document.addEventListener('DOMContentLoaded', () => {
       : 'Diagnóstico General de Logs e Incidentes';
 
     // Extraer incidentes para la tabla (Hasta 50 eventos principales)
+    // Agrupar los incidentes por patrón de diagnóstico único para un informe ejecutivo conciso de alto nivel
     let incidentsHtml = '';
-    const logsToInclude = criticalLogs.length > 0 ? criticalLogs.slice(0, 50) : targetLogs.slice(0, 25);
+    const diagMap = new Map();
+    const logsToGroup = criticalLogs.length > 0 ? criticalLogs : targetLogs;
 
-    logsToInclude.forEach((log, idx) => {
+    logsToGroup.forEach(log => {
       const codeInLine = log.message.match(/(520\d{4}|AUD\d+)/)?.[1];
       const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message, codeInLine);
+      const key = diag.title || log.message;
+
+      if (!diagMap.has(key)) {
+        diagMap.set(key, {
+          log,
+          diag,
+          count: 1,
+          sampleRaw: log.raw || log.message
+        });
+      } else {
+        diagMap.get(key).count += 1;
+      }
+    });
+
+    let idxCounter = 0;
+    diagMap.forEach((item) => {
+      idxCounter++;
+      const { log, diag, count, sampleRaw } = item;
 
       if (onlyCatalogErrors) {
         incidentsHtml += `
-          <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:5px solid #dc2626; border-radius:6px; padding:14px; page-break-inside:avoid; margin-bottom:12px;">
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:5px solid #dc2626; border-radius:6px; padding:14px; page-break-inside:avoid; break-inside:avoid; margin-bottom:12px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <div>
-                <span style="background:#fee2e2; color:#dc2626; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:4px; font-family:monospace;">${log.level}</span>
-                <span style="font-family:monospace; font-size:12px; font-weight:bold; color:#0a3d6d; margin-left:8px;">#${idx + 1} - ${escapeHtml(log.service)}</span>
+                <span style="background:#fee2e2; color:#dc2626; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:4px; font-family:monospace;">${log.level} (${count}x)</span>
+                <span style="font-family:monospace; font-size:12px; font-weight:bold; color:#0a3d6d; margin-left:8px;">#${idxCounter} - ${escapeHtml(log.service)}</span>
               </div>
-              <span style="font-family:monospace; font-size:11px; color:#64748b;">${escapeHtml(log.timestamp)}</span>
+              <span style="font-family:monospace; font-size:11px; color:#64748b; font-weight:bold;">${count} Reincidencias</span>
             </div>
 
             <div style="background:#0f172a; color:#f87171; padding:10px 12px; border-radius:6px; font-family:Consolas, Monaco, monospace; font-size:11px; line-height:1.5; margin-bottom:10px; word-break:break-all;">
-              ${escapeHtml(log.raw || log.message)}
+              ${escapeHtml(sampleRaw)}
             </div>
 
             <div style="font-size:12px; color:#1e293b; margin-bottom:6px;">
@@ -546,9 +566,10 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       } else {
         incidentsHtml += `
-          <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
+          <tr style="background:${idxCounter % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
             <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center;">
-              <span style="white-space:nowrap; background:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#fee2e2' : '#e0f2fe'}; color:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#dc2626' : '#0284c7'}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">#${idx + 1} ${log.level}</span>
+              <span style="white-space:nowrap; background:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#fee2e2' : '#e0f2fe'}; color:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#dc2626' : '#0284c7'}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">#${idxCounter} ${log.level}</span><br>
+              <span style="font-size:9.5px; color:#dc2626; font-weight:bold;">${count} veces</span>
             </td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(log.service)}</td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1;">
@@ -596,7 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ? `<div style="margin-bottom:25px;">${incidentsHtml || '<div style="padding:15px; text-align:center; color:#64748b;">No se detectaron errores de catálogo durante el análisis.</div>'}</div>`
       : `<table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
           <thead>
-            <tr style="background:#0a3d6d; color:#ffffff; text-align:left;">
+            <tr style="background:#0a3d6d; color:#ffffff; text-align:left; page-break-inside:avoid; break-inside:avoid;">
               <th style="padding:8px 6px; border:1px solid #0a3d6d; width:10%; text-align:center;">Nivel</th>
               <th style="padding:8px 6px; border:1px solid #0a3d6d; width:14%;">Servicio / API</th>
               <th style="padding:8px 6px; border:1px solid #0a3d6d; width:26%;">Evento & Significado</th>
@@ -682,25 +703,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <!-- Sección I: Hallazgos & Diagnóstico (Formato Fichas o Tabla según modo) -->
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
-          ${onlyCatalogErrors ? '1. Catálogo Exclusivo de Errores [520xxx / IDaaS] Detectados' : '1. Hallazgos y Diagnóstico Técnico de Errores [520xxx / IDaaS]'} (${logsToInclude.length} registros)
+          ${onlyCatalogErrors ? '1. Catálogo Exclusivo de Errores [520xxx / IDaaS] Detectados' : '1. Hallazgos y Diagnóstico Técnico por Patrón de Error [520xxx / IDaaS]'} (${diagMap.size} diagnósticos únicos)
         </h3>
         ${section1Content}
 
         <!-- Tabla II: Análisis de Frecuencia de Errores -->
-        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">2. Análisis Estadístico de Errores Reincidentes (520xxx / AUDxxx)</h3>
-        <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
-          <thead>
-            <tr style="background:#e0f2fe; color:#0a3d6d; text-align:left;">
-              <th style="padding:8px 6px; border:1px solid #cbd5e1; width:15%;">Código</th>
-              <th style="padding:8px 6px; border:1px solid #cbd5e1; width:35%;">Descripción del Evento</th>
-              <th style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center; width:15%;">Reincidencias</th>
-              <th style="padding:8px 6px; border:1px solid #cbd5e1; width:35%;">Diagnóstico Frecuente</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${topCodesHtml}
-          </tbody>
-        </table>
+        <div style="page-break-before: always; break-before: always; padding-top:10px;">
+          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">2. Análisis Estadístico de Errores Reincidentes (520xxx / AUDxxx)</h3>
+          <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
+            <thead>
+              <tr style="background:#e0f2fe; color:#0a3d6d; text-align:left; page-break-inside:avoid; break-inside:avoid;">
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:15%;">Código</th>
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:35%;">Descripción del Evento</th>
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center; width:15%;">Reincidencias</th>
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:35%;">Diagnóstico Frecuente</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${topCodesHtml}
+            </tbody>
+          </table>
+        </div>
 
         <!-- Sección III: Recomendaciones Técnicas -->
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">3. Recomendaciones Técnicas y Plan de Acción Preventivo (Basado en Diagnóstico)</h3>
