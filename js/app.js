@@ -516,14 +516,16 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         incidentsHtml += `
           <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
-            <td style="padding:10px; border:1px solid #cbd5e1; font-weight:bold; color:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#dc2626' : '#0284c7'}; font-size:12px;">#${idx + 1} (${log.level})</td>
-            <td style="padding:10px; border:1px solid #cbd5e1; font-family:monospace; font-size:11px; color:#0f172a;">${escapeHtml(log.service)}</td>
-            <td style="padding:10px; border:1px solid #cbd5e1; font-size:12px;">
-              <strong>${escapeHtml(diag.title)}</strong><br>
-              <span style="font-size:11px; color:#475569;">${escapeHtml(diag.meaning)}</span>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center;">
+              <span style="white-space:nowrap; background:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#fee2e2' : '#e0f2fe'}; color:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#dc2626' : '#0284c7'}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">#${idx + 1} ${log.level}</span>
             </td>
-            <td style="padding:10px; border:1px solid #cbd5e1; font-size:11px; color:#b91c1c; font-weight:600;">${escapeHtml(diag.rootCause)}</td>
-            <td style="padding:10px; border:1px solid #cbd5e1; font-size:11px; white-space:pre-line; color:#047857;">${escapeHtml(diag.remediation)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(log.service)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1;">
+              <strong style="color:#0a3d6d; font-size:11px;">${escapeHtml(diag.title)}</strong><br>
+              <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(diag.meaning)}</span>
+            </td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(diag.rootCause)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(diag.remediation)}</td>
           </tr>
         `;
       }
@@ -548,10 +550,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const diag = window.knowledgeBaseEngine.diagnoseLog(sampleMsg, code);
         topCodesHtml += `
           <tr>
-            <td style="padding:8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d;">${code}</td>
-            <td style="padding:8px; border:1px solid #cbd5e1; font-size:12px;">${escapeHtml(diag.title)}</td>
-            <td style="padding:8px; border:1px solid #cbd5e1; font-size:12px; text-align:center; font-weight:bold; color:#dc2626;">${count} veces</td>
-            <td style="padding:8px; border:1px solid #cbd5e1; font-size:11px; color:#475569;">${escapeHtml(diag.rootCause)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d; text-align:center;">${code}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px;">${escapeHtml(diag.title)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:#dc2626;">${count} veces</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(diag.rootCause)}</td>
           </tr>
         `;
       });
@@ -564,9 +566,9 @@ document.addEventListener('DOMContentLoaded', () => {
       : `<table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
           <thead>
             <tr style="background:#0a3d6d; color:#ffffff; text-align:left;">
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:10%;">Nivel</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:16%;">Servicio / API</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:24%;">Evento & Significado</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:10%; text-align:center;">Nivel</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:14%;">Servicio / API</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:26%;">Evento & Significado</th>
               <th style="padding:8px 6px; border:1px solid #0a3d6d; width:22%;">Causa Raíz Probable</th>
               <th style="padding:8px 6px; border:1px solid #0a3d6d; width:28%;">Remediación Inmediata</th>
             </tr>
@@ -607,45 +609,42 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
 
-        <!-- Resumen Ejecutivo Metrics & Gráfico de Severidad -->
-        <div class="report-summary-wrapper" style="display:grid; grid-template-columns: 1.4fr 1fr; gap:16px; margin-bottom:25px; align-items:stretch;">
-          <div class="report-metrics-grid" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; background:#f1f5f9; padding:12px; border-radius:6px; border:1px solid #cbd5e1;">
-            <div style="text-align:center; background:#fff; padding:8px; border-radius:6px; border:1px solid #e2e8f0;">
+        <!-- Resumen Ejecutivo Metrics & Barra de Severidad -->
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:16px; border-radius:6px; margin-bottom:22px;">
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:14px;">
+            <div style="text-align:center; background:#fff; padding:10px 8px; border-radius:6px; border:1px solid #e2e8f0;">
               <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Índice de Salud</div>
               <div style="font-size:22px; font-weight:bold; color:${calculatedHealth < 80 ? '#dc2626' : '#0a3d6d'};">${healthValStr}</div>
             </div>
-            <div style="text-align:center; background:#fff; padding:8px; border-radius:6px; border:1px solid #e2e8f0;">
+            <div style="text-align:center; background:#fff; padding:10px 8px; border-radius:6px; border:1px solid #e2e8f0;">
               <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
               <div style="font-size:22px; font-weight:bold; color:#0f172a;">${totalCount}</div>
             </div>
-            <div style="text-align:center; background:#fff; padding:8px; border-radius:6px; border:1px solid #e2e8f0;">
+            <div style="text-align:center; background:#fff; padding:10px 8px; border-radius:6px; border:1px solid #e2e8f0;">
               <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Incidentes Críticos</div>
               <div style="font-size:22px; font-weight:bold; color:#dc2626;">${criticalLogs.length}</div>
             </div>
-            <div style="text-align:center; background:#fff; padding:8px; border-radius:6px; border:1px solid #e2e8f0;">
+            <div style="text-align:center; background:#fff; padding:10px 8px; border-radius:6px; border:1px solid #e2e8f0;">
               <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Alertas Auditoría</div>
               <div style="font-size:22px; font-weight:bold; color:#d97706;">${warningLogs.length}</div>
             </div>
           </div>
 
-          <!-- Gráfico Visual de Distribución por Severidad -->
-          <div class="report-chart-box" style="background:#f8fafc; border:1px solid #cbd5e1; padding:12px; border-radius:6px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-            <div style="font-size:11px; font-weight:bold; color:#0a3d6d; text-transform:uppercase; margin-bottom:8px;">🍩 Distribución por Severidad</div>
-            <div style="display:flex; justify-content:center; align-items:center; gap:12px; width:100%;">
-              <div style="width:76px; height:76px; min-width:76px; border-radius:50%; background:conic-gradient(
-                #dc2626 0% ${visualCritPct}%, 
-                #f59e0b ${visualCritPct}% ${visualCritPct + visualWarnPct}%, 
-                #0284c7 ${visualCritPct + visualWarnPct}% 100%
-              ); display:flex; align-items:center; justify-content:center;">
-                <div style="width:42px; height:42px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; color:#0a3d6d;">
-                  ${totalCount}
-                </div>
-              </div>
-              <div style="text-align:left; font-size:10px; line-height:1.6; flex:1;">
-                <div style="white-space:nowrap;"><span style="display:inline-block; width:8px; height:8px; background:#dc2626; border-radius:2px; margin-right:4px;"></span> <strong>CRITICAL:</strong> ${criticalLogs.length} (${formatPctStr(criticalLogs.length, totalCount)})</div>
-                <div style="white-space:nowrap;"><span style="display:inline-block; width:8px; height:8px; background:#f59e0b; border-radius:2px; margin-right:4px;"></span> <strong>WARN:</strong> ${warningLogs.length} (${formatPctStr(warningLogs.length, totalCount)})</div>
-                <div style="white-space:nowrap;"><span style="display:inline-block; width:8px; height:8px; background:#0284c7; border-radius:2px; margin-right:4px;"></span> <strong>INFO:</strong> ${infoLogs.length} (${formatPctStr(infoLogs.length, totalCount)})</div>
-              </div>
+          <!-- Barra de Distribución Porcentual -->
+          <div style="background:#fff; border:1px solid #e2e8f0; padding:10px 14px; border-radius:6px;">
+            <div style="font-size:10px; font-weight:bold; color:#0a3d6d; text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between;">
+              <span>📊 Distribución por Severidad de Eventos</span>
+              <span style="color:#64748b; font-weight:normal;">Total Procesados: ${totalCount}</span>
+            </div>
+            <div style="height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden; display:flex; margin-bottom:8px;">
+              <div style="width:${visualCritPct}%; background:#dc2626;" title="CRITICAL/ERROR"></div>
+              <div style="width:${visualWarnPct}%; background:#f59e0b;" title="WARN"></div>
+              <div style="width:${100 - visualCritPct - visualWarnPct}%; background:#0284c7;" title="INFO"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:10px; color:#334155;">
+              <div><span style="display:inline-block; width:8px; height:8px; background:#dc2626; border-radius:2px; margin-right:4px;"></span> <strong>CRITICAL/ERROR:</strong> ${criticalLogs.length} (${formatPctStr(criticalLogs.length, totalCount)})</div>
+              <div><span style="display:inline-block; width:8px; height:8px; background:#f59e0b; border-radius:2px; margin-right:4px;"></span> <strong>WARN (Auditoría):</strong> ${warningLogs.length} (${formatPctStr(warningLogs.length, totalCount)})</div>
+              <div><span style="display:inline-block; width:8px; height:8px; background:#0284c7; border-radius:2px; margin-right:4px;"></span> <strong>INFO:</strong> ${infoLogs.length} (${formatPctStr(infoLogs.length, totalCount)})</div>
             </div>
           </div>
         </div>
