@@ -451,7 +451,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const criticalLogs = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
     const warningLogs = targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING');
     const infoLogs = targetLogs.filter(l => l.level === 'INFO');
-    const healthVal = dom.healthIndex ? dom.healthIndex.textContent : '98%';
+
+    // Cálculo dinámico realista del Índice de Salud
+    const critPenalty = criticalLogs.length > 0 ? Math.min(65, Math.max(5, (criticalLogs.length / (totalCount || 1)) * 100 * 5 + criticalLogs.length * 0.2)) : 0;
+    const warnPenalty = warningLogs.length > 0 ? Math.min(25, (warningLogs.length / (totalCount || 1)) * 100 * 2 + warningLogs.length * 0.1) : 0;
+    const calculatedHealth = Math.max(10, Math.round(100 - critPenalty - warnPenalty));
+    const healthValStr = `${calculatedHealth}%`;
+
+    // Formateador preciso de porcentaje
+    const formatPctStr = (count, total) => {
+      if (!total || total === 0 || !count || count === 0) return '0%';
+      const pct = (count / total) * 100;
+      if (pct < 0.01) return '<0.01%';
+      if (pct < 1) return pct.toFixed(2) + '%';
+      return pct.toFixed(1) + '%';
+    };
+
+    // Porciones visuales mínimas para el gráfico
+    const visualCritPct = criticalLogs.length > 0 ? Math.max(6, (criticalLogs.length / (totalCount || 1)) * 100) : 0;
+    const visualWarnPct = warningLogs.length > 0 ? Math.max(5, (warningLogs.length / (totalCount || 1)) * 100) : 0;
 
     const reportTitleText = onlyCatalogErrors 
       ? 'INFORME DE DIAGNÓSTICO EXCLUSIVO DE ERRORES IDENTITYGUARD [520xxx / IDaaS]'
@@ -594,7 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; background:#f1f5f9; padding:15px; border-radius:6px; border:1px solid #cbd5e1;">
             <div style="text-align:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
               <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Índice de Salud</div>
-              <div style="font-size:24px; font-weight:bold; color:#0a3d6d;">${healthVal}</div>
+              <div style="font-size:24px; font-weight:bold; color:${calculatedHealth < 80 ? '#dc2626' : '#0a3d6d'};">${healthValStr}</div>
             </div>
             <div style="text-align:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
               <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
@@ -615,18 +633,18 @@ document.addEventListener('DOMContentLoaded', () => {
             <div style="font-size:11px; font-weight:bold; color:#0a3d6d; text-transform:uppercase; margin-bottom:8px;">🍩 Distribución por Severidad</div>
             <div style="display:flex; justify-content:center; align-items:center; gap:12px;">
               <div style="width:90px; height:90px; border-radius:50%; background:conic-gradient(
-                #dc2626 0% ${totalCount > 0 ? (criticalLogs.length / totalCount) * 100 : 0}%, 
-                #f59e0b ${totalCount > 0 ? (criticalLogs.length / totalCount) * 100 : 0}% ${totalCount > 0 ? ((criticalLogs.length + warningLogs.length) / totalCount) * 100 : 0}%, 
-                #0284c7 ${totalCount > 0 ? ((criticalLogs.length + warningLogs.length) / totalCount) * 100 : 0}% 100%
+                #dc2626 0% ${visualCritPct}%, 
+                #f59e0b ${visualCritPct}% ${visualCritPct + visualWarnPct}%, 
+                #0284c7 ${visualCritPct + visualWarnPct}% 100%
               ); display:flex; align-items:center; justify-content:center;">
                 <div style="width:50px; height:50px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold; color:#0a3d6d;">
                   ${totalCount}
                 </div>
               </div>
               <div style="text-align:left; font-size:10px; line-height:1.5;">
-                <div><span style="display:inline-block; width:10px; height:10px; background:#dc2626; border-radius:2px; margin-right:4px;"></span> <strong>CRITICAL/ERROR:</strong> ${totalCount > 0 ? Math.round((criticalLogs.length / totalCount) * 100) : 0}%</div>
-                <div><span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border-radius:2px; margin-right:4px;"></span> <strong>WARN (Auditoría):</strong> ${totalCount > 0 ? Math.round((warningLogs.length / totalCount) * 100) : 0}%</div>
-                <div><span style="display:inline-block; width:10px; height:10px; background:#0284c7; border-radius:2px; margin-right:4px;"></span> <strong>INFO:</strong> ${totalCount > 0 ? Math.round((infoLogs.length / totalCount) * 100) : 0}%</div>
+                <div><span style="display:inline-block; width:10px; height:10px; background:#dc2626; border-radius:2px; margin-right:4px;"></span> <strong>CRITICAL/ERROR:</strong> ${criticalLogs.length} (${formatPctStr(criticalLogs.length, totalCount)})</div>
+                <div><span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border-radius:2px; margin-right:4px;"></span> <strong>WARN (Auditoría):</strong> ${warningLogs.length} (${formatPctStr(warningLogs.length, totalCount)})</div>
+                <div><span style="display:inline-block; width:10px; height:10px; background:#0284c7; border-radius:2px; margin-right:4px;"></span> <strong>INFO:</strong> ${infoLogs.length} (${formatPctStr(infoLogs.length, totalCount)})</div>
               </div>
             </div>
           </div>
@@ -1382,7 +1400,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (dom.healthIndex) {
       const total = Math.max(1, state.logs.length);
-      const health = Math.max(0, Math.round(100 - ((criticals.length * 15 + warnings.length * 5) / total) * 10));
+      const critPenalty = criticals.length > 0 ? Math.min(65, Math.max(5, (criticals.length / total) * 100 * 5 + criticals.length * 0.2)) : 0;
+      const warnPenalty = warnings.length > 0 ? Math.min(25, (warnings.length / total) * 100 * 2 + warnings.length * 0.1) : 0;
+      const health = Math.max(10, Math.round(100 - critPenalty - warnPenalty));
       dom.healthIndex.textContent = `${health}%`;
     }
 
