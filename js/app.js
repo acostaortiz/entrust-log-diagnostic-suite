@@ -768,35 +768,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const hasSamlIdaasErrors = /(SAML|IDaaS|OIDC|OAuth2|EXPIRED)/i.test(fullLogText);
 
     if (hasAuthErrors) {
-      items.push(`<li><strong>Desbloqueo y Gestión de Cuentas LDAP / Active Directory:</strong> Se diagnosticaron reintentos fallidos de autenticación y bloqueos de cuenta (códigos 5202013 / 5205079 / 5203016). Se recomienda verificar las cuentas afectadas en la consola de Entrust y en el directorio LDAP para restablecer vigencias y desbloquear cuentas.</li>`);
+      items.push(`<li><strong>Desbloqueo y Gestión de Cuentas LDAP / Active Directory:</strong> Se diagnosticaron reintentos fallidos de autenticación y bloqueos de cuenta (códigos 5202013 / 5205079 / 5203016). Se recomienda verificar las cuentas afectadas en la consola de Entrust y en el directorio LDAP para restablecer vigencias y desbloquear cuentas. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración Entrust: Sección 4.2 - Authentication Troubleshooting)</em></li>`);
     }
 
     if (hasUserNotFound) {
-      items.push(`<li><strong>Sincronización del Repositorio de Usuarios (LDAP/AD):</strong> Se detectaron accesos fallidos por usuarios o alias no registrados (código 5205139). Se sugiere ejecutar un barrido de sincronización de usuarios en la consola de administración de IdentityGuard.</li>`);
+      items.push(`<li><strong>Sincronización del Repositorio de Usuarios (LDAP/AD):</strong> Se detectaron accesos fallidos por usuarios o alias no registrados (código 5205139). Se sugiere ejecutar un barrido de sincronización de usuarios en la consola de administración de IdentityGuard. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración Entrust: Sección 3.1 - Identity Repository Maintenance)</em></li>`);
     }
 
     if (hasGridPinErrors) {
-      items.push(`<li><strong>Reasignación y Auditoría de Tarjetas Grid / PIN:</strong> Se registraron incoherencias entre los desafíos y las respuestas enviadas (códigos 5201008 / 5201010). Se recomienda validar las series de tarjetas Grid activas asignadas a los usuarios y capacitar en el ingreso de celdas.</li>`);
+      items.push(`<li><strong>Reasignación y Auditoría de Tarjetas Grid / PIN:</strong> Se registraron incoherencias entre los desafíos y las respuestas enviadas (códigos 5201008 / 5201010). Se recomienda validar las series de tarjetas Grid activas asignadas a los usuarios y capacitar en el ingreso de celdas. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad Entrust: Sección 5.4 - Challenge-Response & Grid Management)</em></li>`);
     }
 
     if (hasClientApiErrors) {
-      items.push(`<li><strong>Auditoría de Canales de Integración Web / API:</strong> Se observaron rechazos en la autorización de aplicaciones cliente (código 5202340). Se sugiere validar la clave compartida (Client Secret) y las direcciones IP permitidas en la política del canal.</li>`);
+      items.push(`<li><strong>Auditoría de Canales de Integración Web / API:</strong> Se observaron rechazos en la autorización de aplicaciones cliente (código 5202340). Se sugiere validar la clave compartida (Client Secret) y las direcciones IP permitidas en la política del canal. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Integración Entrust API: Sección 2.3 - Client Authorization)</em></li>`);
     }
 
     if (hasPoolDbErrors) {
-      items.push(`<li><strong>Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):</strong> Se detectó alta saturación en las conexiones al repositorio (AUD154 / AUD155). Se recomienda incrementar el número de conexiones en <code>identityguard.properties</code> y ajustar los tiempos de espera (Timeout).</li>`);
+      items.push(`<li><strong>Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):</strong> Se detectó alta saturación en las conexiones al repositorio (AUD154 / AUD155). Se recomienda incrementar el número de conexiones en <code>identityguard.properties</code> y ajustar los tiempos de espera (Timeout). <em style="color:#64748b; font-size:11px;">(Ref. Manual de Mantenimiento Entrust: Sección 7.1 - Database Connection Pooling)</em></li>`);
     }
 
     if (hasSoftTokenPushErrors) {
-      items.push(`<li><strong>Revisión de Notificaciones Push MFA & Soft Tokens:</strong> Se identificaron fallos en la entrega de detalles de transacciones a tokens de software (AUD2309 / 5209525). Se recomienda comprobar la conectividad del dispositivo móvil del usuario y los certificados Push (APNS/FCM).</li>`);
+      items.push(`<li><strong>Revisión de Notificaciones Push MFA & Soft Tokens:</strong> Se identificaron fallos en la entrega de detalles de transacciones a tokens de software (AUD2309 / 5209525). Se recomienda comprobar la conectividad del dispositivo móvil del usuario y los certificados Push (APNS/FCM). <em style="color:#64748b; font-size:11px;">(Ref. Guía Entrust IDaaS Push Gateway: Sección 8.2 - APNs/FCM Configuration)</em></li>`);
     }
 
     if (hasSamlIdaasErrors) {
-      items.push(`<li><strong>Verificación de Certificados SAML 2.0 y Tiempo NTP:</strong> Se detectaron aserciones SAML expiradas o firmas inválidas. Se sugiere validar la fecha de vencimiento del certificado de firma X.509 en la Consola Entrust IDaaS y verificar la sincronización del reloj de servidor mediante NTP.</li>`);
+      items.push(`<li><strong>Verificación de Certificados SAML 2.0 y Tiempo NTP:</strong> Se detectaron aserciones SAML expiradas o firmas inválidas. Se sugiere validar la fecha de vencimiento del certificado de firma X.509 en la Consola Entrust IDaaS y verificar la sincronización del reloj de servidor mediante NTP. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Federación Entrust IDaaS: Sección 6.4 - SAML SSO Lifecycle)</em></li>`);
     }
 
     // Recomendación general por versión
-    items.push(`<li><strong>Revisión de Parches Oficiales para ${escapeHtml(activeClient.version)}:</strong> Validar la aplicación de los parches e hitos oficializados por Entrust para la versión <strong>${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</strong> según la documentación técnica oficial.</li>`);
+    items.push(`<li><strong>Revisión de Parches Oficiales para ${escapeHtml(activeClient.version)}:</strong> Validar la aplicación de los parches e hitos oficializados por Entrust para la versión <strong>${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</strong> según la documentación técnica oficial. <em style="color:#64748b; font-size:11px;">(Ref. Release Notes & Advisory Bulletins Entrust ${escapeHtml(activeClient.version)})</em></li>`);
 
     return items.join('\n');
   }
