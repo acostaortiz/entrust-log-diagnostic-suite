@@ -813,6 +813,8 @@ body.dark-theme .text-cyan { color: #38bdf8; }
     width: 100% !important;
     height: auto !important;
     overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* Ocultar toda la interfaz de la aplicación, navegación y botones */
@@ -864,24 +866,56 @@ body.dark-theme .text-cyan { color: #38bdf8; }
     background: #ffffff !important;
   }
 
-  /* Formato y continuidad de tabla en el PDF */
-  table {
+  /* Maquetación del Resumen Ejecutivo y Gráfico en Impresión */
+  .report-summary-wrapper {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 15px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .report-metrics-grid {
+    flex: 1.4 !important;
+  }
+
+  .report-chart-box {
+    flex: 1 !important;
+    min-width: 240px !important;
+  }
+
+  /* Formato y continuidad de tablas en PDF */
+  .report-table, table {
     width: 100% !important;
     border-collapse: collapse !important;
-    page-break-inside: auto;
+    table-layout: fixed !important;
+    word-wrap: break-word !important;
+    margin-bottom: 20px !important;
+  }
+
+  th, td {
+    padding: 6px 8px !important;
+    word-break: break-word !important;
+    font-size: 10.5px !important;
+    line-height: 1.35 !important;
   }
 
   tr {
-    page-break-inside: avoid;
-    page-break-after: auto;
+    page-break-inside: avoid !important;
+    page-break-after: auto !important;
   }
 
   thead {
-    display: table-header-group;
+    display: table-header-group !important;
+  }
+
+  h1, h2, h3, h4 {
+    page-break-after: avoid !important;
   }
 
   @page {
     size: letter portrait;
-    margin: 12mm 15mm 12mm 15mm;
+    margin: 10mm 12mm 10mm 12mm;
   }
 }

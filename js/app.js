@@ -561,14 +561,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const section1Content = onlyCatalogErrors
       ? `<div style="margin-bottom:25px;">${incidentsHtml || '<div style="padding:15px; text-align:center; color:#64748b;">No se detectaron errores de catálogo durante el análisis.</div>'}</div>`
-      : `<table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
+      : `<table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
           <thead>
             <tr style="background:#0a3d6d; color:#ffffff; text-align:left;">
-              <th style="padding:10px; border:1px solid #0a3d6d; width:110px;">Nivel</th>
-              <th style="padding:10px; border:1px solid #0a3d6d; width:130px;">Servicio / API</th>
-              <th style="padding:10px; border:1px solid #0a3d6d;">Evento & Significado</th>
-              <th style="padding:10px; border:1px solid #0a3d6d;">Causa Raíz Probable</th>
-              <th style="padding:10px; border:1px solid #0a3d6d;">Remediación Inmediata</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:10%;">Nivel</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:16%;">Servicio / API</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:24%;">Evento & Significado</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:22%;">Causa Raíz Probable</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:28%;">Remediación Inmediata</th>
             </tr>
           </thead>
           <tbody>
@@ -608,63 +608,63 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <!-- Resumen Ejecutivo Metrics & Gráfico de Severidad -->
-        <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; margin-bottom:25px; align-items:center;">
-          <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; background:#f1f5f9; padding:15px; border-radius:6px; border:1px solid #cbd5e1;">
-            <div style="text-align:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
-              <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Índice de Salud</div>
-              <div style="font-size:24px; font-weight:bold; color:${calculatedHealth < 80 ? '#dc2626' : '#0a3d6d'};">${healthValStr}</div>
+        <div class="report-summary-wrapper" style="display:grid; grid-template-columns: 1.4fr 1fr; gap:16px; margin-bottom:25px; align-items:stretch;">
+          <div class="report-metrics-grid" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; background:#f1f5f9; padding:12px; border-radius:6px; border:1px solid #cbd5e1;">
+            <div style="text-align:center; background:#fff; padding:8px; border-radius:6px; border:1px solid #e2e8f0;">
+              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Índice de Salud</div>
+              <div style="font-size:22px; font-weight:bold; color:${calculatedHealth < 80 ? '#dc2626' : '#0a3d6d'};">${healthValStr}</div>
             </div>
-            <div style="text-align:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
-              <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
-              <div style="font-size:24px; font-weight:bold; color:#0f172a;">${totalCount}</div>
+            <div style="text-align:center; background:#fff; padding:8px; border-radius:6px; border:1px solid #e2e8f0;">
+              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
+              <div style="font-size:22px; font-weight:bold; color:#0f172a;">${totalCount}</div>
             </div>
-            <div style="text-align:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
-              <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Incidentes Críticos</div>
-              <div style="font-size:24px; font-weight:bold; color:#dc2626;">${criticalLogs.length}</div>
+            <div style="text-align:center; background:#fff; padding:8px; border-radius:6px; border:1px solid #e2e8f0;">
+              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Incidentes Críticos</div>
+              <div style="font-size:22px; font-weight:bold; color:#dc2626;">${criticalLogs.length}</div>
             </div>
-            <div style="text-align:center; background:#fff; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
-              <div style="font-size:11px; color:#64748b; text-transform:uppercase; font-weight:bold;">Alertas Auditoría</div>
-              <div style="font-size:24px; font-weight:bold; color:#d97706;">${warningLogs.length}</div>
+            <div style="text-align:center; background:#fff; padding:8px; border-radius:6px; border:1px solid #e2e8f0;">
+              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Alertas Auditoría</div>
+              <div style="font-size:22px; font-weight:bold; color:#d97706;">${warningLogs.length}</div>
             </div>
           </div>
 
           <!-- Gráfico Visual de Distribución por Severidad -->
-          <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:14px; border-radius:6px; text-align:center;">
+          <div class="report-chart-box" style="background:#f8fafc; border:1px solid #cbd5e1; padding:12px; border-radius:6px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
             <div style="font-size:11px; font-weight:bold; color:#0a3d6d; text-transform:uppercase; margin-bottom:8px;">🍩 Distribución por Severidad</div>
-            <div style="display:flex; justify-content:center; align-items:center; gap:12px;">
-              <div style="width:90px; height:90px; border-radius:50%; background:conic-gradient(
+            <div style="display:flex; justify-content:center; align-items:center; gap:12px; width:100%;">
+              <div style="width:76px; height:76px; min-width:76px; border-radius:50%; background:conic-gradient(
                 #dc2626 0% ${visualCritPct}%, 
                 #f59e0b ${visualCritPct}% ${visualCritPct + visualWarnPct}%, 
                 #0284c7 ${visualCritPct + visualWarnPct}% 100%
               ); display:flex; align-items:center; justify-content:center;">
-                <div style="width:50px; height:50px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold; color:#0a3d6d;">
+                <div style="width:42px; height:42px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; color:#0a3d6d;">
                   ${totalCount}
                 </div>
               </div>
-              <div style="text-align:left; font-size:10px; line-height:1.5;">
-                <div><span style="display:inline-block; width:10px; height:10px; background:#dc2626; border-radius:2px; margin-right:4px;"></span> <strong>CRITICAL/ERROR:</strong> ${criticalLogs.length} (${formatPctStr(criticalLogs.length, totalCount)})</div>
-                <div><span style="display:inline-block; width:10px; height:10px; background:#f59e0b; border-radius:2px; margin-right:4px;"></span> <strong>WARN (Auditoría):</strong> ${warningLogs.length} (${formatPctStr(warningLogs.length, totalCount)})</div>
-                <div><span style="display:inline-block; width:10px; height:10px; background:#0284c7; border-radius:2px; margin-right:4px;"></span> <strong>INFO:</strong> ${infoLogs.length} (${formatPctStr(infoLogs.length, totalCount)})</div>
+              <div style="text-align:left; font-size:10px; line-height:1.6; flex:1;">
+                <div style="white-space:nowrap;"><span style="display:inline-block; width:8px; height:8px; background:#dc2626; border-radius:2px; margin-right:4px;"></span> <strong>CRITICAL:</strong> ${criticalLogs.length} (${formatPctStr(criticalLogs.length, totalCount)})</div>
+                <div style="white-space:nowrap;"><span style="display:inline-block; width:8px; height:8px; background:#f59e0b; border-radius:2px; margin-right:4px;"></span> <strong>WARN:</strong> ${warningLogs.length} (${formatPctStr(warningLogs.length, totalCount)})</div>
+                <div style="white-space:nowrap;"><span style="display:inline-block; width:8px; height:8px; background:#0284c7; border-radius:2px; margin-right:4px;"></span> <strong>INFO:</strong> ${infoLogs.length} (${formatPctStr(infoLogs.length, totalCount)})</div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Sección I: Hallazgos & Diagnóstico (Formato Fichas o Tabla según modo) -->
-        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">
+        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
           ${onlyCatalogErrors ? '1. Catálogo Exclusivo de Errores [520xxx / IDaaS] Detectados' : '1. Hallazgos y Diagnóstico Técnico de Errores [520xxx / IDaaS]'} (${logsToInclude.length} registros)
         </h3>
         ${section1Content}
 
         <!-- Tabla II: Análisis de Frecuencia de Errores -->
-        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">2. Análisis Estadístico de Errores Reincidentes (520xxx / AUDxxx)</h3>
-        <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
+        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">2. Análisis Estadístico de Errores Reincidentes (520xxx / AUDxxx)</h3>
+        <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
           <thead>
             <tr style="background:#e0f2fe; color:#0a3d6d; text-align:left;">
-              <th style="padding:8px; border:1px solid #cbd5e1; width:110px;">Código</th>
-              <th style="padding:8px; border:1px solid #cbd5e1;">Descripción del Evento</th>
-              <th style="padding:8px; border:1px solid #cbd5e1; text-align:center; width:110px;">Reincidencias</th>
-              <th style="padding:8px; border:1px solid #cbd5e1;">Diagnóstico Frecuente</th>
+              <th style="padding:8px 6px; border:1px solid #cbd5e1; width:15%;">Código</th>
+              <th style="padding:8px 6px; border:1px solid #cbd5e1; width:35%;">Descripción del Evento</th>
+              <th style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center; width:15%;">Reincidencias</th>
+              <th style="padding:8px 6px; border:1px solid #cbd5e1; width:35%;">Diagnóstico Frecuente</th>
             </tr>
           </thead>
           <tbody>
