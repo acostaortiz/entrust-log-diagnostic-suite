@@ -336,14 +336,98 @@ class KnowledgeBase {
 
       // ENTRUST IDENTITYGUARD ONPREMISE 520XXX
       {
+        id: 'KB-ENTRUST-5201000',
+        title: 'Entrust IdentityGuard: Server Failure (Fallo del Servidor)',
+        category: 'Entrust OnPremise / Motor Principal',
+        severity: 'CRITICAL',
+        pattern: /(5201000|Server failure)/i,
+        meaning: 'Fallo o excepción interna no controlada en el motor del servidor Entrust IdentityGuard.',
+        rootCause: 'Fallo de procesamiento interno, pérdida de comunicación con la base de datos o corrupción en claves maestras.',
+        remediation: '1. Reinicie el servicio de administración de Entrust (`identityguard-admin`).\n2. Verifique la conectividad con la base de datos de repositorios y valide los archivos de claves `.enc`.',
+        riskLevel: 'Crítico (Fallo de Servidor)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5201000',
+        sectionTitle: 'Código [5201000]: Server failure'
+      },
+      {
+        id: 'KB-ENTRUST-5201006',
+        title: 'Entrust IdentityGuard: Número de Respuestas No Coincide con Desafíos',
+        category: 'Entrust OnPremise / Autenticación Grid & OTP',
+        severity: 'ERROR',
+        pattern: /(5201006|The number of responses to the challenge does not match)/i,
+        meaning: 'El número de respuestas enviadas por el usuario o aplicación no coincide con el número de desafíos (challenges) generados.',
+        rootCause: 'El usuario omitió una de las celdas de la tarjeta Grid o la aplicación integradora envió menos parámetros de los requeridos.',
+        remediation: '1. Verifique que la aplicación cliente envíe exactamente el número de respuestas solicitadas por el reto Grid/OTP.\n2. Solicite al usuario ingresar todas las coordenadas solicitadas en pantalla.',
+        riskLevel: 'Medio (Error de Parámetros de Autenticación)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5201006',
+        sectionTitle: 'Código [5201006]: Response Count Mismatch'
+      },
+      {
+        id: 'KB-ENTRUST-5201007',
+        title: 'Entrust IdentityGuard: La Respuesta No Coincide con el Desafío',
+        category: 'Entrust OnPremise / Autenticación Grid & OTP',
+        severity: 'ERROR',
+        pattern: /(5201007|The response to the challenge does not match the challenge)/i,
+        meaning: 'La respuesta de autenticación ingresada no corresponde al desafío (challenge) o token generado.',
+        rootCause: 'Valores de la tarjeta Grid o respuesta OTP errónea ingresada por el usuario.',
+        remediation: '1. Verifique que el usuario esté utilizando la tarjeta Grid Card o token de software activo y correcto.\n2. Solicite generar un nuevo reto de autenticación.',
+        riskLevel: 'Medio (Respuesta de Desafío Inválida)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5201007',
+        sectionTitle: 'Código [5201007]: Response Mismatch'
+      },
+      {
+        id: 'KB-ENTRUST-5201008',
+        title: 'Entrust IdentityGuard: La Tarjeta No Coincide con el Desafío',
+        category: 'Entrust OnPremise / Tarjetas Grid',
+        severity: 'ERROR',
+        pattern: /(5201008|Card does not match challenge)/i,
+        meaning: 'La tarjeta Grid utilizada durante el intento de autenticación no coincide con el desafío emitido por el servidor.',
+        rootCause: 'El usuario utilizó una tarjeta Grid antigua, reasignada o con número de serie diferente.',
+        remediation: '1. Verifique en la consola de administración el número de serie de la tarjeta Grid activa asignada al usuario.\n2. Si la tarjeta fue extraviada, emita un nuevo paquete de tarjetas Grid y reasígnele al usuario.',
+        riskLevel: 'Medio (Incompatibilidad de Tarjeta Grid)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5201008',
+        sectionTitle: 'Código [5201008]: Card Does Not Match Challenge'
+      },
+      {
+        id: 'KB-ENTRUST-5201009',
+        title: 'Entrust IdentityGuard: Fallo al Generar Desafío (Failed to Generate Challenge)',
+        category: 'Entrust OnPremise / Motor de Desafíos',
+        severity: 'ERROR',
+        pattern: /(5201009|Failed to generate challenge)/i,
+        meaning: 'El servidor Entrust no pudo generar el reto o desafío de autenticación para la sesión.',
+        rootCause: 'El usuario no tiene tokens ni tarjetas Grid asignadas, o la plantilla de desafíos no está configurada.',
+        remediation: '1. Inicie sesión en la consola de administración de IdentityGuard y verifique que el usuario tenga un autenticador asignado.\n2. Asigne un token o tarjeta Grid al perfil del usuario.',
+        riskLevel: 'Alto (Fallo de Generación de Desafío)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5201009',
+        sectionTitle: 'Código [5201009]: Failed to Generate Challenge'
+      },
+      {
+        id: 'KB-ENTRUST-5201010',
+        title: 'Entrust IdentityGuard: El PIN No Coincide con el Desafío',
+        category: 'Entrust OnPremise / Autenticación PIN',
+        severity: 'ERROR',
+        pattern: /(5201010|PIN does not match challenge)/i,
+        meaning: 'El PIN de seguridad introducido no coincide con el PIN registrado en el servidor Entrust.',
+        rootCause: 'PIN de seguridad incorrecto ingresado por el usuario o la aplicación cliente.',
+        remediation: '1. Solicite al usuario ingresar nuevamente su PIN de seguridad de forma precisa.\n2. Si el usuario olvidó su PIN, utilice la función de restablecimiento de PIN en la consola de administración.',
+        riskLevel: 'Medio (PIN Inválido)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5201010',
+        sectionTitle: 'Código [5201010]: PIN Does Not Match Challenge'
+      },
+      {
         id: 'KB-ENTRUST-5202013',
         title: 'Entrust IdentityGuard: ID de Usuario o Contraseña Inválida',
         category: 'Entrust OnPremise / Autenticación',
         severity: 'ERROR',
         pattern: /(5202013|Invalid user ID or password)/i,
-        meaning: 'El subsistema de Contexto de Sistema de Entrust IdentityGuard (IG.SYSTEM.SystemContext.API) rechazó el intento de autenticación porque el ID de usuario o la contraseña proporcionada es incorrecta.',
-        rootCause: 'Credenciales inválidas ingresadas por el usuario, usuario bloqueado en el directorio LDAP/AD o clave de API incorrecta.',
-        remediation: '1. Verifique si el usuario existe en Active Directory / LDAP.\n2. Inicie sesión en la consola de administración de IdentityGuard para revisar el estado del usuario.\n3. Desbloquee la cuenta si superó el límite de reintentos.',
+        meaning: 'El subsistema de Contexto de Sistema de Entrust IdentityGuard (IG.SYSTEM.SystemContext.API) rechazó la autenticación porque el ID de usuario o contraseña es incorrecta.',
+        rootCause: 'Credenciales inválidas ingresadas por el usuario, usuario bloqueado en LDAP/Active Directory o clave de API incorrecta.',
+        remediation: '1. Verifique que el usuario exista y esté activo en Active Directory / LDAP.\n2. Inicie sesión en la consola de administración de IdentityGuard para revisar el estado del usuario.\n3. Desbloquee la cuenta si superó el límite de reintentos fallidos.',
         riskLevel: 'Medio (Fallo de Autenticación)',
         manualVersion: 'vEntrust',
         sectionId: 'sec-5202013',
@@ -439,19 +523,20 @@ class KnowledgeBase {
       }
     }
 
-    // Diagnóstico Heurístico Entrust OnPremise AUDxxxx
-    const audMatch = logText.match(/\[(AUD\d+)\]/i);
+    // Diagnóstico Heurístico Entrust OnPremise AUDxxxx (Sin mensajes de "Consulte el manual")
+    const audMatch = logText.match(/\[(AUD\d+)\]\s*(.*)/i);
     if (audMatch) {
       const audCode = audMatch[1].toUpperCase();
+      const audDetail = audMatch[2] ? audMatch[2].trim() : 'Evento de auditoría en la plataforma Entrust.';
       return {
         matched: true,
         ruleId: `KB-ENTRUST-${audCode}`,
-        title: `Entrust IdentityGuard Evento de Auditoría [${audCode}]`,
+        title: `Entrust Audit: Evento [${audCode}]`,
         category: 'Entrust OnPremise Audit',
         severity: 'INFO',
-        meaning: `Se registró el evento de auditoría [${audCode}] en el módulo IG.AUDIT de Entrust IdentityGuard.`,
-        rootCause: 'Operación realizada por usuario, administrador o tarea de sistema.',
-        remediation: 'Consulte el manual administrativo vEntrust para verificar la descripción completa.',
+        meaning: `Se registró el evento de auditoría [${audCode}] en el módulo IG.AUDIT: ${audDetail}`,
+        rootCause: 'Operación o cambio de estado ejecutado por un usuario, administrador o tarea programada.',
+        remediation: '1. Verifique que el evento corresponda a una actividad autorizada en el sistema.\n2. En caso de ser una alerta de conexión o servicio, revise la conectividad del componente afectado.',
         riskLevel: 'Bajo (Registro de Auditoría)',
         manualVersion: 'vEntrust',
         sectionId: `sec-${audCode.toLowerCase()}`,
@@ -459,20 +544,41 @@ class KnowledgeBase {
       };
     }
 
-    // Diagnóstico Heurístico Entrust OnPremise 520xxx
+    // Diagnóstico Heurístico Entrust OnPremise 520xxx (Remediación técnica explícita)
     const entrustMatch = logText.match(/\[(520\d{4})\]\s*(.*)/);
     if (entrustMatch) {
       const code = entrustMatch[1];
-      const detail = entrustMatch[2];
+      const detail = entrustMatch[2] ? entrustMatch[2].trim() : 'Error en la transacción de autenticación/administración.';
+
+      let causeText = 'Fallo reportado por el servidor de autenticación/administración de Entrust IdentityGuard.';
+      let remediationText = '1. Revise el estado de la cuenta del usuario y sus credenciales activas en la consola de Entrust.\n2. Compruebe si el usuario o token alcanzó el límite de reintentos fallidos y desbloquee la cuenta.\n3. Valide la conectividad y sincronización entre el servidor web y la base de datos de repositorios.';
+
+      if (/PIN/i.test(detail)) {
+        causeText = 'El PIN de seguridad proporcionado por el usuario no coincide con el PIN registrado en el servidor Entrust.';
+        remediationText = '1. Solicite al usuario ingresar nuevamente su PIN de seguridad o restablecerlo en la consola.\n2. Verifique si la cuenta del usuario fue bloqueada por intentos fallidos de PIN.';
+      } else if (/Card|Grid/i.test(detail)) {
+        causeText = 'La tarjeta Grid Card o valor de desafío ingresado por el usuario no corresponde al número de serie asignado.';
+        remediationText = '1. Verifique en la consola de administración el número de serie de la tarjeta Grid activa asignada al usuario.\n2. Si la tarjeta fue extraviada o reemplazada, asigne un nuevo paquete de tarjetas Grid.';
+      } else if (/Challenge|response/i.test(detail)) {
+        causeText = 'La respuesta de desafío ingresada no coincide con el reto numérico (challenge) emitido por el servidor.';
+        remediationText = '1. Solicite al usuario generar una nueva respuesta al desafío (Challenge-Response).\n2. Verifique la sincronización de tiempo (NTP) del servidor y del cliente.';
+      } else if (/password|user ID|login/i.test(detail)) {
+        causeText = 'Credenciales de acceso inválidas o usuario inactivo en el directorio LDAP/Active Directory.';
+        remediationText = '1. Verifique que el nombre de usuario exista y esté activo en Active Directory.\n2. Restablezca la contraseña o desbloquee al usuario en la consola de administración.';
+      } else if (/server failure|5201000/i.test(detail) || code === '5201000') {
+        causeText = 'Excepción o fallo interno del motor de servidor de Entrust IdentityGuard durante el procesamiento de la transacción.';
+        remediationText = '1. Reinicie el servicio de administración de Entrust (`identityguard-admin`).\n2. Verifique la conectividad con la base de datos principal y los archivos de clave maestra (`.enc`).';
+      }
+
       return {
         matched: true,
         ruleId: `KB-ENTRUST-${code}`,
         title: `Entrust IdentityGuard Error [${code}]`,
         category: 'Entrust OnPremise Suite',
         severity: 'ERROR',
-        meaning: `Se registró el código de error [${code}] en Entrust IdentityGuard OnPremise: ${detail}`,
-        rootCause: 'Fallo reportado por la API de administración o contexto del sistema IdentityGuard.',
-        remediation: '1. Consulte el Manual Administrativo en HTML de Entrust IdentityGuard (Versión vEntrust).\n2. Busque el código [' + code + '] en el catálogo completo de errores.',
+        meaning: `Se registró el código de error [${code}]: ${detail}`,
+        rootCause: causeText,
+        remediation: remediationText,
         riskLevel: 'Medio (Error de Sistema IdentityGuard)',
         manualVersion: 'vEntrust',
         sectionId: `sec-${code}`,
@@ -480,7 +586,7 @@ class KnowledgeBase {
       };
     }
 
-    // Diagnóstico Heurístico Entrust IDaaS Cloud
+    // Diagnóstico Heurístico Entrust IDaaS Cloud (Remediación técnica explícita)
     if (/IDaaS|SAML|OIDC|OAuth2|Push|MFA|Radius/i.test(logText)) {
       return {
         matched: true,
@@ -490,7 +596,7 @@ class KnowledgeBase {
         severity: /failed|error|rejected|timeout/i.test(logText) ? 'ERROR' : 'INFO',
         meaning: 'Registro de evento de autenticación en la nube o pasarela de identidad Entrust IDaaS.',
         rootCause: 'Solicitud de token, sincronización de identidad o evaluación de regla MFA en la nube.',
-        remediation: '1. Verifique el estado del tenant en la Consola Entrust IDaaS Cloud.\n2. Revise el visor de manuales en versión vIDaaS.',
+        remediation: '1. Verifique el estado del tenant y la política de autenticación en la Consola Entrust IDaaS Cloud.\n2. Compruebe la validez del certificado SAML 2.0 / OIDC.\n3. Verifique la conectividad con la pasarela MFA.',
         riskLevel: 'Medio (Evento de Identidad Cloud)',
         manualVersion: 'vIDaaS',
         sectionId: 'sec-idaas-saml',
