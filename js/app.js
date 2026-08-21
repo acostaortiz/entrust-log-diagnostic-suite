@@ -708,7 +708,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ${section1Content}
 
         <!-- Tabla II: Análisis de Frecuencia de Errores -->
-        <div style="page-break-before: always; break-before: always; padding-top:10px;">
+        <div style="margin-top:20px; page-break-inside:avoid; break-inside:avoid;">
           <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">2. Análisis Estadístico de Errores Reincidentes (520xxx / AUDxxx)</h3>
           <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
             <thead>
@@ -725,26 +725,28 @@ document.addEventListener('DOMContentLoaded', () => {
           </table>
         </div>
 
-        <!-- Sección III: Recomendaciones Técnicas -->
-        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">3. Recomendaciones Técnicas y Plan de Acción Preventivo (Basado en Diagnóstico)</h3>
-        <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:16px; border-radius:6px; font-size:12px; line-height:1.6; margin-bottom:30px;">
-          <ul style="margin:0; padding-left:20px; color:#334155;">
-            ${generateDynamicRecommendationsHtml(targetLogs, activeClient)}
-          </ul>
-        </div>
-
-        <!-- Firma y Cierre Oficial -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; padding-top:20px; border-top:2px solid #0a3d6d;">
-          <div>
-            <p style="font-size:11px; color:#475569; margin:0;">
-              <strong>Suite de Diagnóstico</strong> — Entrust IdentityGuard OnPremise & IDaaS Cloud<br>
-              Confidencial — Para uso exclusivo del cliente <strong>${escapeHtml(activeClient.name)}</strong>.
-            </p>
+        <!-- Sección III: Recomendaciones Técnicas & Firma Oficial -->
+        <div style="page-break-inside:avoid; break-inside:avoid;">
+          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">3. Recomendaciones Técnicas y Plan de Acción Preventivo (Basado en Diagnóstico)</h3>
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:16px; border-radius:6px; font-size:12px; line-height:1.6; margin-bottom:30px;">
+            <ul style="margin:0; padding-left:20px; color:#334155;">
+              ${generateDynamicRecommendationsHtml(targetLogs, activeClient)}
+            </ul>
           </div>
-          <div style="text-align:center; min-width:260px;">
-            <div style="border-bottom:1px solid #0f172a; margin-bottom:6px; height:35px;"></div>
-            <strong style="font-size:12px; color:#0a3d6d;">Departamento de Soporte IT Servicios de Venezuela</strong><br>
-            <span style="font-size:11px; color:#64748b;">Ing. ${escapeHtml(activeClient.engineer)}</span>
+
+          <!-- Firma y Cierre Oficial -->
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; padding-top:20px; border-top:2px solid #0a3d6d;">
+            <div>
+              <p style="font-size:11px; color:#475569; margin:0;">
+                <strong>Suite de Diagnóstico</strong> — Entrust IdentityGuard OnPremise & IDaaS Cloud<br>
+                Confidencial — Para uso exclusivo del cliente <strong>${escapeHtml(activeClient.name)}</strong>.
+              </p>
+            </div>
+            <div style="text-align:center; min-width:260px;">
+              <div style="border-bottom:1px solid #0f172a; margin-bottom:6px; height:35px;"></div>
+              <strong style="font-size:12px; color:#0a3d6d;">Departamento de Soporte IT Servicios de Venezuela</strong><br>
+              <span style="font-size:11px; color:#64748b;">Ing. ${escapeHtml(activeClient.engineer)}</span>
+            </div>
           </div>
         </div>
       </div>
