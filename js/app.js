@@ -619,13 +619,10 @@ document.addEventListener('DOMContentLoaded', () => {
         </table>
 
         <!-- Sección III: Recomendaciones Técnicas -->
-        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">3. Recomendaciones Técnicas y Plan de Acción Preventivo</h3>
+        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">3. Recomendaciones Técnicas y Plan de Acción Preventivo (Basado en Diagnóstico)</h3>
         <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:16px; border-radius:6px; font-size:12px; line-height:1.6; margin-bottom:30px;">
           <ul style="margin:0; padding-left:20px; color:#334155;">
-            <li><strong>Atención Prioritaria de Errores 520xxx:</strong> Ejecutar la verificación de cuentas de usuario bloqueadas y desbloquearlas mediante la Consola de Administración de Entrust.</li>
-            <li><strong>Mantenimiento de Conexión a Base de Datos:</strong> Verificar los parámetros de tiempo de espera (Timeout) y el pool de conexiones en el repositorio de identidades para prevenir los errores de autenticación repetidos.</li>
-            <li><strong>Revisión de Parches y Release Notes:</strong> Validar la aplicación de los parches oficializados para la versión <strong>${escapeHtml(activeClient.version)}</strong> según la documentación administrativa de Entrust.</li>
-            <li><strong>Gestión de Ciclo de Vida de Tokens:</strong> Capacitar a los usuarios finales en la renovación oportuna de tokens OTP / Grid Cards e inspeccionar políticas de expiración en la consola de administración.</li>
+            ${generateDynamicRecommendationsHtml(targetLogs, activeClient)}
           </ul>
         </div>
 
@@ -647,6 +644,52 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     modal.classList.add('active');
+  }
+
+  function generateDynamicRecommendationsHtml(targetLogs, activeClient) {
+    const items = [];
+    const fullLogText = targetLogs.map(l => l.message).join(' ');
+
+    const hasAuthErrors = /(5202013|5205079|5203016|Invalid user ID|password)/i.test(fullLogText);
+    const hasUserNotFound = /(5205139|Unable to find a user)/i.test(fullLogText);
+    const hasGridPinErrors = /(5201006|5201007|5201008|5201010|Card does not match|PIN)/i.test(fullLogText);
+    const hasClientApiErrors = /(5202340|Authorization Failure)/i.test(fullLogText);
+    const hasPoolDbErrors = /(AUD154|AUD155|AUD150|5201000|Connection pool|exhaustion)/i.test(fullLogText);
+    const hasSoftTokenPushErrors = /(AUD2309|5209525|Failed delivery|Push)/i.test(fullLogText);
+    const hasSamlIdaasErrors = /(SAML|IDaaS|OIDC|OAuth2|EXPIRED)/i.test(fullLogText);
+
+    if (hasAuthErrors) {
+      items.push(`<li><strong>Desbloqueo y Gestión de Cuentas LDAP / Active Directory:</strong> Se diagnosticaron reintentos fallidos de autenticación y bloqueos de cuenta (códigos 5202013 / 5205079 / 5203016). Se recomienda verificar las cuentas afectadas en la consola de Entrust y en el directorio LDAP para restablecer vigencias y desbloquear cuentas.</li>`);
+    }
+
+    if (hasUserNotFound) {
+      items.push(`<li><strong>Sincronización del Repositorio de Usuarios (LDAP/AD):</strong> Se detectaron accesos fallidos por usuarios o alias no registrados (código 5205139). Se sugiere ejecutar un barrido de sincronización de usuarios en la consola de administración de IdentityGuard.</li>`);
+    }
+
+    if (hasGridPinErrors) {
+      items.push(`<li><strong>Reasignación y Auditoría de Tarjetas Grid / PIN:</strong> Se registraron incoherencias entre los desafíos y las respuestas enviadas (códigos 5201008 / 5201010). Se recomienda validar las series de tarjetas Grid activas asignadas a los usuarios y capacitar en el ingreso de celdas.</li>`);
+    }
+
+    if (hasClientApiErrors) {
+      items.push(`<li><strong>Auditoría de Canales de Integración Web / API:</strong> Se observaron rechazos en la autorización de aplicaciones cliente (código 5202340). Se sugiere validar la clave compartida (Client Secret) y las direcciones IP permitidas en la política del canal.</li>`);
+    }
+
+    if (hasPoolDbErrors) {
+      items.push(`<li><strong>Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):</strong> Se detectó alta saturación en las conexiones al repositorio (AUD154 / AUD155). Se recomienda incrementar el número de conexiones en <code>identityguard.properties</code> y ajustar los tiempos de espera (Timeout).</li>`);
+    }
+
+    if (hasSoftTokenPushErrors) {
+      items.push(`<li><strong>Revisión de Notificaciones Push MFA & Soft Tokens:</strong> Se identificaron fallos en la entrega de detalles de transacciones a tokens de software (AUD2309 / 5209525). Se recomienda comprobar la conectividad del dispositivo móvil del usuario y los certificados Push (APNS/FCM).</li>`);
+    }
+
+    if (hasSamlIdaasErrors) {
+      items.push(`<li><strong>Verificación de Certificados SAML 2.0 y Tiempo NTP:</strong> Se detectaron aserciones SAML expiradas o firmas inválidas. Se sugiere validar la fecha de vencimiento del certificado de firma X.509 en la Consola Entrust IDaaS y verificar la sincronización del reloj de servidor mediante NTP.</li>`);
+    }
+
+    // Recomendación general por versión
+    items.push(`<li><strong>Revisión de Parches Oficiales para ${escapeHtml(activeClient.version)}:</strong> Validar la aplicación de los parches e hitos oficializados por Entrust para la versión <strong>${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</strong> según la documentación técnica oficial.</li>`);
+
+    return items.join('\n');
   }
 
   /* ==========================================================================
