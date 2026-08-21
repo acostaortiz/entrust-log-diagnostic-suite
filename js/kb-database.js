@@ -406,6 +406,20 @@ class KnowledgeBase {
         sectionTitle: 'Código [5201009]: Failed to Generate Challenge'
       },
       {
+        id: 'KB-ENTRUST-5203113',
+        title: 'Entrust IdentityGuard: Autenticación de Contraseña Fallida (Bad user ID or password)',
+        category: 'Entrust OnPremise / Autenticación',
+        severity: 'ERROR',
+        pattern: /(5203113|The password authentication failed for user)/i,
+        meaning: 'El subsistema de gestión de autenticaciones (IG.SYSTEM.AuthenticationManagement.API) rechazó la autenticación porque el ID de usuario o contraseña proporcionada es inválida.',
+        rootCause: 'Credenciales de acceso inválidas o usuario inactivo en el directorio LDAP/Active Directory.',
+        remediation: '1. Verifique que el usuario exista y esté activo en Active Directory / LDAP.\n2. Inicie sesión en la consola de Entrust para desbloquear la cuenta si superó el límite de reintentos fallidos.\n3. Solicite al usuario realizar un blanqueo o actualización de contraseña.',
+        riskLevel: 'Medio (Fallo de Autenticación de Contraseña)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5203113',
+        sectionTitle: 'Código [5203113]: Password Authentication Failed'
+      },
+      {
         id: 'KB-ENTRUST-5201010',
         title: 'Entrust IdentityGuard: El PIN No Coincide con el Desafío',
         category: 'Entrust OnPremise / Autenticación PIN',

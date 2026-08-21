@@ -466,19 +466,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const logsToInclude = criticalLogs.length > 0 ? criticalLogs.slice(0, 50) : targetLogs.slice(0, 25);
 
     logsToInclude.forEach((log, idx) => {
-      const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message);
-      incidentsHtml += `
-        <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
-          <td style="padding:10px; border:1px solid #cbd5e1; font-weight:bold; color:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#dc2626' : '#0284c7'}; font-size:12px;">#${idx + 1} (${log.level})</td>
-          <td style="padding:10px; border:1px solid #cbd5e1; font-family:monospace; font-size:11px; color:#0f172a;">${escapeHtml(log.service)}</td>
-          <td style="padding:10px; border:1px solid #cbd5e1; font-size:12px;">
-            <strong>${escapeHtml(diag.title)}</strong><br>
-            <span style="font-size:11px; color:#475569;">${escapeHtml(diag.meaning)}</span>
-          </td>
-          <td style="padding:10px; border:1px solid #cbd5e1; font-size:11px; color:#b91c1c; font-weight:600;">${escapeHtml(diag.rootCause)}</td>
-          <td style="padding:10px; border:1px solid #cbd5e1; font-size:11px; white-space:pre-line; color:#047857;">${escapeHtml(diag.remediation)}</td>
-        </tr>
-      `;
+      const codeInLine = log.message.match(/(520\d{4}|AUD\d+)/)?.[1];
+      const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message, codeInLine);
+
+      if (onlyCatalogErrors) {
+        incidentsHtml += `
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:5px solid #dc2626; border-radius:6px; padding:14px; page-break-inside:avoid; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div>
+                <span style="background:#fee2e2; color:#dc2626; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:4px; font-family:monospace;">${log.level}</span>
+                <span style="font-family:monospace; font-size:12px; font-weight:bold; color:#0a3d6d; margin-left:8px;">#${idx + 1} - ${escapeHtml(log.service)}</span>
+              </div>
+              <span style="font-family:monospace; font-size:11px; color:#64748b;">${escapeHtml(log.timestamp)}</span>
+            </div>
+
+            <div style="background:#0f172a; color:#f87171; padding:10px 12px; border-radius:6px; font-family:Consolas, Monaco, monospace; font-size:11px; line-height:1.5; margin-bottom:10px; word-break:break-all;">
+              ${escapeHtml(log.raw || log.message)}
+            </div>
+
+            <div style="font-size:12px; color:#1e293b; margin-bottom:6px;">
+              <strong style="color:#0a3d6d;">Diagnóstico:</strong> ${escapeHtml(diag.meaning)}
+            </div>
+            <div style="font-size:12px; color:#b91c1c; margin-bottom:6px;">
+              <strong style="color:#991b1b;">Causa Raíz:</strong> ${escapeHtml(diag.rootCause)}
+            </div>
+            <div style="font-size:11px; color:#047857; background:#ecfdf5; padding:8px 10px; border-radius:4px; border:1px solid #a7f3d0; white-space:pre-line;">
+              <strong style="color:#065f46;">Remediación Inmediata:</strong><br>${escapeHtml(diag.remediation)}
+            </div>
+          </div>
+        `;
+      } else {
+        incidentsHtml += `
+          <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+            <td style="padding:10px; border:1px solid #cbd5e1; font-weight:bold; color:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#dc2626' : '#0284c7'}; font-size:12px;">#${idx + 1} (${log.level})</td>
+            <td style="padding:10px; border:1px solid #cbd5e1; font-family:monospace; font-size:11px; color:#0f172a;">${escapeHtml(log.service)}</td>
+            <td style="padding:10px; border:1px solid #cbd5e1; font-size:12px;">
+              <strong>${escapeHtml(diag.title)}</strong><br>
+              <span style="font-size:11px; color:#475569;">${escapeHtml(diag.meaning)}</span>
+            </td>
+            <td style="padding:10px; border:1px solid #cbd5e1; font-size:11px; color:#b91c1c; font-weight:600;">${escapeHtml(diag.rootCause)}</td>
+            <td style="padding:10px; border:1px solid #cbd5e1; font-size:11px; white-space:pre-line; color:#047857;">${escapeHtml(diag.remediation)}</td>
+          </tr>
+        `;
+      }
     });
 
     // Frecuencia de códigos de error 520xxx / AUDxxx
@@ -510,6 +540,23 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       topCodesHtml = `<tr><td colspan="4" style="padding:10px; text-align:center; color:#64748b;">No se registraron patrones numéricos recurrentes.</td></tr>`;
     }
+
+    const section1Content = onlyCatalogErrors
+      ? `<div style="margin-bottom:25px;">${incidentsHtml || '<div style="padding:15px; text-align:center; color:#64748b;">No se detectaron errores de catálogo durante el análisis.</div>'}</div>`
+      : `<table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
+          <thead>
+            <tr style="background:#0a3d6d; color:#ffffff; text-align:left;">
+              <th style="padding:10px; border:1px solid #0a3d6d; width:110px;">Nivel</th>
+              <th style="padding:10px; border:1px solid #0a3d6d; width:130px;">Servicio / API</th>
+              <th style="padding:10px; border:1px solid #0a3d6d;">Evento & Significado</th>
+              <th style="padding:10px; border:1px solid #0a3d6d;">Causa Raíz Probable</th>
+              <th style="padding:10px; border:1px solid #0a3d6d;">Remediación Inmediata</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${incidentsHtml || '<tr><td colspan="5" style="padding:15px; text-align:center; color:#64748b;">No se detectaron fallos críticos durante el periodo de análisis.</td></tr>'}
+          </tbody>
+        </table>`;
 
     container.innerHTML = `
       <div style="background:#fff; color:#0f172a; padding:30px; font-family:'Segoe UI', Arial, sans-serif; border-radius:8px;">
@@ -585,22 +632,11 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
 
-        <!-- Tabla I: Incidentes & Diagnósticos -->
-        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">1. Hallazgos y Diagnóstico Técnico de Errores [520xxx / IDaaS] (${logsToInclude.length} registros)</h3>
-        <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
-          <thead>
-            <tr style="background:#0a3d6d; color:#ffffff; text-align:left;">
-              <th style="padding:10px; border:1px solid #0a3d6d; width:110px;">Nivel</th>
-              <th style="padding:10px; border:1px solid #0a3d6d; width:130px;">Servicio / API</th>
-              <th style="padding:10px; border:1px solid #0a3d6d;">Evento & Significado</th>
-              <th style="padding:10px; border:1px solid #0a3d6d;">Causa Raíz Probable</th>
-              <th style="padding:10px; border:1px solid #0a3d6d;">Remediación Inmediata</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${incidentsHtml || '<tr><td colspan="5" style="padding:15px; text-align:center; color:#64748b;">No se detectaron fallos críticos durante el periodo de análisis.</td></tr>'}
-          </tbody>
-        </table>
+        <!-- Sección I: Hallazgos & Diagnóstico (Formato Fichas o Tabla según modo) -->
+        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">
+          ${onlyCatalogErrors ? '1. Catálogo Exclusivo de Errores [520xxx / IDaaS] Detectados' : '1. Hallazgos y Diagnóstico Técnico de Errores [520xxx / IDaaS]'} (${logsToInclude.length} registros)
+        </h3>
+        ${section1Content}
 
         <!-- Tabla II: Análisis de Frecuencia de Errores -->
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px;">2. Análisis Estadístico de Errores Reincidentes (520xxx / AUDxxx)</h3>
