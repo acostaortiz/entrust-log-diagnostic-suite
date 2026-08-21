@@ -10,8 +10,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
-  <!-- Chart.js CDN -->
+  <!-- Chart.js & html2pdf CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/styles.css?v=2.5">
@@ -292,9 +293,10 @@
   <div class="modal-overlay" id="exec-report-modal">
     <div class="modal-content" style="max-width: 950px;">
       <div class="card-header">
-        <div class="card-title text-cyan">📄 Informe de Diagnóstico Preliminar de Incidentes</div>
-        <div style="display:flex; gap:10px;">
-          <button class="btn btn-primary" id="btn-print-exec-report">🖨️ Imprimir / Guardar en PDF</button>
+        <div class="card-title text-cyan">📄 Informe de Diagnóstico Oficial de Incidentes</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-primary" id="btn-download-pdf-exec-report" style="background:#047857; border-color:#047857;">📥 Descargar PDF Limpio (Recomendado)</button>
+          <button class="btn btn-primary" id="btn-print-exec-report">🖨️ Imprimir Sistema</button>
           <button class="btn" id="btn-close-exec-report">✖ Cerrar</button>
         </div>
       </div>
@@ -496,10 +498,10 @@
   </footer>
 
   <!-- Scripts JavaScript -->
-  <script src="js/kb-database.js?v=18.0"></script>
-  <script src="js/manuals-engine.js?v=18.0"></script>
-  <script src="js/log-parser.js?v=18.0"></script>
-  <script src="js/app.js?v=18.0"></script>
+  <script src="js/kb-database.js?v=19.0"></script>
+  <script src="js/manuals-engine.js?v=19.0"></script>
+  <script src="js/log-parser.js?v=19.0"></script>
+  <script src="js/app.js?v=19.0"></script>
 
 </body>
 </html>

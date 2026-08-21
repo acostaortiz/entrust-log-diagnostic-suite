@@ -398,6 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnGen = document.getElementById('btn-generate-exec-report');
     const btnClose = document.getElementById('btn-close-exec-report');
     const btnPrint = document.getElementById('btn-print-exec-report');
+    const btnDownloadPdf = document.getElementById('btn-download-pdf-exec-report');
 
     if (btnGen) {
       btnGen.addEventListener('click', (e) => {
@@ -413,10 +414,39 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    if (btnDownloadPdf) {
+      btnDownloadPdf.addEventListener('click', () => {
+        downloadExecutiveReportPdf();
+      });
+    }
+
     if (btnPrint) {
       btnPrint.addEventListener('click', () => {
         window.print();
       });
+    }
+  }
+
+  function downloadExecutiveReportPdf() {
+    const element = document.getElementById('exec-report-container');
+    if (!element) return;
+
+    const activeClient = getActiveClientProfile();
+    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+
+    const opt = {
+      margin:       [8, 10, 8, 10],
+      filename:     `Informe_Entrust_${clientSanitized}_${dateStamp}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false },
+      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+    };
+
+    if (window.html2pdf) {
+      window.html2pdf().set(opt).from(element).save();
+    } else {
+      window.print();
     }
   }
 

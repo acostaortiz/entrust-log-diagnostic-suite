@@ -804,17 +804,23 @@ body.dark-theme .text-cyan { color: #38bdf8; }
    REGLAS DE IMPRESIÓN Y EXPORTACIÓN DE INFORME EN PDF (@media print)
    ========================================================================== */
 @media print {
+  @page {
+    size: letter portrait;
+    margin: 0mm !important; /* Suprime la cabecera localhost:8085 y fecha por defecto del navegador */
+  }
+
   /* Reseteo general de cuerpo e interfaz */
   body, html {
     background: #ffffff !important;
     color: #000000 !important;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 8mm 10mm !important; /* Márgenes interiores limpios del informe */
     width: 100% !important;
     height: auto !important;
     overflow: visible !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
 
   /* Ocultar toda la interfaz de la aplicación, navegación y botones */
@@ -825,6 +831,7 @@ body.dark-theme .text-cyan { color: #38bdf8; }
   .header-actions,
   #btn-close-exec-report,
   #btn-print-exec-report,
+  #btn-download-pdf-exec-report,
   .modal-content > .card-header {
     display: none !important;
   }
@@ -866,23 +873,10 @@ body.dark-theme .text-cyan { color: #38bdf8; }
     background: #ffffff !important;
   }
 
-  /* Maquetación del Resumen Ejecutivo y Gráfico en Impresión */
-  .report-summary-wrapper {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    gap: 15px !important;
-    margin-bottom: 20px !important;
-  }
-
-  .report-metrics-grid {
-    flex: 1.4 !important;
-  }
-
-  .report-chart-box {
-    flex: 1 !important;
-    min-width: 240px !important;
+  /* Garantizar colores de las barras de severidad y cajas */
+  div, span, td, th {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* Formato y continuidad de tablas en PDF */
@@ -912,10 +906,5 @@ body.dark-theme .text-cyan { color: #38bdf8; }
 
   h1, h2, h3, h4 {
     page-break-after: avoid !important;
-  }
-
-  @page {
-    size: letter portrait;
-    margin: 10mm 12mm 10mm 12mm;
   }
 }
