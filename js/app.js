@@ -440,7 +440,8 @@ document.addEventListener('DOMContentLoaded', () => {
       filename:     `Informe_Entrust_${clientSanitized}_${dateStamp}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
       html2canvas:  { scale: 2, useCORS: true, logging: false },
-      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' },
+      pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', 'h3', 'div[style*="border"]'] }
     };
 
     if (window.html2pdf) {
@@ -545,7 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       } else {
         incidentsHtml += `
-          <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+          <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
             <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center;">
               <span style="white-space:nowrap; background:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#fee2e2' : '#e0f2fe'}; color:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#dc2626' : '#0284c7'}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">#${idx + 1} ${log.level}</span>
             </td>
@@ -579,7 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sampleMsg = state.logs.find(l => l.message.includes(code))?.message || '';
         const diag = window.knowledgeBaseEngine.diagnoseLog(sampleMsg, code);
         topCodesHtml += `
-          <tr>
+          <tr style="page-break-inside:avoid; break-inside:avoid;">
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d; text-align:center;">${code}</td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px;">${escapeHtml(diag.title)}</td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:#dc2626;">${count} veces</td>
