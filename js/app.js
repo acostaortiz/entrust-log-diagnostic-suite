@@ -813,6 +813,19 @@ document.addEventListener('DOMContentLoaded', () => {
           displayService = displayService.replace(/IDaaS Cloud|Cloud IDaaS|Entrust IDaaS/gi, 'Entrust IdentityGuard');
         }
 
+        const clientVer = activeClient?.version || 'Release 11.0';
+        let cleanTitle = (diag.title || '').replace(/Release \d+\.\d+/gi, clientVer);
+        let cleanMeaning = (diag.meaning || '').replace(/Release \d+\.\d+/gi, clientVer);
+        let cleanRootCause = (diag.rootCause || '').replace(/Release \d+\.\d+/gi, clientVer);
+        let cleanRemediation = (diag.remediation || '').replace(/Release \d+\.\d+/gi, clientVer);
+
+        if (!isCloud) {
+          cleanTitle = cleanTitle.replace(/IDaaS Cloud|Cloud IDaaS|Entrust IDaaS/gi, 'Entrust IdentityGuard');
+          cleanMeaning = cleanMeaning.replace(/IDaaS Cloud|Cloud IDaaS|Entrust IDaaS/gi, 'Entrust IdentityGuard');
+          cleanRootCause = cleanRootCause.replace(/IDaaS Cloud|Cloud IDaaS|Entrust IDaaS/gi, 'Entrust IdentityGuard');
+          cleanRemediation = cleanRemediation.replace(/IDaaS Cloud|Cloud IDaaS|Entrust IDaaS/gi, 'Entrust IdentityGuard');
+        }
+
         incidentsHtml += `
           <tr style="background:${idxCounter % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
             <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center;">
@@ -821,11 +834,11 @@ document.addEventListener('DOMContentLoaded', () => {
             </td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(displayService)}</td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1;">
-              <strong style="color:#0a3d6d; font-size:11px;">${escapeHtml(diag.title)}</strong><br>
-              <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(diag.meaning)}</span>
+              <strong style="color:#0a3d6d; font-size:11px;">${escapeHtml(cleanTitle)}</strong><br>
+              <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(cleanMeaning)}</span>
             </td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(diag.rootCause)}</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(diag.remediation)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(cleanRootCause)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(cleanRemediation)}</td>
           </tr>
         `;
       }
@@ -839,13 +852,16 @@ document.addEventListener('DOMContentLoaded', () => {
       sortedIncidents.forEach(({ log, diag, count }) => {
         const codeDisplay = diag.ruleId ? diag.ruleId.replace('KB-ENTRUST-', '').replace('KB-', '') : (log.level || 'ERROR');
         const pctStr = formatPctStr(count, totalCount);
+        const clientVer = activeClient?.version || 'Release 11.0';
+        const titleSanitized = (diag.title || '').replace(/Release \d+\.\d+/gi, clientVer).replace(/IDaaS Cloud|Cloud IDaaS|Entrust IDaaS/gi, 'Entrust IdentityGuard');
+        const causeSanitized = (diag.rootCause || '').replace(/Release \d+\.\d+/gi, clientVer).replace(/IDaaS Cloud|Cloud IDaaS|Entrust IDaaS/gi, 'Entrust IdentityGuard');
 
         topCodesHtml += `
           <tr style="page-break-inside:avoid; break-inside:avoid;">
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d; text-align:center;">${escapeHtml(codeDisplay)}</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(diag.title)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(titleSanitized)}</td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:#dc2626;">${count} veces (${pctStr})</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(diag.rootCause)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(causeSanitized)}</td>
           </tr>
         `;
       });

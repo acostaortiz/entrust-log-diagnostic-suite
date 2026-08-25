@@ -609,6 +609,36 @@ class KnowledgeBase {
         sectionTitle: 'Código [5203020]: Password Policy Violation / Expired'
       },
       {
+        id: 'KB-ENTRUST-5205150',
+        title: 'Entrust IdentityGuard [5205150]: Contraseña de Usuario Expirada (User Password Expired)',
+        category: 'Entrust OnPremise / Políticas de Contraseñas',
+        severity: 'WARN',
+        pattern: /(5205150)/i,
+        attribution: '🔑 Políticas de Seguridad / Contraseñas',
+        meaning: 'La contraseña de acceso del usuario caducó al alcanzar el periodo máximo de vigencia configurado en la política del servidor Entrust.',
+        rootCause: 'Cumplimiento del tiempo límite de validez de las credenciales de usuario.',
+        remediation: '1. Solicite al usuario realizar el cambio de contraseña a través del Portal de Autoservicio.\n2. Ingrese a la Consola de Administración de Entrust y fuerce el restablecimiento si la cuenta está bloqueada.',
+        riskLevel: 'Medio (Contraseña Caducada)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5205150',
+        sectionTitle: 'Código [5205150]: User Password Expired'
+      },
+      {
+        id: 'KB-ENTRUST-5206001',
+        title: 'Entrust IdentityGuard [5206001]: Autenticador o Tarjeta Grid Pendiente de Activación',
+        category: 'Entrust OnPremise / Enrolamiento de Tarjetas',
+        severity: 'ERROR',
+        pattern: /(5206001)/i,
+        attribution: '⚙️ Enrolamiento / Tarjeta Grid',
+        meaning: 'El dispositivo o Tarjeta Grid asociada al usuario no ha completado el proceso de activación o confirmación de primer uso.',
+        rootCause: 'Tarjeta Grid asignada pero no activada en la consola o código de confirmación no ingresado.',
+        remediation: '1. Ingrese a la Consola de Administración de Entrust IdentityGuard.\n2. Verifique el estado de la Tarjeta Grid o Soft Token del usuario y ejecute la acción de Confirmar/Activar.',
+        riskLevel: 'Alto (Autenticador Inactivo)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-5206001',
+        sectionTitle: 'Código [5206001]: Card or Token Pending Activation'
+      },
+      {
         id: 'KB-ENTRUST-5207677',
         title: 'Entrust IdentityGuard: Fallo de Comunicación con Proxy RADIUS',
         category: 'Entrust OnPremise / Proxy RADIUS',
