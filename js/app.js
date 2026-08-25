@@ -606,7 +606,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const hourBuckets = {};
     targetLogs.forEach(l => {
       const timeMatch = l.timestamp.match(/(\d{2}:\d{2})/);
-      const bucketKey = timeMatch ? `${timeMatch[1].substring(0, 2)}:00` : 'Horario General';
+      let bucketKey = 'Horario General';
+      if (timeMatch) {
+        const hourNum = parseInt(timeMatch[1].substring(0, 2), 10);
+        const padHour = String(hourNum).padStart(2, '0');
+        let ampmStr = 'AM';
+        if (hourNum === 12) ampmStr = 'PM Mediodía';
+        else if (hourNum > 12) ampmStr = `${hourNum - 12} PM`;
+        else if (hourNum === 0) ampmStr = '12 AM Medianoche';
+        else ampmStr = `${hourNum} AM`;
+
+        bucketKey = `${padHour}:00 - ${padHour}:59 hrs (${ampmStr})`;
+      }
+
       if (!hourBuckets[bucketKey]) {
         hourBuckets[bucketKey] = { total: 0, critical: 0, warn: 0, info: 0 };
       }
