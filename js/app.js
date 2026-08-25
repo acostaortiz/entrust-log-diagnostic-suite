@@ -1165,7 +1165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Recomendación general por versión
-    items.push(`<li><strong>Revisión de Parches Oficiales para ${escapeHtml(activeClient.version)}:</strong> Validar la aplicación de los parches e hitos oficializados por Entrust para la versión <strong>${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</strong> según la documentación técnica oficial de ${platformTitle}. <em style="color:#64748b; font-size:11px;">(Ref. Release Notes & Advisory Bulletins ${platformTitle})</em></li>`);
+    items.push(`<li><strong>Revisión de Parches Oficiales para ${escapeHtml(activeClient.version)}:</strong> Validar la aplicación de los parches e hitos oficializados por Entrust para la versión <strong>${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</strong> según la documentación técnica oficial de ${platformTitle}. <em style="color:#64748b; font-size:11px;">(Ref. Release Notes & Advisory Bulletins - ${platformTitle})</em></li>`);
 
     return items.join('\n');
   }
