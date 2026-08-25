@@ -1022,53 +1022,99 @@ document.addEventListener('DOMContentLoaded', () => {
     renderDiagnosticPanel(log);
   }
 
+  function countReincidences(log) {
+    if (!state.logs || state.logs.length === 0) return { count: 1, percent: '100%', firstSeen: log.timestamp, lastSeen: log.timestamp };
+    const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message);
+    const key = diag.title || log.message;
+
+    const matches = state.logs.filter(l => {
+      const d = l.diagnostic || window.knowledgeBaseEngine.diagnoseLog(l.message);
+      return (d.title || l.message) === key;
+    });
+
+    const count = matches.length;
+    const totalLogs = state.logs.length;
+    const percent = ((count / totalLogs) * 100).toFixed(1) + '%';
+    const firstSeen = matches[0]?.timestamp || log.timestamp;
+    const lastSeen = matches[matches.length - 1]?.timestamp || log.timestamp;
+
+    return { count, percent, firstSeen, lastSeen, matches };
+  }
+
   function renderDiagnosticPanel(log) {
     if (!dom.diagnosticCard || !log) return;
 
     const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message);
+    const freq = countReincidences(log);
+
+    const user = log.user || log.message.match(/user[=:\s]+([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+|[a-zA-Z0-9._-]+)/i)?.[1] || 'N/A';
+    const clientIp = log.clientIp || log.message.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/)?.[1] || 'N/A';
+    const channelApp = log.service || 'Entrust Suite Component';
 
     dom.diagnosticCard.innerHTML = `
-      <div class="diagnostic-header">
-        <div class="diagnostic-title">
-          <span>🛡️ Diagnóstico de Seguridad & Auditoría (Entrust Suite)</span>
+      <div class="diagnostic-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <div class="diagnostic-title" style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:1.1rem; font-weight:700;">🛡️ Diagnóstico de Seguridad & Auditoría (Entrust Suite)</span>
           <span class="badge-sev ${diag.severity}">${diag.severity}</span>
         </div>
-        <span class="text-muted font-mono" style="font-size:0.8rem;">Firma: ${diag.ruleId}</span>
+        <span class="text-muted font-mono" style="font-size:0.8rem;">Firma KB: ${diag.ruleId}</span>
       </div>
 
-      <div class="diag-field">
-        <div class="diag-label">Evento u Excepción Observada</div>
-        <div class="diag-val font-mono text-cyan" style="font-weight:700;">${escapeHtml(diag.title)}</div>
+      <!-- Resumen Ejecutivo de Frecuencia e Impacto -->
+      <div style="background:rgba(15, 23, 42, 0.4); border:1px solid rgba(226, 232, 240, 0.15); border-radius:8px; padding:12px 14px; margin-bottom:14px; display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+        <div>
+          <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; font-weight:600;">🔁 Reincidencia Muestra</div>
+          <div style="font-size:1.05rem; font-weight:700; color:#38bdf8;" class="font-mono">${freq.count} vez/veces (${freq.percent})</div>
+        </div>
+        <div>
+          <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; font-weight:600;">🕒 Rango de Ocurrencia</div>
+          <div style="font-size:0.8rem; font-weight:600; color:#cbd5e1;" class="font-mono">${escapeHtml(freq.firstSeen)} → ${escapeHtml(freq.lastSeen)}</div>
+        </div>
+        <div>
+          <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; font-weight:600;">👤 Usuario / IP Origen</div>
+          <div style="font-size:0.85rem; font-weight:600; color:#f43f5e;" class="font-mono">${escapeHtml(user)} @ ${escapeHtml(clientIp)}</div>
+        </div>
       </div>
 
-      <div class="diag-field">
-        <div class="diag-label">Registro Original de Log / Trazas</div>
-        <div class="diag-code">${escapeHtml(log.raw)}</div>
+      <div class="diag-field mb-3">
+        <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">EVENTO U EXCEPCIÓN OBSERVADA</div>
+        <div class="diag-val font-mono text-cyan" style="font-weight:700; font-size:1.05rem;">${escapeHtml(diag.title)}</div>
       </div>
 
-      <div class="diag-field">
-        <div class="diag-label">Significado del Log (Explicación Entrust)</div>
-        <div class="diag-val">${escapeHtml(diag.meaning)}</div>
+      <div class="diag-field mb-3">
+        <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">REGISTRO ORIGINAL DE LOG / TRAZAS</div>
+        <div class="diag-code" style="background:#0f172a; border-radius:6px; padding:10px; border:1px solid #334155; font-family:monospace; font-size:0.8rem; word-break:break-all;">${escapeHtml(log.raw)}</div>
       </div>
 
-      <div class="diag-field">
-        <div class="diag-label">Causa Raíz Probable</div>
-        <div class="diag-val text-warn font-mono">${escapeHtml(diag.rootCause)}</div>
+      <div class="diag-field mb-3">
+        <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">SIGNIFICADO DEL LOG (EXPLICACIÓN ENTRUST)</div>
+        <div class="diag-val" style="font-size:0.9rem; line-height:1.5;">${escapeHtml(diag.meaning)}</div>
       </div>
 
-      <div class="diag-field">
-        <div class="diag-label">Recomendación & Pasos de Solución</div>
-        <div class="diag-val" style="white-space: pre-line;">${escapeHtml(diag.remediation)}</div>
+      <div class="diag-field mb-3">
+        <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">CAUSA RAÍZ PROBABLE</div>
+        <div class="diag-val text-warn font-mono" style="font-weight:600; font-size:0.9rem;">${escapeHtml(diag.rootCause)}</div>
       </div>
 
-      <div class="flex-between mt-4" style="padding-top:12px; border-top:1px solid var(--border-color);">
+      <div class="diag-field mb-3">
+        <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">RECOMENDACIÓN & PASOS DE SOLUCIÓN (FABRICANTE ENTRUST)</div>
+        <div class="diag-val" style="white-space: pre-line; background:rgba(6, 78, 59, 0.2); border:1px solid rgba(16, 185, 129, 0.3); border-radius:6px; padding:12px; font-size:0.88rem; line-height:1.5; color:#34d399;">${escapeHtml(diag.remediation)}</div>
+      </div>
+
+      <!-- Barra de Acciones y Procedimientos -->
+      <div class="flex-between mt-4" style="padding-top:14px; border-top:1px solid var(--border-color); flex-wrap:wrap; gap:10px; align-items:center;">
         <div>
           <span class="diag-label">Nivel de Riesgo Operativo:</span>
-          <span class="text-danger font-mono" style="font-weight:700;">${diag.riskLevel}</span>
+          <span class="text-danger font-mono" style="font-weight:700; font-size:0.95rem;">${diag.riskLevel}</span>
         </div>
-        <button class="btn btn-primary" id="btn-jump-manual" data-version="${diag.manualVersion}" data-section="${diag.sectionId}">
-          📚 Ver Procedimiento en Manual (${diag.manualVersion})
-        </button>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-outline" id="btn-copy-ticket" title="Copiar diagnóstico estructurado para ticket de soporte">
+            📋 Copiar Ticket ITIL
+          </button>
+          <button class="btn btn-primary" id="btn-jump-manual" data-version="${diag.manualVersion}" data-section="${diag.sectionId}">
+            📚 Ver Procedimiento en Manual (${diag.manualVersion})
+          </button>
+        </div>
       </div>
     `;
 
@@ -1076,6 +1122,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const ver = e.currentTarget.getAttribute('data-version');
       const sec = e.currentTarget.getAttribute('data-section');
       jumpToManualSection(ver, sec);
+    });
+
+    document.getElementById('btn-copy-ticket')?.addEventListener('click', () => {
+      const ticketText = `[TICKET SOPORTE ITIL - DIAGNÓSTICO ENTRUST]
+Evento: ${diag.title}
+Firma KB: ${diag.ruleId}
+Severidad: ${diag.severity} | Riesgo: ${diag.riskLevel}
+Componente/Canal: ${channelApp}
+Reincidencias: ${freq.count} vez/veces en la muestra (${freq.percent})
+Rango: ${freq.firstSeen} -> ${freq.lastSeen}
+Usuario: ${user} | IP: ${clientIp}
+Causa Raíz: ${diag.rootCause}
+Remediación Oficial:
+${diag.remediation}
+Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
+
+      navigator.clipboard.writeText(ticketText).then(() => {
+        alert('📋 ¡Diagnóstico copiado al portapapeles en formato de ticket ITIL!');
+      });
     });
   }
 
