@@ -75,6 +75,72 @@ class LogParser {
   }
 
   /**
+   * Parsea logs de forma asíncrona en bloques (chunking) para liberar el hilo principal del navegador.
+   * Evita congelamientos y la advertencia "La página no responde".
+   * @param {string} rawContent 
+   * @param {function(number, number, string): void} onProgress 
+   * @param {number} chunkSize 
+   * @returns {Promise<Array<Object>>}
+   */
+  async parseLogsAsync(rawContent, onProgress, chunkSize = 5000) {
+    if (!rawContent || typeof rawContent !== 'string') return [];
+
+    const lines = rawContent.split(/\r?\n/);
+    const totalLines = lines.length;
+    const mergedLines = [];
+
+    // Pre-procesamiento de combinación multi-línea asíncrono
+    for (let i = 0; i < totalLines; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      if (/^\[520\d{4}\]/.test(line) && mergedLines.length > 0) {
+        const lastIndex = mergedLines.length - 1;
+        mergedLines[lastIndex] = mergedLines[lastIndex] + ' \n ' + line;
+      } else {
+        mergedLines.push(line);
+      }
+
+      if (i % (chunkSize * 2) === 0) {
+        const pct = Math.round((i / (totalLines * 2)) * 100);
+        if (onProgress) onProgress(i, totalLines, `Pre-procesando trazas... (${pct}%)`);
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+    }
+
+    const totalMerged = mergedLines.length;
+    const parsedEntries = [];
+
+    for (let i = 0; i < totalMerged; i++) {
+      const line = mergedLines[i];
+      let parsed = this.tryParseEntrustIdentityGuard(line, i);
+      if (!parsed) parsed = this.tryParseSoapWebService(line, i);
+      if (!parsed) parsed = this.tryParseTomcatCatalina(line, i);
+      if (!parsed) parsed = this.tryParseCsv(line, i);
+      if (!parsed) parsed = this.tryParseJson(line, i);
+      if (!parsed) parsed = this.tryParseAuditd(line, i);
+      if (!parsed) parsed = this.tryParseSyslog(line, i);
+      if (!parsed) parsed = this.tryParseWebAccess(line, i);
+      if (!parsed) parsed = this.fallbackParse(line, i);
+
+      if (window.knowledgeBaseEngine) {
+        parsed.diagnostic = window.knowledgeBaseEngine.diagnoseLog(parsed.message || parsed.raw);
+      }
+
+      parsedEntries.push(parsed);
+
+      if (i % chunkSize === 0 || i === totalMerged - 1) {
+        const pct = Math.round(50 + (i / totalMerged) * 50);
+        if (onProgress) onProgress(i + 1, totalMerged, `Analizando e indexando eventos... (${pct}%)`);
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+    }
+
+    if (onProgress) onProgress(totalMerged, totalMerged, '100% Finalizado');
+    return parsedEntries;
+  }
+
+  /**
    * Parser especializado para Web Services SOAP de Entrust IdentityGuard OnPremise
    * Endpoints: /idgserv/services/AuthenticationService, /AdministrationService, /IdentityRepositoryService
    * Payload: SOAP Envelope, SOAP Faults, WS-Security Headers

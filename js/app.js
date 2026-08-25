@@ -2070,17 +2070,21 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const files = Array.from(e.target.files);
       if (files.length === 0) return;
 
-      showAnalysisStatus(true, `⚙️ Procesando e Indexando ${files.length} archivo(s)...`, 'Analizando estructura...');
-
       let newLogs = [];
       let fileCount = 0;
 
-      for (const file of files) {
+      for (let fIdx = 0; fIdx < files.length; fIdx++) {
+        const file = files[fIdx];
         try {
+          showAnalysisStatus(true, `⚙️ Procesando [${fIdx + 1}/${files.length}]: ${file.name}...`, 'Iniciando lectura asíncrona por bloques...');
           const content = await file.text();
           const clientName = extractClientFromFilename(file.name);
 
-          const parsedEntries = window.logParserEngine.parseLogs(content).map((log, idx) => ({
+          const rawEntries = await window.logParserEngine.parseLogsAsync(content, (current, total, msg) => {
+            showAnalysisStatus(true, `⚙️ [Archivo ${fIdx + 1}/${files.length}] ${file.name}`, `${msg}`);
+          }, 5000);
+
+          const parsedEntries = rawEntries.map((log, idx) => ({
             ...log,
             lineNum: state.logs.length + newLogs.length + idx + 1,
             client: clientName,
