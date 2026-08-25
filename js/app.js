@@ -1577,7 +1577,41 @@ document.addEventListener('DOMContentLoaded', () => {
     state.charts.severity.update();
   }
 
+  function resetSession() {
+    state.logs = [];
+    state.filteredLogs = [];
+    state.selectedLog = null;
+    state.executiveReportCache = null;
+
+    if (dom.fileInput) dom.fileInput.value = '';
+
+    clearFilterMode();
+    if (dom.filterLevelSelect) dom.filterLevelSelect.value = 'ALL';
+    if (dom.filterTypeSelect) dom.filterTypeSelect.value = 'ALL';
+    if (dom.filterClientSelect) dom.filterClientSelect.value = 'ALL';
+    if (dom.searchLogInput) dom.searchLogInput.value = '';
+
+    populateClientSelector();
+    applyLogFilters();
+
+    if (dom.diagnosticCard) {
+      dom.diagnosticCard.innerHTML = `
+        <div style="padding:40px; text-align:center; color: var(--text-muted);">
+          <div style="font-size:32px; margin-bottom:10px;">🧹</div>
+          <strong style="color:var(--text-primary); font-size:16px;">Sesión Limpiada Exitosamente</strong><br>
+          <span style="font-size:13px; color:var(--text-muted);">Se eliminaron todos los registros previos. Cargue un nuevo archivo (.log, .txt, .json, .csv) para iniciar un análisis totalmente limpio.</span>
+        </div>`;
+    }
+
+    showAnalysisStatus(false, '🧹 Sesión Limpiada', 'Se eliminaron todos los registros y la muestra actual fue reiniciada a cero.');
+  }
+
+  window.resetAppSession = resetSession;
+
   function initEventListeners() {
+    dom.btnResetSession?.addEventListener('click', () => resetSession());
+    document.getElementById('btn-reset-session')?.addEventListener('click', () => resetSession());
+
     dom.searchLogInput?.addEventListener('input', () => applyLogFilters());
     dom.filterClientSelect?.addEventListener('change', () => applyLogFilters());
     dom.filterLevelSelect?.addEventListener('change', () => applyLogFilters());

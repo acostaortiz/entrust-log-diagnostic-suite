@@ -125,7 +125,7 @@
         <div class="card-header">
           <div class="card-title">🛠️ Herramientas de Carga de Logs Entrust OnPremise / IDaaS Cloud</div>
           <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-            <button class="btn btn-danger" id="btn-reset-session" title="Eliminar todos los logs y limpiar la muestra actual">🧹 Limpiar Sesión / Nuevo Análisis</button>
+            <button class="btn btn-danger" id="btn-reset-session" onclick="window.resetAppSession && window.resetAppSession()" title="Eliminar todos los logs y limpiar la muestra actual">🧹 Limpiar Sesión / Nuevo Análisis</button>
             <button class="btn" id="btn-export-report">📥 Exportar Datos JSON</button>
             <label class="btn btn-primary" style="margin:0;">
               📂 Cargar Archivos (.log, .txt, .json, .csv)
