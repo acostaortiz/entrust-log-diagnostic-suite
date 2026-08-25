@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addKbModal: document.getElementById('add-kb-modal'),
     btnCloseAddKb: document.getElementById('btn-close-add-kb'),
     btnSaveCustomKb: document.getElementById('btn-save-custom-kb'),
+    btnResetSession: document.getElementById('btn-reset-session'),
     traceWaterfallContainer: document.getElementById('trace-waterfall-container')
   };
 
@@ -767,6 +768,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const hasSoftTokenPushErrors = /(AUD2309|5209525|Failed delivery|Push)/i.test(fullLogText);
     const hasSamlIdaasErrors = /(SAML|IDaaS|OIDC|OAuth2|EXPIRED)/i.test(fullLogText);
 
+    const hasTomcatOom = /(OutOfMemoryError|Java heap space)/i.test(fullLogText);
+    const hasTomcatSql = /(SQLException|Cannot get a connection)/i.test(fullLogText);
+    const hasTomcatSsl = /(SSLHandshakeException|PKIX path building failed)/i.test(fullLogText);
+
     if (hasAuthErrors) {
       items.push(`<li><strong>Desbloqueo y Gestión de Cuentas LDAP / Active Directory:</strong> Se diagnosticaron reintentos fallidos de autenticación y bloqueos de cuenta (códigos 5202013 / 5205079 / 5203016). Se recomienda verificar las cuentas afectadas en la consola de Entrust y en el directorio LDAP para restablecer vigencias y desbloquear cuentas. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración Entrust: Sección 4.2 - Authentication Troubleshooting)</em></li>`);
     }
@@ -783,8 +788,8 @@ document.addEventListener('DOMContentLoaded', () => {
       items.push(`<li><strong>Auditoría de Canales de Integración Web / API:</strong> Se observaron rechazos en la autorización de aplicaciones cliente (código 5202340). Se sugiere validar la clave compartida (Client Secret) y las direcciones IP permitidas en la política del canal. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Integración Entrust API: Sección 2.3 - Client Authorization)</em></li>`);
     }
 
-    if (hasPoolDbErrors) {
-      items.push(`<li><strong>Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):</strong> Se detectó alta saturación en las conexiones al repositorio (AUD154 / AUD155). Se recomienda incrementar el número de conexiones en <code>identityguard.properties</code> y ajustar los tiempos de espera (Timeout). <em style="color:#64748b; font-size:11px;">(Ref. Manual de Mantenimiento Entrust: Sección 7.1 - Database Connection Pooling)</em></li>`);
+    if (hasPoolDbErrors || hasTomcatSql) {
+      items.push(`<li><strong>Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):</strong> Se detectó alta saturación o excepciones SQLException en las conexiones al repositorio (AUD154 / AUD155 / Tomcat JDBC). Se recomienda incrementar el número de conexiones en <code>identityguard.properties</code> / <code>context.xml</code> y ajustar los tiempos de espera (Timeout). <em style="color:#64748b; font-size:11px;">(Ref. Manual de Mantenimiento Entrust: Sección 7.1 - Database Connection Pooling)</em></li>`);
     }
 
     if (hasSoftTokenPushErrors) {
@@ -793,6 +798,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (hasSamlIdaasErrors) {
       items.push(`<li><strong>Verificación de Certificados SAML 2.0 y Tiempo NTP:</strong> Se detectaron aserciones SAML expiradas o firmas inválidas. Se sugiere validar la fecha de vencimiento del certificado de firma X.509 en la Consola Entrust IDaaS y verificar la sincronización del reloj de servidor mediante NTP. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Federación Entrust IDaaS: Sección 6.4 - SAML SSO Lifecycle)</em></li>`);
+    }
+
+    if (hasTomcatOom) {
+      items.push(`<li><strong>Ajuste de Memoria Heap de la JVM en Tomcat Catalina:</strong> Se identificaron excepciones de agotamiento de memoria <code>OutOfMemoryError: Java heap space</code>. Se recomienda incrementar los parámetros <code>-Xms2048m -Xmx4096m</code> en <code>catalina.sh / setenv.sh</code>. <em style="color:#64748b; font-size:11px;">(Ref. Manual Entrust IDG Tomcat Tuning: Sección 9.3 - JVM Heap Settings)</em></li>`);
+    }
+
+    if (hasTomcatSsl) {
+      items.push(`<li><strong>Importación de Certificados CA en Truststore de Java (cacerts):</strong> Se detectaron excepciones <code>SSLHandshakeException / PKIX</code>. Se recomienda importar el certificado de la Entidad Emisora mediante <code>keytool -importcert -keystore cacerts</code>. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad Entrust TLS: Sección 6.2 - Keystore Management)</em></li>`);
     }
 
     // Recomendación general por versión

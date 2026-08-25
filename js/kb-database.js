@@ -753,6 +753,75 @@ class KnowledgeBase {
       };
     }
 
+    // Diagnóstico heurístico para logs de Tomcat / Catalina (Servidor de Aplicaciones Entrust)
+    if (/OutOfMemoryError|Java heap space/i.test(logText)) {
+      return {
+        matched: true,
+        ruleId: 'KB-CATALINA-OOM',
+        title: 'Tomcat Catalina: OutOfMemoryError (Agotamiento de Memoria JVM Heap)',
+        category: 'Tomcat Catalina / Servidor de Aplicaciones',
+        severity: 'CRITICAL',
+        meaning: 'La máquina virtual Java (JVM) de Tomcat que ejecuta Entrust IdentityGuard agotó su memoria RAM disponible.',
+        rootCause: 'Asignación insuficiente del tamaño de Heap (-Xmx) en Tomcat o alta concurrencia de sesiones de autenticación.',
+        remediation: '1. Aumente la memoria JVM en setenv.sh / catalina.sh (ej. -Xms2048m -Xmx4096m).\n2. Reinicie el servicio Tomcat/IdentityGuard.\n3. Monitoree la recolección de basura (GC) con jstat / VisualVM. (Ref. Manual Entrust IDG Tomcat Tuning: Sección 9.3 - JVM Heap Settings)',
+        riskLevel: 'Crítico (Caída del Servidor de Aplicaciones)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-aud-codes',
+        sectionTitle: 'Manual de Ajuste JVM y Servidor Tomcat'
+      };
+    }
+
+    if (/SQLException|Cannot get a connection|ConnectionPool/i.test(logText)) {
+      return {
+        matched: true,
+        ruleId: 'KB-CATALINA-JDBC',
+        title: 'Tomcat Catalina: Fallo de Conexión a Base de Datos (JDBC Connection Pool)',
+        category: 'Tomcat Catalina / Base de Datos',
+        severity: 'CRITICAL',
+        meaning: 'El contenedor de servlets Tomcat no pudo obtener una conexión activa con la base de datos SQL de Entrust.',
+        rootCause: 'Pool de conexiones JDBC agotado (maxActive alcanzado) o caída del servidor de base de datos SQL.',
+        remediation: '1. Incremente maxActive y maxWaitSec en context.xml / server.xml de Tomcat.\n2. Verifique la conectividad de red con el puerto SQL (ej. 1433/1521/5432).\n3. Reinicie el pool de conexiones. (Ref. Manual de Administración Entrust: Sección 7.1 - Tomcat JDBC Connection Pooling)',
+        riskLevel: 'Alto (Base de Datos Inalcanzable)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-aud154',
+        sectionTitle: 'Manual de Configuración de Pool JDBC Tomcat'
+      };
+    }
+
+    if (/SSLHandshakeException|PKIX path building failed/i.test(logText)) {
+      return {
+        matched: true,
+        ruleId: 'KB-CATALINA-SSL',
+        title: 'Tomcat Catalina: Fallo de Certificado TLS/SSL (PKIX CertPath Builder Failed)',
+        category: 'Tomcat Catalina / Seguridad SSL',
+        severity: 'ERROR',
+        meaning: 'Tomcat no pudo validar la cadena de confianza del certificado SSL/TLS al conectar con un directorio LDAP o IDaaS Cloud.',
+        rootCause: 'Falta el certificado CA raíz o intermedio en el Keystore / Truststore (cacerts) de la JVM de Tomcat.',
+        remediation: '1. Importe el certificado CA usando: keytool -importcert -keystore $JAVA_HOME/lib/security/cacerts -alias entrust-ca -file ca-cert.crt.\n2. Reinicie Tomcat para recargar la cadena de certificados SSL. (Ref. Guía de Seguridad Entrust TLS: Sección 6.2 - Keystore Management)',
+        riskLevel: 'Alto (Conexión TLS Rechazada)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-aud125',
+        sectionTitle: 'Guía de Certificados SSL/TLS en Tomcat'
+      };
+    }
+
+    if (/ClientAbortException|Broken pipe/i.test(logText)) {
+      return {
+        matched: true,
+        ruleId: 'KB-CATALINA-CLIENT-ABORT',
+        title: 'Tomcat Catalina: Cancelación de Conexión Cliente (ClientAbortException)',
+        category: 'Tomcat Catalina / Red & Proxy',
+        severity: 'WARN',
+        meaning: 'El proxy inverso (Nginx / F5 / NetScaler) o el usuario cerró la conexión socket antes de recibir la respuesta.',
+        rootCause: 'Tiempo de espera (timeout) muy corto en el proxy inverso o abandono del usuario durante la transacción.',
+        remediation: '1. Incremente proxy_read_timeout y proxy_connect_timeout a 60s en Nginx/Apache.\n2. Ajuste connectionTimeout="20000" en server.xml de Tomcat. (Ref. Manual de Arquitectura Entrust Web Proxy: Sección 4.5 - Reverse Proxy Tuning)',
+        riskLevel: 'Medio (Timeout de Conexión Proxy)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-aud126',
+        sectionTitle: 'Guía de Proxy Inverso y Timeouts HTTP'
+      };
+    }
+
     // Diagnóstico heurístico general
     if (/error|fail|exception|fatal|panic/i.test(logText)) {
       return {

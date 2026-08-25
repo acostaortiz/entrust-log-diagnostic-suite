@@ -39,6 +39,12 @@ class LogParser {
       let parsed = this.tryParseEntrustIdentityGuard(line, index);
 
       if (!parsed) {
+        parsed = this.tryParseTomcatCatalina(line, index);
+      }
+      if (!parsed) {
+        parsed = this.tryParseCsv(line, index);
+      }
+      if (!parsed) {
         parsed = this.tryParseJson(line, index);
       }
       if (!parsed) {
@@ -63,6 +69,122 @@ class LogParser {
     });
 
     return parsedEntries;
+  }
+
+  /**
+   * Parser especializado para Tomcat / Catalina (Entrust IdentityGuard Application Server)
+   */
+  tryParseTomcatCatalina(line, lineNum) {
+    const isCatalinaPattern = /(catalina|org\.apache\.catalina|com\.entrust|OutOfMemoryError|SQLException|SSLHandshakeException|ClientAbortException|NullPointerException|Servlet\.service)/i.test(line);
+    const dateMatch = line.match(/^(\d{2}-[A-Za-z]{3}-\d{4}\s+\d{2}:\d{2}:\d{2}(?:\.\d+)?)/) ||
+                      line.match(/^([A-Za-z]{3}\s+\d{1,2},\s+\d{4}\s+\d{1,2}:\d{2}:\d{2}\s+(?:AM|PM))/i) ||
+                      line.match(/^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(?:,\d{3})?)/);
+
+    const levelMatch = line.match(/\b(SEVERE|FATAL|ERROR|WARNING|WARN|INFO|CONFIG|FINE|FINER|FINEST)\b/i);
+
+    if (!isCatalinaPattern && !dateMatch && !levelMatch) return null;
+
+    let level = 'INFO';
+    if (levelMatch) {
+      level = this.normalizeLevel(levelMatch[1]);
+    } else if (/(OutOfMemoryError|SQLException|SSLHandshakeException|FATAL|CRITICAL)/i.test(line)) {
+      level = 'CRITICAL';
+    } else if (/(Exception|Error|Failed)/i.test(line)) {
+      level = 'ERROR';
+    }
+
+    const timestamp = dateMatch ? dateMatch[1] : new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+    let service = 'Tomcat Catalina / IDG';
+    const exceptionClassMatch = line.match(/\b(java\.[a-zA-Z0-9\._]+Exception|javax\.[a-zA-Z0-9\._]+Exception|java\.lang\.OutOfMemoryError|org\.apache\.[a-zA-Z0-9\._]+)\b/);
+    if (exceptionClassMatch) {
+      service = `Tomcat [${exceptionClassMatch[1].split('.').pop()}]`;
+    }
+
+    const codeMatch = line.match(/(520\d{4}|AUD\d+)/i);
+
+    return {
+      id: `tomcat-${lineNum}-${Date.now()}`,
+      lineNum: lineNum + 1,
+      type: 'Tomcat Catalina',
+      timestamp: timestamp,
+      level: level,
+      hostname: 'idg-tomcat-srv',
+      service: service,
+      message: line,
+      raw: line,
+      entrustCode: codeMatch ? codeMatch[1] : null
+    };
+  }
+
+  /**
+   * Parser especializado para archivos CSV exportados por Entrust IDaaS Cloud
+   */
+  tryParseCsv(line, lineNum) {
+    if (!line.includes(',') && !line.includes(';')) return null;
+
+    if (lineNum === 0 && /(timestamp|event|user|severity|level|description|ip|code|status)/i.test(line)) {
+      return {
+        id: `csv-header-${Date.now()}`,
+        lineNum: 1,
+        type: 'CSV Header',
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        level: 'INFO',
+        hostname: 'idaas-cloud',
+        service: 'CSV Import Engine',
+        message: `Encabezado CSV Detectado: ${line}`,
+        raw: line,
+        isHeader: true
+      };
+    }
+
+    const fields = line.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(f => f.replace(/^"|"$/g, '').trim());
+
+    if (fields.length < 3) return null;
+
+    let timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    let level = 'INFO';
+    let user = 'N/A';
+    let service = 'Entrust IDaaS Cloud (CSV)';
+    let message = line;
+    let entrustCode = null;
+    let clientIp = 'N/A';
+
+    fields.forEach(field => {
+      if (/^\d{4}[-/.]\d{2}[-/.]\d{2}/.test(field) || /^\d{2}:[0-5]\d:[0-5]\d/.test(field)) {
+        timestamp = field;
+      } else if (/^(CRITICAL|ERROR|SEVERE|WARN|WARNING|INFO|DEBUG)$/i.test(field)) {
+        level = this.normalizeLevel(field);
+      } else if (/(520\d{4}|AUD\d+|SAML|MFA|OIDC|OAUTH)/i.test(field)) {
+        entrustCode = field;
+      } else if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(field)) {
+        clientIp = field;
+      } else if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(field) || /^(user|admin|mrodriguez|jperez|acosta)/i.test(field)) {
+        user = field;
+      }
+    });
+
+    const codeInLine = line.match(/(520\d{4}|AUD\d+|SAML_\w+|MFA_\w+)/i)?.[1];
+    if (codeInLine) entrustCode = codeInLine;
+
+    if (/(fail|error|denied|invalid|expired|locked)/i.test(line) && level === 'INFO') {
+      level = 'ERROR';
+    }
+
+    return {
+      id: `csv-${lineNum}-${Date.now()}`,
+      lineNum: lineNum + 1,
+      type: 'Entrust IDaaS (CSV)',
+      timestamp: timestamp,
+      level: level,
+      hostname: 'idaas.entrust.com',
+      service: entrustCode ? `IDaaS [${entrustCode}]` : 'IDaaS Audit CSV',
+      message: message,
+      raw: line,
+      user: user,
+      clientIp: clientIp,
+      entrustCode: entrustCode
+    };
   }
 
   /**
