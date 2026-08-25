@@ -517,8 +517,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const diagMap = new Map();
     const logsToGroup = criticalLogs.length > 0 ? criticalLogs : targetLogs;
 
+    function extractEntrustErrorCode(line) {
+      if (!line) return null;
+      const sanitized = line.replace(/(\?|&)[^=\s]+=[^&\s]*/g, '');
+      const match = sanitized.match(/(?:\[|\b)(520\d{4}|AUD\d+)(?:\]|\b)/i);
+      return match ? match[1].toUpperCase() : null;
+    }
+
     logsToGroup.forEach(log => {
-      const codeInLine = log.message.match(/(520\d{4}|AUD\d+)/)?.[1];
+      const codeInLine = extractEntrustErrorCode(log.message);
       const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message, codeInLine);
       const key = diag.title || log.message;
 
@@ -587,9 +594,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Frecuencia de códigos de error 520xxx / AUDxxx
     const codeCounts = {};
     targetLogs.forEach(l => {
-      const codeMatch = l.message.match(/(520\d{4}|AUD\d+)/i);
-      if (codeMatch) {
-        const code = codeMatch[1].toUpperCase();
+      const code = extractEntrustErrorCode(l.message);
+      if (code) {
         codeCounts[code] = (codeCounts[code] || 0) + 1;
       }
     });

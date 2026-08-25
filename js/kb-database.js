@@ -1013,17 +1013,18 @@ class KnowledgeBase {
     }
 
     // Diagnóstico heurístico general
-    if (/error|fail|exception|fatal|panic/i.test(logText)) {
+    if (/error|fail|exception|fatal|panic|critical|500/i.test(logText)) {
       return {
         matched: false,
         ruleId: 'KB-GEN-999',
-        title: 'Anomalía o Error Generado en Sistema',
+        title: 'Excepción o Fallo Crítico Registrado en Servidor Entrust',
         category: 'Detección Heurística General',
-        severity: /fatal|panic|critical/i.test(logText) ? 'CRITICAL' : 'ERROR',
-        meaning: 'Se detectó una palabra clave de fallo en el log. El mensaje contiene términos de error o excepción que requieren revisión.',
-        rootCause: 'Condición de fallo en ejecución de servicio o excepción no capturada en el flujo de aplicación.',
-        remediation: '1. Revise las trazas completas de pila (Stacktrace) del proceso.\n2. Verifique los Manuales Administrativos en HTML.',
-        riskLevel: 'Medio (Revisión Sugerida)',
+        severity: /fatal|panic|critical|500/i.test(logText) ? 'CRITICAL' : 'ERROR',
+        attribution: '🖥️ Servidor Entrust / Backend Application',
+        meaning: 'Se detectó un fallo crítico o excepción en la ejecución de la solicitud. El mensaje contiene términos de error o respuesta HTTP 500.',
+        rootCause: 'Condición de fallo en la ejecución del servicio web o excepción de aplicación en Tomcat/Java.',
+        remediation: '1. Inspeccione la traza completa (Stacktrace) en catalina.out a la hora exacta del evento.\n2. Verifique la conectividad con los repositorios de base de datos.',
+        riskLevel: 'Alto (Fallo de Servicio)',
         manualVersion: 'vEntrust',
         sectionId: 'sec-aud-codes',
         sectionTitle: 'Manual Administrativo Operativo'
@@ -1036,6 +1037,7 @@ class KnowledgeBase {
       title: 'Evento Operativo Normal',
       category: 'Informativo',
       severity: 'INFO',
+      attribution: '✅ Operación Normal del Sistema',
       meaning: 'Registro de actividad estándar o estado transitorio sin indicios de fallos críticos en el sistema.',
       rootCause: 'Ejecución regular de tareas programadas, accesos autorizados o señales de salud.',
       remediation: 'No requiere ninguna acción correctiva inmediata.',

@@ -255,14 +255,15 @@ class LogParser {
    * Formato: [YYYY-MM-DD HH:mm:ss,SSS] [Thread] [LEVEL] [Category] [AUDxxx/API] [User/Context] Message...
    */
   tryParseEntrustIdentityGuard(line, lineNum) {
-    if (!line.includes('[IG.') && !/520\d{4}/.test(line) && !/AUD\d+/i.test(line) && !/\[\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}/.test(line)) {
+    const sanitizedLine = line.replace(/(\?|&)[^=\s]+=[^&\s]*/g, '');
+    if (!line.includes('[IG.') && !/520\d{4}/.test(sanitizedLine) && !/AUD\d+/i.test(sanitizedLine) && !/\[\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}/.test(line)) {
       return null;
     }
 
     const dateMatch = line.match(/^\[?(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(?:,\d{3})?)\]?/);
     const levelMatch = line.match(/\[?(INFO|ERROR|WARN|WARNING|CRITICAL|FATAL|DEBUG)\]?/i);
-    const code520Match = line.match(/(?:\[|\b)(520\d{4})(?:\]|\b)/);
-    const audMatch = line.match(/(?:\[|\b)(AUD\d+)(?:\]|\b)/i);
+    const code520Match = sanitizedLine.match(/(?:\[|\b)(520\d{4})(?:\]|\b)/);
+    const audMatch = sanitizedLine.match(/(?:\[|\b)(AUD\d+)(?:\]|\b)/i);
     const categoryMatch = line.match(/\[?(IG\.[A-Z0-9\._]+)\]?/i);
 
     if (!dateMatch && !code520Match && !audMatch && !categoryMatch) {
