@@ -998,6 +998,100 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.add('active');
   }
 
+  function copyExecutiveReportMarkdown() {
+    const activeClientName = dom.clientSelector?.value || 'Banco del Caribe';
+    const activeClient = state.clients[activeClientName] || {
+      name: activeClientName,
+      platform: 'Entrust IdentityGuard OnPremise',
+      version: 'Release 11.0',
+      build: 'Release 11.0 (General)',
+      contact: 'Gerencia de Seguridad de la Información / Plataforma TI',
+      engineer: 'Tomás Acosta'
+    };
+
+    const targetLogs = state.logs;
+    const criticalLogs = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
+    const warningLogs = targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING');
+    const infoLogs = targetLogs.filter(l => l.level === 'INFO');
+    const totalCount = Math.max(1, targetLogs.length);
+
+    const healthIndex = calculateHealthIndex(targetLogs);
+    const dateStr = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+    let md = `# IT SERVICIOS DE VENEZUELA\n`;
+    md += `## INFORME DE DIAGNÓSTICO TÉCNICO PRELIMINAR DE INCIDENTES — ${activeClient.platform.toUpperCase()}\n\n`;
+    md += `**Cliente / Destinatario:** ${activeClient.name}\n`;
+    md += `**Dirigido a:** ${activeClient.contact}\n`;
+    md += `**Ingeniero Responsable:** ${activeClient.engineer} — Soporte IT Servicios\n`;
+    md += `**Plataforma y Versión:** ${activeClient.platform} (${activeClient.version})\n`;
+    md += `**Fecha de Emisión:** ${dateStr}, ${timeStr} hrs\n`;
+    md += `**Estatus:** DOCUMENTO OFICIAL PRELIMINAR DE OBSERVACIONES — CONFIDENCIAL\n\n`;
+    md += `---\n\n`;
+
+    md += `### 1. RESUMEN EJECUTIVO DE SALUD Y MÉTRICAS DE LA MUESTRA\n\n`;
+    md += `- **Total Eventos Analizados:** \`${totalCount}\` registros\n`;
+    md += `- **Índice de Salud de Autenticación:** \`${healthIndex}%\`\n`;
+    md += `- **Incidentes Críticos:** \`${criticalLogs.length}\` (${formatPctStr(criticalLogs.length, totalCount)})\n`;
+    md += `- **Alertas de Auditoría:** \`${warningLogs.length}\` (${formatPctStr(warningLogs.length, totalCount)})\n`;
+    md += `- **Operaciones Informativas:** \`${infoLogs.length}\` (${formatPctStr(infoLogs.length, totalCount)})\n\n`;
+
+    md += `---\n\n`;
+    md += `### 2. ANÁLISIS DE FRECUENCIA DE ERRORES E INCIDENTES\n\n`;
+    md += `| Código / Diagnóstico | Descripción del Evento | Reincidencias | Impacto |\n`;
+    md += `| :--- | :--- | :---: | :---: |\n`;
+
+    const diagMap = new Map();
+    const logsToGroup = criticalLogs.length > 0 ? criticalLogs : targetLogs;
+    logsToGroup.forEach(log => {
+      const sanitized = (log.message || '').replace(/(\?|&)[^=\s]+=[^&\s]*/g, '');
+      const match = sanitized.match(/(?:\[|\b)(520\d{4}|AUD\d+)(?:\]|\b)/i);
+      const codeInLine = match ? match[1].toUpperCase() : null;
+      const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message, codeInLine);
+      const key = diag.title || log.message;
+
+      if (!diagMap.has(key)) {
+        diagMap.set(key, { log, diag, count: 1 });
+      } else {
+        diagMap.get(key).count += 1;
+      }
+    });
+
+    const sortedIncidents = Array.from(diagMap.values()).sort((a, b) => b.count - a.count);
+    sortedIncidents.forEach(({ log, diag, count }) => {
+      const codeDisplay = diag.ruleId ? diag.ruleId.replace('KB-ENTRUST-', '').replace('KB-', '') : (log.level || 'ERROR');
+      const pctStr = formatPctStr(count, totalCount);
+      md += `| \`${codeDisplay}\` | **${diag.title}**<br>${diag.meaning} | **${count}** | ${pctStr} |\n`;
+    });
+
+    md += `\n---\n\n`;
+    md += `### 3. RECOMENDACIONES TÉCNICAS Y PLAN DE ACCIÓN RECOMENDADO\n\n`;
+    md += `1. **Desbloqueo y Gestión de Cuentas LDAP / Active Directory:** Verificar cuentas afectadas en la Consola de Administración de ${activeClient.platform} y en el directorio LDAP.\n`;
+    md += `2. **Reasignación y Auditoría de Tarjetas Grid / PIN:** Validar series de tarjetas Grid activas asignadas a usuarios y capacitar en el ingreso de celdas.\n`;
+    md += `3. **Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):** Incrementar el número de conexiones en \`identityguard.properties\` / \`context.xml\` y ajustar los tiempos de espera.\n`;
+    md += `4. **Revisión de Parches Oficiales para ${activeClient.version}:** Aplicar parches oficiales de Entrust para la versión ${activeClient.version} (${activeClient.build}).\n\n`;
+
+    md += `---\n\n`;
+    md += `**Departamento de Soporte IT Servicios de Venezuela**  \n`;
+    md += `*Ing. ${activeClient.engineer} — Especialista en Infraestructura Entrust*\n`;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(md).then(() => {
+        alert('✅ ¡Informe Preliminar en formato Markdown / Texto copiado al portapapeles con éxito!');
+      }).catch(err => {
+        console.error('Error al copiar al portapapeles:', err);
+      });
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = md;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      alert('✅ ¡Informe Preliminar en formato Markdown / Texto copiado al portapapeles con éxito!');
+    }
+  }
+
   function generateDynamicRecommendationsHtml(targetLogs, activeClient) {
     const items = [];
     const fullLogText = targetLogs.map(l => l.message).join(' ');
@@ -1958,6 +2052,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     dom.filterLevelSelect?.addEventListener('change', () => applyLogFilters());
     dom.filterTypeSelect?.addEventListener('change', () => applyLogFilters());
 
+    document.getElementById('btn-copy-exec-report-md')?.addEventListener('click', () => copyExecutiveReportMarkdown());
+
     dom.btnToggleStream?.addEventListener('click', () => {
       state.isStreaming = !state.isStreaming;
       if (dom.btnToggleStream) {
@@ -2017,8 +2113,61 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         switchTab('analyzer');
 
         const uniqueClients = [...new Set(state.logs.map(l => l.client || 'Cliente General'))];
-        showAnalysisStatus(false, `✅ ¡Análisis Finalizado Exitosamente!`, `Se procesaron ${fileCount} archivo(s) con ${newLogs.length} registro(s) para ${uniqueClients.length} cliente(s) activo(s).`);
       }
+    });
+
+    document.getElementById('btn-do-import-catalog')?.addEventListener('click', () => {
+      const fileInput = document.getElementById('import-catalog-file-input');
+      const versionSelect = document.getElementById('import-catalog-version');
+      const statusDiv = document.getElementById('import-catalog-status');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        statusDiv.style.display = 'block';
+        statusDiv.style.background = '#fee2e2';
+        statusDiv.style.color = '#dc2626';
+        statusDiv.innerText = 'Por favor selecciona un archivo HTML, JSON o TXT antes de continuar.';
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const versionLabel = versionSelect.value;
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const content = e.target.result;
+        let count = 0;
+        if (file.name.endsWith('.html') || file.name.endsWith('.htm') || content.includes('<html')) {
+          count = window.knowledgeBaseEngine.importCatalogFromHtml(content, versionLabel);
+        } else if (file.name.endsWith('.json')) {
+          try {
+            const jsonArr = JSON.parse(content);
+            if (Array.isArray(jsonArr)) {
+              jsonArr.forEach(item => {
+                window.knowledgeBaseEngine.saveCustomRule({
+                  ...item,
+                  manualVersion: versionLabel
+                });
+                count++;
+              });
+            }
+          } catch(err) {
+            console.error(err);
+          }
+        }
+
+        statusDiv.style.display = 'block';
+        statusDiv.style.background = '#ecfdf5';
+        statusDiv.style.color = '#047857';
+        statusDiv.innerText = `¡Éxito! Se importaron y sincronizaron ${count} reglas de error oficiales para ${versionLabel}.`;
+
+        setTimeout(() => {
+          document.getElementById('import-catalog-modal').classList.remove('active');
+          statusDiv.style.display = 'none';
+          if (window.renderDashboard) window.renderDashboard();
+        }, 2000);
+      };
+
+      reader.readAsText(file);
     });
   }
 

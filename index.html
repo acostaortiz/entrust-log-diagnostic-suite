@@ -53,6 +53,7 @@
       </div>
 
       <button class="theme-toggle-btn" id="btn-toggle-theme" title="Cambiar entre Modo Claro y Oscuro">☀️ / 🌙 Tema</button>
+      <button class="btn" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="document.getElementById('import-catalog-modal').classList.add('active');" title="Importar catálogo oficial de errores HTML para cualquier versión">📥 Importar HTML Errores</button>
       <button class="btn btn-primary" id="btn-generate-exec-report">📄 Generar Informe Preliminar</button>
       <div class="user-badge-header">
         <span>👤 Tomás Acosta</span>
@@ -357,6 +358,7 @@
           <button class="btn btn-primary" id="btn-download-pdf-exec-report" style="background:#047857; border-color:#047857;">📥 Descargar PDF (Oficial)</button>
           <button class="btn btn-primary" id="btn-download-html-exec-report" style="background:#0284c7; border-color:#0284c7;">🌐 Exportar HTML Autónomo</button>
           <button class="btn btn-primary" id="btn-download-csv-exec-report" style="background:#d97706; border-color:#d97706;">📊 Exportar Excel CSV</button>
+          <button class="btn btn-primary" id="btn-copy-exec-report-md" style="background:#475569; border-color:#475569;" title="Copiar informe preliminar en formato Markdown / Texto estructurado">📋 Copiar Markdown / Texto</button>
           <button class="btn btn-primary" id="btn-print-exec-report">🖨️ Imprimir</button>
           <button class="btn" id="btn-close-exec-report">✖ Cerrar</button>
         </div>
@@ -556,13 +558,47 @@
     <div>
       Desarrollado y Administrado por: <strong class="text-cyan">Tomás Acosta</strong> | Suite de Diagnostico
     </div>
-  </footer>
+  <!-- Modal de Importación de Catálogo Oficial HTML / JSON -->
+  <div class="modal-overlay" id="import-catalog-modal" onclick="if(event.target === this) this.classList.remove('active');">
+    <div class="modal-content" style="max-width:550px; background:#ffffff; color:#0f172a; border-radius:10px; padding:24px; box-shadow:0 10px 25px rgba(0,0,0,0.4);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #0a3d6d; padding-bottom:12px; margin-bottom:16px;">
+        <h3 style="color:#0a3d6d; margin:0; font-size:16px;">📥 Importar Catálogo Oficial de Errores (HTML / JSON / TXT)</h3>
+        <button onclick="document.getElementById('import-catalog-modal').classList.remove('active');" style="background:none; border:none; font-size:20px; cursor:pointer; color:#64748b;">✕</button>
+      </div>
+      
+      <p style="font-size:12px; color:#475569; margin-bottom:16px;">
+        Selecciona la versión del cliente y carga tu archivo HTML oficial (ej. WebHelp de Entrust) para sincronizar todos los códigos 520xxx y AUDxxx.
+      </p>
+
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:12px; font-weight:bold; color:#0a3d6d; margin-bottom:4px;">Versión del Catálogo Target:</label>
+        <select id="import-catalog-version" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+          <option value="Release 11.0">Entrust IdentityGuard OnPremise Release 11.0</option>
+          <option value="Release 12.0">Entrust IdentityGuard OnPremise Release 12.0</option>
+          <option value="Release 13.0">Entrust IdentityGuard OnPremise Release 13.0</option>
+          <option value="IDaaS Cloud">Entrust IDaaS Cloud Suite</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <label style="display:block; font-size:12px; font-weight:bold; color:#0a3d6d; margin-bottom:4px;">Seleccionar Archivo HTML / JSON / TXT:</label>
+        <input type="file" id="import-catalog-file-input" accept=".html,.htm,.json,.txt" style="width:100%; padding:8px; border:1px dashed #0284c7; background:#f0f9ff; border-radius:6px; font-size:12px;" />
+      </div>
+
+      <div id="import-catalog-status" style="display:none; padding:10px; border-radius:6px; font-size:12px; margin-bottom:14px;"></div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-secondary" onclick="document.getElementById('import-catalog-modal').classList.remove('active');">Cancelar</button>
+        <button class="btn btn-primary" id="btn-do-import-catalog" style="background:#0a3d6d; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;">⚡ Importar & Sincronizar KB</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Scripts JavaScript -->
-  <script src="js/kb-database.js?v=36.0"></script>
-  <script src="js/manuals-engine.js?v=36.0"></script>
-  <script src="js/log-parser.js?v=36.0"></script>
-  <script src="js/app.js?v=36.0"></script>
+  <script src="js/kb-database.js?v=40.0"></script>
+  <script src="js/manuals-engine.js?v=40.0"></script>
+  <script src="js/log-parser.js?v=40.0"></script>
+  <script src="js/app.js?v=40.0"></script>
 
 </body>
 </html>

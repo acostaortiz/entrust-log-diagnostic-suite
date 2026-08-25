@@ -718,6 +718,47 @@ class KnowledgeBase {
     }
   }
 
+  importCatalogFromHtml(htmlContent, versionLabel = 'Release 11.0') {
+    if (!htmlContent) return 0;
+    let importedCount = 0;
+
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlContent, 'text/html');
+
+      const cards = doc.querySelectorAll('.error-card, .proc-card, tr, h2, h3, div, p');
+      cards.forEach(card => {
+        const text = card.textContent || '';
+        const codeMatch = text.match(/(520\d{4}|AUD\d+)/i);
+        if (codeMatch) {
+          const code = codeMatch[1].toUpperCase();
+          const existing = this.rules.find(r => r.id === `KB-ENTRUST-${code}`);
+          if (!existing) {
+            const meaningMatch = text.match(/(?:Significado|Meaning|Descripción|Detalle):\s*([^\n\r]+)/i);
+            const remMatch = text.match(/(?:Remediación|Remediation|Solución):\s*([^\n\r]+)/i);
+
+            this.saveCustomRule({
+              id: `KB-ENTRUST-${code}`,
+              title: `Entrust IdentityGuard [${code}] (${versionLabel})`,
+              category: `Entrust OnPremise (${versionLabel})`,
+              severity: 'ERROR',
+              pattern: `(${code})`,
+              meaning: meaningMatch ? meaningMatch[1].trim() : `Código de error [${code}] registrado según la documentación oficial de ${versionLabel}.`,
+              rootCause: `Condición de evento o error en la transacción reportada por el servidor Entrust ${versionLabel}.`,
+              remediation: remMatch ? remMatch[1].trim() : `Consulte la Consola de Administración de Entrust y verifique la cuenta/configuración asociada al código [${code}].`,
+              manualVersion: versionLabel
+            });
+            importedCount++;
+          }
+        }
+      });
+    } catch (e) {
+      console.error('Error al importar HTML en KB:', e);
+    }
+
+    return importedCount;
+  }
+
   diagnoseLog(logText, targetCode) {
     if (!logText && !targetCode) return null;
     const searchText = logText || (targetCode ? `[${targetCode}]` : '');
