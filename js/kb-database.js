@@ -830,6 +830,7 @@ class KnowledgeBase {
         title: 'Entrust IDG: Excepción en Web Service SOAP (Authentication / Administration API)',
         category: 'Entrust OnPremise / Web Services SOAP',
         severity: /Fault|FailedAuthentication|ERROR|500/i.test(logText) ? 'ERROR' : 'INFO',
+        attribution: '🖥️ Cliente SOAP / Integración de Aplicación',
         meaning: 'Transacción rechazada o excepción registrada en los puntos de enlace SOAP (WSDL) de Entrust IdentityGuard.',
         rootCause: 'Firma WS-Security inválida, credenciales del cliente SOAP incorrectas, o excepción en la lógica del servicio web.',
         remediation: '1. Revise el elemento <wsse:Security> y el Password Digest en el mensaje SOAP de la solicitud.\n2. Verifique en la Consola Entrust > Web Services Clients la vigencia de la clave del canal.\n3. (Ref. Guía de Integración Entrust SOAP Web Services: Sección 4.1 - WS-Security & WSDL Specifications)',
@@ -838,6 +839,177 @@ class KnowledgeBase {
         sectionId: 'sec-aud-codes',
         sectionTitle: 'Manual de Integración SOAP Web Services Entrust'
       };
+    }
+
+    // Diagnóstico especializado de Códigos de Estado HTTP (200, 400, 401, 403, 404, 429, 500, 502, 503, 504)
+    const httpStatusMatch = logText.match(/"\s+(200|201|400|401|403|404|429|500|502|503|504)\s+\d+/i) ||
+                            logText.match(/\bHTTP\/\d\.\d"\s+(200|201|400|401|403|404|429|500|502|503|504)\b/i) ||
+                            logText.match(/\b(200|201|400|401|403|404|429|500|502|503|504)\b/);
+
+    if (httpStatusMatch) {
+      const code = httpStatusMatch[1];
+
+      if (code === '400') {
+        return {
+          matched: true,
+          ruleId: 'KB-HTTP-400',
+          title: 'HTTP 400 Bad Request: Solicitud API Mal Formada o Parámetros Inválidos',
+          category: 'HTTP Protocol / Error de Cliente API',
+          severity: 'ERROR',
+          attribution: '⚠️ Aplicación Cliente / Integración Frontend',
+          meaning: 'El cliente web o la aplicación móvil envió una petición HTTP con sintaxis incorrecta, formato JSON/XML inválido o parámetros requeridos ausentes.',
+          rootCause: 'Parámetros obligatorios ausentes en el Query String (ej. uid, pwd, login o aleatorio faltantes) o cuerpo HTTP mal formado.',
+          remediation: '1. Valide el formato de los parámetros enviados a los endpoints /idgserv/action/rest/.\n2. Asegure la codificación de caracteres URL (URL encoding) de los parámetros.\n3. (Ref. Guía de Integración REST API Entrust: Sección 3.2 - HTTP Error Codes)',
+          riskLevel: 'Medio (Rechazo por Formato de Solicitud)',
+          manualVersion: 'vEntrust',
+          sectionId: 'sec-aud-codes',
+          sectionTitle: 'Guía de Errores HTTP REST Entrust'
+        };
+      }
+
+      if (code === '401') {
+        return {
+          matched: true,
+          ruleId: 'KB-HTTP-401',
+          title: 'HTTP 401 Unauthorized: No Autorizado / Credenciales o Token Inválidos',
+          category: 'HTTP Protocol / Autenticación de Cliente',
+          severity: 'ERROR',
+          attribution: '👤 Usuario Final / Aplicación Cliente',
+          meaning: 'La petición carece de credenciales de autenticación válidas, el token OAuth2/JWT está caducado o el secreto de API es incorrecto.',
+          rootCause: 'Clave API de aplicación caducada, token de sesión vencido o firma de solicitud rechazada por el servidor.',
+          remediation: '1. Solicite un nuevo Bearer Token OAuth2 a la API de Entrust IDaaS/IDG.\n2. Compruebe la vigencia del Client Secret del canal cliente.\n3. (Ref. Guía de Seguridad Entrust API: Sección 2.1 - Bearer Token Authentication)',
+          riskLevel: 'Alto (Fallo de Autenticación API)',
+          manualVersion: 'vEntrust',
+          sectionId: 'sec-aud-codes',
+          sectionTitle: 'Guía de Errores HTTP REST Entrust'
+        };
+      }
+
+      if (code === '403') {
+        return {
+          matched: true,
+          ruleId: 'KB-HTTP-403',
+          title: 'HTTP 403 Forbidden: Acceso Prohibido / Permisos Insuficientes',
+          category: 'HTTP Protocol / Autorización & Políticas',
+          severity: 'ERROR',
+          attribution: '🛡️ Política de Seguridad / Permisos de Usuario',
+          meaning: 'El servidor comprendió la solicitud pero se niega a autorizarla según las políticas de acceso de Entrust.',
+          rootCause: 'El usuario o aplicación cliente autenticada carece del rol necesario o viola una regla de política MFA.',
+          remediation: '1. Verifique los grupos de autorización asignados al usuario o canal.\n2. Revise las políticas de acceso en la Consola Entrust (Authentication Policies).\n3. (Ref. Manual de Administración Entrust: Sección 4.3 - Access Control Rules)',
+          riskLevel: 'Alto (Acceso Denegado por Política)',
+          manualVersion: 'vEntrust',
+          sectionId: 'sec-aud-codes',
+          sectionTitle: 'Guía de Errores HTTP REST Entrust'
+        };
+      }
+
+      if (code === '404') {
+        return {
+          matched: true,
+          ruleId: 'KB-HTTP-404',
+          title: 'HTTP 404 Not Found: Endpoint o Recurso No Encontrado',
+          category: 'HTTP Protocol / Error de Ruta Client-side',
+          severity: 'WARN',
+          attribution: '⚠️ Aplicación Cliente (Ruta URL Incorrecta)',
+          meaning: 'El punto de enlace URL solicitado no existe en el servidor Tomcat o el recurso indicado no fue localizado.',
+          rootCause: 'Error tipográfico en la URI de la llamada API REST (ej. ruta incorrecta en /idgserv/action/rest/) o servlet desinstalado.',
+          remediation: '1. Verifique que el context path /idgserv/ esté desplegado activamente en Tomcat.\n2. Confirme que la ruta del endpoint coincida exactamente con la documentación OpenAPI/Swagger de Entrust.\n3. (Ref. Guía de Integración REST API Entrust: Sección 1.4 - API Endpoints Overview)',
+          riskLevel: 'Bajo (Ruta Inexistente)',
+          manualVersion: 'vEntrust',
+          sectionId: 'sec-aud-codes',
+          sectionTitle: 'Guía de Errores HTTP REST Entrust'
+        };
+      }
+
+      if (code === '429') {
+        return {
+          matched: true,
+          ruleId: 'KB-HTTP-429',
+          title: 'HTTP 429 Too Many Requests: Límite de Tasa Superado (Rate Limiting)',
+          category: 'HTTP Protocol / Protección Anti-Bruteforce',
+          severity: 'WARN',
+          attribution: '⚡ Script de Cliente / Consumo Excesivo',
+          meaning: 'Se enviaron más solicitudes por segundo de las permitidas por la política de protección anti-fuerza bruta de Entrust.',
+          rootCause: 'Bucle descontrolado en la aplicación cliente o intento de escaneo masivo sobre los endpoints de autenticación.',
+          remediation: '1. Implemente reintentos con retardo exponencial (exponential backoff & jitter) en el cliente.\n2. Ajuste los límites de tasa (Rate Limit Thresholds) en la Consola Entrust IDaaS.\n3. (Ref. Guía de Protección Entrust API: Sección 8.1 - Rate Limiting & Throttling)',
+          riskLevel: 'Medio (Límite de Tasa Alcanzado)',
+          manualVersion: 'vEntrust',
+          sectionId: 'sec-aud-codes',
+          sectionTitle: 'Guía de Errores HTTP REST Entrust'
+        };
+      }
+
+      if (code === '500') {
+        return {
+          matched: true,
+          ruleId: 'KB-HTTP-500',
+          title: 'HTTP 500 Internal Server Error: Fallo Interno en Servidor Entrust / Tomcat',
+          category: 'HTTP Protocol / Error Crítico de Servidor',
+          severity: 'CRITICAL',
+          attribution: '🖥️ Servidor Entrust / Tomcat / Base de Datos',
+          meaning: 'El servidor de aplicaciones Tomcat experimentó un fallo no manejado o la API no pudo comunicarse con la base de datos de repositorios.',
+          rootCause: 'Excepción Java no capturada (SQLException / OutOfMemoryError / NullPointerException) o agotamiento del pool JDBC.',
+          remediation: '1. Revise catalina.out y los logs de aplicación a la hora exacta del incidente.\n2. Verifique la conectividad con la base de datos repositorio y amplíe el pool JDBC en context.xml.\n3. (Ref. Manual de Administración Entrust: Sección 7.1 - Database Connection Pooling)',
+          riskLevel: 'Crítico (Fallo de Respuesta API Backend)',
+          manualVersion: 'vEntrust',
+          sectionId: 'sec-aud-codes',
+          sectionTitle: 'Guía de Errores HTTP REST Entrust'
+        };
+      }
+
+      if (code === '502' || code === '503') {
+        return {
+          matched: true,
+          ruleId: `KB-HTTP-${code}`,
+          title: `HTTP ${code}: Servicio No Disponible / Proxy Inverso Desconectado`,
+          category: 'HTTP Protocol / Infraestructura & Proxy',
+          severity: 'CRITICAL',
+          attribution: '🔌 Proxy Inverso (Nginx/Apache) / Servicio Tomcat Caído',
+          meaning: 'El balanceador de carga o proxy inverso no pudo conectar con el servidor Tomcat de Entrust o el servicio está detenido.',
+          rootCause: 'Servicio Tomcat7 detenido, proceso Java colgado por falta de memoria o puerto 8080/8443 inalcanzable.',
+          remediation: '1. Verifique el estado del servicio Tomcat7 mediante: systemctl status tomcat.\n2. Verifique la pila de procesos Java y reinicie el servicio de ser necesario.\n3. (Ref. Guía de Mantenimiento Entrust Infrastructure: Sección 3.2 - Service Recovery)',
+          riskLevel: 'Crítico (Servicio Web Caído)',
+          manualVersion: 'vEntrust',
+          sectionId: 'sec-aud-codes',
+          sectionTitle: 'Guía de Errores HTTP REST Entrust'
+        };
+      }
+
+      if (code === '504') {
+        return {
+          matched: true,
+          ruleId: 'KB-HTTP-504',
+          title: 'HTTP 504 Gateway Timeout: Tiempo de Espera Agotado en Backend',
+          category: 'HTTP Protocol / Timeouts de Infraestructura',
+          severity: 'ERROR',
+          attribution: '⏳ Servidor Backend Entrust / Latencia de Base de Datos',
+          meaning: 'El proxy inverso no recibió una respuesta oportuna del servidor Tomcat antes de que expirara el tiempo de espera (timeout).',
+          rootCause: 'Consultas SQL extremadamente lentas en la base de datos o bloqueos de transacciones en la JVM de Tomcat.',
+          remediation: '1. Incremente proxy_read_timeout 60s; en Nginx/Apache.\n2. Analice las consultas lentas en la base de datos de repositorios Entrust.\n3. (Ref. Manual Entrust Web Proxy: Sección 4.5 - Timeout Adjustments)',
+          riskLevel: 'Alto (Timeout de Respuesta Backend)',
+          manualVersion: 'vEntrust',
+          sectionId: 'sec-aud-codes',
+          sectionTitle: 'Guía de Errores HTTP REST Entrust'
+        };
+      }
+
+      if (code === '200' || code === '201') {
+        return {
+          matched: true,
+          ruleId: 'KB-HTTP-200',
+          title: `HTTP ${code} OK: Operación API Procesada Exitosamente`,
+          category: 'HTTP Protocol / Respuesta Exitosa',
+          severity: 'INFO',
+          attribution: '✅ Operación Normal / Petición Válida',
+          meaning: 'La solicitud HTTP enviada a la API REST de Entrust fue recibida, procesada y respondida sin errores.',
+          rootCause: 'Funcionamiento correcto del canal API y procesamiento sin excepciones.',
+          remediation: 'No se requiere acción correctiva. La transacción completó de forma nominal.',
+          riskLevel: 'Ninguno (Operación Nominal Exitosamente Completada)',
+          manualVersion: 'vEntrust',
+          sectionId: 'sec-aud-codes',
+          sectionTitle: 'Guía de Errores HTTP REST Entrust'
+        };
+      }
     }
 
     // Diagnóstico heurístico general

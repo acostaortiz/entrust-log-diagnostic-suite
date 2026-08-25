@@ -1114,6 +1114,12 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="diag-val" style="font-size:0.9rem; line-height:1.5;">${escapeHtml(diag.meaning)}</div>
       </div>
 
+      ${diag.attribution ? `
+      <div class="diag-field mb-3">
+        <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">🎯 CAUSANTE / RESPONSABILIDAD DEL EVENTO</div>
+        <div class="diag-val font-mono" style="font-weight:700; font-size:0.95rem; color:#f43f5e; background:rgba(244, 63, 94, 0.1); border:1px solid rgba(244, 63, 94, 0.3); padding:8px 12px; border-radius:6px;">${escapeHtml(diag.attribution)}</div>
+      </div>` : ''}
+
       <div class="diag-field mb-3">
         <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">CAUSA RAÍZ PROBABLE</div>
         <div class="diag-val text-warn font-mono" style="font-weight:600; font-size:0.9rem;">${escapeHtml(diag.rootCause)}</div>
@@ -1156,6 +1162,7 @@ Componente/Canal: ${channelApp}
 Reincidencias: ${freq.count} vez/veces en la muestra (${freq.percent})
 Rango: ${freq.firstSeen} -> ${freq.lastSeen}
 Usuario/Contexto: ${userDisplay} | Origen/Host: ${ipOrHostDisplay}
+Causante/Atribución: ${diag.attribution || 'N/A'}
 Causa Raíz: ${diag.rootCause}
 Remediación Oficial:
 ${diag.remediation}
