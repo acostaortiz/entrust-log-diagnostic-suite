@@ -118,67 +118,89 @@ class LogParser {
   }
 
   /**
-   * Parser especializado para archivos CSV exportados por Entrust IDaaS Cloud
+   * Parser especializado para archivos CSV / TSV exportados por Entrust IDaaS Cloud
    */
   tryParseCsv(line, lineNum) {
-    if (!line.includes(',') && !line.includes(';')) return null;
+    if (!line.includes(',') && !line.includes(';') && !line.includes('\t')) return null;
 
-    if (lineNum === 0 && /(timestamp|event|user|severity|level|description|ip|code|status)/i.test(line)) {
+    let delimiter = ',';
+    if (line.includes('\t')) delimiter = '\t';
+    else if (line.includes(';') && !line.includes(',')) delimiter = ';';
+
+    const fields = line.split(delimiter === '\t' ? '\t' : new RegExp(`${delimiter}(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)`))
+                       .map(f => f.replace(/^"|"$/g, '').trim());
+
+    if (fields.length < 3) return null;
+
+    if (/(id|eventTime|accountId|subjectName|eventType|eventOutcome|sourceIp)/i.test(line) && lineNum === 0) {
       return {
         id: `csv-header-${Date.now()}`,
         lineNum: 1,
-        type: 'CSV Header',
+        type: 'IDaaS TSV/CSV Header',
         timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
         level: 'INFO',
         hostname: 'idaas-cloud',
-        service: 'CSV Import Engine',
-        message: `Encabezado CSV Detectado: ${line}`,
+        service: 'CSV/TSV Import Engine',
+        message: `Encabezado Entrust IDaaS Cloud Detectado (${fields.length} columnas)`,
         raw: line,
         isHeader: true
       };
     }
 
-    const fields = line.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(f => f.replace(/^"|"$/g, '').trim());
-
-    if (fields.length < 3) return null;
-
     let timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
     let level = 'INFO';
     let user = 'N/A';
-    let service = 'Entrust IDaaS Cloud (CSV)';
+    let service = 'Entrust IDaaS Cloud';
     let message = line;
     let entrustCode = null;
     let clientIp = 'N/A';
+    let eventOutcome = 'SUCCESS';
 
-    fields.forEach(field => {
-      if (/^\d{4}[-/.]\d{2}[-/.]\d{2}/.test(field) || /^\d{2}:[0-5]\d:[0-5]\d/.test(field)) {
-        timestamp = field;
-      } else if (/^(CRITICAL|ERROR|SEVERE|WARN|WARNING|INFO|DEBUG)$/i.test(field)) {
-        level = this.normalizeLevel(field);
-      } else if (/(520\d{4}|AUD\d+|SAML|MFA|OIDC|OAUTH)/i.test(field)) {
-        entrustCode = field;
-      } else if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(field)) {
-        clientIp = field;
-      } else if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(field) || /^(user|admin|mrodriguez|jperez|acosta)/i.test(field)) {
-        user = field;
+    if (fields.length >= 10 && (fields[1]?.includes('T') || fields[8] === 'SUCCESS' || fields[8] === 'FAIL')) {
+      timestamp = fields[1] || timestamp;
+      user = fields[4] || fields[3] || 'N/A';
+      eventOutcome = fields[8] || 'SUCCESS';
+      level = eventOutcome === 'FAIL' ? 'ERROR' : 'INFO';
+      const eventTypeStr = fields[7] || 'Event';
+      const msgStr = fields[9] || '';
+      const appStr = fields[11] || 'Administration Portal';
+      clientIp = fields[12] || 'N/A';
+      const tokenType = fields[14] || '';
+
+      service = `IDaaS [${eventTypeStr}]`;
+      message = `[${eventOutcome}] ${msgStr} - App: ${appStr}${tokenType ? ' - Token: ' + tokenType : ''} - User: ${user}`;
+      entrustCode = msgStr.split('.').pop() || eventTypeStr;
+    } else {
+      fields.forEach(field => {
+        if (/^\d{4}[-/.]\d{2}[-/.]\d{2}/.test(field) || /^\d{2}:[0-5]\d:[0-5]\d/.test(field)) {
+          timestamp = field;
+        } else if (/^(CRITICAL|ERROR|SEVERE|FAIL|FAILED|WARN|WARNING|INFO|DEBUG)$/i.test(field)) {
+          level = this.normalizeLevel(field);
+        } else if (/(520\d{4}|AUD\d+|SAML|MFA|OIDC|OAUTH)/i.test(field)) {
+          entrustCode = field;
+        } else if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(field)) {
+          clientIp = field;
+        } else if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(field) || /^(user|admin|mrodriguez|jperez|acosta)/i.test(field)) {
+          user = field;
+        }
+      });
+
+      const codeInLine = line.match(/(520\d{4}|AUD\d+|SAML_\w+|MFA_\w+|Authentication\w+Event)/i)?.[1];
+      if (codeInLine) entrustCode = codeInLine;
+
+      if (/(fail|error|denied|invalid|expired|locked)/i.test(line) && level === 'INFO') {
+        level = 'ERROR';
       }
-    });
-
-    const codeInLine = line.match(/(520\d{4}|AUD\d+|SAML_\w+|MFA_\w+)/i)?.[1];
-    if (codeInLine) entrustCode = codeInLine;
-
-    if (/(fail|error|denied|invalid|expired|locked)/i.test(line) && level === 'INFO') {
-      level = 'ERROR';
     }
 
     return {
       id: `csv-${lineNum}-${Date.now()}`,
       lineNum: lineNum + 1,
-      type: 'Entrust IDaaS (CSV)',
+      type: 'Entrust IDaaS (CSV/TSV)',
       timestamp: timestamp,
       level: level,
       hostname: 'idaas.entrust.com',
-      service: entrustCode ? `IDaaS [${entrustCode}]` : 'IDaaS Audit CSV',
+      service: service,
       message: message,
       raw: line,
       user: user,
