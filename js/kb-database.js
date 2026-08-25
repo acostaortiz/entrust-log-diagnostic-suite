@@ -463,17 +463,18 @@ class KnowledgeBase {
       },
       {
         id: 'KB-ENTRUST-5203000',
-        title: 'Entrust IdentityGuard: Sesión de Autenticación Expirada',
-        category: 'Entrust OnPremise / Gestión de Sesiones',
-        severity: 'WARN',
-        pattern: /(5203000)/i,
-        meaning: 'La transacción o sesión de desafío (challenge) expiró antes de recibir la respuesta de autenticación del usuario.',
-        rootCause: 'Tiempo de espera (timeout) de sesión excedido en el portal o aplicación integradora mientras el usuario ingresaba su credencial.',
-        remediation: '1. Ajuste los parámetros de tiempo de vida de la sesión (Session Timeout) en el Editor de Propiedades de IdentityGuard.\n2. Solicite al usuario iniciar una nueva transacción de autenticación sin demoras prolongadas.',
-        riskLevel: 'Bajo (Timeout de Sesión)',
+        title: 'Entrust IdentityGuard [5203000]: Respuesta Inválida a Desafío de Autenticación (Invalid Response to Challenge)',
+        category: 'Entrust OnPremise / Autenticación & Desafíos',
+        severity: 'ERROR',
+        pattern: /(5203000|Invalid response to a challenge)/i,
+        attribution: '👤 Usuario Final / Respuesta Incorrecta',
+        meaning: 'Autenticación fallida del usuario debido al ingreso de una respuesta incorrecta al desafío emitido (ej. celdas de Tarjeta Grid, Token OTP o PIN erróneo). Indica la cantidad de intentos de autenticación restantes.',
+        rootCause: '1. El usuario no ingresó las respuestas correctas para el desafío emitido (Grid/OTP/PIN).\n2. Ocurrió un error interno durante la validación del desafío en el servidor Entrust.',
+        remediation: '1. Ingrese las respuestas correctas para el desafío emitido sin agotar los intentos restantes.\n2. Compruebe los logs del sistema en busca de un mensaje de error contenido que pueda estar oculto para el usuario final.\n3. (Ref. Documentación Técnica Oficial Entrust IdentityGuard: Código 5203000 - Invalid Response to Challenge)',
+        riskLevel: 'Medio (Respuesta Inválida a Desafío)',
         manualVersion: 'vEntrust',
         sectionId: 'sec-5203000',
-        sectionTitle: 'Código [5203000]: Authentication Session Timeout'
+        sectionTitle: 'Código [5203000]: Invalid Response to Challenge'
       },
       {
         id: 'KB-ENTRUST-5203016',
