@@ -822,6 +822,24 @@ class KnowledgeBase {
       };
     }
 
+    // Diagnóstico heurístico para Web Services SOAP de Entrust IdentityGuard
+    if (/soapenv:Fault|SOAPFault|wsse:FailedAuthentication|AuthenticationService|AdministrationService/i.test(logText)) {
+      return {
+        matched: true,
+        ruleId: 'KB-SOAP-IDG',
+        title: 'Entrust IDG: Excepción en Web Service SOAP (Authentication / Administration API)',
+        category: 'Entrust OnPremise / Web Services SOAP',
+        severity: /Fault|FailedAuthentication|ERROR|500/i.test(logText) ? 'ERROR' : 'INFO',
+        meaning: 'Transacción rechazada o excepción registrada en los puntos de enlace SOAP (WSDL) de Entrust IdentityGuard.',
+        rootCause: 'Firma WS-Security inválida, credenciales del cliente SOAP incorrectas, o excepción en la lógica del servicio web.',
+        remediation: '1. Revise el elemento <wsse:Security> y el Password Digest en el mensaje SOAP de la solicitud.\n2. Verifique en la Consola Entrust > Web Services Clients la vigencia de la clave del canal.\n3. (Ref. Guía de Integración Entrust SOAP Web Services: Sección 4.1 - WS-Security & WSDL Specifications)',
+        riskLevel: 'Alto (Rechazo en API SOAP)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-aud-codes',
+        sectionTitle: 'Manual de Integración SOAP Web Services Entrust'
+      };
+    }
+
     // Diagnóstico heurístico general
     if (/error|fail|exception|fatal|panic/i.test(logText)) {
       return {

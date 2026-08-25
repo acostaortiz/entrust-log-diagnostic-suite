@@ -39,6 +39,9 @@ class LogParser {
       let parsed = this.tryParseEntrustIdentityGuard(line, index);
 
       if (!parsed) {
+        parsed = this.tryParseSoapWebService(line, index);
+      }
+      if (!parsed) {
         parsed = this.tryParseTomcatCatalina(line, index);
       }
       if (!parsed) {
@@ -69,6 +72,44 @@ class LogParser {
     });
 
     return parsedEntries;
+  }
+
+  /**
+   * Parser especializado para Web Services SOAP de Entrust IdentityGuard OnPremise
+   * Endpoints: /idgserv/services/AuthenticationService, /AdministrationService, /IdentityRepositoryService
+   * Payload: SOAP Envelope, SOAP Faults, WS-Security Headers
+   */
+  tryParseSoapWebService(line, lineNum) {
+    const isSoapPattern = /(soapenv:|SOAPFault|wsse:|AuthenticationService|AdministrationService|IdentityRepositoryService|\/services\/[A-Za-z]+Service)/i.test(line);
+    if (!isSoapPattern) return null;
+
+    const codeMatch = line.match(/(520\d{4}|AUD\d+|wsse:\w+|soapenv:\w+)/i);
+    const dateMatch = line.match(/^\[?(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(?:,\d{3})?)\]?/) ||
+                      line.match(/\[?(\d{2}-[A-Za-z]{3}-\d{4}\s+\d{2}:\d{2}:\d{2})/);
+
+    let level = 'INFO';
+    if (/(Fault|Exception|FailedAuthentication|ERROR|CRITICAL|500)/i.test(line)) {
+      level = 'ERROR';
+    }
+
+    let serviceName = 'Entrust IDG SOAP WebService';
+    const soapServiceMatch = line.match(/(AuthenticationService|AdministrationService|IdentityRepositoryService|ParmsService)/i);
+    if (soapServiceMatch) {
+      serviceName = `IDG SOAP [${soapServiceMatch[1]}]`;
+    }
+
+    return {
+      id: `soap-${lineNum}-${Date.now()}`,
+      lineNum: lineNum + 1,
+      type: 'Entrust SOAP WebService',
+      timestamp: dateMatch ? dateMatch[1] : new Date().toISOString().replace('T', ' ').substring(0, 19),
+      level: level,
+      hostname: 'idg-soap-endpoint',
+      service: serviceName,
+      message: line,
+      raw: line,
+      entrustCode: codeMatch ? codeMatch[1] : null
+    };
   }
 
   /**
