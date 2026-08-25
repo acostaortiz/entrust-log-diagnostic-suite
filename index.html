@@ -21,47 +21,57 @@
 
   <!-- Header & App Navbar Corporativo IT SERVICIOS -->
   <header class="app-header">
-    <div class="brand-container">
-      <div class="official-it-logo">
-        <div class="it-logo-box">
-          <div class="it-logo-red-accent"></div>
-          <span class="it-logo-text-it">IT</span>
+    <!-- FILA SUPERIOR: Marca, Cliente Activo, Usuario & Tema -->
+    <div class="header-top-row">
+      <div class="brand-container">
+        <div class="official-it-logo">
+          <div class="it-logo-box">
+            <div class="it-logo-red-accent"></div>
+            <span class="it-logo-text-it">IT</span>
+          </div>
+          <span class="it-logo-text-servicios">SERVICIOS</span>
         </div>
-        <span class="it-logo-text-servicios">SERVICIOS</span>
+        <div>
+          <div class="brand-subtitle">Suite de Diagnóstico — Entrust OnPremise & IDaaS Cloud</div>
+        </div>
       </div>
-      <div>
-        <div class="brand-subtitle">Suite de Diagnostico — Entrust OnPremise & IDaaS Cloud</div>
+
+      <div class="header-top-right">
+        <div class="active-client-badge">
+          <span class="active-client-label">🏢 Cliente Activo:</span>
+          <select class="form-control" id="active-client-session-select">
+            <!-- Opciones inyectadas por JS -->
+          </select>
+          <button class="btn btn-primary" id="btn-open-create-client-modal" onclick="document.getElementById('client-modal').classList.add('active');" style="padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer;" title="Registrar o editar perfil de cliente">➕ Cliente</button>
+        </div>
+
+        <div class="user-badge-header">
+          <span>👤 Tomás Acosta</span>
+        </div>
+
+        <button class="theme-toggle-btn" id="btn-toggle-theme" title="Cambiar entre Modo Claro y Oscuro">☀️ / 🌙 Tema</button>
       </div>
     </div>
 
-    <nav class="nav-tabs">
-      <button class="nav-btn active" data-tab="overview">📊 Visión General</button>
-      <button class="nav-btn" data-tab="analyzer">🔍 Analizador & Diagnóstico</button>
-      <button class="nav-btn" data-tab="traces">⚡ Trazas Distribuidas</button>
-      <button class="nav-btn" data-tab="nodes">🏢 Comparativa Multi-Nodo</button>
-      <button class="nav-btn" data-tab="kb">🧠 Base de Conocimientos</button>
-      <button class="nav-btn" data-tab="manuals">📚 Manuales Administrativos</button>
-    </nav>
+    <!-- FILA INFERIOR: Pestañas de Navegación & Botones de Acción -->
+    <div class="header-bottom-row">
+      <nav class="nav-tabs">
+        <button class="nav-btn active" data-tab="overview">📊 Visión General</button>
+        <button class="nav-btn" data-tab="analyzer">🔍 Analizador & Diagnóstico</button>
+        <button class="nav-btn" data-tab="traces">⚡ Trazas Distribuidas</button>
+        <button class="nav-btn" data-tab="nodes">🏢 Comparativa Multi-Nodo</button>
+        <button class="nav-btn" data-tab="kb">🧠 Base de Conocimientos</button>
+        <button class="nav-btn" data-tab="manuals">📚 Manuales Administrativos</button>
+      </nav>
 
-    <div class="header-actions">
-      <div style="display:flex; align-items:center; gap:6px; background:var(--bg-primary); padding:4px 8px; border-radius:6px; border:1px solid var(--border-color);">
-        <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">🏢 Cliente Activo:</span>
-        <select class="form-control" id="active-client-session-select" style="width:230px; height:32px; font-size:0.8rem; font-weight:700; padding:2px 8px;">
-          <!-- Opciones inyectadas por JS -->
-        </select>
-        <button class="btn btn-primary" id="btn-open-create-client-modal" onclick="document.getElementById('client-modal').classList.add('active');" style="padding:4px 8px; font-size:0.75rem; cursor:pointer;" title="Registrar o editar perfil de cliente">➕ Cliente</button>
+      <div class="header-actions">
+        <button class="btn btn-import-html" id="btn-open-import-catalog" onclick="document.getElementById('import-catalog-modal').classList.add('active');" title="Importar catálogo oficial de errores HTML para cualquier versión">📥 Importar HTML Errores</button>
+        <button class="btn btn-primary" id="btn-generate-exec-report">📄 Generar Informe Preliminar</button>
+        <div class="pulse-badge" style="display: none;">
+          <span class="pulse-dot"></span> Streaming Activo
+        </div>
+        <button class="btn" id="btn-toggle-stream">▶️ Simulador</button>
       </div>
-
-      <button class="theme-toggle-btn" id="btn-toggle-theme" title="Cambiar entre Modo Claro y Oscuro">☀️ / 🌙 Tema</button>
-      <button class="btn" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="document.getElementById('import-catalog-modal').classList.add('active');" title="Importar catálogo oficial de errores HTML para cualquier versión">📥 Importar HTML Errores</button>
-      <button class="btn btn-primary" id="btn-generate-exec-report">📄 Generar Informe Preliminar</button>
-      <div class="user-badge-header">
-        <span>👤 Tomás Acosta</span>
-      </div>
-      <div class="pulse-badge" style="display: none;">
-        <span class="pulse-dot"></span> Streaming Activo
-      </div>
-      <button class="btn" id="btn-toggle-stream">▶️ Simulador</button>
     </div>
   </header>
 
@@ -595,10 +605,10 @@
   </div>
 
   <!-- Scripts JavaScript -->
-  <script src="js/kb-database.js?v=41.0"></script>
-  <script src="js/manuals-engine.js?v=41.0"></script>
-  <script src="js/log-parser.js?v=41.0"></script>
-  <script src="js/app.js?v=41.0"></script>
+  <script src="js/kb-database.js?v=42.0"></script>
+  <script src="js/manuals-engine.js?v=42.0"></script>
+  <script src="js/log-parser.js?v=42.0"></script>
+  <script src="js/app.js?v=42.0"></script>
 
 </body>
 </html>
