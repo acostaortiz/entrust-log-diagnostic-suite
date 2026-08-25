@@ -1132,50 +1132,67 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function generateDynamicRecommendationsHtml(targetLogs, activeClient) {
     const items = [];
-    const fullLogText = targetLogs.map(l => l.message).join(' ');
-
     const isCloud = (activeClient?.platform || '').toLowerCase().includes('idaas') || (activeClient?.platform || '').toLowerCase().includes('cloud');
     const platformTitle = isCloud ? 'Entrust IDaaS Cloud' : `Entrust IdentityGuard OnPremise (${activeClient?.version || 'Release 11.0'})`;
     const consoleTitle = isCloud ? 'Consola Entrust IDaaS Cloud' : 'Consola de Administración Entrust IdentityGuard OnPremise';
 
-    const hasAuthErrors = /(5202013|5205079|5203016|Invalid user ID|password)/i.test(fullLogText);
-    const hasUserNotFound = /(5205139|Unable to find a user)/i.test(fullLogText);
-    const hasGridPinErrors = /(5201006|5201007|5201008|5201010|Card does not match|PIN)/i.test(fullLogText);
-    const hasClientApiErrors = /(5202340|Authorization Failure)/i.test(fullLogText);
-    const hasPoolDbErrors = /(AUD154|AUD155|AUD150|5201000|Connection pool|exhaustion)/i.test(fullLogText);
-    const hasSoftTokenPushErrors = /(AUD2309|5209525|Failed delivery|Push)/i.test(fullLogText);
-    const hasSamlErrors = /(SAML|OIDC|OAuth2|Assertion|X509|Certificate)/i.test(fullLogText);
-
-    const hasTomcatOom = /(OutOfMemoryError|Java heap space)/i.test(fullLogText);
-    const hasTomcatSql = /(SQLException|Cannot get a connection)/i.test(fullLogText);
-    const hasTomcatSsl = /(SSLHandshakeException|PKIX path building failed)/i.test(fullLogText);
-
-    if (hasAuthErrors) {
-      items.push(`<li><strong>Desbloqueo y Gestión de Cuentas LDAP / Active Directory:</strong> Se diagnosticaron reintentos fallidos de autenticación y bloqueos de cuenta (códigos 5202013 / 5205079 / 5203016). Se recomienda verificar las cuentas afectadas en la ${consoleTitle} y en el directorio LDAP para restablecer vigencias y desbloquear cuentas. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración ${platformTitle}: Sección 4.2 - Authentication Troubleshooting)</em></li>`);
+    // Función auxiliar para extraer los códigos de error exactos presentes en la muestra
+    function getDetectedCodes(regex) {
+      const set = new Set();
+      targetLogs.forEach(l => {
+        const msg = l.message || '';
+        if (regex.test(msg)) {
+          const match = msg.match(/(?:\[|\b)(520\d{4}|AUD\d+)(?:\]|\b)/i);
+          if (match) set.add(match[1].toUpperCase());
+        }
+      });
+      return Array.from(set);
     }
 
-    if (hasUserNotFound) {
-      items.push(`<li><strong>Sincronización del Repositorio de Usuarios (LDAP/AD):</strong> Se detectaron accesos fallidos por usuarios o alias no registrados (código 5205139). Se sugiere ejecutar un barrido de sincronización de usuarios en la ${consoleTitle}. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración ${platformTitle}: Sección 3.1 - Identity Repository Maintenance)</em></li>`);
+    const authCodes = getDetectedCodes(/(5202013|5205079|5203016|5203113|5205150|5203019|5203020|5205080|Invalid user ID|password|does not have a password|one-time password)/i);
+    const notFoundCodes = getDetectedCodes(/(5205139|5203004|Unable to find a user|User.*not found)/i);
+    const gridPinCodes = getDetectedCodes(/(5201006|5201007|5201008|5201010|5203000|5203007|5203033|5202057|5202050|Card does not match|PIN|Challenge|Grid)/i);
+    const apiCodes = getDetectedCodes(/(5202340|Authorization Failure)/i);
+    const dbCodes = getDetectedCodes(/(AUD154|AUD155|AUD150|5201000|5202404|Connection pool|exhaustion|SQLException)/i);
+    const pushCodes = getDetectedCodes(/(AUD2309|5209525|Failed delivery|Push)/i);
+    const samlCodes = getDetectedCodes(/(SAML|OIDC|OAuth2|Assertion|X509|Certificate)/i);
+
+    const hasTomcatOom = targetLogs.some(l => /(OutOfMemoryError|Java heap space)/i.test(l.message || ''));
+    const hasTomcatSsl = targetLogs.some(l => /(SSLHandshakeException|PKIX path building failed)/i.test(l.message || ''));
+
+    if (authCodes.length > 0) {
+      const codeStr = authCodes.join(' / ');
+      items.push(`<li><strong>Desbloqueo y Gestión de Cuentas LDAP / Active Directory:</strong> Se diagnosticaron reintentos fallidos de autenticación, credenciales o cuentas suspendidas (código(s) ${codeStr}). Se recomienda verificar las cuentas afectadas en la ${consoleTitle} y en el directorio LDAP para restablecer vigencias y desbloquear cuentas. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración ${platformTitle}: Sección 4.2 - Authentication Troubleshooting)</em></li>`);
     }
 
-    if (hasGridPinErrors) {
-      items.push(`<li><strong>Reasignación y Auditoría de Tarjetas Grid / PIN:</strong> Se registraron incoherencias entre los desafíos y las respuestas enviadas (códigos 5201008 / 5201010). Se recomienda validar las series de tarjetas Grid activas asignadas a los usuarios y capacitar en el ingreso de celdas. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad ${platformTitle}: Sección 5.4 - Challenge-Response & Grid Management)</em></li>`);
+    if (notFoundCodes.length > 0) {
+      const codeStr = notFoundCodes.join(' / ');
+      items.push(`<li><strong>Sincronización del Repositorio de Usuarios (LDAP/AD):</strong> Se detectaron accesos fallidos por usuarios o alias no registrados (código(s) ${codeStr}). Se sugiere ejecutar un barrido de sincronización de usuarios en la ${consoleTitle}. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración ${platformTitle}: Sección 3.1 - Identity Repository Maintenance)</em></li>`);
     }
 
-    if (hasClientApiErrors) {
-      items.push(`<li><strong>Auditoría de Canales de Integración Web / API:</strong> Se observaron rechazos en la autorización de aplicaciones cliente (código 5202340). Se sugiere validar la clave compartida (Client Secret) y las direcciones IP permitidas en la política del canal. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Integración ${platformTitle} API: Sección 2.3 - Client Authorization)</em></li>`);
+    if (gridPinCodes.length > 0) {
+      const codeStr = gridPinCodes.join(' / ');
+      items.push(`<li><strong>Reasignación y Auditoría de Tarjetas Grid / PIN:</strong> Se registraron incoherencias entre los desafíos y las respuestas enviadas (código(s) ${codeStr}). Se recomienda validar las series de tarjetas Grid activas asignadas a los usuarios y capacitar en el ingreso de celdas. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad ${platformTitle}: Sección 5.4 - Challenge-Response & Grid Management)</em></li>`);
     }
 
-    if (hasPoolDbErrors || hasTomcatSql) {
-      items.push(`<li><strong>Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):</strong> Se detectó alta saturación o excepciones SQLException en las conexiones al repositorio (AUD154 / AUD155 / Tomcat JDBC). Se recomienda incrementar el número de conexiones en <code>identityguard.properties</code> / <code>context.xml</code> y ajustar los tiempos de espera (Timeout). <em style="color:#64748b; font-size:11px;">(Ref. Manual de Mantenimiento ${platformTitle}: Sección 7.1 - Database Connection Pooling)</em></li>`);
+    if (apiCodes.length > 0) {
+      const codeStr = apiCodes.join(' / ');
+      items.push(`<li><strong>Auditoría de Canales de Integración Web / API:</strong> Se observaron rechazos en la autorización de aplicaciones cliente (código(s) ${codeStr}). Se sugiere validar la clave compartida (Client Secret) y las direcciones IP permitidas en la política del canal. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Integración ${platformTitle} API: Sección 2.3 - Client Authorization)</em></li>`);
     }
 
-    if (hasSoftTokenPushErrors) {
-      items.push(`<li><strong>Revisión de Notificaciones Push MFA & Soft Tokens:</strong> Se identificaron fallos en la entrega de detalles de transacciones a tokens de software (AUD2309 / 5209525). Se recomienda comprobar la conectividad del dispositivo móvil del usuario y los certificados del Servidor Push OnPremise (APNS/FCM). <em style="color:#64748b; font-size:11px;">(Ref. Guía ${platformTitle} Mobile Push Gateway: Sección 8.2 - Push Configuration)</em></li>`);
+    if (dbCodes.length > 0) {
+      const codeStr = dbCodes.join(' / ');
+      items.push(`<li><strong>Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):</strong> Se detectó alta saturación o excepciones SQLException en las conexiones al repositorio (código(s) ${codeStr}). Se recomienda incrementar el número de conexiones en <code>identityguard.properties</code> / <code>context.xml</code> y ajustar los tiempos de espera (Timeout). <em style="color:#64748b; font-size:11px;">(Ref. Manual de Mantenimiento ${platformTitle}: Sección 7.1 - Database Connection Pooling)</em></li>`);
     }
 
-    if (hasSamlErrors) {
-      items.push(`<li><strong>Verificación de Certificados SAML 2.0 y Tiempo NTP:</strong> Se detectaron aserciones SAML expiradas o firmas inválidas. Se sugiere validar la fecha de vencimiento del certificado de firma X.509 en la ${consoleTitle} y verificar la sincronización del reloj de servidor mediante NTP. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Federación ${platformTitle}: Sección 6.4 - SAML SSO Lifecycle)</em></li>`);
+    if (pushCodes.length > 0) {
+      const codeStr = pushCodes.join(' / ');
+      items.push(`<li><strong>Revisión de Notificaciones Push MFA & Soft Tokens:</strong> Se identificaron fallos en la entrega de detalles de transacciones a tokens de software (código(s) ${codeStr}). Se recomienda comprobar la conectividad del dispositivo móvil del usuario y los certificados del Servidor Push OnPremise (APNS/FCM). <em style="color:#64748b; font-size:11px;">(Ref. Guía ${platformTitle} Mobile Push Gateway: Sección 8.2 - Push Configuration)</em></li>`);
+    }
+
+    if (samlCodes.length > 0) {
+      const codeStr = samlCodes.join(' / ');
+      items.push(`<li><strong>Verificación de Certificados SAML 2.0 y Tiempo NTP:</strong> Se detectaron aserciones SAML expiradas o firmas inválidas (código(s) ${codeStr}). Se sugiere validar la fecha de vencimiento del certificado de firma X.509 en la ${consoleTitle} y verificar la sincronización del reloj de servidor mediante NTP. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Federación ${platformTitle}: Sección 6.4 - SAML SSO Lifecycle)</em></li>`);
     }
 
     if (hasTomcatOom) {
