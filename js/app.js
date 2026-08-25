@@ -1047,8 +1047,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message);
     const freq = countReincidences(log);
 
-    const user = log.user || log.message.match(/user[=:\s]+([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+|[a-zA-Z0-9._-]+)/i)?.[1] || 'N/A';
-    const clientIp = log.clientIp || log.message.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/)?.[1] || 'N/A';
+    let userDisplay = log.user || 'N/A';
+    if (userDisplay === 'N/A') {
+      const matchUser = log.message.match(/user\s+['"]?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+|[a-zA-Z0-9._-]+)['"]?/i) ||
+                        log.message.match(/for\s+user\s+([a-zA-Z0-9._-]+)/i);
+      if (matchUser) {
+        userDisplay = matchUser[1];
+      } else {
+        const threadMatch = log.message.match(/\[(audit-thread-\d+|http-[^\]]+|main|supersh-exec-\d+)\]/);
+        userDisplay = threadMatch ? `Sistema (${threadMatch[1]})` : 'Evento Interno del Sistema';
+      }
+    }
+
+    let ipOrHostDisplay = log.clientIp || 'N/A';
+    if (ipOrHostDisplay === 'N/A') {
+      const ipMatch = log.message.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/);
+      const hostMatch = log.message.match(/jdbc:[a-z:]+@([a-zA-Z0-9._:-]+)/i) || log.message.match(/URL\s+([a-zA-Z0-9._:-]+)/i);
+      if (ipMatch) {
+        ipOrHostDisplay = ipMatch[1];
+      } else if (hostMatch) {
+        ipOrHostDisplay = hostMatch[1];
+      } else {
+        ipOrHostDisplay = 'Servidor Local (Intranet)';
+      }
+    }
+
     const channelApp = log.service || 'Entrust Suite Component';
 
     dom.diagnosticCard.innerHTML = `
@@ -1071,8 +1094,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="font-size:0.8rem; font-weight:600; color:#cbd5e1;" class="font-mono">${escapeHtml(freq.firstSeen)} → ${escapeHtml(freq.lastSeen)}</div>
         </div>
         <div>
-          <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; font-weight:600;">👤 Usuario / IP Origen</div>
-          <div style="font-size:0.85rem; font-weight:600; color:#f43f5e;" class="font-mono">${escapeHtml(user)} @ ${escapeHtml(clientIp)}</div>
+          <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; font-weight:600;">👤 Usuario / IP u Origen</div>
+          <div style="font-size:0.85rem; font-weight:600; color:#f43f5e;" class="font-mono">${escapeHtml(userDisplay)} @ ${escapeHtml(ipOrHostDisplay)}</div>
         </div>
       </div>
 
@@ -1132,7 +1155,7 @@ Severidad: ${diag.severity} | Riesgo: ${diag.riskLevel}
 Componente/Canal: ${channelApp}
 Reincidencias: ${freq.count} vez/veces en la muestra (${freq.percent})
 Rango: ${freq.firstSeen} -> ${freq.lastSeen}
-Usuario: ${user} | IP: ${clientIp}
+Usuario/Contexto: ${userDisplay} | Origen/Host: ${ipOrHostDisplay}
 Causa Raíz: ${diag.rootCause}
 Remediación Oficial:
 ${diag.remediation}
