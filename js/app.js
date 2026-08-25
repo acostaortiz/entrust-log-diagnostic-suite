@@ -685,9 +685,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function generateExecutiveReport(onlyCatalogErrors = false) {
-    const container = document.getElementById('exec-report-container');
-    const modal = document.getElementById('exec-report-modal');
-    if (!container || !modal) return;
+    const container = document.getElementById('exec-report-container') || dom.execReportContainer;
+    const modal = document.getElementById('exec-report-modal') || dom.execReportModal;
+    if (!container || !modal) {
+      console.error('No se encontró el contenedor o modal del informe ejecutivo.');
+      return;
+    }
+
+    if (!state.logs || state.logs.length === 0) {
+      alert('⚠️ No hay registros cargados en la sesión actual. Por favor carga un archivo de log antes de generar el informe.');
+      return;
+    }
 
     // Resolver de forma estricta el cliente destinatario activo
     const toolbarVal = dom.filterClientSelect?.value;
@@ -697,9 +705,9 @@ document.addEventListener('DOMContentLoaded', () => {
       activeClient = state.clientProfiles.find(c => c.name.toLowerCase() === toolbarVal.toLowerCase()) || {
         name: toolbarVal,
         platform: 'Entrust IdentityGuard OnPremise',
-        version: 'Release 13.0',
-        build: 'General',
-        contact: 'Departamento de Ciberseguridad & TI',
+        version: 'Release 11.0',
+        build: 'Release 11.0 (General)',
+        contact: 'Gerencia de Seguridad de la Información / TI',
         engineer: 'Tomás Acosta'
       };
     } else {
@@ -707,9 +715,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const dateStr = new Date().toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'medium' });
-    const targetLogs = onlyCatalogErrors 
-      ? state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || /(520\d{4}|AUD\d+|IDaaS|SAML)/i.test(l.message))
-      : state.logs;
+    let targetLogs = state.logs;
+
+    if (onlyCatalogErrors) {
+      targetLogs = state.logs.filter(l => 
+        l.level === 'CRITICAL' || 
+        l.level === 'ERROR' || 
+        /(520\d{4}|AUD\d+|IDaaS|SAML|ERROR|FAIL|EXCEPTION)/i.test(l.message || '')
+      );
+      if (targetLogs.length === 0) {
+        targetLogs = state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || l.level === 'WARN');
+      }
+    }
+
+    if (targetLogs.length === 0) {
+      alert('ℹ️ No se detectaron fallos críticos ni errores 520xxx en la muestra de logs actualmente cargada.');
+      return;
+    }
 
     const totalCount = targetLogs.length;
     const criticalLogs = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
@@ -2069,6 +2091,24 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     dom.filterTypeSelect?.addEventListener('change', () => applyLogFilters());
 
     document.getElementById('btn-copy-exec-report-md')?.addEventListener('click', () => copyExecutiveReportMarkdown());
+
+    // Event Listeners para generación de Informes (Preliminar y Exclusivo de Errores)
+    dom.btnGenerateExecReport?.addEventListener('click', () => generateExecutiveReport(false));
+    dom.btnExportReport?.addEventListener('click', () => generateExecutiveReport(false));
+    document.getElementById('btn-generate-exec-report')?.addEventListener('click', () => generateExecutiveReport(false));
+    document.getElementById('btn-export-report')?.addEventListener('click', () => generateExecutiveReport(false));
+    document.getElementById('btn-gen-report-for-detected-520')?.addEventListener('click', () => {
+      if (dom.entrustErrorsModal) dom.entrustErrorsModal.classList.remove('active');
+      generateExecutiveReport(true);
+    });
+
+    dom.btnCloseExecReport?.addEventListener('click', () => {
+      if (dom.execReportModal) dom.execReportModal.classList.remove('active');
+    });
+
+    dom.btnPrintExecReport?.addEventListener('click', () => {
+      window.print();
+    });
 
     dom.btnToggleStream?.addEventListener('click', () => {
       state.isStreaming = !state.isStreaming;
