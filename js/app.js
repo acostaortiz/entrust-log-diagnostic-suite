@@ -605,10 +605,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const hourBuckets = {};
     targetLogs.forEach(l => {
-      const timeMatch = l.timestamp.match(/(\d{2}:\d{2})/);
+      const textToSearch = (l.timestamp || '') + ' ' + (l.raw || '');
+
+      const isoDateMatch = textToSearch.match(/(\d{4}-\d{2}-\d{2})/);
+      const apacheDateMatch = textToSearch.match(/(\d{1,2}\/[A-Za-z]{3}\/\d{4})/);
+      const slashDateMatch = textToSearch.match(/(\d{4}\/\d{2}\/\d{2})/);
+
+      let datePart = '';
+      if (isoDateMatch) datePart = isoDateMatch[1];
+      else if (apacheDateMatch) datePart = apacheDateMatch[1];
+      else if (slashDateMatch) datePart = slashDateMatch[1];
+
+      const timeMatch = textToSearch.match(/(\d{2}):(\d{2})/);
       let bucketKey = 'Horario General';
+
       if (timeMatch) {
-        const hourNum = parseInt(timeMatch[1].substring(0, 2), 10);
+        const hourNum = parseInt(timeMatch[1], 10);
         const padHour = String(hourNum).padStart(2, '0');
         let ampmStr = 'AM';
         if (hourNum === 12) ampmStr = 'PM Mediodía';
@@ -616,7 +628,8 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (hourNum === 0) ampmStr = '12 AM Medianoche';
         else ampmStr = `${hourNum} AM`;
 
-        bucketKey = `${padHour}:00 - ${padHour}:59 hrs (${ampmStr})`;
+        const timeRangeStr = `${padHour}:00 - ${padHour}:59 hrs (${ampmStr})`;
+        bucketKey = datePart ? `📅 ${datePart} — ${timeRangeStr}` : timeRangeStr;
       }
 
       if (!hourBuckets[bucketKey]) {
@@ -636,7 +649,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isPeak = peakBucket && peakBucket[0] === hour && data.critical > 0;
       rowsHtml += `
         <tr style="background:${isPeak ? '#fee2e2' : '#ffffff'};">
-          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; text-align:center;">${hour} ${isPeak ? '🔥 RÁFAGA' : ''}</td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; text-align:left;">${hour} ${isPeak ? '🔥 RÁFAGA' : ''}</td>
           <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; font-weight:bold;">${data.total}</td>
           <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; color:#dc2626; font-weight:bold;">${data.critical}</td>
           <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; color:#d97706;">${data.warn}</td>
@@ -648,15 +661,15 @@ document.addEventListener('DOMContentLoaded', () => {
     return `
       <div style="margin-bottom:25px; page-break-inside:avoid; break-inside:avoid;">
         <h3 style="color:#0a3d6d; font-size:14px; margin-bottom:10px; border-bottom:2px solid #0a3d6d; padding-bottom:4px;">
-          📈 Distribución Temporal & Detección de Ráfagas de Errores (Timeline Burst Heatmap)
+          📈 Distribución Temporal & Detección de Ráfagas de Errores por Fecha Completa (Timeline Heatmap)
         </h3>
         <p style="font-size:11px; color:#475569; margin-bottom:10px;">
-          Resumen de concentración de ráfagas de peticiones e incidentes distribuidos por intervalo de hora durante la muestra.
+          Resumen de concentración de ráfagas de peticiones e incidentes distribuidos por fecha calendario e intervalo de hora durante la muestra.
         </p>
         <table style="width:100%; border-collapse:collapse; font-size:11px;">
           <thead>
             <tr style="background:#0a3d6d; color:#ffffff;">
-              <th style="padding:6px; border:1px solid #0a3d6d;">Intervalo Horario</th>
+              <th style="padding:6px; border:1px solid #0a3d6d; text-align:left;">Fecha Calendario y Rango Horario</th>
               <th style="padding:6px; border:1px solid #0a3d6d;">Total Eventos</th>
               <th style="padding:6px; border:1px solid #0a3d6d;">Errores Críticos</th>
               <th style="padding:6px; border:1px solid #0a3d6d;">Alertas (Warn)</th>
@@ -722,13 +735,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const visualCritPct = criticalLogs.length > 0 ? Math.max(6, (criticalLogs.length / (totalCount || 1)) * 100) : 0;
     const visualWarnPct = warningLogs.length > 0 ? Math.max(5, (warningLogs.length / (totalCount || 1)) * 100) : 0;
 
+    const isCloud = (activeClient?.platform || '').toLowerCase().includes('idaas') || (activeClient?.platform || '').toLowerCase().includes('cloud');
+    const platformLabel = isCloud ? 'IDaaS Cloud' : `IdentityGuard OnPremise (${activeClient?.version || 'v11.0'})`;
+
     const reportTitleText = onlyCatalogErrors 
-      ? 'INFORME DE DIAGNÓSTICO EXCLUSIVO DE ERRORES IDENTITYGUARD [520xxx / IDaaS]'
-      : 'INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES & AUDITORÍA ENTRUST';
+      ? `INFORME DE DIAGNÓSTICO EXCLUSIVO DE ERRORES ENTRUST [520xxx / ${platformLabel.toUpperCase()}]`
+      : `INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES — ${escapeHtml(activeClient.platform.toUpperCase())}`;
 
     const reportScopeText = onlyCatalogErrors
-      ? 'Filtro Exclusivo: Catálogo de Errores 520xxx y Fallos IDaaS Detectados'
-      : 'Diagnóstico General de Logs e Incidentes';
+      ? `Filtro Exclusivo: Catálogo de Errores 520xxx y Fallos de Autenticación`
+      : `Diagnóstico General de Logs e Incidentes en ${escapeHtml(activeClient.platform)}`;
 
     // Extraer incidentes para la tabla (Hasta 50 eventos principales)
     // Agrupar los incidentes por patrón de diagnóstico único para un informe ejecutivo conciso de alto nivel
@@ -922,7 +938,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <!-- Sección I: Hallazgos & Diagnóstico (Formato Fichas o Tabla según modo) -->
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
-          ${onlyCatalogErrors ? '1. Catálogo Exclusivo de Errores [520xxx / IDaaS] Detectados' : '1. Hallazgos y Diagnóstico Técnico por Patrón de Error [520xxx / IDaaS]'} (${diagMap.size} diagnósticos únicos)
+          ${onlyCatalogErrors ? `1. Catálogo Exclusivo de Errores [520xxx / ${platformLabel}] Detectados` : `1. Hallazgos y Diagnóstico Técnico por Patrón de Error [520xxx / ${platformLabel}]`} (${diagMap.size} diagnósticos únicos)
         </h3>
         ${section1Content}
 
@@ -981,56 +997,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const items = [];
     const fullLogText = targetLogs.map(l => l.message).join(' ');
 
+    const isCloud = (activeClient?.platform || '').toLowerCase().includes('idaas') || (activeClient?.platform || '').toLowerCase().includes('cloud');
+    const platformTitle = isCloud ? 'Entrust IDaaS Cloud' : `Entrust IdentityGuard OnPremise (${activeClient?.version || 'Release 11.0'})`;
+    const consoleTitle = isCloud ? 'Consola Entrust IDaaS Cloud' : 'Consola de Administración Entrust IdentityGuard OnPremise';
+
     const hasAuthErrors = /(5202013|5205079|5203016|Invalid user ID|password)/i.test(fullLogText);
     const hasUserNotFound = /(5205139|Unable to find a user)/i.test(fullLogText);
     const hasGridPinErrors = /(5201006|5201007|5201008|5201010|Card does not match|PIN)/i.test(fullLogText);
     const hasClientApiErrors = /(5202340|Authorization Failure)/i.test(fullLogText);
     const hasPoolDbErrors = /(AUD154|AUD155|AUD150|5201000|Connection pool|exhaustion)/i.test(fullLogText);
     const hasSoftTokenPushErrors = /(AUD2309|5209525|Failed delivery|Push)/i.test(fullLogText);
-    const hasSamlIdaasErrors = /(SAML|IDaaS|OIDC|OAuth2|EXPIRED)/i.test(fullLogText);
+    const hasSamlErrors = /(SAML|OIDC|OAuth2|Assertion|X509|Certificate)/i.test(fullLogText);
 
     const hasTomcatOom = /(OutOfMemoryError|Java heap space)/i.test(fullLogText);
     const hasTomcatSql = /(SQLException|Cannot get a connection)/i.test(fullLogText);
     const hasTomcatSsl = /(SSLHandshakeException|PKIX path building failed)/i.test(fullLogText);
 
     if (hasAuthErrors) {
-      items.push(`<li><strong>Desbloqueo y Gestión de Cuentas LDAP / Active Directory:</strong> Se diagnosticaron reintentos fallidos de autenticación y bloqueos de cuenta (códigos 5202013 / 5205079 / 5203016). Se recomienda verificar las cuentas afectadas en la consola de Entrust y en el directorio LDAP para restablecer vigencias y desbloquear cuentas. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración Entrust: Sección 4.2 - Authentication Troubleshooting)</em></li>`);
+      items.push(`<li><strong>Desbloqueo y Gestión de Cuentas LDAP / Active Directory:</strong> Se diagnosticaron reintentos fallidos de autenticación y bloqueos de cuenta (códigos 5202013 / 5205079 / 5203016). Se recomienda verificar las cuentas afectadas en la ${consoleTitle} y en el directorio LDAP para restablecer vigencias y desbloquear cuentas. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración ${platformTitle}: Sección 4.2 - Authentication Troubleshooting)</em></li>`);
     }
 
     if (hasUserNotFound) {
-      items.push(`<li><strong>Sincronización del Repositorio de Usuarios (LDAP/AD):</strong> Se detectaron accesos fallidos por usuarios o alias no registrados (código 5205139). Se sugiere ejecutar un barrido de sincronización de usuarios en la consola de administración de IdentityGuard. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración Entrust: Sección 3.1 - Identity Repository Maintenance)</em></li>`);
+      items.push(`<li><strong>Sincronización del Repositorio de Usuarios (LDAP/AD):</strong> Se detectaron accesos fallidos por usuarios o alias no registrados (código 5205139). Se sugiere ejecutar un barrido de sincronización de usuarios en la ${consoleTitle}. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración ${platformTitle}: Sección 3.1 - Identity Repository Maintenance)</em></li>`);
     }
 
     if (hasGridPinErrors) {
-      items.push(`<li><strong>Reasignación y Auditoría de Tarjetas Grid / PIN:</strong> Se registraron incoherencias entre los desafíos y las respuestas enviadas (códigos 5201008 / 5201010). Se recomienda validar las series de tarjetas Grid activas asignadas a los usuarios y capacitar en el ingreso de celdas. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad Entrust: Sección 5.4 - Challenge-Response & Grid Management)</em></li>`);
+      items.push(`<li><strong>Reasignación y Auditoría de Tarjetas Grid / PIN:</strong> Se registraron incoherencias entre los desafíos y las respuestas enviadas (códigos 5201008 / 5201010). Se recomienda validar las series de tarjetas Grid activas asignadas a los usuarios y capacitar en el ingreso de celdas. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad ${platformTitle}: Sección 5.4 - Challenge-Response & Grid Management)</em></li>`);
     }
 
     if (hasClientApiErrors) {
-      items.push(`<li><strong>Auditoría de Canales de Integración Web / API:</strong> Se observaron rechazos en la autorización de aplicaciones cliente (código 5202340). Se sugiere validar la clave compartida (Client Secret) y las direcciones IP permitidas en la política del canal. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Integración Entrust API: Sección 2.3 - Client Authorization)</em></li>`);
+      items.push(`<li><strong>Auditoría de Canales de Integración Web / API:</strong> Se observaron rechazos en la autorización de aplicaciones cliente (código 5202340). Se sugiere validar la clave compartida (Client Secret) y las direcciones IP permitidas en la política del canal. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Integración ${platformTitle} API: Sección 2.3 - Client Authorization)</em></li>`);
     }
 
     if (hasPoolDbErrors || hasTomcatSql) {
-      items.push(`<li><strong>Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):</strong> Se detectó alta saturación o excepciones SQLException en las conexiones al repositorio (AUD154 / AUD155 / Tomcat JDBC). Se recomienda incrementar el número de conexiones en <code>identityguard.properties</code> / <code>context.xml</code> y ajustar los tiempos de espera (Timeout). <em style="color:#64748b; font-size:11px;">(Ref. Manual de Mantenimiento Entrust: Sección 7.1 - Database Connection Pooling)</em></li>`);
+      items.push(`<li><strong>Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):</strong> Se detectó alta saturación o excepciones SQLException en las conexiones al repositorio (AUD154 / AUD155 / Tomcat JDBC). Se recomienda incrementar el número de conexiones en <code>identityguard.properties</code> / <code>context.xml</code> y ajustar los tiempos de espera (Timeout). <em style="color:#64748b; font-size:11px;">(Ref. Manual de Mantenimiento ${platformTitle}: Sección 7.1 - Database Connection Pooling)</em></li>`);
     }
 
     if (hasSoftTokenPushErrors) {
-      items.push(`<li><strong>Revisión de Notificaciones Push MFA & Soft Tokens:</strong> Se identificaron fallos en la entrega de detalles de transacciones a tokens de software (AUD2309 / 5209525). Se recomienda comprobar la conectividad del dispositivo móvil del usuario y los certificados Push (APNS/FCM). <em style="color:#64748b; font-size:11px;">(Ref. Guía Entrust IDaaS Push Gateway: Sección 8.2 - APNs/FCM Configuration)</em></li>`);
+      items.push(`<li><strong>Revisión de Notificaciones Push MFA & Soft Tokens:</strong> Se identificaron fallos en la entrega de detalles de transacciones a tokens de software (AUD2309 / 5209525). Se recomienda comprobar la conectividad del dispositivo móvil del usuario y los certificados del Servidor Push OnPremise (APNS/FCM). <em style="color:#64748b; font-size:11px;">(Ref. Guía ${platformTitle} Mobile Push Gateway: Sección 8.2 - Push Configuration)</em></li>`);
     }
 
-    if (hasSamlIdaasErrors) {
-      items.push(`<li><strong>Verificación de Certificados SAML 2.0 y Tiempo NTP:</strong> Se detectaron aserciones SAML expiradas o firmas inválidas. Se sugiere validar la fecha de vencimiento del certificado de firma X.509 en la Consola Entrust IDaaS y verificar la sincronización del reloj de servidor mediante NTP. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Federación Entrust IDaaS: Sección 6.4 - SAML SSO Lifecycle)</em></li>`);
+    if (hasSamlErrors) {
+      items.push(`<li><strong>Verificación de Certificados SAML 2.0 y Tiempo NTP:</strong> Se detectaron aserciones SAML expiradas o firmas inválidas. Se sugiere validar la fecha de vencimiento del certificado de firma X.509 en la ${consoleTitle} y verificar la sincronización del reloj de servidor mediante NTP. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Federación ${platformTitle}: Sección 6.4 - SAML SSO Lifecycle)</em></li>`);
     }
 
     if (hasTomcatOom) {
-      items.push(`<li><strong>Ajuste de Memoria Heap de la JVM en Tomcat Catalina:</strong> Se identificaron excepciones de agotamiento de memoria <code>OutOfMemoryError: Java heap space</code>. Se recomienda incrementar los parámetros <code>-Xms2048m -Xmx4096m</code> en <code>catalina.sh / setenv.sh</code>. <em style="color:#64748b; font-size:11px;">(Ref. Manual Entrust IDG Tomcat Tuning: Sección 9.3 - JVM Heap Settings)</em></li>`);
+      items.push(`<li><strong>Ajuste de Memoria Heap de la JVM en Tomcat Catalina:</strong> Se identificaron excepciones de agotamiento de memoria <code>OutOfMemoryError: Java heap space</code>. Se recomienda incrementar los parámetros <code>-Xms2048m -Xmx4096m</code> en <code>catalina.sh / setenv.sh</code>. <em style="color:#64748b; font-size:11px;">(Ref. Manual ${platformTitle} Tomcat Tuning: Sección 9.3 - JVM Heap Settings)</em></li>`);
     }
 
     if (hasTomcatSsl) {
-      items.push(`<li><strong>Importación de Certificados CA en Truststore de Java (cacerts):</strong> Se detectaron excepciones <code>SSLHandshakeException / PKIX</code>. Se recomienda importar el certificado de la Entidad Emisora mediante <code>keytool -importcert -keystore cacerts</code>. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad Entrust TLS: Sección 6.2 - Keystore Management)</em></li>`);
+      items.push(`<li><strong>Importación de Certificados CA en Truststore de Java (cacerts):</strong> Se detectaron excepciones <code>SSLHandshakeException / PKIX</code>. Se recomienda importar el certificado de la Entidad Emisora mediante <code>keytool -importcert -keystore cacerts</code>. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad ${platformTitle} TLS: Sección 6.2 - Keystore Management)</em></li>`);
     }
 
     // Recomendación general por versión
-    items.push(`<li><strong>Revisión de Parches Oficiales para ${escapeHtml(activeClient.version)}:</strong> Validar la aplicación de los parches e hitos oficializados por Entrust para la versión <strong>${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</strong> según la documentación técnica oficial. <em style="color:#64748b; font-size:11px;">(Ref. Release Notes & Advisory Bulletins Entrust ${escapeHtml(activeClient.version)})</em></li>`);
+    items.push(`<li><strong>Revisión de Parches Oficiales para ${escapeHtml(activeClient.version)}:</strong> Validar la aplicación de los parches e hitos oficializados por Entrust para la versión <strong>${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</strong> según la documentación técnica oficial de ${platformTitle}. <em style="color:#64748b; font-size:11px;">(Ref. Release Notes & Advisory Bulletins ${platformTitle})</em></li>`);
 
     return items.join('\n');
   }
