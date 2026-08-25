@@ -208,7 +208,7 @@ class LogParser {
       clientIp = fields[12] || 'N/A';
       const tokenType = fields[14] || '';
 
-      service = `IDaaS [${eventTypeStr}]`;
+      service = `IDaaS REST API [${eventTypeStr}]`;
       message = `[${eventOutcome}] ${msgStr} - App: ${appStr}${tokenType ? ' - Token: ' + tokenType : ''} - User: ${user}`;
       entrustCode = msgStr.split('.').pop() || eventTypeStr;
     } else {
@@ -237,7 +237,7 @@ class LogParser {
     return {
       id: `csv-${lineNum}-${Date.now()}`,
       lineNum: lineNum + 1,
-      type: 'Entrust IDaaS (CSV/TSV)',
+      type: 'Entrust IDaaS Cloud (API REST)',
       timestamp: timestamp,
       level: level,
       hostname: 'idaas.entrust.com',
