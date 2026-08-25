@@ -808,13 +808,18 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         `;
       } else {
+        let displayService = log.service || 'Entrust Service';
+        if (!isCloud) {
+          displayService = displayService.replace(/IDaaS Cloud|Cloud IDaaS|Entrust IDaaS/gi, 'Entrust IdentityGuard');
+        }
+
         incidentsHtml += `
           <tr style="background:${idxCounter % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
             <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center;">
               <span style="white-space:nowrap; background:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#fee2e2' : '#e0f2fe'}; color:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#dc2626' : '#0284c7'}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">#${idxCounter} ${log.level}</span><br>
               <span style="font-size:9.5px; color:#dc2626; font-weight:bold;">${count} veces</span>
             </td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(log.service)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(displayService)}</td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1;">
               <strong style="color:#0a3d6d; font-size:11px;">${escapeHtml(diag.title)}</strong><br>
               <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(diag.meaning)}</span>

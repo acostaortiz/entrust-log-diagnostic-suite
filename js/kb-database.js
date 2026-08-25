@@ -826,21 +826,22 @@ class KnowledgeBase {
       };
     }
 
-    // Diagnóstico Heurístico Entrust IDaaS Cloud (Remediación técnica explícita)
+    // Diagnóstico Heurístico Entrust (Adaptable OnPremise / Cloud)
     if (/IDaaS|SAML|OIDC|OAuth2|Push|MFA|Radius/i.test(logText)) {
       return {
         matched: true,
-        ruleId: 'KB-IDAAS-GEN',
-        title: 'Evento de Autenticación Cloud Entrust IDaaS',
-        category: 'Entrust IDaaS Cloud Suite',
+        ruleId: 'KB-ENTRUST-MFA',
+        title: 'Evento de Autenticación / Federación Entrust',
+        category: 'Entrust IdentityGuard Suite',
         severity: /failed|error|rejected|timeout/i.test(logText) ? 'ERROR' : 'INFO',
-        meaning: 'Registro de evento de autenticación en la nube o pasarela de identidad Entrust IDaaS.',
-        rootCause: 'Solicitud de token, sincronización de identidad o evaluación de regla MFA en la nube.',
-        remediation: '1. Verifique el estado del tenant y la política de autenticación en la Consola Entrust IDaaS Cloud.\n2. Compruebe la validez del certificado SAML 2.0 / OIDC.\n3. Verifique la conectividad con la pasarela MFA.',
-        riskLevel: 'Medio (Evento de Identidad Cloud)',
-        manualVersion: 'vIDaaS',
+        attribution: '🔒 Servicios de Identidad & Federación',
+        meaning: 'Registro de evento de autenticación, token o evaluación de regla MFA en la plataforma Entrust.',
+        rootCause: 'Solicitud de token, sincronización de identidad o evaluación de política MFA.',
+        remediation: '1. Verifique el estado de la política de autenticación en la Consola Entrust.\n2. Compruebe la validez del certificado SAML 2.0 / OIDC.\n3. Verifique la conectividad con la pasarela MFA.',
+        riskLevel: 'Medio (Evento de Identidad)',
+        manualVersion: 'vEntrust',
         sectionId: 'sec-idaas-saml',
-        sectionTitle: 'Manual de Diagnóstico Entrust IDaaS Cloud'
+        sectionTitle: 'Manual de Diagnóstico Entrust IdentityGuard'
       };
     }
 
