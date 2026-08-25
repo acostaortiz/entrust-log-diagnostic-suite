@@ -591,33 +591,26 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Frecuencia de códigos de error 520xxx / AUDxxx
-    const codeCounts = {};
-    targetLogs.forEach(l => {
-      const code = extractEntrustErrorCode(l.message);
-      if (code) {
-        codeCounts[code] = (codeCounts[code] || 0) + 1;
-      }
-    });
-
+    // Frecuencia de códigos de error y patrones diagnosticados (100% Sincronizado y Coherente con Sección 1)
     let topCodesHtml = '';
-    const sortedCodes = Object.entries(codeCounts).sort((a, b) => b[1] - a[1]);
+    const sortedIncidents = Array.from(diagMap.values()).sort((a, b) => b.count - a.count);
 
-    if (sortedCodes.length > 0) {
-      sortedCodes.slice(0, 10).forEach(([code, count]) => {
-        const sampleMsg = state.logs.find(l => l.message.includes(code))?.message || '';
-        const diag = window.knowledgeBaseEngine.diagnoseLog(sampleMsg, code);
+    if (sortedIncidents.length > 0) {
+      sortedIncidents.forEach(({ log, diag, count }) => {
+        const codeDisplay = diag.ruleId ? diag.ruleId.replace('KB-ENTRUST-', '').replace('KB-', '') : (log.level || 'ERROR');
+        const pctStr = formatPctStr(count, totalCount);
+
         topCodesHtml += `
           <tr style="page-break-inside:avoid; break-inside:avoid;">
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d; text-align:center;">${code}</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px;">${escapeHtml(diag.title)}</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:#dc2626;">${count} veces</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d; text-align:center;">${escapeHtml(codeDisplay)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(diag.title)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:#dc2626;">${count} veces (${pctStr})</td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(diag.rootCause)}</td>
           </tr>
         `;
       });
     } else {
-      topCodesHtml = `<tr><td colspan="4" style="padding:10px; text-align:center; color:#64748b;">No se registraron patrones numéricos recurrentes.</td></tr>`;
+      topCodesHtml = `<tr><td colspan="4" style="padding:10px; text-align:center; color:#64748b;">No se registraron fallos de seguridad o anomalías en la muestra.</td></tr>`;
     }
 
     const section1Content = onlyCatalogErrors
