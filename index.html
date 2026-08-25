@@ -38,6 +38,7 @@
       <button class="nav-btn active" data-tab="overview">📊 Visión General</button>
       <button class="nav-btn" data-tab="analyzer">🔍 Analizador & Diagnóstico</button>
       <button class="nav-btn" data-tab="traces">⚡ Trazas Distribuidas</button>
+      <button class="nav-btn" data-tab="nodes">🏢 Comparativa Multi-Nodo</button>
       <button class="nav-btn" data-tab="kb">🧠 Base de Conocimientos</button>
       <button class="nav-btn" data-tab="manuals">📚 Manuales Administrativos</button>
     </nav>
@@ -288,6 +289,63 @@
       </div>
     </div>
 
+    <!-- 4. PESTAÑA: COMPARATIVA MULTI-NODO (PRIMARIO VS SECUNDARIO) -->
+    <div class="tab-pane" id="tab-nodes">
+      <div class="glass-card mb-4">
+        <div class="card-header">
+          <div class="card-title text-cyan">🏢 Módulo de Comparativa Multi-Nodo (Servidor Primario vs Secundario)</div>
+          <button class="btn btn-primary" id="btn-refresh-node-comparison">🔄 Recalcular Comparativa</button>
+        </div>
+        <p class="text-muted" style="font-size:0.85rem; margin-bottom:16px;">
+          Permite evaluar la simetría de carga, distribución de errores HTTP/520xxx y salud entre dos servidores o nodos de la arquitectura de Entrust (ej. Nodo Primario <code>192.168.11.48</code> vs Nodo Secundario <code>192.168.11.60</code>).
+        </p>
+
+        <!-- Selector de Nodos / Fuentes de Log -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:20px;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
+            <div class="card-title text-it-blue mb-2" style="font-size:0.95rem;">🖥️ Nodo A (Servidor Primario)</div>
+            <select class="form-control" id="node-a-select" style="margin-bottom:8px;">
+              <option value="192.168.11.48">Nodo Primario (IP: 192.168.11.48)</option>
+              <option value="192.168.11.41">Nodo Secundario (IP: 192.168.11.41)</option>
+              <option value="10.16.13.175">Servidor Ubuntu Production (10.16.13.175)</option>
+            </select>
+            <div id="node-a-summary" style="font-size:0.8rem; color:var(--text-muted);">
+              Cargando estadísticas de Nodo A...
+            </div>
+          </div>
+
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
+            <div class="card-title text-cyan mb-2" style="font-size:0.95rem;">🖥️ Nodo B (Servidor Secundario / Respaldo)</div>
+            <select class="form-control" id="node-b-select" style="margin-bottom:8px;">
+              <option value="192.168.11.60">Nodo Secundario (IP: 192.168.11.60)</option>
+              <option value="192.168.11.61">Nodo Auxiliar (IP: 192.168.11.61)</option>
+              <option value="idaas.entrust.com">Entrust IDaaS Cloud Tenant</option>
+            </select>
+            <div id="node-b-summary" style="font-size:0.8rem; color:var(--text-muted);">
+              Cargando estadísticas de Nodo B...
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Asimetría de Carga -->
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:16px; margin-bottom:20px;">
+          <div class="flex-between mb-2">
+            <span class="diag-label">⚖️ Asimetría de Distribución de Carga & Solicitudes:</span>
+            <span class="font-mono text-cyan" id="node-asymmetry-label" style="font-weight:700;">Balanceando...</span>
+          </div>
+          <div style="height:14px; background:#1e293b; border-radius:7px; overflow:hidden; display:flex;">
+            <div id="node-asymmetry-bar-a" style="width:50%; background:#0284c7; transition:width 0.5s;" title="Nodo A"></div>
+            <div id="node-asymmetry-bar-b" style="width:50%; background:#06b6d4; transition:width 0.5s;" title="Nodo B"></div>
+          </div>
+        </div>
+
+        <!-- Tabla Comparativa -->
+        <div id="node-comparison-table-container">
+          <!-- Inyectado dinámicamente por JS -->
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- MODAL INFORME DE DIAGNÓSTICO PRELIMINAR EJECUTIVO (PRINTABLE) -->
@@ -296,8 +354,10 @@
       <div class="card-header">
         <div class="card-title text-cyan">📄 Informe de Diagnóstico Oficial de Incidentes</div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn btn-primary" id="btn-download-pdf-exec-report" style="background:#047857; border-color:#047857;">📥 Descargar PDF Limpio (Recomendado)</button>
-          <button class="btn btn-primary" id="btn-print-exec-report">🖨️ Imprimir Sistema</button>
+          <button class="btn btn-primary" id="btn-download-pdf-exec-report" style="background:#047857; border-color:#047857;">📥 Descargar PDF (Oficial)</button>
+          <button class="btn btn-primary" id="btn-download-html-exec-report" style="background:#0284c7; border-color:#0284c7;">🌐 Exportar HTML Autónomo</button>
+          <button class="btn btn-primary" id="btn-download-csv-exec-report" style="background:#d97706; border-color:#d97706;">📊 Exportar Excel CSV</button>
+          <button class="btn btn-primary" id="btn-print-exec-report">🖨️ Imprimir</button>
           <button class="btn" id="btn-close-exec-report">✖ Cerrar</button>
         </div>
       </div>
@@ -499,10 +559,10 @@
   </footer>
 
   <!-- Scripts JavaScript -->
-  <script src="js/kb-database.js?v=30.0"></script>
-  <script src="js/manuals-engine.js?v=30.0"></script>
-  <script src="js/log-parser.js?v=30.0"></script>
-  <script src="js/app.js?v=30.0"></script>
+  <script src="js/kb-database.js?v=31.0"></script>
+  <script src="js/manuals-engine.js?v=31.0"></script>
+  <script src="js/log-parser.js?v=31.0"></script>
+  <script src="js/app.js?v=31.0"></script>
 
 </body>
 </html>
