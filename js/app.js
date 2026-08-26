@@ -2416,54 +2416,35 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   function initNodeComparisonModule() {
     const fileInputA = document.getElementById('node-a-file-input');
     const fileInputB = document.getElementById('node-b-file-input');
-    const selectA = document.getElementById('node-a-select');
-    const selectB = document.getElementById('node-b-select');
+    const fileInputC = document.getElementById('node-c-file-input');
+    const fileInputD = document.getElementById('node-d-file-input');
     const btnRefresh = document.getElementById('btn-refresh-node-comparison');
 
-    fileInputA?.addEventListener('change', async (e) => {
-      const files = Array.from(e.target.files);
+    const handleNodeUpload = async (fileInput, nodeKey, nodeName) => {
+      const files = Array.from(fileInput.files);
       if (files.length === 0) return;
-      
-      let allNodeALogs = [];
+      let logs = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        showAnalysisStatus(true, `⚙️ [Nodo A - Archivo ${i+1}/${files.length}]: ${file.name}...`, 'Procesando trazas por bloques...');
+        showAnalysisStatus(true, `⚙️ [${nodeName} - Archivo ${i+1}/${files.length}]: ${file.name}...`, 'Procesando trazas por bloques...');
         const content = await file.text();
         const parsed = await window.logParserEngine.parseLogsAsync(content, null);
-        allNodeALogs = allNodeALogs.concat(parsed);
+        logs = logs.concat(parsed);
       }
-
-      state.nodeALogs = allNodeALogs;
-      state.nodeAFileName = files.length === 1 ? files[0].name : `${files.length} Archivos Cargados (Nodo A)`;
+      state[`node${nodeKey}Logs`] = logs;
+      state[`node${nodeKey}FileName`] = files.length === 1 ? files[0].name : `${files.length} Archivos (${nodeName})`;
       updateNodeComparisonUI();
-      showAnalysisStatus(false, `✅ Logs de Nodo A Cargados: ${files.length} archivo(s)`, `${state.nodeALogs.length} registros analizados`);
-    });
+      showAnalysisStatus(false, `✅ Logs de ${nodeName} Cargados: ${files.length} archivo(s)`, `${logs.length} registros analizados`);
+    };
 
-    fileInputB?.addEventListener('change', async (e) => {
-      const files = Array.from(e.target.files);
-      if (files.length === 0) return;
-
-      let allNodeBLogs = [];
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        showAnalysisStatus(true, `⚙️ [Nodo B - Archivo ${i+1}/${files.length}]: ${file.name}...`, 'Procesando trazas por bloques...');
-        const content = await file.text();
-        const parsed = await window.logParserEngine.parseLogsAsync(content, null);
-        allNodeBLogs = allNodeBLogs.concat(parsed);
-      }
-
-      state.nodeBLogs = allNodeBLogs;
-      state.nodeBFileName = files.length === 1 ? files[0].name : `${files.length} Archivos Cargados (Nodo B)`;
-      updateNodeComparisonUI();
-      showAnalysisStatus(false, `✅ Logs de Nodo B Cargados: ${files.length} archivo(s)`, `${state.nodeBLogs.length} registros analizados`);
-    });
+    fileInputA?.addEventListener('change', () => handleNodeUpload(fileInputA, 'A', 'Nodo 1 / Web'));
+    fileInputB?.addEventListener('change', () => handleNodeUpload(fileInputB, 'B', 'Nodo 2 / Móvil'));
+    fileInputC?.addEventListener('change', () => handleNodeUpload(fileInputC, 'C', 'Nodo 3 / Empresas'));
+    fileInputD?.addEventListener('change', () => handleNodeUpload(fileInputD, 'D', 'Nodo 4 / APIs'));
 
     btnRefresh?.addEventListener('click', () => {
       updateNodeComparisonUI();
     });
-
-    selectA?.addEventListener('change', () => updateNodeComparisonUI());
-    selectB?.addEventListener('change', () => updateNodeComparisonUI());
 
     updateNodeComparisonUI();
   }
@@ -2471,84 +2452,101 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   function updateNodeComparisonUI() {
     const summaryA = document.getElementById('node-a-summary');
     const summaryB = document.getElementById('node-b-summary');
+    const summaryC = document.getElementById('node-c-summary');
+    const summaryD = document.getElementById('node-d-summary');
+
     const barA = document.getElementById('node-asymmetry-bar-a');
     const barB = document.getElementById('node-asymmetry-bar-b');
+    const barC = document.getElementById('node-asymmetry-bar-c');
+    const barD = document.getElementById('node-asymmetry-bar-d');
+
     const labelAsym = document.getElementById('node-asymmetry-label');
     const containerTable = document.getElementById('node-comparison-table-container');
 
     const logsA = state.nodeALogs || [];
     const logsB = state.nodeBLogs || [];
+    const logsC = state.nodeCLogs || [];
+    const logsD = state.nodeDLogs || [];
 
-    const nameA = state.nodeAFileName || 'Nodo A (SACVWIG07 / 192.168.11.48)';
-    const nameB = state.nodeBFileName || 'Nodo B (SACVWIG08 / 192.168.11.60)';
+    const nameA = state.nodeAFileName || 'Nodo 1 / Web (SACVWIG01)';
+    const nameB = state.nodeBFileName || 'Nodo 2 / Móvil (SACVWIG02)';
+    const nameC = state.nodeCFileName || 'Nodo 3 / Empresas (SACVWIG03)';
+    const nameD = state.nodeDFileName || 'Nodo 4 / APIs (SACVWIG04)';
 
     const countA = logsA.length;
     const countB = logsB.length;
+    const countC = logsC.length;
+    const countD = logsD.length;
+
     const errA = logsA.filter(l => l.level === 'ERROR' || l.level === 'CRITICAL').length;
     const errB = logsB.filter(l => l.level === 'ERROR' || l.level === 'CRITICAL').length;
+    const errC = logsC.filter(l => l.level === 'ERROR' || l.level === 'CRITICAL').length;
+    const errD = logsD.filter(l => l.level === 'ERROR' || l.level === 'CRITICAL').length;
 
-    if (summaryA) {
-      summaryA.innerHTML = `📁 Archivo: <strong>${escapeHtml(nameA)}</strong><br>Total Registros: <strong>${countA}</strong> | Errores 520xxx: <strong style="color:${errA > 0 ? '#dc2626' : '#10b981'};">${errA}</strong>`;
-    }
-    if (summaryB) {
-      summaryB.innerHTML = `📁 Archivo: <strong>${escapeHtml(nameB)}</strong><br>Total Registros: <strong>${countB}</strong> | Errores 520xxx: <strong style="color:${errB > 0 ? '#dc2626' : '#10b981'};">${errB}</strong>`;
-    }
+    if (summaryA) summaryA.innerHTML = `📁 <strong>${escapeHtml(nameA)}</strong><br>Logs: <strong>${countA}</strong> | Errores 520: <strong style="color:${errA > 0 ? '#dc2626' : '#10b981'};">${errA}</strong>`;
+    if (summaryB) summaryB.innerHTML = `📁 <strong>${escapeHtml(nameB)}</strong><br>Logs: <strong>${countB}</strong> | Errores 520: <strong style="color:${errB > 0 ? '#dc2626' : '#10b981'};">${errB}</strong>`;
+    if (summaryC) summaryC.innerHTML = `📁 <strong>${escapeHtml(nameC)}</strong><br>Logs: <strong>${countC}</strong> | Errores 520: <strong style="color:${errC > 0 ? '#dc2626' : '#10b981'};">${errC}</strong>`;
+    if (summaryD) summaryD.innerHTML = `📁 <strong>${escapeHtml(nameD)}</strong><br>Logs: <strong>${countD}</strong> | Errores 520: <strong style="color:${errD > 0 ? '#dc2626' : '#10b981'};">${errD}</strong>`;
 
-    const total = Math.max(1, countA + countB);
-    const pctA = countA === 0 && countB === 0 ? 50 : Math.round((countA / total) * 100);
-    const pctB = countA === 0 && countB === 0 ? 50 : 100 - pctA;
+    const total = Math.max(1, countA + countB + countC + countD);
+    const activeNodesCount = [countA, countB, countC, countD].filter(c => c > 0).length;
+
+    const pctA = countA === 0 && activeNodesCount === 0 ? 25 : Math.round((countA / total) * 100);
+    const pctB = countB === 0 && activeNodesCount === 0 ? 25 : Math.round((countB / total) * 100);
+    const pctC = countC === 0 && activeNodesCount === 0 ? 25 : Math.round((countC / total) * 100);
+    const pctD = countD === 0 && activeNodesCount === 0 ? 25 : Math.round((countD / total) * 100);
 
     if (barA) barA.style.width = `${pctA}%`;
     if (barB) barB.style.width = `${pctB}%`;
+    if (barC) barC.style.width = `${pctC}%`;
+    if (barD) barD.style.width = `${pctD}%`;
+
     if (labelAsym) {
-      if (countA === 0 && countB === 0) {
-        labelAsym.textContent = '⏳ Cargue los archivos de log del Nodo A y Nodo B para iniciar la comparativa';
+      if (activeNodesCount === 0) {
+        labelAsym.textContent = '⏳ Cargue los archivos de log de los Servidores / Canales para iniciar la comparativa del clúster (hasta 4 Nodos)';
       } else {
-        const isAsymmetric = Math.abs(pctA - pctB) > 20;
-        labelAsym.textContent = isAsymmetric 
-          ? `⚠️ ASIMETRÍA ALTA EN BALANCER (Nodo A: ${pctA}% vs Nodo B: ${pctB}%)`
-          : `✅ CARGA BALANCEADA (Nodo A: ${pctA}% vs Nodo B: ${pctB}%)`;
+        labelAsym.textContent = `📊 DISTRIBUCIÓN CLÚSTER (N1: ${pctA}% | N2: ${pctB}% | N3: ${pctC}% | N4: ${pctD}%)`;
       }
     }
 
     if (containerTable) {
-      const mapErrA = new Map();
-      logsA.forEach(l => {
-        if (l.entrustCode) mapErrA.set(l.entrustCode, (mapErrA.get(l.entrustCode) || 0) + 1);
-      });
-      const mapErrB = new Map();
-      logsB.forEach(l => {
-        if (l.entrustCode) mapErrB.set(l.entrustCode, (mapErrB.get(l.entrustCode) || 0) + 1);
-      });
+      const mapErrA = new Map(); logsA.forEach(l => { if (l.entrustCode) mapErrA.set(l.entrustCode, (mapErrA.get(l.entrustCode) || 0) + 1); });
+      const mapErrB = new Map(); logsB.forEach(l => { if (l.entrustCode) mapErrB.set(l.entrustCode, (mapErrB.get(l.entrustCode) || 0) + 1); });
+      const mapErrC = new Map(); logsC.forEach(l => { if (l.entrustCode) mapErrC.set(l.entrustCode, (mapErrC.get(l.entrustCode) || 0) + 1); });
+      const mapErrD = new Map(); logsD.forEach(l => { if (l.entrustCode) mapErrD.set(l.entrustCode, (mapErrD.get(l.entrustCode) || 0) + 1); });
 
-      const allCodes = Array.from(new Set([...mapErrA.keys(), ...mapErrB.keys()]));
+      const allCodes = Array.from(new Set([...mapErrA.keys(), ...mapErrB.keys(), ...mapErrC.keys(), ...mapErrD.keys()]));
 
       let codesRows = '';
       if (allCodes.length > 0) {
         allCodes.forEach(code => {
           const cA = mapErrA.get(code) || 0;
           const cB = mapErrB.get(code) || 0;
-          const diffStr = cA === cB ? '✅ Idéntico' : (cA > cB ? `⚠️ ${cA - cB} más en Nodo A` : `⚠️ ${cB - cA} más en Nodo B`);
+          const cC = mapErrC.get(code) || 0;
+          const cD = mapErrD.get(code) || 0;
+
           codesRows += `
             <tr style="border-bottom:1px solid var(--border-color);">
               <td style="padding:6px 8px; font-family:monospace; font-weight:bold; color:var(--text-cyan);">Código [${escapeHtml(code)}]</td>
               <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cA > 0 ? '#dc2626' : '#10b981'};">${cA}</td>
               <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cB > 0 ? '#dc2626' : '#10b981'};">${cB}</td>
-              <td style="padding:6px 8px; text-align:center; font-size:0.8rem;">${diffStr}</td>
+              <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cC > 0 ? '#dc2626' : '#10b981'};">${cC}</td>
+              <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cD > 0 ? '#dc2626' : '#10b981'};">${cD}</td>
             </tr>`;
         });
       } else {
-        codesRows = `<tr><td colspan="4" style="padding:10px; text-align:center; color:var(--text-muted);">No se detectaron códigos de error [520xxx] en las muestras.</td></tr>`;
+        codesRows = `<tr><td colspan="5" style="padding:10px; text-align:center; color:var(--text-muted);">No se detectaron códigos de error [520xxx] en las muestras.</td></tr>`;
       }
 
       containerTable.innerHTML = `
         <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:10px;">
           <thead>
             <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
-              <th style="padding:8px; border-bottom:2px solid var(--border-color);">Métrica / Indicador</th>
+              <th style="padding:8px; border-bottom:2px solid var(--border-color);">Métrica Clúster</th>
               <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:var(--it-blue);">🖥️ ${escapeHtml(nameA)}</th>
               <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:var(--text-cyan);">🖥️ ${escapeHtml(nameB)}</th>
-              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center;">Diagnóstico de Simetría</th>
+              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:#8b5cf6;">🖥️ ${escapeHtml(nameC)}</th>
+              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:#10b981;">🖥️ ${escapeHtml(nameD)}</th>
             </tr>
           </thead>
           <tbody>
@@ -2556,33 +2554,37 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               <td style="padding:8px; font-weight:bold;">Total Transacciones / Logs</td>
               <td style="padding:8px; text-align:center; font-weight:bold;">${countA}</td>
               <td style="padding:8px; text-align:center; font-weight:bold;">${countB}</td>
-              <td style="padding:8px; text-align:center;">${Math.abs(countA - countB) < 50 ? '✅ Simétrico' : '⚠️ Desbalance de Carga'}</td>
+              <td style="padding:8px; text-align:center; font-weight:bold;">${countC}</td>
+              <td style="padding:8px; text-align:center; font-weight:bold;">${countD}</td>
             </tr>
             <tr>
               <td style="padding:8px; font-weight:bold;">Errores Críticos / 520xxx</td>
               <td style="padding:8px; text-align:center; font-weight:bold; color:#dc2626;">${errA}</td>
               <td style="padding:8px; text-align:center; font-weight:bold; color:#dc2626;">${errB}</td>
-              <td style="padding:8px; text-align:center;">${errA === errB ? '✅ Mismo comportamiento' : (errA > errB ? '⚠️ Falla mayoritaria en Nodo A' : '⚠️ Falla mayoritaria en Nodo B')}</td>
+              <td style="padding:8px; text-align:center; font-weight:bold; color:#dc2626;">${errC}</td>
+              <td style="padding:8px; text-align:center; font-weight:bold; color:#dc2626;">${errD}</td>
             </tr>
             <tr>
               <td style="padding:8px; font-weight:bold;">Índice de Salud Calculado</td>
               <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${countA > 0 ? Math.max(10, Math.round(100 - (errA / countA) * 100 * 5)) + '%' : 'N/A'}</td>
               <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${countB > 0 ? Math.max(10, Math.round(100 - (errB / countB) * 100 * 5)) + '%' : 'N/A'}</td>
-              <td style="padding:8px; text-align:center;">${errA === errB ? '✅ Salud Paritaria' : '🔍 Revisar nodo afectado'}</td>
+              <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${countC > 0 ? Math.max(10, Math.round(100 - (errC / countC) * 100 * 5)) + '%' : 'N/A'}</td>
+              <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${countD > 0 ? Math.max(10, Math.round(100 - (errD / countD) * 100 * 5)) + '%' : 'N/A'}</td>
             </tr>
           </tbody>
         </table>
 
         <div style="margin-top:20px; font-weight:bold; color:var(--text-main); font-size:0.9rem;">
-          📊 Comparativa Lado a Lado de Códigos de Error Entrust [520xxx]:
+          📊 Comparativa Clúster 4 Nodos — Códigos de Error Entrust [520xxx]:
         </div>
         <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:8px;">
           <thead>
             <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
-              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color);">Código de Error / Evento</th>
-              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Conteo Nodo A</th>
-              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Conteo Nodo B</th>
-              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Diferencial Forense</th>
+              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color);">Código de Error</th>
+              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Nodo 1 (Web)</th>
+              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Nodo 2 (Móvil)</th>
+              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Nodo 3 (Empresas)</th>
+              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Nodo 4 (APIs)</th>
             </tr>
           </thead>
           <tbody>
