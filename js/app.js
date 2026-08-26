@@ -2435,6 +2435,11 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (dom.searchLogInput) {
       dom.searchLogInput.value = uId;
       applyLogFilters();
+      switchTab('analyzer');
+      if (state.filteredLogs && state.filteredLogs.length > 0) {
+        selectLog(state.filteredLogs[0]);
+      }
+      window.scrollTo({ top: 120, behavior: 'smooth' });
     }
   };
 
@@ -2442,6 +2447,11 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (dom.searchLogInput) {
       dom.searchLogInput.value = ipStr;
       applyLogFilters();
+      switchTab('analyzer');
+      if (state.filteredLogs && state.filteredLogs.length > 0) {
+        selectLog(state.filteredLogs[0]);
+      }
+      window.scrollTo({ top: 120, behavior: 'smooth' });
     }
   };
 

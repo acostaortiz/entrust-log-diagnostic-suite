@@ -542,18 +542,44 @@ class LogParser {
 
   extractUser(line) {
     if (!line || typeof line !== 'string') return null;
-    const match = line.match(/(?:for\s+user|user:?|subjectName:?|user\s*=)\s+([A-Za-z0-9_\-\.\/@]+)/i) ||
-                  line.match(/\b(BCClientesJuridicos\/[0-9]+)\b/i) ||
-                  line.match(/\b([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\b/i);
-    return match ? match[1] : null;
+
+    // Priorizar usuarios explícitos de Banco del Caribe / Mercantil / Banesco
+    const bcMatch = line.match(/\b(BCClientes[A-Za-z0-9_\-\.\/@]+|BCMercantil[A-Za-z0-9_\-\.\/@]+|BC[A-Za-z0-9_\-\.\/@]+)\b/i);
+    if (bcMatch) return bcMatch[1];
+
+    const emailMatch = line.match(/\b([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\b/i);
+    if (emailMatch) return emailMatch[1];
+
+    const match = line.match(/(?:for\s+user|user:?|subjectName:?|user\s*=|username\s*=)\s+(['"]?)([A-Za-z0-9_\-\.\/@]+)\1/i);
+    if (match) {
+      const candidate = match[2].trim();
+      const blacklist = ['calling', 'info', 'debug', 'warn', 'warning', 'error', 'critical', 'fatal', 'trace', 'main', 'false', 'true', 'null', 'undefined', 'n/a', 'none'];
+      if (!blacklist.includes(candidate.toLowerCase()) && !candidate.startsWith('net.sf.') && !candidate.startsWith('org.apache.') && !candidate.startsWith('java.')) {
+        return candidate;
+      }
+    }
+
+    return null;
   }
 
   extractClientIp(line) {
     if (!line || typeof line !== 'string') return null;
+
+    // Descartar líneas de depuración Java (JasperReports, TLS cipher suites, etc.)
+    if (line.includes('jasperreports') || line.includes('TLS_DHE') || line.includes('virtualizer') || line.includes('delete.on.exit')) {
+      return null;
+    }
+
     const matches = line.match(/\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/g);
     if (!matches) return null;
-    const realIp = matches.find(ip => ip !== '127.0.0.1' && ip !== '0.0.0.0');
-    return realIp || matches[0];
+
+    const validIp = matches.find(ip => {
+      if (ip === '127.0.0.1' || ip === '0.0.0.0' || ip.startsWith('255.')) return false;
+      const parts = ip.split('.').map(Number);
+      return parts.every(p => !isNaN(p) && p >= 0 && p <= 255);
+    });
+
+    return validIp || null;
   }
 
   normalizeLevel(level) {

@@ -4,12 +4,12 @@
    ========================================================================== */
 
 :root {
-  /* Variables Oficiales IT SERVICIOS */
+  /* Variables Oficiales IT SERVICIOS de Venezuela */
   --it-blue: #0a3d6d;
-  --it-blue-light: #1e6091;
-  --it-red: #d32f2f;
+  --it-blue-light: #0284c7;
+  --it-red: #e11d48;
   
-  /* MODO CLARO CORPORATIVO (POR DEFECTO - LIMPIO Y LUMINOSO) */
+  /* MODO CLARO CORPORATIVO (ALTO CONTRASTE & LEGIBILIDAD IMPECABLE) */
   --bg-primary: #f1f5f9;
   --bg-secondary: #ffffff;
   --bg-card: #ffffff;
@@ -18,12 +18,12 @@
   --border-glow: #0284c7;
 
   --text-main: #0f172a;
-  --text-muted: #475569;
+  --text-muted: #334155;
   --text-dim: #64748b;
 
   --accent-cyan: #0284c7;
   --accent-blue: #0a3d6d;
-  --accent-red: #d32f2f;
+  --accent-red: #e11d48;
   --accent-gold: #d97706;
 
   /* Severidades para Modo Claro */
@@ -38,42 +38,42 @@
   --sev-debug: #7e22ce;
   --sev-debug-bg: #f3e8ff;
 
-  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.06);
-  --shadow-lg: 0 10px 25px rgba(10, 61, 109, 0.12);
+  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 10px 25px rgba(10, 61, 109, 0.15);
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
 }
 
-/* TEMA OSCURO (DARK MODE TOGGLE) */
+/* TEMA OSCURO ENTERPRISE (AZUL NOCHE PROFUNDO & CIAN TECNOLÓGICO IT SERVICIOS) */
 body.dark-theme {
-  --bg-primary: #040d1a;
-  --bg-secondary: #081a2e;
-  --bg-card: rgba(11, 33, 58, 0.88);
-  --bg-card-hover: rgba(16, 46, 80, 0.95);
-  --border-color: rgba(30, 96, 145, 0.35);
-  --border-glow: rgba(56, 189, 248, 0.4);
+  --bg-primary: #0b1329;
+  --bg-secondary: #0f172a;
+  --bg-card: rgba(15, 23, 42, 0.95);
+  --bg-card-hover: rgba(30, 41, 59, 0.98);
+  --border-color: rgba(56, 189, 248, 0.25);
+  --border-glow: rgba(56, 189, 248, 0.5);
 
   --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-muted: #cbd5e1;
+  --text-dim: #94a3b8;
 
   --accent-cyan: #38bdf8;
   --accent-blue: #0a3d6d;
-  --accent-red: #d32f2f;
+  --accent-red: #f43f5e;
   --accent-gold: #fbbf24;
 
   --sev-critical: #ef4444;
-  --sev-critical-bg: rgba(239, 68, 68, 0.18);
+  --sev-critical-bg: rgba(239, 68, 68, 0.22);
   --sev-error: #f97316;
-  --sev-error-bg: rgba(249, 115, 22, 0.18);
+  --sev-error-bg: rgba(249, 115, 22, 0.22);
   --sev-warn: #f59e0b;
-  --sev-warn-bg: rgba(245, 158, 11, 0.18);
+  --sev-warn-bg: rgba(245, 158, 11, 0.22);
   --sev-info: #38bdf8;
-  --sev-info-bg: rgba(56, 189, 248, 0.18);
+  --sev-info-bg: rgba(56, 189, 248, 0.22);
 
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.7);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.8);
 }
 
 * {
