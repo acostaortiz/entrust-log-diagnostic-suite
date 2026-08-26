@@ -1360,6 +1360,56 @@ class KnowledgeBase {
     };
   }
 
+  generateCliCommands(diag) {
+    const title = (diag.title || '').toLowerCase();
+    const code = diag.ruleId || '';
+
+    let win = '';
+    let nix = '';
+
+    if (code.includes('5202404') || title.includes('database') || title.includes('sql') || title.includes('pool')) {
+      win = `REM --- Verificación & Reinicio Pool BD Entrust (Windows SACVWIG07) ---
+cd "C:\\Program Files\\Entrust\\IdentityGuardServer\\bin"
+keytool -list -v -keystore "..\\identityguard.keystore" -storepass changeit
+net stop "Entrust IdentityGuard Administration Service"
+net start "Entrust IdentityGuard Administration Service"`;
+      nix = `# --- Verificación & Reinicio Pool BD Entrust (Linux/WSO2 sadcluapi01) ---
+systemctl status wso2am
+netstat -tulpn | grep 1521
+systemctl restart wso2am`;
+    } else if (code.includes('5203113') || title.includes('password') || title.includes('usuario')) {
+      win = `REM --- Resetear Usuario Bloqueado en Entrust CLI (Windows SACVWIG07) ---
+cd "C:\\Program Files\\Entrust\\IdentityGuardServer\\tools"
+IdentityGuardAdminTool.bat -user unlock -username "usuario_afectado"`;
+      nix = `# --- Resetear Usuario Bloqueado en Entrust CLI (Linux) ---
+/app/Entrust/tools/adminTool.sh -user unlock -username "usuario_afectado"`;
+    } else if (title.includes('certificate') || title.includes('ssl') || title.includes('tls') || title.includes('cert')) {
+      win = `REM --- Importar / Verificar Certificado SSL en IdentityGuard (Windows SACVWIG07) ---
+keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\identityguard.keystore" -storepass changeit
+keytool -importcert -alias entrust_root -file "C:\\certs\\ACCVRAIZ1.crt" -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\identityguard.keystore" -storepass changeit -noprompt`;
+      nix = `# --- Importar Certificado SSL en WSO2 API Manager & Linux (sadcluapi01) ---
+cp /tmp/ACCVRAIZ1.crt /usr/local/share/ca-certificates/
+update-ca-certificates
+keytool -importcert -alias entrust_root -file /tmp/ACCVRAIZ1.crt -keystore /app/Apimanager/wso2am-4.2.0/repository/resources/security/client-truststore.jks -storepass wso2carbon -noprompt
+chown usr_APImanager_prod_4_2:usr_APImanager_prod_4_2 /app/Apimanager/wso2am-4.2.0/repository/resources/security/client-truststore.jks`;
+    } else {
+      win = `REM --- Verificación General de Estado Entrust (Windows SACVWIG07) ---
+sc query "Entrust IdentityGuard Administration Service"
+sc query "Entrust IdentityGuard Authentication Service"`;
+      nix = `# --- Verificación General de Servicios Entrust & WSO2 (Linux) ---
+systemctl status wso2am
+journalctl -u wso2am -n 50 --no-pager`;
+    }
+
+    return { win, nix };
+  }
+
+  diagnoseLogWithCli(logText) {
+    const diag = this.diagnoseLog(logText);
+    diag.cliCommands = this.generateCliCommands(diag);
+    return diag;
+  }
+
   getAllRules() {
     return this.rules;
   }

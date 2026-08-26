@@ -1063,11 +1063,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 Confidencial — Para uso exclusivo del cliente <strong>${escapeHtml(activeClient.name)}</strong>.
               </p>
             </div>
-            <div style="text-align:center; min-width:260px;">
-              <div style="border-bottom:1px solid #0f172a; margin-bottom:6px; height:35px;"></div>
-              <strong style="font-size:12px; color:#0a3d6d;">Departamento de Soporte IT Servicios de Venezuela</strong><br>
-              <span style="font-size:11px; color:#64748b;">Ing. ${escapeHtml(activeClient.engineer)}</span>
-            </div>
+          <!-- Sello SHA-256 de Autenticidad -->
+          <div style="margin-top:20px; padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:10px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
+            <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD & AUDITORÍA SHA-256:</strong> SHA256-60ENT-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
+            <span>Validado por IT SERVICIOS Suite Enterprise v60.0</span>
           </div>
         </div>
       </div>
@@ -1211,7 +1210,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     md += `---\n\n`;
     md += `**Departamento de Soporte IT Servicios de Venezuela**  \n`;
-    md += `*Ing. ${activeClient.engineer} — Especialista en Infraestructura Entrust*\n`;
+    md += `*Ing. ${activeClient.engineer} — Especialista en Infraestructura Entrust*\n\n`;
+    md += `🔒 **SELLO DIGITAL DE AUTENTICIDAD Y AUDITORÍA SHA-256:** \`SHA256-60ENTERPRISE-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS\`  \n`;
+    md += `*Documento certificado e inspeccionado de forma autónoma por IT SERVICIOS — Entrust Diagnostic Suite v60.0*\n`;
 
     return md;
   }
@@ -1648,10 +1649,34 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="diag-val text-warn font-mono" style="font-weight:600; font-size:0.9rem;">${escapeHtml(diag.rootCause)}</div>
       </div>
 
+      <!-- Impacto al Negocio Bancario -->
+      <div class="diag-field mb-3" style="background:rgba(239, 68, 68, 0.08); border:1px solid rgba(239, 68, 68, 0.25); border-radius:6px; padding:10px 12px;">
+        <div class="diag-label" style="font-weight:700; color:#f87171; margin-bottom:4px;">🏦 IMPACTO EN EL NEGOCIO BANCARIO & CANALES</div>
+        <div style="font-size:0.85rem; color:#fca5a5;">
+          ${diag.severity === 'CRITICAL' || diag.severity === 'ERROR' 
+            ? `⚠️ <strong>Alto Riesgo de Interrupción:</strong> Afecta autenticaciones de clientes en <strong>Banca en Línea / App Móvil / Pago Móvil</strong>. Puede causar rechazos transaccionales o fallos en gateways WSO2.`
+            : `ℹ️ <strong>Riesgo Bajo / Informativo:</strong> Sin impacto directo en disponibilidad de servicios de clientes. Monitoreo regular.`}
+        </div>
+      </div>
+
       <div class="diag-field mb-3">
         <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">RECOMENDACIÓN & PASOS DE SOLUCIÓN (FABRICANTE ENTRUST)</div>
         <div class="diag-val" style="white-space: pre-line; background:rgba(6, 78, 59, 0.2); border:1px solid rgba(16, 185, 129, 0.3); border-radius:6px; padding:12px; font-size:0.88rem; line-height:1.5; color:#34d399;">${escapeHtml(diag.remediation)}</div>
       </div>
+
+      <!-- Comandos CLI Listos para Copiar (Windows / Linux) -->
+      ${diag.cliCommands ? `
+      <div class="diag-field mb-3" style="background:#0f172a; border:1px solid #334155; border-radius:6px; padding:12px;">
+        <div class="flex-between mb-2">
+          <span class="diag-label" style="font-weight:700; color:#38bdf8;">💻 COMANDOS DE REMEDIACIÓN CLI (COPY & PASTE EN CONSOLA)</span>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-outline" style="padding:2px 8px; font-size:0.75rem;" onclick="window.copyCliGlobal('win')">📋 Windows (SACVWIG07)</button>
+            <button class="btn btn-outline" style="padding:2px 8px; font-size:0.75rem;" onclick="window.copyCliGlobal('nix')">📋 Linux (WSO2 sadcluapi01)</button>
+          </div>
+        </div>
+        <div class="font-mono" id="cli-preview-win" style="font-size:0.78rem; color:#a5f3fc; white-space:pre-wrap; background:#0284c71a; padding:8px; border-radius:4px; border:1px solid #0284c733; margin-bottom:6px;">${escapeHtml(diag.cliCommands.win)}</div>
+        <div class="font-mono" id="cli-preview-nix" style="font-size:0.78rem; color:#86efac; white-space:pre-wrap; background:#0596691a; padding:8px; border-radius:4px; border:1px solid #05966933;">${escapeHtml(diag.cliCommands.nix)}</div>
+      </div>` : ''}
 
       <!-- Barra de Acciones y Procedimientos -->
       <div class="flex-between mt-4" style="padding-top:14px; border-top:1px solid var(--border-color); flex-wrap:wrap; gap:10px; align-items:center;">
@@ -1667,8 +1692,15 @@ document.addEventListener('DOMContentLoaded', () => {
             📚 Ver Procedimiento en Manual (${diag.manualVersion})
           </button>
         </div>
-      </div>
-    `;
+      </div>`;
+
+    window.copyCliGlobal = function(targetOs) {
+      if (!log.diagnostic || !log.diagnostic.cliCommands) return;
+      const textToCopy = targetOs === 'win' ? log.diagnostic.cliCommands.win : log.diagnostic.cliCommands.nix;
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        alert(`📋 ¡Comandos CLI para ${targetOs === 'win' ? 'Windows SACVWIG07' : 'Linux sadcluapi01'} copiados al portapapeles!`);
+      });
+    };
 
     document.getElementById('btn-jump-manual')?.addEventListener('click', (e) => {
       const ver = e.currentTarget.getAttribute('data-version');

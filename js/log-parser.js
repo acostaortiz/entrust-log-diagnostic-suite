@@ -124,7 +124,9 @@ class LogParser {
       if (!parsed) parsed = this.fallbackParse(line, i);
 
       if (window.knowledgeBaseEngine) {
-        parsed.diagnostic = window.knowledgeBaseEngine.diagnoseLog(parsed.message || parsed.raw);
+        parsed.diagnostic = window.knowledgeBaseEngine.diagnoseLogWithCli 
+          ? window.knowledgeBaseEngine.diagnoseLogWithCli(parsed.message || parsed.raw)
+          : window.knowledgeBaseEngine.diagnoseLog(parsed.message || parsed.raw);
       }
 
       parsedEntries.push(parsed);
