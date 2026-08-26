@@ -336,13 +336,13 @@
           Permite evaluar la simetría de carga, distribución de errores HTTP/520xxx y salud entre dos servidores o nodos de la arquitectura de Entrust (ej. Nodo Primario <code>192.168.11.48</code> vs Nodo Secundario <code>192.168.11.60</code>).
         </p>
 
-        <!-- Selector y Cargador de Logs para Nodos -->
+        <!-- Selector y Cargador Múltiple de Logs para Nodos -->
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:20px;">
           <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
             <div class="card-title text-it-blue mb-2" style="font-size:0.95rem;">🖥️ Nodo A (Servidor Primario - Ej. SACVWIG07)</div>
-            <label class="btn btn-primary" style="margin-bottom:10px; display:inline-block; font-size:0.8rem; cursor:pointer;">
-              📂 Cargar Log Nodo A (.log, .txt)
-              <input type="file" id="node-a-file-input" accept=".log,.txt,.json,.csv" style="display:none;">
+            <label class="btn btn-primary" style="margin-bottom:10px; display:inline-block; font-size:0.8rem; cursor:pointer;" title="Puedes seleccionar múltiples archivos de log a la vez">
+              📂 Cargar Logs Nodo A (Múltiples Archivos)
+              <input type="file" id="node-a-file-input" accept=".log,.txt,.json,.csv" multiple style="display:none;">
             </label>
             <select class="form-control" id="node-a-select" style="margin-bottom:8px;">
               <option value="192.168.11.48">Nodo Primario (IP: 192.168.11.48 / SACVWIG07)</option>
@@ -350,15 +350,15 @@
               <option value="10.16.13.175">Servidor Ubuntu Production (10.16.13.175)</option>
             </select>
             <div id="node-a-summary" style="font-size:0.8rem; color:var(--text-muted);">
-              Selecciona o carga el archivo del Nodo A...
+              Selecciona o carga uno o varios archivos del Nodo A...
             </div>
           </div>
 
           <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
             <div class="card-title text-cyan mb-2" style="font-size:0.95rem;">🖥️ Nodo B (Servidor Secundario - Ej. SACVWIG08)</div>
-            <label class="btn btn-primary" style="margin-bottom:10px; display:inline-block; font-size:0.8rem; background:#0284c7; border-color:#0284c7; cursor:pointer;">
-              📂 Cargar Log Nodo B (.log, .txt)
-              <input type="file" id="node-b-file-input" accept=".log,.txt,.json,.csv" style="display:none;">
+            <label class="btn btn-primary" style="margin-bottom:10px; display:inline-block; font-size:0.8rem; background:#0284c7; border-color:#0284c7; cursor:pointer;" title="Puedes seleccionar múltiples archivos de log a la vez">
+              📂 Cargar Logs Nodo B (Múltiples Archivos)
+              <input type="file" id="node-b-file-input" accept=".log,.txt,.json,.csv" multiple style="display:none;">
             </label>
             <select class="form-control" id="node-b-select" style="margin-bottom:8px;">
               <option value="192.168.11.60">Nodo Secundario (IP: 192.168.11.60 / SACVWIG08)</option>
@@ -366,7 +366,7 @@
               <option value="idaas.entrust.com">Entrust IDaaS Cloud Tenant</option>
             </select>
             <div id="node-b-summary" style="font-size:0.8rem; color:var(--text-muted);">
-              Selecciona o carga el archivo del Nodo B...
+              Selecciona o carga uno o varios archivos del Nodo B...
             </div>
           </div>
         </div>

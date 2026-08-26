@@ -2421,23 +2421,41 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const btnRefresh = document.getElementById('btn-refresh-node-comparison');
 
     fileInputA?.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      showAnalysisStatus(true, `⚙️ Procesando Log Nodo A: ${file.name}...`, 'Analizando registros...');
-      const content = await file.text();
-      state.nodeALogs = await window.logParserEngine.parseLogsAsync(content, null);
-      updateNodeComparisonUI(file.name, null);
-      showAnalysisStatus(false, `✅ Log Nodo A Cargado: ${file.name}`, `${state.nodeALogs.length} registros analizados`);
+      const files = Array.from(e.target.files);
+      if (files.length === 0) return;
+      
+      let allNodeALogs = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        showAnalysisStatus(true, `⚙️ [Nodo A - Archivo ${i+1}/${files.length}]: ${file.name}...`, 'Procesando trazas por bloques...');
+        const content = await file.text();
+        const parsed = await window.logParserEngine.parseLogsAsync(content, null);
+        allNodeALogs = allNodeALogs.concat(parsed);
+      }
+
+      state.nodeALogs = allNodeALogs;
+      const labelA = files.length === 1 ? files[0].name : `${files.length} Archivos Cargados (Nodo A)`;
+      updateNodeComparisonUI(labelA, null);
+      showAnalysisStatus(false, `✅ Logs de Nodo A Cargados: ${files.length} archivo(s)`, `${state.nodeALogs.length} registros analizados`);
     });
 
     fileInputB?.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      showAnalysisStatus(true, `⚙️ Procesando Log Nodo B: ${file.name}...`, 'Analizando registros...');
-      const content = await file.text();
-      state.nodeBLogs = await window.logParserEngine.parseLogsAsync(content, null);
-      updateNodeComparisonUI(null, file.name);
-      showAnalysisStatus(false, `✅ Log Nodo B Cargado: ${file.name}`, `${state.nodeBLogs.length} registros analizados`);
+      const files = Array.from(e.target.files);
+      if (files.length === 0) return;
+
+      let allNodeBLogs = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        showAnalysisStatus(true, `⚙️ [Nodo B - Archivo ${i+1}/${files.length}]: ${file.name}...`, 'Procesando trazas por bloques...');
+        const content = await file.text();
+        const parsed = await window.logParserEngine.parseLogsAsync(content, null);
+        allNodeBLogs = allNodeBLogs.concat(parsed);
+      }
+
+      state.nodeBLogs = allNodeBLogs;
+      const labelB = files.length === 1 ? files[0].name : `${files.length} Archivos Cargados (Nodo B)`;
+      updateNodeComparisonUI(null, labelB);
+      showAnalysisStatus(false, `✅ Logs de Nodo B Cargados: ${files.length} archivo(s)`, `${state.nodeBLogs.length} registros analizados`);
     });
 
     btnRefresh?.addEventListener('click', () => {
