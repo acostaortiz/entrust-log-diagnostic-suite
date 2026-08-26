@@ -349,6 +349,9 @@ class LogParser {
       serviceName = categoryMatch[1];
     }
 
+    const extractedUser = this.extractUser(line);
+    const extractedIp = this.extractClientIp(line);
+
     return {
       id: `entrust-${lineNum}-${Date.now()}`,
       lineNum: lineNum + 1,
@@ -359,6 +362,8 @@ class LogParser {
       service: serviceName,
       message: line,
       raw: line,
+      user: extractedUser,
+      clientIp: extractedIp,
       entrustCode: code520Match ? code520Match[1] : (audMatch ? audMatch[1] : null)
     };
   }
@@ -495,6 +500,22 @@ class LogParser {
       message: line,
       raw: line
     };
+  }
+
+  extractUser(line) {
+    if (!line || typeof line !== 'string') return null;
+    const match = line.match(/(?:for\s+user|user:?|subjectName:?|user\s*=)\s+([A-Za-z0-9_\-\.\/@]+)/i) ||
+                  line.match(/\b(BCClientesJuridicos\/[0-9]+)\b/i) ||
+                  line.match(/\b([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\b/i);
+    return match ? match[1] : null;
+  }
+
+  extractClientIp(line) {
+    if (!line || typeof line !== 'string') return null;
+    const matches = line.match(/\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/g);
+    if (!matches) return null;
+    const realIp = matches.find(ip => ip !== '127.0.0.1' && ip !== '0.0.0.0');
+    return realIp || matches[0];
   }
 
   normalizeLevel(level) {

@@ -220,6 +220,31 @@
           Selecciona un registro de log en la tabla superior para emitir su diagnóstico rápido y consultar el manual correspondiente.
         </div>
       </div>
+
+      <!-- Paneles de Telemetría: Trazabilidad por Usuario & Rastreabilidad por IP -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:20px;">
+        <!-- Panel 👤 Trazabilidad por Usuario -->
+        <div class="glass-card" style="margin-bottom:0;">
+          <div class="card-header">
+            <div class="card-title text-cyan">👤 Trazabilidad e Interacciones por Usuario</div>
+            <span class="font-mono text-muted" style="font-size:0.78rem;" id="user-count-badge">0 Usuarios Únicos</span>
+          </div>
+          <div id="user-analytics-container" style="max-height: 280px; overflow-y: auto;">
+            <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">Cargue un archivo de logs para analizar usuarios activos.</div>
+          </div>
+        </div>
+
+        <!-- Panel 🌐 Rastreabilidad por IP -->
+        <div class="glass-card" style="margin-bottom:0;">
+          <div class="card-header">
+            <div class="card-title text-cyan">🌐 Rastreabilidad por Dirección IP de Origen</div>
+            <span class="font-mono text-muted" style="font-size:0.78rem;" id="ip-count-badge">0 IPs Únicas</span>
+          </div>
+          <div id="ip-analytics-container" style="max-height: 280px; overflow-y: auto;">
+            <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">Cargue un archivo de logs para analizar direcciones IP de origen.</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 3. PESTAÑA: TRAZAS DISTRIBUIDAS -->
@@ -368,6 +393,7 @@
           <button class="btn btn-primary" id="btn-download-pdf-exec-report" style="background:#047857; border-color:#047857;">📥 Descargar PDF (Oficial)</button>
           <button class="btn btn-primary" id="btn-download-html-exec-report" style="background:#0284c7; border-color:#0284c7;">🌐 Exportar HTML Autónomo</button>
           <button class="btn btn-primary" id="btn-download-csv-exec-report" style="background:#d97706; border-color:#d97706;">📊 Exportar Excel CSV</button>
+          <button class="btn btn-primary" id="btn-download-exec-report-md" style="background:#4f46e5; border-color:#4f46e5;" title="Descargar archivo informe_preliminar.md directamente a tu máquina">📥 Descargar Archivo .MD</button>
           <button class="btn btn-primary" id="btn-copy-exec-report-md" style="background:#475569; border-color:#475569;" title="Copiar informe preliminar en formato Markdown / Texto estructurado">📋 Copiar Markdown / Texto</button>
           <button class="btn btn-primary" id="btn-print-exec-report">🖨️ Imprimir</button>
           <button class="btn" id="btn-close-exec-report">✖ Cerrar</button>
@@ -605,10 +631,10 @@
   </div>
 
   <!-- Scripts JavaScript -->
-  <script src="js/kb-database.js?v=48.0"></script>
-  <script src="js/manuals-engine.js?v=48.0"></script>
-  <script src="js/log-parser.js?v=48.0"></script>
-  <script src="js/app.js?v=48.0"></script>
+  <script src="js/kb-database.js?v=49.0"></script>
+  <script src="js/manuals-engine.js?v=49.0"></script>
+  <script src="js/log-parser.js?v=49.0"></script>
+  <script src="js/app.js?v=49.0"></script>
 
 </body>
 </html>

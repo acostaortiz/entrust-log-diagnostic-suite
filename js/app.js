@@ -1036,24 +1036,33 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.add('active');
   }
 
-  function copyExecutiveReportMarkdown() {
-    const activeClientName = dom.clientSelector?.value || 'Banco del Caribe';
-    const activeClient = state.clients[activeClientName] || {
-      name: activeClientName,
-      platform: 'Entrust IdentityGuard OnPremise',
-      version: 'Release 11.0',
-      build: 'Release 11.0 (General)',
-      contact: 'Gerencia de Seguridad de la Información / Plataforma TI',
-      engineer: 'Tomás Acosta'
-    };
+  function generateMarkdownReportString() {
+    const toolbarVal = dom.filterClientSelect?.value;
+    let activeClient = null;
+
+    if (toolbarVal && toolbarVal !== 'ALL') {
+      activeClient = state.clientProfiles.find(c => c.name.toLowerCase() === toolbarVal.toLowerCase()) || {
+        name: toolbarVal,
+        platform: 'Entrust IdentityGuard OnPremise',
+        version: 'Release 11.0',
+        build: 'Release 11.0 (General)',
+        contact: 'Gerencia de Seguridad de la Información / TI',
+        engineer: 'Tomás Acosta'
+      };
+    } else {
+      activeClient = getActiveClientProfile();
+    }
 
     const targetLogs = state.logs;
+    const totalCount = Math.max(1, targetLogs.length);
     const criticalLogs = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
     const warningLogs = targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING');
     const infoLogs = targetLogs.filter(l => l.level === 'INFO');
-    const totalCount = Math.max(1, targetLogs.length);
 
-    const healthIndex = calculateHealthIndex(targetLogs);
+    const critPenalty = criticalLogs.length > 0 ? Math.min(65, Math.max(5, (criticalLogs.length / totalCount) * 100 * 5 + criticalLogs.length * 0.2)) : 0;
+    const warnPenalty = warningLogs.length > 0 ? Math.min(25, (warningLogs.length / totalCount) * 100 * 2 + warningLogs.length * 0.1) : 0;
+    const healthIndex = Math.max(10, Math.round(100 - critPenalty - warnPenalty));
+
     const dateStr = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const timeStr = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
@@ -1103,7 +1112,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     md += `\n---\n\n`;
-    md += `### 3. RECOMENDACIONES TÉCNICAS Y PLAN DE ACCIÓN RECOMENDADO\n\n`;
+    md += `### 3. TRAZABILIDAD DE USUARIOS E IPS DE ORIGEN\n\n`;
+
+    const userMap = new Map();
+    const ipMap = new Map();
+
+    state.logs.forEach(l => {
+      if (l.user) {
+        if (!userMap.has(l.user)) {
+          userMap.set(l.user, { total: 1, errors: (l.level === 'ERROR' || l.level === 'CRITICAL') ? 1 : 0 });
+        } else {
+          const u = userMap.get(l.user);
+          u.total += 1;
+          if (l.level === 'ERROR' || l.level === 'CRITICAL') u.errors += 1;
+        }
+      }
+      if (l.clientIp) {
+        if (!ipMap.has(l.clientIp)) {
+          ipMap.set(l.clientIp, { total: 1, errors: (l.level === 'ERROR' || l.level === 'CRITICAL') ? 1 : 0 });
+        } else {
+          const ipObj = ipMap.get(l.clientIp);
+          ipObj.total += 1;
+          if (l.level === 'ERROR' || l.level === 'CRITICAL') ipObj.errors += 1;
+        }
+      }
+    });
+
+    if (userMap.size > 0) {
+      md += `#### Top Usuarios Afectados / Activos:\n`;
+      md += `| Usuario ID | Total Interacciones | Fallos Registrados | Estado |\n`;
+      md += `| :--- | :---: | :---: | :--- |\n`;
+      const sortedUsers = Array.from(userMap.entries()).sort((a, b) => b[1].total - a[1].total).slice(0, 10);
+      sortedUsers.forEach(([uId, uStats]) => {
+        const status = uStats.errors > 0 ? '⚠️ Con Fallos' : '✅ Operativo';
+        md += `| \`${uId}\` | **${uStats.total}** | ${uStats.errors} | ${status} |\n`;
+      });
+      md += `\n`;
+    }
+
+    if (ipMap.size > 0) {
+      md += `#### Top Direcciones IP de Origen:\n`;
+      md += `| Dirección IP | Peticiones | Fallos | Ráfaga |\n`;
+      md += `| :--- | :---: | :---: | :--- |\n`;
+      const sortedIps = Array.from(ipMap.entries()).sort((a, b) => b[1].total - a[1].total).slice(0, 10);
+      sortedIps.forEach(([ipStr, ipStats]) => {
+        const burst = ipStats.errors >= 5 ? '🔥 Alta Ráfaga' : 'Normal';
+        md += `| \`${ipStr}\` | **${ipStats.total}** | ${ipStats.errors} | ${burst} |\n`;
+      });
+      md += `\n`;
+    }
+
+    md += `---\n\n`;
+    md += `### 4. RECOMENDACIONES TÉCNICAS Y PLAN DE ACCIÓN RECOMENDADO\n\n`;
     md += `1. **Desbloqueo y Gestión de Cuentas LDAP / Active Directory:** Verificar cuentas afectadas en la Consola de Administración de ${activeClient.platform} y en el directorio LDAP.\n`;
     md += `2. **Reasignación y Auditoría de Tarjetas Grid / PIN:** Validar series de tarjetas Grid activas asignadas a usuarios y capacitar en el ingreso de celdas.\n`;
     md += `3. **Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):** Incrementar el número de conexiones en \`identityguard.properties\` / \`context.xml\` y ajustar los tiempos de espera.\n`;
@@ -1113,21 +1173,48 @@ document.addEventListener('DOMContentLoaded', () => {
     md += `**Departamento de Soporte IT Servicios de Venezuela**  \n`;
     md += `*Ing. ${activeClient.engineer} — Especialista en Infraestructura Entrust*\n`;
 
+    return md;
+  }
+
+  function copyExecutiveReportMarkdown() {
+    const md = generateMarkdownReportString();
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(md).then(() => {
         alert('✅ ¡Informe Preliminar en formato Markdown / Texto copiado al portapapeles con éxito!');
       }).catch(err => {
         console.error('Error al copiar al portapapeles:', err);
+        fallbackCopyText(md);
       });
     } else {
-      const ta = document.createElement('textarea');
-      ta.value = md;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      alert('✅ ¡Informe Preliminar en formato Markdown / Texto copiado al portapapeles con éxito!');
+      fallbackCopyText(md);
     }
+  }
+
+  function fallbackCopyText(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      alert('✅ ¡Informe Preliminar en formato Markdown / Texto copiado al portapapeles con éxito!');
+    } catch(e) {
+      alert('⚠️ Portapapeles no disponible. Utilice el botón "Descargar Archivo .MD".');
+    }
+    document.body.removeChild(ta);
+  }
+
+  function downloadExecutiveReportMarkdown() {
+    const mdContent = generateMarkdownReportString();
+    const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `informe_preliminar_entrust_${new Date().toISOString().substring(0, 10)}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 
   function generateDynamicRecommendationsHtml(targetLogs, activeClient) {
@@ -1348,6 +1435,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.filteredLogs = result;
     renderLogTable();
     updateMetricsAndCharts();
+    renderUserAndIpAnalytics();
   }
 
   function extractClientFromFilename(filename) {
@@ -2045,10 +2133,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         }
       });
     }
-    } catch(err) {
-      console.error('Error al inicializar Chart.js:', err);
-    }
+  } catch(err) {
+    console.error('Error al inicializar Chart.js:', err);
   }
+}
 
   function updateTrendChart() {
     if (!state.charts.trend) return;
@@ -2096,7 +2184,126 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     showAnalysisStatus(false, '🧹 Sesión Limpiada', 'Se eliminaron todos los registros y la muestra actual fue reiniciada a cero.');
   }
 
-  window.resetAppSession = resetSession;
+  function renderUserAndIpAnalytics() {
+    const userContainer = document.getElementById('user-analytics-container');
+    const ipContainer = document.getElementById('ip-analytics-container');
+    const userBadge = document.getElementById('user-count-badge');
+    const ipBadge = document.getElementById('ip-count-badge');
+
+    if (!userContainer || !ipContainer) return;
+
+    const userMap = new Map();
+    const ipMap = new Map();
+
+    const logsToAnalyze = state.filteredLogs && state.filteredLogs.length > 0 ? state.filteredLogs : state.logs;
+
+    logsToAnalyze.forEach(l => {
+      const u = l.user;
+      const ip = l.clientIp;
+
+      if (u) {
+        if (!userMap.has(u)) {
+          userMap.set(u, { total: 1, errors: (l.level === 'ERROR' || l.level === 'CRITICAL') ? 1 : 0 });
+        } else {
+          const item = userMap.get(u);
+          item.total += 1;
+          if (l.level === 'ERROR' || l.level === 'CRITICAL') item.errors += 1;
+        }
+      }
+
+      if (ip) {
+        if (!ipMap.has(ip)) {
+          ipMap.set(ip, { total: 1, errors: (l.level === 'ERROR' || l.level === 'CRITICAL') ? 1 : 0 });
+        } else {
+          const item = ipMap.get(ip);
+          item.total += 1;
+          if (l.level === 'ERROR' || l.level === 'CRITICAL') item.errors += 1;
+        }
+      }
+    });
+
+    if (userBadge) userBadge.textContent = `${userMap.size} Usuarios Únicos`;
+    if (ipBadge) ipBadge.textContent = `${ipMap.size} IPs Únicas`;
+
+    // Renderizar Usuarios
+    if (userMap.size > 0) {
+      const sortedUsers = Array.from(userMap.entries()).sort((a, b) => b[1].total - a[1].total);
+      let userHtml = `<table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+        <thead>
+          <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color);">Usuario / Identificador</th>
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Interacciones</th>
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Fallos</th>
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Filtrar</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      sortedUsers.forEach(([uId, uStats]) => {
+        userHtml += `
+          <tr style="border-bottom:1px solid var(--border-color);">
+            <td style="padding:6px 8px; font-family:monospace; font-weight:bold; color:var(--it-blue); word-break:break-all;">${escapeHtml(uId)}</td>
+            <td style="padding:6px 8px; text-align:center; font-weight:bold;">${uStats.total}</td>
+            <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${uStats.errors > 0 ? '#dc2626' : '#047857'};">${uStats.errors}</td>
+            <td style="padding:6px 8px; text-align:center;">
+              <button class="btn" style="padding:2px 8px; font-size:0.7rem; background:#0284c7; color:#fff;" onclick="window.filterLogByUserGlobal('${escapeHtml(uId)}')">🔍 Ver</button>
+            </td>
+          </tr>`;
+      });
+      userHtml += `</tbody></table>`;
+      userContainer.innerHTML = userHtml;
+    } else {
+      userContainer.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">No se detectaron identificadores de usuario explícitos en las trazas actuales.</div>`;
+    }
+
+    // Renderizar IPs
+    if (ipMap.size > 0) {
+      const sortedIps = Array.from(ipMap.entries()).sort((a, b) => b[1].total - a[1].total);
+      let ipHtml = `<table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+        <thead>
+          <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color);">Dirección IP de Origen</th>
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Peticiones</th>
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Fallos</th>
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Filtrar</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      sortedIps.forEach(([ipStr, ipStats]) => {
+        const isHighVolume = ipStats.errors >= 5;
+        ipHtml += `
+          <tr style="border-bottom:1px solid var(--border-color);">
+            <td style="padding:6px 8px; font-family:monospace; font-weight:bold; color:var(--text-main); word-break:break-all;">
+              ${escapeHtml(ipStr)} ${isHighVolume ? '<span style="background:#fee2e2; color:#dc2626; padding:1px 4px; border-radius:3px; font-size:0.7rem;">🔥 ALTA RÁFAGA</span>' : ''}
+            </td>
+            <td style="padding:6px 8px; text-align:center; font-weight:bold;">${ipStats.total}</td>
+            <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${ipStats.errors > 0 ? '#dc2626' : '#047857'};">${ipStats.errors}</td>
+            <td style="padding:6px 8px; text-align:center;">
+              <button class="btn" style="padding:2px 8px; font-size:0.7rem; background:#0284c7; color:#fff;" onclick="window.filterLogByIpGlobal('${escapeHtml(ipStr)}')">🔍 Ver</button>
+            </td>
+          </tr>`;
+      });
+      ipHtml += `</tbody></table>`;
+      ipContainer.innerHTML = ipHtml;
+    } else {
+      ipContainer.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">No se detectaron direcciones IP explícitas en las trazas actuales.</div>`;
+    }
+  }
+
+  window.filterLogByUserGlobal = function(uId) {
+    if (dom.searchLogInput) {
+      dom.searchLogInput.value = uId;
+      applyLogFilters();
+    }
+  };
+
+  window.filterLogByIpGlobal = function(ipStr) {
+    if (dom.searchLogInput) {
+      dom.searchLogInput.value = ipStr;
+      applyLogFilters();
+    }
+  };
 
   function initEventListeners() {
     dom.btnResetSession?.addEventListener('click', () => resetSession());
@@ -2108,6 +2315,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     dom.filterTypeSelect?.addEventListener('change', () => applyLogFilters());
 
     document.getElementById('btn-copy-exec-report-md')?.addEventListener('click', () => copyExecutiveReportMarkdown());
+    document.getElementById('btn-download-exec-report-md')?.addEventListener('click', () => downloadExecutiveReportMarkdown());
 
     // Event Listeners para generación de Informes (Preliminar y Exclusivo de Errores)
     dom.btnGenerateExecReport?.addEventListener('click', () => generateExecutiveReport(false));
