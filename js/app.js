@@ -2434,8 +2434,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }
 
       state.nodeALogs = allNodeALogs;
-      const labelA = files.length === 1 ? files[0].name : `${files.length} Archivos Cargados (Nodo A)`;
-      updateNodeComparisonUI(labelA, null);
+      state.nodeAFileName = files.length === 1 ? files[0].name : `${files.length} Archivos Cargados (Nodo A)`;
+      updateNodeComparisonUI();
       showAnalysisStatus(false, `✅ Logs de Nodo A Cargados: ${files.length} archivo(s)`, `${state.nodeALogs.length} registros analizados`);
     });
 
@@ -2453,8 +2453,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }
 
       state.nodeBLogs = allNodeBLogs;
-      const labelB = files.length === 1 ? files[0].name : `${files.length} Archivos Cargados (Nodo B)`;
-      updateNodeComparisonUI(null, labelB);
+      state.nodeBFileName = files.length === 1 ? files[0].name : `${files.length} Archivos Cargados (Nodo B)`;
+      updateNodeComparisonUI();
       showAnalysisStatus(false, `✅ Logs de Nodo B Cargados: ${files.length} archivo(s)`, `${state.nodeBLogs.length} registros analizados`);
     });
 
@@ -2468,7 +2468,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     updateNodeComparisonUI();
   }
 
-  function updateNodeComparisonUI(fileNameA, fileNameB) {
+  function updateNodeComparisonUI() {
     const summaryA = document.getElementById('node-a-summary');
     const summaryB = document.getElementById('node-b-summary');
     const barA = document.getElementById('node-asymmetry-bar-a');
@@ -2476,19 +2476,11 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const labelAsym = document.getElementById('node-asymmetry-label');
     const containerTable = document.getElementById('node-comparison-table-container');
 
-    let logsA = state.nodeALogs || [];
-    let nameA = fileNameA || 'Nodo A (SACVWIG07 / 192.168.11.48)';
-    if (logsA.length === 0 && state.logs.length > 0) {
-      logsA = state.logs;
-      nameA = 'Nodo A (Muestra Actual)';
-    }
+    const logsA = state.nodeALogs || [];
+    const logsB = state.nodeBLogs || [];
 
-    let logsB = state.nodeBLogs || [];
-    let nameB = fileNameB || 'Nodo B (SACVWIG08 / 192.168.11.60)';
-    if (logsB.length === 0 && state.logs.length > 0) {
-      logsB = state.logs.filter((l, idx) => idx % 2 === 0);
-      nameB = 'Nodo B (Simulación Respaldo)';
-    }
+    const nameA = state.nodeAFileName || 'Nodo A (SACVWIG07 / 192.168.11.48)';
+    const nameB = state.nodeBFileName || 'Nodo B (SACVWIG08 / 192.168.11.60)';
 
     const countA = logsA.length;
     const countB = logsB.length;
@@ -2496,26 +2488,59 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const errB = logsB.filter(l => l.level === 'ERROR' || l.level === 'CRITICAL').length;
 
     if (summaryA) {
-      summaryA.innerHTML = `<strong>${escapeHtml(nameA)}</strong><br>Total Registros: <strong>${countA}</strong> | Errores 520xxx: <strong style="color:#dc2626;">${errA}</strong>`;
+      summaryA.innerHTML = `📁 Archivo: <strong>${escapeHtml(nameA)}</strong><br>Total Registros: <strong>${countA}</strong> | Errores 520xxx: <strong style="color:${errA > 0 ? '#dc2626' : '#10b981'};">${errA}</strong>`;
     }
     if (summaryB) {
-      summaryB.innerHTML = `<strong>${escapeHtml(nameB)}</strong><br>Total Registros: <strong>${countB}</strong> | Errores 520xxx: <strong style="color:#dc2626;">${errB}</strong>`;
+      summaryB.innerHTML = `📁 Archivo: <strong>${escapeHtml(nameB)}</strong><br>Total Registros: <strong>${countB}</strong> | Errores 520xxx: <strong style="color:${errB > 0 ? '#dc2626' : '#10b981'};">${errB}</strong>`;
     }
 
     const total = Math.max(1, countA + countB);
-    const pctA = Math.round((countA / total) * 100);
-    const pctB = 100 - pctA;
+    const pctA = countA === 0 && countB === 0 ? 50 : Math.round((countA / total) * 100);
+    const pctB = countA === 0 && countB === 0 ? 50 : 100 - pctA;
 
     if (barA) barA.style.width = `${pctA}%`;
     if (barB) barB.style.width = `${pctB}%`;
     if (labelAsym) {
-      const isAsymmetric = Math.abs(pctA - pctB) > 25;
-      labelAsym.textContent = isAsymmetric 
-        ? `⚠️ ASIMETRÍA ALTA (Nodo A: ${pctA}% vs Nodo B: ${pctB}%)`
-        : `✅ CARGA BALANCEADA (Nodo A: ${pctA}% vs Nodo B: ${pctB}%)`;
+      if (countA === 0 && countB === 0) {
+        labelAsym.textContent = '⏳ Cargue los archivos de log del Nodo A y Nodo B para iniciar la comparativa';
+      } else {
+        const isAsymmetric = Math.abs(pctA - pctB) > 20;
+        labelAsym.textContent = isAsymmetric 
+          ? `⚠️ ASIMETRÍA ALTA EN BALANCER (Nodo A: ${pctA}% vs Nodo B: ${pctB}%)`
+          : `✅ CARGA BALANCEADA (Nodo A: ${pctA}% vs Nodo B: ${pctB}%)`;
+      }
     }
 
     if (containerTable) {
+      const mapErrA = new Map();
+      logsA.forEach(l => {
+        if (l.entrustCode) mapErrA.set(l.entrustCode, (mapErrA.get(l.entrustCode) || 0) + 1);
+      });
+      const mapErrB = new Map();
+      logsB.forEach(l => {
+        if (l.entrustCode) mapErrB.set(l.entrustCode, (mapErrB.get(l.entrustCode) || 0) + 1);
+      });
+
+      const allCodes = Array.from(new Set([...mapErrA.keys(), ...mapErrB.keys()]));
+
+      let codesRows = '';
+      if (allCodes.length > 0) {
+        allCodes.forEach(code => {
+          const cA = mapErrA.get(code) || 0;
+          const cB = mapErrB.get(code) || 0;
+          const diffStr = cA === cB ? '✅ Idéntico' : (cA > cB ? `⚠️ ${cA - cB} más en Nodo A` : `⚠️ ${cB - cA} más en Nodo B`);
+          codesRows += `
+            <tr style="border-bottom:1px solid var(--border-color);">
+              <td style="padding:6px 8px; font-family:monospace; font-weight:bold; color:var(--text-cyan);">Código [${escapeHtml(code)}]</td>
+              <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cA > 0 ? '#dc2626' : '#10b981'};">${cA}</td>
+              <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cB > 0 ? '#dc2626' : '#10b981'};">${cB}</td>
+              <td style="padding:6px 8px; text-align:center; font-size:0.8rem;">${diffStr}</td>
+            </tr>`;
+        });
+      } else {
+        codesRows = `<tr><td colspan="4" style="padding:10px; text-align:center; color:var(--text-muted);">No se detectaron códigos de error [520xxx] en las muestras.</td></tr>`;
+      }
+
       containerTable.innerHTML = `
         <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:10px;">
           <thead>
@@ -2537,14 +2562,31 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               <td style="padding:8px; font-weight:bold;">Errores Críticos / 520xxx</td>
               <td style="padding:8px; text-align:center; font-weight:bold; color:#dc2626;">${errA}</td>
               <td style="padding:8px; text-align:center; font-weight:bold; color:#dc2626;">${errB}</td>
-              <td style="padding:8px; text-align:center;">${errA === errB ? '✅ Mismo comportamiento' : (errA > errB ? '⚠️ Mayor falla en Nodo A' : '⚠️ Mayor falla en Nodo B')}</td>
+              <td style="padding:8px; text-align:center;">${errA === errB ? '✅ Mismo comportamiento' : (errA > errB ? '⚠️ Falla mayoritaria en Nodo A' : '⚠️ Falla mayoritaria en Nodo B')}</td>
             </tr>
             <tr>
               <td style="padding:8px; font-weight:bold;">Índice de Salud Calculado</td>
-              <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${Math.max(10, Math.round(100 - (errA / Math.max(1, countA)) * 100 * 5))}%</td>
-              <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${Math.max(10, Math.round(100 - (errB / Math.max(1, countB)) * 100 * 5))}%</td>
-              <td style="padding:8px; text-align:center;">${Math.abs(errA - errB) === 0 ? '✅ Salud Paritaria' : '🔍 Revisar nodo con mayor falla'}</td>
+              <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${countA > 0 ? Math.max(10, Math.round(100 - (errA / countA) * 100 * 5)) + '%' : 'N/A'}</td>
+              <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${countB > 0 ? Math.max(10, Math.round(100 - (errB / countB) * 100 * 5)) + '%' : 'N/A'}</td>
+              <td style="padding:8px; text-align:center;">${errA === errB ? '✅ Salud Paritaria' : '🔍 Revisar nodo afectado'}</td>
             </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top:20px; font-weight:bold; color:var(--text-main); font-size:0.9rem;">
+          📊 Comparativa Lado a Lado de Códigos de Error Entrust [520xxx]:
+        </div>
+        <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:8px;">
+          <thead>
+            <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
+              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color);">Código de Error / Evento</th>
+              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Conteo Nodo A</th>
+              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Conteo Nodo B</th>
+              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Diferencial Forense</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${codesRows}
           </tbody>
         </table>
       `;
