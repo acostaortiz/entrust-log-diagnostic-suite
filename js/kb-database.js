@@ -8,6 +8,20 @@ class KnowledgeBase {
   constructor() {
     this.storageKey = 'kb_custom_rules_v1';
     this.defaultRules = [
+      {
+        id: 'KB-ENTRUST-DISCONNECT',
+        title: 'Desconexión Voluntaria del Usuario (Client Abort / Broken Pipe)',
+        category: 'Entrust OnPremise / Conectividad HTTP',
+        severity: 'INFO',
+        pattern: /(ClientAbortException|Broken pipe|ClientAbort|Connection reset by peer)/i,
+        meaning: 'El usuario o navegador cerró la pestaña/conexión antes de que Entrust terminara de enviar la respuesta HTTP.',
+        rootCause: 'Navegación cancelada o ventana cerrada prematuramente por el cliente final.',
+        remediation: 'No requiere acción técnica. Es un comportamiento habitual del usuario y no representa una falla del servidor Entrust.',
+        riskLevel: 'Informativo (Cero Falsos Positivos)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-client-abort',
+        sectionTitle: 'Desconexión Voluntaria del Cliente'
+      },
       // ==========================================
       // AUDITORÍA DE SERVICIOS Y ALTA DISPONIBILIDAD (AUD106 - AUD155)
       // ==========================================

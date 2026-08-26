@@ -517,6 +517,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const element = document.getElementById('exec-report-container');
     if (!element) return;
 
+    // Convertir gráficos de dona y tendencia a imágenes PNG para el PDF
+    const trendCanvas = document.getElementById('chart-trend');
+    const sevCanvas = document.getElementById('chart-severity');
+    let chartsContainer = document.getElementById('report-embedded-charts');
+
+    if (!chartsContainer) {
+      chartsContainer = document.createElement('div');
+      chartsContainer.id = 'report-embedded-charts';
+      chartsContainer.style.display = 'flex';
+      chartsContainer.style.gap = '20px';
+      chartsContainer.style.justifyContent = 'center';
+      chartsContainer.style.margin = '20px 0';
+      element.appendChild(chartsContainer);
+    }
+
+    chartsContainer.innerHTML = '';
+    if (trendCanvas) {
+      try {
+        const imgTrend = document.createElement('img');
+        imgTrend.src = trendCanvas.toDataURL('image/png');
+        imgTrend.style.maxWidth = '45%';
+        imgTrend.style.border = '1px solid #cbd5e1';
+        imgTrend.style.borderRadius = '6px';
+        chartsContainer.appendChild(imgTrend);
+      } catch(e) {}
+    }
+    if (sevCanvas) {
+      try {
+        const imgSev = document.createElement('img');
+        imgSev.src = sevCanvas.toDataURL('image/png');
+        imgSev.style.maxWidth = '45%';
+        imgSev.style.border = '1px solid #cbd5e1';
+        imgSev.style.borderRadius = '6px';
+        chartsContainer.appendChild(imgSev);
+      } catch(e) {}
+    }
+
     const activeClient = getActiveClientProfile();
     const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
     const dateStamp = new Date().toISOString().slice(0, 10);
@@ -2194,6 +2231,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     const userMap = new Map();
     const ipMap = new Map();
+    const ipUserSet = new Map();
 
     const logsToAnalyze = state.filteredLogs && state.filteredLogs.length > 0 ? state.filteredLogs : state.logs;
 
@@ -2219,11 +2257,24 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           item.total += 1;
           if (l.level === 'ERROR' || l.level === 'CRITICAL') item.errors += 1;
         }
+
+        if (u) {
+          if (!ipUserSet.has(ip)) ipUserSet.set(ip, new Set());
+          ipUserSet.get(ip).add(u);
+        }
       }
     });
 
     if (userBadge) userBadge.textContent = `${userMap.size} Usuarios Únicos`;
     if (ipBadge) ipBadge.textContent = `${ipMap.size} IPs Únicas`;
+
+    // Detección de Password Spraying (1 IP probando múltiples usuarios)
+    let sprayingDetected = false;
+    ipUserSet.forEach((userSet, ipAddr) => {
+      if (userSet.size >= 3) {
+        sprayingDetected = true;
+      }
+    });
 
     // Renderizar Usuarios
     if (userMap.size > 0) {

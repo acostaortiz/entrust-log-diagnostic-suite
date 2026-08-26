@@ -136,8 +136,41 @@ class LogParser {
       }
     }
 
+    this.correlateAutoHealing(parsedEntries);
+
     if (onProgress) onProgress(totalMerged, totalMerged, '100% Finalizado');
     return parsedEntries;
+  }
+
+  correlateAutoHealing(parsedEntries) {
+    if (!parsedEntries || parsedEntries.length === 0) return;
+    const userEvents = new Map();
+
+    parsedEntries.forEach(entry => {
+      if (!entry.user) return;
+      if (!userEvents.has(entry.user)) userEvents.set(entry.user, []);
+      userEvents.get(entry.user).push(entry);
+    });
+
+    userEvents.forEach((events) => {
+      for (let i = 0; i < events.length; i++) {
+        const current = events[i];
+        if (current.level === 'ERROR' || current.level === 'CRITICAL') {
+          for (let j = i + 1; j < events.length; j++) {
+            const next = events[j];
+            if (next.level === 'INFO' || (next.message && /(200 OK|AuthenticationSuccessful|AUD2300|success)/i.test(next.message))) {
+              current.recovered = true;
+              current.recoveredAt = next.timestamp;
+              if (current.diagnostic) {
+                current.diagnostic.title = `[REINTENTO RECUPERADO CON ÉXITO] ${current.diagnostic.title}`;
+                current.diagnostic.meaning += ` (El usuario logró autenticarse exitosamente a las ${next.timestamp}).`;
+              }
+              break;
+            }
+          }
+        }
+      }
+    });
   }
 
   /**
@@ -192,7 +225,10 @@ class LogParser {
     if (!isCatalinaPattern && !dateMatch && !levelMatch) return null;
 
     let level = 'INFO';
-    if (levelMatch) {
+    const isDisconnection = /(ClientAbortException|Broken pipe|ClientAbort|Connection reset)/i.test(line);
+    if (isDisconnection) {
+      level = 'INFO';
+    } else if (levelMatch) {
       level = this.normalizeLevel(levelMatch[1]);
     } else if (/(OutOfMemoryError|SQLException|SSLHandshakeException|FATAL|CRITICAL)/i.test(line)) {
       level = 'CRITICAL';
