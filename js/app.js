@@ -391,8 +391,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (targetTab === 'manuals') {
       loadManual(state.currentManualVersion);
     }
+    if (targetTab === 'traces') {
+      renderTraceWaterfall();
+    }
     if (targetTab === 'nodes') {
-      renderNodeComparison();
+      updateNodeComparisonUI();
     }
   }
 
@@ -2095,85 +2098,139 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
   function initCharts() {
     if (typeof Chart === 'undefined') {
-      console.warn('Chart.js no disponible en window. Omitiendo renderizado de canvas.');
+      console.warn('Chart.js no disponible en CDN. Activando renderizador gráfico HTML/SVG fallback.');
+      renderFallbackCharts();
       return;
     }
     try {
       const trendCanvas = document.getElementById('chart-trend');
       if (trendCanvas) {
         const ctx = trendCanvas.getContext('2d');
-      state.charts.trend = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ['10:14', '10:15', '10:16', '10:18', '10:20', '10:22', '10:25', '10:28'],
-          datasets: [
-            {
-              label: 'Errores Entrust [520xxx / IDaaS]',
-              data: [0, 1, 1, 1, 0, 1, 0, 0],
-              borderColor: '#dc2626',
-              backgroundColor: 'rgba(220, 38, 38, 0.1)',
-              tension: 0.3,
-              fill: true
-            },
-            {
-              label: 'Alertas de Auditoría [AUDxxx]',
-              data: [1, 0, 0, 0, 1, 1, 1, 2],
-              borderColor: '#0284c7',
-              backgroundColor: 'rgba(2, 132, 199, 0.1)',
-              tension: 0.3,
-              fill: true
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { labels: { color: '#475569', font: { family: 'Inter', weight: '600' } } }
+        state.charts.trend = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['10:14', '10:15', '10:16', '10:18', '10:20', '10:22', '10:25', '10:28'],
+            datasets: [
+              {
+                label: 'Errores Entrust [520xxx / IDaaS]',
+                data: [0, 1, 1, 1, 0, 1, 0, 0],
+                borderColor: '#dc2626',
+                backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                tension: 0.3,
+                fill: true
+              },
+              {
+                label: 'Alertas de Auditoría [AUDxxx]',
+                data: [1, 0, 0, 0, 1, 1, 1, 2],
+                borderColor: '#0284c7',
+                backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                tension: 0.3,
+                fill: true
+              }
+            ]
           },
-          scales: {
-            x: { grid: { color: 'rgba(203, 213, 225, 0.3)' }, ticks: { color: '#64748b' } },
-            y: { grid: { color: 'rgba(203, 213, 225, 0.3)' }, ticks: { color: '#64748b' } }
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: '#475569', font: { family: 'Inter', weight: '600' } } }
+            },
+            scales: {
+              x: { grid: { color: 'rgba(203, 213, 225, 0.3)' }, ticks: { color: '#64748b' } },
+              y: { grid: { color: 'rgba(203, 213, 225, 0.3)' }, ticks: { color: '#64748b' } }
+            }
           }
-        }
-      });
+        });
+      }
+
+      const severityCanvas = document.getElementById('chart-severity');
+      if (severityCanvas) {
+        const ctxSev = severityCanvas.getContext('2d');
+        state.charts.severity = new Chart(ctxSev, {
+          type: 'doughnut',
+          data: {
+            labels: ['CRITICAL / ERROR', 'WARN (Auditoría)', 'INFO', 'DEBUG'],
+            datasets: [{
+              data: [0, 0, 0, 0],
+              backgroundColor: [
+                '#dc2626',
+                '#f59e0b',
+                '#0284c7',
+                '#8b5cf6'
+              ],
+              borderWidth: 2,
+              borderColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { color: '#475569', font: { family: 'Inter', weight: '600', size: 11 } }
+              }
+            }
+          }
+        });
+      }
+    } catch(err) {
+      console.error('Error al inicializar Chart.js:', err);
+      renderFallbackCharts();
+    }
+  }
+
+  function renderFallbackCharts() {
+    const trendContainer = document.getElementById('chart-trend')?.parentElement;
+    const sevContainer = document.getElementById('chart-severity')?.parentElement;
+
+    const criticalCount = state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
+    const warnCount = state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length;
+    const infoCount = state.logs.filter(l => l.level === 'INFO').length;
+    const total = Math.max(1, state.logs.length);
+
+    if (trendContainer) {
+      trendContainer.innerHTML = `
+        <div style="padding:15px; background:var(--bg-primary); border-radius:6px; font-size:0.85rem;">
+          <div style="font-weight:bold; margin-bottom:10px; color:var(--text-main);">📊 Tendencia Visual de Eventos (Fallback Modo Seguro)</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div>
+              <div class="flex-between mb-1"><span>Errores Críticos / 520xxx</span><strong style="color:#dc2626;">${criticalCount} (${((criticalCount/total)*100).toFixed(1)}%)</strong></div>
+              <div style="height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden;"><div style="width:${Math.min(100, (criticalCount/total)*100)}%; background:#dc2626; height:100%;"></div></div>
+            </div>
+            <div>
+              <div class="flex-between mb-1"><span>Alertas Auditoría AUDxxx</span><strong style="color:#f59e0b;">${warnCount} (${((warnCount/total)*100).toFixed(1)}%)</strong></div>
+              <div style="height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden;"><div style="width:${Math.min(100, (warnCount/total)*100)}%; background:#f59e0b; height:100%;"></div></div>
+            </div>
+            <div>
+              <div class="flex-between mb-1"><span>Operaciones Informativas</span><strong style="color:#0284c7;">${infoCount} (${((infoCount/total)*100).toFixed(1)}%)</strong></div>
+              <div style="height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden;"><div style="width:${Math.min(100, (infoCount/total)*100)}%; background:#0284c7; height:100%;"></div></div>
+            </div>
+          </div>
+        </div>`;
     }
 
-    const severityCanvas = document.getElementById('chart-severity');
-    if (severityCanvas) {
-      const ctxSev = severityCanvas.getContext('2d');
-      state.charts.severity = new Chart(ctxSev, {
-        type: 'doughnut',
-        data: {
-          labels: ['CRITICAL / ERROR', 'WARN (Auditoría)', 'INFO', 'DEBUG'],
-          datasets: [{
-            data: [0, 0, 0, 0],
-            backgroundColor: [
-              '#dc2626',
-              '#f59e0b',
-              '#0284c7',
-              '#8b5cf6'
-            ],
-            borderWidth: 2,
-            borderColor: '#ffffff'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: { color: '#475569', font: { family: 'Inter', weight: '600', size: 11 } }
-            }
-          }
-        }
-      });
+    if (sevContainer) {
+      sevContainer.innerHTML = `
+        <div style="padding:15px; background:var(--bg-primary); border-radius:6px; font-size:0.85rem;">
+          <div style="font-weight:bold; margin-bottom:10px; color:var(--text-main);">🍩 Distribución por Severidad</div>
+          <div style="display:flex; justify-content:space-around; text-align:center; padding:10px 0;">
+            <div style="background:rgba(220,38,38,0.1); padding:10px 16px; border-radius:6px; border:1px solid #dc2626;">
+              <div style="font-size:1.4rem; font-weight:bold; color:#dc2626;">${criticalCount}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">CRITICAL</div>
+            </div>
+            <div style="background:rgba(245,158,11,0.1); padding:10px 16px; border-radius:6px; border:1px solid #f59e0b;">
+              <div style="font-size:1.4rem; font-weight:bold; color:#f59e0b;">${warnCount}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">WARNING</div>
+            </div>
+            <div style="background:rgba(2,132,199,0.1); padding:10px 16px; border-radius:6px; border:1px solid #0284c7;">
+              <div style="font-size:1.4rem; font-weight:bold; color:#0284c7;">${infoCount}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">INFO</div>
+            </div>
+          </div>
+        </div>`;
     }
-  } catch(err) {
-    console.error('Error al inicializar Chart.js:', err);
   }
-}
 
   function updateTrendChart() {
     if (!state.charts.trend) return;
@@ -2355,6 +2412,155 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       applyLogFilters();
     }
   };
+
+  function initNodeComparisonModule() {
+    const fileInputA = document.getElementById('node-a-file-input');
+    const fileInputB = document.getElementById('node-b-file-input');
+    const selectA = document.getElementById('node-a-select');
+    const selectB = document.getElementById('node-b-select');
+    const btnRefresh = document.getElementById('btn-refresh-node-comparison');
+
+    fileInputA?.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      showAnalysisStatus(true, `⚙️ Procesando Log Nodo A: ${file.name}...`, 'Analizando registros...');
+      const content = await file.text();
+      state.nodeALogs = await window.logParserEngine.parseLogsAsync(content, null);
+      updateNodeComparisonUI(file.name, null);
+      showAnalysisStatus(false, `✅ Log Nodo A Cargado: ${file.name}`, `${state.nodeALogs.length} registros analizados`);
+    });
+
+    fileInputB?.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      showAnalysisStatus(true, `⚙️ Procesando Log Nodo B: ${file.name}...`, 'Analizando registros...');
+      const content = await file.text();
+      state.nodeBLogs = await window.logParserEngine.parseLogsAsync(content, null);
+      updateNodeComparisonUI(null, file.name);
+      showAnalysisStatus(false, `✅ Log Nodo B Cargado: ${file.name}`, `${state.nodeBLogs.length} registros analizados`);
+    });
+
+    btnRefresh?.addEventListener('click', () => {
+      updateNodeComparisonUI();
+    });
+
+    selectA?.addEventListener('change', () => updateNodeComparisonUI());
+    selectB?.addEventListener('change', () => updateNodeComparisonUI());
+
+    updateNodeComparisonUI();
+  }
+
+  function updateNodeComparisonUI(fileNameA, fileNameB) {
+    const summaryA = document.getElementById('node-a-summary');
+    const summaryB = document.getElementById('node-b-summary');
+    const barA = document.getElementById('node-asymmetry-bar-a');
+    const barB = document.getElementById('node-asymmetry-bar-b');
+    const labelAsym = document.getElementById('node-asymmetry-label');
+    const containerTable = document.getElementById('node-comparison-table-container');
+
+    let logsA = state.nodeALogs || [];
+    let nameA = fileNameA || 'Nodo A (SACVWIG07 / 192.168.11.48)';
+    if (logsA.length === 0 && state.logs.length > 0) {
+      logsA = state.logs;
+      nameA = 'Nodo A (Muestra Actual)';
+    }
+
+    let logsB = state.nodeBLogs || [];
+    let nameB = fileNameB || 'Nodo B (SACVWIG08 / 192.168.11.60)';
+    if (logsB.length === 0 && state.logs.length > 0) {
+      logsB = state.logs.filter((l, idx) => idx % 2 === 0);
+      nameB = 'Nodo B (Simulación Respaldo)';
+    }
+
+    const countA = logsA.length;
+    const countB = logsB.length;
+    const errA = logsA.filter(l => l.level === 'ERROR' || l.level === 'CRITICAL').length;
+    const errB = logsB.filter(l => l.level === 'ERROR' || l.level === 'CRITICAL').length;
+
+    if (summaryA) {
+      summaryA.innerHTML = `<strong>${escapeHtml(nameA)}</strong><br>Total Registros: <strong>${countA}</strong> | Errores 520xxx: <strong style="color:#dc2626;">${errA}</strong>`;
+    }
+    if (summaryB) {
+      summaryB.innerHTML = `<strong>${escapeHtml(nameB)}</strong><br>Total Registros: <strong>${countB}</strong> | Errores 520xxx: <strong style="color:#dc2626;">${errB}</strong>`;
+    }
+
+    const total = Math.max(1, countA + countB);
+    const pctA = Math.round((countA / total) * 100);
+    const pctB = 100 - pctA;
+
+    if (barA) barA.style.width = `${pctA}%`;
+    if (barB) barB.style.width = `${pctB}%`;
+    if (labelAsym) {
+      const isAsymmetric = Math.abs(pctA - pctB) > 25;
+      labelAsym.textContent = isAsymmetric 
+        ? `⚠️ ASIMETRÍA ALTA (Nodo A: ${pctA}% vs Nodo B: ${pctB}%)`
+        : `✅ CARGA BALANCEADA (Nodo A: ${pctA}% vs Nodo B: ${pctB}%)`;
+    }
+
+    if (containerTable) {
+      containerTable.innerHTML = `
+        <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:10px;">
+          <thead>
+            <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
+              <th style="padding:8px; border-bottom:2px solid var(--border-color);">Métrica / Indicador</th>
+              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:var(--it-blue);">🖥️ ${escapeHtml(nameA)}</th>
+              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:var(--text-cyan);">🖥️ ${escapeHtml(nameB)}</th>
+              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center;">Diagnóstico de Simetría</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:8px; font-weight:bold;">Total Transacciones / Logs</td>
+              <td style="padding:8px; text-align:center; font-weight:bold;">${countA}</td>
+              <td style="padding:8px; text-align:center; font-weight:bold;">${countB}</td>
+              <td style="padding:8px; text-align:center;">${Math.abs(countA - countB) < 50 ? '✅ Simétrico' : '⚠️ Desbalance de Carga'}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px; font-weight:bold;">Errores Críticos / 520xxx</td>
+              <td style="padding:8px; text-align:center; font-weight:bold; color:#dc2626;">${errA}</td>
+              <td style="padding:8px; text-align:center; font-weight:bold; color:#dc2626;">${errB}</td>
+              <td style="padding:8px; text-align:center;">${errA === errB ? '✅ Mismo comportamiento' : (errA > errB ? '⚠️ Mayor falla en Nodo A' : '⚠️ Mayor falla en Nodo B')}</td>
+            </tr>
+            <tr>
+              <td style="padding:8px; font-weight:bold;">Índice de Salud Calculado</td>
+              <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${Math.max(10, Math.round(100 - (errA / Math.max(1, countA)) * 100 * 5))}%</td>
+              <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${Math.max(10, Math.round(100 - (errB / Math.max(1, countB)) * 100 * 5))}%</td>
+              <td style="padding:8px; text-align:center;">${Math.abs(errA - errB) === 0 ? '✅ Salud Paritaria' : '🔍 Revisar nodo con mayor falla'}</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+    }
+  }
+
+  function renderTraceWaterfall() {
+    const container = document.getElementById('trace-waterfall-container');
+    if (!container) return;
+
+    const sampleSpans = [
+      { name: '1. HTTP Request (WSO2 API Gateway)', duration: '18 ms', pct: 15, status: 'OK', color: '#0284c7' },
+      { name: '2. Entrust Auth Context Lookup (HTTPS 8443)', duration: '115 ms', pct: 40, status: 'OK', color: '#06b6d4' },
+      { name: '3. LDAP / Active Directory Password Validation', duration: '240 ms', pct: 75, status: 'OK', color: '#10b981' },
+      { name: '4. Grid Card Challenge Validation (SOAP Service)', duration: '85 ms', pct: 30, status: 'OK', color: '#8b5cf6' },
+      { name: '5. Notification Dispatch (SMS / Email Gateway)', duration: '3.420 ms', pct: 95, status: 'WARN', color: '#f59e0b' }
+    ];
+
+    let html = `<div style="display:flex; flex-direction:column; gap:12px;">`;
+    sampleSpans.forEach(span => {
+      html += `
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); padding:10px 14px; border-radius:6px;">
+          <div class="flex-between mb-1" style="font-size:0.85rem;">
+            <span style="font-weight:600; color:var(--text-main);">${escapeHtml(span.name)}</span>
+            <span class="font-mono" style="color:var(--text-cyan); font-weight:700;">${span.duration} (${span.status})</span>
+          </div>
+          <div style="height:8px; background:#1e293b; border-radius:4px; overflow:hidden;">
+            <div style="width:${span.pct}%; background:${span.color}; height:100%; transition:width 0.5s;"></div>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+    container.innerHTML = html;
+  }
 
   function initEventListeners() {
     dom.btnResetSession?.addEventListener('click', () => resetSession());
