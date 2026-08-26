@@ -1730,14 +1730,23 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   }
 
   function jumpToManualSection(version, sectionId) {
-    switchTab('manuals');
-
-    state.currentManualVersion = version;
-    if (dom.manualVersionSelect) {
-      dom.manualVersionSelect.value = version;
+    let realVersion = version;
+    if (!realVersion || realVersion === 'vEntrust' || realVersion === 'v13.0' || realVersion === 'v13_0') {
+      realVersion = 'v13_0_webhelp';
+    } else if (realVersion === 'v12.0' || realVersion === 'v12_0') {
+      realVersion = 'v12_0_webhelp';
+    } else if (realVersion === 'v11.0' || realVersion === 'v11_0') {
+      realVersion = 'v11_0_webhelp';
     }
 
-    loadManual(version, sectionId);
+    switchTab('manuals');
+
+    state.currentManualVersion = realVersion;
+    if (dom.manualVersionSelect) {
+      dom.manualVersionSelect.value = realVersion;
+    }
+
+    loadManual(realVersion, sectionId);
   }
 
   /* ==========================================================================
@@ -1823,59 +1832,67 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   async function loadManual(version, scrollToSectionId = null) {
     if (!dom.manualIframe) return;
 
-    if (version === 'v13_0_webhelp') {
-      dom.manualIframe.src = 'manuals/IG_130_Admin_WebHelp/index.htm';
-      renderTocList([
+    let targetSrc = 'manuals/IG_130_Admin_WebHelp/index.htm';
+    let tocItems = [];
+
+    if (version === 'v13_0_webhelp' || version === 'v13.0' || version === 'vEntrust') {
+      targetSrc = 'manuals/IG_130_Admin_WebHelp/index.htm';
+      tocItems = [
         { id: 'manuals/IG_130_Admin_WebHelp/index.htm', text: '📖 Inicio WebHelp Entrust v13.0', level: 'h2' },
         { id: 'manuals/IG_130_Admin_WebHelp/reference.htm', text: '📘 Referencia General de Administración', level: 'h2' },
         { id: 'manuals/IG_130_Admin_WebHelp/configure_token_authentication.htm', text: '🔑 Configuración de Autenticación de Tokens', level: 'h3' },
         { id: 'manuals/IG_130_Admin_WebHelp/authenticate_with_your_entrust_datacard_ot_token.htm', text: '📲 Autenticación Soft Token / Identity Guard', level: 'h3' }
-      ]);
-      return;
-    }
-
-    if (version === 'v12_0_webhelp') {
-      dom.manualIframe.src = 'manuals/IG_120_Admin_WebHelp/index.htm';
-      renderTocList([
+      ];
+    } else if (version === 'v12_0_webhelp' || version === 'v12.0') {
+      targetSrc = 'manuals/IG_120_Admin_WebHelp/index.htm';
+      tocItems = [
         { id: 'manuals/IG_120_Admin_WebHelp/index.htm', text: '📖 Inicio WebHelp Entrust v12.0', level: 'h2' },
         { id: 'manuals/IG_120_Admin_WebHelp/reference.htm', text: '📘 Referencia General de Administración v12.0', level: 'h2' },
         { id: 'manuals/IG_120_Admin_WebHelp/configuration_worksheets.htm', text: '📋 Hojas de Configuración v12.0', level: 'h3' },
         { id: 'manuals/IG_120_Admin_WebHelp/authenticate_with_your_entrust_datacard_ot_token.htm', text: '📲 Autenticación Soft Token / Identity Guard', level: 'h3' }
-      ]);
-      return;
-    }
-
-    if (version === 'v11_0_webhelp') {
-      dom.manualIframe.src = 'manuals/IG_110_Admin_WebHelp/index.htm';
-      renderTocList([
+      ];
+    } else if (version === 'v11_0_webhelp' || version === 'v11.0') {
+      targetSrc = 'manuals/IG_110_Admin_WebHelp/index.htm';
+      tocItems = [
         { id: 'manuals/IG_110_Admin_WebHelp/index.htm', text: '📖 Inicio WebHelp Entrust v11.0', level: 'h2' },
         { id: 'manuals/IG_110_Admin_WebHelp/reference.htm', text: '📘 Referencia General de Administración v11.0', level: 'h2' },
         { id: 'manuals/IG_110_Admin_WebHelp/configuration_worksheets.htm', text: '📋 Hojas de Configuración v11.0', level: 'h3' }
-      ]);
-      return;
+      ];
+    } else if (version === 'v13_0_relnotes') {
+      targetSrc = 'manuals/entrust_ig_130_releasenotes.html';
+      tocItems = [{ id: 'manuals/entrust_ig_130_releasenotes.html', text: '📋 Release Notes v13.0 (Diciembre 2020)', level: 'h2' }];
+    } else if (version === 'v12_0_relnotes') {
+      targetSrc = 'manuals/entrust_ig_120_releasenotes.html';
+      tocItems = [{ id: 'manuals/entrust_ig_120_releasenotes.html', text: '📋 Release Notes v12.0 (Marzo 2017)', level: 'h2' }];
+    } else if (version === 'v11_0_relnotes') {
+      targetSrc = 'manuals/entrust_ig_110_releasenotes.html';
+      tocItems = [{ id: 'manuals/entrust_ig_110_releasenotes.html', text: '📋 Release Notes v11.0 (Noviembre 2015)', level: 'h2' }];
     }
 
-    if (version === 'v13_0_relnotes') {
-      dom.manualIframe.src = 'manuals/entrust_ig_130_releasenotes.html';
-      renderTocList([
-        { id: 'manuals/entrust_ig_130_releasenotes.html', text: '📋 Release Notes v13.0 (Diciembre 2020)', level: 'h2' }
-      ]);
-      return;
-    }
+    if (tocItems.length > 0) {
+      dom.manualIframe.src = targetSrc;
+      renderTocList(tocItems);
 
-    if (version === 'v12_0_relnotes') {
-      dom.manualIframe.src = 'manuals/entrust_ig_120_releasenotes.html';
-      renderTocList([
-        { id: 'manuals/entrust_ig_120_releasenotes.html', text: '📋 Release Notes v12.0 (Marzo 2017)', level: 'h2' }
-      ]);
-      return;
-    }
+      const scrollToTarget = () => {
+        if (!scrollToSectionId) return;
+        try {
+          const doc = dom.manualIframe.contentDocument || dom.manualIframe.contentWindow.document;
+          if (doc) {
+            const targetEl = doc.getElementById(scrollToSectionId) || doc.querySelector(`[data-section="${scrollToSectionId}"]`) || doc.querySelector('h1, h2, h3, body');
+            if (targetEl && targetEl !== doc.body) {
+              targetEl.scrollIntoView({ behavior: 'smooth' });
+              targetEl.style.background = '#fef08a';
+              targetEl.style.color = '#0f172a';
+              setTimeout(() => targetEl.style.background = 'transparent', 3500);
+            }
+          }
+        } catch(e) {
+          console.log('Scroll into manual section error handled:', e);
+        }
+      };
 
-    if (version === 'v11_0_relnotes') {
-      dom.manualIframe.src = 'manuals/entrust_ig_110_releasenotes.html';
-      renderTocList([
-        { id: 'manuals/entrust_ig_110_releasenotes.html', text: '📋 Release Notes v11.0 (Noviembre 2015)', level: 'h2' }
-      ]);
+      dom.manualIframe.onload = scrollToTarget;
+      setTimeout(scrollToTarget, 500);
       return;
     }
 
@@ -1892,13 +1909,14 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     if (scrollToSectionId) {
       setTimeout(() => {
-        const targetEl = doc.getElementById(scrollToSectionId);
+        const targetEl = doc.getElementById(scrollToSectionId) || doc.querySelector(`.${scrollToSectionId}`);
         if (targetEl) {
           targetEl.scrollIntoView({ behavior: 'smooth' });
           targetEl.style.background = '#fef08a';
-          setTimeout(() => targetEl.style.background = 'transparent', 2500);
+          targetEl.style.color = '#0f172a';
+          setTimeout(() => targetEl.style.background = 'transparent', 3500);
         }
-      }, 200);
+      }, 300);
     }
   }
 
