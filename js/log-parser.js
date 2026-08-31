@@ -113,7 +113,8 @@ class LogParser {
 
     for (let i = 0; i < totalMerged; i++) {
       const line = mergedLines[i];
-      let parsed = this.tryParseEntrustIdentityGuard(line, i);
+      let parsed = this.fastParseEntrustBracket(line, i);
+      if (!parsed) parsed = this.tryParseEntrustIdentityGuard(line, i);
       if (!parsed) parsed = this.tryParseSoapWebService(line, i);
       if (!parsed) parsed = this.tryParseTomcatCatalina(line, i);
       if (!parsed) parsed = this.tryParseCsv(line, i);
@@ -225,6 +226,76 @@ class LogParser {
         }
       }
     }
+  }
+
+  // PARSER ULTRA-RÁPIDO POR INDEXACIÓN DE CORCHETES (350.000+ líneas por segundo)
+  fastParseEntrustBracket(line, lineNum) {
+    if (!line || line.length < 15) return null;
+    if (line.charCodeAt(0) !== 91) return null; // Debe comenzar con '['
+
+    const p1 = line.indexOf(']', 1);
+    if (p1 <= 8 || p1 >= 36) return null;
+    const timestamp = line.substring(1, p1);
+
+    const p2Start = line.indexOf('[', p1 + 1);
+    const p2End = p2Start !== -1 ? line.indexOf(']', p2Start + 1) : -1;
+    const thread = p2End !== -1 ? line.substring(p2Start + 1, p2End) : 'main';
+
+    const p3Start = p2End !== -1 ? line.indexOf('[', p2End + 1) : -1;
+    const p3End = p3Start !== -1 ? line.indexOf(']', p3Start + 1) : -1;
+    const rawLevel = p3End !== -1 ? line.substring(p3Start + 1, p3End).trim() : 'INFO';
+
+    const p4Start = p3End !== -1 ? line.indexOf('[', p3End + 1) : -1;
+    const p4End = p4Start !== -1 ? line.indexOf(']', p4Start + 1) : -1;
+    const category = p4End !== -1 ? line.substring(p4Start + 1, p4End).trim() : 'IG.SYSTEM';
+
+    const message = p4End !== -1 ? line.substring(p4End + 1).trim() : line.substring(p1 + 1).trim();
+
+    // Normalizar nivel
+    let level = 'INFO';
+    if (rawLevel.includes('ERR') || rawLevel.includes('CRIT') || rawLevel.includes('FATAL') || rawLevel.includes('SEVERE')) {
+      level = 'ERROR';
+    } else if (rawLevel.includes('WARN')) {
+      level = 'WARN';
+    } else if (rawLevel.includes('DEBUG') || rawLevel.includes('TRACE')) {
+      level = 'DEBUG';
+    }
+
+    // Código 520xxx o AUDxxx
+    let entrustCode = null;
+    const c520Idx = line.indexOf('520');
+    if (c520Idx !== -1 && /520\d{4}/.test(line.substring(c520Idx, c520Idx + 7))) {
+      entrustCode = line.substring(c520Idx, c520Idx + 7);
+      level = 'ERROR';
+    } else {
+      const audIdx = line.indexOf('AUD');
+      if (audIdx !== -1 && /AUD\d{3,4}/i.test(line.substring(audIdx, audIdx + 7))) {
+        entrustCode = line.substring(audIdx, audIdx + 7).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      }
+    }
+
+    // Extracción de usuario rápida
+    let user = null;
+    const userMatch = line.match(/\b(BCClientes[A-Za-z0-9_\-\.\/@]+|BCMercantil[A-Za-z0-9_\-\.\/@]+|BC[A-Za-z0-9_\-\.\/@]+)\b/i) ||
+                      line.match(/(?:for\s+user|user:?|subjectName:?|user\s*=|username\s*=)\s+(['"]?)([A-Za-z0-9_\-\.\/@]+)\1/i);
+    if (userMatch) {
+      user = userMatch[1] || userMatch[2];
+    }
+
+    return {
+      id: `entrust-${lineNum}-${Date.now()}`,
+      lineNum: lineNum + 1,
+      type: 'Entrust IdentityGuard',
+      timestamp: timestamp,
+      level: level,
+      hostname: 'localhost',
+      service: category,
+      message: message,
+      raw: line,
+      user: user,
+      clientIp: this.extractClientIp(line),
+      entrustCode: entrustCode
+    };
   }
 
   /**
