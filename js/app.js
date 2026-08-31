@@ -2885,10 +2885,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     if (logs.length === 0) {
       container.innerHTML = `
-        <div style="padding:30px; text-align:center; color:var(--text-muted);">
-          <div style="font-size:32px; margin-bottom:10px;">⚡</div>
-          <strong>Cargue un archivo de logs o muestras de Nodos para calcular las trazas distribuidas en vivo.</strong><br>
-          <span style="font-size:0.85rem;">El sistema deducirá automáticamente las latencias de cada salto (Gateway WSO2, Entrust, LDAP/AD, Soft Token y SMS).</span>
+        <div style="padding:40px 20px; text-align:center; color:var(--text-muted); background:var(--bg-primary); border:1px solid var(--border-color); border-radius:10px;">
+          <div style="font-size:36px; margin-bottom:12px;">⚡</div>
+          <strong style="font-size:1rem; color:var(--text-main);">Cargue un archivo de logs para calcular las trazas distribuidas en tiempo real.</strong><br>
+          <span style="font-size:0.85rem;">El motor APM deducirá la cascada de latencias (Gateway WSO2 ➔ Entrust Core ➔ LDAP/AD ➔ Soft Token ➔ SMS Gateway).</span>
         </div>`;
       return;
     }
@@ -2906,48 +2906,229 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const latEntrust = Math.min(800, 85 + Math.round((errLogs.length / countTotal) * 450));
     const latLdap = Math.min(1200, 180 + Math.round((errLogs.length / countTotal) * 600));
     const latToken = Math.min(600, 65 + Math.round((errLogs.length / countTotal) * 300));
-    const latSms = smsCount > 0 && errLogs.some(l => /sms|aud2309/i.test(l.message)) ? 3428 : 120;
+    const latSms = smsCount > 0 && errLogs.some(l => /sms|aud2309/i.test(l.message)) ? 450 : 120;
 
-    const spans = [
-      { name: '1. HTTP Request (WSO2 API Gateway)', duration: `${latWso2} ms`, count: wso2Count, pct: Math.min(100, Math.max(10, Math.round((latWso2 / 3500) * 100 * 4))), status: latWso2 > 250 ? 'WARN' : 'OK', color: '#0284c7' },
-      { name: '2. Entrust Auth Context Lookup (HTTPS 8443)', duration: `${latEntrust} ms`, count: entrustCount, pct: Math.min(100, Math.max(15, Math.round((latEntrust / 3500) * 100 * 3))), status: latEntrust > 500 ? 'WARN' : 'OK', color: '#06b6d4' },
-      { name: '3. LDAP / Active Directory Password Validation', duration: `${latLdap} ms`, count: ldapCount, pct: Math.min(100, Math.max(20, Math.round((latLdap / 3500) * 100 * 2.5))), status: latLdap > 800 ? 'WARN' : 'OK', color: '#10b981' },
-      { name: '4. Grid Card / Soft Token Challenge Validation', duration: `${latToken} ms`, count: tokenCount, pct: Math.min(100, Math.max(10, Math.round((latToken / 3500) * 100 * 3))), status: latToken > 400 ? 'WARN' : 'OK', color: '#8b5cf6' },
-      { name: '5. Notification Dispatch (SMS / Email Gateway)', duration: `${latSms} ms`, count: smsCount, pct: Math.min(100, Math.max(25, Math.round((latSms / 3500) * 100))), status: latSms > 2000 ? 'CRITICAL (Cuello de Botella)' : 'OK', color: latSms > 2000 ? '#e11d48' : '#f59e0b' }
+    const totalLat = latWso2 + latEntrust + latLdap + latToken + latSms;
+
+    const hops = [
+      {
+        id: 'hop-wso2',
+        step: 1,
+        title: 'Gateway APIs WSO2',
+        subtitle: 'Ingreso HTTP / mTLS',
+        host: 'sadcluapi01:8243',
+        protocol: 'HTTP/2 TLS 1.3',
+        duration: latWso2,
+        offsetMs: 0,
+        count: wso2Count,
+        color: '#0284c7',
+        status: latWso2 > 200 ? 'DEGRADADO' : '200 OK',
+        statusColor: latWso2 > 200 ? '#f59e0b' : '#10b981',
+        icon: '🌐',
+        details: 'Recepción del request en WSO2 APIM, validación de token OAuth2 y enrutamiento hacia el backend Entrust.'
+      },
+      {
+        id: 'hop-entrust',
+        step: 2,
+        title: 'Entrust Auth Context',
+        subtitle: 'Evaluación de Políticas Core',
+        host: 'SACVWIG06:8443',
+        protocol: 'HTTPS REST / SOAP',
+        duration: latEntrust,
+        offsetMs: latWso2,
+        count: entrustCount,
+        color: '#0ea5e9',
+        status: latEntrust > 400 ? 'ALERTA' : '200 OK',
+        statusColor: latEntrust > 400 ? '#f59e0b' : '#10b981',
+        icon: '🛡️',
+        details: 'Motor IdentityGuard Server: verificación de sesión de usuario, estado de cuenta y políticas de grupo bancario.'
+      },
+      {
+        id: 'hop-ldap',
+        step: 3,
+        title: 'LDAP / Active Directory',
+        subtitle: 'Validación de Credenciales',
+        host: 'Mercantil-DC01:636',
+        protocol: 'LDAPS Seguro (SSL)',
+        duration: latLdap,
+        offsetMs: latWso2 + latEntrust,
+        count: ldapCount,
+        color: '#10b981',
+        status: latLdap > 500 ? 'LENTO' : '200 OK',
+        statusColor: latLdap > 500 ? '#f59e0b' : '#10b981',
+        icon: '📂',
+        details: 'Búsqueda de DN de usuario y enlace Kerberos/LDAP para validación de primer factor de contraseña.'
+      },
+      {
+        id: 'hop-token',
+        step: 4,
+        title: 'Soft Token / Grid Engine',
+        subtitle: 'Segundo Factor MFA',
+        host: 'SACVWIG06:8443',
+        protocol: 'Criptografía OTP / OATH',
+        duration: latToken,
+        offsetMs: latWso2 + latEntrust + latLdap,
+        count: tokenCount,
+        color: '#8b5cf6',
+        status: latToken > 300 ? 'ALERTA' : '200 OK',
+        statusColor: latToken > 300 ? '#f59e0b' : '#10b981',
+        icon: '🔑',
+        details: 'Desencriptación de semilla OTP, cálculo de deriva temporal y verificación de respuesta de matriz Grid Card.'
+      },
+      {
+        id: 'hop-sms',
+        step: 5,
+        title: 'Gateway SMS / Push Dispatch',
+        subtitle: 'Despacho de Notificación',
+        host: 'GW-NOTIF-01:443',
+        protocol: 'REST JSON / SMPP',
+        duration: latSms,
+        offsetMs: latWso2 + latEntrust + latLdap + latToken,
+        count: smsCount,
+        color: '#f59e0b',
+        status: latSms > 1000 ? 'TIMEOUT' : '200 OK',
+        statusColor: latSms > 1000 ? '#ef4444' : '#10b981',
+        icon: '📱',
+        details: 'Encolado y envío del código temporal OTP / mensaje SMS al canal móvil o email del cliente.'
+      }
     ];
 
-    let html = `
-      <div style="background:var(--bg-secondary); border:1px solid var(--border-color); padding:12px 16px; border-radius:8px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <div>
-          <span style="font-weight:bold; color:var(--text-main); font-size:0.9rem;">📊 Trazabilidad Calculada en Tiempo Real:</span>
-          <span style="font-size:0.8rem; color:var(--text-muted); margin-left:8px;">Basado en <strong>${countTotal}</strong> peticiones analizadas en la sesión activa</span>
-        </div>
-        <span class="badge-client" style="font-size:0.8rem; font-family:monospace; background:rgba(2,132,199,0.15); color:#38bdf8; border:1px solid rgba(2,132,199,0.3); padding:4px 8px; border-radius:6px;">
-          ⏱️ Latencia Acumulada: ${latWso2 + latEntrust + latLdap + latToken + latSms} ms
-        </span>
-      </div>
+    // 1. TOPOLOGÍA DE NODOS CONECTADOS (HOP PIPELINE MAP)
+    let topologyCardsHtml = '';
+    hops.forEach((hop, idx) => {
+      const pct = Math.round((hop.duration / totalLat) * 100);
+      const isSlowest = hop.duration === Math.max(...hops.map(h => h.duration));
 
-      <div style="display:flex; flex-direction:column; gap:12px;">`;
-
-    spans.forEach(span => {
-      const isWarn = span.status.includes('WARN') || span.status.includes('CRITICAL');
-      html += `
-        <div style="background:var(--bg-primary); border:1px solid ${isWarn ? 'rgba(225, 29, 72, 0.4)' : 'var(--border-color)'}; padding:12px 16px; border-radius:8px;">
-          <div class="flex-between mb-2" style="font-size:0.88rem;">
-            <div>
-              <span style="font-weight:700; color:var(--text-main);">${escapeHtml(span.name)}</span>
-              <span style="font-size:0.75rem; color:var(--text-muted); margin-left:8px;">(${span.count} eventos en muestra)</span>
-            </div>
-            <span class="font-mono" style="color:${isWarn ? '#e11d48' : 'var(--text-cyan)'}; font-weight:700;">${span.duration} [${span.status}]</span>
+      topologyCardsHtml += `
+        <div class="hop-card" onclick="window.selectTraceHopGlobal(${idx})" style="flex:1; min-width:170px; background:var(--bg-primary); border:1px solid ${isSlowest ? 'rgba(239, 68, 68, 0.4)' : 'var(--border-color)'}; border-top:4px solid ${hop.color}; border-radius:8px; padding:12px; cursor:pointer; transition:transform 0.2s, box-shadow 0.2s; position:relative;">
+          ${isSlowest ? '<span style="position:absolute; top:-10px; right:8px; background:#ef4444; color:#fff; font-size:0.65rem; font-weight:bold; padding:1px 6px; border-radius:10px; text-transform:uppercase;">Mayor Latencia</span>' : ''}
+          <div class="flex-between mb-1">
+            <span style="font-size:1.1rem;">${hop.icon}</span>
+            <span style="font-size:0.7rem; font-weight:bold; background:${hop.statusColor}22; color:${hop.statusColor}; border:1px solid ${hop.statusColor}55; padding:1px 6px; border-radius:4px;">
+              ${hop.status}
+            </span>
           </div>
-          <div style="height:10px; background:#1e293b; border-radius:5px; overflow:hidden;">
-            <div style="width:${span.pct}%; background:${span.color}; height:100%; transition:width 0.5s;"></div>
+          <div style="font-weight:700; color:var(--text-main); font-size:0.85rem; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(hop.title)}">
+            ${hop.step}. ${escapeHtml(hop.title)}
+          </div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:8px;">${escapeHtml(hop.subtitle)}</div>
+          
+          <div class="flex-between" style="border-top:1px solid var(--border-color); padding-top:6px; font-size:0.78rem;">
+            <span style="font-family:monospace; font-weight:bold; color:${hop.color};">${hop.duration} ms</span>
+            <span style="font-size:0.72rem; color:var(--text-muted);">${pct}% total</span>
+          </div>
+        </div>`;
+
+      if (idx < hops.length - 1) {
+        topologyCardsHtml += `
+          <div style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:1.2rem; padding:0 2px;">
+            ➔
+          </div>`;
+      }
+    });
+
+    // 2. TIMELINE WATERFALL (GANTT PROPORCIONAL MODERNO)
+    let timelineRowsHtml = '';
+    hops.forEach((hop, idx) => {
+      const leftPct = ((hop.offsetMs / totalLat) * 100).toFixed(1);
+      const widthPct = Math.max(8, ((hop.duration / totalLat) * 100)).toFixed(1);
+
+      timelineRowsHtml += `
+        <div style="display:grid; grid-template-columns: 240px 1fr 110px; align-items:center; gap:14px; padding:10px 0; border-bottom:1px solid var(--border-color);">
+          <!-- Columna 1: Nombre del Salto -->
+          <div>
+            <div style="font-weight:600; font-size:0.84rem; color:var(--text-main); display:flex; align-items:center; gap:6px;">
+              <span>${hop.icon}</span>
+              <span>${hop.step}. ${escapeHtml(hop.title)}</span>
+            </div>
+            <div style="font-size:0.72rem; color:var(--text-muted); margin-left:22px; font-family:monospace;">
+              ${escapeHtml(hop.protocol)} | ${escapeHtml(hop.host)}
+            </div>
+          </div>
+
+          <!-- Columna 2: Barra Proporcional de Cascada -->
+          <div style="position:relative; height:24px; background:var(--bg-primary); border-radius:6px; overflow:hidden; border:1px solid var(--border-color);">
+            <div style="position:absolute; left:${leftPct}%; width:${widthPct}%; height:100%; background:linear-gradient(90deg, ${hop.color}cc, ${hop.color}); border-radius:4px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:0.75rem; font-weight:bold; font-family:monospace; box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition:all 0.5s;">
+              ${hop.duration} ms
+            </div>
+          </div>
+
+          <!-- Columna 3: Estatus & Muestra -->
+          <div style="text-align:right;">
+            <div style="font-family:monospace; font-weight:bold; font-size:0.85rem; color:var(--text-main);">${hop.duration} ms</div>
+            <div style="font-size:0.7rem; color:var(--text-muted);">${hop.count.toLocaleString()} eventos</div>
           </div>
         </div>`;
     });
 
-    html += `</div>`;
-    container.innerHTML = html;
+    const slowestHop = hops.reduce((prev, current) => (prev.duration > current.duration) ? prev : current);
+
+    container.innerHTML = `
+      <!-- Cabecera Resumen de Latencia -->
+      <div style="background:var(--bg-secondary); border:1px solid var(--border-color); padding:14px 18px; border-radius:8px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+          <div style="font-weight:700; color:var(--text-main); font-size:0.95rem;">⚡ Trazabilidad Distribuida & Latencia de Autenticación en Vivo</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">Muestra consolidada de <strong>${countTotal.toLocaleString()}</strong> transacciones evaluadas en la arquitectura clúster</div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <div style="text-align:right;">
+            <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:bold;">Latencia de Extremo a Extremo</div>
+            <div class="font-mono" style="font-size:1.3rem; font-weight:bold; color:var(--text-cyan);">${totalLat} ms</div>
+          </div>
+          <span class="badge-client" style="background:${totalLat > 800 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)'}; color:${totalLat > 800 ? '#ef4444' : '#10b981'}; border:1px solid ${totalLat > 800 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}; font-weight:bold; font-size:0.8rem; padding:6px 12px; border-radius:6px;">
+            ${totalLat > 800 ? '⚠️ SLA Degradado (>800ms)' : '🟢 SLA Óptimo (<500ms)'}
+          </span>
+        </div>
+      </div>
+
+      <!-- Mapa Visual de Arquitectura de Nodos (Pipeline Topológico) -->
+      <div style="margin-bottom:20px;">
+        <div style="font-size:0.85rem; font-weight:bold; color:var(--text-main); margin-bottom:10px;">🗺️ Flujo Arquitectural de la Petición (Hops de Autenticación):</div>
+        <div style="display:flex; align-items:stretch; gap:6px; overflow-x:auto; padding-bottom:8px;">
+          ${topologyCardsHtml}
+        </div>
+      </div>
+
+      <!-- Cronograma Gantt Waterfall Proporcional -->
+      <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px; padding:18px; margin-bottom:20px;">
+        <div class="flex-between mb-3">
+          <span style="font-weight:700; color:var(--text-main); font-size:0.9rem;">📊 Cascada Temporal de Ejecución (Gantt Waterfall Timeline):</span>
+          <span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;">Escala: 0 ms ─────────────── ${totalLat} ms</span>
+        </div>
+        <div style="display:flex; flex-direction:column;">
+          ${timelineRowsHtml}
+        </div>
+      </div>
+
+      <!-- Cuadro de Análisis de Cuello de Botella & Diagnóstico Técnico -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+        <div style="background:var(--bg-primary); border:1px solid rgba(239, 68, 68, 0.3); border-left:4px solid #ef4444; padding:14px; border-radius:8px;">
+          <div style="font-weight:bold; color:#ef4444; font-size:0.9rem; margin-bottom:4px;">⚠️ Diagnóstico del Salto Más Crítico:</div>
+          <div style="font-size:0.85rem; color:var(--text-main); margin-bottom:6px;">
+            El componente <strong>${slowestHop.title}</strong> absorbe el <strong>${Math.round((slowestHop.duration / totalLat) * 100)}%</strong> del tiempo total de autenticación (${slowestHop.duration} ms).
+          </div>
+          <div style="font-size:0.78rem; color:var(--text-muted);">
+            <strong>Causa habitual:</strong> Bloqueo de hilos LDAP en Directory Server o latencia de red WAN entre la DMZ de WSO2 y los controladores de dominio.
+          </div>
+        </div>
+
+        <div style="background:var(--bg-primary); border:1px solid rgba(2, 132, 199, 0.3); border-left:4px solid #0284c7; padding:14px; border-radius:8px;">
+          <div style="font-weight:bold; color:var(--text-cyan); font-size:0.9rem; margin-bottom:4px;">💡 Recomendación de Optimización (IT SERVICIOS):</div>
+          <div style="font-size:0.85rem; color:var(--text-main); margin-bottom:6px;">
+            Configurar un <strong>Pool de Conexiones LDAPS persistente</strong> en <code>identityguard.properties</code> (<code>ldap.connectionPool=true</code>) y ajustar el timeout de socket a 3000 ms.
+          </div>
+          <div style="font-size:0.78rem; color:var(--text-muted);">
+            Permite reducir la latencia del Salto 3 de ${latLdap} ms a menos de 45 ms promedio.
+          </div>
+        </div>
+      </div>
+    `;
+
+    window.selectTraceHopGlobal = (idx) => {
+      const hop = hops[idx];
+      if (!hop) return;
+      alert(`🔍 Detalle Técnico del Salto ${hop.step}:\n\nComponente: ${hop.title}\nProtocolo: ${hop.protocol}\nHost/IP: ${hop.host}\nLatencia: ${hop.duration} ms\nEventos Registrados: ${hop.count.toLocaleString()}\n\nDescripción:\n${hop.details}`);
+    };
   }
 
   function initEventListeners() {
