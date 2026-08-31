@@ -3280,7 +3280,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
           const rawEntries = await window.logParserEngine.parseLogsAsync(content, (current, total, msg) => {
             showAnalysisStatus(true, `⚙️ [Archivo ${fIdx + 1}/${files.length}] ${file.name}`, `${msg}`);
-          }, 5000);
+          }, 25000);
 
           const nodeInfo = detectNodeFromLog({ sourceFile: file.name, message: content.slice(0, 1500) });
 
