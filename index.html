@@ -148,15 +148,35 @@
     <!-- 2. PESTAÑA: ANALIZADOR DE LOGS Y DIAGNÓSTICO RÁPIDO -->
     <div class="tab-pane" id="tab-analyzer">
       <div class="glass-card mb-4">
-        <div class="card-header">
-          <div class="card-title">🛠️ Herramientas de Carga de Logs Entrust OnPremise / IDaaS Cloud</div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-            <button class="btn btn-danger" id="btn-reset-session" onclick="window.resetAppSession && window.resetAppSession()" title="Eliminar todos los logs y limpiar la muestra actual">🧹 Limpiar Sesión / Nuevo Análisis</button>
-            <button class="btn" id="btn-export-report">📥 Exportar Datos JSON</button>
-            <label class="btn btn-primary" style="margin:0;">
+        <div class="card-header flex-between" style="flex-wrap:wrap; gap:12px;">
+          <div>
+            <div class="card-title text-cyan" style="font-size:1.15rem; font-weight:700;">🛠️ Gestor de Archivos de Logs Entrust & IDaaS Cloud</div>
+            <div class="card-subtitle">Carga masiva, soporte de archivos rotados (.log, .1, .2) y análisis acumulativo por Nodos</div>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <!-- Selector de Modo Acumulativo -->
+            <label style="display:flex; align-items:center; gap:6px; background:var(--bg-primary); border:1px solid var(--border-color); padding:6px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; color:var(--text-main); font-weight:600;" title="Si está activo, los nuevos archivos cargados se sumarán al análisis actual sin borrar los anteriores">
+              <input type="checkbox" id="chk-accumulate-mode" checked style="cursor:pointer; accent-color:#0284c7;">
+              <span>➕ Modo Acumulativo (Sumar a sesión)</span>
+            </label>
+
+            <button class="btn btn-danger" id="btn-reset-session" onclick="window.resetAppSession && window.resetAppSession()" title="Eliminar todos los logs y limpiar la muestra actual" style="font-size:0.8rem; padding:6px 12px;">🧹 Limpiar Todo</button>
+            <button class="btn" id="btn-export-report" style="font-size:0.8rem; padding:6px 12px;">📥 Exportar JSON</button>
+            <label class="btn btn-primary" style="margin:0; font-size:0.82rem; padding:6px 14px; background:#0284c7; border:none; cursor:pointer; font-weight:700;">
               📂 Cargar Archivos (.log, .txt, .json, .csv)
               <input type="file" id="file-input" accept=".log,.txt,.json,.csv" multiple style="display:none;">
             </label>
+          </div>
+        </div>
+
+        <!-- Panel de Archivos Actualmente Cargados en la Sesión -->
+        <div id="loaded-files-panel" style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:12px 16px; margin-bottom:14px;">
+          <div class="flex-between mb-2">
+            <span style="font-size:0.82rem; font-weight:700; color:var(--text-main);">📁 Archivos Cargados en la Sesión Activa (<span id="loaded-files-count-badge">0 archivos</span>):</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);" id="loaded-files-summary-text">Cargue uno o más archivos rotados (.log, .log.1, .log.2...)</span>
+          </div>
+          <div id="loaded-files-list" style="display:flex; flex-wrap:wrap; gap:8px; min-height:32px; align-items:center;">
+            <span class="text-muted font-mono" style="font-size:0.78rem;">Ningún archivo cargado actualmente.</span>
           </div>
         </div>
 
@@ -176,8 +196,9 @@
         </div>
 
         <div class="log-toolbar">
-          <div class="search-box">
-            <input type="text" class="form-control" id="search-log-input" placeholder="🔍 Buscar por 520xxx, AUDxxx, SAML, MFA, usuario o API...">
+          <div class="search-box" style="position:relative; display:flex; align-items:center;">
+            <input type="text" class="form-control" id="search-log-input" placeholder="🔍 Buscar por 520xxx, AUDxxx, usuario, IP, API o mensaje...">
+            <button id="btn-clear-search" style="position:absolute; right:10px; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.9rem; display:none;" title="Limpiar búsqueda">✖</button>
           </div>
 
           <div style="width: 200px;">

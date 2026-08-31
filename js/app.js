@@ -2449,6 +2449,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     state.filteredLogs = [];
     state.selectedLog = null;
     state.executiveReportCache = null;
+    state.loadedFiles = [];
 
     if (dom.fileInput) dom.fileInput.value = '';
 
@@ -2458,8 +2459,11 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (dom.filterClientSelect) dom.filterClientSelect.value = 'ALL';
     if (dom.searchLogInput) dom.searchLogInput.value = '';
 
+    renderLoadedFilesDrawer();
     populateClientSelector();
     applyLogFilters();
+    updateNodeComparisonUI();
+    renderTraceWaterfall();
 
     if (dom.diagnosticCard) {
       dom.diagnosticCard.innerHTML = `
@@ -2471,6 +2475,83 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
 
     showAnalysisStatus(false, '🧹 Sesión Limpiada', 'Se eliminaron todos los registros y la muestra actual fue reiniciada a cero.');
+  }
+
+  // PILAR 1: GESTOR VISUAL DE ARCHIVOS CARGADOS EN LA SESIÓN ACTIVA
+  function renderLoadedFilesDrawer() {
+    const listContainer = document.getElementById('loaded-files-list');
+    const badgeCount = document.getElementById('loaded-files-count-badge');
+    const summaryText = document.getElementById('loaded-files-summary-text');
+    if (!listContainer) return;
+
+    const files = state.loadedFiles || [];
+
+    if (badgeCount) badgeCount.textContent = `${files.length} archivo(s)`;
+
+    if (files.length === 0) {
+      listContainer.innerHTML = '<span class="text-muted font-mono" style="font-size:0.78rem;">Ningún archivo cargado actualmente en la sesión.</span>';
+      if (summaryText) summaryText.textContent = 'Cargue uno o más archivos rotados (.log, .log.1, .log.2...)';
+      return;
+    }
+
+    // Contar distribución por Nodos
+    const nodeCountMap = {};
+    let totalLogsInFiles = 0;
+    files.forEach(f => {
+      nodeCountMap[f.nodeName] = (nodeCountMap[f.nodeName] || 0) + 1;
+      totalLogsInFiles += (f.count || 0);
+    });
+
+    const nodeSummaryArr = Object.entries(nodeCountMap).map(([nName, cnt]) => `${cnt} en ${nName}`);
+    if (summaryText) {
+      summaryText.textContent = `${nodeSummaryArr.join(' | ')} (Total: ${totalLogsInFiles.toLocaleString()} logs)`;
+    }
+
+    let html = '';
+    files.forEach((f, idx) => {
+      const sizeMb = f.size > 0 ? (f.size / (1024 * 1024)).toFixed(1) + ' MB' : 'Muestra';
+      const isNode6 = f.nodeKey === 'node_06' || f.nodeName.includes('06');
+      const isNode7 = f.nodeKey === 'node_07' || f.nodeName.includes('07');
+      const chipColor = isNode6 ? '#0284c7' : (isNode7 ? '#10b981' : '#8b5cf6');
+
+      html += `
+        <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-left:3px solid ${chipColor}; padding:4px 10px; border-radius:6px; display:inline-flex; align-items:center; gap:8px; font-size:0.78rem; max-width:100%;">
+          <span style="display:flex; align-items:center; gap:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            <span>📄</span>
+            <strong style="color:var(--text-main); font-family:monospace;">${escapeHtml(f.name)}</strong>
+            <span style="color:var(--text-muted); font-size:0.72rem;">(${sizeMb} | ${(f.count || 0).toLocaleString()} logs)</span>
+            <span style="background:${chipColor}22; color:${chipColor}; border:1px solid ${chipColor}44; padding:1px 6px; border-radius:4px; font-weight:bold; font-size:0.7rem;">${escapeHtml(f.nodeName)}</span>
+          </span>
+          <button onclick="window.removeLoadedFileGlobal('${escapeHtml(f.name)}')" style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#ef4444; border-radius:3px; padding:1px 5px; cursor:pointer; font-weight:bold; font-size:0.75rem;" title="Eliminar este archivo de la sesión">✖</button>
+        </div>`;
+    });
+
+    listContainer.innerHTML = html;
+  }
+
+  window.removeLoadedFileGlobal = function(fileName) {
+    if (!state.loadedFiles) return;
+    const fileIndex = state.loadedFiles.findIndex(f => f.name === fileName);
+    if (fileIndex !== -1) {
+      state.loadedFiles.splice(fileIndex, 1);
+    }
+
+    state.logs = state.logs.filter(l => l.sourceFile !== fileName);
+    reindexLogs();
+
+    renderLoadedFilesDrawer();
+    populateClientSelector();
+    applyLogFilters();
+    updateNodeComparisonUI();
+    renderTraceWaterfall();
+
+    showAnalysisStatus(false, `🗑️ Archivo Eliminado: ${fileName}`, `Logs restantes en sesión: ${state.logs.length.toLocaleString()}`);
+  };
+
+  function reindexLogs() {
+    state.logs.forEach((log, idx) => {
+      log.lineNum = idx + 1;
+    });
   }
 
   function renderUserAndIpAnalytics() {
@@ -2604,6 +2685,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   window.filterLogByUserGlobal = function(uId) {
     if (dom.searchLogInput) {
       dom.searchLogInput.value = uId;
+      const btnClear = document.getElementById('btn-clear-search');
+      if (btnClear) btnClear.style.display = 'block';
       applyLogFilters();
       switchTab('analyzer');
       if (state.filteredLogs && state.filteredLogs.length > 0) {
@@ -2616,6 +2699,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   window.filterLogByIpGlobal = function(ipStr) {
     if (dom.searchLogInput) {
       dom.searchLogInput.value = ipStr;
+      const btnClear = document.getElementById('btn-clear-search');
+      if (btnClear) btnClear.style.display = 'block';
       applyLogFilters();
       switchTab('analyzer');
       if (state.filteredLogs && state.filteredLogs.length > 0) {
@@ -3135,7 +3220,17 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     dom.btnResetSession?.addEventListener('click', () => resetSession());
     document.getElementById('btn-reset-session')?.addEventListener('click', () => resetSession());
 
-    dom.searchLogInput?.addEventListener('input', () => applyLogFilters());
+    const btnClearSearch = document.getElementById('btn-clear-search');
+    dom.searchLogInput?.addEventListener('input', (e) => {
+      if (btnClearSearch) btnClearSearch.style.display = e.target.value.length > 0 ? 'block' : 'none';
+      applyLogFilters();
+    });
+    btnClearSearch?.addEventListener('click', () => {
+      if (dom.searchLogInput) dom.searchLogInput.value = '';
+      btnClearSearch.style.display = 'none';
+      applyLogFilters();
+    });
+
     dom.filterClientSelect?.addEventListener('change', () => applyLogFilters());
     dom.filterLevelSelect?.addEventListener('change', () => applyLogFilters());
     dom.filterTypeSelect?.addEventListener('change', () => applyLogFilters());
@@ -3161,21 +3256,17 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       window.print();
     });
 
-    dom.btnToggleStream?.addEventListener('click', () => {
-      state.isStreaming = !state.isStreaming;
-      if (dom.btnToggleStream) {
-        dom.btnToggleStream.textContent = state.isStreaming ? '⏸️ Pausar Simulador' : '▶️ Simulador';
-      }
-      if (state.isStreaming) {
-        startStreamingSimulatedLogs();
-      } else {
-        clearInterval(state.streamInterval);
-      }
-    });
-
     dom.fileInput?.addEventListener('change', async (e) => {
       const files = Array.from(e.target.files);
       if (files.length === 0) return;
+
+      const isAccumulate = document.getElementById('chk-accumulate-mode')?.checked ?? true;
+      if (!isAccumulate) {
+        state.logs = [];
+        state.loadedFiles = [];
+      }
+
+      if (!state.loadedFiles) state.loadedFiles = [];
 
       let newLogs = [];
       let fileCount = 0;
@@ -3191,12 +3282,32 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             showAnalysisStatus(true, `⚙️ [Archivo ${fIdx + 1}/${files.length}] ${file.name}`, `${msg}`);
           }, 5000);
 
+          const nodeInfo = detectNodeFromLog({ sourceFile: file.name, message: content.slice(0, 1500) });
+
           const parsedEntries = rawEntries.map((log, idx) => ({
             ...log,
             lineNum: state.logs.length + newLogs.length + idx + 1,
             client: clientName,
-            sourceFile: file.name
+            sourceFile: file.name,
+            node: nodeInfo.name
           }));
+
+          // Registrar archivo en el drawer
+          const existingFileIdx = state.loadedFiles.findIndex(f => f.name === file.name);
+          const fileMeta = {
+            name: file.name,
+            size: file.size,
+            count: parsedEntries.length,
+            nodeKey: nodeInfo.key,
+            nodeName: nodeInfo.name,
+            client: clientName
+          };
+
+          if (existingFileIdx >= 0) {
+            state.loadedFiles[existingFileIdx] = fileMeta;
+          } else {
+            state.loadedFiles.push(fileMeta);
+          }
 
           newLogs = newLogs.concat(parsedEntries);
           fileCount++;
@@ -3207,7 +3318,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       if (newLogs.length > 0) {
         state.logs = state.logs.concat(newLogs);
-        autoDistributeLogsToNodes(newLogs);
+        reindexLogs();
+
+        renderLoadedFilesDrawer();
+        updateNodeComparisonUI();
         renderTraceWaterfall();
 
         clearFilterMode();
@@ -3225,8 +3339,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         }
 
         switchTab('analyzer');
-
-        showAnalysisStatus(false, `✅ Archivo(s) Cargados & Acumulados: ${fileCount} archivo(s)`, `Total Acumulado en Sesión: ${state.logs.length} registros`);
+        showAnalysisStatus(false, `✅ ${fileCount} Archivo(s) Procesados con Éxito`, `Total Acumulado en Sesión: ${state.logs.length.toLocaleString()} registros (${state.loadedFiles.length} archivos)`);
       }
     });
 
@@ -3611,24 +3724,48 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             x: 0.8, y: 3.3, w: '85%', fontSize: 13, color: 'CBD5E1', lineSpacing: 22, fontFace: 'Segoe UI'
           });
 
-          // SLIDE 3: COMPARATIVA MULTI-NODO
+          // SLIDE 3: COMPARATIVA MULTI-NODO DINÁMICA
           const slide3 = pptx.addSlide();
           slide3.background = { color: '0F172A' };
 
-          slide3.addText('2. Arquitectura Clúster & Consolidación de Nodos', {
+          slide3.addText('2. Arquitectura Clúster & Consolidación Multi-Nodo', {
             x: 0.8, y: 0.5, w: '85%', fontSize: 22, color: '38BDF8', bold: true, fontFace: 'Segoe UI'
+          });
+
+          // Obtener nodos reales descubiertos
+          const nodeMap = new Map();
+          (state.logs || []).forEach(log => {
+            const nodeInfo = detectNodeFromLog(log);
+            if (!nodeMap.has(nodeInfo.key)) {
+              nodeMap.set(nodeInfo.key, { name: nodeInfo.name, count: 0, errors: 0 });
+            }
+            const item = nodeMap.get(nodeInfo.key);
+            item.count++;
+            if (log.level === 'ERROR' || log.level === 'CRITICAL') item.errors++;
           });
 
           const tableData = [
             [
-              { text: 'Nodo / Servidor', options: { bold: true, fill: { color: '0284C7' }, color: 'FFFFFF' } },
-              { text: 'Canales Asociados', options: { bold: true, fill: { color: '0284C7' }, color: 'FFFFFF' } },
-              { text: 'Estatus & Balanceo', options: { bold: true, fill: { color: '0284C7' }, color: 'FFFFFF' } }
-            ],
-            ['Nodo 06 (SACVWIG06)', 'Canal Móvil / Pago Móvil / Banca Web', 'OPERATIVO (12 archivos rotados analizados)'],
-            ['Nodo 07 (SACVWIG07)', 'Canal Empresas / Jurídico / Contingencia', 'OPERATIVO (5 archivos rotados analizados)'],
-            ['Gateway WSO2 APIM', 'sadcluapi01 / sadcluapi02', 'ENLACE MUTUAL SSL ACTIVO']
+              { text: 'Nodo / Servidor Consolidado', options: { bold: true, fill: { color: '0284C7' }, color: 'FFFFFF' } },
+              { text: 'Transacciones', options: { bold: true, fill: { color: '0284C7' }, color: 'FFFFFF', align: 'center' } },
+              { text: 'Errores [520xxx]', options: { bold: true, fill: { color: '0284C7' }, color: 'FFFFFF', align: 'center' } },
+              { text: 'Salud Calculada', options: { bold: true, fill: { color: '0284C7' }, color: 'FFFFFF', align: 'center' } }
+            ]
           ];
+
+          if (nodeMap.size > 0) {
+            nodeMap.forEach(n => {
+              const h = n.count > 0 ? Math.max(10, Math.round(100 - (n.errors / n.count) * 100 * 5)) + '%' : '100%';
+              tableData.push([
+                n.name.replace('🖥️ ', ''),
+                n.count.toLocaleString(),
+                n.errors.toLocaleString(),
+                h
+              ]);
+            });
+          } else {
+            tableData.push(['Nodo 06 (SACVWIG06 - Primario)', total.toLocaleString(), criticals.toLocaleString(), `${health}%`]);
+          }
 
           slide3.addTable(tableData, { x: 0.8, y: 1.4, w: 8.8, fill: { color: '1E293B' }, color: 'FFFFFF', fontSize: 12, border: { pt: 1, color: '334155' } });
 
