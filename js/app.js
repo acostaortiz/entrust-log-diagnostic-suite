@@ -2199,19 +2199,18 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
   }
 
-  function processLogText(rawText, clientName = 'Entrust OnPremise') {
-    const lines = rawText.split('\n').filter(l => l.trim().length > 0);
-    const newLogs = lines.map((line, idx) => {
-      const parsed = window.logParserEngine.parseLine(line, idx + 1);
-      const diagnostic = window.knowledgeBaseEngine.diagnoseLog(parsed.message);
-      return {
-        ...parsed,
-        client: clientName,
-        diagnostic: diagnostic
-      };
-    });
+  async function processLogText(rawText, clientName = 'Entrust OnPremise') {
+    showAnalysisStatus(true, '⚙️ Procesando Muestra de Logs...', 'Delegando análisis al motor multihilo Web Worker...');
 
-    state.logs = newLogs;
+    const parsedLogs = window.logParserEngine.parseLogsWithWorker 
+      ? await window.logParserEngine.parseLogsWithWorker(rawText, clientName, (cur, tot, msg) => {
+          showAnalysisStatus(true, '⚙️ Analizando Muestra de Logs...', msg);
+        })
+      : await window.logParserEngine.parseLogsAsync(rawText, clientName, (cur, tot, msg) => {
+          showAnalysisStatus(true, '⚙️ Analizando Muestra de Logs...', msg);
+        });
+
+    state.logs = parsedLogs;
     populateClientSelector();
     applyLogFilters();
 
@@ -2219,6 +2218,11 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (targetLog) {
       selectLog(targetLog);
     }
+
+    renderTraceWaterfall();
+    updateNodeComparisonUI();
+
+    showAnalysisStatus(false, `✅ Muestra Analizada Exitosamente (${state.logs.length} registros)`, `Cliente: ${clientName}`);
   }
 
   function updateMetricsAndCharts() {
@@ -2952,6 +2956,56 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       applyLogFilters();
     }, 3500);
   }
+
+  function initSyslogCollectorModule() {
+    const btnStart = document.getElementById('btn-start-syslog-live');
+    const btnStop = document.getElementById('btn-stop-syslog-live');
+    const terminal = document.getElementById('syslog-terminal-output');
+    const rateVal = document.getElementById('syslog-rate-val');
+    const totalVal = document.getElementById('syslog-total-val');
+    const errorsVal = document.getElementById('syslog-errors-val');
+
+    if (!btnStart || !window.syslogCollectorEngine) return;
+
+    btnStart.addEventListener('click', () => {
+      if (terminal) terminal.innerHTML = '<div style="color:#10b981;">🟢 [Syslog Receiver]: Escuchador activo en puerto UDP 514 / WebSocket...</div>';
+      window.syslogCollectorEngine.startSimulation((parsed, stats) => {
+        if (rateVal) rateVal.textContent = `${stats.rate} tx/seg`;
+        if (totalVal) totalVal.textContent = stats.total;
+        if (errorsVal) errorsVal.textContent = stats.critical;
+
+        if (terminal) {
+          const lineDiv = document.createElement('div');
+          const isError = parsed.level === 'CRITICAL' || parsed.level === 'ERROR';
+          lineDiv.style.color = isError ? '#f87171' : '#38bdf8';
+          lineDiv.style.marginBottom = '2px';
+          lineDiv.textContent = parsed.message;
+          terminal.appendChild(lineDiv);
+
+          if (terminal.children.length > 200) {
+            terminal.removeChild(terminal.firstChild);
+          }
+          terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        state.logs.push(parsed);
+      });
+    });
+
+    btnStop?.addEventListener('click', () => {
+      window.syslogCollectorEngine.stopStream();
+      if (terminal) {
+        const lineDiv = document.createElement('div');
+        lineDiv.style.color = '#f59e0b';
+        lineDiv.textContent = '⏹️ [Syslog Receiver]: Captura en tiempo real pausada.';
+        terminal.appendChild(lineDiv);
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initSyslogCollectorModule();
+  });
 
   function escapeHtml(text) {
     if (!text) return '';
