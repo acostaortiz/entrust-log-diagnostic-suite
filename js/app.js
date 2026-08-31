@@ -388,14 +388,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const activePane = document.getElementById(`tab-${targetTab}`);
     if (activePane) activePane.classList.add('active');
 
-    if (targetTab === 'manuals') {
+    if (targetTab === 'manuals' && (!state.manualLoaded || state.manualLoaded !== state.currentManualVersion)) {
       loadManual(state.currentManualVersion);
+      state.manualLoaded = state.currentManualVersion;
     }
-    if (targetTab === 'traces') {
-      renderTraceWaterfall();
+    if (targetTab === 'traces' && state.dirtyTabs?.traces) {
+      setTimeout(() => {
+        renderTraceWaterfall();
+        state.dirtyTabs.traces = false;
+      }, 10);
     }
-    if (targetTab === 'nodes') {
-      updateNodeComparisonUI();
+    if (targetTab === 'nodes' && state.dirtyTabs?.nodes) {
+      setTimeout(() => {
+        updateNodeComparisonUI();
+        state.dirtyTabs.nodes = false;
+      }, 10);
     }
   }
 
@@ -2538,11 +2545,15 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       sortedUsers.forEach(([uId, uStats]) => {
         userHtml += `
           <tr style="border-bottom:1px solid var(--border-color);">
-            <td style="padding:6px 8px; font-family:monospace; font-weight:bold; color:var(--it-blue); word-break:break-all;">${escapeHtml(uId)}</td>
-            <td style="padding:6px 8px; text-align:center; font-weight:bold;">${uStats.total}</td>
-            <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${uStats.errors > 0 ? '#dc2626' : '#047857'};">${uStats.errors}</td>
-            <td style="padding:6px 8px; text-align:center;">
-              <button class="btn" style="padding:2px 8px; font-size:0.7rem; background:#0284c7; color:#fff;" onclick="window.filterLogByUserGlobal('${escapeHtml(uId)}')">🔍 Ver</button>
+            <td style="padding:8px; word-break:break-all;">
+              <span style="font-family:monospace; font-size:0.92rem; font-weight:700; color:#ffffff; background:#0284c7; padding:4px 10px; border-radius:6px; display:inline-block; border:1px solid #38bdf8; box-shadow:0 1px 3px rgba(0,0,0,0.3); letter-spacing:0.3px;">
+                👤 ${escapeHtml(uId)}
+              </span>
+            </td>
+            <td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:var(--text-main);">${uStats.total}</td>
+            <td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:${uStats.errors > 0 ? '#ef4444' : '#10b981'};">${uStats.errors}</td>
+            <td style="padding:8px; text-align:center;">
+              <button class="btn" style="padding:4px 10px; font-size:0.75rem; background:#0a3d6d; color:#fff; font-weight:bold; border-radius:4px;" onclick="window.filterLogByUserGlobal('${escapeHtml(uId)}')">🔍 Filtrar</button>
             </td>
           </tr>`;
       });
@@ -2558,10 +2569,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       let ipHtml = `<table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.8rem;">
         <thead>
           <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
-            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color);">Dirección IP de Origen</th>
-            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Peticiones</th>
-            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Fallos</th>
-            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Filtrar</th>
+            <th style="padding:8px; border-bottom:1px solid var(--border-color);">Dirección IP de Origen</th>
+            <th style="padding:8px; border-bottom:1px solid var(--border-color); text-align:center;">Peticiones</th>
+            <th style="padding:8px; border-bottom:1px solid var(--border-color); text-align:center;">Fallos</th>
+            <th style="padding:8px; border-bottom:1px solid var(--border-color); text-align:center;">Filtrar</th>
           </tr>
         </thead>
         <tbody>`;
@@ -2570,13 +2581,16 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         const isHighVolume = ipStats.errors >= 5;
         ipHtml += `
           <tr style="border-bottom:1px solid var(--border-color);">
-            <td style="padding:6px 8px; font-family:monospace; font-weight:bold; color:var(--text-main); word-break:break-all;">
-              ${escapeHtml(ipStr)} ${isHighVolume ? '<span style="background:#fee2e2; color:#dc2626; padding:1px 4px; border-radius:3px; font-size:0.7rem;">🔥 ALTA RÁFAGA</span>' : ''}
+            <td style="padding:8px; word-break:break-all;">
+              <span style="font-family:monospace; font-size:0.92rem; font-weight:700; color:#ffffff; background:#334155; padding:4px 10px; border-radius:6px; display:inline-block; border:1px solid #64748b;">
+                🌐 ${escapeHtml(ipStr)}
+              </span>
+              ${isHighVolume ? '<span style="background:#fee2e2; color:#dc2626; padding:2px 6px; border-radius:4px; font-size:0.75rem; font-weight:bold; margin-left:6px;">🔥 ALTA RÁFAGA</span>' : ''}
             </td>
-            <td style="padding:6px 8px; text-align:center; font-weight:bold;">${ipStats.total}</td>
-            <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${ipStats.errors > 0 ? '#dc2626' : '#047857'};">${ipStats.errors}</td>
-            <td style="padding:6px 8px; text-align:center;">
-              <button class="btn" style="padding:2px 8px; font-size:0.7rem; background:#0284c7; color:#fff;" onclick="window.filterLogByIpGlobal('${escapeHtml(ipStr)}')">🔍 Ver</button>
+            <td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:var(--text-main);">${ipStats.total}</td>
+            <td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:${ipStats.errors > 0 ? '#ef4444' : '#10b981'};">${ipStats.errors}</td>
+            <td style="padding:8px; text-align:center;">
+              <button class="btn" style="padding:4px 10px; font-size:0.75rem; background:#0a3d6d; color:#fff; font-weight:bold; border-radius:4px;" onclick="window.filterLogByIpGlobal('${escapeHtml(ipStr)}')">🔍 Filtrar</button>
             </td>
           </tr>`;
       });
@@ -2649,6 +2663,65 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     updateNodeComparisonUI();
   }
 
+  function normalizeRotatedFilename(filename) {
+    if (!filename) return 'servidor_principal';
+    let base = filename.toLowerCase().trim();
+    base = base.replace(/\.(gz|bak|txt)$/i, '');
+    base = base.replace(/\.\d{4}-\d{2}-\d{2}.*$/i, ''); // e.g. .2026-08-31
+    base = base.replace(/\.\d+$/i, ''); // e.g. .1, .2, .3
+    return base;
+  }
+
+  function detectNodeFromLog(log) {
+    if (log.sourceFile && state.customNodeAssignments && state.customNodeAssignments[log.sourceFile]) {
+      const assigned = state.customNodeAssignments[log.sourceFile];
+      return {
+        key: assigned.key,
+        name: assigned.name
+      };
+    }
+
+    const textToSearch = `${log.sourceFile || ''} ${log.clientIp || ''} ${log.message || ''}`.toLowerCase();
+
+    // 1. Detección explícita de etiquetas de Nodo (SACVWIG06 / SACVWIG07 / wig06 / wig07 / 06 / 07)
+    if (textToSearch.match(/(sacvwig06|wig06|node06|nodo06|nodo_06|node_06|\b06\b)/i)) {
+      return { key: 'node_06', name: '🖥️ Nodo 06 (SACVWIG06 - Primario)' };
+    }
+    if (textToSearch.match(/(sacvwig07|wig07|node07|nodo07|nodo_07|node_07|\b07\b)/i)) {
+      return { key: 'node_07', name: '🖥️ Nodo 07 (SACVWIG07 - Secundario)' };
+    }
+    if (textToSearch.match(/(sacvwig01|wig01|node01|nodo01|\b01\b)/i)) {
+      return { key: 'node_01', name: '🖥️ Nodo 01 (SACVWIG01)' };
+    }
+    if (textToSearch.match(/(sacvwig02|wig02|node02|nodo02|\b02\b)/i)) {
+      return { key: 'node_02', name: '🖥️ Nodo 02 (SACVWIG02)' };
+    }
+    if (textToSearch.match(/(sacvwig03|wig03|node03|nodo03|\b03\b)/i)) {
+      return { key: 'node_03', name: '🖥️ Nodo 03 (SACVWIG03)' };
+    }
+    if (textToSearch.match(/(sacvwig04|wig04|node04|nodo04|\b04\b)/i)) {
+      return { key: 'node_04', name: '🖥️ Nodo 04 (SACVWIG04)' };
+    }
+    if (textToSearch.match(/(sacvwig05|wig05|node05|nodo05|\b05\b)/i)) {
+      return { key: 'node_05', name: '🖥️ Nodo 05 (SACVWIG05)' };
+    }
+
+    // 2. Por IP de Host
+    if (log.clientIp) {
+      const ip = log.clientIp.trim();
+      return { key: `ip_${ip.replace(/[^a-z0-9]/g, '_')}`, name: `🖥️ Host IP ${ip}` };
+    }
+
+    // 3. Fallback: normalizar archivos rotados (.log.1, .log.2, etc.) para que formen parte del MISMO NODO
+    if (log.sourceFile) {
+      const normalizedBase = normalizeRotatedFilename(log.sourceFile);
+      const cleanName = normalizedBase.replace(/[^a-z0-9_]/g, ' ').toUpperCase();
+      return { key: `file_${normalizedBase.replace(/[^a-z0-9]/g, '_')}`, name: `🖥️ ${cleanName}` };
+    }
+
+    return { key: 'node_default', name: '🖥️ Servidor Entrust General' };
+  }
+
   function updateNodeComparisonUI() {
     const cardsContainer = document.getElementById('dynamic-node-cards-container');
     const barContainer = document.getElementById('dynamic-node-asymmetry-bar');
@@ -2661,33 +2734,19 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const nodeMap = new Map();
 
     logs.forEach(log => {
-      let nodeKey = 'desconocido';
-      let nodeName = 'Nodo Desconocido';
-      const msg = (log.message || '').toLowerCase();
-      const src = (log.sourceFile || '').toLowerCase();
-
-      if (msg.includes('sacvwig01') || src.includes('sacvwig01') || src.includes('web') || src.includes('nodo1')) {
-        nodeKey = 'sacvwig01'; nodeName = 'SACVWIG01 (Canal Web)';
-      } else if (msg.includes('sacvwig02') || src.includes('sacvwig02') || src.includes('movil') || src.includes('móvil') || src.includes('nodo2')) {
-        nodeKey = 'sacvwig02'; nodeName = 'SACVWIG02 (Canal Móvil)';
-      } else if (msg.includes('sacvwig03') || src.includes('sacvwig03') || src.includes('empresas') || src.includes('nodo3')) {
-        nodeKey = 'sacvwig03'; nodeName = 'SACVWIG03 (Canal Empresas)';
-      } else if (msg.includes('sacvwig04') || src.includes('sacvwig04') || src.includes('api') || src.includes('wso2') || src.includes('nodo4')) {
-        nodeKey = 'sacvwig04'; nodeName = 'SACVWIG04 (Gateway APIs)';
-      } else if (log.sourceFile) {
-        nodeKey = log.sourceFile.toLowerCase().replace(/[^a-z0-9]/g, '_');
-        nodeName = `Servidor: ${log.sourceFile}`;
-      } else if (log.node) {
-        nodeKey = log.node.toLowerCase().replace(/[^a-z0-9]/g, '_');
-        nodeName = `Servidor: ${log.node}`;
-      }
+      const nodeInfo = detectNodeFromLog(log);
+      const nodeKey = nodeInfo.key;
+      const nodeName = nodeInfo.name;
 
       if (!nodeMap.has(nodeKey)) {
-        nodeMap.set(nodeKey, { key: nodeKey, name: nodeName, logs: [], errors: 0 });
+        nodeMap.set(nodeKey, { key: nodeKey, name: nodeName, logsCount: 0, errors: 0, entrustCodes: {} });
       }
       const entry = nodeMap.get(nodeKey);
-      entry.logs.push(log);
+      entry.logsCount++;
       if (log.level === 'ERROR' || log.level === 'CRITICAL') entry.errors++;
+      if (log.entrustCode) {
+        entry.entrustCodes[log.entrustCode] = (entry.entrustCodes[log.entrustCode] || 0) + 1;
+      }
     });
 
     const discoveredNodes = Array.from(nodeMap.values());
@@ -2711,10 +2770,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const color = colors[idx % colors.length];
       cardsHtml += `
         <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:12px; border-top:4px solid ${color};">
-          <div class="card-title mb-2" style="font-size:0.88rem; color:var(--text-main);">🖥️ ${escapeHtml(node.name)}</div>
+          <div class="card-title mb-2" style="font-size:0.88rem; color:var(--text-main);">${escapeHtml(node.name)}</div>
           <div style="font-size:0.8rem; color:var(--text-muted);">
-            Trazas: <strong style="color:var(--text-main);">${node.logs.length}</strong><br>
-            Errores 520: <strong style="color:${node.errors > 0 ? '#dc2626' : '#10b981'};">${node.errors}</strong>
+            Trazas Consolidadas: <strong style="color:var(--text-main);">${node.logsCount.toLocaleString()}</strong><br>
+            Errores 520xxx: <strong style="color:${node.errors > 0 ? '#dc2626' : '#10b981'};">${node.errors.toLocaleString()}</strong>
           </div>
         </div>`;
     });
@@ -2724,13 +2783,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     let barHtml = '';
     discoveredNodes.forEach((node, idx) => {
       const color = colors[idx % colors.length];
-      const pct = Math.round((node.logs.length / totalLogs) * 100);
+      const pct = Math.round((node.logsCount / totalLogs) * 100);
       barHtml += `<div style="width:${pct}%; background:${color}; transition:width 0.5s;" title="${escapeHtml(node.name)}: ${pct}%"></div>`;
     });
     if (barContainer) barContainer.innerHTML = barHtml;
 
     if (labelAsym) {
-      labelAsym.textContent = `🔍 Topología Auto-Detectada: ${discoveredNodes.length} Nodos Detectados en Muestra (${totalLogs} registros)`;
+      labelAsym.textContent = `⚖️ Clúster Consolidado: ${discoveredNodes.length} Nodos Reales Detectados (${totalLogs.toLocaleString()} registros)`;
     }
 
     if (containerTable) {
@@ -2741,22 +2800,19 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       discoveredNodes.forEach((node, idx) => {
         const color = colors[idx % colors.length];
-        const health = node.logs.length > 0 ? Math.max(10, Math.round(100 - (node.errors / node.logs.length) * 100 * 5)) + '%' : 'N/A';
+        const health = node.logsCount > 0 ? Math.max(10, Math.round(100 - (node.errors / node.logsCount) * 100 * 5)) + '%' : 'N/A';
 
-        headerCols += `<th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:${color};">🖥️ ${escapeHtml(node.name)}</th>`;
-        logsRowCols += `<td style="padding:8px; text-align:center; font-weight:bold;">${node.logs.length}</td>`;
-        errRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; color:${node.errors > 0 ? '#dc2626' : '#10b981'};">${node.errors}</td>`;
-        healthRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; color:${color};">${health}</td>`;
+        headerCols += `<th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:${color};">${escapeHtml(node.name)}</th>`;
+        logsRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem;">${node.logsCount.toLocaleString()}</td>`;
+        errRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:${node.errors > 0 ? '#dc2626' : '#10b981'};">${node.errors.toLocaleString()}</td>`;
+        healthRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:${color};">${health}</td>`;
       });
 
       const allCodesMap = new Map();
       discoveredNodes.forEach(node => {
-        node.logs.forEach(l => {
-          if (l.entrustCode) {
-            if (!allCodesMap.has(l.entrustCode)) allCodesMap.set(l.entrustCode, {});
-            const item = allCodesMap.get(l.entrustCode);
-            item[node.key] = (item[node.key] || 0) + 1;
-          }
+        Object.entries(node.entrustCodes || {}).forEach(([code, count]) => {
+          if (!allCodesMap.has(code)) allCodesMap.set(code, {});
+          allCodesMap.get(code)[node.key] = count;
         });
       });
 
@@ -3515,14 +3571,100 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    initSyslogCollectorModule();
-    initStoragePersistence();
-    initCertificatesModule();
-    initZohoDeskModule();
-    initAiOpinionModule();
-    initPptxExportModule();
-  });
+  function initNodeGroupingModule() {
+    const btnOpen = document.getElementById('btn-open-node-grouping');
+    const modal = document.getElementById('node-grouping-modal');
+    const listContainer = document.getElementById('node-grouping-files-list');
+    const btnApply = document.getElementById('btn-apply-node-grouping');
+    const btnQuick0607 = document.getElementById('btn-quick-group-06-07');
+    const btnReset = document.getElementById('btn-reset-node-grouping');
+
+    if (!btnOpen || !modal) return;
+
+    const renderFilesList = () => {
+      const fileNames = [...new Set(state.logs.map(l => l.sourceFile).filter(Boolean))];
+      if (fileNames.length === 0) {
+        listContainer.innerHTML = '<div style="padding:15px; text-align:center; color:var(--text-muted); font-size:0.85rem;">No se han detectado archivos con nombre de origen en la sesión actual.</div>';
+        return;
+      }
+
+      let html = '';
+      fileNames.forEach((fn, idx) => {
+        const detected = detectNodeFromLog({ sourceFile: fn });
+        const currentAssignment = state.customNodeAssignments && state.customNodeAssignments[fn] ? state.customNodeAssignments[fn].key : detected.key;
+
+        html += `
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div style="font-family:monospace; font-size:0.85rem; font-weight:bold; color:var(--text-main); word-break:break-all;">
+              📄 ${escapeHtml(fn)}
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <label style="font-size:0.75rem; color:var(--text-muted);">Asignar a:</label>
+              <select class="form-control node-assign-select" data-filename="${escapeHtml(fn)}" style="width:280px; font-size:0.8rem; padding:4px 8px;">
+                <option value="node_06" ${currentAssignment === 'node_06' ? 'selected' : ''}>🖥️ Nodo 06 (SACVWIG06 - Primario)</option>
+                <option value="node_07" ${currentAssignment === 'node_07' ? 'selected' : ''}>🖥️ Nodo 07 (SACVWIG07 - Secundario)</option>
+                <option value="node_01" ${currentAssignment === 'node_01' ? 'selected' : ''}>🖥️ Nodo 01 (SACVWIG01)</option>
+                <option value="node_02" ${currentAssignment === 'node_02' ? 'selected' : ''}>🖥️ Nodo 02 (SACVWIG02)</option>
+                <option value="node_03" ${currentAssignment === 'node_03' ? 'selected' : ''}>🖥️ Nodo 03 (SACVWIG03)</option>
+                <option value="node_04" ${currentAssignment === 'node_04' ? 'selected' : ''}>🖥️ Nodo 04 (SACVWIG04)</option>
+                <option value="node_05" ${currentAssignment === 'node_05' ? 'selected' : ''}>🖥️ Nodo 05 (SACVWIG05)</option>
+                <option value="node_wso2" ${currentAssignment === 'node_wso2' ? 'selected' : ''}>🖥️ Gateway WSO2 APIM</option>
+              </select>
+            </div>
+          </div>`;
+      });
+      listContainer.innerHTML = html;
+    };
+
+    btnOpen.addEventListener('click', () => {
+      renderFilesList();
+      modal.classList.add('active');
+    });
+
+    btnQuick0607?.addEventListener('click', () => {
+      const selects = listContainer.querySelectorAll('.node-assign-select');
+      selects.forEach((sel, idx) => {
+        const fn = sel.getAttribute('data-filename') || '';
+        if (fn.includes('07') || idx >= 12) {
+          sel.value = 'node_07';
+        } else {
+          sel.value = 'node_06';
+        }
+      });
+    });
+
+    btnReset?.addEventListener('click', () => {
+      state.customNodeAssignments = {};
+      renderFilesList();
+    });
+
+    btnApply?.addEventListener('click', () => {
+      state.customNodeAssignments = state.customNodeAssignments || {};
+      const selects = listContainer.querySelectorAll('.node-assign-select');
+      selects.forEach(sel => {
+        const fn = sel.getAttribute('data-filename');
+        const opt = sel.options[sel.selectedIndex];
+        state.customNodeAssignments[fn] = {
+          key: sel.value,
+          name: opt.text
+        };
+      });
+
+      modal.classList.remove('active');
+      updateNodeComparisonUI();
+      renderTraceWaterfall();
+      showAnalysisStatus(false, '✅ Nodos Asignados y Agrupados', `Topología Clúster reconfigurada`);
+    });
+  }
+
+  // Inicialización de componentes al cargar el DOM
+  initSyslogCollectorModule();
+  initStoragePersistence();
+  initCertificatesModule();
+  initZohoDeskModule();
+  initAiOpinionModule();
+  initPptxExportModule();
+  initNodeGroupingModule();
 
   function escapeHtml(text) {
     if (!text) return '';

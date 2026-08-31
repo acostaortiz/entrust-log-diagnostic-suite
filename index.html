@@ -330,12 +330,18 @@
     <!-- 4. PESTAÑA: COMPARATIVA MULTI-NODO (PRIMARIO VS SECUNDARIO) -->
     <div class="tab-pane" id="tab-nodes">
       <div class="glass-card mb-4">
-        <div class="card-header">
-          <div class="card-title text-cyan">🏢 Módulo de Comparativa Multi-Nodo (Servidor Primario vs Secundario)</div>
-          <button class="btn btn-primary" id="btn-refresh-node-comparison">🔄 Recalcular Comparativa</button>
+        <div class="card-header flex-between" style="flex-wrap:wrap; gap:10px;">
+          <div>
+            <div class="card-title text-cyan">🏢 Módulo de Comparativa Multi-Nodo (Servidores Primario, Secundario & Rotaciones)</div>
+            <div class="card-subtitle">Agrupación inteligente de archivos rotados (.log.1, .log.2) por Servidor/Nodo</div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-primary" id="btn-open-node-grouping" style="background:#0284c7; border-color:#0284c7;">🎛️ Asignar / Agrupar Archivos a Nodos</button>
+            <button class="btn btn-primary" id="btn-refresh-node-comparison">🔄 Recalcular Comparativa</button>
+          </div>
         </div>
         <p class="text-muted" style="font-size:0.85rem; margin-bottom:16px;">
-          Permite evaluar la simetría de carga, distribución de errores HTTP/520xxx y salud entre dos servidores o nodos de la arquitectura de Entrust (ej. Nodo Primario <code>192.168.11.48</code> vs Nodo Secundario <code>192.168.11.60</code>).
+          Permite evaluar la simetría de carga, distribución de errores HTTP/520xxx y salud consolidada entre los Nodos del Clúster (ej. <strong>Nodo 06</strong> con sus 12 rotaciones vs <strong>Nodo 07</strong> con sus 5 rotaciones).
         </p>
 
         <!-- Contenedor Dinámico de Tarjetas de Nodos Detectados -->
@@ -520,6 +526,37 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
       <div class="card-title mb-2" style="font-size:0.9rem; color:var(--text-main);">📋 Casos Guardados en Almacenamiento Local:</div>
       <div id="saved-cases-list-container" style="max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
         <!-- Inyectado dinámicamente por JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ASIGNACIÓN Y AGRUPACIÓN MANUAL DE ARCHIVOS A NODOS -->
+  <div class="modal-overlay" id="node-grouping-modal">
+    <div class="modal-content" style="max-width: 850px;">
+      <div class="card-header flex-between">
+        <div class="card-title text-cyan" style="font-size:1.1rem;">🎛️ Asignación & Agrupación de Archivos por Nodo/Servidor</div>
+        <button class="btn" onclick="document.getElementById('node-grouping-modal').classList.remove('active');">✖ Cerrar</button>
+      </div>
+
+      <p class="text-muted" style="font-size:0.85rem; margin-bottom:14px;">
+        Si cargaste múltiples archivos rotados (ej. 12 archivos de <code>identityguard_system.log.*</code> de un nodo y 5 archivos de otro nodo), aquí puedes consolidar y asignar cada archivo a su Nodo real correspondiente (ej. <strong>Nodo 06</strong> vs <strong>Nodo 07</strong>).
+      </p>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+        <div style="font-size:0.85rem; font-weight:bold; color:var(--text-main);">Archivos Cargados en Sesión:</div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-secondary" id="btn-quick-group-06-07" style="font-size:0.75rem; background:#0a3d6d; color:#fff;">⚡ Auto-Agrupar Nodo 06 & 07</button>
+          <button class="btn btn-secondary" id="btn-reset-node-grouping" style="font-size:0.75rem;">🔄 Restablecer</button>
+        </div>
+      </div>
+
+      <div id="node-grouping-files-list" style="max-height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+        <!-- Inyectado dinámicamente por JS -->
+      </div>
+
+      <div class="flex-between">
+        <span style="font-size:0.75rem; color:var(--text-muted);">Los cambios se aplicarán inmediatamente a la Comparativa Multi-Nodo y Gráficos de Carga.</span>
+        <button class="btn btn-primary" id="btn-apply-node-grouping" style="background:#059669; border-color:#059669;">✅ Aplicar Agrupación de Nodos</button>
       </div>
     </div>
   </div>
