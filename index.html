@@ -337,68 +337,19 @@
           Permite evaluar la simetría de carga, distribución de errores HTTP/520xxx y salud entre dos servidores o nodos de la arquitectura de Entrust (ej. Nodo Primario <code>192.168.11.48</code> vs Nodo Secundario <code>192.168.11.60</code>).
         </p>
 
-        <!-- Selector y Cargador Múltiple de Logs para 4 Nodos / Servidores por Canal -->
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-bottom:20px;">
-          <!-- NODO A -->
-          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:12px;">
-            <div class="card-title text-it-blue mb-2" style="font-size:0.9rem;">🖥️ Nodo 1 / Canal Web (Ej. SACVWIG01)</div>
-            <label class="btn btn-primary" style="margin-bottom:8px; display:inline-block; font-size:0.75rem; cursor:pointer;" title="Cargar logs del Servidor 1">
-              📂 Cargar Logs Nodo A
-              <input type="file" id="node-a-file-input" accept=".log,.txt,.json,.csv" multiple style="display:none;">
-            </label>
-            <div id="node-a-summary" style="font-size:0.78rem; color:var(--text-muted);">
-              Nodo 1 (SACVWIG01) — 0 registros
-            </div>
-          </div>
-
-          <!-- NODO B -->
-          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:12px;">
-            <div class="card-title text-cyan mb-2" style="font-size:0.9rem;">🖥️ Nodo 2 / Canal Móvil (Ej. SACVWIG02)</div>
-            <label class="btn btn-primary" style="margin-bottom:8px; display:inline-block; font-size:0.75rem; background:#0284c7; border-color:#0284c7; cursor:pointer;" title="Cargar logs del Servidor 2">
-              📂 Cargar Logs Nodo B
-              <input type="file" id="node-b-file-input" accept=".log,.txt,.json,.csv" multiple style="display:none;">
-            </label>
-            <div id="node-b-summary" style="font-size:0.78rem; color:var(--text-muted);">
-              Nodo 2 (SACVWIG02) — 0 registros
-            </div>
-          </div>
-
-          <!-- NODO C -->
-          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:12px;">
-            <div class="card-title mb-2" style="font-size:0.9rem; color:#8b5cf6;">🖥️ Nodo 3 / Canal Empresas (Ej. SACVWIG03)</div>
-            <label class="btn btn-primary" style="margin-bottom:8px; display:inline-block; font-size:0.75rem; background:#7c3aed; border-color:#7c3aed; cursor:pointer;" title="Cargar logs del Servidor 3">
-              📂 Cargar Logs Nodo C
-              <input type="file" id="node-c-file-input" accept=".log,.txt,.json,.csv" multiple style="display:none;">
-            </label>
-            <div id="node-c-summary" style="font-size:0.78rem; color:var(--text-muted);">
-              Nodo 3 (SACVWIG03) — 0 registros
-            </div>
-          </div>
-
-          <!-- NODO D -->
-          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:12px;">
-            <div class="card-title mb-2" style="font-size:0.9rem; color:#10b981;">🖥️ Nodo 4 / Gateway APIs (Ej. SACVWIG04)</div>
-            <label class="btn btn-primary" style="margin-bottom:8px; display:inline-block; font-size:0.75rem; background:#059669; border-color:#059669; cursor:pointer;" title="Cargar logs del Servidor 4">
-              📂 Cargar Logs Nodo D
-              <input type="file" id="node-d-file-input" accept=".log,.txt,.json,.csv" multiple style="display:none;">
-            </label>
-            <div id="node-d-summary" style="font-size:0.78rem; color:var(--text-muted);">
-              Nodo 4 (SACVWIG04) — 0 registros
-            </div>
-          </div>
+        <!-- Contenedor Dinámico de Tarjetas de Nodos Detectados -->
+        <div id="dynamic-node-cards-container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-bottom:20px;">
+          <!-- Inyectado dinámicamente según los nodos descubiertos en los logs -->
         </div>
 
-        <!-- Barra de Asimetría de Carga de 4 Nodos -->
+        <!-- Barra Dinámica de Asimetría de Carga del Clúster -->
         <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:16px; margin-bottom:20px;">
           <div class="flex-between mb-2">
-            <span class="diag-label">⚖️ Distribución de Carga Clúster 4 Nodos (Mercantil / Bancos):</span>
+            <span class="diag-label">⚖️ Distribución de Carga del Clúster (Detección Automática de Nodos):</span>
             <span class="font-mono text-cyan" id="node-asymmetry-label" style="font-weight:700;">Balanceando Clúster...</span>
           </div>
-          <div style="height:14px; background:#1e293b; border-radius:7px; overflow:hidden; display:flex;">
-            <div id="node-asymmetry-bar-a" style="width:25%; background:#0284c7; transition:width 0.5s;" title="Nodo A"></div>
-            <div id="node-asymmetry-bar-b" style="width:25%; background:#06b6d4; transition:width 0.5s;" title="Nodo B"></div>
-            <div id="node-asymmetry-bar-c" style="width:25%; background:#8b5cf6; transition:width 0.5s;" title="Nodo C"></div>
-            <div id="node-asymmetry-bar-d" style="width:25%; background:#10b981; transition:width 0.5s;" title="Nodo D"></div>
+          <div id="dynamic-node-asymmetry-bar" style="height:12px; background:#1e293b; border-radius:6px; overflow:hidden; display:flex;">
+            <!-- Inyectado dinámicamente por JS -->
           </div>
         </div>
 

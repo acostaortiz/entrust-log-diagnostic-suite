@@ -2650,92 +2650,133 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   }
 
   function updateNodeComparisonUI() {
-    const summaryA = document.getElementById('node-a-summary');
-    const summaryB = document.getElementById('node-b-summary');
-    const summaryC = document.getElementById('node-c-summary');
-    const summaryD = document.getElementById('node-d-summary');
-
-    const barA = document.getElementById('node-asymmetry-bar-a');
-    const barB = document.getElementById('node-asymmetry-bar-b');
-    const barC = document.getElementById('node-asymmetry-bar-c');
-    const barD = document.getElementById('node-asymmetry-bar-d');
-
+    const cardsContainer = document.getElementById('dynamic-node-cards-container');
+    const barContainer = document.getElementById('dynamic-node-asymmetry-bar');
     const labelAsym = document.getElementById('node-asymmetry-label');
     const containerTable = document.getElementById('node-comparison-table-container');
 
-    const logsA = state.nodeALogs || [];
-    const logsB = state.nodeBLogs || [];
-    const logsC = state.nodeCLogs || [];
-    const logsD = state.nodeDLogs || [];
+    if (!cardsContainer) return;
 
-    const nameA = state.nodeAFileName || 'Nodo 1 / Web (SACVWIG01)';
-    const nameB = state.nodeBFileName || 'Nodo 2 / Móvil (SACVWIG02)';
-    const nameC = state.nodeCFileName || 'Nodo 3 / Empresas (SACVWIG03)';
-    const nameD = state.nodeDFileName || 'Nodo 4 / APIs (SACVWIG04)';
+    const logs = state.logs || [];
+    const nodeMap = new Map();
 
-    const countA = logsA.length;
-    const countB = logsB.length;
-    const countC = logsC.length;
-    const countD = logsD.length;
+    logs.forEach(log => {
+      let nodeKey = 'desconocido';
+      let nodeName = 'Nodo Desconocido';
+      const msg = (log.message || '').toLowerCase();
+      const src = (log.sourceFile || '').toLowerCase();
 
-    const errA = logsA.filter(l => l.level === 'ERROR' || l.level === 'CRITICAL').length;
-    const errB = logsB.filter(l => l.level === 'ERROR' || l.level === 'CRITICAL').length;
-    const errC = logsC.filter(l => l.level === 'ERROR' || l.level === 'CRITICAL').length;
-    const errD = logsD.filter(l => l.level === 'ERROR' || l.level === 'CRITICAL').length;
+      if (msg.includes('sacvwig01') || src.includes('sacvwig01') || src.includes('web') || src.includes('nodo1')) {
+        nodeKey = 'sacvwig01'; nodeName = 'SACVWIG01 (Canal Web)';
+      } else if (msg.includes('sacvwig02') || src.includes('sacvwig02') || src.includes('movil') || src.includes('móvil') || src.includes('nodo2')) {
+        nodeKey = 'sacvwig02'; nodeName = 'SACVWIG02 (Canal Móvil)';
+      } else if (msg.includes('sacvwig03') || src.includes('sacvwig03') || src.includes('empresas') || src.includes('nodo3')) {
+        nodeKey = 'sacvwig03'; nodeName = 'SACVWIG03 (Canal Empresas)';
+      } else if (msg.includes('sacvwig04') || src.includes('sacvwig04') || src.includes('api') || src.includes('wso2') || src.includes('nodo4')) {
+        nodeKey = 'sacvwig04'; nodeName = 'SACVWIG04 (Gateway APIs)';
+      } else if (log.sourceFile) {
+        nodeKey = log.sourceFile.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        nodeName = `Servidor: ${log.sourceFile}`;
+      } else if (log.node) {
+        nodeKey = log.node.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        nodeName = `Servidor: ${log.node}`;
+      }
 
-    if (summaryA) summaryA.innerHTML = `📁 <strong>${escapeHtml(nameA)}</strong><br>Logs: <strong>${countA}</strong> | Errores 520: <strong style="color:${errA > 0 ? '#dc2626' : '#10b981'};">${errA}</strong>`;
-    if (summaryB) summaryB.innerHTML = `📁 <strong>${escapeHtml(nameB)}</strong><br>Logs: <strong>${countB}</strong> | Errores 520: <strong style="color:${errB > 0 ? '#dc2626' : '#10b981'};">${errB}</strong>`;
-    if (summaryC) summaryC.innerHTML = `📁 <strong>${escapeHtml(nameC)}</strong><br>Logs: <strong>${countC}</strong> | Errores 520: <strong style="color:${errC > 0 ? '#dc2626' : '#10b981'};">${errC}</strong>`;
-    if (summaryD) summaryD.innerHTML = `📁 <strong>${escapeHtml(nameD)}</strong><br>Logs: <strong>${countD}</strong> | Errores 520: <strong style="color:${errD > 0 ? '#dc2626' : '#10b981'};">${errD}</strong>`;
+      if (!nodeMap.has(nodeKey)) {
+        nodeMap.set(nodeKey, { key: nodeKey, name: nodeName, logs: [], errors: 0 });
+      }
+      const entry = nodeMap.get(nodeKey);
+      entry.logs.push(log);
+      if (log.level === 'ERROR' || log.level === 'CRITICAL') entry.errors++;
+    });
 
-    const total = Math.max(1, countA + countB + countC + countD);
-    const activeNodesCount = [countA, countB, countC, countD].filter(c => c > 0).length;
+    const discoveredNodes = Array.from(nodeMap.values());
+    const colors = ['#0284c7', '#06b6d4', '#8b5cf6', '#10b981', '#f59e0b', '#ec4899', '#6366f1', '#14b8a6'];
 
-    const pctA = countA === 0 && activeNodesCount === 0 ? 25 : Math.round((countA / total) * 100);
-    const pctB = countB === 0 && activeNodesCount === 0 ? 25 : Math.round((countB / total) * 100);
-    const pctC = countC === 0 && activeNodesCount === 0 ? 25 : Math.round((countC / total) * 100);
-    const pctD = countD === 0 && activeNodesCount === 0 ? 25 : Math.round((countD / total) * 100);
+    if (discoveredNodes.length === 0) {
+      cardsContainer.innerHTML = `
+        <div style="grid-column: 1 / -1; padding:30px; text-align:center; color:var(--text-muted); background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px;">
+          <div style="font-size:32px; margin-bottom:8px;">🔍</div>
+          <strong>No se han cargado logs en la sesión.</strong><br>
+          <span style="font-size:0.85rem;">Al subir archivos en la Visión General, la Suite detectará automáticamente cuántos Nodos/Servidores tiene este cliente.</span>
+        </div>`;
+      if (labelAsym) labelAsym.textContent = '⏳ Esperando carga de archivos para auto-descubrimiento de topología...';
+      if (barContainer) barContainer.innerHTML = '';
+      if (containerTable) containerTable.innerHTML = '';
+      return;
+    }
 
-    if (barA) barA.style.width = `${pctA}%`;
-    if (barB) barB.style.width = `${pctB}%`;
-    if (barC) barC.style.width = `${pctC}%`;
-    if (barD) barD.style.width = `${pctD}%`;
+    let cardsHtml = '';
+    discoveredNodes.forEach((node, idx) => {
+      const color = colors[idx % colors.length];
+      cardsHtml += `
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:12px; border-top:4px solid ${color};">
+          <div class="card-title mb-2" style="font-size:0.88rem; color:var(--text-main);">🖥️ ${escapeHtml(node.name)}</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">
+            Trazas: <strong style="color:var(--text-main);">${node.logs.length}</strong><br>
+            Errores 520: <strong style="color:${node.errors > 0 ? '#dc2626' : '#10b981'};">${node.errors}</strong>
+          </div>
+        </div>`;
+    });
+    cardsContainer.innerHTML = cardsHtml;
+
+    const totalLogs = logs.length || 1;
+    let barHtml = '';
+    discoveredNodes.forEach((node, idx) => {
+      const color = colors[idx % colors.length];
+      const pct = Math.round((node.logs.length / totalLogs) * 100);
+      barHtml += `<div style="width:${pct}%; background:${color}; transition:width 0.5s;" title="${escapeHtml(node.name)}: ${pct}%"></div>`;
+    });
+    if (barContainer) barContainer.innerHTML = barHtml;
 
     if (labelAsym) {
-      if (activeNodesCount === 0) {
-        labelAsym.textContent = '⏳ Cargue los archivos de log de los Servidores / Canales para iniciar la comparativa del clúster (hasta 4 Nodos)';
-      } else {
-        labelAsym.textContent = `📊 DISTRIBUCIÓN CLÚSTER (N1: ${pctA}% | N2: ${pctB}% | N3: ${pctC}% | N4: ${pctD}%)`;
-      }
+      labelAsym.textContent = `🔍 Topología Auto-Detectada: ${discoveredNodes.length} Nodos Detectados en Muestra (${totalLogs} registros)`;
     }
 
     if (containerTable) {
-      const mapErrA = new Map(); logsA.forEach(l => { if (l.entrustCode) mapErrA.set(l.entrustCode, (mapErrA.get(l.entrustCode) || 0) + 1); });
-      const mapErrB = new Map(); logsB.forEach(l => { if (l.entrustCode) mapErrB.set(l.entrustCode, (mapErrB.get(l.entrustCode) || 0) + 1); });
-      const mapErrC = new Map(); logsC.forEach(l => { if (l.entrustCode) mapErrC.set(l.entrustCode, (mapErrC.get(l.entrustCode) || 0) + 1); });
-      const mapErrD = new Map(); logsD.forEach(l => { if (l.entrustCode) mapErrD.set(l.entrustCode, (mapErrD.get(l.entrustCode) || 0) + 1); });
+      let headerCols = '';
+      let logsRowCols = '';
+      let errRowCols = '';
+      let healthRowCols = '';
 
-      const allCodes = Array.from(new Set([...mapErrA.keys(), ...mapErrB.keys(), ...mapErrC.keys(), ...mapErrD.keys()]));
+      discoveredNodes.forEach((node, idx) => {
+        const color = colors[idx % colors.length];
+        const health = node.logs.length > 0 ? Math.max(10, Math.round(100 - (node.errors / node.logs.length) * 100 * 5)) + '%' : 'N/A';
+
+        headerCols += `<th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:${color};">🖥️ ${escapeHtml(node.name)}</th>`;
+        logsRowCols += `<td style="padding:8px; text-align:center; font-weight:bold;">${node.logs.length}</td>`;
+        errRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; color:${node.errors > 0 ? '#dc2626' : '#10b981'};">${node.errors}</td>`;
+        healthRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; color:${color};">${health}</td>`;
+      });
+
+      const allCodesMap = new Map();
+      discoveredNodes.forEach(node => {
+        node.logs.forEach(l => {
+          if (l.entrustCode) {
+            if (!allCodesMap.has(l.entrustCode)) allCodesMap.set(l.entrustCode, {});
+            const item = allCodesMap.get(l.entrustCode);
+            item[node.key] = (item[node.key] || 0) + 1;
+          }
+        });
+      });
 
       let codesRows = '';
-      if (allCodes.length > 0) {
-        allCodes.forEach(code => {
-          const cA = mapErrA.get(code) || 0;
-          const cB = mapErrB.get(code) || 0;
-          const cC = mapErrC.get(code) || 0;
-          const cD = mapErrD.get(code) || 0;
+      if (allCodesMap.size > 0) {
+        allCodesMap.forEach((nodeCounts, code) => {
+          let colCells = '';
+          discoveredNodes.forEach(node => {
+            const cnt = nodeCounts[node.key] || 0;
+            colCells += `<td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cnt > 0 ? '#dc2626' : '#10b981'};">${cnt}</td>`;
+          });
 
           codesRows += `
             <tr style="border-bottom:1px solid var(--border-color);">
               <td style="padding:6px 8px; font-family:monospace; font-weight:bold; color:var(--text-cyan);">Código [${escapeHtml(code)}]</td>
-              <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cA > 0 ? '#dc2626' : '#10b981'};">${cA}</td>
-              <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cB > 0 ? '#dc2626' : '#10b981'};">${cB}</td>
-              <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cC > 0 ? '#dc2626' : '#10b981'};">${cC}</td>
-              <td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cD > 0 ? '#dc2626' : '#10b981'};">${cD}</td>
+              ${colCells}
             </tr>`;
         });
       } else {
-        codesRows = `<tr><td colspan="5" style="padding:10px; text-align:center; color:var(--text-muted);">No se detectaron códigos de error [520xxx] en las muestras.</td></tr>`;
+        codesRows = `<tr><td colspan="${discoveredNodes.length + 1}" style="padding:10px; text-align:center; color:var(--text-muted);">No se detectaron códigos de error [520xxx] en las muestras.</td></tr>`;
       }
 
       containerTable.innerHTML = `
@@ -2743,48 +2784,33 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           <thead>
             <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
               <th style="padding:8px; border-bottom:2px solid var(--border-color);">Métrica Clúster</th>
-              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:var(--it-blue);">🖥️ ${escapeHtml(nameA)}</th>
-              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:var(--text-cyan);">🖥️ ${escapeHtml(nameB)}</th>
-              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:#8b5cf6;">🖥️ ${escapeHtml(nameC)}</th>
-              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:#10b981;">🖥️ ${escapeHtml(nameD)}</th>
+              ${headerCols}
             </tr>
           </thead>
           <tbody>
             <tr>
               <td style="padding:8px; font-weight:bold;">Total Transacciones / Logs</td>
-              <td style="padding:8px; text-align:center; font-weight:bold;">${countA}</td>
-              <td style="padding:8px; text-align:center; font-weight:bold;">${countB}</td>
-              <td style="padding:8px; text-align:center; font-weight:bold;">${countC}</td>
-              <td style="padding:8px; text-align:center; font-weight:bold;">${countD}</td>
+              ${logsRowCols}
             </tr>
             <tr>
               <td style="padding:8px; font-weight:bold;">Errores Críticos / 520xxx</td>
-              <td style="padding:8px; text-align:center; font-weight:bold; color:#dc2626;">${errA}</td>
-              <td style="padding:8px; text-align:center; font-weight:bold; color:#dc2626;">${errB}</td>
-              <td style="padding:8px; text-align:center; font-weight:bold; color:#dc2626;">${errC}</td>
-              <td style="padding:8px; text-align:center; font-weight:bold; color:#dc2626;">${errD}</td>
+              ${errRowCols}
             </tr>
             <tr>
               <td style="padding:8px; font-weight:bold;">Índice de Salud Calculado</td>
-              <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${countA > 0 ? Math.max(10, Math.round(100 - (errA / countA) * 100 * 5)) + '%' : 'N/A'}</td>
-              <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${countB > 0 ? Math.max(10, Math.round(100 - (errB / countB) * 100 * 5)) + '%' : 'N/A'}</td>
-              <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${countC > 0 ? Math.max(10, Math.round(100 - (errC / countC) * 100 * 5)) + '%' : 'N/A'}</td>
-              <td style="padding:8px; text-align:center; font-weight:bold; color:#0284c7;">${countD > 0 ? Math.max(10, Math.round(100 - (errD / countD) * 100 * 5)) + '%' : 'N/A'}</td>
+              ${healthRowCols}
             </tr>
           </tbody>
         </table>
 
         <div style="margin-top:20px; font-weight:bold; color:var(--text-main); font-size:0.9rem;">
-          📊 Comparativa Clúster 4 Nodos — Códigos de Error Entrust [520xxx]:
+          📊 Comparativa Clúster Auto-Detectado (${discoveredNodes.length} Nodos) — Códigos [520xxx]:
         </div>
         <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:8px;">
           <thead>
             <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
               <th style="padding:6px 8px; border-bottom:1px solid var(--border-color);">Código de Error</th>
-              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Nodo 1 (Web)</th>
-              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Nodo 2 (Móvil)</th>
-              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Nodo 3 (Empresas)</th>
-              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Nodo 4 (APIs)</th>
+              ${headerCols}
             </tr>
           </thead>
           <tbody>
