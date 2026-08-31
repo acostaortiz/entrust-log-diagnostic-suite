@@ -144,6 +144,47 @@ class LogParser {
     return parsedEntries;
   }
 
+  async parseLogsWithWorker(rawContent, clientId, onProgress) {
+    if (window.Worker) {
+      return new Promise((resolve) => {
+        try {
+          const worker = new Worker('js/log-parser-worker.js');
+          worker.postMessage({ rawContent, clientId });
+
+          worker.onmessage = (e) => {
+            const { type, current, total, pct, parsedLogs } = e.data;
+            if (type === 'progress') {
+              if (onProgress) onProgress(current, total, `⚡ [Web Worker Multihilo]: Procesando logs... (${pct}%)`);
+            } else if (type === 'complete') {
+              worker.terminate();
+              if (window.knowledgeBaseEngine) {
+                parsedLogs.forEach(l => {
+                  l.diagnostic = window.knowledgeBaseEngine.diagnoseLogWithCli 
+                    ? window.knowledgeBaseEngine.diagnoseLogWithCli(l.message || l.raw)
+                    : window.knowledgeBaseEngine.diagnoseLog(l.message || l.raw);
+                });
+              }
+              this.correlateAutoHealing(parsedLogs);
+              if (onProgress) onProgress(total, total, '100% Finalizado (Web Worker)');
+              resolve(parsedLogs);
+            }
+          };
+
+          worker.onerror = (err) => {
+            console.warn('Worker error fallback to parseLogsAsync:', err);
+            worker.terminate();
+            resolve(this.parseLogsAsync(rawContent, clientId, onProgress));
+          };
+        } catch(e) {
+          console.warn('Worker init fallback:', e);
+          resolve(this.parseLogsAsync(rawContent, clientId, onProgress));
+        }
+      });
+    } else {
+      return this.parseLogsAsync(rawContent, clientId, onProgress);
+    }
+  }
+
   correlateAutoHealing(parsedEntries) {
     if (!parsedEntries || parsedEntries.length === 0) return;
     const userEvents = new Map();

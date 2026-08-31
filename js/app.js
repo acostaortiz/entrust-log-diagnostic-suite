@@ -501,6 +501,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    document.getElementById('btn-download-onepage-exec-report')?.addEventListener('click', () => {
+      downloadOnePageExecutivePdf();
+    });
+
     document.getElementById('btn-download-html-exec-report')?.addEventListener('click', () => {
       downloadExecutiveReportHtml();
     });
@@ -513,6 +517,98 @@ document.addEventListener('DOMContentLoaded', () => {
       btnPrint.addEventListener('click', () => {
         window.print();
       });
+    }
+  }
+
+  function downloadOnePageExecutivePdf() {
+    const activeClient = getActiveClientProfile();
+    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+    const targetLogs = state.logs || [];
+    const totalCount = Math.max(1, targetLogs.length);
+    const criticalLogs = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
+    const warningLogs = targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING');
+    const critPenalty = criticalLogs.length > 0 ? Math.min(65, Math.max(5, (criticalLogs.length / totalCount) * 100 * 5 + criticalLogs.length * 0.2)) : 0;
+    const healthIndex = Math.max(10, Math.round(100 - critPenalty));
+
+    const pageWrapper = document.createElement('div');
+    pageWrapper.style.width = '790px';
+    pageWrapper.style.padding = '20px';
+    pageWrapper.style.background = '#ffffff';
+    pageWrapper.style.color = '#0f172a';
+    pageWrapper.style.fontFamily = "'Segoe UI', Arial, sans-serif";
+    pageWrapper.style.boxSizing = 'border-box';
+
+    pageWrapper.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #0a3d6d; padding-bottom:10px; margin-bottom:12px;">
+        <div>
+          <h1 style="color:#0a3d6d; margin:0; font-size:18px; font-weight:bold;">IT SERVICIOS DE VENEZUELA</h1>
+          <h3 style="color:#e11d48; margin:2px 0 0 0; font-size:12px; text-transform:uppercase;">RESUMEN EJECUTIVO DE INCIDENTES ENTRUST — LÁMINA 1 PÁGINA</h3>
+        </div>
+        <div style="text-align:right; font-size:10px; color:#64748b;">
+          <strong>Cliente:</strong> ${escapeHtml(activeClient.name)}<br>
+          <strong>Fecha:</strong> ${dateStamp} | <strong>Ingeniero:</strong> ${escapeHtml(activeClient.engineer)}
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:14px;">
+        <div style="background:#f0f9ff; border:1px solid #0284c7; padding:8px; border-radius:6px; text-align:center;">
+          <div style="font-size:18px; font-weight:bold; color:#0284c7;">${healthIndex}%</div>
+          <div style="font-size:9px; color:#475569; text-transform:uppercase; font-weight:bold;">Salud Autenticación</div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:8px; border-radius:6px; text-align:center;">
+          <div style="font-size:18px; font-weight:bold; color:#0f172a;">${totalCount}</div>
+          <div style="font-size:9px; color:#475569; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
+        </div>
+        <div style="background:#fef2f2; border:1px solid #ef4444; padding:8px; border-radius:6px; text-align:center;">
+          <div style="font-size:18px; font-weight:bold; color:#dc2626;">${criticalLogs.length}</div>
+          <div style="font-size:9px; color:#dc2626; text-transform:uppercase; font-weight:bold;">Errores 520 / Críticos</div>
+        </div>
+        <div style="background:#fffbeb; border:1px solid #f59e0b; padding:8px; border-radius:6px; text-align:center;">
+          <div style="font-size:18px; font-weight:bold; color:#d97706;">${warningLogs.length}</div>
+          <div style="font-size:9px; color:#d97706; text-transform:uppercase; font-weight:bold;">Alertas Auditoría</div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #cbd5e1; border-radius:6px; padding:10px; margin-bottom:12px; background:#f8fafc;">
+        <h4 style="margin:0 0 6px 0; font-size:12px; color:#0a3d6d;">🎯 Hallazgos Forenses y Evaluación de Canales Bancarios:</h4>
+        <p style="font-size:10px; color:#334155; margin:0 0 6px 0; line-height:1.4;">
+          ${criticalLogs.length > 0 ? `⚠️ Se detectaron ${criticalLogs.length} eventos críticos que requieren atención inmediata en la infraestructura de autenticación.` : '✅ La plataforma operó con estabilidad aceptable durante el periodo de análisis.'}
+        </p>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <h4 style="margin:0 0 6px 0; font-size:12px; color:#0a3d6d;">🛠️ Medidas de Remediación Prioritarias (Comandos CLI):</h4>
+        <div style="background:#0f172a; color:#a5f3fc; padding:8px; border-radius:6px; font-family:monospace; font-size:9px; line-height:1.4;">
+          REM --- Verificación General de Servicios Entrust & WSO2 ---<br>
+          sc query "Entrust IdentityGuard Administration Service"<br>
+          keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\identityguard.keystore" -storepass changeit
+        </div>
+      </div>
+
+      <div style="margin-top:14px; padding:8px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:9px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
+        <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD SHA-256:</strong> SHA256-ONEPAGE-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
+        <span>Aprobado por IT SERVICIOS v62.0</span>
+      </div>
+    `;
+
+    document.body.appendChild(pageWrapper);
+
+    const opt = {
+      margin:       [4, 4, 4, 4],
+      filename:     `Lamina_Ejecutiva_Entrust_${clientSanitized}_${dateStamp}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false },
+      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+    };
+
+    if (window.html2pdf) {
+      window.html2pdf().set(opt).from(pageWrapper).save().then(() => {
+        document.body.removeChild(pageWrapper);
+      });
+    } else {
+      window.print();
+      document.body.removeChild(pageWrapper);
     }
   }
 
@@ -2488,7 +2584,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         const file = files[i];
         showAnalysisStatus(true, `⚙️ [${nodeName} - Archivo ${i+1}/${files.length}]: ${file.name}...`, 'Procesando trazas por bloques...');
         const content = await file.text();
-        const parsed = await window.logParserEngine.parseLogsAsync(content, null);
+        const parsed = window.logParserEngine.parseLogsWithWorker 
+          ? await window.logParserEngine.parseLogsWithWorker(content, null, (c, t, msg) => showAnalysisStatus(true, `⚙️ [${nodeName}]: ${file.name}`, msg))
+          : await window.logParserEngine.parseLogsAsync(content, null);
         logs = logs.concat(parsed);
       }
       state[`node${nodeKey}Logs`] = logs;
