@@ -2199,6 +2199,44 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
   }
 
+  function autoDistributeLogsToNodes(newLogs) {
+    if (!newLogs || newLogs.length === 0) return;
+
+    if (!state.nodeALogs) state.nodeALogs = [];
+    if (!state.nodeBLogs) state.nodeBLogs = [];
+    if (!state.nodeCLogs) state.nodeCLogs = [];
+    if (!state.nodeDLogs) state.nodeDLogs = [];
+
+    newLogs.forEach((log, idx) => {
+      const msg = (log.message || '').toLowerCase();
+      const src = (log.sourceFile || '').toLowerCase();
+      const nodeTag = (log.node || '').toLowerCase();
+
+      if (msg.includes('sacvwig01') || src.includes('sacvwig01') || src.includes('nodo1') || src.includes('web') || nodeTag.includes('01')) {
+        state.nodeALogs.push(log);
+      } else if (msg.includes('sacvwig02') || src.includes('sacvwig02') || src.includes('nodo2') || src.includes('movil') || src.includes('móvil') || nodeTag.includes('02')) {
+        state.nodeBLogs.push(log);
+      } else if (msg.includes('sacvwig03') || src.includes('sacvwig03') || src.includes('nodo3') || src.includes('empresas') || nodeTag.includes('03')) {
+        state.nodeCLogs.push(log);
+      } else if (msg.includes('sacvwig04') || src.includes('sacvwig04') || src.includes('nodo4') || src.includes('api') || src.includes('wso2') || nodeTag.includes('04')) {
+        state.nodeDLogs.push(log);
+      } else {
+        const mod = idx % 4;
+        if (mod === 0) state.nodeALogs.push(log);
+        else if (mod === 1) state.nodeBLogs.push(log);
+        else if (mod === 2) state.nodeCLogs.push(log);
+        else state.nodeDLogs.push(log);
+      }
+    });
+
+    state.nodeAFileName = `${state.nodeALogs.length} Registros (Nodo 1 Web)`;
+    state.nodeBFileName = `${state.nodeBLogs.length} Registros (Nodo 2 Móvil)`;
+    state.nodeCFileName = `${state.nodeCLogs.length} Registros (Nodo 3 Empresas)`;
+    state.nodeDFileName = `${state.nodeDLogs.length} Registros (Nodo 4 APIs)`;
+
+    updateNodeComparisonUI();
+  }
+
   async function processLogText(rawText, clientName = 'Entrust OnPremise') {
     showAnalysisStatus(true, '⚙️ Procesando Muestra de Logs...', 'Delegando análisis al motor multihilo Web Worker...');
 
@@ -2210,7 +2248,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           showAnalysisStatus(true, '⚙️ Analizando Muestra de Logs...', msg);
         });
 
-    state.logs = parsedLogs;
+    state.logs = (state.logs || []).concat(parsedLogs);
+    autoDistributeLogsToNodes(parsedLogs);
+
     populateClientSelector();
     applyLogFilters();
 
@@ -2220,9 +2260,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
 
     renderTraceWaterfall();
-    updateNodeComparisonUI();
-
-    showAnalysisStatus(false, `✅ Muestra Analizada Exitosamente (${state.logs.length} registros)`, `Cliente: ${clientName}`);
+    showAnalysisStatus(false, `✅ Muestra Analizada & Acumulada Exitosamente (${state.logs.length} registros totales)`, `Cliente: ${clientName}`);
   }
 
   function updateMetricsAndCharts() {
@@ -2906,6 +2944,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       if (newLogs.length > 0) {
         state.logs = state.logs.concat(newLogs);
+        autoDistributeLogsToNodes(newLogs);
+        renderTraceWaterfall();
+
         clearFilterMode();
         if (dom.filterLevelSelect) dom.filterLevelSelect.value = 'ALL';
         if (dom.filterTypeSelect) dom.filterTypeSelect.value = 'ALL';
@@ -2922,7 +2963,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
         switchTab('analyzer');
 
-        const uniqueClients = [...new Set(state.logs.map(l => l.client || 'Cliente General'))];
+        showAnalysisStatus(false, `✅ Archivo(s) Cargados & Acumulados: ${fileCount} archivo(s)`, `Total Acumulado en Sesión: ${state.logs.length} registros`);
       }
     });
 
