@@ -3356,92 +3356,126 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     renderCerts();
   }
 
-  // PILAR 4: EXPORTADOR DE PRESENTACIONES POWERPOINT (.PPTX)
+  // PILAR 4: EXPORTADOR DE PRESENTACIONES NATIVAS POWERPOINT (.PPTX)
   function initPptxExportModule() {
     const btnPptx = document.getElementById('btn-export-pptx');
     if (!btnPptx) return;
 
-    btnPptx.addEventListener('click', () => {
+    btnPptx.addEventListener('click', async () => {
       const client = getActiveClientProfile();
       const total = state.logs.length;
       const criticals = state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
+      const warnings = state.logs.filter(l => l.level === 'WARN').length;
       const health = total > 0 ? Math.max(10, Math.round(100 - (criticals / total) * 100 * 5)) : 100;
-      const dateStr = new Date().toISOString().slice(0, 10);
+      const dateStr = new Date().toLocaleDateString('es-VE', { year: 'numeric', month: 'long', day: 'numeric' });
+      const cleanClient = (client.name || 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
 
-      // Generar archivo HTML/XML de Presentación Ejecutiva compatible con Microsoft PowerPoint
-      const pptxContent = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Presentación Ejecutiva Entrust - ${escapeHtml(client.name)}</title>
-          <style>
-            body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a192f; color: #fff; margin:0; padding:40px; }
-            .slide { background: #0f172a; border: 2px solid #0284c7; border-radius: 12px; padding: 40px; margin-bottom: 40px; page-break-after: always; box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-height: 500px; }
-            h1 { color: #38bdf8; font-size: 28px; margin-top:0; border-bottom: 2px solid #0284c7; padding-bottom: 10px; }
-            h2 { color: #f43f5e; font-size: 22px; }
-            .kpi-box { display: inline-block; width: 22%; background: #1e293b; padding: 15px; margin: 1%; border-radius: 8px; text-align: center; border-top: 4px solid #38bdf8; }
-            .kpi-val { font-size: 32px; font-weight: bold; color: #38bdf8; }
-            .kpi-lbl { font-size: 12px; color: #94a3b8; text-transform: uppercase; }
-            table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-            th, td { padding: 10px; border: 1px solid #334155; text-align: left; }
-            th { background: #1e293b; color: #38bdf8; }
-            .footer { margin-top: 30px; font-size: 11px; color: #64748b; border-top: 1px solid #334155; padding-top: 8px; display: flex; justify-content: space-between; }
-          </style>
-        </head>
-        <body>
-          <!-- DIAPOSITIVA 1: PORTADA -->
-          <div class="slide">
-            <div style="text-align:center; padding: 60px 20px;">
-              <h3 style="color:#f43f5e; letter-spacing: 2px;">IT SERVICIOS DE VENEZUELA</h3>
-              <h1 style="font-size: 36px; margin: 20px 0; color:#fff;">INFORME EJECUTIVO DE INCIDENTES ENTRUST</h1>
-              <h2 style="color:#38bdf8;">AUDITORÍA FORENSE & EVALUACIÓN DE CANALES DIGITALES</h2>
-              <div style="margin-top: 40px; font-size: 16px; color:#94a3b8;">
-                <strong>Cliente:</strong> ${escapeHtml(client.name)} (${escapeHtml(client.version)})<br>
-                <strong>Fecha:</strong> ${dateStr} | <strong>Ingeniero:</strong> ${escapeHtml(client.engineer)}
-              </div>
-            </div>
-            <div class="footer"><span>IT SERVICIOS DE VENEZUELA</span><span>CONFIDENCIAL / C-LEVEL</span></div>
-          </div>
+      if (window.PptxGenJS) {
+        showAnalysisStatus(true, '📊 Generando Presentación PowerPoint Nativa (.pptx)...', 'Creando láminas ejecutivas...');
 
-          <!-- DIAPOSITIVA 2: MÉTRICAS -->
-          <div class="slide">
-            <h1>1. Estado Operacional & Salud de la Plataforma</h1>
-            <p style="color:#cbd5e1;">Evaluación integral del volumen de autenticación durante la ventana de análisis.</p>
-            <div style="margin: 30px 0;">
-              <div class="kpi-box"><div class="kpi-val">${health}%</div><div class="kpi-lbl">Índice de Salud</div></div>
-              <div class="kpi-box"><div class="kpi-val">${total.toLocaleString()}</div><div class="kpi-lbl">Total Transacciones</div></div>
-              <div class="kpi-box"><div class="kpi-val" style="color:#f43f5e;">${criticals.toLocaleString()}</div><div class="kpi-lbl">Incidentes Críticos</div></div>
-              <div class="kpi-box"><div class="kpi-val">0</div><div class="kpi-lbl">Disponibilidad SLA</div></div>
-            </div>
-            <div class="footer"><span>IT SERVICIOS DE VENEZUELA</span><span>Diapositiva 2</span></div>
-          </div>
+        try {
+          const pptx = new window.PptxGenJS();
+          pptx.layout = 'LAYOUT_16x9';
+          pptx.author = 'Tomás Acosta - IT SERVICIOS DE VENEZUELA';
+          pptx.company = 'IT SERVICIOS DE VENEZUELA';
+          pptx.title = `Informe Ejecutivo Entrust - ${client.name}`;
 
-          <!-- DIAPOSITIVA 3: TOPOLOGÍA -->
-          <div class="slide">
-            <h1>2. Arquitectura Clúster & Distribución Multi-Nodo</h1>
-            <p style="color:#cbd5e1;">Comprobación de simetría de carga entre servidores de aplicación Entrust IdentityGuard.</p>
-            <table>
-              <tr><th>Componente / Nodo</th><th>Canal Asociado</th><th>Estatus</th></tr>
-              <tr><td>SACVWIG01</td><td>Canal Web Personas</td><td>OPERATIVO (Balanceado)</td></tr>
-              <tr><td>SACVWIG02</td><td>Canal Móvil / Pago Móvil</td><td>OPERATIVO</td></tr>
-              <tr><td>SACVWIG03</td><td>Canal Empresas / Jurídico</td><td>OPERATIVO</td></tr>
-              <tr><td>SACVWIG04</td><td>Gateway APIs WSO2</td><td>OPERATIVO</td></tr>
-            </table>
-            <div class="footer"><span>IT SERVICIOS DE VENEZUELA</span><span>Diapositiva 3</span></div>
-          </div>
-        </body>
-        </html>`;
+          // SLIDE 1: PORTADA EJECUTIVA
+          const slide1 = pptx.addSlide();
+          slide1.background = { color: '0A192F' };
+          
+          slide1.addText('IT SERVICIOS DE VENEZUELA', {
+            x: 0.8, y: 1.0, w: '85%', fontSize: 16, color: '38BDF8', bold: true, fontFace: 'Segoe UI'
+          });
+          slide1.addText('INFORME EJECUTIVO DE INCIDENTES', {
+            x: 0.8, y: 1.6, w: '85%', fontSize: 30, color: 'FFFFFF', bold: true, fontFace: 'Segoe UI'
+          });
+          slide1.addText(`Auditoría Forense & Diagnóstico de Autenticación — ${client.name}`, {
+            x: 0.8, y: 2.4, w: '85%', fontSize: 18, color: '0284C7', fontFace: 'Segoe UI'
+          });
 
-      const blob = new Blob([pptxContent], { type: 'application/vnd.ms-powerpoint' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Presentacion_Ejecutiva_${client.name.replace(/[^a-zA-Z0-9]/g, '_')}_${dateStr}.ppt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+          slide1.addShape(pptx.ShapeType.line, {
+            x: 0.8, y: 3.1, w: 8.5, h: 0, line: { color: '38BDF8', width: 2 }
+          });
+
+          slide1.addText(`Entorno: ${client.platform || 'Entrust IdentityGuard'} (${client.version || 'Release 11.0/13.0'})\nFecha de Emisión: ${dateStr}\nPerito Responsable: ${client.engineer || 'Tomás Acosta'}\nEstatus: DOCUMENTO EJECUTIVO / CONFIDENCIAL`, {
+            x: 0.8, y: 3.4, w: '85%', fontSize: 13, color: '94A3B8', lineSpacing: 22, fontFace: 'Segoe UI'
+          });
+
+          // SLIDE 2: ESTADO OPERACIONAL & KPIS
+          const slide2 = pptx.addSlide();
+          slide2.background = { color: '0F172A' };
+
+          slide2.addText('1. Estado Operacional & Salud del Clúster', {
+            x: 0.8, y: 0.5, w: '85%', fontSize: 22, color: '38BDF8', bold: true, fontFace: 'Segoe UI'
+          });
+
+          // Box 1: Salud
+          slide2.addShape(pptx.ShapeType.rect, { x: 0.8, y: 1.3, w: 2.8, h: 1.6, fill: { color: '1E293B' }, line: { color: '0284C7', width: 1.5 } });
+          slide2.addText(`${health}%`, { x: 0.8, y: 1.5, w: 2.8, fontSize: 36, color: health >= 80 ? '10B981' : 'EF4444', bold: true, align: 'center', fontFace: 'Segoe UI' });
+          slide2.addText('ÍNDICE DE SALUD', { x: 0.8, y: 2.3, w: 2.8, fontSize: 11, color: '94A3B8', bold: true, align: 'center', fontFace: 'Segoe UI' });
+
+          // Box 2: Total Trazas
+          slide2.addShape(pptx.ShapeType.rect, { x: 3.8, y: 1.3, w: 2.8, h: 1.6, fill: { color: '1E293B' }, line: { color: '0284C7', width: 1.5 } });
+          slide2.addText(`${total.toLocaleString()}`, { x: 3.8, y: 1.5, w: 2.8, fontSize: 30, color: '38BDF8', bold: true, align: 'center', fontFace: 'Segoe UI' });
+          slide2.addText('TOTAL TRANSACCIONES', { x: 3.8, y: 2.3, w: 2.8, fontSize: 11, color: '94A3B8', bold: true, align: 'center', fontFace: 'Segoe UI' });
+
+          // Box 3: Incidentes Críticos
+          slide2.addShape(pptx.ShapeType.rect, { x: 6.8, y: 1.3, w: 2.8, h: 1.6, fill: { color: '1E293B' }, line: { color: 'EF4444', width: 1.5 } });
+          slide2.addText(`${criticals.toLocaleString()}`, { x: 6.8, y: 1.5, w: 2.8, fontSize: 30, color: 'EF4444', bold: true, align: 'center', fontFace: 'Segoe UI' });
+          slide2.addText('INCIDENTES CRÍTICOS (520xxx)', { x: 6.8, y: 2.3, w: 2.8, fontSize: 11, color: '94A3B8', bold: true, align: 'center', fontFace: 'Segoe UI' });
+
+          // Resumen descriptivo
+          slide2.addText(`• Se analizaron ${total.toLocaleString()} transacciones procesadas por la arquitectura Entrust.\n• Se identificaron ${criticals.toLocaleString()} eventos críticos que requirieron diagnóstico y correlación.\n• Cumplimiento con auditoría forense bancaria conforme a lineamientos de Sudeban e ISO 27001.`, {
+            x: 0.8, y: 3.3, w: '85%', fontSize: 13, color: 'CBD5E1', lineSpacing: 22, fontFace: 'Segoe UI'
+          });
+
+          // SLIDE 3: COMPARATIVA MULTI-NODO
+          const slide3 = pptx.addSlide();
+          slide3.background = { color: '0F172A' };
+
+          slide3.addText('2. Arquitectura Clúster & Consolidación de Nodos', {
+            x: 0.8, y: 0.5, w: '85%', fontSize: 22, color: '38BDF8', bold: true, fontFace: 'Segoe UI'
+          });
+
+          const tableData = [
+            [
+              { text: 'Nodo / Servidor', options: { bold: true, fill: { color: '0284C7' }, color: 'FFFFFF' } },
+              { text: 'Canales Asociados', options: { bold: true, fill: { color: '0284C7' }, color: 'FFFFFF' } },
+              { text: 'Estatus & Balanceo', options: { bold: true, fill: { color: '0284C7' }, color: 'FFFFFF' } }
+            ],
+            ['Nodo 06 (SACVWIG06)', 'Canal Móvil / Pago Móvil / Banca Web', 'OPERATIVO (12 archivos rotados analizados)'],
+            ['Nodo 07 (SACVWIG07)', 'Canal Empresas / Jurídico / Contingencia', 'OPERATIVO (5 archivos rotados analizados)'],
+            ['Gateway WSO2 APIM', 'sadcluapi01 / sadcluapi02', 'ENLACE MUTUAL SSL ACTIVO']
+          ];
+
+          slide3.addTable(tableData, { x: 0.8, y: 1.4, w: 8.8, fill: { color: '1E293B' }, color: 'FFFFFF', fontSize: 12, border: { pt: 1, color: '334155' } });
+
+          // SLIDE 4: PLAN DE REMEDIACIÓN RECOMENDADO
+          const slide4 = pptx.addSlide();
+          slide4.background = { color: '0A192F' };
+
+          slide4.addText('3. Plan de Remediación & Recomendaciones Oficiales', {
+            x: 0.8, y: 0.5, w: '85%', fontSize: 22, color: '38BDF8', bold: true, fontFace: 'Segoe UI'
+          });
+
+          slide4.addText(`1. Ajuste de Parámetros JVM Tomcat:\n   Configurar -Xms2048m -Xmx4096m en el servicio de Entrust en SACVWIG06 y SACVWIG07.\n\n2. Optimización del Pool de Conexiones JDBC:\n   Incrementar maxActive=100 y maxWait=5000 en identityguard.properties.\n\n3. Auditoría y Renovación de Keystores SSL/TLS:\n   Verificar vigencia en identityguard.keystore para prevenir fallos en enlaces mTLS.\n\n4. Sincronización NTP:\n   Validar que la diferencia horaria sea menor a 120ms para garantizar validación OTP.`, {
+            x: 0.8, y: 1.3, w: '85%', fontSize: 13, color: 'CBD5E1', lineSpacing: 20, fontFace: 'Segoe UI'
+          });
+
+          // Descargar archivo .pptx nativo
+          const fileName = `Presentacion_Ejecutiva_${cleanClient}_${new Date().toISOString().slice(0,10)}.pptx`;
+          await pptx.writeFile({ fileName });
+
+          showAnalysisStatus(false, '✅ Presentación PowerPoint (.pptx) Descargada', `Archivo nativo: ${fileName}`);
+        } catch(err) {
+          console.error('Error generando PPTX:', err);
+          alert(`Error generando PowerPoint: ${err.message}`);
+          showAnalysisStatus(false, 'Error en exportación PPTX', err.message);
+        }
+      } else {
+        alert('Librería PptxGenJS no cargada en el navegador.');
+      }
     });
   }
 
