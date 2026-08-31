@@ -3068,6 +3068,407 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }, 3500);
   }
 
+  /* ==========================================================================
+     8. PILARES ENTERPRISE (v70.0 PLATINUM): INDEXEDDB, CERTIFICADOS, ZOHO & IA
+     ========================================================================== */
+
+  // PILAR 1: DICTAMEN IA FORENSE
+  function initAiOpinionModule() {
+    const btnOpen = document.getElementById('btn-open-ai-opinion');
+    const modal = document.getElementById('ai-opinion-modal');
+    const container = document.getElementById('ai-opinion-content');
+    const btnCopy = document.getElementById('btn-copy-ai-opinion');
+
+    if (btnOpen) {
+      btnOpen.addEventListener('click', () => {
+        const client = getActiveClientProfile();
+        const opinion = window.knowledgeBaseEngine.generateExpertAiOpinion(state.logs, client);
+
+        let findingsHtml = '';
+        opinion.criticalFindings.forEach((f, idx) => {
+          findingsHtml += `
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-left:4px solid #7c3aed; padding:10px 14px; border-radius:6px; margin-bottom:8px;">
+              <div class="flex-between">
+                <span class="font-mono text-cyan" style="font-weight:bold;">#${idx+1} Código [${escapeHtml(f.code)}]</span>
+                <span style="font-size:0.75rem; background:#fee2e2; color:#dc2626; padding:2px 6px; border-radius:4px; font-weight:bold;">${f.occurrences} ocurrencias</span>
+              </div>
+              <div style="font-size:0.85rem; color:var(--text-main); margin:4px 0;"><strong>Significado:</strong> ${escapeHtml(f.meaning)}</div>
+              <div style="font-size:0.8rem; color:var(--text-warn);"><strong>Causa Raíz:</strong> ${escapeHtml(f.rootCause)}</div>
+            </div>`;
+        });
+
+        let remHtml = '';
+        opinion.remediationPlan.forEach(r => {
+          remHtml += `<li style="margin-bottom:4px;">${escapeHtml(r)}</li>`;
+        });
+
+        container.innerHTML = `
+          <div style="background:linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(2, 132, 199, 0.1)); border:1px solid #7c3aed; border-radius:8px; padding:14px; margin-bottom:14px;">
+            <h3 style="margin:0 0 6px 0; color:#7c3aed; font-size:1.1rem;">⚖️ ${opinion.title}</h3>
+            <div style="font-size:0.8rem; color:var(--text-muted);">
+              <strong>Entorno Evaluado:</strong> ${escapeHtml(opinion.client)} | <strong>Fecha de Emisión:</strong> ${opinion.date}<br>
+              <strong>Perito Responsable:</strong> ${escapeHtml(opinion.engineer)}
+            </div>
+          </div>
+
+          <div style="margin-bottom:14px;">
+            <h4 style="margin:0 0 6px 0; color:var(--text-main); font-size:0.95rem;">📌 Resumen Dictamen Ejecutivo:</h4>
+            <p style="font-size:0.85rem; color:var(--text-main); line-height:1.5; background:var(--bg-secondary); padding:10px; border-radius:6px; border:1px solid var(--border-color);">
+              ${escapeHtml(opinion.executiveSummary)}
+            </p>
+          </div>
+
+          <div style="margin-bottom:14px;">
+            <h4 style="margin:0 0 6px 0; color:var(--text-main); font-size:0.95rem;">🔍 Hallazgos de Mayor Impacto Forense:</h4>
+            ${findingsHtml}
+          </div>
+
+          <div style="margin-bottom:14px;">
+            <h4 style="margin:0 0 6px 0; color:var(--text-main); font-size:0.95rem;">🛠️ Plan de Remediación Obligatorio (ITIL / Sudeban):</h4>
+            <ul style="font-size:0.85rem; color:var(--text-main); padding-left:20px; line-height:1.5;">
+              ${remHtml}
+            </ul>
+          </div>
+
+          <div style="padding:8px 12px; background:var(--bg-secondary); border:1px dashed #7c3aed; border-radius:6px; font-size:0.75rem; color:var(--text-muted); font-family:monospace;">
+            ${escapeHtml(opinion.regulatoryStatement)}
+          </div>
+        `;
+
+        if (modal) modal.classList.add('active');
+      });
+    }
+
+    if (btnCopy) {
+      btnCopy.addEventListener('click', () => {
+        const text = container.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          alert('¡Dictamen Pericial copiado al portapapeles!');
+        });
+      });
+    }
+  }
+
+  // PILAR 2: PERSISTENCIA INDEXEDDB & GESTOR DE CASOS
+  async function initStoragePersistence() {
+    // Restaurar sesión activa si existe
+    try {
+      const savedSession = await window.storageEngine.loadActiveSession();
+      if (savedSession && savedSession.logs && savedSession.logs.length > 0 && state.logs.length === 0) {
+        state.logs = savedSession.logs;
+        state.activeClientId = savedSession.activeClientId || state.activeClientId;
+        populateClientSelector();
+        applyLogFilters();
+        updateNodeComparisonUI();
+        renderTraceWaterfall();
+        showAnalysisStatus(false, `💾 Sesión Restaurada de IndexedDB (${state.logs.length} registros)`, `Cliente: ${state.activeClientId}`);
+      }
+    } catch(e) {}
+
+    const btnOpenCases = document.getElementById('btn-open-saved-cases');
+    const modalCases = document.getElementById('saved-cases-modal');
+    const btnDoSave = document.getElementById('btn-do-save-current-case');
+    const titleInput = document.getElementById('save-case-title-input');
+    const listContainer = document.getElementById('saved-cases-list-container');
+
+    const renderCasesList = async () => {
+      if (!listContainer) return;
+      const cases = await window.storageEngine.listHistoricalCases();
+      if (cases.length === 0) {
+        listContainer.innerHTML = '<div style="padding:15px; text-align:center; color:var(--text-muted); font-size:0.85rem;">No hay incidentes guardados en la base de datos local.</div>';
+        return;
+      }
+      let html = '';
+      cases.forEach(c => {
+        html += `
+          <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:6px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+              <div style="font-weight:bold; color:var(--text-main); font-size:0.9rem;">📁 ${escapeHtml(c.caseTitle)}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">
+                Cliente: <strong>${escapeHtml(c.clientName)}</strong> | Trazas: <strong>${c.logsCount}</strong> | Errores: <strong style="color:#dc2626;">${c.criticalCount}</strong> | Fecha: ${new Date(c.createdAt).toLocaleString()}
+              </div>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-primary" style="padding:4px 8px; font-size:0.75rem;" onclick="window.loadHistoricalCaseGlobal('${c.caseId}')">Abrir</button>
+              <button class="btn" style="padding:4px 8px; font-size:0.75rem; color:#ef4444;" onclick="window.deleteHistoricalCaseGlobal('${c.caseId}')">🗑️</button>
+            </div>
+          </div>`;
+      });
+      listContainer.innerHTML = html;
+    };
+
+    if (btnOpenCases && modalCases) {
+      btnOpenCases.addEventListener('click', () => {
+        renderCasesList();
+        modalCases.classList.add('active');
+      });
+    }
+
+    if (btnDoSave) {
+      btnDoSave.addEventListener('click', async () => {
+        const title = titleInput.value.trim() || `Incidente ${getActiveClientProfile().name} ${new Date().toLocaleDateString()}`;
+        if (state.logs.length === 0) {
+          alert('No hay registros cargados en la sesión activa para guardar.');
+          return;
+        }
+        await window.storageEngine.saveHistoricalCase(title, getActiveClientProfile().name, state.logs);
+        titleInput.value = '';
+        renderCasesList();
+        alert('¡Incidente guardado exitosamente en IndexedDB!');
+      });
+    }
+
+    window.loadHistoricalCaseGlobal = async (caseId) => {
+      const record = await window.storageEngine.getCaseById(caseId);
+      if (!record) return;
+      state.logs = record.logs || [];
+      populateClientSelector();
+      applyLogFilters();
+      updateNodeComparisonUI();
+      renderTraceWaterfall();
+      if (modalCases) modalCases.classList.remove('active');
+      showAnalysisStatus(false, `📂 Caso Cargado: ${record.caseTitle}`, `${state.logs.length} registros cargados`);
+    };
+
+    window.deleteHistoricalCaseGlobal = async (caseId) => {
+      if (confirm('¿Está seguro de eliminar este incidente guardado?')) {
+        await window.storageEngine.deleteCase(caseId);
+        renderCasesList();
+      }
+    };
+  }
+
+  // PILAR 3: AUDITORÍA DE CERTIFICADOS KEYSTORE SSL/TLS
+  function initCertificatesModule() {
+    const container = document.getElementById('certificates-table-container');
+    const terminal = document.getElementById('cert-cli-terminal');
+    if (!container || !window.certAuditorEngine) return;
+
+    const renderCerts = () => {
+      const certs = window.certAuditorEngine.certificates;
+      let rowsHtml = '';
+
+      certs.forEach((cert, idx) => {
+        const days = window.certAuditorEngine.getDaysRemaining(cert.validTo);
+        const traffic = window.certAuditorEngine.getTrafficLight(days);
+
+        rowsHtml += `
+          <tr style="border-bottom:1px solid var(--border-color);">
+            <td style="padding:10px 8px;">
+              <div style="font-weight:bold; color:var(--text-main); font-size:0.85rem;">🔒 ${escapeHtml(cert.alias)}</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(cert.purpose)}</div>
+            </td>
+            <td style="padding:10px 8px; font-size:0.8rem; color:var(--text-muted);">${escapeHtml(cert.subject)}</td>
+            <td style="padding:10px 8px; text-align:center; font-size:0.8rem; font-family:monospace;">
+              ${cert.validTo}<br>
+              <span style="color:${traffic.color}; font-weight:bold;">${days > 0 ? `${days} días` : 'Expiró'}</span>
+            </td>
+            <td style="padding:10px 8px; text-align:center;">
+              <span style="background:${traffic.color}22; color:${traffic.color}; border:1px solid ${traffic.color}55; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">
+                ${traffic.badge}
+              </span>
+            </td>
+            <td style="padding:10px 8px; text-align:center;">
+              <button class="btn btn-primary" style="padding:3px 8px; font-size:0.75rem;" onclick="window.showCertCliGlobal(${idx})">📋 Ver CLI</button>
+            </td>
+          </tr>`;
+      });
+
+      container.innerHTML = `
+        <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+          <thead>
+            <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
+              <th style="padding:8px; border-bottom:2px solid var(--border-color);">Alias & Propósito</th>
+              <th style="padding:8px; border-bottom:2px solid var(--border-color);">Sujeto (CN / Organización)</th>
+              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center;">Vencimiento</th>
+              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center;">Estado Semáforo</th>
+              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center;">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>`;
+    };
+
+    window.showCertCliGlobal = (idx) => {
+      const cert = window.certAuditorEngine.certificates[idx];
+      if (!cert || !terminal) return;
+      terminal.textContent = window.certAuditorEngine.generateRenewalCommand(cert);
+    };
+
+    renderCerts();
+  }
+
+  // PILAR 4: EXPORTADOR DE PRESENTACIONES POWERPOINT (.PPTX)
+  function initPptxExportModule() {
+    const btnPptx = document.getElementById('btn-export-pptx');
+    if (!btnPptx) return;
+
+    btnPptx.addEventListener('click', () => {
+      const client = getActiveClientProfile();
+      const total = state.logs.length;
+      const criticals = state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
+      const health = total > 0 ? Math.max(10, Math.round(100 - (criticals / total) * 100 * 5)) : 100;
+      const dateStr = new Date().toISOString().slice(0, 10);
+
+      // Generar archivo HTML/XML de Presentación Ejecutiva compatible con Microsoft PowerPoint
+      const pptxContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Presentación Ejecutiva Entrust - ${escapeHtml(client.name)}</title>
+          <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a192f; color: #fff; margin:0; padding:40px; }
+            .slide { background: #0f172a; border: 2px solid #0284c7; border-radius: 12px; padding: 40px; margin-bottom: 40px; page-break-after: always; box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-height: 500px; }
+            h1 { color: #38bdf8; font-size: 28px; margin-top:0; border-bottom: 2px solid #0284c7; padding-bottom: 10px; }
+            h2 { color: #f43f5e; font-size: 22px; }
+            .kpi-box { display: inline-block; width: 22%; background: #1e293b; padding: 15px; margin: 1%; border-radius: 8px; text-align: center; border-top: 4px solid #38bdf8; }
+            .kpi-val { font-size: 32px; font-weight: bold; color: #38bdf8; }
+            .kpi-lbl { font-size: 12px; color: #94a3b8; text-transform: uppercase; }
+            table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+            th, td { padding: 10px; border: 1px solid #334155; text-align: left; }
+            th { background: #1e293b; color: #38bdf8; }
+            .footer { margin-top: 30px; font-size: 11px; color: #64748b; border-top: 1px solid #334155; padding-top: 8px; display: flex; justify-content: space-between; }
+          </style>
+        </head>
+        <body>
+          <!-- DIAPOSITIVA 1: PORTADA -->
+          <div class="slide">
+            <div style="text-align:center; padding: 60px 20px;">
+              <h3 style="color:#f43f5e; letter-spacing: 2px;">IT SERVICIOS DE VENEZUELA</h3>
+              <h1 style="font-size: 36px; margin: 20px 0; color:#fff;">INFORME EJECUTIVO DE INCIDENTES ENTRUST</h1>
+              <h2 style="color:#38bdf8;">AUDITORÍA FORENSE & EVALUACIÓN DE CANALES DIGITALES</h2>
+              <div style="margin-top: 40px; font-size: 16px; color:#94a3b8;">
+                <strong>Cliente:</strong> ${escapeHtml(client.name)} (${escapeHtml(client.version)})<br>
+                <strong>Fecha:</strong> ${dateStr} | <strong>Ingeniero:</strong> ${escapeHtml(client.engineer)}
+              </div>
+            </div>
+            <div class="footer"><span>IT SERVICIOS DE VENEZUELA</span><span>CONFIDENCIAL / C-LEVEL</span></div>
+          </div>
+
+          <!-- DIAPOSITIVA 2: MÉTRICAS -->
+          <div class="slide">
+            <h1>1. Estado Operacional & Salud de la Plataforma</h1>
+            <p style="color:#cbd5e1;">Evaluación integral del volumen de autenticación durante la ventana de análisis.</p>
+            <div style="margin: 30px 0;">
+              <div class="kpi-box"><div class="kpi-val">${health}%</div><div class="kpi-lbl">Índice de Salud</div></div>
+              <div class="kpi-box"><div class="kpi-val">${total.toLocaleString()}</div><div class="kpi-lbl">Total Transacciones</div></div>
+              <div class="kpi-box"><div class="kpi-val" style="color:#f43f5e;">${criticals.toLocaleString()}</div><div class="kpi-lbl">Incidentes Críticos</div></div>
+              <div class="kpi-box"><div class="kpi-val">0</div><div class="kpi-lbl">Disponibilidad SLA</div></div>
+            </div>
+            <div class="footer"><span>IT SERVICIOS DE VENEZUELA</span><span>Diapositiva 2</span></div>
+          </div>
+
+          <!-- DIAPOSITIVA 3: TOPOLOGÍA -->
+          <div class="slide">
+            <h1>2. Arquitectura Clúster & Distribución Multi-Nodo</h1>
+            <p style="color:#cbd5e1;">Comprobación de simetría de carga entre servidores de aplicación Entrust IdentityGuard.</p>
+            <table>
+              <tr><th>Componente / Nodo</th><th>Canal Asociado</th><th>Estatus</th></tr>
+              <tr><td>SACVWIG01</td><td>Canal Web Personas</td><td>OPERATIVO (Balanceado)</td></tr>
+              <tr><td>SACVWIG02</td><td>Canal Móvil / Pago Móvil</td><td>OPERATIVO</td></tr>
+              <tr><td>SACVWIG03</td><td>Canal Empresas / Jurídico</td><td>OPERATIVO</td></tr>
+              <tr><td>SACVWIG04</td><td>Gateway APIs WSO2</td><td>OPERATIVO</td></tr>
+            </table>
+            <div class="footer"><span>IT SERVICIOS DE VENEZUELA</span><span>Diapositiva 3</span></div>
+          </div>
+        </body>
+        </html>`;
+
+      const blob = new Blob([pptxContent], { type: 'application/vnd.ms-powerpoint' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Presentacion_Ejecutiva_${client.name.replace(/[^a-zA-Z0-9]/g, '_')}_${dateStr}.ppt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  // PILAR 5: INTEGRACIÓN ZOHO DESK / ZOHO TICKETS
+  function initZohoDeskModule() {
+    const btnOpenZoho = document.getElementById('btn-open-zoho-modal');
+    const modalZoho = document.getElementById('zoho-ticket-modal');
+    const subjInput = document.getElementById('zoho-ticket-subject');
+    const bodyArea = document.getElementById('zoho-ticket-body');
+    const clientInput = document.getElementById('zoho-ticket-client');
+    const btnCopy = document.getElementById('btn-copy-zoho-ticket');
+    const btnSend = document.getElementById('btn-send-zoho-webhook');
+
+    if (btnOpenZoho) {
+      btnOpenZoho.addEventListener('click', () => {
+        const client = getActiveClientProfile();
+        const criticals = state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
+        const errCodes = [...new Set(criticals.filter(l => l.entrustCode).map(l => l.entrustCode))];
+
+        if (clientInput) clientInput.value = client.name;
+        if (subjInput) {
+          subjInput.value = `[INC-ENTRUST-${client.name.toUpperCase()}] ${criticals.length > 0 ? `Fallo en Autenticación: ${errCodes.join(', ') || 'Errores Críticos'}` : 'Auditoría de Rutina Preventiva'}`;
+        }
+
+        const ticketText = `=== TICKET DE INCIDENTE ITIL — ZOHO DESK ===
+Cliente / Organización: ${client.name}
+Plataforma: ${client.platform} (${client.version})
+Ingeniero Responsable: ${client.engineer}
+Fecha de Registro: ${new Date().toISOString()}
+
+--- RESUMEN EJECUTIVO DEL INCIDENTE ---
+Se detectaron ${criticals.length} eventos críticos durante el análisis de logs de autenticación.
+Códigos de Error Detectados: ${errCodes.join(', ') || 'N/A'}
+
+--- IMPACTO EN NEGOCIO & CANALES ---
+- Canal Afectado: Pago Móvil / Banca por Internet / Tokens Móviles
+- Severidad Asignada: ${criticals.length > 50 ? 'P1 (Crítico)' : 'P2 (Alto)'}
+
+--- PLAN DE REMEDIACIÓN RECOMENDADO ---
+1. Verificar conectividad con Directorio Activo LDAP (Puerto 389/636).
+2. Comprobar disponibilidad de memoria Heap en Tomcat (-Xmx4096m).
+3. Validar vigencia de certificados en identityguard.keystore.
+
+--- SELLO CRIPTOGRÁFICO DE AUTENTICIDAD ---
+SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
+
+        if (bodyArea) bodyArea.value = ticketText;
+        if (modalZoho) modalZoho.classList.add('active');
+      });
+    }
+
+    if (btnCopy) {
+      btnCopy.addEventListener('click', () => {
+        if (bodyArea) {
+          navigator.clipboard.writeText(bodyArea.value).then(() => {
+            alert('¡Ticket formateado copiado al portapapeles para Zoho Desk!');
+          });
+        }
+      });
+    }
+
+    if (btnSend) {
+      btnSend.addEventListener('click', () => {
+        const webhookUrl = prompt('Ingrese la URL del Webhook de Zoho Desk / Zoho Flow / Teams:');
+        if (webhookUrl) {
+          fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              subject: subjInput?.value,
+              description: bodyArea?.value,
+              source: 'IT Servicios Entrust Diagnostic Suite v70.0'
+            })
+          }).then(() => {
+            alert('¡Ticket enviado exitosamente a la API de Zoho Desk!');
+          }).catch(err => {
+            alert(`Error enviando webhook: ${err.message}`);
+          });
+        }
+      });
+    }
+  }
+
   function initSyslogCollectorModule() {
     const btnStart = document.getElementById('btn-start-syslog-live');
     const btnStop = document.getElementById('btn-stop-syslog-live');
@@ -3116,6 +3517,11 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
   document.addEventListener('DOMContentLoaded', () => {
     initSyslogCollectorModule();
+    initStoragePersistence();
+    initCertificatesModule();
+    initZohoDeskModule();
+    initAiOpinionModule();
+    initPptxExportModule();
   });
 
   function escapeHtml(text) {

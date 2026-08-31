@@ -61,17 +61,18 @@
         <button class="nav-btn" data-tab="traces">⚡ Trazas Distribuidas</button>
         <button class="nav-btn" data-tab="nodes">🏢 Comparativa Multi-Nodo</button>
         <button class="nav-btn" data-tab="syslog" style="color:#38bdf8; font-weight:bold;">📡 Monitoreo Syslog (Tiempo Real)</button>
+        <button class="nav-btn" data-tab="certificates" style="color:#f59e0b; font-weight:bold;">🔐 Auditoría Certificados</button>
         <button class="nav-btn" data-tab="kb">🧠 Base de Conocimientos</button>
         <button class="nav-btn" data-tab="manuals">📚 Manuales Administrativos</button>
       </nav>
 
       <div class="header-actions">
+        <button class="btn" id="btn-open-ai-opinion" style="background:#7c3aed; color:#fff; border-color:#7c3aed;" title="Generar Dictamen Técnico Pericial con IA Forense">🤖 Dictamen IA</button>
+        <button class="btn" id="btn-export-pptx" style="background:#ea580c; color:#fff; border-color:#ea580c;" title="Exportar Presentación Ejecutiva PowerPoint (.pptx)">📊 PPTX Directiva</button>
+        <button class="btn" id="btn-open-zoho-modal" style="background:#0284c7; color:#fff; border-color:#0284c7;" title="Crear Ticket de Soporte Oficial en Zoho Desk / Zoho Tickets">🎫 Ticket Zoho Desk</button>
+        <button class="btn" id="btn-open-saved-cases" style="background:#334155; color:#fff; border-color:#475569;" title="Ver y Administrar Casos Históricos de Incidentes Guardados">📂 Casos Guardados</button>
         <button class="btn btn-import-html" id="btn-open-import-catalog" onclick="document.getElementById('import-catalog-modal').classList.add('active');" title="Importar catálogo oficial de errores HTML para cualquier versión">📥 Importar HTML Errores</button>
-        <button class="btn btn-primary" id="btn-generate-exec-report">📄 Generar Informe Preliminar</button>
-        <div class="pulse-badge" style="display: none;">
-          <span class="pulse-dot"></span> Streaming Activo
-        </div>
-        <button class="btn" id="btn-toggle-stream">▶️ Simulador</button>
+        <button class="btn btn-primary" id="btn-generate-exec-report">📄 Generar Informe</button>
       </div>
     </div>
   </header>
@@ -392,9 +393,136 @@
           <div style="color:#64748b;">⏳ Escuchador Syslog listo en puerto UDP 514 / WebSocket. Pulse "▶️ Iniciar Escuchador Syslog" para comenzar la captura en vivo...</div>
         </div>
       </div>
+    <!-- 8. PESTAÑA: AUDITORÍA FORENSE DE CERTIFICADOS SSL/TLS & KEYSTORES (PILAR 3) -->
+    <div class="tab-pane" id="tab-certificates">
+      <div class="glass-card mb-4">
+        <div class="card-header flex-between" style="flex-wrap:wrap; gap:10px;">
+          <div>
+            <div class="card-title" style="color:#f59e0b; font-size:1.1rem;">🔐 Auditoría Forense de Certificados SSL/TLS & Keystores Java</div>
+            <div class="card-subtitle">Inspección de vigencia, algoritmos de firma y almacenes identityguard.keystore / cacerts</div>
+          </div>
+          <button class="btn btn-primary" id="btn-open-add-cert-modal" style="background:#0a3d6d; border-color:#0a3d6d;">➕ Analizar Certificado PEM / CRT</button>
+        </div>
+
+        <p class="text-muted" style="font-size:0.85rem; margin-bottom:16px;">
+          Supervisión preventiva para evitar caídas de servicio por vencimiento de certificados SSL en HTTPS 8443, aserciones SAML 2.0 o enlaces mTLS con WSO2.
+        </p>
+
+        <div id="certificates-table-container">
+          <!-- Inyectado dinámicamente por JS -->
+        </div>
+
+        <div style="margin-top:20px; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:16px;">
+          <div class="card-title text-cyan mb-2" style="font-size:0.95rem;">🛠️ Generador de Comandos Keytool para Renovación en Servidor:</div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">Haga clic en "📋 Ver CLI" en cualquier certificado para generar su secuencia de comandos CLI oficial.</div>
+          <div id="cert-cli-terminal" class="font-mono" style="background:#0f172a; color:#a5f3fc; padding:12px; border-radius:6px; font-size:0.8rem; line-height:1.5; white-space:pre-wrap;">
+REM Seleccione un certificado de la tabla superior para ver los comandos de renovación keytool...
+          </div>
+        </div>
+      </div>
     </div>
 
   </main>
+
+  <!-- MODAL: TICKET OFICIAL ZOHO DESK (PILAR 5) -->
+  <div class="modal-overlay" id="zoho-ticket-modal">
+    <div class="modal-content" style="max-width: 850px;">
+      <div class="card-header flex-between">
+        <div class="card-title text-cyan" style="font-size:1.1rem;">🎫 Integración Oficial con Zoho Desk / Zoho Tickets</div>
+        <button class="btn" onclick="document.getElementById('zoho-ticket-modal').classList.remove('active');">✖ Cerrar</button>
+      </div>
+
+      <p class="text-muted" style="font-size:0.85rem; margin-bottom:14px;">
+        Plantilla de ticket pre-formateada bajo estándares ITIL para la suite Zoho Desk de IT SERVICIOS.
+      </p>
+
+      <div style="display:grid; grid-template-columns: 2fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label class="diag-label">Asunto del Ticket en Zoho Desk *</label>
+          <input type="text" class="form-control" id="zoho-ticket-subject" value="[INC-ENTRUST-P1] Incidente Crítico en Autenticación">
+        </div>
+        <div>
+          <label class="diag-label">Prioridad ITIL *</label>
+          <select class="form-control" id="zoho-ticket-priority">
+            <option value="Urgente (P1)">🔴 Urgente (P1 - Interrupción de Canal)</option>
+            <option value="Alta (P2)">🟠 Alta (P2 - Degradación Severa)</option>
+            <option value="Media (P3)">🟡 Media (P3 - Incidencia Operativa)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label class="diag-label">Departamento Destino</label>
+          <input type="text" class="form-control" id="zoho-ticket-dept" value="Soporte Entrust & Canales Bancarios">
+        </div>
+        <div>
+          <label class="diag-label">Cliente Afectado</label>
+          <input type="text" class="form-control" id="zoho-ticket-client" value="Banco Mercantil C.A.">
+        </div>
+        <div>
+          <label class="diag-label">Ingeniero Asignado</label>
+          <input type="text" class="form-control" id="zoho-ticket-agent" value="Tomás Acosta">
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label class="diag-label">Cuerpo Detallado del Ticket (Formato Zoho Markdown / HTML):</label>
+        <textarea class="form-control font-mono" id="zoho-ticket-body" rows="10" style="font-size:0.8rem;"></textarea>
+      </div>
+
+      <div class="flex-between" style="flex-wrap:wrap; gap:10px;">
+        <span style="font-size:0.75rem; color:var(--text-muted);">🔒 Certificado con Sello SHA-256 de IT SERVICIOS</span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary" id="btn-copy-zoho-ticket" style="background:#0284c7; border-color:#0284c7;">📋 Copiar para Zoho Desk</button>
+          <button class="btn btn-primary" id="btn-send-zoho-webhook" style="background:#059669; border-color:#059669;">🚀 Enviar por Webhook API</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DICTAMEN PERICIAL IA FORENSE (PILAR 1) -->
+  <div class="modal-overlay" id="ai-opinion-modal">
+    <div class="modal-content" style="max-width: 900px;">
+      <div class="card-header flex-between">
+        <div class="card-title" style="color:#7c3aed; font-size:1.1rem;">🤖 Dictamen Técnico Pericial & Auditoría IA Forense</div>
+        <button class="btn" onclick="document.getElementById('ai-opinion-modal').classList.remove('active');">✖ Cerrar</button>
+      </div>
+
+      <div id="ai-opinion-content" style="padding:10px 0;">
+        <!-- Inyectado dinámicamente por JS -->
+      </div>
+
+      <div class="flex-between mt-4">
+        <button class="btn btn-primary" id="btn-copy-ai-opinion" style="background:#7c3aed; border-color:#7c3aed;">📋 Copiar Dictamen Pericial</button>
+        <button class="btn" onclick="document.getElementById('ai-opinion-modal').classList.remove('active');">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GESTOR DE CASOS HISTÓRICOS GUARDADOS EN INDEXEDDB (PILAR 2) -->
+  <div class="modal-overlay" id="saved-cases-modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <div class="card-header flex-between">
+        <div class="card-title text-cyan" style="font-size:1.1rem;">📂 Historial de Incidentes Guardados (Persistencia IndexedDB)</div>
+        <button class="btn" onclick="document.getElementById('saved-cases-modal').classList.remove('active');">✖ Cerrar</button>
+      </div>
+
+      <p class="text-muted" style="font-size:0.85rem; margin-bottom:14px;">
+        Guarda la sesión actual de logs o abre incidentes pasados para análisis comparativo sin tener que volver a subir archivos.
+      </p>
+
+      <div style="background:var(--bg-primary); border:1px solid var(--border-color); padding:12px; border-radius:8px; margin-bottom:16px; display:flex; gap:10px; align-items:center;">
+        <input type="text" class="form-control" id="save-case-title-input" placeholder="Nombre del Caso (ej. Caída Pago Móvil 31-Agosto)">
+        <button class="btn btn-primary" id="btn-do-save-current-case" style="white-space:nowrap; background:#059669; border-color:#059669;">💾 Guardar Sesión Actual</button>
+      </div>
+
+      <div class="card-title mb-2" style="font-size:0.9rem; color:var(--text-main);">📋 Casos Guardados en Almacenamiento Local:</div>
+      <div id="saved-cases-list-container" style="max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+        <!-- Inyectado dinámicamente por JS -->
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL INFORME DE DIAGNÓSTICO PRELIMINAR EJECUTIVO (PRINTABLE) -->
   <div class="modal-overlay" id="exec-report-modal">
@@ -644,11 +772,13 @@
   </div>
 
   <!-- Scripts JavaScript -->
-  <script src="js/kb-database.js?v=49.0"></script>
-  <script src="js/manuals-engine.js?v=49.0"></script>
-  <script src="js/log-parser.js?v=49.0"></script>
-  <script src="js/syslog-collector.js?v=63.0"></script>
-  <script src="js/app.js?v=63.0"></script>
+  <script src="js/kb-database.js?v=70.0"></script>
+  <script src="js/manuals-engine.js?v=70.0"></script>
+  <script src="js/log-parser.js?v=70.0"></script>
+  <script src="js/storage-engine.js?v=70.0"></script>
+  <script src="js/cert-auditor.js?v=70.0"></script>
+  <script src="js/syslog-collector.js?v=70.0"></script>
+  <script src="js/app.js?v=70.0"></script>
 
 </body>
 </html>
