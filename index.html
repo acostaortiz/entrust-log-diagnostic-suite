@@ -66,13 +66,25 @@
         <button class="nav-btn" data-tab="manuals">📚 Manuales Administrativos</button>
       </nav>
 
-      <div class="header-actions">
-        <button class="btn" id="btn-open-ai-opinion" style="background:#7c3aed; color:#fff; border-color:#7c3aed;" title="Generar Dictamen Técnico Pericial con IA Forense">🤖 Dictamen IA</button>
-        <button class="btn" id="btn-export-pptx" style="background:#ea580c; color:#fff; border-color:#ea580c;" title="Exportar Presentación Ejecutiva PowerPoint (.pptx)">📊 PPTX Directiva</button>
-        <button class="btn" id="btn-open-zoho-modal" style="background:#0284c7; color:#fff; border-color:#0284c7;" title="Crear Ticket de Soporte Oficial en Zoho Desk / Zoho Tickets">🎫 Ticket Zoho Desk</button>
-        <button class="btn" id="btn-open-saved-cases" style="background:#334155; color:#fff; border-color:#475569;" title="Ver y Administrar Casos Históricos de Incidentes Guardados">📂 Casos Guardados</button>
-        <button class="btn btn-import-html" id="btn-open-import-catalog" onclick="document.getElementById('import-catalog-modal').classList.add('active');" title="Importar catálogo oficial de errores HTML para cualquier versión">📥 Importar HTML Errores</button>
-        <button class="btn btn-primary" id="btn-generate-exec-report">📄 Generar Informe</button>
+      <div class="header-actions" style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+        <button class="btn" id="btn-open-ai-opinion" style="background:#0a3d6d; border:1px solid #0284c7; color:#38bdf8; font-weight:600; font-size:0.8rem; padding:6px 12px; border-radius:6px; display:flex; align-items:center; gap:6px;" title="Generar Dictamen Técnico Pericial con IA Forense">
+          🤖 Dictamen IA
+        </button>
+        <button class="btn" id="btn-export-pptx" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.8rem; padding:6px 10px; border-radius:6px;" title="Exportar Presentación Ejecutiva PowerPoint (.pptx)">
+          📊 PPTX Directiva
+        </button>
+        <button class="btn" id="btn-open-zoho-modal" style="background:var(--bg-primary); border:1px solid var(--border-color); color:#0284c7; font-weight:600; font-size:0.8rem; padding:6px 10px; border-radius:6px;" title="Crear Ticket de Soporte Oficial en Zoho Desk / Zoho Tickets">
+          🎫 Ticket Zoho Desk
+        </button>
+        <button class="btn" id="btn-open-saved-cases" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.8rem; padding:6px 10px; border-radius:6px;" title="Ver y Administrar Casos Históricos de Incidentes Guardados">
+          📂 Casos Guardados
+        </button>
+        <button class="btn btn-import-html" id="btn-open-import-catalog" onclick="document.getElementById('import-catalog-modal').classList.add('active');" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-muted); font-size:0.8rem; padding:6px 10px; border-radius:6px;" title="Importar catálogo oficial de errores HTML para cualquier versión">
+          📥 Importar HTML
+        </button>
+        <button class="btn btn-primary" id="btn-generate-exec-report" style="background:#0284c7; border:none; color:#fff; font-weight:700; font-size:0.82rem; padding:6px 14px; border-radius:6px; box-shadow:0 2px 6px rgba(2, 132, 199, 0.3);">
+          📄 Generar Informe
+        </button>
       </div>
     </div>
   </header>
@@ -563,18 +575,39 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
 
   <!-- MODAL INFORME DE DIAGNÓSTICO PRELIMINAR EJECUTIVO (PRINTABLE) -->
   <div class="modal-overlay" id="exec-report-modal">
-    <div class="modal-content" style="max-width: 950px;">
-      <div class="card-header">
-        <div class="card-title text-cyan">📄 Informe de Diagnóstico Oficial de Incidentes</div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn btn-primary" id="btn-download-onepage-exec-report" style="background:#e11d48; border-color:#e11d48;" title="Generar lámina ejecutiva de 1 sola página PDF para Vicepresidencia y Gerencia de TI">📄 Lámina 1 Pág (VP/TI)</button>
-          <button class="btn btn-primary" id="btn-download-pdf-exec-report" style="background:#047857; border-color:#047857;">📥 Descargar PDF (Oficial)</button>
-          <button class="btn btn-primary" id="btn-download-html-exec-report" style="background:#0284c7; border-color:#0284c7;">🌐 Exportar HTML Autónomo</button>
-          <button class="btn btn-primary" id="btn-download-csv-exec-report" style="background:#d97706; border-color:#d97706;">📊 Exportar Excel CSV</button>
-          <button class="btn btn-primary" id="btn-download-exec-report-md" style="background:#4f46e5; border-color:#4f46e5;" title="Descargar archivo informe_preliminar.md directamente a tu máquina">📥 Descargar Archivo .MD</button>
-          <button class="btn btn-primary" id="btn-copy-exec-report-md" style="background:#475569; border-color:#475569;" title="Copiar informe preliminar en formato Markdown / Texto estructurado">📋 Copiar Markdown / Texto</button>
-          <button class="btn btn-primary" id="btn-print-exec-report">🖨️ Imprimir</button>
-          <button class="btn" id="btn-close-exec-report">✖ Cerrar</button>
+    <div class="modal-content" style="max-width: 980px;">
+      <div class="card-header flex-between" style="border-bottom:1px solid var(--border-color); padding-bottom:14px; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <div class="card-title text-cyan" style="font-size:1.15rem; font-weight:700; display:flex; align-items:center; gap:8px;">
+            📄 Informe Oficial de Incidentes Entrust
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-muted);">IT SERVICIOS DE VENEZUELA — Documento Pericial y Auditoría Forense Certificada</div>
+        </div>
+
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <!-- GRUPO 1: DESCARGAS PDF EJECUTIVAS -->
+          <div style="display:flex; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; padding:2px; gap:2px;">
+            <button class="btn btn-primary" id="btn-download-pdf-exec-report" style="background:#0a3d6d; border:none; color:#fff; font-size:0.78rem; padding:6px 12px; font-weight:600; border-radius:4px;" title="Descargar Informe Técnico Completo en PDF">
+              📥 Descargar PDF
+            </button>
+            <button class="btn" id="btn-download-onepage-exec-report" style="background:transparent; border:none; color:#f43f5e; font-size:0.78rem; padding:6px 10px; font-weight:600; border-radius:4px;" title="Generar lámina ejecutiva de 1 sola página PDF para Vicepresidencia y Gerencia de TI">
+              📄 Lámina VP (1 Pág)
+            </button>
+          </div>
+
+          <!-- GRUPO 2: FORMATOS DE DATOS -->
+          <div style="display:flex; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; padding:2px; gap:2px;">
+            <button class="btn" id="btn-download-html-exec-report" style="background:transparent; border:none; color:var(--text-main); font-size:0.78rem; padding:6px 8px; border-radius:4px;" title="Exportar HTML Autónomo">🌐 HTML</button>
+            <button class="btn" id="btn-download-csv-exec-report" style="background:transparent; border:none; color:var(--text-main); font-size:0.78rem; padding:6px 8px; border-radius:4px;" title="Exportar Excel CSV">📊 CSV</button>
+            <button class="btn" id="btn-download-exec-report-md" style="background:transparent; border:none; color:var(--text-main); font-size:0.78rem; padding:6px 8px; border-radius:4px;" title="Descargar archivo Markdown .MD">📝 .MD</button>
+          </div>
+
+          <!-- GRUPO 3: ACCIONES RÁPIDAS -->
+          <div style="display:flex; gap:4px;">
+            <button class="btn" id="btn-copy-exec-report-md" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px;" title="Copiar informe en texto estructurado">📋 Copiar</button>
+            <button class="btn" id="btn-print-exec-report" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px;" title="Imprimir Informe">🖨️ Imprimir</button>
+            <button class="btn" id="btn-close-exec-report" style="background:rgba(239, 68, 68, 0.1); border:1px solid rgba(239, 68, 68, 0.4); color:#ef4444; font-size:0.78rem; padding:6px 12px; border-radius:6px; font-weight:bold;">✖ Cerrar</button>
+          </div>
         </div>
       </div>
 
