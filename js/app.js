@@ -97,16 +97,16 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   const defaultClients = [
     {
-      id: 'caribe',
-      name: 'Banco del Caribe C.A.',
+      id: 'general',
+      name: 'Entorno Entrust General / Multi-Nodo',
       platform: 'Entrust IdentityGuard OnPremise',
-      version: 'Release 11.0',
-      build: '11.0.10.2',
-      contact: 'Vicepresidencia de Ciberseguridad & TI',
+      version: 'Release 13.0',
+      build: 'General',
+      contact: 'Gerencia de Seguridad & TI',
       engineer: 'Tomás Acosta',
       nodes: [
-        { key: 'node_06', name: '🖥️ Nodo 06 (SACVWIG06 - Primario)' },
-        { key: 'node_07', name: '🖥️ Nodo 07 (SACVWIG07 - Secundario)' }
+        { key: 'node_01', name: '🖥️ Servidor Primario (Core)' },
+        { key: 'node_02', name: '🖥️ Servidor Secundario (Servicios/HA)' }
       ]
     },
     {
@@ -149,6 +149,19 @@ document.addEventListener('DOMContentLoaded', () => {
       ]
     },
     {
+      id: 'caribe',
+      name: 'Banco del Caribe C.A.',
+      platform: 'Entrust IdentityGuard OnPremise',
+      version: 'Release 11.0',
+      build: '11.0.10.2',
+      contact: 'Vicepresidencia de Ciberseguridad & TI',
+      engineer: 'Tomás Acosta',
+      nodes: [
+        { key: 'node_06', name: '🖥️ Nodo 06 (SACVWIG06 - Primario)' },
+        { key: 'node_07', name: '🖥️ Nodo 07 (SACVWIG07 - Secundario)' }
+      ]
+    },
+    {
       id: 'idaas_cloud',
       name: 'IDaaS Cloud Latam',
       platform: 'Entrust IDaaS Cloud',
@@ -160,35 +173,22 @@ document.addEventListener('DOMContentLoaded', () => {
         { key: 'node_pod_east', name: '☁️ Pod US-East (SSO Gateway)' },
         { key: 'node_pod_west', name: '☁️ Pod US-West (Push MFA)' }
       ]
-    },
-    {
-      id: 'general',
-      name: 'Entorno Entrust General',
-      platform: 'Entrust IdentityGuard OnPremise',
-      version: 'Release 13.0',
-      build: 'General',
-      contact: 'Departamento de TI',
-      engineer: 'Tomás Acosta',
-      nodes: [
-        { key: 'node_01', name: '🖥️ Servidor Primario (Core)' },
-        { key: 'node_02', name: '🖥️ Servidor Secundario (Servicios/HA)' }
-      ]
     }
   ];
 
   function loadClientProfiles() {
     try {
-      const stored = localStorage.getItem('custom_client_profiles_v5');
+      const stored = localStorage.getItem('custom_client_profiles_v6');
       if (stored) {
         state.clientProfiles = JSON.parse(stored);
       } else {
         state.clientProfiles = defaultClients;
-        localStorage.setItem('custom_client_profiles_v5', JSON.stringify(defaultClients));
+        localStorage.setItem('custom_client_profiles_v6', JSON.stringify(defaultClients));
       }
     } catch (e) {
       state.clientProfiles = defaultClients;
     }
-    state.activeClientId = state.clientProfiles[0]?.id || 'mercantil';
+    state.activeClientId = state.clientProfiles[0]?.id || 'general';
     populateClientSessionSelectors();
   }
 
@@ -2775,7 +2775,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     if (files.length === 0) {
       listContainer.innerHTML = '<span class="text-muted font-mono" style="font-size:0.78rem;">Ningún archivo cargado actualmente en la sesión.</span>';
-      if (summaryText) summaryText.textContent = `Cliente: ${client.name} — Cargue uno o más archivos (.log, .log.1, .log.2...)`;
+      if (summaryText) summaryText.textContent = 'Cargue uno o más archivos rotados (.log, .log.1, .log.2...)';
       return;
     }
 
