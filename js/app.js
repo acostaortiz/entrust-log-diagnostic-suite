@@ -149,19 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ]
     },
     {
-      id: 'caribe',
-      name: 'Banco del Caribe C.A.',
-      platform: 'Entrust IdentityGuard OnPremise',
-      version: 'Release 11.0',
-      build: '11.0.10.2',
-      contact: 'Vicepresidencia de Ciberseguridad & TI',
-      engineer: 'Tomás Acosta',
-      nodes: [
-        { key: 'node_06', name: '🖥️ Nodo 06 (SACVWIG06 - Primario)' },
-        { key: 'node_07', name: '🖥️ Nodo 07 (SACVWIG07 - Secundario)' }
-      ]
-    },
-    {
       id: 'idaas_cloud',
       name: 'IDaaS Cloud Latam',
       platform: 'Entrust IDaaS Cloud',
@@ -178,12 +165,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function loadClientProfiles() {
     try {
-      const stored = localStorage.getItem('custom_client_profiles_v6');
+      // Limpiar versiones anteriores para evitar residuos
+      ['custom_client_profiles_v1', 'custom_client_profiles_v2', 'custom_client_profiles_v3', 'custom_client_profiles_v4', 'custom_client_profiles_v5', 'custom_client_profiles_v6'].forEach(k => {
+        try { localStorage.removeItem(k); } catch(e){}
+      });
+
+      const stored = localStorage.getItem('custom_client_profiles_v7');
       if (stored) {
         state.clientProfiles = JSON.parse(stored);
       } else {
         state.clientProfiles = defaultClients;
-        localStorage.setItem('custom_client_profiles_v6', JSON.stringify(defaultClients));
+        localStorage.setItem('custom_client_profiles_v7', JSON.stringify(defaultClients));
       }
     } catch (e) {
       state.clientProfiles = defaultClients;
