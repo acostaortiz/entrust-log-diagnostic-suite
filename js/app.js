@@ -2330,24 +2330,67 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   }
 
   function updateMetricsAndCharts() {
-    if (dom.totalLogsCount) dom.totalLogsCount.textContent = state.logs.length;
-
+    const total = state.logs.length;
     const criticals = state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
     const warnings = state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING');
+    const fileCount = state.loadedFiles ? state.loadedFiles.length : 0;
 
-    if (dom.criticalCount) dom.criticalCount.textContent = criticals.length;
-    if (dom.warningCount) dom.warningCount.textContent = warnings.length;
+    // 1. Tarjeta Total Logs
+    if (dom.totalLogsCount) dom.totalLogsCount.textContent = total.toLocaleString();
+    const totalBadge = document.getElementById('total-logs-badge');
+    if (totalBadge) totalBadge.textContent = `${fileCount} Archivo(s)`;
 
-    if (dom.healthIndex) {
-      const total = Math.max(1, state.logs.length);
-      const critPenalty = criticals.length > 0 ? Math.min(65, Math.max(5, (criticals.length / total) * 100 * 5 + criticals.length * 0.2)) : 0;
-      const warnPenalty = warnings.length > 0 ? Math.min(25, (warnings.length / total) * 100 * 2 + warnings.length * 0.1) : 0;
-      const health = Math.max(10, Math.round(100 - critPenalty - warnPenalty));
-      dom.healthIndex.textContent = `${health}%`;
+    // 2. Tarjeta Incidentes Críticos
+    if (dom.criticalCount) dom.criticalCount.textContent = criticals.length.toLocaleString();
+    const critRateBadge = document.getElementById('critical-rate-badge');
+    const critBar = document.getElementById('critical-progress-bar');
+    const critPct = total > 0 ? ((criticals.length / total) * 100).toFixed(2) : '0';
+    if (critRateBadge) critRateBadge.textContent = `${critPct}% Tasa Falla`;
+    if (critBar) critBar.style.width = `${Math.min(100, Math.max(2, parseFloat(critPct) * 10))}%`;
+
+    // 3. Tarjeta Alertas de Auditoría
+    if (dom.warningCount) dom.warningCount.textContent = warnings.length.toLocaleString();
+    const auditRateBadge = document.getElementById('audit-rate-badge');
+    const warnBar = document.getElementById('warn-progress-bar');
+    const warnPct = total > 0 ? ((warnings.length / total) * 100).toFixed(1) : '0';
+    if (auditRateBadge) auditRateBadge.textContent = `${warnPct}% Auditoría`;
+    if (warnBar) warnBar.style.width = `${Math.min(100, Math.max(2, parseFloat(warnPct) * 5))}%`;
+
+    // 4. Tarjeta Salud Clúster
+    const critPenalty = criticals.length > 0 ? Math.min(65, Math.max(5, (criticals.length / Math.max(1, total)) * 100 * 5 + criticals.length * 0.05)) : 0;
+    const warnPenalty = warnings.length > 0 ? Math.min(25, (warnings.length / Math.max(1, total)) * 100 * 2) : 0;
+    const health = total > 0 ? Math.max(10, Math.round(100 - critPenalty - warnPenalty)) : 100;
+    
+    if (dom.healthIndex) dom.healthIndex.textContent = `${health}%`;
+    const healthBar = document.getElementById('health-progress-bar');
+    const healthBadge = document.getElementById('health-status-badge');
+    
+    if (healthBar) {
+      healthBar.style.width = `${health}%`;
+      healthBar.style.background = health >= 80 ? '#10b981' : (health >= 50 ? '#f59e0b' : '#ef4444');
+    }
+    if (healthBadge) {
+      if (health >= 80) {
+        healthBadge.textContent = 'ÓPTIMO';
+        healthBadge.style.color = '#10b981';
+        healthBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+        healthBadge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+      } else if (health >= 50) {
+        healthBadge.textContent = 'DEGRADADO';
+        healthBadge.style.color = '#f59e0b';
+        healthBadge.style.background = 'rgba(245, 158, 11, 0.15)';
+        healthBadge.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+      } else {
+        healthBadge.textContent = 'CRÍTICO';
+        healthBadge.style.color = '#ef4444';
+        healthBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+        healthBadge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+      }
     }
 
     updateTrendChart();
     updateSeverityChart();
+    updateOverviewWidgets();
   }
 
   function initCharts() {
@@ -2363,35 +2406,65 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         state.charts.trend = new Chart(ctx, {
           type: 'line',
           data: {
-            labels: ['10:14', '10:15', '10:16', '10:18', '10:20', '10:22', '10:25', '10:28'],
+            labels: ['Inicio', 'Cargando...'],
             datasets: [
               {
-                label: 'Errores Entrust [520xxx / IDaaS]',
-                data: [0, 1, 1, 1, 0, 1, 0, 0],
-                borderColor: '#dc2626',
-                backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                tension: 0.3,
-                fill: true
+                label: 'Transacciones Totales (Nominales)',
+                data: [0, 0],
+                borderColor: '#0284c7',
+                backgroundColor: 'rgba(2, 132, 199, 0.12)',
+                tension: 0.35,
+                fill: true,
+                yAxisID: 'y'
               },
               {
-                label: 'Alertas de Auditoría [AUDxxx]',
-                data: [1, 0, 0, 0, 1, 1, 1, 2],
-                borderColor: '#0284c7',
-                backgroundColor: 'rgba(2, 132, 199, 0.1)',
-                tension: 0.3,
-                fill: true
+                label: 'Errores [520xxx / Fallas]',
+                data: [0, 0],
+                borderColor: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                tension: 0.35,
+                fill: true,
+                yAxisID: 'y1'
               }
             ]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
-              legend: { labels: { color: '#475569', font: { family: 'Inter', weight: '600' } } }
+              legend: { labels: { color: '#94a3b8', font: { family: 'Segoe UI', weight: '600', size: 11 } } },
+              tooltip: {
+                backgroundColor: '#0f172a',
+                titleColor: '#38bdf8',
+                bodyColor: '#f8fafc',
+                borderColor: '#334155',
+                borderWidth: 1
+              }
             },
             scales: {
-              x: { grid: { color: 'rgba(203, 213, 225, 0.3)' }, ticks: { color: '#64748b' } },
-              y: { grid: { color: 'rgba(203, 213, 225, 0.3)' }, ticks: { color: '#64748b' } }
+              x: { grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+              y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                ticks: {
+                  color: '#0284c7',
+                  callback: function(val) {
+                    if (val >= 1000000) return (val / 1000000).toFixed(1) + 'M';
+                    if (val >= 1000) return (val / 1000).toFixed(0) + 'K';
+                    return val;
+                  }
+                }
+              },
+              y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                grid: { drawOnChartArea: false },
+                ticks: { color: '#ef4444', font: { size: 10 } }
+              }
             }
           }
         });
@@ -2403,26 +2476,39 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         state.charts.severity = new Chart(ctxSev, {
           type: 'doughnut',
           data: {
-            labels: ['CRITICAL / ERROR', 'WARN (Auditoría)', 'INFO', 'DEBUG'],
+            labels: ['INFO (Nominal)', 'CRITICAL / ERROR [520xxx]', 'WARN (Auditoría)', 'DEBUG'],
             datasets: [{
-              data: [0, 0, 0, 0],
+              data: [1, 0, 0, 0],
               backgroundColor: [
-                '#dc2626',
-                '#f59e0b',
                 '#0284c7',
+                '#ef4444',
+                '#f59e0b',
                 '#8b5cf6'
               ],
               borderWidth: 2,
-              borderColor: '#ffffff'
+              borderColor: '#0f172a'
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '65%',
             plugins: {
               legend: {
                 position: 'bottom',
-                labels: { color: '#475569', font: { family: 'Inter', weight: '600', size: 11 } }
+                labels: { color: '#94a3b8', font: { family: 'Segoe UI', weight: '600', size: 10 }, boxWidth: 12 }
+              },
+              tooltip: {
+                backgroundColor: '#0f172a',
+                titleColor: '#38bdf8',
+                callbacks: {
+                  label: function(context) {
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const val = context.raw || 0;
+                    const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                    return ` ${context.label}: ${val.toLocaleString()} (${pct}%)`;
+                  }
+                }
               }
             }
           }
@@ -2446,18 +2532,18 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (trendContainer) {
       trendContainer.innerHTML = `
         <div style="padding:15px; background:var(--bg-primary); border-radius:6px; font-size:0.85rem;">
-          <div style="font-weight:bold; margin-bottom:10px; color:var(--text-main);">📊 Tendencia Visual de Eventos (Fallback Modo Seguro)</div>
+          <div style="font-weight:bold; margin-bottom:10px; color:var(--text-main);">📊 Tendencia Visual de Eventos</div>
           <div style="display:flex; flex-direction:column; gap:8px;">
             <div>
-              <div class="flex-between mb-1"><span>Errores Críticos / 520xxx</span><strong style="color:#dc2626;">${criticalCount} (${((criticalCount/total)*100).toFixed(1)}%)</strong></div>
+              <div class="flex-between mb-1"><span>Errores Críticos / 520xxx</span><strong style="color:#dc2626;">${criticalCount.toLocaleString()} (${((criticalCount/total)*100).toFixed(1)}%)</strong></div>
               <div style="height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden;"><div style="width:${Math.min(100, (criticalCount/total)*100)}%; background:#dc2626; height:100%;"></div></div>
             </div>
             <div>
-              <div class="flex-between mb-1"><span>Alertas Auditoría AUDxxx</span><strong style="color:#f59e0b;">${warnCount} (${((warnCount/total)*100).toFixed(1)}%)</strong></div>
+              <div class="flex-between mb-1"><span>Alertas Auditoría AUDxxx</span><strong style="color:#f59e0b;">${warnCount.toLocaleString()} (${((warnCount/total)*100).toFixed(1)}%)</strong></div>
               <div style="height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden;"><div style="width:${Math.min(100, (warnCount/total)*100)}%; background:#f59e0b; height:100%;"></div></div>
             </div>
             <div>
-              <div class="flex-between mb-1"><span>Operaciones Informativas</span><strong style="color:#0284c7;">${infoCount} (${((infoCount/total)*100).toFixed(1)}%)</strong></div>
+              <div class="flex-between mb-1"><span>Operaciones Informativas</span><strong style="color:#0284c7;">${infoCount.toLocaleString()} (${((infoCount/total)*100).toFixed(1)}%)</strong></div>
               <div style="height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden;"><div style="width:${Math.min(100, (infoCount/total)*100)}%; background:#0284c7; height:100%;"></div></div>
             </div>
           </div>
@@ -2470,15 +2556,15 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           <div style="font-weight:bold; margin-bottom:10px; color:var(--text-main);">🍩 Distribución por Severidad</div>
           <div style="display:flex; justify-content:space-around; text-align:center; padding:10px 0;">
             <div style="background:rgba(220,38,38,0.1); padding:10px 16px; border-radius:6px; border:1px solid #dc2626;">
-              <div style="font-size:1.4rem; font-weight:bold; color:#dc2626;">${criticalCount}</div>
+              <div style="font-size:1.4rem; font-weight:bold; color:#dc2626;">${criticalCount.toLocaleString()}</div>
               <div style="font-size:0.75rem; color:var(--text-muted);">CRITICAL</div>
             </div>
             <div style="background:rgba(245,158,11,0.1); padding:10px 16px; border-radius:6px; border:1px solid #f59e0b;">
-              <div style="font-size:1.4rem; font-weight:bold; color:#f59e0b;">${warnCount}</div>
+              <div style="font-size:1.4rem; font-weight:bold; color:#f59e0b;">${warnCount.toLocaleString()}</div>
               <div style="font-size:0.75rem; color:var(--text-muted);">WARNING</div>
             </div>
             <div style="background:rgba(2,132,199,0.1); padding:10px 16px; border-radius:6px; border:1px solid #0284c7;">
-              <div style="font-size:1.4rem; font-weight:bold; color:#0284c7;">${infoCount}</div>
+              <div style="font-size:1.4rem; font-weight:bold; color:#0284c7;">${infoCount.toLocaleString()}</div>
               <div style="font-size:0.75rem; color:var(--text-muted);">INFO</div>
             </div>
           </div>
@@ -2488,7 +2574,46 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
   function updateTrendChart() {
     if (!state.charts.trend) return;
+    const logs = state.logs || [];
+    if (logs.length === 0) return;
+
+    // Agregación cronológica real en 10-12 buckets
+    const numBuckets = 12;
+    const bucketSize = Math.max(1, Math.floor(logs.length / numBuckets));
+    const labels = [];
+    const totalData = [];
+    const errorData = [];
+
+    for (let b = 0; b < numBuckets; b++) {
+      const startIdx = b * bucketSize;
+      const endIdx = b === numBuckets - 1 ? logs.length : (b + 1) * bucketSize;
+      const slice = logs.slice(startIdx, endIdx);
+      if (slice.length === 0) continue;
+
+      const firstLog = slice[0];
+      let timeLabel = `T-${b + 1}`;
+      if (firstLog && firstLog.timestamp) {
+        const parts = firstLog.timestamp.split(' ');
+        timeLabel = parts[1] ? parts[1].substring(0, 5) : parts[0];
+      }
+
+      const errorsInSlice = slice.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
+      labels.push(timeLabel);
+      totalData.push(slice.length);
+      errorData.push(errorsInSlice);
+    }
+
+    state.charts.trend.data.labels = labels;
+    state.charts.trend.data.datasets[0].data = totalData;
+    state.charts.trend.data.datasets[1].data = errorData;
     state.charts.trend.update();
+
+    const rangeBadge = document.getElementById('trend-time-range-badge');
+    if (rangeBadge && logs.length > 0) {
+      const firstT = logs[0].timestamp || 'Inicio';
+      const lastT = logs[logs.length - 1].timestamp || 'Fin';
+      rangeBadge.textContent = `${firstT} ➔ ${lastT}`;
+    }
   }
 
   function updateSeverityChart() {
@@ -2499,8 +2624,83 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const infoCount = state.logs.filter(l => l.level === 'INFO').length;
     const debugCount = state.logs.filter(l => l.level === 'DEBUG').length;
 
-    state.charts.severity.data.datasets[0].data = [criticalCount, warnCount, infoCount, debugCount];
+    state.charts.severity.data.datasets[0].data = [infoCount, criticalCount, warnCount, debugCount];
     state.charts.severity.update();
+  }
+
+  function updateOverviewWidgets() {
+    // 1. Widget Top Códigos 520xxx
+    const topContainer = document.getElementById('top-codes-overview-container');
+    if (topContainer) {
+      const codeMap = {};
+      (state.logs || []).forEach(l => {
+        if (l.entrustCode && (l.level === 'ERROR' || l.level === 'CRITICAL' || /520\d{4}/.test(l.entrustCode))) {
+          codeMap[l.entrustCode] = (codeMap[l.entrustCode] || 0) + 1;
+        }
+      });
+
+      const sortedCodes = Object.entries(codeMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      if (sortedCodes.length === 0) {
+        topContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:15px;">✅ No se detectaron códigos de error críticos [520xxx] en la muestra.</div>';
+      } else {
+        const maxCnt = sortedCodes[0][1] || 1;
+        let html = '';
+        sortedCodes.forEach(([code, cnt]) => {
+          const pct = Math.round((cnt / maxCnt) * 100);
+          html += `
+            <div style="font-size:0.78rem;">
+              <div class="flex-between" style="margin-bottom:3px;">
+                <span style="font-family:monospace; font-weight:bold; color:#ef4444;">[${escapeHtml(code)}]</span>
+                <strong style="color:var(--text-main);">${cnt.toLocaleString()} eventos</strong>
+              </div>
+              <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;">
+                <div style="width:${pct}%; height:100%; background:linear-gradient(90deg, #ef4444, #f97316); border-radius:3px;"></div>
+              </div>
+            </div>`;
+        });
+        topContainer.innerHTML = html;
+      }
+    }
+
+    // 2. Widget Balanceo de Nodos
+    const balanceContainer = document.getElementById('cluster-balance-overview-container');
+    if (balanceContainer) {
+      const nodeMap = new Map();
+      (state.logs || []).forEach(log => {
+        const nodeInfo = detectNodeFromLog(log);
+        if (!nodeMap.has(nodeInfo.key)) {
+          nodeMap.set(nodeInfo.key, { name: nodeInfo.name, count: 0, errors: 0 });
+        }
+        const item = nodeMap.get(nodeInfo.key);
+        item.count++;
+        if (log.level === 'ERROR' || log.level === 'CRITICAL') item.errors++;
+      });
+
+      const nodes = Array.from(nodeMap.values());
+      const totalLogs = state.logs.length || 1;
+      const colors = ['#0284c7', '#10b981', '#8b5cf6', '#f59e0b'];
+
+      if (nodes.length === 0) {
+        balanceContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:15px;">⏳ Esperando carga de archivos para mostrar balanceo.</div>';
+      } else {
+        let html = '';
+        nodes.forEach((n, idx) => {
+          const color = colors[idx % colors.length];
+          const pct = ((n.count / totalLogs) * 100).toFixed(1);
+          html += `
+            <div style="font-size:0.8rem;">
+              <div class="flex-between" style="margin-bottom:4px;">
+                <span style="font-weight:bold; color:var(--text-main);">${escapeHtml(n.name)}</span>
+                <span style="color:${color}; font-weight:bold; font-family:monospace;">${n.count.toLocaleString()} logs (${pct}%)</span>
+              </div>
+              <div style="height:8px; background:rgba(255,255,255,0.08); border-radius:4px; overflow:hidden;">
+                <div style="width:${pct}%; height:100%; background:${color}; border-radius:4px; transition:width 0.8s;"></div>
+              </div>
+            </div>`;
+        });
+        balanceContainer.innerHTML = html;
+      }
+    }
   }
 
   function resetSession() {
