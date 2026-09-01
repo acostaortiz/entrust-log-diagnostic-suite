@@ -97,13 +97,30 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   const defaultClients = [
     {
+      id: 'caribe',
+      name: 'Banco del Caribe C.A.',
+      platform: 'Entrust IdentityGuard OnPremise',
+      version: 'Release 11.0',
+      build: '11.0.10.2',
+      contact: 'Vicepresidencia de Ciberseguridad & TI',
+      engineer: 'Tomás Acosta',
+      nodes: [
+        { key: 'node_06', name: '🖥️ Nodo 06 (SACVWIG06 - Primario)' },
+        { key: 'node_07', name: '🖥️ Nodo 07 (SACVWIG07 - Secundario)' }
+      ]
+    },
+    {
       id: 'mercantil',
       name: 'Banco Mercantil C.A.',
       platform: 'Entrust IdentityGuard OnPremise',
       version: 'Release 13.0',
       build: '13.0.12.4',
       contact: 'Vicepresidencia de Ciberseguridad & TI',
-      engineer: 'Tomás Acosta'
+      engineer: 'Tomás Acosta',
+      nodes: [
+        { key: 'node_01', name: '🖥️ Nodo 01 (BMIGPROD01)' },
+        { key: 'node_02', name: '🖥️ Nodo 02 (BMIGPROD02)' }
+      ]
     },
     {
       id: 'banesco',
@@ -112,7 +129,24 @@ document.addEventListener('DOMContentLoaded', () => {
       version: 'Release 12.0',
       build: 'Issue 5 (Build 12.4.0)',
       contact: 'Gerencia de Tecnología & Operaciones',
-      engineer: 'Tomás Acosta'
+      engineer: 'Tomás Acosta',
+      nodes: [
+        { key: 'node_01', name: '🖥️ Nodo 01 (BANESCOIG01)' },
+        { key: 'node_02', name: '🖥️ Nodo 02 (BANESCOIG02)' }
+      ]
+    },
+    {
+      id: 'bancamiga',
+      name: 'Bancamiga Banco Universal',
+      platform: 'Entrust IdentityGuard OnPremise',
+      version: 'Release 13.0',
+      build: '13.0.4.1',
+      contact: 'Seguridad de la Información',
+      engineer: 'Tomás Acosta',
+      nodes: [
+        { key: 'node_01', name: '🖥️ Nodo 01 (BANCAMIGA-IG1)' },
+        { key: 'node_02', name: '🖥️ Nodo 02 (BANCAMIGA-IG2)' }
+      ]
     },
     {
       id: 'idaas_cloud',
@@ -121,23 +155,40 @@ document.addEventListener('DOMContentLoaded', () => {
       version: 'IDaaS Cloud v2026',
       build: 'Cloud-Gateway-8921',
       contact: 'Departamento de SSO & Push MFA',
-      engineer: 'Tomás Acosta'
+      engineer: 'Tomás Acosta',
+      nodes: [
+        { key: 'node_pod_east', name: '☁️ Pod US-East (SSO Gateway)' },
+        { key: 'node_pod_west', name: '☁️ Pod US-West (Push MFA)' }
+      ]
+    },
+    {
+      id: 'general',
+      name: 'Entorno Entrust General',
+      platform: 'Entrust IdentityGuard OnPremise',
+      version: 'Release 13.0',
+      build: 'General',
+      contact: 'Departamento de TI',
+      engineer: 'Tomás Acosta',
+      nodes: [
+        { key: 'node_01', name: '🖥️ Servidor Primario (Core)' },
+        { key: 'node_02', name: '🖥️ Servidor Secundario (Servicios/HA)' }
+      ]
     }
   ];
 
   function loadClientProfiles() {
     try {
-      const stored = localStorage.getItem('custom_client_profiles_v3');
+      const stored = localStorage.getItem('custom_client_profiles_v4');
       if (stored) {
         state.clientProfiles = JSON.parse(stored);
       } else {
         state.clientProfiles = defaultClients;
-        localStorage.setItem('custom_client_profiles_v3', JSON.stringify(defaultClients));
+        localStorage.setItem('custom_client_profiles_v4', JSON.stringify(defaultClients));
       }
     } catch (e) {
       state.clientProfiles = defaultClients;
     }
-    state.activeClientId = state.clientProfiles[0]?.id || 'mercantil';
+    state.activeClientId = state.clientProfiles[0]?.id || 'caribe';
     populateClientSessionSelectors();
   }
 
@@ -152,18 +203,26 @@ document.addEventListener('DOMContentLoaded', () => {
         version: 'Release 13.0',
         build: 'General',
         contact: 'Departamento de TI',
-        engineer: 'Tomás Acosta'
+        engineer: 'Tomás Acosta',
+        nodes: [
+          { key: 'node_01', name: '🖥️ Servidor Primario (Core)' },
+          { key: 'node_02', name: '🖥️ Servidor Secundario (Servicios/HA)' }
+        ]
       };
     }
 
-    return state.clientProfiles.find(c => c.id === state.activeClientId) || state.clientProfiles[0] || {
-      name: 'Cliente General',
-      platform: 'Entrust IdentityGuard OnPremise',
-      version: 'Release 13.0',
-      build: 'General',
-      contact: 'Departamento de TI',
-      engineer: 'Tomás Acosta'
-    };
+    return state.clientProfiles.find(c => c.id === state.activeClientId) || state.clientProfiles[0] || defaultClients[0];
+  }
+
+  function getClientAvailableNodes() {
+    const client = getActiveClientProfile();
+    if (client && client.nodes && Array.isArray(client.nodes) && client.nodes.length > 0) {
+      return client.nodes;
+    }
+    return [
+      { key: 'node_01', name: '🖥️ Servidor Primario (Core)' },
+      { key: 'node_02', name: '🖥️ Servidor Secundario (Servicios/HA)' }
+    ];
   }
 
   function renderRegisteredClientsList() {
@@ -2477,7 +2536,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     showAnalysisStatus(false, '🧹 Sesión Limpiada', 'Se eliminaron todos los registros y la muestra actual fue reiniciada a cero.');
   }
 
-  // PILAR 1: GESTOR VISUAL DE ARCHIVOS CARGADOS EN LA SESIÓN ACTIVA
+  // PILAR 1: GESTOR VISUAL DE ARCHIVOS CARGADOS EN LA SESIÓN ACTIVA (DINÁMICO POR CLIENTE)
   function renderLoadedFilesDrawer() {
     const listContainer = document.getElementById('loaded-files-list');
     const badgeCount = document.getElementById('loaded-files-count-badge');
@@ -2485,12 +2544,14 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (!listContainer) return;
 
     const files = state.loadedFiles || [];
+    const client = getActiveClientProfile();
+    const availNodes = getClientAvailableNodes();
 
     if (badgeCount) badgeCount.textContent = `${files.length} archivo(s)`;
 
     if (files.length === 0) {
       listContainer.innerHTML = '<span class="text-muted font-mono" style="font-size:0.78rem;">Ningún archivo cargado actualmente en la sesión.</span>';
-      if (summaryText) summaryText.textContent = 'Cargue uno o más archivos rotados (.log, .log.1, .log.2...)';
+      if (summaryText) summaryText.textContent = `Cliente: ${client.name} — Cargue uno o más archivos (.log, .log.1, .log.2...)`;
       return;
     }
 
@@ -2507,18 +2568,26 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       summaryText.textContent = `${nodeSummaryArr.join(' | ')} (Total: ${totalLogsInFiles.toLocaleString()} logs)`;
     }
 
+    const quickButtonsHtml = availNodes.map(n => 
+      `<button class="btn" onclick="window.assignAllFilesToNodeGlobal('${escapeHtml(n.key)}')" style="padding:2px 8px; font-size:0.72rem; background:var(--bg-secondary); color:var(--text-cyan); border:1px solid var(--border-color); border-radius:4px; font-weight:bold; cursor:pointer;" title="Asignar todos los archivos a este servidor">⚡ Asignar Todo a ${escapeHtml(n.name)}</button>`
+    ).join(' ');
+
     let html = `
       <div style="width:100%; display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; align-items:center;">
-        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">Acción Rápida de Asignación:</span>
-        <button class="btn" onclick="window.assignAllFilesToNodeGlobal('node_06')" style="padding:2px 8px; font-size:0.72rem; background:#0284c7; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">⚡ Asignar Todos a Nodo 06 (Primario)</button>
-        <button class="btn" onclick="window.assignAllFilesToNodeGlobal('node_07')" style="padding:2px 8px; font-size:0.72rem; background:#10b981; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">⚡ Asignar Todos a Nodo 07 (Secundario)</button>
+        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">Acción Rápida [${escapeHtml(client.name)}]:</span>
+        ${quickButtonsHtml}
+        <button class="btn" onclick="window.editClientNodesGlobal()" style="padding:2px 8px; font-size:0.72rem; background:rgba(56,189,248,0.15); color:var(--it-blue); border:1px solid var(--it-blue); border-radius:4px; font-weight:bold; cursor:pointer;">⚙️ Configurar Nodos de este Cliente</button>
       </div>`;
 
     files.forEach((f, idx) => {
       const sizeMb = f.size > 0 ? (f.size / (1024 * 1024)).toFixed(1) + ' MB' : 'Muestra';
-      const isNode6 = f.nodeKey === 'node_06' || f.nodeName.includes('06');
-      const isNode7 = f.nodeKey === 'node_07' || f.nodeName.includes('07');
-      const chipColor = isNode6 ? '#0284c7' : (isNode7 ? '#10b981' : '#8b5cf6');
+      const nodeIndex = availNodes.findIndex(n => n.key === f.nodeKey || n.name === f.nodeName);
+      const colors = ['#0284c7', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4'];
+      const chipColor = colors[nodeIndex >= 0 ? nodeIndex % colors.length : 0];
+
+      const optionsHtml = availNodes.map(n => 
+        `<option value="${escapeHtml(n.key)}" ${f.nodeKey === n.key || f.nodeName === n.name ? 'selected' : ''}>${escapeHtml(n.name)}</option>`
+      ).join('');
 
       html += `
         <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-left:3px solid ${chipColor}; padding:4px 10px; border-radius:6px; display:inline-flex; align-items:center; gap:8px; font-size:0.78rem; max-width:100%; flex-wrap:wrap;">
@@ -2528,10 +2597,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             <span style="color:var(--text-muted); font-size:0.72rem;">(${sizeMb} | ${(f.count || 0).toLocaleString()} logs)</span>
           </span>
           <select onchange="window.changeFileNodeGlobal('${escapeHtml(f.name)}', this.value)" style="background:var(--bg-primary); border:1px solid ${chipColor}; color:${chipColor}; font-weight:bold; font-size:0.72rem; padding:2px 6px; border-radius:4px; cursor:pointer;">
-            <option value="node_06" ${f.nodeKey === 'node_06' ? 'selected' : ''}>🖥️ Nodo 06 (Primario)</option>
-            <option value="node_07" ${f.nodeKey === 'node_07' ? 'selected' : ''}>🖥️ Nodo 07 (Secundario)</option>
-            <option value="node_01" ${f.nodeKey === 'node_01' ? 'selected' : ''}>🖥️ Nodo 01</option>
-            <option value="node_02" ${f.nodeKey === 'node_02' ? 'selected' : ''}>🖥️ Nodo 02</option>
+            ${optionsHtml}
           </select>
           <button onclick="window.removeLoadedFileGlobal('${escapeHtml(f.name)}')" style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#ef4444; border-radius:3px; padding:1px 5px; cursor:pointer; font-weight:bold; font-size:0.75rem;" title="Eliminar este archivo de la sesión">✖</button>
         </div>`;
@@ -2542,15 +2608,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
   window.changeFileNodeGlobal = function(fileName, targetNodeKey) {
     if (!state.customNodeAssignments) state.customNodeAssignments = {};
-    const nodeNames = {
-      'node_06': '🖥️ Nodo 06 (SACVWIG06 - Primario)',
-      'node_07': '🖥️ Nodo 07 (SACVWIG07 - Secundario)',
-      'node_01': '🖥️ Nodo 01 (SACVWIG01)',
-      'node_02': '🖥️ Nodo 02 (SACVWIG02)',
-      'node_03': '🖥️ Nodo 03 (SACVWIG03)',
-      'node_04': '🖥️ Nodo 04 (SACVWIG04)'
-    };
-    const targetName = nodeNames[targetNodeKey] || '🖥️ Nodo 06 (SACVWIG06 - Primario)';
+    const availNodes = getClientAvailableNodes();
+    const match = availNodes.find(n => n.key === targetNodeKey);
+    const targetName = match ? match.name : (targetNodeKey.startsWith('🖥️') ? targetNodeKey : `🖥️ ${targetNodeKey}`);
     state.customNodeAssignments[fileName] = { key: targetNodeKey, name: targetName };
 
     if (state.loadedFiles) {
@@ -2579,6 +2639,51 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     state.loadedFiles.forEach(f => {
       window.changeFileNodeGlobal(f.name, targetNodeKey);
     });
+  };
+
+  window.editClientNodesGlobal = function() {
+    const client = getActiveClientProfile();
+    const currentNodes = getClientAvailableNodes();
+    const defaultText = currentNodes.map(n => n.name.replace('🖥️ ', '').replace('☁️ ', '')).join(', ');
+    
+    const userInput = prompt(`⚙️ Configuración de Nodos para "${client.name}":\n\nIntroduce los nombres de los servidores separados por coma (ej: Servidor Primario, Servidor Secundario, Gateway WSO2):`, defaultText);
+    
+    if (userInput !== null && userInput.trim() !== '') {
+      const parts = userInput.split(',').map(s => s.trim()).filter(s => s.length > 0);
+      if (parts.length > 0) {
+        client.nodes = parts.map((name, idx) => ({
+          key: `node_${idx + 1}`,
+          name: name.startsWith('🖥️') || name.startsWith('☁️') ? name : `🖥️ ${name}`
+        }));
+
+        try {
+          localStorage.setItem('custom_client_profiles_v4', JSON.stringify(state.clientProfiles));
+        } catch(e) {
+          console.warn('LocalStorage error:', e);
+        }
+
+        // Re-asignar archivos si es necesario
+        if (state.loadedFiles) {
+          state.loadedFiles.forEach((f, idx) => {
+            const assignedNode = client.nodes[idx % client.nodes.length];
+            f.nodeKey = assignedNode.key;
+            f.nodeName = assignedNode.name;
+          });
+        }
+
+        if (state.logs) {
+          state.logs.forEach(log => {
+            const detected = detectNodeFromLog(log);
+            log.node = detected.name;
+          });
+        }
+
+        renderLoadedFilesDrawer();
+        updateNodeComparisonUI();
+        renderTraceWaterfall();
+        showAnalysisStatus(false, `✅ Nodos de ${client.name} Actualizados`, `Se configuraron ${client.nodes.length} servidores para este cliente.`);
+      }
+    }
   };
 
   window.removeLoadedFileGlobal = function(fileName) {
@@ -2811,43 +2916,37 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
   function detectNodeFromLog(log) {
     if (log.sourceFile && state.customNodeAssignments && state.customNodeAssignments[log.sourceFile]) {
-      const assigned = state.customNodeAssignments[log.sourceFile];
-      return {
-        key: assigned.key,
-        name: assigned.name
-      };
+      return state.customNodeAssignments[log.sourceFile];
     }
 
+    const availNodes = getClientAvailableNodes();
     const fileName = (log.sourceFile || '').toLowerCase();
     const message = (log.message || '').toLowerCase();
     const textToSearch = `${fileName} ${message}`;
 
-    // 1. Detección de Nodo 07 (SACVWIG07 / serviciosIDG / wig07 / node07)
-    if (textToSearch.includes('sacvwig07') || textToSearch.includes('wig07') || textToSearch.includes('nodo07') || textToSearch.includes('node07') || textToSearch.includes('serviciosidg')) {
-      return { key: 'node_07', name: '🖥️ Nodo 07 (SACVWIG07 - Secundario)' };
+    // 1. Detección por clave o nombre exacto configurado para este cliente
+    for (let i = 0; i < availNodes.length; i++) {
+      const node = availNodes[i];
+      const cleanKey = (node.key || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const rawName = (node.name || '').replace(/🖥️|☁️/g, '').toLowerCase().trim();
+      const cleanName = rawName.replace(/[^a-z0-9]/g, '');
+
+      if (cleanKey && textToSearch.includes(cleanKey)) {
+        return node;
+      }
+      if (cleanName.length >= 3 && textToSearch.includes(cleanName)) {
+        return node;
+      }
     }
 
-    // 2. Detección de Nodo 06 (SACVWIG06 / wig06 / nodo06 / node06)
-    if (textToSearch.includes('sacvwig06') || textToSearch.includes('wig06') || textToSearch.includes('nodo06') || textToSearch.includes('node06')) {
-      return { key: 'node_06', name: '🖥️ Nodo 06 (SACVWIG06 - Primario)' };
+    // 2. Heurística natural por tipo de servicio:
+    // Si el archivo es serviciosIDG, soap, radius, gateway -> 2do nodo del cliente (Servicios/HA)
+    if (/(servicios|soap|radius|gateway|apim|wsse)/i.test(fileName) && availNodes.length > 1) {
+      return availNodes[1];
     }
 
-    // 3. Otros nodos explícitos de clientes específicos
-    if (textToSearch.includes('sacvwig01') || textToSearch.includes('wig01') || textToSearch.includes('nodo01')) {
-      return { key: 'node_01', name: '🖥️ Nodo 01 (SACVWIG01)' };
-    }
-    if (textToSearch.includes('sacvwig02') || textToSearch.includes('wig02') || textToSearch.includes('nodo02')) {
-      return { key: 'node_02', name: '🖥️ Nodo 02 (SACVWIG02)' };
-    }
-    if (textToSearch.includes('sacvwig03') || textToSearch.includes('wig03') || textToSearch.includes('nodo03')) {
-      return { key: 'node_03', name: '🖥️ Nodo 03 (SACVWIG03)' };
-    }
-    if (textToSearch.includes('sacvwig04') || textToSearch.includes('wig04') || textToSearch.includes('nodo04')) {
-      return { key: 'node_04', name: '🖥️ Nodo 04 (SACVWIG04)' };
-    }
-
-    // 4. Default limpio para archivos de IdentityGuard: Todos pertenecen a Nodo 06 (Servidor Primario)
-    return { key: 'node_06', name: '🖥️ Nodo 06 (SACVWIG06 - Primario)' };
+    // 3. Por defecto: 1er nodo del cliente (Primario / Core)
+    return availNodes[0] || { key: 'node_01', name: '🖥️ Servidor Primario (Core)' };
   }
 
   function updateNodeComparisonUI() {
