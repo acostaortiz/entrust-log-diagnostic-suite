@@ -178,17 +178,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function loadClientProfiles() {
     try {
-      const stored = localStorage.getItem('custom_client_profiles_v4');
+      const stored = localStorage.getItem('custom_client_profiles_v5');
       if (stored) {
         state.clientProfiles = JSON.parse(stored);
       } else {
         state.clientProfiles = defaultClients;
-        localStorage.setItem('custom_client_profiles_v4', JSON.stringify(defaultClients));
+        localStorage.setItem('custom_client_profiles_v5', JSON.stringify(defaultClients));
       }
     } catch (e) {
       state.clientProfiles = defaultClients;
     }
-    state.activeClientId = state.clientProfiles[0]?.id || 'caribe';
+    state.activeClientId = state.clientProfiles[0]?.id || 'mercantil';
     populateClientSessionSelectors();
   }
 
@@ -376,7 +376,31 @@ document.addEventListener('DOMContentLoaded', () => {
       headerSelect.addEventListener('change', (e) => {
         state.activeClientId = e.target.value;
         const currentClient = getActiveClientProfile();
-        showAnalysisStatus(false, `🏢 Sesión de Cliente Cambiada: ${currentClient.name}`, `Plataforma: ${currentClient.platform} | Versión: ${currentClient.version} (${currentClient.build})`);
+        const availNodes = getClientAvailableNodes();
+
+        // Actualizar nodos en archivos cargados
+        if (state.loadedFiles) {
+          state.loadedFiles.forEach((f, idx) => {
+            const assigned = availNodes[idx % availNodes.length] || availNodes[0];
+            f.nodeKey = assigned.key;
+            f.nodeName = assigned.name;
+          });
+        }
+
+        // Actualizar nodos en logs en memoria
+        if (state.logs) {
+          state.logs.forEach(log => {
+            const detected = detectNodeFromLog(log);
+            log.node = detected.name;
+          });
+        }
+
+        renderLoadedFilesDrawer();
+        updateNodeComparisonUI();
+        updateMetricsAndCharts();
+        renderTraceWaterfall();
+
+        showAnalysisStatus(false, `🏢 Sesión Cambiada a: ${currentClient.name}`, `Nodos activos: ${availNodes.map(n => n.name).join(' | ')}`);
       });
     }
 
