@@ -2507,7 +2507,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       summaryText.textContent = `${nodeSummaryArr.join(' | ')} (Total: ${totalLogsInFiles.toLocaleString()} logs)`;
     }
 
-    let html = '';
+    let html = `
+      <div style="width:100%; display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">Acción Rápida de Asignación:</span>
+        <button class="btn" onclick="window.assignAllFilesToNodeGlobal('node_06')" style="padding:2px 8px; font-size:0.72rem; background:#0284c7; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">⚡ Asignar Todos a Nodo 06 (Primario)</button>
+        <button class="btn" onclick="window.assignAllFilesToNodeGlobal('node_07')" style="padding:2px 8px; font-size:0.72rem; background:#10b981; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">⚡ Asignar Todos a Nodo 07 (Secundario)</button>
+      </div>`;
+
     files.forEach((f, idx) => {
       const sizeMb = f.size > 0 ? (f.size / (1024 * 1024)).toFixed(1) + ' MB' : 'Muestra';
       const isNode6 = f.nodeKey === 'node_06' || f.nodeName.includes('06');
@@ -2515,19 +2521,65 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const chipColor = isNode6 ? '#0284c7' : (isNode7 ? '#10b981' : '#8b5cf6');
 
       html += `
-        <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-left:3px solid ${chipColor}; padding:4px 10px; border-radius:6px; display:inline-flex; align-items:center; gap:8px; font-size:0.78rem; max-width:100%;">
+        <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-left:3px solid ${chipColor}; padding:4px 10px; border-radius:6px; display:inline-flex; align-items:center; gap:8px; font-size:0.78rem; max-width:100%; flex-wrap:wrap;">
           <span style="display:flex; align-items:center; gap:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
             <span>📄</span>
             <strong style="color:var(--text-main); font-family:monospace;">${escapeHtml(f.name)}</strong>
             <span style="color:var(--text-muted); font-size:0.72rem;">(${sizeMb} | ${(f.count || 0).toLocaleString()} logs)</span>
-            <span style="background:${chipColor}22; color:${chipColor}; border:1px solid ${chipColor}44; padding:1px 6px; border-radius:4px; font-weight:bold; font-size:0.7rem;">${escapeHtml(f.nodeName)}</span>
           </span>
+          <select onchange="window.changeFileNodeGlobal('${escapeHtml(f.name)}', this.value)" style="background:var(--bg-primary); border:1px solid ${chipColor}; color:${chipColor}; font-weight:bold; font-size:0.72rem; padding:2px 6px; border-radius:4px; cursor:pointer;">
+            <option value="node_06" ${f.nodeKey === 'node_06' ? 'selected' : ''}>🖥️ Nodo 06 (Primario)</option>
+            <option value="node_07" ${f.nodeKey === 'node_07' ? 'selected' : ''}>🖥️ Nodo 07 (Secundario)</option>
+            <option value="node_01" ${f.nodeKey === 'node_01' ? 'selected' : ''}>🖥️ Nodo 01</option>
+            <option value="node_02" ${f.nodeKey === 'node_02' ? 'selected' : ''}>🖥️ Nodo 02</option>
+          </select>
           <button onclick="window.removeLoadedFileGlobal('${escapeHtml(f.name)}')" style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#ef4444; border-radius:3px; padding:1px 5px; cursor:pointer; font-weight:bold; font-size:0.75rem;" title="Eliminar este archivo de la sesión">✖</button>
         </div>`;
     });
 
     listContainer.innerHTML = html;
   }
+
+  window.changeFileNodeGlobal = function(fileName, targetNodeKey) {
+    if (!state.customNodeAssignments) state.customNodeAssignments = {};
+    const nodeNames = {
+      'node_06': '🖥️ Nodo 06 (SACVWIG06 - Primario)',
+      'node_07': '🖥️ Nodo 07 (SACVWIG07 - Secundario)',
+      'node_01': '🖥️ Nodo 01 (SACVWIG01)',
+      'node_02': '🖥️ Nodo 02 (SACVWIG02)',
+      'node_03': '🖥️ Nodo 03 (SACVWIG03)',
+      'node_04': '🖥️ Nodo 04 (SACVWIG04)'
+    };
+    const targetName = nodeNames[targetNodeKey] || '🖥️ Nodo 06 (SACVWIG06 - Primario)';
+    state.customNodeAssignments[fileName] = { key: targetNodeKey, name: targetName };
+
+    if (state.loadedFiles) {
+      const f = state.loadedFiles.find(file => file.name === fileName);
+      if (f) {
+        f.nodeKey = targetNodeKey;
+        f.nodeName = targetName;
+      }
+    }
+
+    if (state.logs) {
+      state.logs.forEach(log => {
+        if (log.sourceFile === fileName) {
+          log.node = targetName;
+        }
+      });
+    }
+
+    renderLoadedFilesDrawer();
+    updateNodeComparisonUI();
+    renderTraceWaterfall();
+  };
+
+  window.assignAllFilesToNodeGlobal = function(targetNodeKey) {
+    if (!state.loadedFiles || state.loadedFiles.length === 0) return;
+    state.loadedFiles.forEach(f => {
+      window.changeFileNodeGlobal(f.name, targetNodeKey);
+    });
+  };
 
   window.removeLoadedFileGlobal = function(fileName) {
     if (!state.loadedFiles) return;
@@ -2766,45 +2818,36 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       };
     }
 
-    const textToSearch = `${log.sourceFile || ''} ${log.clientIp || ''} ${log.message || ''}`.toLowerCase();
+    const fileName = (log.sourceFile || '').toLowerCase();
+    const message = (log.message || '').toLowerCase();
+    const textToSearch = `${fileName} ${message}`;
 
-    // 1. Detección explícita de etiquetas de Nodo (SACVWIG06 / SACVWIG07 / wig06 / wig07 / 06 / 07)
-    if (textToSearch.match(/(sacvwig06|wig06|node06|nodo06|nodo_06|node_06|\b06\b)/i)) {
-      return { key: 'node_06', name: '🖥️ Nodo 06 (SACVWIG06 - Primario)' };
-    }
-    if (textToSearch.match(/(sacvwig07|wig07|node07|nodo07|nodo_07|node_07|\b07\b)/i)) {
+    // 1. Detección de Nodo 07 (SACVWIG07 / serviciosIDG / wig07 / node07)
+    if (textToSearch.includes('sacvwig07') || textToSearch.includes('wig07') || textToSearch.includes('nodo07') || textToSearch.includes('node07') || textToSearch.includes('serviciosidg')) {
       return { key: 'node_07', name: '🖥️ Nodo 07 (SACVWIG07 - Secundario)' };
     }
-    if (textToSearch.match(/(sacvwig01|wig01|node01|nodo01|\b01\b)/i)) {
+
+    // 2. Detección de Nodo 06 (SACVWIG06 / wig06 / nodo06 / node06)
+    if (textToSearch.includes('sacvwig06') || textToSearch.includes('wig06') || textToSearch.includes('nodo06') || textToSearch.includes('node06')) {
+      return { key: 'node_06', name: '🖥️ Nodo 06 (SACVWIG06 - Primario)' };
+    }
+
+    // 3. Otros nodos explícitos de clientes específicos
+    if (textToSearch.includes('sacvwig01') || textToSearch.includes('wig01') || textToSearch.includes('nodo01')) {
       return { key: 'node_01', name: '🖥️ Nodo 01 (SACVWIG01)' };
     }
-    if (textToSearch.match(/(sacvwig02|wig02|node02|nodo02|\b02\b)/i)) {
+    if (textToSearch.includes('sacvwig02') || textToSearch.includes('wig02') || textToSearch.includes('nodo02')) {
       return { key: 'node_02', name: '🖥️ Nodo 02 (SACVWIG02)' };
     }
-    if (textToSearch.match(/(sacvwig03|wig03|node03|nodo03|\b03\b)/i)) {
+    if (textToSearch.includes('sacvwig03') || textToSearch.includes('wig03') || textToSearch.includes('nodo03')) {
       return { key: 'node_03', name: '🖥️ Nodo 03 (SACVWIG03)' };
     }
-    if (textToSearch.match(/(sacvwig04|wig04|node04|nodo04|\b04\b)/i)) {
+    if (textToSearch.includes('sacvwig04') || textToSearch.includes('wig04') || textToSearch.includes('nodo04')) {
       return { key: 'node_04', name: '🖥️ Nodo 04 (SACVWIG04)' };
     }
-    if (textToSearch.match(/(sacvwig05|wig05|node05|nodo05|\b05\b)/i)) {
-      return { key: 'node_05', name: '🖥️ Nodo 05 (SACVWIG05)' };
-    }
 
-    // 2. Por IP de Host
-    if (log.clientIp) {
-      const ip = log.clientIp.trim();
-      return { key: `ip_${ip.replace(/[^a-z0-9]/g, '_')}`, name: `🖥️ Host IP ${ip}` };
-    }
-
-    // 3. Fallback: normalizar archivos rotados (.log.1, .log.2, etc.) para que formen parte del MISMO NODO
-    if (log.sourceFile) {
-      const normalizedBase = normalizeRotatedFilename(log.sourceFile);
-      const cleanName = normalizedBase.replace(/[^a-z0-9_]/g, ' ').toUpperCase();
-      return { key: `file_${normalizedBase.replace(/[^a-z0-9]/g, '_')}`, name: `🖥️ ${cleanName}` };
-    }
-
-    return { key: 'node_default', name: '🖥️ Servidor Entrust General' };
+    // 4. Default limpio para archivos de IdentityGuard: Todos pertenecen a Nodo 06 (Servidor Primario)
+    return { key: 'node_06', name: '🖥️ Nodo 06 (SACVWIG06 - Primario)' };
   }
 
   function updateNodeComparisonUI() {
