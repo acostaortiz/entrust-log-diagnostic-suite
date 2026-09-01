@@ -205,6 +205,35 @@ class ManualsEngine {
     const cleanQuery = query.toLowerCase().trim();
     const results = [];
 
+    // 1. Buscar en la Base de Conocimientos & Catálogos Importados de Todas las Versiones
+    if (window.knowledgeBaseEngine) {
+      const kbRules = window.knowledgeBaseEngine.getAllRules() || [];
+      kbRules.forEach(rule => {
+        const idMatch = (rule.id || '').toLowerCase().includes(cleanQuery);
+        const titleMatch = (rule.title || '').toLowerCase().includes(cleanQuery);
+        const meaningMatch = (rule.meaning || '').toLowerCase().includes(cleanQuery);
+        const causeMatch = (rule.rootCause || '').toLowerCase().includes(cleanQuery);
+        const remediationMatch = (rule.remediation || '').toLowerCase().includes(cleanQuery);
+        const patternStr = rule.pattern ? (rule.pattern.source || rule.pattern.toString()).toLowerCase() : '';
+        const patternMatch = patternStr.includes(cleanQuery);
+
+        if (idMatch || titleMatch || meaningMatch || causeMatch || remediationMatch || patternMatch) {
+          results.push({
+            type: 'error_rule',
+            rule: rule,
+            code: (rule.id || '').replace('KB-ENTRUST-', '').replace('KB-', ''),
+            title: rule.title || rule.id,
+            version: rule.manualVersion || 'Entrust IdentityGuard',
+            severity: rule.severity || 'ERROR',
+            category: rule.category || 'General',
+            snippet: `${rule.title} — ${rule.meaning ? rule.meaning.substring(0, 90) + '...' : ''}`,
+            sectionId: rule.sectionId || 'sec-' + (rule.id || '').toLowerCase()
+          });
+        }
+      });
+    }
+
+    // 2. Buscar en Manuales WebHelp y Release Notes en Caché
     Object.keys(this.manualsMap).forEach(ver => {
       const content = this.loadedCache[ver] || this.fallbackManuals[ver];
       if (content) {
@@ -219,9 +248,11 @@ class ManualsEngine {
           const snippet = '...' + textContent.substring(start, end).replace(/\s+/g, ' ') + '...';
 
           results.push({
+            type: 'manual_page',
             version: ver,
+            title: this.manualsMap[ver]?.title || ver,
             snippet: snippet,
-            sectionId: 'sec-5202013'
+            sectionId: 'sec-' + cleanQuery
           });
         }
       }

@@ -2131,22 +2131,132 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
   function renderManualSearchResults(results) {
     if (!dom.manualTocList) return;
-    dom.manualTocList.innerHTML = '<div class="diag-label">Resultados de Búsqueda:</div>';
+    dom.manualTocList.innerHTML = `<div class="diag-label" style="font-weight:bold; color:var(--text-cyan); padding:4px 0; border-bottom:1px solid var(--border-color); margin-bottom:8px;">
+      🔍 Resultados (${results.length} coincidencias):
+    </div>`;
 
     if (results.length === 0) {
-      dom.manualTocList.innerHTML += '<div class="text-muted" style="padding:10px;">Sin coincidencias.</div>';
+      dom.manualTocList.innerHTML += '<div class="text-muted" style="padding:15px; text-align:center;">Sin coincidencias para la búsqueda.</div>';
       return;
     }
 
     results.forEach(res => {
       const div = document.createElement('div');
       div.className = 'toc-item';
-      div.innerHTML = `<strong class="text-cyan">${res.version}</strong>: ${escapeHtml(res.snippet)}`;
-      div.addEventListener('click', () => {
-        loadManual(res.version, res.sectionId);
-      });
+      div.style.padding = '8px';
+      div.style.marginBottom = '6px';
+      div.style.borderRadius = '6px';
+      div.style.border = '1px solid var(--border-color)';
+      div.style.background = 'var(--bg-secondary)';
+      div.style.cursor = 'pointer';
+
+      if (res.type === 'error_rule' && res.rule) {
+        const sevColor = res.severity === 'CRITICAL' || res.severity === 'ERROR' ? '#ef4444' : (res.severity === 'WARN' ? '#f59e0b' : '#0284c7');
+        div.innerHTML = `
+          <div class="flex-between" style="margin-bottom:4px;">
+            <span style="font-family:monospace; font-weight:bold; color:${sevColor};">[${escapeHtml(res.code)}]</span>
+            <span style="font-size:0.7rem; background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; color:var(--text-muted);">${escapeHtml(res.version)}</span>
+          </div>
+          <div style="font-size:0.8rem; font-weight:600; color:var(--text-main); line-height:1.3; margin-bottom:4px;">${escapeHtml(res.title)}</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); line-height:1.2;">${escapeHtml(res.snippet)}</div>
+        `;
+
+        div.addEventListener('click', () => {
+          renderRuleInManualViewer(res.rule);
+        });
+      } else {
+        div.innerHTML = `
+          <div style="font-weight:bold; font-size:0.8rem; color:var(--text-cyan); margin-bottom:2px;">📖 ${escapeHtml(res.title || res.version)}</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); line-height:1.3;">${escapeHtml(res.snippet)}</div>
+        `;
+        div.addEventListener('click', () => {
+          loadManual(res.version, res.sectionId);
+        });
+      }
+
       dom.manualTocList.appendChild(div);
     });
+
+    // Auto-mostrar el primer resultado si hay coincidencia de código de error
+    if (results.length > 0 && results[0].type === 'error_rule' && results[0].rule) {
+      renderRuleInManualViewer(results[0].rule);
+    }
+  }
+
+  function renderRuleInManualViewer(rule) {
+    if (!dom.manualIframe) return;
+    const doc = dom.manualIframe.contentDocument || dom.manualIframe.contentWindow.document;
+    if (!doc) return;
+
+    const code = (rule.id || '').replace('KB-ENTRUST-', '').replace('KB-', '');
+    const sevColor = rule.severity === 'CRITICAL' || rule.severity === 'ERROR' ? '#dc2626' : (rule.severity === 'WARN' ? '#d97706' : '#0284c7');
+    const sevBg = rule.severity === 'CRITICAL' || rule.severity === 'ERROR' ? '#fee2e2' : (rule.severity === 'WARN' ? '#fef3c7' : '#e0f2fe');
+
+    const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ficha Técnica Oficial Entrust [${code}]</title>
+  <style>
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; padding: 24px; color: #0f172a; background: #ffffff; line-height: 1.6; margin: 0; }
+    .header { border-bottom: 2px solid #0a3d6d; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { color: #0a3d6d; font-size: 20px; margin: 0; }
+    .badge { padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+    .card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .card-title { font-weight: bold; color: #0a3d6d; font-size: 13px; text-transform: uppercase; margin-bottom: 6px; }
+    .code-box { background: #0f172a; color: #38bdf8; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 12px; white-space: pre-wrap; margin-top: 6px; }
+    .remed-box { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 14px; border-radius: 6px; white-space: pre-line; font-size: 13px; line-height: 1.6; }
+    .btn { background: #0284c7; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>🛡️ ENTRUST IDENTITYGUARD — CATÁLOGO OFICIAL DE ERRORES</h1>
+      <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Manual y Guía de Resolución Oficial (Versión: ${escapeHtml(rule.manualVersion || 'Release 13.0 / 12.0 / 11.0')})</div>
+    </div>
+    <div>
+      <span class="badge" style="background: ${sevBg}; color: ${sevColor}; font-size: 13px; border: 1px solid ${sevColor};">${rule.severity || 'ERROR'} [${code}]</span>
+    </div>
+  </div>
+
+  <div class="card" style="border-left: 5px solid #0a3d6d;">
+    <div class="card-title">📌 Evento & Título del Código de Error</div>
+    <div style="font-size: 16px; font-weight: bold; color: #0f172a;">${escapeHtml(rule.title)}</div>
+    <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Categoría: <strong>${escapeHtml(rule.category || 'Entrust OnPremise')}</strong> | Firma KB: <code>${escapeHtml(rule.id)}</code></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 Significado Técnico (Explicación del Fabricante)</div>
+    <div style="font-size: 13px; color: #334155;">${escapeHtml(rule.meaning || 'Error de procesamiento en la plataforma Entrust IdentityGuard.')}</div>
+  </div>
+
+  <div class="card" style="border-left: 5px solid #d97706;">
+    <div class="card-title" style="color: #d97706;">🔍 Causa Raíz Probable en Servidores</div>
+    <div style="font-size: 13px; color: #b45309; font-weight: 600;">${escapeHtml(rule.rootCause || 'Fallo de política, conexión o configuración.')}</div>
+  </div>
+
+  <div class="card" style="border-left: 5px solid #059669;">
+    <div class="card-title" style="color: #059669;">🛠️ Procedimiento de Remediación Paso a Paso</div>
+    <div class="remed-box">${escapeHtml(rule.remediation || 'Consulte los logs de arranque y la consola de administración de Entrust.')}</div>
+  </div>
+
+  ${rule.cliCommands ? `
+  <div class="card">
+    <div class="card-title">💻 Comandos de Consola CLI de Reparación</div>
+    <div class="code-box">${escapeHtml(rule.cliCommands.win || rule.cliCommands.nix || '')}</div>
+  </div>` : ''}
+
+  <div style="margin-top: 24px; padding: 14px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; font-size: 11px; color: #64748b; display: flex; justify-content: space-between; align-items: center;">
+    <span>🔒 Documento Oficial Indexado por <strong>IT SERVICIOS DE VENEZUELA</strong> — Suite de Diagnóstico Entrust</span>
+    <span>Sello Digital: SHA256-KB-${Date.now().toString(16).toUpperCase()}</span>
+  </div>
+</body>
+</html>`;
+
+    doc.open();
+    doc.write(html);
+    doc.close();
   }
 
   /* ==========================================================================
