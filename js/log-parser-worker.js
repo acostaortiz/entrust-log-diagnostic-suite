@@ -57,9 +57,10 @@ async function processGiantFileStream(file, clientId) {
   const codeCounter = {};
   const timeBuckets = {};
 
-  // Buffer de visualización interactiva en UI (25.000 eventos con 100% de los errores)
+  // Buffer de visualización interactiva en UI (máximo 15.000 registros para evitar OOM)
   const displayLogs = [];
-  const MAX_DISPLAY_LOGS = 25000;
+  const MAX_DISPLAY_LOGS = 15000;
+  let displayErrorCount = 0;
 
   let lastProgressReportTime = 0;
 
@@ -115,17 +116,12 @@ async function processGiantFileStream(file, clientId) {
           if (isWarn) timeBuckets[dateBucket].warn++;
         }
 
-        // 5. Muestreo Inteligente: 100% de los errores siempre entran
-        if (isError) {
+        // 5. Muestreo Seguro con tope estricto de memoria
+        if (isError && displayErrorCount < 5000) {
+          displayErrorCount++;
           displayLogs.push(parsed);
-        } else if (displayLogs.length < MAX_DISPLAY_LOGS) {
+        } else if (!isError && displayLogs.length < MAX_DISPLAY_LOGS && (lineCount % 1000 === 0 || displayLogs.length < 1000)) {
           displayLogs.push(parsed);
-        } else if (Math.random() < 0.05 && displayLogs.length >= MAX_DISPLAY_LOGS) {
-          // Reemplazo probabilístico para mantener distribución temporal
-          const repIdx = Math.floor(Math.random() * displayLogs.length);
-          if (displayLogs[repIdx].level !== 'ERROR' && displayLogs[repIdx].level !== 'CRITICAL') {
-            displayLogs[repIdx] = parsed;
-          }
         }
       }
     }
