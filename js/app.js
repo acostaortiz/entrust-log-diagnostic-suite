@@ -1660,6 +1660,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function extractClientFromFilename(filename) {
     if (!filename) return 'Entrust OnPremise';
 
+    const lower = filename.toLowerCase();
+    if (lower.includes('auditevents') || lower.includes('idaas') || lower.includes('bulkidentityguard')) {
+      return 'Banco Mercantil C.A. (IDaaS Cloud)';
+    }
+    if (lower.includes('mercantil')) {
+      return 'Banco Mercantil C.A.';
+    }
+
     let name = filename.replace(/\.[^/.]+$/, "").trim();
 
     // Si el nombre del archivo empieza con fecha o marca de tiempo (ej. 2025-11-28_20-02-37)
@@ -3742,15 +3750,24 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       for (let fIdx = 0; fIdx < files.length; fIdx++) {
         const file = files[fIdx];
         try {
-          showAnalysisStatus(true, `⚙️ Procesando [${fIdx + 1}/${files.length}]: ${file.name}...`, 'Iniciando lectura asíncrona por bloques...');
-          const content = await file.text();
           const clientName = extractClientFromFilename(file.name);
+          const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+          showAnalysisStatus(true, `⚙️ Procesando [${fIdx + 1}/${files.length}]: ${file.name} (${sizeMb} MB)...`, 'Iniciando motor de alta velocidad...');
 
-          const rawEntries = await window.logParserEngine.parseLogsAsync(content, (current, total, msg) => {
-            showAnalysisStatus(true, `⚙️ [Archivo ${fIdx + 1}/${files.length}] ${file.name}`, `${msg}`);
-          }, 25000);
+          let rawEntries = [];
+          if (file.size > 25 * 1024 * 1024) {
+            // Archivos mayores a 25 MB (incluyendo 10 GB+) -> Procesamiento Streaming por Bloques
+            rawEntries = await window.logParserEngine.parseLargeFileInChunks(file, (current, total, msg) => {
+              showAnalysisStatus(true, `⚙️ [${file.name} — ${sizeMb} MB]`, msg);
+            });
+          } else {
+            const content = await file.text();
+            rawEntries = await window.logParserEngine.parseLogsAsync(content, (current, total, msg) => {
+              showAnalysisStatus(true, `⚙️ [Archivo ${fIdx + 1}/${files.length}] ${file.name}`, `${msg}`);
+            }, 25000);
+          }
 
-          const nodeInfo = detectNodeFromLog({ sourceFile: file.name, message: content.slice(0, 1500) });
+          const nodeInfo = detectNodeFromLog({ sourceFile: file.name, message: file.name });
 
           const parsedEntries = rawEntries.map((log, idx) => ({
             ...log,

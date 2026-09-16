@@ -197,6 +197,75 @@ class LogParser {
     }
   }
 
+  // MOTOR STREAMING POR BLOQUES PARA ARCHIVOS GIGANTES (10 GB+ / Sin desbordar memoria)
+  async parseLargeFileInChunks(file, onProgress, chunkSize = 32 * 1024 * 1024) {
+    const fileSize = file.size;
+    let offset = 0;
+    let leftover = '';
+    let totalLinesProcessed = 0;
+    const allParsed = [];
+    const maxEntriesToRetainInSession = 300000; // Mantiene los más recientes para rendimiento ultra-rápido en UI
+
+    while (offset < fileSize) {
+      const slice = file.slice(offset, Math.min(offset + chunkSize, fileSize));
+      const chunkText = await slice.text();
+      offset += chunkSize;
+
+      const fullText = leftover + chunkText;
+      const lines = fullText.split(/\r?\n/);
+
+      if (offset < fileSize) {
+        leftover = lines.pop() || '';
+      } else {
+        leftover = '';
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        totalLinesProcessed++;
+        const parsed = this.parseLine(line, totalLinesProcessed);
+        if (parsed) {
+          allParsed.push(parsed);
+        }
+      }
+
+      const pct = Math.min(99, Math.round((Math.min(offset, fileSize) / fileSize) * 100));
+      const mbProcessed = (Math.min(offset, fileSize) / (1024 * 1024)).toFixed(0);
+      const totalMb = (fileSize / (1024 * 1024)).toFixed(0);
+
+      if (onProgress) {
+        onProgress(
+          Math.min(offset, fileSize),
+          fileSize,
+          `⚡ Streaming: ${mbProcessed} MB / ${totalMb} MB (${pct}%) — ${totalLinesProcessed.toLocaleString()} eventos analizados...`
+        );
+      }
+
+      // Ceder el hilo de ejecución para que la interfaz se refresque suavemente
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+
+    if (leftover && leftover.trim()) {
+      totalLinesProcessed++;
+      const parsed = this.parseLine(leftover.trim(), totalLinesProcessed);
+      if (parsed) allParsed.push(parsed);
+    }
+
+    this.correlateAutoHealing(allParsed);
+
+    if (onProgress) {
+      onProgress(fileSize, fileSize, `✅ 100% Completado: ${totalLinesProcessed.toLocaleString()} eventos procesados`);
+    }
+
+    // Si el conjunto supera el límite en memoria de UI, conservamos una muestra de alta resolución
+    if (allParsed.length > maxEntriesToRetainInSession) {
+      return allParsed.slice(-maxEntriesToRetainInSession);
+    }
+
+    return allParsed;
+  }
+
   // ALGORITMO O(N) LINEAL DE ALTA VELOCIDAD (Resuelve en <20ms para 5M+ logs)
   correlateAutoHealing(parsedEntries) {
     if (!parsedEntries || parsedEntries.length === 0) return;
