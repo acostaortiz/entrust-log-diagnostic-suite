@@ -44,15 +44,16 @@ self.onmessage = async function (e) {
 
 async function processGiantFileStream(file, clientId) {
   const fileSize = file.size;
-  const chunkSize = 16 * 1024 * 1024; // 16 MB chunks
+  const chunkSize = 8 * 1024 * 1024; // 8 MB chunks
   let offset = 0;
   let leftover = '';
   let lineCount = 0;
   let totalErrors = 0;
   let totalWarnings = 0;
 
+  // BUFFER ACOTADO (Máximo 10.000 registros para evitar Out of Memory en navegador)
   const displayLogs = [];
-  const MAX_DISPLAY_LOGS = 60000;
+  const MAX_DISPLAY_LOGS = 10000;
 
   let lastProgressReportTime = 0;
 
@@ -81,12 +82,18 @@ async function processGiantFileStream(file, clientId) {
 
         if (parsed.level === 'ERROR' || parsed.level === 'CRITICAL') {
           totalErrors++;
-          displayLogs.push(parsed);
         } else if (parsed.level === 'WARN') {
           totalWarnings++;
+        }
+
+        // Muestreo acotado en memoria
+        if (displayLogs.length < MAX_DISPLAY_LOGS) {
           displayLogs.push(parsed);
-        } else if (displayLogs.length < MAX_DISPLAY_LOGS) {
-          displayLogs.push(parsed);
+        } else if (parsed.level === 'ERROR' || parsed.level === 'CRITICAL') {
+          const replaceIdx = Math.floor(Math.random() * displayLogs.length);
+          if (displayLogs[replaceIdx].level !== 'ERROR' && displayLogs[replaceIdx].level !== 'CRITICAL') {
+            displayLogs[replaceIdx] = parsed;
+          }
         }
       }
     }
@@ -110,14 +117,14 @@ async function processGiantFileStream(file, clientId) {
       });
     }
 
-    // Ceder el hilo para comunicación fluida
+    // Ceder el hilo para recolector de basura
     await new Promise(r => setTimeout(r, 0));
   }
 
   if (leftover && leftover.trim()) {
     lineCount++;
     const parsed = parseSingleLineFast(leftover.trim(), lineCount);
-    if (parsed) {
+    if (parsed && displayLogs.length < MAX_DISPLAY_LOGS) {
       if (clientId) parsed.client = clientId;
       displayLogs.push(parsed);
     }
@@ -125,7 +132,7 @@ async function processGiantFileStream(file, clientId) {
 
   self.postMessage({
     type: 'complete',
-    parsedLogs: displayLogs.slice(-MAX_DISPLAY_LOGS),
+    parsedLogs: displayLogs,
     totalLinesProcessed: lineCount,
     totalErrors: totalErrors,
     totalWarnings: totalWarnings
