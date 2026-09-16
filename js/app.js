@@ -2358,11 +2358,14 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   }
 
   async function loadMercantil10GbBundle() {
-    showAnalysisStatus(true, '⏳ Cargando Auditoría Masiva Banco Mercantil...', 'Descargando e indexando métricas consolidadas de 16,504,695 eventos (10.17 GB)...');
+    showAnalysisStatus(true, '⏳ Cargando Auditoría Masiva Banco Mercantil...', 'Indexando métricas consolidadas de 16,504,695 eventos (10.17 GB)...');
     try {
-      const res = await fetch('data/bancomercantil_audit_10gb.json?v=' + Date.now());
-      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-      const bundle = await res.json();
+      let bundle = window.__BANCO_MERCANTIL_10GB_BUNDLE__;
+      if (!bundle) {
+        const res = await fetch('data/bancomercantil_audit_10gb.json?v=' + Date.now());
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        bundle = await res.json();
+      }
 
       // Configurar Banco Mercantil como cliente activo
       state.activeClientId = 'mercantil';
