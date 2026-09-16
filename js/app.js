@@ -2464,35 +2464,36 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   }
 
   function updateMetricsAndCharts() {
-    const total = state.logs.length;
-    const criticals = state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
-    const warnings = state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING');
+    const isGlobal = !!state.globalStreamMetrics;
+    const total = isGlobal ? state.globalStreamMetrics.totalLogs : state.logs.length;
+    const criticalsCount = isGlobal ? state.globalStreamMetrics.totalErrors : state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
+    const warningsCount = isGlobal ? state.globalStreamMetrics.totalWarnings : state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length;
     const fileCount = state.loadedFiles ? state.loadedFiles.length : 0;
 
     // 1. Tarjeta Total Logs
     if (dom.totalLogsCount) dom.totalLogsCount.textContent = total.toLocaleString();
     const totalBadge = document.getElementById('total-logs-badge');
-    if (totalBadge) totalBadge.textContent = `${fileCount} Archivo(s)`;
+    if (totalBadge) totalBadge.textContent = isGlobal ? `${fileCount} Archivo(s) [Panorama Total]` : `${fileCount} Archivo(s)`;
 
     // 2. Tarjeta Incidentes Críticos
-    if (dom.criticalCount) dom.criticalCount.textContent = criticals.length.toLocaleString();
+    if (dom.criticalCount) dom.criticalCount.textContent = criticalsCount.toLocaleString();
     const critRateBadge = document.getElementById('critical-rate-badge');
     const critBar = document.getElementById('critical-progress-bar');
-    const critPct = total > 0 ? ((criticals.length / total) * 100).toFixed(2) : '0';
+    const critPct = total > 0 ? ((criticalsCount / total) * 100).toFixed(2) : '0';
     if (critRateBadge) critRateBadge.textContent = `${critPct}% Tasa Falla`;
     if (critBar) critBar.style.width = `${Math.min(100, Math.max(2, parseFloat(critPct) * 10))}%`;
 
     // 3. Tarjeta Alertas de Auditoría
-    if (dom.warningCount) dom.warningCount.textContent = warnings.length.toLocaleString();
+    if (dom.warningCount) dom.warningCount.textContent = warningsCount.toLocaleString();
     const auditRateBadge = document.getElementById('audit-rate-badge');
     const warnBar = document.getElementById('warn-progress-bar');
-    const warnPct = total > 0 ? ((warnings.length / total) * 100).toFixed(1) : '0';
+    const warnPct = total > 0 ? ((warningsCount / total) * 100).toFixed(1) : '0';
     if (auditRateBadge) auditRateBadge.textContent = `${warnPct}% Auditoría`;
     if (warnBar) warnBar.style.width = `${Math.min(100, Math.max(2, parseFloat(warnPct) * 5))}%`;
 
     // 4. Tarjeta Salud Clúster
-    const critPenalty = criticals.length > 0 ? Math.min(65, Math.max(5, (criticals.length / Math.max(1, total)) * 100 * 5 + criticals.length * 0.05)) : 0;
-    const warnPenalty = warnings.length > 0 ? Math.min(25, (warnings.length / Math.max(1, total)) * 100 * 2) : 0;
+    const critPenalty = criticalsCount > 0 ? Math.min(65, Math.max(5, (criticalsCount / Math.max(1, total)) * 100 * 5 + criticalsCount * 0.05)) : 0;
+    const warnPenalty = warningsCount > 0 ? Math.min(25, (warningsCount / Math.max(1, total)) * 100 * 2) : 0;
     const health = total > 0 ? Math.max(10, Math.round(100 - critPenalty - warnPenalty)) : 100;
     
     if (dom.healthIndex) dom.healthIndex.textContent = `${health}%`;
@@ -2709,32 +2710,43 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   function updateTrendChart() {
     if (!state.charts.trend) return;
     const logs = state.logs || [];
-    if (logs.length === 0) return;
+    if (logs.length === 0 && !state.globalStreamMetrics) return;
 
-    // Agregación cronológica real en 10-12 buckets
-    const numBuckets = 12;
-    const bucketSize = Math.max(1, Math.floor(logs.length / numBuckets));
-    const labels = [];
-    const totalData = [];
-    const errorData = [];
+    let labels = [];
+    let totalData = [];
+    let errorData = [];
 
-    for (let b = 0; b < numBuckets; b++) {
-      const startIdx = b * bucketSize;
-      const endIdx = b === numBuckets - 1 ? logs.length : (b + 1) * bucketSize;
-      const slice = logs.slice(startIdx, endIdx);
-      if (slice.length === 0) continue;
+    if (state.globalStreamMetrics && state.globalStreamMetrics.timeBuckets && Object.keys(state.globalStreamMetrics.timeBuckets).length > 0) {
+      // Usar buckets de toda la semana generados por el Web Worker (100% de los 9.7 GB)
+      const sortedKeys = Object.keys(state.globalStreamMetrics.timeBuckets).sort();
+      sortedKeys.forEach(k => {
+        labels.push(k.substring(5)); // e.g. "09-08 13"
+        totalData.push(state.globalStreamMetrics.timeBuckets[k].total);
+        errorData.push(state.globalStreamMetrics.timeBuckets[k].critical);
+      });
+    } else {
+      // Agregación cronológica en 12 buckets
+      const numBuckets = 12;
+      const bucketSize = Math.max(1, Math.floor(logs.length / numBuckets));
 
-      const firstLog = slice[0];
-      let timeLabel = `T-${b + 1}`;
-      if (firstLog && firstLog.timestamp) {
-        const parts = firstLog.timestamp.split(' ');
-        timeLabel = parts[1] ? parts[1].substring(0, 5) : parts[0];
+      for (let b = 0; b < numBuckets; b++) {
+        const startIdx = b * bucketSize;
+        const endIdx = b === numBuckets - 1 ? logs.length : (b + 1) * bucketSize;
+        const slice = logs.slice(startIdx, endIdx);
+        if (slice.length === 0) continue;
+
+        const firstLog = slice[0];
+        let timeLabel = `T-${b + 1}`;
+        if (firstLog && firstLog.timestamp) {
+          const parts = firstLog.timestamp.split(' ');
+          timeLabel = parts[1] ? parts[1].substring(0, 5) : parts[0];
+        }
+
+        const errorsInSlice = slice.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
+        labels.push(timeLabel);
+        totalData.push(slice.length);
+        errorData.push(errorsInSlice);
       }
-
-      const errorsInSlice = slice.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
-      labels.push(timeLabel);
-      totalData.push(slice.length);
-      errorData.push(errorsInSlice);
     }
 
     state.charts.trend.data.labels = labels;
@@ -2743,10 +2755,15 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     state.charts.trend.update();
 
     const rangeBadge = document.getElementById('trend-time-range-badge');
-    if (rangeBadge && logs.length > 0) {
-      const firstT = logs[0].timestamp || 'Inicio';
-      const lastT = logs[logs.length - 1].timestamp || 'Fin';
-      rangeBadge.textContent = `${firstT} ➔ ${lastT}`;
+    if (rangeBadge) {
+      if (state.globalStreamMetrics?.timeBuckets) {
+        const sortedKeys = Object.keys(state.globalStreamMetrics.timeBuckets).sort();
+        rangeBadge.textContent = `${sortedKeys[0] || '06-Sep'} ➔ ${sortedKeys[sortedKeys.length - 1] || '12-Sep'} (Semana Completa)`;
+      } else if (logs.length > 0) {
+        const firstT = logs[0].timestamp || 'Inicio';
+        const lastT = logs[logs.length - 1].timestamp || 'Fin';
+        rangeBadge.textContent = `${firstT} ➔ ${lastT}`;
+      }
     }
   }
 
@@ -2773,7 +2790,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         }
       });
 
-      const sortedCodes = Object.entries(codeMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      let sortedCodes = [];
+      if (state.globalStreamMetrics && state.globalStreamMetrics.topCodes && state.globalStreamMetrics.topCodes.length > 0) {
+        sortedCodes = state.globalStreamMetrics.topCodes.map(item => [item.code, item.count]);
+      } else {
+        sortedCodes = Object.entries(codeMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      }
+
       if (sortedCodes.length === 0) {
         topContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:15px;">✅ No se detectaron códigos de error críticos [520xxx] en la muestra.</div>';
       } else {
@@ -3088,6 +3111,66 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         }
       }
     });
+
+    if (state.globalStreamMetrics && state.globalStreamMetrics.topUsers && state.globalStreamMetrics.topUsers.length > 0) {
+      // Usar agregación global de los 9.7 GB calculada por el Web Worker
+      const globalUsers = state.globalStreamMetrics.topUsers;
+      const globalIps = state.globalStreamMetrics.topIps || [];
+
+      if (userBadge) userBadge.textContent = `${globalUsers.length}+ Usuarios Identificados (Semana Completa)`;
+      if (ipBadge) ipBadge.textContent = `${globalIps.length}+ IPs Identificadas (Semana Completa)`;
+
+      let userHtml = `<table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+        <thead>
+          <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color);">Usuario / Identificador</th>
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Transacciones Globales</th>
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Acción</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      globalUsers.forEach(u => {
+        userHtml += `
+          <tr style="border-bottom:1px solid var(--border-color);">
+            <td style="padding:8px; word-break:break-all;">
+              <span style="font-family:monospace; font-size:0.92rem; font-weight:700; color:#ffffff; background:#0284c7; padding:4px 10px; border-radius:6px; display:inline-block; border:1px solid #38bdf8; box-shadow:0 1px 3px rgba(0,0,0,0.3); letter-spacing:0.3px;">
+                👤 ${escapeHtml(u.user)}
+              </span>
+            </td>
+            <td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:var(--text-main);">${u.count.toLocaleString()}</td>
+            <td style="padding:8px; text-align:center;">
+              <button class="btn" style="padding:4px 10px; font-size:0.75rem; background:#0a3d6d; color:#fff; font-weight:bold; border-radius:4px;" onclick="window.filterLogByUserGlobal('${escapeHtml(u.user)}')">🔍 Filtrar</button>
+            </td>
+          </tr>`;
+      });
+      userHtml += '</tbody></table>';
+      userContainer.innerHTML = userHtml;
+
+      let ipHtml = `<table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+        <thead>
+          <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color);">Dirección IP Origen</th>
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Peticiones Globales</th>
+            <th style="padding:6px 8px; border-bottom:1px solid var(--border-color); text-align:center;">Acción</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      globalIps.forEach(item => {
+        ipHtml += `
+          <tr style="border-bottom:1px solid var(--border-color);">
+            <td style="padding:8px; font-family:monospace; font-weight:bold; color:var(--text-cyan);">🌐 ${escapeHtml(item.ip)}</td>
+            <td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:var(--text-main);">${item.count.toLocaleString()}</td>
+            <td style="padding:8px; text-align:center;">
+              <button class="btn" style="padding:4px 10px; font-size:0.75rem; background:#0284c7; color:#fff; font-weight:bold; border-radius:4px;" onclick="window.filterLogByIpGlobal('${escapeHtml(item.ip)}')">🔍 Filtrar</button>
+            </td>
+          </tr>`;
+      });
+      ipHtml += '</tbody></table>';
+      ipContainer.innerHTML = ipHtml;
+      return;
+    }
 
     if (userBadge) userBadge.textContent = `${userMap.size} Usuarios Únicos`;
     if (ipBadge) ipBadge.textContent = `${ipMap.size} IPs Únicas`;
@@ -3755,16 +3838,29 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           showAnalysisStatus(true, `⚙️ Procesando [${fIdx + 1}/${files.length}]: ${file.name} (${sizeMb} MB)...`, 'Iniciando motor de alta velocidad...');
 
           let rawEntries = [];
+          let realTotalLines = 0;
+          let realTotalErrors = 0;
+          let realTotalWarnings = 0;
+
           if (file.size > 25 * 1024 * 1024) {
             // Archivos mayores a 25 MB (incluyendo 10 GB+) -> Procesamiento Streaming en Web Worker (Hilo Secundario)
-            rawEntries = await window.logParserEngine.parseLargeFileWithWorker(file, clientName, (current, total, msg) => {
+            const streamResult = await window.logParserEngine.parseLargeFileWithWorker(file, clientName, (current, total, msg) => {
               showAnalysisStatus(true, `⚙️ [${file.name} — ${sizeMb} MB]`, msg);
             });
+
+            rawEntries = streamResult.parsedLogs || [];
+            realTotalLines = streamResult.totalLinesProcessed || rawEntries.length;
+            realTotalErrors = streamResult.totalErrors || 0;
+            realTotalWarnings = streamResult.totalWarnings || 0;
+            if (streamResult.globalMetrics) {
+              state.globalStreamMetrics = streamResult.globalMetrics;
+            }
           } else {
             const content = await file.text();
             rawEntries = await window.logParserEngine.parseLogsAsync(content, (current, total, msg) => {
               showAnalysisStatus(true, `⚙️ [Archivo ${fIdx + 1}/${files.length}] ${file.name}`, `${msg}`);
             }, 25000);
+            realTotalLines = rawEntries.length;
           }
 
           const nodeInfo = detectNodeFromLog({ sourceFile: file.name, message: file.name });
@@ -3777,12 +3873,15 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             node: nodeInfo.name
           }));
 
-          // Registrar archivo en el drawer
+          // Registrar archivo en el drawer con su total real de transacciones
           const existingFileIdx = state.loadedFiles.findIndex(f => f.name === file.name);
           const fileMeta = {
             name: file.name,
             size: file.size,
-            count: parsedEntries.length,
+            count: realTotalLines || parsedEntries.length,
+            sampleCount: parsedEntries.length,
+            realErrors: realTotalErrors,
+            realWarnings: realTotalWarnings,
             nodeKey: nodeInfo.key,
             nodeName: nodeInfo.name,
             client: clientName
@@ -3818,13 +3917,14 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         populateClientSelector();
         applyLogFilters();
 
+        const totalToReport = state.globalStreamMetrics ? state.globalStreamMetrics.totalLogs : state.logs.length;
         const targetLog = newLogs.find(l => l.level === 'CRITICAL' || l.level === 'ERROR') || newLogs[0];
         if (targetLog) {
           selectLog(targetLog);
         }
 
         switchTab('analyzer');
-        showAnalysisStatus(false, `✅ ${fileCount} Archivo(s) Procesados con Éxito`, `Total Acumulado en Sesión: ${state.logs.length.toLocaleString()} registros (${state.loadedFiles.length} archivos)`);
+        showAnalysisStatus(false, `✅ ${fileCount} Archivo(s) Procesados con Éxito`, `Panorama Completo: ${totalToReport.toLocaleString()} registros analizados (${state.loadedFiles.length} archivos)`);
       }
     });
 

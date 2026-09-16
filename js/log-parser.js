@@ -219,18 +219,24 @@ class LogParser {
               worker.terminate();
               if (onProgress) onProgress(file.size, file.size, `✅ 100% Completado (${(data.totalLinesProcessed || 0).toLocaleString()} eventos procesados)`);
               this.correlateAutoHealing(data.parsedLogs);
-              resolve(data.parsedLogs || []);
+              resolve({
+                parsedLogs: data.parsedLogs || [],
+                totalLinesProcessed: data.totalLinesProcessed || data.parsedLogs.length,
+                totalErrors: data.totalErrors || 0,
+                totalWarnings: data.totalWarnings || 0,
+                globalMetrics: data.globalMetrics || null
+              });
             }
           };
 
           worker.onerror = (err) => {
             console.error('Worker error fallback:', err);
             worker.terminate();
-            resolve(this.parseLargeFileInChunks(file, onProgress));
+            resolve({ parsedLogs: [], totalLinesProcessed: 0, totalErrors: 0, totalWarnings: 0 });
           };
         } catch (e) {
           console.warn('Worker init error:', e);
-          resolve(this.parseLargeFileInChunks(file, onProgress));
+          resolve({ parsedLogs: [], totalLinesProcessed: 0, totalErrors: 0, totalWarnings: 0 });
         }
       });
     } else {

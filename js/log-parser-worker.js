@@ -51,9 +51,15 @@ async function processGiantFileStream(file, clientId) {
   let totalErrors = 0;
   let totalWarnings = 0;
 
-  // BUFFER ACOTADO (Máximo 10.000 registros para evitar Out of Memory en navegador)
+  // Agregadores Globales para el Panorama Completo (100% de los 9.7 GB)
+  const userCounter = {};
+  const ipCounter = {};
+  const codeCounter = {};
+  const timeBuckets = {};
+
+  // Buffer de visualización interactiva en UI (25.000 eventos con 100% de los errores)
   const displayLogs = [];
-  const MAX_DISPLAY_LOGS = 10000;
+  const MAX_DISPLAY_LOGS = 25000;
 
   let lastProgressReportTime = 0;
 
@@ -80,19 +86,45 @@ async function processGiantFileStream(file, clientId) {
       if (parsed) {
         if (clientId) parsed.client = clientId;
 
-        if (parsed.level === 'ERROR' || parsed.level === 'CRITICAL') {
-          totalErrors++;
-        } else if (parsed.level === 'WARN') {
-          totalWarnings++;
+        const isError = parsed.level === 'ERROR' || parsed.level === 'CRITICAL';
+        const isWarn = parsed.level === 'WARN';
+
+        if (isError) totalErrors++;
+        if (isWarn) totalWarnings++;
+
+        // 1. Agregación de Códigos / Eventos
+        const codeKey = parsed.entrustCode || parsed.service || 'UNKNOWN';
+        codeCounter[codeKey] = (codeCounter[codeKey] || 0) + 1;
+
+        // 2. Agregación de Usuarios
+        if (parsed.user && parsed.user !== 'unknown' && parsed.user !== 'N/A') {
+          userCounter[parsed.user] = (userCounter[parsed.user] || 0) + 1;
         }
 
-        // Muestreo acotado en memoria
-        if (displayLogs.length < MAX_DISPLAY_LOGS) {
+        // 3. Agregación de IPs
+        if (parsed.clientIp && parsed.clientIp !== 'N/A') {
+          ipCounter[parsed.clientIp] = (ipCounter[parsed.clientIp] || 0) + 1;
+        }
+
+        // 4. Agregación de Tiempos (Día / Hora)
+        const dateBucket = (parsed.timestamp || '').substring(0, 13); // 'YYYY-MM-DD HH'
+        if (dateBucket && dateBucket.length >= 10) {
+          if (!timeBuckets[dateBucket]) timeBuckets[dateBucket] = { total: 0, critical: 0, warn: 0 };
+          timeBuckets[dateBucket].total++;
+          if (isError) timeBuckets[dateBucket].critical++;
+          if (isWarn) timeBuckets[dateBucket].warn++;
+        }
+
+        // 5. Muestreo Inteligente: 100% de los errores siempre entran
+        if (isError) {
           displayLogs.push(parsed);
-        } else if (parsed.level === 'ERROR' || parsed.level === 'CRITICAL') {
-          const replaceIdx = Math.floor(Math.random() * displayLogs.length);
-          if (displayLogs[replaceIdx].level !== 'ERROR' && displayLogs[replaceIdx].level !== 'CRITICAL') {
-            displayLogs[replaceIdx] = parsed;
+        } else if (displayLogs.length < MAX_DISPLAY_LOGS) {
+          displayLogs.push(parsed);
+        } else if (Math.random() < 0.05 && displayLogs.length >= MAX_DISPLAY_LOGS) {
+          // Reemplazo probabilístico para mantener distribución temporal
+          const repIdx = Math.floor(Math.random() * displayLogs.length);
+          if (displayLogs[repIdx].level !== 'ERROR' && displayLogs[repIdx].level !== 'CRITICAL') {
+            displayLogs[repIdx] = parsed;
           }
         }
       }
@@ -117,30 +149,55 @@ async function processGiantFileStream(file, clientId) {
       });
     }
 
-    // Ceder el hilo para recolector de basura
     await new Promise(r => setTimeout(r, 0));
   }
 
   if (leftover && leftover.trim()) {
     lineCount++;
     const parsed = parseSingleLineFast(leftover.trim(), lineCount);
-    if (parsed && displayLogs.length < MAX_DISPLAY_LOGS) {
+    if (parsed) {
       if (clientId) parsed.client = clientId;
       displayLogs.push(parsed);
     }
   }
 
+  // Ordenar y recortar Top 50 Usuarios y Top 50 IPs
+  const topUsers = Object.entries(userCounter)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 50)
+    .map(([user, count]) => ({ user, count }));
+
+  const topIps = Object.entries(ipCounter)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 50)
+    .map(([ip, count]) => ({ ip, count }));
+
+  const topCodes = Object.entries(codeCounter)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 20)
+    .map(([code, count]) => ({ code, count }));
+
   self.postMessage({
     type: 'complete',
-    parsedLogs: displayLogs,
+    parsedLogs: displayLogs.slice(-MAX_DISPLAY_LOGS),
     totalLinesProcessed: lineCount,
     totalErrors: totalErrors,
-    totalWarnings: totalWarnings
+    totalWarnings: totalWarnings,
+    globalMetrics: {
+      totalLogs: lineCount,
+      totalErrors: totalErrors,
+      totalWarnings: totalWarnings,
+      topUsers: topUsers,
+      topIps: topIps,
+      topCodes: topCodes,
+      timeBuckets: timeBuckets
+    }
   });
 }
 
 function parseSingleLineFast(line, lineNum) {
-  if (line.charCodeAt(0) === 91) { // '['
+  // 1. Formato IdentityGuard OnPremise Bracket: [2026-09-08 10:15:23] [http-nio-8443-exec-12] [ERROR] ...
+  if (line.charCodeAt(0) === 91) {
     const p1 = line.indexOf(']', 1);
     if (p1 > 8 && p1 < 36) {
       const timestamp = line.substring(1, p1);
@@ -198,10 +255,11 @@ function parseSingleLineFast(line, lineNum) {
     }
   }
 
-  // Parser Entrust IDaaS Cloud TSV / Audit Trail Export
-  if (line.includes('\t') && (line.includes('AuthenticationTokenPushSuccessEvent') || line.includes('Bulkidentityguard') || line.includes('UsersAddEvent') || line.includes('AuthorizationgroupsAddEvent'))) {
-    const parts = line.split('\t');
-    if (parts.length >= 9 && parts[0].toLowerCase() !== 'id') {
+  // 2. Parser Entrust IDaaS Cloud TSV / CSV Audit Trail Export (Logs_AuditEvents-*.csv)
+  if (line.includes('AuthenticationTokenPush') || line.includes('Bulkidentityguard') || line.includes('UsersAdd') || line.includes('Authorizationgroups') || line.includes('AuditDetails') || (line.includes('Event') && (line.includes('SUCCESS') || line.includes('FAILURE') || line.includes('FAIL')))) {
+    const isTab = line.includes('\t');
+    const parts = isTab ? line.split('\t') : splitCsvLine(line);
+    if (parts.length >= 8 && parts[0].toLowerCase() !== 'id') {
       const rawTime = parts[1] || '';
       const subjectName = parts[4] || '';
       const eventCategory = parts[6] || 'IDaaS.Audit';
@@ -265,6 +323,25 @@ function parseSingleLineFast(line, lineNum) {
     user: extractUser(line),
     clientIp: extractClientIp(line)
   };
+}
+
+function splitCsvLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim());
+  return result;
 }
 
 function extractUser(line) {
