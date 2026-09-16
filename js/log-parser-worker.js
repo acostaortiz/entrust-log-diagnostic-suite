@@ -3,8 +3,16 @@
    Procesamiento asíncrono en segundo plano (350.000+ líneas/segundo)
    ========================================================================== */
 
-self.onmessage = function (e) {
-  const { rawContent, clientId } = e.data;
+self.onmessage = async function (e) {
+  const { file, rawContent, clientId, mode } = e.data;
+
+  // MODO 1: Archivo Gigante Streaming (File / Blob hasta 10 GB+)
+  if (file || mode === 'fileBlob') {
+    await processGiantFileStream(file, clientId);
+    return;
+  }
+
+  // MODO 2: Contenido en Memoria (Texto directo)
   if (!rawContent) {
     self.postMessage({ type: 'complete', parsedLogs: [] });
     return;
@@ -33,6 +41,96 @@ self.onmessage = function (e) {
 
   self.postMessage({ type: 'complete', parsedLogs });
 };
+
+async function processGiantFileStream(file, clientId) {
+  const fileSize = file.size;
+  const chunkSize = 16 * 1024 * 1024; // 16 MB chunks
+  let offset = 0;
+  let leftover = '';
+  let lineCount = 0;
+  let totalErrors = 0;
+  let totalWarnings = 0;
+
+  const displayLogs = [];
+  const MAX_DISPLAY_LOGS = 60000;
+
+  let lastProgressReportTime = 0;
+
+  while (offset < fileSize) {
+    const slice = file.slice(offset, Math.min(offset + chunkSize, fileSize));
+    const chunkText = await slice.text();
+    offset += chunkSize;
+
+    const fullText = leftover + chunkText;
+    const lines = fullText.split(/\r?\n/);
+
+    if (offset < fileSize) {
+      leftover = lines.pop() || '';
+    } else {
+      leftover = '';
+    }
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+      lineCount++;
+
+      const parsed = parseSingleLineFast(line, lineCount);
+      if (parsed) {
+        if (clientId) parsed.client = clientId;
+
+        if (parsed.level === 'ERROR' || parsed.level === 'CRITICAL') {
+          totalErrors++;
+          displayLogs.push(parsed);
+        } else if (parsed.level === 'WARN') {
+          totalWarnings++;
+          displayLogs.push(parsed);
+        } else if (displayLogs.length < MAX_DISPLAY_LOGS) {
+          displayLogs.push(parsed);
+        }
+      }
+    }
+
+    const now = Date.now();
+    if (now - lastProgressReportTime > 250 || offset >= fileSize) {
+      lastProgressReportTime = now;
+      const pct = Math.min(99, Math.round((Math.min(offset, fileSize) / fileSize) * 100));
+      const mbProcessed = (Math.min(offset, fileSize) / (1024 * 1024)).toFixed(0);
+      const totalMb = (fileSize / (1024 * 1024)).toFixed(0);
+
+      self.postMessage({
+        type: 'progress',
+        current: Math.min(offset, fileSize),
+        total: fileSize,
+        pct: pct,
+        mbProcessed: mbProcessed,
+        totalMb: totalMb,
+        lineCount: lineCount,
+        totalErrors: totalErrors
+      });
+    }
+
+    // Ceder el hilo para comunicación fluida
+    await new Promise(r => setTimeout(r, 0));
+  }
+
+  if (leftover && leftover.trim()) {
+    lineCount++;
+    const parsed = parseSingleLineFast(leftover.trim(), lineCount);
+    if (parsed) {
+      if (clientId) parsed.client = clientId;
+      displayLogs.push(parsed);
+    }
+  }
+
+  self.postMessage({
+    type: 'complete',
+    parsedLogs: displayLogs.slice(-MAX_DISPLAY_LOGS),
+    totalLinesProcessed: lineCount,
+    totalErrors: totalErrors,
+    totalWarnings: totalWarnings
+  });
+}
 
 function parseSingleLineFast(line, lineNum) {
   if (line.charCodeAt(0) === 91) { // '['

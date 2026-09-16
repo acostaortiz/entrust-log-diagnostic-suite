@@ -3756,8 +3756,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
           let rawEntries = [];
           if (file.size > 25 * 1024 * 1024) {
-            // Archivos mayores a 25 MB (incluyendo 10 GB+) -> Procesamiento Streaming por Bloques
-            rawEntries = await window.logParserEngine.parseLargeFileInChunks(file, (current, total, msg) => {
+            // Archivos mayores a 25 MB (incluyendo 10 GB+) -> Procesamiento Streaming en Web Worker (Hilo Secundario)
+            rawEntries = await window.logParserEngine.parseLargeFileWithWorker(file, clientName, (current, total, msg) => {
               showAnalysisStatus(true, `⚙️ [${file.name} — ${sizeMb} MB]`, msg);
             });
           } else {

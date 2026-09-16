@@ -197,6 +197,47 @@ class LogParser {
     }
   }
 
+  // DELEGACIÓN MULTIHILO WEB WORKER PARA ARCHIVOS DE 10 GB+ (HILO PRINCIPAL LIBRE AL 100%)
+  async parseLargeFileWithWorker(file, clientId, onProgress) {
+    if (window.Worker) {
+      return new Promise((resolve) => {
+        try {
+          const worker = new Worker('js/log-parser-worker.js?v=' + Date.now());
+          worker.postMessage({ file: file, clientId: clientId, mode: 'fileBlob' });
+
+          worker.onmessage = (e) => {
+            const data = e.data;
+            if (data.type === 'progress') {
+              if (onProgress) {
+                onProgress(
+                  data.current,
+                  data.total,
+                  `⚡ Streaming Multihilo: ${data.mbProcessed} MB / ${data.totalMb} MB (${data.pct}%) — ${data.lineCount.toLocaleString()} eventos | ${data.totalErrors} errores`
+                );
+              }
+            } else if (data.type === 'complete') {
+              worker.terminate();
+              if (onProgress) onProgress(file.size, file.size, `✅ 100% Completado (${(data.totalLinesProcessed || 0).toLocaleString()} eventos procesados)`);
+              this.correlateAutoHealing(data.parsedLogs);
+              resolve(data.parsedLogs || []);
+            }
+          };
+
+          worker.onerror = (err) => {
+            console.error('Worker error fallback:', err);
+            worker.terminate();
+            resolve(this.parseLargeFileInChunks(file, onProgress));
+          };
+        } catch (e) {
+          console.warn('Worker init error:', e);
+          resolve(this.parseLargeFileInChunks(file, onProgress));
+        }
+      });
+    } else {
+      return this.parseLargeFileInChunks(file, onProgress);
+    }
+  }
+
   // MOTOR STREAMING POR BLOQUES PARA ARCHIVOS GIGANTES (10 GB+ / Sin desbordar memoria)
   async parseLargeFileInChunks(file, onProgress, chunkSize = 32 * 1024 * 1024) {
     const fileSize = file.size;
