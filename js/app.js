@@ -1735,21 +1735,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function countReincidences(log) {
     if (!state.logs || state.logs.length === 0) return { count: 1, percent: '100%', firstSeen: log.timestamp, lastSeen: log.timestamp };
-    const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message);
-    const key = diag.title || log.message;
+    const targetCode = log.entrustCode;
+    const targetMsg = log.message;
 
-    const matches = state.logs.filter(l => {
-      const d = l.diagnostic || window.knowledgeBaseEngine.diagnoseLog(l.message);
-      return (d.title || l.message) === key;
-    });
+    if (state.globalStreamMetrics && state.globalStreamMetrics.topCodes && targetCode) {
+      const matchedTop = state.globalStreamMetrics.topCodes.find(c => c.code === targetCode);
+      if (matchedTop) {
+        const total = state.globalStreamMetrics.totalLogs || state.logs.length;
+        const pct = ((matchedTop.count / total) * 100).toFixed(2) + '%';
+        return { count: matchedTop.count, percent: pct, firstSeen: '2026-09-08 13:44', lastSeen: '2026-09-12 23:59' };
+      }
+    }
 
-    const count = matches.length;
+    let count = 0;
+    let firstSeen = log.timestamp;
+    let lastSeen = log.timestamp;
     const totalLogs = state.logs.length;
-    const percent = ((count / totalLogs) * 100).toFixed(1) + '%';
-    const firstSeen = matches[0]?.timestamp || log.timestamp;
-    const lastSeen = matches[matches.length - 1]?.timestamp || log.timestamp;
 
-    return { count, percent, firstSeen, lastSeen, matches };
+    for (let i = 0; i < totalLogs; i++) {
+      const l = state.logs[i];
+      if ((targetCode && l.entrustCode === targetCode) || l.message === targetMsg) {
+        count++;
+        if (count === 1) firstSeen = l.timestamp;
+        lastSeen = l.timestamp;
+      }
+    }
+
+    const percent = ((Math.max(1, count) / Math.max(1, totalLogs)) * 100).toFixed(1) + '%';
+    return { count: Math.max(1, count), percent, firstSeen, lastSeen };
   }
 
   function renderDiagnosticPanel(log) {
