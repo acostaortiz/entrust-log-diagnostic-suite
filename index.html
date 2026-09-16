@@ -313,13 +313,33 @@
         </div>
 
         <!-- Terminal de Logs -->
-        <div class="log-terminal">
+        <div class="log-terminal" style="border-radius:8px 8px 0 0; margin-bottom:0;">
           <div class="terminal-header">
             <span id="terminal-title">REGISTROS DE ENTRUST SUITE (ONPREMISE & IDAAS CLOUD) - IT SERVICIOS</span>
             <span>Haz clic en cualquier línea para ver su Diagnóstico & Manual HTML Vinculado</span>
           </div>
           <div class="log-scroll-area" id="log-scroll-area">
             <!-- Filas inyectadas por JS -->
+          </div>
+        </div>
+
+        <!-- Barra de Paginación SQL Completa (16.5M Registros) -->
+        <div id="log-pagination-bar" style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-secondary); border:1px solid var(--border-color); border-top:none; padding:10px 16px; border-radius:0 0 8px 8px; flex-wrap:wrap; gap:10px; font-size:0.82rem; margin-bottom:20px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="color:var(--text-muted);">Mostrando:</span>
+            <span id="pagination-showing-badge" style="font-weight:bold; color:var(--text-main); font-family:monospace;">1 - 50 de 16,504,695</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <button class="btn" id="btn-page-first" style="padding:4px 10px; font-size:0.75rem;">⏮ Primera</button>
+            <button class="btn" id="btn-page-prev" style="padding:4px 10px; font-size:0.75rem;">◀ Anterior</button>
+            <span style="font-weight:bold; color:var(--text-cyan); font-family:monospace; padding:0 8px;">Página <span id="pagination-current-page">1</span> / <span id="pagination-total-pages">330,094</span></span>
+            <button class="btn" id="btn-page-next" style="padding:4px 10px; font-size:0.75rem;">Siguiente ▶</button>
+            <button class="btn" id="btn-page-last" style="padding:4px 10px; font-size:0.75rem;">Última ⏭</button>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <a href="/api/export-errors" class="btn" id="btn-export-all-errors-csv" style="background:#dc2626; color:#fff; font-weight:bold; font-size:0.75rem; padding:4px 12px; border-radius:4px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;" title="Descargar archivo CSV completo con los 3,214,547 registros de error">
+              📥 Descargar 3.2M Errores (.CSV)
+            </a>
           </div>
         </div>
       </div>
@@ -939,14 +959,14 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
 
   <!-- Scripts JavaScript -->
   <script src="js/pptxgen.bundle.js"></script>
-  <script src="js/kb-database.js?v=97.0"></script>
-  <script src="js/manuals-engine.js?v=97.0"></script>
-  <script src="js/bancomercantil_data.js?v=97.0"></script>
-  <script src="js/log-parser.js?v=97.0"></script>
-  <script src="js/storage-engine.js?v=97.0"></script>
-  <script src="js/cert-auditor.js?v=97.0"></script>
-  <script src="js/syslog-collector.js?v=97.0"></script>
-  <script src="js/app.js?v=97.0"></script>
+  <script src="js/kb-database.js?v=98.0"></script>
+  <script src="js/manuals-engine.js?v=98.0"></script>
+  <script src="js/bancomercantil_data.js?v=98.0"></script>
+  <script src="js/log-parser.js?v=98.0"></script>
+  <script src="js/storage-engine.js?v=98.0"></script>
+  <script src="js/cert-auditor.js?v=98.0"></script>
+  <script src="js/syslog-collector.js?v=98.0"></script>
+  <script src="js/app.js?v=98.0"></script>
 
 </body>
 </html>

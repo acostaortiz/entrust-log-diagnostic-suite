@@ -2401,11 +2401,61 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const firstLog = state.filteredLogs[0] || state.logs[0];
       if (firstLog) selectLog(firstLog);
 
-      showAnalysisStatus(false, '✅ ¡Auditoría Banco Mercantil Cargada!', `${(bundle.totalLinesProcessed || 16504695).toLocaleString()} eventos (10.17 GB) procesados con precisión forense del 100%`);
+      state.isServerApi = true;
+      showAnalysisStatus(false, '✅ ¡Auditoría Banco Mercantil Cargada!', `${(bundle.totalLinesProcessed || 16504695).toLocaleString()} eventos (10.17 GB) indexados y listos para consulta`);
+
+      // Intentar sincronizar paginación SQL en vivo si server.py está activo
+      fetchSqlLogs(1).catch(() => {});
     } catch (err) {
       console.error('Error al cargar bundle de 10GB:', err);
       showAnalysisStatus(false, '❌ Error al cargar auditoría', err.message);
       alert('Error al inicializar la vista de auditoría: ' + err.message);
+    }
+  }
+
+  async function fetchSqlLogs(targetPage = 1) {
+    const search = dom.searchLogInput?.value || '';
+    const level = dom.filterLevelSelect?.value || 'ALL';
+    const type = dom.filterTypeSelect?.value || 'ALL';
+    let outcome = 'ALL';
+    if (state.activeFilterMode === '520_ONLY' || level === 'CRITICAL' || level === 'ERROR') {
+      outcome = 'FAIL';
+    } else if (level === 'INFO') {
+      outcome = 'SUCCESS';
+    }
+
+    try {
+      const url = `/api/logs?page=${targetPage}&limit=50&search=${encodeURIComponent(search)}&outcome=${outcome}&type=${encodeURIComponent(type)}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('API server.py no disponible, usando modo estático');
+      const data = await res.json();
+
+      state.logs = data.logs || [];
+      state.filteredLogs = [...state.logs];
+      state.sqlPage = data.page;
+      state.sqlTotalPages = data.totalPages;
+      state.sqlTotalMatching = data.totalMatching;
+      state.isServerApi = true;
+
+      const pageBadge = document.getElementById('pagination-current-page');
+      const totalPagesBadge = document.getElementById('pagination-total-pages');
+      const showingBadge = document.getElementById('pagination-showing-badge');
+
+      if (pageBadge) pageBadge.textContent = data.page.toLocaleString();
+      if (totalPagesBadge) totalPagesBadge.textContent = data.totalPages.toLocaleString();
+      if (showingBadge) {
+        const start = ((data.page - 1) * 50) + 1;
+        const end = Math.min(data.totalMatching, data.page * 50);
+        showingBadge.textContent = `${start.toLocaleString()} - ${end.toLocaleString()} de ${data.totalMatching.toLocaleString()}`;
+      }
+
+      renderLogTable();
+      if (state.filteredLogs.length > 0) {
+        selectLog(state.filteredLogs[0]);
+      }
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -3855,20 +3905,40 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     dom.btnResetSession?.addEventListener('click', () => resetSession());
     document.getElementById('btn-reset-session')?.addEventListener('click', () => resetSession());
 
+    // Paginación SQL en Vivo (16.5M Registros)
+    document.getElementById('btn-page-first')?.addEventListener('click', () => fetchSqlLogs(1));
+    document.getElementById('btn-page-prev')?.addEventListener('click', () => fetchSqlLogs(Math.max(1, (state.sqlPage || 1) - 1)));
+    document.getElementById('btn-page-next')?.addEventListener('click', () => fetchSqlLogs(Math.min(state.sqlTotalPages || 1, (state.sqlPage || 1) + 1)));
+    document.getElementById('btn-page-last')?.addEventListener('click', () => fetchSqlLogs(state.sqlTotalPages || 1));
+
     const btnClearSearch = document.getElementById('btn-clear-search');
     dom.searchLogInput?.addEventListener('input', (e) => {
       if (btnClearSearch) btnClearSearch.style.display = e.target.value.length > 0 ? 'block' : 'none';
-      applyLogFilters();
+      if (state.activeClientId === 'mercantil' && state.isServerApi) {
+        fetchSqlLogs(1);
+      } else {
+        applyLogFilters();
+      }
     });
     btnClearSearch?.addEventListener('click', () => {
       if (dom.searchLogInput) dom.searchLogInput.value = '';
       btnClearSearch.style.display = 'none';
-      applyLogFilters();
+      if (state.activeClientId === 'mercantil' && state.isServerApi) {
+        fetchSqlLogs(1);
+      } else {
+        applyLogFilters();
+      }
     });
 
-    dom.filterClientSelect?.addEventListener('change', () => applyLogFilters());
-    dom.filterLevelSelect?.addEventListener('change', () => applyLogFilters());
-    dom.filterTypeSelect?.addEventListener('change', () => applyLogFilters());
+    dom.filterClientSelect?.addEventListener('change', () => {
+      if (state.activeClientId === 'mercantil' && state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
+    });
+    dom.filterLevelSelect?.addEventListener('change', () => {
+      if (state.activeClientId === 'mercantil' && state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
+    });
+    dom.filterTypeSelect?.addEventListener('change', () => {
+      if (state.activeClientId === 'mercantil' && state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
+    });
 
     document.getElementById('btn-copy-exec-report-md')?.addEventListener('click', () => copyExecutiveReportMarkdown());
     document.getElementById('btn-download-exec-report-md')?.addEventListener('click', () => downloadExecutiveReportMarkdown());
