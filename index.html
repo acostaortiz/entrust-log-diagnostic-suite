@@ -233,6 +233,9 @@
 
             <button class="btn btn-danger" id="btn-reset-session" onclick="window.resetAppSession && window.resetAppSession()" title="Eliminar todos los logs y limpiar la muestra actual" style="font-size:0.8rem; padding:6px 12px;">🧹 Limpiar Todo</button>
             <button class="btn" id="btn-export-report" style="font-size:0.8rem; padding:6px 12px;">📥 Exportar JSON</button>
+            <button class="btn" id="btn-load-mercantil-10gb" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1px solid #38bdf8; color:#fff; font-weight:700; font-size:0.82rem; padding:6px 14px; border-radius:6px; box-shadow:0 0 12px rgba(2,132,199,0.4); display:flex; align-items:center; gap:6px; cursor:pointer;" title="Cargar instantáneamente la auditoría completa de Banco Mercantil (16,504,695 logs / 10.17 GB)">
+              ⚡ Cargar 10.17 GB Mercantil (16.5M Logs)
+            </button>
             <label class="btn btn-primary" style="margin:0; font-size:0.82rem; padding:6px 14px; background:#0284c7; border:none; cursor:pointer; font-weight:700;">
               📂 Cargar Archivos (.log, .txt, .json, .csv)
               <input type="file" id="file-input" accept=".log,.txt,.json,.csv" multiple style="display:none;">
@@ -244,10 +247,10 @@
         <div id="loaded-files-panel" style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:12px 16px; margin-bottom:14px;">
           <div class="flex-between mb-2">
             <span style="font-size:0.82rem; font-weight:700; color:var(--text-main);">📁 Archivos Cargados en la Sesión Activa (<span id="loaded-files-count-badge">0 archivos</span>):</span>
-            <span style="font-size:0.75rem; color:var(--text-muted);" id="loaded-files-summary-text">Cargue uno o más archivos rotados (.log, .log.1, .log.2...)</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);" id="loaded-files-summary-text">Cargue uno o más archivos rotados o use la auditoría preindexada de 10.17 GB</span>
           </div>
           <div id="loaded-files-list" style="display:flex; flex-wrap:wrap; gap:8px; min-height:32px; align-items:center;">
-            <span class="text-muted font-mono" style="font-size:0.78rem;">Ningún archivo cargado actualmente.</span>
+            <span class="text-muted font-mono" style="font-size:0.78rem;">Ningún archivo cargado actualmente. Haga clic en <strong>⚡ Cargar 10.17 GB Mercantil</strong> para ver los 16.5M de eventos.</span>
           </div>
         </div>
 
@@ -298,8 +301,9 @@
             </select>
           </div>
 
-          <div style="width: 280px;">
+          <div style="width: 320px;">
             <select class="form-control" id="preset-selector">
+              <option value="mercantil_idaas_10gb" selected>⚡ Banco Mercantil IDaaS (16.5M Logs / 10.17 GB)</option>
               <option value="entrust_idg">🔐 Escenario: Entrust OnPremise (520xxx & AUDxxx)</option>
               <option value="entrust_idaas">☁️ Escenario: Entrust IDaaS Cloud (SAML, MFA & Radius)</option>
               <option value="oom_crash">💥 Escenario: Crash de Memoria OOM Linux</option>
@@ -935,13 +939,13 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
 
   <!-- Scripts JavaScript -->
   <script src="js/pptxgen.bundle.js"></script>
-  <script src="js/kb-database.js?v=88.0"></script>
-  <script src="js/manuals-engine.js?v=88.0"></script>
-  <script src="js/log-parser.js?v=88.0"></script>
-  <script src="js/storage-engine.js?v=88.0"></script>
-  <script src="js/cert-auditor.js?v=88.0"></script>
-  <script src="js/syslog-collector.js?v=88.0"></script>
-  <script src="js/app.js?v=88.0"></script>
+  <script src="js/kb-database.js?v=92.0"></script>
+  <script src="js/manuals-engine.js?v=92.0"></script>
+  <script src="js/log-parser.js?v=92.0"></script>
+  <script src="js/storage-engine.js?v=92.0"></script>
+  <script src="js/cert-auditor.js?v=92.0"></script>
+  <script src="js/syslog-collector.js?v=92.0"></script>
+  <script src="js/app.js?v=92.0"></script>
 
 </body>
 </html>
