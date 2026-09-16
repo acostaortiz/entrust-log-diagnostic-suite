@@ -2388,19 +2388,24 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }];
 
       // Renderizar UI completa
-      renderLoadedFilesList();
+      renderLoadedFilesDrawer();
       populateClientSelector();
+      applyLogFilters();
       updateMetricsAndCharts();
       updateTrendChart();
       renderUserAndIpAnalytics();
       updateOverviewWidgets();
+      renderTraceWaterfall();
       renderLogTable();
+
+      const firstLog = state.filteredLogs[0] || state.logs[0];
+      if (firstLog) selectLog(firstLog);
 
       showAnalysisStatus(false, '✅ ¡Auditoría Banco Mercantil Cargada!', `${(bundle.totalLinesProcessed || 16504695).toLocaleString()} eventos (10.17 GB) procesados con precisión forense del 100%`);
     } catch (err) {
       console.error('Error al cargar bundle de 10GB:', err);
-      showAnalysisStatus(false, '❌ Error al cargar archivo pre-indexado', err.message);
-      alert('No se pudo cargar el archivo pre-indexado bancomercantil_audit_10gb.json. Verifique la conexión al servidor.');
+      showAnalysisStatus(false, '❌ Error al cargar auditoría', err.message);
+      alert('Error al inicializar la vista de auditoría: ' + err.message);
     }
   }
 
