@@ -529,6 +529,67 @@ class LogParser {
     };
   }
 
+  tryParseEntrustIdaasAuditTsv(line, lineNum) {
+    if (!line || (!line.includes('\t') && !line.includes('AuthenticationTokenPushSuccessEvent') && !line.includes('Bulkidentityguard'))) return null;
+
+    const parts = line.split('\t');
+    if (parts.length < 9) return null;
+
+    // Ignorar línea de encabezados
+    if (parts[0].toLowerCase() === 'id' && parts[1].toLowerCase() === 'eventtime') return null;
+
+    const id = parts[0] || `idaas-${lineNum}`;
+    const rawTime = parts[1] || '';
+    const subjectName = parts[4] || '';
+    const eventCategory = parts[6] || 'IDaaS.Audit';
+    const eventType = parts[7] || '';
+    const eventOutcome = (parts[8] || 'SUCCESS').toUpperCase();
+    const eventMessage = parts[9] || '';
+    const resourceName = parts[11] || 'Administration Portal';
+    const sourceIp = parts[12] || '';
+    const token = parts[14] || '';
+    const adminRole = parts[17] || '';
+    const entityType = parts[20] || '';
+    const entityAction = parts[21] || '';
+    const entityName = parts[23] || '';
+    const auditDetails = parts[24] || '';
+
+    let level = 'INFO';
+    if (eventOutcome.includes('FAIL') || eventOutcome.includes('ERROR') || eventOutcome.includes('DENIED')) {
+      level = 'ERROR';
+    } else if (eventOutcome.includes('WARN')) {
+      level = 'WARN';
+    }
+
+    // Formatear timestamp ISO (2026-09-08T13:44:04Z -> 2026-09-08 13:44:04)
+    let formattedTime = rawTime.replace('T', ' ').replace('Z', '').substring(0, 19);
+    if (!formattedTime) {
+      formattedTime = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    }
+
+    let summaryMsg = `[${eventType}] ${eventMessage || eventType}`;
+    if (entityName) summaryMsg += ` (Entidad: ${entityName} ${entityAction})`;
+    if (token) summaryMsg += ` [Token: ${token}]`;
+    if (adminRole) summaryMsg += ` [Rol: ${adminRole}]`;
+
+    return {
+      id: `log-${lineNum}-${Date.now()}`,
+      lineNum: lineNum + 1,
+      type: 'IDaaS Cloud Audit',
+      timestamp: formattedTime,
+      level: level,
+      hostname: 'idaas-cloud-latam',
+      service: resourceName || eventCategory,
+      message: summaryMsg,
+      raw: line,
+      user: subjectName || 'unknown',
+      clientIp: sourceIp || null,
+      entrustCode: eventType,
+      category: eventCategory,
+      auditDetails: auditDetails
+    };
+  }
+
   tryParseJson(line, lineNum) {
     if (!line.startsWith('{') || !line.endsWith('}')) return null;
     try {
@@ -731,6 +792,7 @@ class LogParser {
     }
 
     let parsed = this.tryParseEntrustIdentityGuard(line, lineNum || 0);
+    if (!parsed) parsed = this.tryParseEntrustIdaasAuditTsv(line, lineNum || 0);
     if (!parsed) parsed = this.tryParseJson(line, lineNum || 0);
     if (!parsed) parsed = this.tryParseAuditd(line, lineNum || 0);
     if (!parsed) parsed = this.tryParseSyslog(line, lineNum || 0);

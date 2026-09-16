@@ -93,6 +93,51 @@ function parseSingleLineFast(line, lineNum) {
     }
   }
 
+  // Parser Entrust IDaaS Cloud TSV / Audit Trail Export
+  if (line.includes('\t') && (line.includes('AuthenticationTokenPushSuccessEvent') || line.includes('Bulkidentityguard') || line.includes('UsersAddEvent') || line.includes('AuthorizationgroupsAddEvent'))) {
+    const parts = line.split('\t');
+    if (parts.length >= 9 && parts[0].toLowerCase() !== 'id') {
+      const rawTime = parts[1] || '';
+      const subjectName = parts[4] || '';
+      const eventCategory = parts[6] || 'IDaaS.Audit';
+      const eventType = parts[7] || '';
+      const eventOutcome = (parts[8] || 'SUCCESS').toUpperCase();
+      const eventMessage = parts[9] || '';
+      const resourceName = parts[11] || 'Administration Portal';
+      const sourceIp = parts[12] || '';
+      const entityAction = parts[21] || '';
+      const entityName = parts[23] || '';
+
+      let level = 'INFO';
+      if (eventOutcome.includes('FAIL') || eventOutcome.includes('ERROR') || eventOutcome.includes('DENIED')) {
+        level = 'ERROR';
+      } else if (eventOutcome.includes('WARN')) {
+        level = 'WARN';
+      }
+
+      let formattedTime = rawTime.replace('T', ' ').replace('Z', '').substring(0, 19);
+      if (!formattedTime) formattedTime = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+      let summaryMsg = `[${eventType}] ${eventMessage || eventType}`;
+      if (entityName) summaryMsg += ` (Entidad: ${entityName} ${entityAction})`;
+
+      return {
+        id: `worker-log-${lineNum}-${Date.now()}`,
+        lineNum: lineNum + 1,
+        type: 'IDaaS Cloud Audit',
+        timestamp: formattedTime,
+        level: level,
+        hostname: 'idaas-cloud-latam',
+        service: resourceName || eventCategory,
+        message: summaryMsg,
+        raw: line,
+        user: subjectName || 'unknown',
+        clientIp: sourceIp || null,
+        entrustCode: eventType
+      };
+    }
+  }
+
   // Fallback
   let level = 'INFO';
   if (/emergency|alert|critical|fatal|panic/i.test(line)) level = 'CRITICAL';
