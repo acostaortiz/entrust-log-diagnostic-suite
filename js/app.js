@@ -91,16 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
   try { initServerIngestModule(); } catch (e) { console.error('Error al inicializar Ingesta Servidor:', e); }
   try { initEventListeners(); } catch (e) { console.error('Error al inicializar EventListeners:', e); }
 
-  // Inicialización de datos de sesión: Sincronizar con base de datos del servidor o cargar muestra inicial
+  // Inicialización de datos de sesión: Iniciar en estado limpio listo para análisis
   (async () => {
-    try {
-      const synced = await syncClientSessionWithServer('mercantil');
-      if (!synced && (!state.logs || state.logs.length === 0)) {
-        loadMercantil10GbBundle();
-      }
-    } catch (e) {
-      try { loadMercantil10GbBundle(); } catch (err) {}
-    }
+    // Listo para carga de archivos de logs o ingesta de servidor
   })();
 
   /* ==========================================================================
@@ -1786,11 +1779,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <p style="margin-bottom:16px; font-size:0.85rem;">Arrastra aquí cualquier archivo de logs (.log, .txt, .csv, .json) o selecciona una opción:</p>
             <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
               <label class="btn btn-primary" style="font-size:0.82rem; padding:8px 18px; background:#0284c7; color:#fff; cursor:pointer; font-weight:bold; border-radius:6px; box-shadow:0 2px 6px rgba(2,132,199,0.35);">
-                📂 Cargar Archivos Locales
+                📂 Cargar Archivos Locales (.log, .csv, .txt)
                 <input type="file" accept=".log,.txt,.json,.csv" onchange="document.getElementById('file-input').files = this.files; document.getElementById('file-input').dispatchEvent(new Event('change'))" multiple style="display:none;">
               </label>
-              <button type="button" class="btn" onclick="window.loadMercantil10GbBundle && window.loadMercantil10GbBundle()" style="font-size:0.82rem; padding:8px 18px; background:#0a3d6d; color:#38bdf8; border:1px solid #0284c7; border-radius:6px; font-weight:bold; cursor:pointer;">
-                🏦 Cargar Auditoría Banco Mercantil (16.5M)
+              <button type="button" class="btn" onclick="document.getElementById('btn-open-server-ingest')?.click()" style="font-size:0.82rem; padding:8px 18px; background:#059669; color:#fff; border:1px solid #10b981; border-radius:6px; font-weight:bold; cursor:pointer;">
+                ⚡ Ingesta Servidor (> 3 GB)
               </button>
             </div>
           </div>`;
@@ -3246,6 +3239,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     state.nodeBLogs = [];
     state.nodeCLogs = [];
     state.nodeDLogs = [];
+    window.__BANCO_MERCANTIL_10GB_BUNDLE__ = null;
 
     if (dom.fileInput) dom.fileInput.value = '';
 
@@ -3255,6 +3249,39 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (dom.filterClientSelect) dom.filterClientSelect.value = 'ALL';
     if (dom.searchLogInput) dom.searchLogInput.value = '';
 
+    // Ocultar barra de estado y resetear panel de archivos cargados
+    if (dom.analysisStatusBar) dom.analysisStatusBar.style.display = 'none';
+    const listContainer = document.getElementById('loaded-files-list');
+    if (listContainer) listContainer.innerHTML = '<span class="text-muted font-mono" style="font-size:0.78rem;">Ningún archivo cargado actualmente en la sesión.</span>';
+    const badgeCount = document.getElementById('loaded-files-count-badge');
+    if (badgeCount) badgeCount.textContent = '0 archivos';
+    const summaryText = document.getElementById('loaded-files-summary-text');
+    if (summaryText) summaryText.textContent = 'Cargue o arrastre cualquier archivo de logs de cualquier cliente (1 MB a 15 GB+)';
+
+    // Limpiar métricas superiores
+    if (dom.totalLogsCount) dom.totalLogsCount.textContent = '0';
+    if (dom.criticalCount) dom.criticalCount.textContent = '0';
+    if (dom.warningCount) dom.warningCount.textContent = '0';
+    if (dom.healthIndex) dom.healthIndex.textContent = '100%';
+    const totalBadge = document.getElementById('total-logs-badge');
+    if (totalBadge) totalBadge.textContent = '0 Archivos';
+    const critRateBadge = document.getElementById('critical-rate-badge');
+    if (critRateBadge) critRateBadge.textContent = '0% Falla';
+    const critBar = document.getElementById('critical-progress-bar');
+    if (critBar) critBar.style.width = '0%';
+    const auditRateBadge = document.getElementById('audit-rate-badge');
+    if (auditRateBadge) auditRateBadge.textContent = '0% Auditoría';
+    const warnBar = document.getElementById('warn-progress-bar');
+    if (warnBar) warnBar.style.width = '0%';
+    const healthBar = document.getElementById('health-progress-bar');
+    if (healthBar) { healthBar.style.width = '100%'; healthBar.style.background = '#10b981'; }
+    const healthBadge = document.getElementById('health-status-badge');
+    if (healthBadge) {
+      healthBadge.textContent = 'ÓPTIMO';
+      healthBadge.style.color = '#10b981';
+      healthBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+    }
+
     // Limpiar paginación
     const pageBadge = document.getElementById('pagination-current-page');
     const totalPagesBadge = document.getElementById('pagination-total-pages');
@@ -3263,12 +3290,22 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (totalPagesBadge) totalPagesBadge.textContent = '1';
     if (showingBadge) showingBadge.textContent = '0 - 0 de 0';
 
+    // Limpiar gráficos
+    if (state.charts.trend) {
+      state.charts.trend.data.labels = ['Sin Datos'];
+      state.charts.trend.data.datasets[0].data = [0];
+      state.charts.trend.data.datasets[1].data = [0];
+      state.charts.trend.update();
+    }
+    if (state.charts.severity) {
+      state.charts.severity.data.datasets[0].data = [0, 0, 0, 0];
+      state.charts.severity.update();
+    }
+
     // Renderizar vistas vacías
     renderLoadedFilesDrawer();
     populateClientSelector();
     renderLogTable();
-    updateMetricsAndCharts();
-    updateTrendChart();
     renderUserAndIpAnalytics();
     updateOverviewWidgets();
     updateNodeComparisonUI();
@@ -3282,8 +3319,6 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           <span style="font-size:13px; color:var(--text-muted);">Se eliminaron todos los registros. Arrastra o carga un nuevo archivo de logs (.log, .txt, .json, .csv) para iniciar un análisis desde cero.</span>
         </div>`;
     }
-
-    showAnalysisStatus(false, '🧹 Consola Limpia (0 registros)', 'Sesión reiniciada a cero. Listo para cargar nuevos archivos de logs.');
   }
   window.resetAppSession = resetSession;
   window.resetSession = resetSession;
