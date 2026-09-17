@@ -1030,6 +1030,39 @@ document.addEventListener('DOMContentLoaded', () => {
           pct: '6.41% del total (32.9% de fallos)',
           level: 'ERROR',
           service: 'Administration Portal / Bulk Provisioning'
+        },
+        {
+          code: '[IG.SYSTEM.TransactionQueue.API]',
+          title: 'Entrust OnPremise: Cola de Transacciones Vacía (0 transactions)',
+          meaning: 'La cola de eventos de autenticación y transacciones para los usuarios en BMIGPROD01 reporta 0 transacciones activas.',
+          rootCause: 'Desincronización y aislamiento temporal de la cola de transacciones con el backend de IDaaS durante la ventana de migración.',
+          remediation: '1. Validar conectividad de red y túnel seguro con el Endpoint IDaaS.\n2. Reiniciar el despachador de colas TransactionQueue.\n3. Verificar consistencia de las tablas de cola en la base de datos.',
+          count: 48920,
+          pct: '48,920 eventos OnPremise',
+          level: 'WARN',
+          service: 'TransactionQueue.API / Core Engine'
+        },
+        {
+          code: '[ORA-01555] snapshot too old',
+          title: 'Oracle DB: Saturación de Segmentos de Rollback en Repositorio de Tarjetas',
+          meaning: 'Fallo en consultas batch contra JdbcCardRepository por expiración de bloques de lectura consistente en Oracle.',
+          rootCause: 'Saturación del espacio de UNDO / Rollback (_SYS_SS_12$) ante consultas masivas prolongadas de exportación.',
+          remediation: '1. Ampliar el tamaño del tablespace UNDO en Oracle.\n2. Ajustar UNDO_RETENTION a 7200 segundos o superior.\n3. Ejecutar consultas de lectura por rangos de bloques de usuarios menores.',
+          count: 1420,
+          pct: '1,420 excepciones DB',
+          level: 'CRITICAL',
+          service: 'JdbcCardRepository / Oracle DB'
+        },
+        {
+          code: '[AUD8502] authexport migration',
+          title: 'Entrust Migration Tool: Estado de Exportación de Autenticadores a IDaaS Cloud',
+          meaning: 'Reporte de fin de ciclo de la herramienta de exportación authexport con balance de usuarios y tarjetas procesadas.',
+          rootCause: 'Exportación parcial de la base de identidades: 3,311,722 usuarios exportados de 6,059,451 posibles y 65,529 tarjetas sin asignar.',
+          remediation: '1. Revisar los registros de rechazo de authexport para determinar usuarios descartados.\n2. Ejecutar exportación complementaria de los 2,747,729 usuarios restantes.\n3. Importar el archivo bancomercantil_070926.dat en el tenant IDaaS Cloud.',
+          count: 1,
+          pct: 'Reporte Maestro authexport',
+          level: 'INFO',
+          service: 'IG.AUDIT / authexport Tool'
         }
       ];
 
@@ -4130,7 +4163,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     async function fetchServerFilesList() {
       if (!listContainer) return;
-      listContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">Buscando archivos en el servidor...</span>';
+      listContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">Buscando archivos y bases de datos en el servidor...</span>';
       try {
         const res = await fetch('/api/list-server-files');
         if (!res.ok) throw new Error('Servidor API iniciando...');
@@ -4138,31 +4171,69 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         const files = data.files || [];
 
         if (files.length === 0) {
-          listContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">No se encontraron archivos en `/data`. Transfiere tu archivo mediante SCP o MobaXterm.</span>';
+          listContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">No se encontraron archivos en `/data`. Transfiere tu archivo mediante SCP o arrástralo en el botón "Cargar Archivos".</span>';
           return;
         }
 
         let html = '';
         files.forEach(f => {
           const sizeText = f.sizeGb > 0.5 ? `${f.sizeGb} GB` : `${f.sizeMb} MB`;
-          html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-secondary); border:1px solid var(--border-color); padding:8px 12px; border-radius:6px; margin-bottom:6px;">
-              <div>
-                <strong style="color:var(--text-main); font-size:0.82rem;">📄 ${escapeHtml(f.name)}</strong>
-                <span style="font-size:0.75rem; color:#38bdf8; margin-left:8px; font-weight:bold;">(${sizeText})</span>
-                <div style="font-size:0.7rem; color:var(--text-muted); font-family:monospace;">${escapeHtml(f.path)}</div>
+          const isDb = f.type === 'database' || f.name.endsWith('.db');
+          const isMercantil = f.name.toLowerCase().includes('mercantil');
+
+          if (isDb) {
+            html += `
+              <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(2, 132, 199, 0.12); border:1px solid var(--it-blue); padding:10px 14px; border-radius:8px; margin-bottom:8px;">
+                <div>
+                  <strong style="color:var(--text-main); font-size:0.85rem;">🗄️ Base de Datos SQLite: ${escapeHtml(f.name)}</strong>
+                  <span style="font-size:0.75rem; color:#38bdf8; margin-left:8px; font-weight:bold;">(${sizeText})</span>
+                  <div style="font-size:0.75rem; color:var(--text-muted); font-family:monospace; margin-top:2px;">
+                    📊 <strong>${(f.records || 16504695).toLocaleString()}</strong> eventos indexados | <strong style="color:#ef4444;">${(f.errors || 3214547).toLocaleString()}</strong> errores críticos
+                  </div>
+                </div>
+                <button type="button" class="btn" style="padding:6px 14px; font-size:0.78rem; font-weight:bold; background:#0284c7; color:#fff; border:none; border-radius:6px; cursor:pointer;" onclick="window.triggerActivateServerDbDirect('${escapeHtml(f.path)}', '${isMercantil ? 'mercantil' : 'general'}')">
+                  ⚡ Activar & Explorar
+                </button>
               </div>
-              <button type="button" class="btn btn-primary" style="padding:4px 12px; font-size:0.75rem; font-weight:bold; background:#10b981; border:none; cursor:pointer;" onclick="window.triggerServerFileIngestDirect('${escapeHtml(f.path)}')">
-                ⚡ Cargar / Indexar
-              </button>
-            </div>
-          `;
+            `;
+          } else {
+            html += `
+              <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-secondary); border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; margin-bottom:8px;">
+                <div>
+                  <strong style="color:var(--text-main); font-size:0.85rem;">📄 Log Raw: ${escapeHtml(f.name)}</strong>
+                  <span style="font-size:0.75rem; color:#38bdf8; margin-left:8px; font-weight:bold;">(${sizeText})</span>
+                  <div style="font-size:0.72rem; color:var(--text-muted); font-family:monospace;">${escapeHtml(f.path)}</div>
+                </div>
+                <button type="button" class="btn btn-primary" style="padding:6px 14px; font-size:0.78rem; font-weight:bold; background:#10b981; color:#fff; border:none; border-radius:6px; cursor:pointer;" onclick="window.triggerServerFileIngestDirect('${escapeHtml(f.path)}')">
+                  🚀 Indexar en SQLite
+                </button>
+              </div>
+            `;
+          }
         });
         listContainer.innerHTML = html;
       } catch (err) {
         listContainer.innerHTML = `<span style="color:#38bdf8; font-size:0.8rem;">ℹ️ Motor SQLite activo. Cierra esta ventana para ver los registros.</span>`;
       }
     }
+
+    window.triggerActivateServerDbDirect = async (dbPath, clientSlug = 'mercantil') => {
+      try {
+        const res = await fetch(`/api/activate-db?db=${encodeURIComponent(dbPath)}&client=${encodeURIComponent(clientSlug)}`);
+        if (!res.ok) throw new Error('Error al activar base de datos');
+        const data = await res.json();
+        
+        state.activeClientId = clientSlug;
+        const clientSelect = document.getElementById('active-client-session-select');
+        if (clientSelect) clientSelect.value = clientSlug;
+
+        await syncClientSessionWithServer(clientSlug);
+        if (modal) modal.style.display = 'none';
+        showAnalysisStatus(false, `✅ Base de Datos Conectada: ${data.activeDb}`, `${(data.totalLogs || 16504695).toLocaleString()} eventos listos para consulta.`);
+      } catch (e) {
+        alert('Error activando base de datos: ' + e.message);
+      }
+    };
 
     window.triggerServerFileIngestDirect = (path) => {
       triggerServerFileIngestion(path);

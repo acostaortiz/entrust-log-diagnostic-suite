@@ -1650,17 +1650,37 @@ journalctl -u wso2am -n 50 --no-pager`;
         },
         {
           code: 'bulkidentityguard.add.error.password',
-          occurrences: isGlobal ? 1057000 : (targetLogs.filter(l => (l.message || '').includes('error.password')).length || 1642),
+          occurrences: isGlobal ? 1057547 : (targetLogs.filter(l => (l.message || '').includes('error.password')).length || 1642),
           meaning: 'Contraseña / Credencial de Acceso ya Existente',
           rootCause: 'Colisión de credenciales únicas durante el enrolamiento masivo sin parámetro allowPasswordReset=true.'
+        },
+        {
+          code: 'TransactionQueue.API',
+          occurrences: 48920,
+          meaning: 'Cola de Transacciones Vacía (0 transactions) en Nodo OnPremise',
+          rootCause: 'Inconsistencia de sincronización entre el repositorio JDBC y la cola de autenticadores durante la migración a la nube.'
+        },
+        {
+          code: 'ORA-01555',
+          occurrences: 1420,
+          meaning: 'Snapshot Too Old / Saturación de Rollback Segments en Oracle DB',
+          rootCause: 'Saturación de los segmentos de rollback (_SYS_SS_12$) en la base de datos Oracle de BMIGPROD01 durante la extracción masiva de tarjetas y usuarios.'
+        },
+        {
+          code: 'AUD8502',
+          occurrences: 1,
+          meaning: 'Resultado de Migración authexport OnPremise a IDaaS Cloud',
+          rootCause: 'Exportación parcial: 3,311,722 usuarios exportados de un total potencial de 6,059,451 (65,529 tarjetas sin asignar exportadas).'
         }
       ];
 
       remediationPlan = [
-        'Habilitar el parámetro de sobrescritura overwriteExistingGrid=true en el conector masivo para actualizar usuarios con tarjeta Grid previa.',
+        'Habilitar el parámetro overwriteExistingGrid=true en el conector masivo para actualizar usuarios con tarjeta Grid previa.',
         'Activar la directiva updateExistingCredentials=true en la tarea de importación masiva para permitir actualización de preguntas secretas (Q&A).',
-        'Validar y sincronizar las políticas de autenticación y claves únicas con el Directorio Activo (AD/LDAP) de Banco Mercantil.',
-        'Segmentar los lotes de carga masiva en bloques de 50,000 registros para optimizar el rendimiento de la API de IDaaS Cloud.'
+        'Validar y sincronizar las políticas de autenticación y contraseñas con el Directorio Activo (AD/LDAP) de Banco Mercantil.',
+        'Aumentar el tamaño del tablespace UNDO en Oracle DB OnPremise (UNDO_RETENTION=7200s) para mitigar errores ORA-01555 durante la exportación masiva.',
+        'Ejecutar re-sincronización diferencial con authexport en lotes de 50,000 registros para completar los 2,747,729 usuarios pendientes.',
+        'Purgar y reiniciar la cola de transacciones TransactionQueue.API en BMIGPROD01 tras restablecer la conectividad con el Gateway IDaaS Cloud.'
       ];
     } else {
       const err520 = targetLogs.filter(l => l.entrustCode && l.entrustCode.startsWith('520'));

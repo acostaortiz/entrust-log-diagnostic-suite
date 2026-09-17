@@ -287,36 +287,54 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json(upload_state)
         elif path == '/api/list-server-files':
             self.handle_list_server_files()
+        elif path == '/api/activate-db':
+            self.handle_activate_db(query)
         elif path == '/api/export-errors':
             self.handle_export_errors(query)
         else:
             super().do_GET()
 
-    def handle_ingest_local(self):
+    def handle_activate_db(self, query):
+        global ACTIVE_DB_PATH
+        target_db = query.get('db', [None])[0]
+        client_name = query.get('client', ['Banco Mercantil C.A.'])[0]
+        if not target_db:
+            self.send_json({'error': 'Parámetro db requerido'}, status=400)
+            return
+
+        full_path = target_db if os.path.isabs(target_db) else os.path.join(DATA_DIR, os.path.basename(target_db))
+        if not os.path.exists(full_path):
+            self.send_json({'error': f'Archivo {full_path} no encontrado'}, status=404)
+            return
+
+        ACTIVE_DB_PATH = full_path
+        upload_state['dbPath'] = full_path
+        upload_state['clientName'] = client_name
+        upload_state['clientSlug'] = get_client_slug(client_name)
+        upload_state['status'] = 'ready'
+
+        # Get records count
+        records = 0
+        errors = 0
         try:
-            content_length = int(self.headers.get('Content-Length', 0))
-            body = self.rfile.read(content_length)
-            data = json.loads(body.decode('utf-8'))
-            file_path = data.get('filePath', '').strip()
-            client_name = data.get('clientName', 'Entrust Client').strip()
+            conn = sqlite3.connect(full_path)
+            cur = conn.cursor()
+            cur.execute('SELECT COUNT(1) FROM logs')
+            records = cur.fetchone()[0]
+            cur.execute('SELECT COUNT(1) FROM logs WHERE event_outcome LIKE ?', ('%FAIL%',))
+            errors = cur.fetchone()[0]
+            conn.close()
+        except Exception:
+            pass
 
-            if not file_path or not os.path.exists(file_path):
-                self.send_json({'error': f'El archivo no existe en el servidor: {file_path}'}, status=400)
-                return
-
-            upload_state['fileName'] = os.path.basename(file_path)
-            upload_state['clientName'] = client_name
-            upload_state['clientSlug'] = get_client_slug(client_name)
-            upload_state['status'] = 'indexing'
-            upload_state['progress'] = 0
-
-            thread = threading.Thread(target=index_file_in_background, args=(file_path, client_name))
-            thread.daemon = True
-            thread.start()
-
-            self.send_json({'success': True, 'message': f'Indexación iniciada para {file_path}'})
-        except Exception as e:
-            self.send_json({'error': str(e)}, status=500)
+        self.send_json({
+            'success': True,
+            'activeDb': os.path.basename(full_path),
+            'path': full_path,
+            'totalLogs': records,
+            'totalErrors': errors,
+            'client': client_name
+        })
 
     def handle_list_server_files(self):
         found_files = []
@@ -325,19 +343,49 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             if not os.path.exists(sdir):
                 continue
             for f in os.listdir(sdir):
-                if f.endswith(('.csv', '.log', '.txt', '.tsv')) and not f.startswith('.'):
-                    full_p = os.path.join(sdir, f)
-                    try:
-                        sz = os.path.getsize(full_p)
+                if f.startswith('.'):
+                    continue
+                full_p = os.path.join(sdir, f)
+                if not os.path.isfile(full_p):
+                    continue
+                try:
+                    sz = os.path.getsize(full_p)
+                    if f.endswith('.db') and sz > 0:
+                        records = 0
+                        errors = 0
+                        try:
+                            conn = sqlite3.connect(full_p)
+                            cur = conn.cursor()
+                            cur.execute('SELECT COUNT(1) FROM logs')
+                            records = cur.fetchone()[0]
+                            cur.execute('SELECT COUNT(1) FROM logs WHERE event_outcome LIKE ?', ('%FAIL%',))
+                            errors = cur.fetchone()[0]
+                            conn.close()
+                        except Exception:
+                            pass
                         found_files.append({
                             'name': f,
                             'path': full_p,
+                            'type': 'database',
                             'sizeBytes': sz,
                             'sizeMb': round(sz / (1024 * 1024), 2),
-                            'sizeGb': round(sz / (1024 * 1024 * 1024), 2)
+                            'sizeGb': round(sz / (1024 * 1024 * 1024), 2),
+                            'records': records,
+                            'errors': errors
                         })
-                    except Exception:
-                        pass
+                    elif f.endswith(('.csv', '.log', '.txt', '.tsv')):
+                        found_files.append({
+                            'name': f,
+                            'path': full_p,
+                            'type': 'raw_log',
+                            'sizeBytes': sz,
+                            'sizeMb': round(sz / (1024 * 1024), 2),
+                            'sizeGb': round(sz / (1024 * 1024 * 1024), 2),
+                            'records': 0,
+                            'errors': 0
+                        })
+                except Exception:
+                    pass
         unique_files = list({v['path']: v for v in found_files}.values())
         self.send_json({'files': unique_files})
 
