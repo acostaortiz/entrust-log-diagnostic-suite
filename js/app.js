@@ -2429,9 +2429,67 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       // Intentar sincronizar paginación SQL en vivo si server.py está activo
       fetchSqlLogs(1).catch(() => {});
     } catch (err) {
-      console.error('Error al cargar bundle de 10GB:', err);
+      console.error('Error al cargar bundle:', err);
       showAnalysisStatus(false, '❌ Error al cargar auditoría', err.message);
       alert('Error al inicializar la vista de auditoría: ' + err.message);
+    }
+  }
+
+  async function uploadFileInChunksToServer(file, clientName, onProgress) {
+    const chunkSize = 10 * 1024 * 1024; // 10 MB por bloque (mantiene el uso de RAM del navegador en <15 MB)
+    const totalChunks = Math.ceil(file.size / chunkSize);
+    const fileName = encodeURIComponent(file.name);
+    const encClientName = encodeURIComponent(clientName);
+
+    for (let i = 0; i < totalChunks; i++) {
+      const start = i * chunkSize;
+      const end = Math.min(file.size, start + chunkSize);
+      const chunkBlob = file.slice(start, end);
+      const chunkBuffer = await chunkBlob.arrayBuffer();
+
+      const res = await fetch('/api/upload-chunk', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'X-Chunk-Index': String(i),
+          'X-Total-Chunks': String(totalChunks),
+          'X-File-Name': fileName,
+          'X-Client-Name': encClientName
+        },
+        body: chunkBuffer
+      });
+
+      if (!res.ok) {
+        throw new Error(`Error en el servidor al subir bloque ${i + 1}/${totalChunks}`);
+      }
+
+      const pct = Math.round(((i + 1) / totalChunks) * 100);
+      const mbDone = (end / (1024 * 1024)).toFixed(0);
+      const mbTotal = (file.size / (1024 * 1024)).toFixed(0);
+      if (onProgress) {
+        onProgress(end, file.size, `🚀 Transfiriendo al Servidor: ${mbDone} MB / ${mbTotal} MB (${pct}%) — (Memoria Browser 0%)`);
+      }
+    }
+
+    // Esperar indexación en segundo plano en el Servidor
+    while (true) {
+      await new Promise(r => setTimeout(r, 1200));
+      const statusRes = await fetch('/api/upload-status');
+      if (!statusRes.ok) continue;
+      const statusData = await statusRes.json();
+      if (statusData.status === 'ready') {
+        return statusData;
+      } else if (statusData.status === 'indexing') {
+        if (onProgress) {
+          onProgress(
+            statusData.progress,
+            100,
+            `⚡ Servidor Indexando SQLite en Tiempo Real: ${statusData.progress}% (${(statusData.linesProcessed || 0).toLocaleString()} eventos | ${(statusData.totalErrors || 0).toLocaleString()} errores)`
+          );
+        }
+      } else if (statusData.status === 'error') {
+        throw new Error(statusData.error || 'Error durante la indexación en el servidor');
+      }
     }
   }
 
@@ -4010,8 +4068,55 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           let realTotalErrors = 0;
           let realTotalWarnings = 0;
 
-          if (file.size > 25 * 1024 * 1024) {
-            // Archivos mayores a 25 MB -> Procesamiento Streaming en Web Worker (Hilo Secundario)
+          if (file.size > 50 * 1024 * 1024) {
+            // ARCHIVOS MASIVOS (> 50 MB / 10 GB+): Subida y procesamiento streaming en el Servidor (0% uso de RAM en Chrome)
+            showAnalysisStatus(true, `🚀 Procesando Archivo Masivo [${file.name} — ${sizeMb} MB]...`, 'Subiendo en bloques de 10 MB al motor SQLite del Servidor para prevenir saturación de memoria...');
+            try {
+              const serverResult = await uploadFileInChunksToServer(file, clientName, (current, total, msg) => {
+                showAnalysisStatus(true, `⚙️ [${file.name} — ${sizeMb} MB]`, msg);
+              });
+
+              // Cargar estadísticas globales desde SQLite del Servidor
+              const statsRes = await fetch('/api/stats');
+              if (statsRes.ok) {
+                const statsData = await statsRes.json();
+                state.globalStreamMetrics = {
+                  totalLogs: statsData.totalLogs || serverResult.linesProcessed || 0,
+                  totalErrors: statsData.totalErrors || serverResult.totalErrors || 0,
+                  totalWarnings: statsData.totalWarnings || 0,
+                  topUsers: statsData.topUsers || [],
+                  topIps: statsData.topIps || [],
+                  topCodes: (statsData.eventTypes || []).map(t => ({ code: t.code, count: t.count }))
+                };
+              }
+
+              // Registrar archivo en la lista
+              state.loadedFiles.push({
+                name: file.name,
+                size: file.size,
+                count: serverResult.linesProcessed || 0,
+                sampleCount: 50,
+                realErrors: serverResult.totalErrors || 0,
+                realWarnings: 0,
+                nodeKey: 'server_cluster',
+                nodeName: '🖥️ Servidor Core SQLite',
+                client: clientName
+              });
+
+              state.isServerApi = true;
+              await fetchSqlLogs(1);
+              updateMetricsAndCharts();
+              renderLoadedFilesDrawer();
+              showAnalysisStatus(false, `✅ Archivo Masivo Indexado con Éxito (${(serverResult.linesProcessed || 0).toLocaleString()} registros)`, `Base de Datos SQLite activa: ${serverResult.dbPath || 'data/active_audit.db'}`);
+              return;
+            } catch (serverErr) {
+              console.warn('Fallo en subida al servidor, intentando fallback local...', serverErr);
+              showAnalysisStatus(true, `⚠️ Fallback local para ${file.name}...`, 'Procesando muestra segura para proteger el navegador...');
+            }
+          }
+
+          if (file.size > 10 * 1024 * 1024) {
+            // Archivos medianos (10MB - 50MB) -> Procesamiento Streaming en Web Worker (Hilo Secundario)
             const streamResult = await window.logParserEngine.parseLargeFileWithWorker(file, clientName, (current, total, msg) => {
               showAnalysisStatus(true, `⚙️ [${file.name} — ${sizeMb} MB]`, msg);
             });
