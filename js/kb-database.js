@@ -1621,92 +1621,64 @@ journalctl -u wso2am -n 50 --no-pager`;
     const isGlobal = !!(window.appState && window.appState.globalStreamMetrics);
     const globalMetrics = window.appState ? window.appState.globalStreamMetrics : null;
 
-    const total = isGlobal && globalMetrics ? globalMetrics.totalLogs : targetLogs.length;
-    const criticalsCount = isGlobal && globalMetrics ? globalMetrics.totalErrors : targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
-    
-    const isIdaas = client.name.includes('Mercantil') || (client.platform && client.platform.includes('IDaaS')) || targetLogs.some(l => (l.message || '').includes('bulkidentityguard'));
+    const total = targetLogs.length || (isGlobal && globalMetrics ? globalMetrics.totalLogs : 0);
+    const criticalsCount = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length;
+    const warningsCount = targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length;
 
-    let uniqueFindings = [];
-    let health = 100;
-    let execSummary = '';
-    let remediationPlan = [];
+    // Extracción dinámica de hallazgos directamente de los logs procesados
+    const findingsMap = new Map();
 
-    if (isIdaas) {
-      health = total > 0 ? parseFloat((((total - criticalsCount) / total) * 100).toFixed(2)) : 80.52;
-      execSummary = `Durante el periodo de auditoría evaluado para ${client.name} (${client.version || 'IDaaS Cloud Enterprise'}), la plataforma procesó un volumen total consolidado de ${total.toLocaleString()} eventos de auditoría, registrando un índice de salud operacional del ${health}%. Se identificaron ${criticalsCount.toLocaleString()} eventos críticos clasificados como fallos en el proceso de aprovisionamiento masivo de identidades (Bulk Provisioning Task PRUEBA_PERSONAS_FINAL_1), originados por colisión de tarjetas Grid preasignadas, preguntas secretas (Q&A) duplicadas y credenciales de acceso preexistentes.`;
+    targetLogs.forEach(log => {
+      const isErr = log.level === 'CRITICAL' || log.level === 'ERROR' || (log.outcome && log.outcome.includes('FAIL'));
+      const isWarn = log.level === 'WARN' || log.level === 'WARNING';
+      if (!isErr && !isWarn && !log.entrustCode) return;
 
-      uniqueFindings = [
-        {
-          code: 'bulkidentityguard.add.error.assignedgrid',
-          occurrences: isGlobal ? 1100000 : (targetLogs.filter(l => (l.message || '').includes('assignedgrid')).length || 1716),
-          meaning: 'Conflicto de Tarjeta Grid Preexistente (Grid Already Assigned to User)',
-          rootCause: 'Intento de importación masiva de tarjetas Grid sobre usuarios que ya contaban con una tarjeta asignada sin habilitar la directiva overwriteExistingGrid=true.'
-        },
-        {
-          code: 'bulkidentityguard.add.error.qa',
-          occurrences: isGlobal ? 1057000 : (targetLogs.filter(l => (l.message || '').includes('error.qa')).length || 1642),
-          meaning: 'Preguntas y Respuestas Secretas (Q&A) Duplicadas / Ya Enroladas',
-          rootCause: 'Esquema de preguntas de seguridad Challenge/Response previamente registrado en el almacén de IDaaS para las identidades del lote.'
-        },
-        {
-          code: 'bulkidentityguard.add.error.password',
-          occurrences: isGlobal ? 1057547 : (targetLogs.filter(l => (l.message || '').includes('error.password')).length || 1642),
-          meaning: 'Contraseña / Credencial de Acceso ya Existente',
-          rootCause: 'Colisión de credenciales únicas durante el enrolamiento masivo sin parámetro allowPasswordReset=true.'
-        },
-        {
-          code: 'TransactionQueue.API',
-          occurrences: 48920,
-          meaning: 'Cola de Transacciones Vacía (0 transactions) en Nodo OnPremise',
-          rootCause: 'Inconsistencia de sincronización entre el repositorio JDBC y la cola de autenticadores durante la migración a la nube.'
-        },
-        {
-          code: 'ORA-01555',
-          occurrences: 1420,
-          meaning: 'Snapshot Too Old / Saturación de Rollback Segments en Oracle DB',
-          rootCause: 'Saturación de los segmentos de rollback (_SYS_SS_12$) en la base de datos Oracle de BMIGPROD01 durante la extracción masiva de tarjetas y usuarios.'
-        },
-        {
-          code: 'AUD8502',
+      const code = log.entrustCode || this.extractErrorCodeFromText(log.message) || log.service || 'EVENTO_GENERAL';
+      const diag = log.diagnostic || this.diagnoseLog(log.message, code);
+      const key = code;
+
+      if (!findingsMap.has(key)) {
+        findingsMap.set(key, {
+          code: key,
           occurrences: 1,
-          meaning: 'Resultado de Migración authexport OnPremise a IDaaS Cloud',
-          rootCause: 'Exportación parcial: 3,311,722 usuarios exportados de un total potencial de 6,059,451 (65,529 tarjetas sin asignar exportadas).'
-        }
-      ];
+          meaning: diag.meaning || log.message,
+          rootCause: diag.rootCause || 'Fallo en la ejecución del servicio o validación de credenciales.',
+          remediation: diag.remediation || 'Revisar parámetros de configuración y trazas del componente.',
+          level: log.level || (isErr ? 'ERROR' : 'WARN'),
+          service: log.service || 'Entrust Service'
+        });
+      } else {
+        findingsMap.get(key).occurrences += 1;
+      }
+    });
 
-      remediationPlan = [
-        'Habilitar el parámetro overwriteExistingGrid=true en el conector masivo para actualizar usuarios con tarjeta Grid previa.',
-        'Activar la directiva updateExistingCredentials=true en la tarea de importación masiva para permitir actualización de preguntas secretas (Q&A).',
-        'Validar y sincronizar las políticas de autenticación y contraseñas con el Directorio Activo (AD/LDAP) de Banco Mercantil.',
-        'Aumentar el tamaño del tablespace UNDO en Oracle DB OnPremise (UNDO_RETENTION=7200s) para mitigar errores ORA-01555 durante la exportación masiva.',
-        'Ejecutar re-sincronización diferencial con authexport en lotes de 50,000 registros para completar los 2,747,729 usuarios pendientes.',
-        'Purgar y reiniciar la cola de transacciones TransactionQueue.API en BMIGPROD01 tras restablecer la conectividad con el Gateway IDaaS Cloud.'
-      ];
-    } else {
-      const err520 = targetLogs.filter(l => l.entrustCode && l.entrustCode.startsWith('520'));
-      const uniqueCodes = [...new Set(err520.map(l => l.entrustCode))];
-      const healthPenalty = criticalsCount > 0 ? Math.min(70, Math.round((criticalsCount / Math.max(1, total)) * 100 * 5)) : 0;
-      health = Math.max(10, 100 - healthPenalty);
+    let uniqueFindings = Array.from(findingsMap.values()).sort((a, b) => b.occurrences - a.occurrences);
 
-      execSummary = `Durante el periodo evaluado para ${client.name} (${client.version}), la plataforma de autenticación procesó un volumen total de ${total.toLocaleString()} transacciones, registrando un índice de estabilidad del ${health}%. Se identificaron ${criticalsCount.toLocaleString()} eventos críticos (${uniqueCodes.length} códigos de error únicos), con impacto prioritario en los canales de atención digital.`;
-
-      uniqueFindings = uniqueCodes.slice(0, 5).map(c => {
-        const sample = err520.find(l => l.entrustCode === c);
-        const diag = sample ? this.diagnoseLog(sample.message) : { meaning: 'Error no tipificado', rootCause: 'Fallo operacional' };
-        return {
-          code: c,
-          occurrences: err520.filter(l => l.entrustCode === c).length,
-          meaning: diag.meaning,
-          rootCause: diag.rootCause
-        };
+    // Si no se detectaron códigos específicos pero hay errores genéricos
+    if (uniqueFindings.length === 0 && criticalsCount > 0) {
+      uniqueFindings.push({
+        code: 'INCIDENTE_OPERACIONAL',
+        occurrences: criticalsCount,
+        meaning: 'Excepciones operacionales detectadas en el procesamiento de logs.',
+        rootCause: 'Anomalías en el flujo de ejecución o timeout de componentes.',
+        remediation: 'Verificar conectividad de red, configuración de base de datos y memoria asignada.',
+        level: 'ERROR',
+        service: 'Core Platform'
       });
+    }
 
-      remediationPlan = [
-        'Ajustar la capacidad de memoria Heap de la JVM Tomcat en los servidores SACVWIG a un mínimo de 4096m.',
-        'Ampliar el pool de conexiones en identityguard.properties (maxActive=100, maxWait=5000).',
-        'Validar vigencia y renovación de certificados X.509 en el almacén identityguard.keystore.',
-        'Sincronizar relojes de servidor mediante protocolo NTP para evitar desalineación en firmas SAML/OTP.'
-      ];
+    const healthPenalty = criticalsCount > 0 ? Math.min(80, Math.round((criticalsCount / Math.max(1, total)) * 100 * 4)) : 0;
+    const health = total > 0 ? Math.max(10, 100 - healthPenalty) : 100;
+
+    const fileNames = (window.appState && window.appState.loadedFiles && window.appState.loadedFiles.length > 0)
+      ? window.appState.loadedFiles.map(f => f.name).join(', ')
+      : 'Archivo de Logs Cargado';
+
+    const execSummary = `Durante la evaluación técnica realizada para ${client.name} (${client.platform || 'Entrust Suite'}), se procesó un volumen de ${total.toLocaleString()} registros correspondientes a: [${fileNames}]. La plataforma registró un índice de salud operacional del ${health}%, detectándose ${criticalsCount.toLocaleString()} eventos críticos y ${uniqueFindings.length} patrones de falla principales que requieren remediación.`;
+
+    const remediationPlan = uniqueFindings.slice(0, 6).map(f => f.remediation);
+    if (remediationPlan.length === 0) {
+      remediationPlan.push('Mantener el monitoreo continuo de transacciones y realizar auditorías periódicas de logs.');
     }
 
     return {

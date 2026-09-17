@@ -988,220 +988,95 @@ document.addEventListener('DOMContentLoaded', () => {
     let topCodesHtml = '';
     let diagMapSize = 0;
 
-    if (isGlobal && isCloud) {
-      // Diagnóstico Forense Consolidado 100% Exacto para Banco Mercantil IDaaS Cloud (16,504,695 logs)
-      const mercantilBreakdown = [
-        {
-          code: 'bulkidentityguard.add.error.assignedgrid',
-          title: 'Entrust IDaaS Cloud: Conflicto de Tarjeta Grid Preexistente (Grid Already Assigned)',
-          meaning: 'La tarea de importación masiva intentó asignar una nueva tarjeta Grid a usuarios que ya contaban con una tarjeta Grid activa en el almacén de identidades de Entrust IDaaS.',
-          rootCause: 'Ejecución del proceso de carga por lotes (PRUEBA_PERSONAS_FINAL_1) sin el parámetro de sobrescritura overwriteExistingGrid=true.',
-          remediation: '1. En la definición de la tarea masiva, configure overwriteExistingGrid=true si requiere reemplazar la tarjeta actual.\n2. Depure el archivo de lote excluyendo los usuarios que ya cuentan con credencial Grid activa.\n3. Ejecute una sincronización diferencial en lugar de una importación completa.',
-          count: 1100000,
-          pct: '6.66% del total (34.2% de fallos)',
-          level: 'ERROR',
-          service: 'Administration Portal / Bulk Provisioning'
-        },
-        {
-          code: 'bulkidentityguard.add.error.qa',
-          title: 'Entrust IDaaS Cloud: Preguntas y Respuestas Secretas (Q&A) Duplicadas / Ya Registradas',
-          meaning: 'El esquema de preguntas y respuestas de desafío (Q&A Challenge/Response) ya fue registrado previamente para este usuario en Entrust IDaaS.',
-          rootCause: 'Intento de inserción de preguntas de seguridad en usuarios ya enrolados sin habilitar la bandera updateExistingCredentials=true.',
-          remediation: '1. Habilite el parámetro updateExistingCredentials=true en la configuración de la tarea de importación masiva.\n2. Si los usuarios deben mantener sus preguntas actuales, omita la columna Q&A en el archivo CSV de carga.\n3. Valide el estado de enrolamiento del usuario en la consola de IDaaS.',
-          count: 1057000,
-          pct: '6.40% del total (32.9% de fallos)',
-          level: 'ERROR',
-          service: 'Administration Portal / Bulk Provisioning'
-        },
-        {
-          code: 'bulkidentityguard.add.error.password',
-          title: 'Entrust IDaaS Cloud: Contraseña / Credencial de Autenticación ya Existente',
-          meaning: 'La credencial de autenticación básica (Password/PIN) enviada en el lote coincide o colisiona con una credencial existente en la base de identidades.',
-          rootCause: 'Conflicto de unicidad en el almacén de identidades IDaaS durante la importación masiva de credenciales.',
-          remediation: '1. Verifique las políticas de sincronización con el Directorio Activo (AD/LDAP).\n2. Asegúrese de que el lote no intente sobreescribir contraseñas sin la directiva allowPasswordReset=true.\n3. Verifique el formato de hash de contraseña admitido.',
-          count: 1057547,
-          pct: '6.41% del total (32.9% de fallos)',
-          level: 'ERROR',
-          service: 'Administration Portal / Bulk Provisioning'
-        },
-        {
-          code: '[IG.SYSTEM.TransactionQueue.API]',
-          title: 'Entrust OnPremise: Cola de Transacciones Vacía (0 transactions)',
-          meaning: 'La cola de eventos de autenticación y transacciones para los usuarios en BMIGPROD01 reporta 0 transacciones activas.',
-          rootCause: 'Desincronización y aislamiento temporal de la cola de transacciones con el backend de IDaaS durante la ventana de migración.',
-          remediation: '1. Validar conectividad de red y túnel seguro con el Endpoint IDaaS.\n2. Reiniciar el despachador de colas TransactionQueue.\n3. Verificar consistencia de las tablas de cola en la base de datos.',
-          count: 48920,
-          pct: '48,920 eventos OnPremise',
-          level: 'WARN',
-          service: 'TransactionQueue.API / Core Engine'
-        },
-        {
-          code: '[ORA-01555] snapshot too old',
-          title: 'Oracle DB: Saturación de Segmentos de Rollback en Repositorio de Tarjetas',
-          meaning: 'Fallo en consultas batch contra JdbcCardRepository por expiración de bloques de lectura consistente en Oracle.',
-          rootCause: 'Saturación del espacio de UNDO / Rollback (_SYS_SS_12$) ante consultas masivas prolongadas de exportación.',
-          remediation: '1. Ampliar el tamaño del tablespace UNDO en Oracle.\n2. Ajustar UNDO_RETENTION a 7200 segundos o superior.\n3. Ejecutar consultas de lectura por rangos de bloques de usuarios menores.',
-          count: 1420,
-          pct: '1,420 excepciones DB',
-          level: 'CRITICAL',
-          service: 'JdbcCardRepository / Oracle DB'
-        },
-        {
-          code: '[AUD8502] authexport migration',
-          title: 'Entrust Migration Tool: Estado de Exportación de Autenticadores a IDaaS Cloud',
-          meaning: 'Reporte de fin de ciclo de la herramienta de exportación authexport con balance de usuarios y tarjetas procesadas.',
-          rootCause: 'Exportación parcial de la base de identidades: 3,311,722 usuarios exportados de 6,059,451 posibles y 65,529 tarjetas sin asignar.',
-          remediation: '1. Revisar los registros de rechazo de authexport para determinar usuarios descartados.\n2. Ejecutar exportación complementaria de los 2,747,729 usuarios restantes.\n3. Importar el archivo bancomercantil_070926.dat en el tenant IDaaS Cloud.',
+    const diagMap = new Map();
+    const errorLogs = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL')));
+    const logsToAnalyze = onlyCatalogErrors ? (errorLogs.length > 0 ? errorLogs : targetLogs) : (errorLogs.length > 0 ? errorLogs : targetLogs);
+
+    function extractErrorCode(log) {
+      if (log.entrustCode) return log.entrustCode;
+      const msg = log.message || '';
+      const m = msg.match(/\[(520\d{4}|AUD\d+|[A-Za-z0-9_\.-]+\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\]/i) ||
+                msg.match(/\b(520\d{4}|AUD\d+|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\b/i);
+      if (m) return m[1];
+      return log.service || log.type || 'LOG_EVENT';
+    }
+
+    logsToAnalyze.forEach(log => {
+      const code = extractErrorCode(log);
+      const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message, code);
+      const key = code;
+
+      if (!diagMap.has(key)) {
+        diagMap.set(key, {
+          code: key,
+          log,
+          diag,
           count: 1,
-          pct: 'Reporte Maestro authexport',
-          level: 'INFO',
-          service: 'IG.AUDIT / authexport Tool'
-        }
-      ];
+          sampleRaw: log.raw || log.message,
+          level: log.level || 'ERROR',
+          service: log.service || 'Entrust Service'
+        });
+      } else {
+        diagMap.get(key).count += 1;
+      }
+    });
 
-      diagMapSize = mercantilBreakdown.length;
+    diagMapSize = diagMap.size;
+    const sortedIncidents = Array.from(diagMap.values()).sort((a, b) => b.count - a.count);
 
-      mercantilBreakdown.forEach((item, idx) => {
-        const idxNum = idx + 1;
-        if (onlyCatalogErrors) {
-          incidentsHtml += `
-            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:5px solid #dc2626; border-radius:6px; padding:14px; page-break-inside:avoid; break-inside:avoid; margin-bottom:12px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <div>
-                  <span style="background:#fee2e2; color:#dc2626; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:4px; font-family:monospace;">${item.level} (${item.count.toLocaleString()}x)</span>
-                  <span style="font-family:monospace; font-size:12px; font-weight:bold; color:#0a3d6d; margin-left:8px;">#${idxNum} - ${escapeHtml(item.service)}</span>
-                </div>
-                <span style="font-family:monospace; font-size:11px; color:#64748b; font-weight:bold;">${item.count.toLocaleString()} Ocurrencias</span>
-              </div>
-              <div style="background:#0f172a; color:#f87171; padding:10px 12px; border-radius:6px; font-family:Consolas, Monaco, monospace; font-size:11px; line-height:1.5; margin-bottom:10px; word-break:break-all;">
-                [BulkidentityguardAddEvent] ${item.code} (Outcome: FAIL) - Task: PRUEBA_PERSONAS_FINAL_1
-              </div>
-              <div style="font-size:12px; color:#1e293b; margin-bottom:6px;">
-                <strong style="color:#0a3d6d;">Diagnóstico:</strong> ${escapeHtml(item.meaning)}
-              </div>
-              <div style="font-size:12px; color:#b91c1c; margin-bottom:6px;">
-                <strong style="color:#991b1b;">Causa Raíz:</strong> ${escapeHtml(item.rootCause)}
-              </div>
-              <div style="font-size:11px; color:#047857; background:#ecfdf5; padding:8px 10px; border-radius:4px; border:1px solid #a7f3d0; white-space:pre-line;">
-                <strong style="color:#065f46;">Remediación Inmediata:</strong><br>${escapeHtml(item.remediation)}
-              </div>
-            </div>`;
-        } else {
-          incidentsHtml += `
-            <tr style="background:${idxNum % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
-              <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center;">
-                <span style="white-space:nowrap; background:#fee2e2; color:#dc2626; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">#${idxNum} ${item.level}</span><br>
-                <span style="font-size:9.5px; color:#dc2626; font-weight:bold;">${item.count.toLocaleString()} veces</span>
-              </td>
-              <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(item.service)}</td>
-              <td style="padding:6px 8px; border:1px solid #cbd5e1;">
-                <strong style="color:#0a3d6d; font-size:11px;">${escapeHtml(item.title)}</strong><br>
-                <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(item.meaning)}</span>
-              </td>
-              <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(item.rootCause)}</td>
-              <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(item.remediation)}</td>
-            </tr>`;
-        }
+    sortedIncidents.forEach((item, idx) => {
+      const idxNum = idx + 1;
+      const { code, log, diag, count, sampleRaw, level, service } = item;
+      const pctStr = formatPctStr(count, totalCount);
 
-        topCodesHtml += `
-          <tr style="page-break-inside:avoid; break-inside:avoid;">
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d; text-align:center;">${escapeHtml(item.code)}</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(item.title)}</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:#dc2626;">${item.count.toLocaleString()} (${item.pct})</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(item.rootCause)}</td>
+      if (onlyCatalogErrors) {
+        incidentsHtml += `
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:5px solid #dc2626; border-radius:6px; padding:14px; page-break-inside:avoid; break-inside:avoid; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div>
+                <span style="background:#fee2e2; color:#dc2626; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:4px; font-family:monospace;">${level} (${count.toLocaleString()}x)</span>
+                <span style="font-family:monospace; font-size:12px; font-weight:bold; color:#0a3d6d; margin-left:8px;">#${idxNum} - [${escapeHtml(code)}] ${escapeHtml(service)}</span>
+              </div>
+              <span style="font-family:monospace; font-size:11px; color:#64748b; font-weight:bold;">${count.toLocaleString()} Ocurrencias (${pctStr})</span>
+            </div>
+            <div style="background:#0f172a; color:#f87171; padding:10px 12px; border-radius:6px; font-family:Consolas, Monaco, monospace; font-size:11px; line-height:1.5; margin-bottom:10px; word-break:break-all;">
+              ${escapeHtml(sampleRaw)}
+            </div>
+            <div style="font-size:12px; color:#1e293b; margin-bottom:6px;">
+              <strong style="color:#0a3d6d;">Diagnóstico:</strong> ${escapeHtml(diag.meaning || log.message)}
+            </div>
+            <div style="font-size:12px; color:#b91c1c; margin-bottom:6px;">
+              <strong style="color:#991b1b;">Causa Raíz:</strong> ${escapeHtml(diag.rootCause || 'Anomalía en los parámetros de autenticación o ejecución de servicio.')}
+            </div>
+            <div style="font-size:11px; color:#047857; background:#ecfdf5; padding:8px 10px; border-radius:4px; border:1px solid #a7f3d0; white-space:pre-line;">
+              <strong style="color:#065f46;">Remediación Inmediata:</strong><br>${escapeHtml(diag.remediation || 'Verificar configuración de repositorio y credenciales de usuario.')}
+            </div>
+          </div>`;
+      } else {
+        incidentsHtml += `
+          <tr style="background:${idxNum % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center;">
+              <span style="white-space:nowrap; background:${level === 'CRITICAL' || level === 'ERROR' ? '#fee2e2' : '#e0f2fe'}; color:${level === 'CRITICAL' || level === 'ERROR' ? '#dc2626' : '#0284c7'}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">#${idxNum} ${level}</span><br>
+              <span style="font-size:9.5px; color:#dc2626; font-weight:bold;">${count.toLocaleString()} veces</span>
+            </td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(service)}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1;">
+              <strong style="color:#0a3d6d; font-size:11px;">[${escapeHtml(code)}] ${escapeHtml(diag.title || code)}</strong><br>
+              <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(diag.meaning || log.message)}</span>
+            </td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(diag.rootCause || 'Fallo operacional detectado en trazas')}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(diag.remediation || 'Consultar manual técnico')}</td>
           </tr>`;
-      });
-    } else {
-      const diagMap = new Map();
-      const logsToGroup = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
-      const sampleList = logsToGroup.length > 0 ? logsToGroup : targetLogs;
-
-      function extractEntrustErrorCode(line) {
-        if (!line) return null;
-        const sanitized = line.replace(/(\?|&)[^=\s]+=[^&\s]*/g, '');
-        const match = sanitized.match(/(?:\[|\b)(520\d{4}|AUD\d+)(?:\]|\b)/i);
-        return match ? match[1].toUpperCase() : null;
       }
 
-      sampleList.forEach(log => {
-        const codeInLine = extractEntrustErrorCode(log.message);
-        const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message, codeInLine);
-        const key = diag.title || log.message;
-
-        if (!diagMap.has(key)) {
-          diagMap.set(key, { log, diag, count: 1, sampleRaw: log.raw || log.message });
-        } else {
-          diagMap.get(key).count += 1;
-        }
-      });
-
-      diagMapSize = diagMap.size;
-      let idxCounter = 0;
-      diagMap.forEach((item) => {
-        idxCounter++;
-        const { log, diag, count, sampleRaw } = item;
-
-        if (onlyCatalogErrors) {
-          incidentsHtml += `
-            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:5px solid #dc2626; border-radius:6px; padding:14px; page-break-inside:avoid; break-inside:avoid; margin-bottom:12px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <div>
-                  <span style="background:#fee2e2; color:#dc2626; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:4px; font-family:monospace;">${log.level} (${count}x)</span>
-                  <span style="font-family:monospace; font-size:12px; font-weight:bold; color:#0a3d6d; margin-left:8px;">#${idxCounter} - ${escapeHtml(log.service)}</span>
-                </div>
-                <span style="font-family:monospace; font-size:11px; color:#64748b; font-weight:bold;">${count} Reincidencias</span>
-              </div>
-              <div style="background:#0f172a; color:#f87171; padding:10px 12px; border-radius:6px; font-family:Consolas, Monaco, monospace; font-size:11px; line-height:1.5; margin-bottom:10px; word-break:break-all;">
-                ${escapeHtml(sampleRaw)}
-              </div>
-              <div style="font-size:12px; color:#1e293b; margin-bottom:6px;">
-                <strong style="color:#0a3d6d;">Diagnóstico:</strong> ${escapeHtml(diag.meaning)}
-              </div>
-              <div style="font-size:12px; color:#b91c1c; margin-bottom:6px;">
-                <strong style="color:#991b1b;">Causa Raíz:</strong> ${escapeHtml(diag.rootCause)}
-              </div>
-              <div style="font-size:11px; color:#047857; background:#ecfdf5; padding:8px 10px; border-radius:4px; border:1px solid #a7f3d0; white-space:pre-line;">
-                <strong style="color:#065f46;">Remediación Inmediata:</strong><br>${escapeHtml(diag.remediation)}
-              </div>
-            </div>`;
-        } else {
-          let displayService = log.service || 'Entrust Service';
-          const clientVer = activeClient?.version || 'Release 11.0';
-          let cleanTitle = (diag.title || '').replace(/Release \d+\.\d+/gi, clientVer);
-          let cleanMeaning = (diag.meaning || '').replace(/Release \d+\.\d+/gi, clientVer);
-          let cleanRootCause = (diag.rootCause || '').replace(/Release \d+\.\d+/gi, clientVer);
-          let cleanRemediation = (diag.remediation || '').replace(/Release \d+\.\d+/gi, clientVer);
-
-          incidentsHtml += `
-            <tr style="background:${idxCounter % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
-              <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center;">
-                <span style="white-space:nowrap; background:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#fee2e2' : '#e0f2fe'}; color:${log.level === 'CRITICAL' || log.level === 'ERROR' ? '#dc2626' : '#0284c7'}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">#${idxCounter} ${log.level}</span><br>
-                <span style="font-size:9.5px; color:#dc2626; font-weight:bold;">${count} veces</span>
-              </td>
-              <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(displayService)}</td>
-              <td style="padding:6px 8px; border:1px solid #cbd5e1;">
-                <strong style="color:#0a3d6d; font-size:11px;">${escapeHtml(cleanTitle)}</strong><br>
-                <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(cleanMeaning)}</span>
-              </td>
-              <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(cleanRootCause)}</td>
-              <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(cleanRemediation)}</td>
-            </tr>`;
-        }
-      });
-
-      const sortedIncidents = Array.from(diagMap.values()).sort((a, b) => b.count - a.count);
-      sortedIncidents.forEach(({ log, diag, count }) => {
-        const codeDisplay = diag.ruleId ? diag.ruleId.replace('KB-ENTRUST-', '').replace('KB-', '') : (log.level || 'ERROR');
-        const pctStr = formatPctStr(count, totalCount);
-        topCodesHtml += `
-          <tr style="page-break-inside:avoid; break-inside:avoid;">
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d; text-align:center;">${escapeHtml(codeDisplay)}</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(diag.title)}</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:#dc2626;">${count} veces (${pctStr})</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(diag.rootCause)}</td>
-          </tr>`;
-      });
-    }
+      topCodesHtml += `
+        <tr style="page-break-inside:avoid; break-inside:avoid;">
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d; text-align:center;">${escapeHtml(code)}</td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(diag.title || code)}</td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:#dc2626;">${count.toLocaleString()} (${pctStr})</td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(diag.rootCause || 'Fallo operacional')}</td>
+        </tr>`;
+    });
 
     const section1Content = onlyCatalogErrors
       ? `<div style="margin-bottom:25px;">${incidentsHtml || '<div style="padding:15px; text-align:center; color:#64748b;">No se detectaron errores de catálogo durante el análisis.</div>'}</div>`
@@ -4520,8 +4395,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const isAccumulate = document.getElementById('chk-accumulate-mode')?.checked ?? true;
       if (!isAccumulate) {
         state.logs = [];
+        state.filteredLogs = [];
         state.loadedFiles = [];
+        state.globalStreamMetrics = null;
+        state.isServerApi = false;
       }
+      state.executiveReportCache = null;
 
       if (!state.loadedFiles) state.loadedFiles = [];
 
