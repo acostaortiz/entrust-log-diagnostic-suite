@@ -148,19 +148,26 @@ start_server_8085() {
 
     if [ -d "$DIR_DIAGNOSTIC" ]; then
         cd "$DIR_DIAGNOSTIC" || return
+        sudo chown -R $(whoami):$(whoami) "$DIR_DIAGNOSTIC" 2>/dev/null || true
+        sudo chmod -R 775 "$DIR_DIAGNOSTIC" 2>/dev/null || true
         sudo kill -9 $(sudo lsof -t -i:8085 2>/dev/null) 2>/dev/null || true
         sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
         sleep 1
         if [ -f "server.py" ]; then
-            nohup python3 server.py > server_8085.log 2>&1 &
+            nohup python3 server.py > /tmp/server_8085.log 2>&1 &
         else
-            nohup python3 -m http.server 8085 --bind 0.0.0.0 >/dev/null 2>&1 &
+            nohup python3 -m http.server 8085 --bind 0.0.0.0 > /tmp/server_8085.log 2>&1 &
         fi
-        sleep 1
-        printf "${GREEN}${BOLD}? Suite de DiagnÃ³stico activa en el puerto 8085.${NC}\n"
-        printf "${YELLOW}   ?? Abre: http://%s:8085/${NC}\n" "$SERVER_IP"
+        sleep 2
+        if sudo lsof -i:8085 >/dev/null 2>&1; then
+            printf "${GREEN}${BOLD}✅ Suite de Diagnóstico ACTIVA y OPERATIVA en puerto 8085.${NC}\n"
+            printf "${YELLOW}   🌐 Abre: http://%s:8085/${NC}\n" "$SERVER_IP"
+        else
+            printf "${RED}❌ Error iniciando server.py. Últimas líneas del log:${NC}\n"
+            tail -n 10 /tmp/server_8085.log 2>/dev/null || true
+        fi
     else
-        printf "${RED}? No se encontrÃ³ $DIR_DIAGNOSTIC.${NC}\n"
+        printf "${RED}❌ No se encontró $DIR_DIAGNOSTIC.${NC}\n"
     fi
 }
 
