@@ -559,7 +559,25 @@ if __name__ == '__main__':
         index_file_in_background(file_to_ingest, c_name)
         sys.exit(0)
 
+    # Liberar puerto 8085 si quedó ocupado por un proceso zombie
+    if sys.platform != 'win32':
+        os.system(f'fuser -k {PORT}/tcp 2>/dev/null || kill -9 $(lsof -t -i:{PORT} 2>/dev/null) 2>/dev/null || true')
+        time.sleep(0.5)
+
     http.server.HTTPServer.allow_reuse_address = True
-    server = ReusableHTTPServer(('0.0.0.0', PORT), DiagnosticRequestHandler)
-    print(f'Servidor API & Dashboard activo en http://0.0.0.0:{PORT}')
-    server.serve_forever()
+    
+    server = None
+    for attempt in range(5):
+        try:
+            server = ReusableHTTPServer(('0.0.0.0', PORT), DiagnosticRequestHandler)
+            print(f'✅ Servidor API & Dashboard ACTIVO en http://0.0.0.0:{PORT}')
+            server.serve_forever()
+            break
+        except OSError as e:
+            if 'Address already in use' in str(e) or getattr(e, 'errno', None) == 98:
+                print(f"⚠️ Puerto {PORT} ocupado. Liberando puerto automáticamente (intento {attempt + 1}/5)...")
+                if sys.platform != 'win32':
+                    os.system(f'fuser -k {PORT}/tcp 2>/dev/null || kill -9 $(lsof -t -i:{PORT} 2>/dev/null) 2>/dev/null || true')
+                time.sleep(1)
+            else:
+                raise e
