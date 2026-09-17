@@ -455,6 +455,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+class ReusableHTTPServer(http.server.HTTPServer):
+    allow_reuse_address = True
+    daemon_threads = True
+
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == '--ingest':
         if len(sys.argv) < 3:
@@ -466,6 +470,7 @@ if __name__ == '__main__':
         index_file_in_background(file_to_ingest, c_name)
         sys.exit(0)
 
-    server = http.server.HTTPServer(('0.0.0.0', PORT), DiagnosticRequestHandler)
+    http.server.HTTPServer.allow_reuse_address = True
+    server = ReusableHTTPServer(('0.0.0.0', PORT), DiagnosticRequestHandler)
     print(f'Servidor API & Dashboard activo en http://0.0.0.0:{PORT}')
     server.serve_forever()
