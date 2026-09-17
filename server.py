@@ -591,9 +591,14 @@ if __name__ == '__main__':
             break
         except OSError as e:
             if 'Address already in use' in str(e) or getattr(e, 'errno', None) == 98:
-                print(f"⚠️ Puerto {PORT} ocupado. Liberando puerto automáticamente (intento {attempt + 1}/5)...")
-                if sys.platform != 'win32':
-                    os.system(f'fuser -k {PORT}/tcp 2>/dev/null || kill -9 $(lsof -t -i:{PORT} 2>/dev/null) 2>/dev/null || true')
-                time.sleep(1)
+                if attempt < 4:
+                    print(f"⚠️ Puerto {PORT} ocupado. Liberando puerto automáticamente (intento {attempt + 1}/5)...")
+                    if sys.platform != 'win32':
+                        os.system(f'fuser -k {PORT}/tcp 2>/dev/null || kill -9 $(lsof -t -i:{PORT} 2>/dev/null) 2>/dev/null || true')
+                    time.sleep(1)
+                else:
+                    print(f"ℹ️ El puerto {PORT} ya se encuentra activo y atendiendo solicitudes en segundo plano.")
+                    print(f"🌐 Puedes abrir el navegador en: http://10.16.13.175:{PORT}")
+                    sys.exit(0)
             else:
                 raise e

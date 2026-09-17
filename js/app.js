@@ -94,12 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicialización de datos de sesión: Sincronizar con base de datos del servidor o cargar muestra inicial
   (async () => {
     try {
-      const synced = await syncClientSessionWithServer(state.activeClientId);
+      const synced = await syncClientSessionWithServer('mercantil');
       if (!synced && (!state.logs || state.logs.length === 0)) {
-        loadPresetScenario('entrust_idg');
+        loadMercantil10GbBundle();
       }
     } catch (e) {
-      try { loadPresetScenario('entrust_idg'); } catch (err) {}
+      try { loadMercantil10GbBundle(); } catch (err) {}
     }
   })();
 
@@ -2431,6 +2431,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       // Asignar métricas globales para dashboard panorámico
       state.globalStreamMetrics = bundle.globalMetrics || null;
+
+      // Resetear filtros para mostrar todos los eventos y errores críticos de inmediato
+      if (dom.filterClientSelect) dom.filterClientSelect.value = 'ALL';
+      if (dom.filterLevelSelect) dom.filterLevelSelect.value = 'ALL';
+      if (dom.filterTypeSelect) dom.filterTypeSelect.value = 'ALL';
+      if (dom.searchLogInput) dom.searchLogInput.value = '';
+      state.activeFilterMode = null;
 
       // Registrar archivo cargado
       state.loadedFiles = [{
