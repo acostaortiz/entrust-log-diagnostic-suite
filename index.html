@@ -233,6 +233,9 @@
 
             <button class="btn btn-danger" id="btn-reset-session" onclick="window.resetAppSession && window.resetAppSession()" title="Eliminar todos los logs y limpiar la muestra actual" style="font-size:0.8rem; padding:6px 12px;">🧹 Limpiar Todo</button>
             <button class="btn" id="btn-export-report" style="font-size:0.8rem; padding:6px 12px;">📥 Exportar JSON</button>
+            <button class="btn" id="btn-open-server-ingest" style="background:linear-gradient(135deg, #10b981, #059669); border:1px solid #34d399; color:#fff; font-weight:700; font-size:0.82rem; padding:8px 16px; border-radius:6px; box-shadow:0 0 12px rgba(16,185,129,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Indexar archivos gigantes (>3GB/10GB) directamente en el Servidor Ubuntu sin consumir memoria del navegador">
+              ⚡ Ingesta Servidor (> 3 GB)
+            </button>
             <label class="btn btn-primary" style="margin:0; font-size:0.82rem; padding:8px 18px; background:linear-gradient(135deg, #0284c7, #0369a1); border:1px solid #38bdf8; cursor:pointer; font-weight:700; display:inline-flex; align-items:center; gap:8px; box-shadow:0 0 12px rgba(2,132,199,0.35);">
               📂 Cargar Archivos (.log, .txt, .json, .csv)
               <input type="file" id="file-input" accept=".log,.txt,.json,.csv" multiple style="display:none;">
@@ -954,16 +957,72 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
     </div>
   </div>
 
+  <!-- Modal: Ingesta Directa en Servidor (10 GB+) -->
+  <div class="modal-overlay" id="server-ingest-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-card" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; max-width:720px; width:92%; padding:24px; box-shadow:0 20px 40px rgba(0,0,0,0.5);">
+      <div class="modal-header flex-between" style="border-bottom:2px solid #10b981; padding-bottom:12px; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:1.6rem;">⚡</span>
+          <div>
+            <h3 style="margin:0; font-size:1.2rem; color:#10b981;">Indexación Directa en Servidor Ubuntu (10.16.13.175)</h3>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Procesamiento masivo para archivos gigantes (>3 GB / 10 GB+ / 16.5M logs) con 0% de uso de RAM en el navegador</span>
+          </div>
+        </div>
+        <button class="btn-close-modal" id="btn-close-server-ingest" style="background:none; border:none; font-size:1.4rem; color:var(--text-muted); cursor:pointer;">&times;</button>
+      </div>
+
+      <div class="modal-body" style="font-size:0.85rem; line-height:1.5;">
+        <!-- Sección 1: Archivos Detectados en el Servidor -->
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:14px; margin-bottom:16px;">
+          <div class="flex-between mb-2">
+            <span style="font-weight:700; color:var(--text-main);">📁 Archivos Detectados en el Servidor (`/data` o raíz):</span>
+            <button class="btn btn-secondary" id="btn-refresh-server-files" style="padding:2px 8px; font-size:0.75rem;">🔄 Buscar Archivos</button>
+          </div>
+          <div id="server-files-list-container" style="max-height:160px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">
+            <span style="color:var(--text-muted); font-size:0.8rem;">Haz clic en "Buscar Archivos" para listar los logs subidos al servidor.</span>
+          </div>
+        </div>
+
+        <!-- Sección 2: Ruta Personalizada en el Servidor -->
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:14px; margin-bottom:16px;">
+          <label style="display:block; font-weight:700; color:var(--text-main); margin-bottom:6px;">⚙️ O ingresa la ruta absoluta de un archivo en el Servidor:</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" class="form-control" id="server-custom-file-path" placeholder="/var/www/entrust-log-diagnostic-suite/data/Logs_AuditEvents.csv" style="flex:1; font-family:monospace; font-size:0.82rem;">
+            <button class="btn" id="btn-do-server-ingest" style="background:#10b981; color:#fff; font-weight:700; padding:6px 16px; border-radius:6px; cursor:pointer;">⚡ Indexar Ahora</button>
+          </div>
+        </div>
+
+        <!-- Sección 3: Instrucciones de Transferencia SCP -->
+        <div style="background:var(--bg-secondary); border:1px dashed var(--border-color); border-radius:8px; padding:12px 14px; font-size:0.78rem; margin-bottom:14px;">
+          <div style="font-weight:700; color:var(--text-cyan); margin-bottom:4px;">💡 ¿Cómo transferir un archivo de 10 GB directamente al servidor sin usar el navegador?</div>
+          <p style="margin:0 0 6px 0; color:var(--text-muted);">Puedes transferir cualquier archivo de cualquier cliente desde tu terminal de Windows usando SCP:</p>
+          <div style="background:#0f172a; color:#a5f3fc; padding:8px 12px; border-radius:6px; font-family:monospace; font-size:0.78rem; word-break:break-all;">
+            <code>scp "C:\ruta\tu_archivo_10gb.csv" tomas@10.16.13.175:/var/www/entrust-log-diagnostic-suite/data/</code>
+          </div>
+        </div>
+
+        <!-- Estado en tiempo real -->
+        <div id="server-ingest-status-box" style="display:none; padding:12px; border-radius:6px; background:rgba(16,185,129,0.15); border:1px solid #10b981; color:var(--text-main); font-family:monospace; font-size:0.82rem;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <span class="pulse-dot" style="background:#10b981;"></span>
+            <strong id="server-ingest-status-title">Indexando archivo en el Servidor...</strong>
+          </div>
+          <div id="server-ingest-status-detail" style="color:var(--text-muted); font-size:0.78rem;">Procesando eventos en SQLite a alta velocidad...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts JavaScript -->
   <script src="js/pptxgen.bundle.js"></script>
-  <script src="js/kb-database.js?v=105.0"></script>
-  <script src="js/manuals-engine.js?v=105.0"></script>
-  <script src="js/bancomercantil_data.js?v=105.0"></script>
-  <script src="js/log-parser.js?v=105.0"></script>
-  <script src="js/storage-engine.js?v=105.0"></script>
-  <script src="js/cert-auditor.js?v=105.0"></script>
-  <script src="js/syslog-collector.js?v=105.0"></script>
-  <script src="js/app.js?v=105.0"></script>
+  <script src="js/kb-database.js?v=110.0"></script>
+  <script src="js/manuals-engine.js?v=110.0"></script>
+  <script src="js/bancomercantil_data.js?v=110.0"></script>
+  <script src="js/log-parser.js?v=110.0"></script>
+  <script src="js/storage-engine.js?v=110.0"></script>
+  <script src="js/cert-auditor.js?v=110.0"></script>
+  <script src="js/syslog-collector.js?v=110.0"></script>
+  <script src="js/app.js?v=110.0"></script>
 
 </body>
 </html>

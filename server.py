@@ -194,6 +194,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
         if path == '/api/upload-chunk':
             self.handle_upload_chunk()
+        elif path == '/api/ingest-local':
+            self.handle_ingest_local()
         else:
             self.send_error(404, 'Endpoint not found')
 
@@ -208,10 +210,61 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_api_stats()
         elif path == '/api/upload-status':
             self.send_json(upload_state)
+        elif path == '/api/list-server-files':
+            self.handle_list_server_files()
         elif path == '/api/export-errors':
             self.handle_export_errors()
         else:
             super().do_GET()
+
+    def handle_ingest_local(self):
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_length)
+            data = json.loads(body.decode('utf-8'))
+            file_path = data.get('filePath', '').strip()
+            client_name = data.get('clientName', 'Entrust Client').strip()
+
+            if not file_path or not os.path.exists(file_path):
+                self.send_json({'error': f'El archivo no existe en el servidor: {file_path}'}, status=400)
+                return
+
+            upload_state['fileName'] = os.path.basename(file_path)
+            upload_state['clientName'] = client_name
+            upload_state['status'] = 'indexing'
+            upload_state['progress'] = 0
+
+            thread = threading.Thread(target=index_file_in_background, args=(file_path, client_name))
+            thread.daemon = True
+            thread.start()
+
+            self.send_json({'success': True, 'message': f'Indexación iniciada para {file_path}'})
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
+
+    def handle_list_server_files(self):
+        found_files = []
+        scan_dirs = [DATA_DIR, UPLOADS_DIR, BASE_DIR]
+        for sdir in scan_dirs:
+            if not os.path.exists(sdir):
+                continue
+            for f in os.listdir(sdir):
+                if f.endswith(('.csv', '.log', '.txt', '.tsv')) and not f.startswith('.'):
+                    full_p = os.path.join(sdir, f)
+                    try:
+                        sz = os.path.getsize(full_p)
+                        found_files.append({
+                            'name': f,
+                            'path': full_p,
+                            'sizeBytes': sz,
+                            'sizeMb': round(sz / (1024 * 1024), 2),
+                            'sizeGb': round(sz / (1024 * 1024 * 1024), 2)
+                        })
+                    except Exception:
+                        pass
+        # Eliminar duplicados por path
+        unique_files = list({v['path']: v for v in found_files}.values())
+        self.send_json({'files': unique_files})
 
     def handle_upload_chunk(self):
         try:

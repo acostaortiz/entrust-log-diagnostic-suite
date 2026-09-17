@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
   try { initMetricCardsInteractivity(); } catch (e) { console.error('Error al inicializar Tarjetas:', e); }
   try { initExecReportModule(); } catch (e) { console.error('Error al inicializar Informe:', e); }
   try { initNodeComparisonModule(); } catch (e) { console.error('Error al inicializar Comparativa Multi-Nodo:', e); }
+  try { initServerIngestModule(); } catch (e) { console.error('Error al inicializar Ingesta Servidor:', e); }
   try { initEventListeners(); } catch (e) { console.error('Error al inicializar EventListeners:', e); }
 
   // Cargar por defecto el escenario de Entrust IdentityGuard OnPremise
@@ -3979,6 +3980,172 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       if (!hop) return;
       alert(`🔍 Detalle Técnico del Salto ${hop.step}:\n\nComponente: ${hop.title}\nProtocolo: ${hop.protocol}\nHost/IP: ${hop.host}\nLatencia: ${hop.duration} ms\nEventos Registrados: ${hop.count.toLocaleString()}\n\nDescripción:\n${hop.details}`);
     };
+  }
+
+  function initServerIngestModule() {
+    const btnOpen = document.getElementById('btn-open-server-ingest');
+    const modal = document.getElementById('server-ingest-modal');
+    const btnClose = document.getElementById('btn-close-server-ingest');
+    const btnRefresh = document.getElementById('btn-refresh-server-files');
+    const btnDoIngest = document.getElementById('btn-do-server-ingest');
+    const customPathInput = document.getElementById('server-custom-file-path');
+    const listContainer = document.getElementById('server-files-list-container');
+    const statusBox = document.getElementById('server-ingest-status-box');
+    const statusTitle = document.getElementById('server-ingest-status-title');
+    const statusDetail = document.getElementById('server-ingest-status-detail');
+
+    if (btnOpen) {
+      btnOpen.addEventListener('click', () => {
+        if (modal) modal.style.display = 'flex';
+        fetchServerFilesList();
+      });
+    }
+
+    if (btnClose) {
+      btnClose.addEventListener('click', () => {
+        if (modal) modal.style.display = 'none';
+      });
+    }
+
+    if (btnRefresh) {
+      btnRefresh.addEventListener('click', () => fetchServerFilesList());
+    }
+
+    if (btnDoIngest) {
+      btnDoIngest.addEventListener('click', () => {
+        const pathVal = customPathInput?.value?.trim();
+        if (!pathVal) {
+          alert('Por favor introduce la ruta del archivo en el servidor.');
+          return;
+        }
+        triggerServerFileIngestion(pathVal);
+      });
+    }
+
+    async function fetchServerFilesList() {
+      if (!listContainer) return;
+      listContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">Buscando archivos en el servidor...</span>';
+      try {
+        const res = await fetch('/api/list-server-files');
+        if (!res.ok) throw new Error('API server.py no disponible');
+        const data = await res.json();
+        const files = data.files || [];
+
+        if (files.length === 0) {
+          listContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">No se encontraron archivos .csv / .log en `/data`. Transfiere tu archivo mediante SCP.</span>';
+          return;
+        }
+
+        let html = '';
+        files.forEach(f => {
+          const sizeText = f.sizeGb > 0.5 ? `${f.sizeGb} GB` : `${f.sizeMb} MB`;
+          html += `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-secondary); border:1px solid var(--border-color); padding:8px 12px; border-radius:6px;">
+              <div>
+                <strong style="color:var(--text-main); font-size:0.82rem;">📄 ${escapeHtml(f.name)}</strong>
+                <span style="font-size:0.75rem; color:#38bdf8; margin-left:8px; font-weight:bold;">(${sizeText})</span>
+                <div style="font-size:0.7rem; color:var(--text-muted); font-family:monospace;">${escapeHtml(f.path)}</div>
+              </div>
+              <button type="button" class="btn btn-primary" style="padding:4px 12px; font-size:0.75rem; font-weight:bold; background:#10b981; border:none; cursor:pointer;" onclick="window.triggerServerFileIngestDirect('${escapeHtml(f.path)}')">
+                ⚡ Indexar
+              </button>
+            </div>
+          `;
+        });
+        listContainer.innerHTML = html;
+      } catch (err) {
+        listContainer.innerHTML = `<span style="color:#ef4444; font-size:0.8rem;">Error listando archivos: ${err.message}</span>`;
+      }
+    }
+
+    window.triggerServerFileIngestDirect = (path) => {
+      triggerServerFileIngestion(path);
+    };
+
+    async function triggerServerFileIngestion(filePath) {
+      const activeClient = getActiveClientProfile();
+      const clientName = activeClient?.name || 'Banco Mercantil';
+
+      if (statusBox) statusBox.style.display = 'block';
+      if (statusTitle) statusTitle.textContent = `Iniciando indexación de ${filePath}...`;
+      if (statusDetail) statusDetail.textContent = 'Enviando orden al motor SQLite del servidor...';
+
+      try {
+        const res = await fetch('/api/ingest-local', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filePath, clientName })
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || 'Error al iniciar indexación');
+        }
+
+        // Sondeo del estado en tiempo real
+        const pollInterval = setInterval(async () => {
+          try {
+            const statusRes = await fetch('/api/upload-status');
+            if (!statusRes.ok) return;
+            const s = await statusRes.json();
+
+            if (s.status === 'indexing') {
+              if (statusTitle) statusTitle.textContent = `⚡ Indexando en Servidor: ${s.progress}% completado`;
+              if (statusDetail) statusDetail.textContent = `Procesados: ${(s.linesProcessed || 0).toLocaleString()} eventos | ${(s.totalErrors || 0).toLocaleString()} errores detectados`;
+              showAnalysisStatus(true, `⚡ Servidor Indexando: ${s.progress}%`, `${(s.linesProcessed || 0).toLocaleString()} registros`);
+            } else if (s.status === 'ready') {
+              clearInterval(pollInterval);
+              if (statusTitle) statusTitle.textContent = `✅ ¡Indexación 100% Completada!`;
+              if (statusDetail) statusDetail.textContent = `Total: ${(s.linesProcessed || 0).toLocaleString()} eventos listos para consulta.`;
+
+              // Cargar estadísticas y refrescar vista
+              const statsRes = await fetch('/api/stats');
+              if (statsRes.ok) {
+                const statsData = await statsRes.json();
+                state.globalStreamMetrics = {
+                  totalLogs: statsData.totalLogs || s.linesProcessed || 0,
+                  totalErrors: statsData.totalErrors || s.totalErrors || 0,
+                  totalWarnings: statsData.totalWarnings || 0,
+                  topUsers: statsData.topUsers || [],
+                  topIps: statsData.topIps || [],
+                  topCodes: (statsData.eventTypes || []).map(t => ({ code: t.code, count: t.count }))
+                };
+              }
+
+              state.loadedFiles = [{
+                name: s.fileName || filePath,
+                size: s.fileSize || 0,
+                count: s.linesProcessed || 0,
+                sampleCount: 50,
+                realErrors: s.totalErrors || 0,
+                realWarnings: 0,
+                nodeKey: 'server_core',
+                nodeName: '🖥️ Servidor Core SQLite',
+                client: clientName
+              }];
+
+              state.isServerApi = true;
+              await fetchSqlLogs(1);
+              updateMetricsAndCharts();
+              renderLoadedFilesDrawer();
+              showAnalysisStatus(false, `✅ Auditoría Cargada desde el Servidor (${(s.linesProcessed || 0).toLocaleString()} eventos)`, `Cliente: ${clientName}`);
+
+              setTimeout(() => {
+                if (modal) modal.style.display = 'none';
+              }, 1500);
+            } else if (s.status === 'error') {
+              clearInterval(pollInterval);
+              if (statusTitle) statusTitle.textContent = `❌ Error en el Servidor`;
+              if (statusDetail) statusDetail.textContent = s.error || 'Error desconocido';
+              alert('Error al indexar en el servidor: ' + s.error);
+            }
+          } catch(e) {}
+        }, 1000);
+      } catch (err) {
+        if (statusTitle) statusTitle.textContent = `❌ Fallo: ${err.message}`;
+        alert(err.message);
+      }
+    }
   }
 
   function initEventListeners() {
