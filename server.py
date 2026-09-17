@@ -107,7 +107,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'clientIp': r[6],
                 'raw': r[7],
                 'client': 'Banco Mercantil C.A. (IDaaS Cloud)',
-                'node': '?? IDaaS Cloud Core'
+                'node': '☁️ IDaaS Cloud Core'
             })
 
         total_pages = max(1, (total_matching + limit - 1) // limit)
