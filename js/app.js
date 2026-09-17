@@ -481,6 +481,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const activePane = document.getElementById(`tab-${targetTab}`);
     if (activePane) activePane.classList.add('active');
 
+    if (targetTab === 'analyzer' && state.isServerApi && (!state.logs || state.logs.length === 0)) {
+      fetchSqlLogs(1);
+    }
     if (targetTab === 'manuals' && (!state.manualLoaded || state.manualLoaded !== state.currentManualVersion)) {
       loadManual(state.currentManualVersion);
       state.manualLoaded = state.currentManualVersion;
@@ -1611,7 +1614,11 @@ document.addEventListener('DOMContentLoaded', () => {
         dom.activeFilterText.textContent = 'Filtrando Únicamente: Eventos de Auditoría (AUDxxx) de Entrust IdentityGuard';
       }
     }
-    applyLogFilters();
+    if (state.isServerApi) {
+      fetchSqlLogs(1);
+    } else {
+      applyLogFilters();
+    }
   }
 
   function clearFilterMode() {
@@ -1619,7 +1626,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dom.activeFilterBanner) {
       dom.activeFilterBanner.style.display = 'none';
     }
-    applyLogFilters();
+    if (state.isServerApi) {
+      fetchSqlLogs(1);
+    } else {
+      applyLogFilters();
+    }
   }
 
   function openEntrust520Modal() {
@@ -1736,7 +1747,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.filteredLogs.length === 0) {
       dom.logScrollArea.innerHTML = `
         <div style="padding: 30px; text-align: center; color: var(--text-muted);">
-          No se encontraron registros de log que coincidan con los filtros aplicados.
+          <p style="margin-bottom:12px; font-size:0.88rem;">No se encontraron registros de log que coincidan con los filtros aplicados.</p>
+          <button type="button" class="btn btn-primary" onclick="window.fetchSqlLogsGlobal && window.fetchSqlLogsGlobal(1)" style="font-size:0.82rem; padding:6px 16px; background:#0284c7; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">
+            ⚡ Cargar / Refrescar Logs del Servidor (16.5M)
+          </button>
         </div>`;
       return;
     }
@@ -2612,6 +2626,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       return false;
     }
   }
+  window.fetchSqlLogsGlobal = fetchSqlLogs;
 
   function loadPresetScenario(scenario) {
     if (scenario === 'mercantil_idaas_10gb') {
