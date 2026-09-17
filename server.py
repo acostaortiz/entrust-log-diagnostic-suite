@@ -438,6 +438,89 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         except Exception as e:
             self.send_json({'error': str(e)}, status=500)
 
+    def handle_ingest_local(self):
+        global ACTIVE_DB_PATH
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            body_data = self.rfile.read(content_length).decode('utf-8')
+            payload = json.loads(body_data) if body_data else {}
+            
+            file_path = payload.get('filePath', '').strip()
+            client_name = payload.get('clientName', 'Banco Mercantil C.A.').strip()
+            
+            if not file_path:
+                self.send_json({'error': 'Ruta de archivo no especificada'}, status=400)
+                return
+                
+            if not os.path.exists(file_path):
+                candidate = os.path.join(DATA_DIR, os.path.basename(file_path))
+                if os.path.exists(candidate):
+                    file_path = candidate
+                else:
+                    self.send_json({'error': f'El archivo no existe en el servidor: {file_path}'}, status=404)
+                    return
+            
+            client_slug = get_client_slug(client_name)
+            target_db = os.path.join(DATA_DIR, f"{client_slug}_audit.db")
+            
+            # If DB already exists and has records, activate immediately
+            if os.path.exists(target_db) and os.path.getsize(target_db) > 1024 * 1024:
+                try:
+                    conn = sqlite3.connect(target_db)
+                    cur = conn.cursor()
+                    cur.execute('SELECT COUNT(1) FROM logs')
+                    records = cur.fetchone()[0]
+                    cur.execute('SELECT COUNT(1) FROM logs WHERE event_outcome LIKE ?', ('%FAIL%',))
+                    errors = cur.fetchone()[0]
+                    conn.close()
+                    
+                    if records > 0:
+                        ACTIVE_DB_PATH = target_db
+                        upload_state['dbPath'] = target_db
+                        upload_state['clientName'] = client_name
+                        upload_state['clientSlug'] = client_slug
+                        upload_state['fileName'] = os.path.basename(file_path)
+                        upload_state['status'] = 'ready'
+                        upload_state['progress'] = 100
+                        upload_state['linesProcessed'] = records
+                        upload_state['totalErrors'] = errors
+                        upload_state['error'] = None
+                        
+                        self.send_json({
+                            'success': True,
+                            'status': 'ready',
+                            'alreadyIndexed': True,
+                            'dbPath': target_db,
+                            'totalLogs': records,
+                            'totalErrors': errors,
+                            'client': client_name
+                        })
+                        return
+                except Exception:
+                    pass
+
+            upload_state['status'] = 'indexing'
+            upload_state['progress'] = 0
+            upload_state['fileName'] = os.path.basename(file_path)
+            upload_state['clientName'] = client_name
+            upload_state['clientSlug'] = client_slug
+            upload_state['linesProcessed'] = 0
+            upload_state['totalErrors'] = 0
+            upload_state['error'] = None
+
+            thread = threading.Thread(target=index_file_in_background, args=(file_path, client_name))
+            thread.daemon = True
+            thread.start()
+
+            self.send_json({
+                'success': True,
+                'status': 'indexing',
+                'filePath': file_path,
+                'client': client_name
+            })
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
+
     def handle_api_stats(self, query):
         client_param = query.get('client', [None])[0]
         db = resolve_client_db(client_param)

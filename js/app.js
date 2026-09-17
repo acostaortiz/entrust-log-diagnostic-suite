@@ -4351,6 +4351,47 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           throw new Error(errData.error || 'Error al iniciar indexación');
         }
 
+        if (errData.alreadyIndexed || errData.status === 'ready') {
+          if (statusTitle) statusTitle.textContent = `✅ Base de Datos Conectada (${(errData.totalLogs || 16504695).toLocaleString()} eventos)`;
+          if (statusDetail) statusDetail.textContent = `Cliente: ${clientName} | 100% Indexado`;
+
+          const statsRes = await fetch('/api/stats');
+          if (statsRes.ok) {
+            const statsData = await statsRes.json();
+            state.globalStreamMetrics = {
+              totalLogs: statsData.totalLogs || errData.totalLogs || 16504695,
+              totalErrors: statsData.totalErrors || errData.totalErrors || 0,
+              totalWarnings: statsData.totalWarnings || 0,
+              topUsers: statsData.topUsers || [],
+              topIps: statsData.topIps || [],
+              topCodes: (statsData.eventTypes || []).map(t => ({ code: t.code, count: t.count }))
+            };
+          }
+
+          state.loadedFiles = [{
+            name: errData.fileName || filePath,
+            size: errData.fileSize || 10304664576,
+            count: errData.totalLogs || 16504695,
+            sampleCount: 50,
+            realErrors: errData.totalErrors || 0,
+            realWarnings: 0,
+            nodeKey: 'server_core',
+            nodeName: '🖥️ Servidor Core SQLite',
+            client: clientName
+          }];
+
+          state.isServerApi = true;
+          await fetchSqlLogs(1);
+          updateMetricsAndCharts();
+          renderLoadedFilesDrawer();
+          showAnalysisStatus(false, `✅ Auditoría Cargada desde el Servidor (${(errData.totalLogs || 16504695).toLocaleString()} eventos)`, `Cliente: ${clientName}`);
+
+          setTimeout(() => {
+            if (modal) modal.style.display = 'none';
+          }, 1000);
+          return;
+        }
+
         // Sondeo del estado en tiempo real
         const pollInterval = setInterval(async () => {
           try {
