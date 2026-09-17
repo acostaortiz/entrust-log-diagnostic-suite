@@ -56,8 +56,13 @@ class ManualsEngine {
         ],
         type: 'builtin'
       },
+      'vIDaaS_docs': {
+        title: '🌐 Entrust IDaaS Cloud - Manual Oficial Completo & Developer APIs (docs.trustedauth.com)',
+        paths: ['manuals/entrust_idaas_docs.html'],
+        type: 'builtin'
+      },
       'vIDaaS': {
-        title: 'Entrust IDaaS Cloud - Troubleshooting SSO, SAML 2.0, OIDC & Push MFA',
+        title: 'Entrust IDaaS Cloud - Troubleshooting Rápido SSO, SAML 2.0, OIDC & Push MFA',
         paths: ['manuals/entrust_idaas_errors.html'],
         type: 'builtin'
       }
