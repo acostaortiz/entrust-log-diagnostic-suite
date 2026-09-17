@@ -22,6 +22,7 @@ upload_state = {
     'status': 'idle',
     'fileName': '',
     'clientName': 'Entrust General',
+    'clientSlug': 'general',
     'fileSize': 0,
     'progress': 0,
     'linesProcessed': 0,
@@ -31,13 +32,58 @@ upload_state = {
     'error': None
 }
 
-def get_active_db():
+def get_client_slug(client_name_or_id):
+    if not client_name_or_id:
+        return 'general'
+    slug = re.sub(r'[^a-zA-Z0-9_]', '_', str(client_name_or_id).lower().strip())
+    slug = re.sub(r'_+', '_', slug).strip('_')
+    # Common mappings
+    if 'mercantil' in slug:
+        return 'mercantil'
+    if 'banesco' in slug:
+        return 'banesco'
+    if 'bancamiga' in slug:
+        return 'bancamiga'
+    if 'provincial' in slug or 'bbva' in slug:
+        return 'provincial'
+    if 'idaas' in slug:
+        return 'idaas_cloud'
+    return slug or 'general'
+
+def resolve_client_db(client_param=None):
     global ACTIVE_DB_PATH
+    if client_param and str(client_param) not in ['ALL', 'all', 'undefined', 'null', '']:
+        slug = get_client_slug(client_param)
+        candidate_names = [
+            f"{slug}_audit.db",
+            f"{slug}.db",
+            f"{str(client_param).strip().lower()}_audit.db",
+            f"{str(client_param).strip().lower()}.db"
+        ]
+        for name in candidate_names:
+            target = os.path.join(DATA_DIR, name)
+            if os.path.exists(target):
+                return target
+        
+        # Search for any db starting with slug
+        if os.path.exists(DATA_DIR):
+            for f in os.listdir(DATA_DIR):
+                if f.lower().startswith(slug) and f.endswith('.db'):
+                    return os.path.join(DATA_DIR, f)
+        
+        return os.path.join(DATA_DIR, f"{slug}_audit.db")
+
     if os.path.exists(ACTIVE_DB_PATH):
         return ACTIVE_DB_PATH
     if os.path.exists(DEFAULT_DB_PATH):
         return DEFAULT_DB_PATH
-    return ACTIVE_DB_PATH
+    
+    # Return any available db in data dir
+    if os.path.exists(DATA_DIR):
+        for f in os.listdir(DATA_DIR):
+            if f.endswith('_audit.db'):
+                return os.path.join(DATA_DIR, f)
+    return None
 
 def init_db(db_path):
     conn = sqlite3.connect(db_path)
@@ -108,9 +154,13 @@ def parse_line_for_db(line, line_num):
 
 def index_file_in_background(file_path, client_name='Entrust Client'):
     global upload_state, ACTIVE_DB_PATH
-    db_name = re.sub(r'[^a-zA-Z0-9_]', '_', client_name.lower()) + '_audit.db'
+    client_slug = get_client_slug(client_name)
+    db_name = f"{client_slug}_audit.db"
     target_db = os.path.join(DATA_DIR, db_name)
     
+    upload_state['clientName'] = client_name
+    upload_state['clientSlug'] = client_slug
+    upload_state['fileName'] = os.path.basename(file_path)
     upload_state['status'] = 'indexing'
     upload_state['progress'] = 0
     upload_state['linesProcessed'] = 0
@@ -207,13 +257,13 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         if path == '/api/logs':
             self.handle_api_logs(query)
         elif path == '/api/stats':
-            self.handle_api_stats()
+            self.handle_api_stats(query)
         elif path == '/api/upload-status':
             self.send_json(upload_state)
         elif path == '/api/list-server-files':
             self.handle_list_server_files()
         elif path == '/api/export-errors':
-            self.handle_export_errors()
+            self.handle_export_errors(query)
         else:
             super().do_GET()
 
@@ -231,6 +281,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             upload_state['fileName'] = os.path.basename(file_path)
             upload_state['clientName'] = client_name
+            upload_state['clientSlug'] = get_client_slug(client_name)
             upload_state['status'] = 'indexing'
             upload_state['progress'] = 0
 
@@ -262,7 +313,6 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                         })
                     except Exception:
                         pass
-        # Eliminar duplicados por path
         unique_files = list({v['path']: v for v in found_files}.values())
         self.send_json({'files': unique_files})
 
@@ -286,6 +336,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             pct = int(((chunk_index + 1) / total_chunks) * 100)
             upload_state['fileName'] = file_name
             upload_state['clientName'] = client_name
+            upload_state['clientSlug'] = get_client_slug(client_name)
             upload_state['status'] = 'uploading'
             upload_state['progress'] = pct
 
@@ -300,10 +351,22 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         except Exception as e:
             self.send_json({'error': str(e)}, status=500)
 
-    def handle_api_stats(self):
-        db = get_active_db()
-        if not os.path.exists(db):
-            self.send_json({'error': 'DB not ready', 'totalLogs': 0, 'totalErrors': 0}, status=200)
+    def handle_api_stats(self, query):
+        client_param = query.get('client', [None])[0]
+        db = resolve_client_db(client_param)
+        
+        if not db or not os.path.exists(db):
+            self.send_json({
+                'status': 'empty',
+                'totalLogs': 0,
+                'totalErrors': 0,
+                'totalSuccess': 0,
+                'eventTypes': [],
+                'topUsers': [],
+                'topIps': [],
+                'activeDb': None,
+                'client': client_param
+            }, status=200)
             return
 
         try:
@@ -326,21 +389,25 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             conn.close()
             self.send_json({
+                'status': 'ready',
                 'totalLogs': total,
                 'totalErrors': errors,
                 'totalSuccess': total - errors,
                 'eventTypes': types,
                 'topUsers': top_users,
                 'topIps': top_ips,
-                'activeDb': os.path.basename(db)
+                'activeDb': os.path.basename(db),
+                'client': client_param or os.path.basename(db).replace('_audit.db', '')
             })
         except Exception as e:
             self.send_json({'error': str(e), 'totalLogs': 0, 'totalErrors': 0}, status=500)
 
     def handle_api_logs(self, query):
-        db = get_active_db()
-        if not os.path.exists(db):
-            self.send_json({'error': 'DB not ready', 'logs': [], 'totalMatching': 0, 'totalPages': 0}, status=200)
+        client_param = query.get('client', [None])[0]
+        db = resolve_client_db(client_param)
+        
+        if not db or not os.path.exists(db):
+            self.send_json({'status': 'empty', 'logs': [], 'totalMatching': 0, 'totalPages': 0, 'page': 1, 'limit': 50}, status=200)
             return
 
         try:
@@ -384,6 +451,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             rows = cur.fetchall()
             conn.close()
 
+            resolved_client_name = client_param or os.path.basename(db).replace('_audit.db', '').replace('_', ' ').title()
             logs = []
             for r in rows:
                 is_err = 'FAIL' in (r[4] or '')
@@ -399,12 +467,13 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     'message': f'[{r[3]}] {r[5]} (Outcome: {r[4]})',
                     'clientIp': r[6],
                     'raw': r[7],
-                    'client': upload_state.get('clientName', 'Entrust Client'),
-                    'node': '🖥️ Server Cluster Core'
+                    'client': resolved_client_name,
+                    'node': '🖥️ Servidor Core SQLite'
                 })
 
             total_pages = max(1, (total_matching + limit - 1) // limit)
             self.send_json({
+                'status': 'ready',
                 'page': page,
                 'limit': limit,
                 'totalMatching': total_matching,
@@ -414,10 +483,12 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         except Exception as e:
             self.send_json({'error': str(e), 'logs': [], 'totalMatching': 0, 'totalPages': 0}, status=500)
 
-    def handle_export_errors(self):
-        db = get_active_db()
-        if not os.path.exists(db):
-            self.send_error(503, 'DB not ready')
+    def handle_export_errors(self, query):
+        client_param = query.get('client', [None])[0]
+        db = resolve_client_db(client_param)
+        
+        if not db or not os.path.exists(db):
+            self.send_error(404, 'No hay base de datos indexada para este cliente')
             return
 
         self.send_response(200)

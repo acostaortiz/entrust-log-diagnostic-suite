@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     activeFilterMode: null,
     theme: localStorage.getItem('app_theme') || 'light',
     clientProfiles: [],
-    activeClientId: 'mercantil'
+    activeClientId: 'general'
   };
   window.appState = state;
 
@@ -91,8 +91,17 @@ document.addEventListener('DOMContentLoaded', () => {
   try { initServerIngestModule(); } catch (e) { console.error('Error al inicializar Ingesta Servidor:', e); }
   try { initEventListeners(); } catch (e) { console.error('Error al inicializar EventListeners:', e); }
 
-  // Cargar por defecto el escenario de Entrust IdentityGuard OnPremise
-  try { loadPresetScenario('entrust_idg'); } catch (e) { console.error('Error al cargar escenario inicial:', e); }
+  // Inicialización de datos de sesión: Sincronizar con base de datos del servidor o cargar muestra inicial
+  (async () => {
+    try {
+      const synced = await syncClientSessionWithServer(state.activeClientId);
+      if (!synced && (!state.logs || state.logs.length === 0)) {
+        loadPresetScenario('entrust_idg');
+      }
+    } catch (e) {
+      try { loadPresetScenario('entrust_idg'); } catch (err) {}
+    }
+  })();
 
   /* ==========================================================================
      0.1 GESTIÓN Y REGISTRO DE PERFILES DE CLIENTES & ENTORNOS ENTRUST
@@ -252,6 +261,9 @@ document.addEventListener('DOMContentLoaded', () => {
     state.activeClientId = clientId;
     const currentClient = getActiveClientProfile();
     populateClientSessionSelectors();
+    if (typeof syncClientSessionWithServer === 'function') {
+      syncClientSessionWithServer(clientId);
+    }
     showAnalysisStatus(false, `🏢 Sesión de Cliente Cambiada: ${currentClient.name}`, `Plataforma: ${currentClient.platform} | Versión: ${currentClient.version} (${currentClient.build})`);
   };
 
@@ -393,6 +405,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updateNodeComparisonUI();
         updateMetricsAndCharts();
         renderTraceWaterfall();
+
+        if (typeof syncClientSessionWithServer === 'function') {
+          syncClientSessionWithServer(state.activeClientId);
+        }
 
         showAnalysisStatus(false, `🏢 Sesión Cambiada a: ${currentClient.name}`, `Nodos activos: ${availNodes.map(n => n.name).join(' | ')}`);
       });
@@ -2494,10 +2510,67 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
   }
 
+  async function syncClientSessionWithServer(clientId) {
+    const cId = clientId || state.activeClientId || 'general';
+    const currentClient = getActiveClientProfile();
+    try {
+      const statsRes = await fetch(`/api/stats?client=${encodeURIComponent(cId)}`);
+      if (!statsRes.ok) return false;
+      const statsData = await statsRes.json();
+      if (statsData.status === 'ready' && statsData.totalLogs > 0) {
+        state.isServerApi = true;
+        state.globalStreamMetrics = {
+          totalLogs: statsData.totalLogs,
+          totalErrors: statsData.totalErrors,
+          totalWarnings: 0,
+          topUsers: statsData.topUsers || [],
+          topIps: statsData.topIps || [],
+          topCodes: (statsData.eventTypes || []).map(t => ({ code: t.code, count: t.count }))
+        };
+        state.loadedFiles = [{
+          name: statsData.activeDb || `${cId}_audit.db`,
+          size: 0,
+          count: statsData.totalLogs,
+          sampleCount: 50,
+          realErrors: statsData.totalErrors,
+          realWarnings: 0,
+          nodeKey: 'server_cluster',
+          nodeName: '🖥️ Servidor Core SQLite',
+          client: currentClient.name
+        }];
+        await fetchSqlLogs(1);
+        updateMetricsAndCharts();
+        renderLoadedFilesDrawer();
+        showAnalysisStatus(false, `✅ Base de Datos Conectada: ${currentClient.name}`, `${statsData.totalLogs.toLocaleString()} eventos indexados en el Servidor.`);
+        return true;
+      } else {
+        if (state.isServerApi) {
+          state.logs = [];
+          state.filteredLogs = [];
+          state.globalStreamMetrics = null;
+          state.loadedFiles = [];
+          state.sqlPage = 1;
+          state.sqlTotalPages = 1;
+          state.sqlTotalMatching = 0;
+          renderLoadedFilesDrawer();
+          renderLogTable();
+          updateMetricsAndCharts();
+          showAnalysisStatus(false, `🏢 Sesión Activa: ${currentClient.name}`, 'Listo para cargar o indexar logs de auditoría sin límite de tamaño.');
+        }
+        return false;
+      }
+    } catch (err) {
+      console.warn('Servidor API no disponible para sync:', err);
+      return false;
+    }
+  }
+  window.syncClientSessionWithServer = syncClientSessionWithServer;
+
   async function fetchSqlLogs(targetPage = 1) {
     const search = dom.searchLogInput?.value || '';
     const level = dom.filterLevelSelect?.value || 'ALL';
     const type = dom.filterTypeSelect?.value || 'ALL';
+    const clientSlug = state.activeClientId || 'general';
     let outcome = 'ALL';
     if (state.activeFilterMode === '520_ONLY' || level === 'CRITICAL' || level === 'ERROR') {
       outcome = 'FAIL';
@@ -2506,28 +2579,28 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
 
     try {
-      const url = `/api/logs?page=${targetPage}&limit=50&search=${encodeURIComponent(search)}&outcome=${outcome}&type=${encodeURIComponent(type)}`;
+      const url = `/api/logs?page=${targetPage}&limit=50&search=${encodeURIComponent(search)}&outcome=${outcome}&type=${encodeURIComponent(type)}&client=${encodeURIComponent(clientSlug)}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('API server.py no disponible, usando modo estático');
       const data = await res.json();
 
       state.logs = data.logs || [];
       state.filteredLogs = [...state.logs];
-      state.sqlPage = data.page;
-      state.sqlTotalPages = data.totalPages;
-      state.sqlTotalMatching = data.totalMatching;
+      state.sqlPage = data.page || 1;
+      state.sqlTotalPages = data.totalPages || 1;
+      state.sqlTotalMatching = data.totalMatching || 0;
       state.isServerApi = true;
 
       const pageBadge = document.getElementById('pagination-current-page');
       const totalPagesBadge = document.getElementById('pagination-total-pages');
       const showingBadge = document.getElementById('pagination-showing-badge');
 
-      if (pageBadge) pageBadge.textContent = data.page.toLocaleString();
-      if (totalPagesBadge) totalPagesBadge.textContent = data.totalPages.toLocaleString();
+      if (pageBadge) pageBadge.textContent = (data.page || 1).toLocaleString();
+      if (totalPagesBadge) totalPagesBadge.textContent = (data.totalPages || 1).toLocaleString();
       if (showingBadge) {
-        const start = ((data.page - 1) * 50) + 1;
-        const end = Math.min(data.totalMatching, data.page * 50);
-        showingBadge.textContent = `${start.toLocaleString()} - ${end.toLocaleString()} de ${data.totalMatching.toLocaleString()}`;
+        const start = (((data.page || 1) - 1) * 50) + (data.totalMatching > 0 ? 1 : 0);
+        const end = Math.min(data.totalMatching || 0, (data.page || 1) * 50);
+        showingBadge.textContent = `${start.toLocaleString()} - ${end.toLocaleString()} de ${(data.totalMatching || 0).toLocaleString()}`;
       }
 
       renderLogTable();
@@ -4174,7 +4247,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const btnClearSearch = document.getElementById('btn-clear-search');
     dom.searchLogInput?.addEventListener('input', (e) => {
       if (btnClearSearch) btnClearSearch.style.display = e.target.value.length > 0 ? 'block' : 'none';
-      if (state.activeClientId === 'mercantil' && state.isServerApi) {
+      if (state.isServerApi) {
         fetchSqlLogs(1);
       } else {
         applyLogFilters();
@@ -4183,7 +4256,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     btnClearSearch?.addEventListener('click', () => {
       if (dom.searchLogInput) dom.searchLogInput.value = '';
       btnClearSearch.style.display = 'none';
-      if (state.activeClientId === 'mercantil' && state.isServerApi) {
+      if (state.isServerApi) {
         fetchSqlLogs(1);
       } else {
         applyLogFilters();
@@ -4191,13 +4264,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     });
 
     dom.filterClientSelect?.addEventListener('change', () => {
-      if (state.activeClientId === 'mercantil' && state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
+      if (state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
     });
     dom.filterLevelSelect?.addEventListener('change', () => {
-      if (state.activeClientId === 'mercantil' && state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
+      if (state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
     });
     dom.filterTypeSelect?.addEventListener('change', () => {
-      if (state.activeClientId === 'mercantil' && state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
+      if (state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
     });
 
     document.getElementById('btn-copy-exec-report-md')?.addEventListener('click', () => copyExecutiveReportMarkdown());
