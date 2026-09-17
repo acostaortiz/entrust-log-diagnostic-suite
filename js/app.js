@@ -2598,6 +2598,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       if (!res.ok) throw new Error('API server.py no disponible, usando modo estático');
       const data = await res.json();
 
+      if (!data.logs || data.logs.length === 0) {
+        if (typeof loadMercantil10GbBundle === 'function') {
+          loadMercantil10GbBundle();
+          return true;
+        }
+      }
+
       state.logs = data.logs || [];
       state.filteredLogs = [...state.logs];
       state.sqlPage = data.page || 1;
@@ -2623,6 +2630,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }
       return true;
     } catch (e) {
+      if (typeof loadMercantil10GbBundle === 'function') {
+        loadMercantil10GbBundle();
+        return true;
+      }
       return false;
     }
   }

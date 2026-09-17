@@ -54,8 +54,8 @@ def get_client_slug(client_name_or_id):
 def resolve_client_db(client_param=None):
     global ACTIVE_DB_PATH
     
-    # 1. Search by client parameter if provided
-    if client_param and str(client_param) not in ['ALL', 'all', 'undefined', 'null', '']:
+    # 1. Search by client parameter if provided and not generic
+    if client_param and str(client_param).lower() not in ['all', 'undefined', 'null', '', 'general', 'entorno entrust general / multi-nodo']:
         slug = get_client_slug(client_param)
         candidate_names = [
             f"{slug}_audit.db",
@@ -85,7 +85,7 @@ def resolve_client_db(client_param=None):
     
     # 4. Find the largest .db file in DATA_DIR (e.g. banco_mercantil_audit.db 10.3 GB)
     if os.path.exists(DATA_DIR):
-        db_files = [os.path.join(DATA_DIR, f) for f in os.listdir(DATA_DIR) if f.endswith('.db')]
+        db_files = [os.path.join(DATA_DIR, f) for f in os.listdir(DATA_DIR) if f.endswith('.db') and os.path.getsize(os.path.join(DATA_DIR, f)) > 0]
         if db_files:
             db_files.sort(key=lambda p: os.path.getsize(p), reverse=True)
             return db_files[0]
