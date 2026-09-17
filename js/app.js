@@ -1778,13 +1778,31 @@ document.addEventListener('DOMContentLoaded', () => {
     dom.logScrollArea.innerHTML = '';
 
     if (state.filteredLogs.length === 0) {
-      dom.logScrollArea.innerHTML = `
-        <div style="padding: 30px; text-align: center; color: var(--text-muted);">
-          <p style="margin-bottom:12px; font-size:0.88rem;">No se encontraron registros de log que coincidan con los filtros aplicados.</p>
-          <button type="button" class="btn btn-primary" onclick="window.fetchSqlLogsGlobal && window.fetchSqlLogsGlobal(1)" style="font-size:0.82rem; padding:6px 16px; background:#0284c7; color:#fff; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">
-            ⚡ Cargar / Refrescar Logs del Servidor (16.5M)
-          </button>
-        </div>`;
+      if (!state.logs || state.logs.length === 0) {
+        dom.logScrollArea.innerHTML = `
+          <div style="padding: 40px 20px; text-align: center; color: var(--text-muted);">
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">📂</div>
+            <strong style="font-size: 1rem; color: var(--text-main); display: block; margin-bottom: 6px;">Consola Limpia y Lista para Análisis</strong>
+            <p style="margin-bottom:16px; font-size:0.85rem;">Arrastra aquí cualquier archivo de logs (.log, .txt, .csv, .json) o selecciona una opción:</p>
+            <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+              <label class="btn btn-primary" style="font-size:0.82rem; padding:8px 18px; background:#0284c7; color:#fff; cursor:pointer; font-weight:bold; border-radius:6px; box-shadow:0 2px 6px rgba(2,132,199,0.35);">
+                📂 Cargar Archivos Locales
+                <input type="file" accept=".log,.txt,.json,.csv" onchange="document.getElementById('file-input').files = this.files; document.getElementById('file-input').dispatchEvent(new Event('change'))" multiple style="display:none;">
+              </label>
+              <button type="button" class="btn" onclick="window.loadMercantil10GbBundle && window.loadMercantil10GbBundle()" style="font-size:0.82rem; padding:8px 18px; background:#0a3d6d; color:#38bdf8; border:1px solid #0284c7; border-radius:6px; font-weight:bold; cursor:pointer;">
+                🏦 Cargar Auditoría Banco Mercantil (16.5M)
+              </button>
+            </div>
+          </div>`;
+      } else {
+        dom.logScrollArea.innerHTML = `
+          <div style="padding: 30px; text-align: center; color: var(--text-muted);">
+            <p style="margin-bottom:12px; font-size:0.88rem;">No se encontraron registros de log que coincidan con los filtros aplicados.</p>
+            <button type="button" class="btn btn-secondary" onclick="if(dom.filterLevelSelect) dom.filterLevelSelect.value='ALL'; if(dom.filterTypeSelect) dom.filterTypeSelect.value='ALL'; if(dom.filterClientSelect) dom.filterClientSelect.value='ALL'; if(dom.searchLogInput) dom.searchLogInput.value=''; applyLogFilters();" style="font-size:0.82rem; padding:6px 16px; cursor:pointer;">
+              ✖ Restablecer Todos los Filtros
+            </button>
+          </div>`;
+      }
       return;
     }
 
@@ -3056,7 +3074,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   function updateTrendChart() {
     if (!state.charts.trend) return;
     const logs = state.logs || [];
-    if (logs.length === 0 && !state.globalStreamMetrics) return;
+    if (logs.length === 0 && !state.globalStreamMetrics) {
+      state.charts.trend.data.labels = ['Sin Datos'];
+      state.charts.trend.data.datasets[0].data = [0];
+      state.charts.trend.data.datasets[1].data = [0];
+      state.charts.trend.update();
+      return;
+    }
 
     let labels = [];
     let totalData = [];
@@ -3212,6 +3236,15 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     state.selectedLog = null;
     state.executiveReportCache = null;
     state.loadedFiles = [];
+    state.globalStreamMetrics = null;
+    state.isServerApi = false;
+    state.sqlPage = 1;
+    state.sqlTotalPages = 1;
+    state.sqlTotalMatching = 0;
+    state.nodeALogs = [];
+    state.nodeBLogs = [];
+    state.nodeCLogs = [];
+    state.nodeDLogs = [];
 
     if (dom.fileInput) dom.fileInput.value = '';
 
@@ -3221,9 +3254,22 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (dom.filterClientSelect) dom.filterClientSelect.value = 'ALL';
     if (dom.searchLogInput) dom.searchLogInput.value = '';
 
+    // Limpiar paginación
+    const pageBadge = document.getElementById('pagination-current-page');
+    const totalPagesBadge = document.getElementById('pagination-total-pages');
+    const showingBadge = document.getElementById('pagination-showing-badge');
+    if (pageBadge) pageBadge.textContent = '1';
+    if (totalPagesBadge) totalPagesBadge.textContent = '1';
+    if (showingBadge) showingBadge.textContent = '0 - 0 de 0';
+
+    // Renderizar vistas vacías
     renderLoadedFilesDrawer();
     populateClientSelector();
-    applyLogFilters();
+    renderLogTable();
+    updateMetricsAndCharts();
+    updateTrendChart();
+    renderUserAndIpAnalytics();
+    updateOverviewWidgets();
     updateNodeComparisonUI();
     renderTraceWaterfall();
 
@@ -3231,13 +3277,16 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       dom.diagnosticCard.innerHTML = `
         <div style="padding:40px; text-align:center; color: var(--text-muted);">
           <div style="font-size:32px; margin-bottom:10px;">🧹</div>
-          <strong style="color:var(--text-primary); font-size:16px;">Sesión Limpiada Exitosamente</strong><br>
-          <span style="font-size:13px; color:var(--text-muted);">Se eliminaron todos los registros previos. Cargue un nuevo archivo (.log, .txt, .json, .csv) para iniciar un análisis totalmente limpio.</span>
+          <strong style="color:var(--text-primary); font-size:16px;">Consola y Sesión Limpias</strong><br>
+          <span style="font-size:13px; color:var(--text-muted);">Se eliminaron todos los registros. Arrastra o carga un nuevo archivo de logs (.log, .txt, .json, .csv) para iniciar un análisis desde cero.</span>
         </div>`;
     }
 
-    showAnalysisStatus(false, '🧹 Sesión Limpiada', 'Se eliminaron todos los registros y la muestra actual fue reiniciada a cero.');
+    showAnalysisStatus(false, '🧹 Consola Limpia (0 registros)', 'Sesión reiniciada a cero. Listo para cargar nuevos archivos de logs.');
   }
+  window.resetAppSession = resetSession;
+  window.resetSession = resetSession;
+  window.resetSessionGlobal = resetSession;
 
   // PILAR 1: GESTOR VISUAL DE ARCHIVOS CARGADOS EN LA SESIÓN ACTIVA (DINÁMICO POR CLIENTE)
   function renderLoadedFilesDrawer() {
