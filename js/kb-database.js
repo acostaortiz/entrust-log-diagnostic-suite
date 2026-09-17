@@ -40,6 +40,65 @@ class KnowledgeBase {
         sectionTitle: 'Monitoreo de Cola de Transacciones'
       },
       // ==========================================
+      // ENTRUST ONPREMISE MIGRATION TO IDAAS CLOUD (AUD8500 - AUD8504 & SUPERSH)
+      // ==========================================
+      {
+        id: 'KB-ENTRUST-AUD8500',
+        title: 'Entrust Migration Tool [AUD8500]: Inicio de Exportación Masiva a IDaaS Cloud (authexport)',
+        category: 'Entrust OnPremise / Migración a IDaaS Cloud',
+        severity: 'INFO',
+        pattern: /(AUD8500|Migration to .*Identity as a Service.*export.*started)/i,
+        meaning: 'Se ha iniciado la tarea de exportación de autenticadores (Tarjetas Grid, eGrid, Tokens y Contraseñas) desde la base de datos OnPremise hacia el paquete cifrado (.dat) para migración a Entrust IDaaS Cloud.',
+        rootCause: 'Ejecución del comando `authexport` en la herramienta `IG_Migration_Tool` desde la consola de administración `supersh`.',
+        remediation: 'Operación nominal. Monitorear el consumo de CPU y el espacio en disco en el directorio de salida `/opt/entrust/IG_Migration_Tool/bin/`.',
+        riskLevel: 'Informativo (Proceso de Migración en Ejecución)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-aud8500',
+        sectionTitle: 'Código [AUD8500]: Inicio de Exportación de Migración IDaaS'
+      },
+      {
+        id: 'KB-ENTRUST-AUD8502',
+        title: 'Entrust Migration Tool [AUD8502]: Exportación Masiva a IDaaS Cloud Completada con Éxito',
+        category: 'Entrust OnPremise / Migración a IDaaS Cloud',
+        severity: 'INFO',
+        pattern: /(AUD8502|Migration to .*Identity as a Service.*completed with status)/i,
+        meaning: 'La exportación masiva de credenciales ha finalizado exitosamente al 100% (3 de 3 fases completadas), generando el archivo cifrado (.dat) con el total de usuarios y tarjetas exportadas.',
+        rootCause: 'Extracción completa de registros de identidades desde la base de datos de Entrust IdentityGuard OnPremise.',
+        remediation: '1. Verificar la integridad y tamaño del archivo `.dat` generado.\n2. Proceder con la importación en la consola de Entrust IDaaS Cloud mediante la tarea por lotes correspondiente.',
+        riskLevel: 'Bajo (Migración Exitosa)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-aud8502',
+        sectionTitle: 'Código [AUD8502]: Exportación de Migración IDaaS Exitosa'
+      },
+      {
+        id: 'KB-ENTRUST-AUD8503',
+        title: 'Entrust Migration Tool [AUD8503]: Despliegue de Contraseña de Cifrado del Paquete (.dat)',
+        category: 'Entrust OnPremise / Migración a IDaaS Cloud',
+        severity: 'INFO',
+        pattern: /(AUD8503|export password request.*was displayed to a master user)/i,
+        meaning: 'La clave simétrica para descifrar el archivo de migración `.dat` fue generada y mostrada en pantalla exclusivamente a un usuario Master.',
+        rootCause: 'Protocolo de seguridad criptográfica de Entrust para custodiar el archivo de exportación de identidades bancarias.',
+        remediation: 'Custodiar de forma segura la contraseña generada para introducirla en la consola de IDaaS Cloud.',
+        riskLevel: 'Medio (Custodia de Clave de Cifrado)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-aud8503',
+        sectionTitle: 'Código [AUD8503]: Clave de Exportación de Migración'
+      },
+      {
+        id: 'KB-ENTRUST-AUD101-SUPERSH',
+        title: 'Entrust Super Shell [AUD101 / AUD102]: Sesión de Administrador Master en supersh',
+        category: 'Entrust OnPremise / Auditoría de Acceso Master',
+        severity: 'INFO',
+        pattern: /(Login to supersh|Logout from supersh|AUD101.*supersh|AUD102.*supersh)/i,
+        meaning: 'Un usuario con privilegios de Maestro (Master Administrator) inició o cerró sesión en la consola interactiva CLI `supersh` de Entrust IdentityGuard.',
+        rootCause: 'Mantenimiento, configuración o ejecución de tareas administrativas de bajo nivel en el servidor.',
+        remediation: 'Auditar que las acciones ejecutadas durante la sesión coincidan con la ventana de cambio autorizada.',
+        riskLevel: 'Bajo (Acceso Administrativo Controlado)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-aud101-supersh',
+        sectionTitle: 'Código [AUD101/AUD102]: Sesión Master en supersh'
+      },
+      // ==========================================
       // ENTRUST IDAAS CLOUD & BULK PROVISIONING (BANCO MERCANTIL)
       // ==========================================
       {
