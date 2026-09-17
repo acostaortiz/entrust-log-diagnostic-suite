@@ -120,7 +120,31 @@ def parse_line_for_db(line, line_num):
     if not line:
         return None
     
-    # 1. Check IDaaS Cloud CSV format
+    # 1. Check IDaaS Cloud Migration Tool format: [ERROR] IdentityGuard migration: ...
+    if 'IdentityGuard migration:' in line:
+        outcome = 'FAIL' if any(k in line for k in ['[ERROR]', 'error', 'fail', 'already']) else 'SUCCESS'
+        event_time = time.strftime('%Y-%m-%d %H:%M:%S')
+        time_match = re.search(r'\d{4}[-/.]\d{2}[-/.]\d{2}[\sT]\d{2}:\d{2}:\d{2}', line)
+        if time_match:
+            event_time = time_match.group(0)
+        
+        user = 'system'
+        u_match = re.search(r'user\s+([0-9A-Za-z_\.\-]+)', line, re.I)
+        if u_match:
+            user = u_match.group(1)
+            
+        if 'grid already assigned' in line.lower() or 'assignedgrid' in line.lower():
+            event_type = 'bulkidentityguard.add.error.assignedgrid'
+        elif 'currently has a password' in line.lower() or 'password will not be migrated' in line.lower():
+            event_type = 'bulkidentityguard.add.error.password'
+        elif 'already' in line.lower() or 'qa' in line.lower():
+            event_type = 'bulkidentityguard.add.error.qa'
+        else:
+            event_type = 'IDG_MIGRATION_EVENT'
+            
+        return (line_num, event_time, user, event_type, outcome, line[:300], 'idaas.entrust.com', line[:500])
+
+    # 1.5. Check IDaaS Cloud CSV format
     if (',' in line or '\t' in line) and not line.startswith('['):
         parts = line.split('\t') if '\t' in line else [p.strip().strip('"') for p in line.split(',')]
         if len(parts) >= 8 and parts[0].lower() != 'id':
@@ -383,14 +407,14 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             {
                 "id": "mercantil",
                 "name": "Banco Mercantil C.A.",
-                "platform": "Entrust IdentityGuard OnPremise",
-                "version": "Release 13.0",
-                "build": "13.0.12.4",
+                "platform": "Entrust IDaaS Cloud / IdentityGuard OnPremise",
+                "version": "IDaaS Cloud v2026",
+                "build": "IDaaS Cloud v2026 (5.46)",
                 "contact": "Vicepresidencia de Ciberseguridad & TI",
                 "engineer": "Tomás Acosta",
                 "nodes": [
-                    { "key": "node_01", "name": "🖥️ Nodo 01 (BMIGPROD01)" },
-                    { "key": "node_02", "name": "🖥️ Nodo 02 (BMIGPROD02)" }
+                    { "key": "node_01", "name": "☁️ IDaaS Cloud (Migration Pipeline)" },
+                    { "key": "node_02", "name": "🖥️ IdentityGuard OnPremise (BMIGPROD01)" }
                 ]
             },
             {

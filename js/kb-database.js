@@ -1180,6 +1180,64 @@ class KnowledgeBase {
       }
     }
 
+    // Diagnóstico Especializado para Entrust IDaaS Migration Tool / Bulk Import
+    if (/IdentityGuard migration:|bulkidentityguard\.add\.error/i.test(searchText) || (targetCode && targetCode.startsWith('bulkidentityguard'))) {
+      if (/assignedgrid|grid already assigned/i.test(searchText) || targetCode === 'bulkidentityguard.add.error.assignedgrid') {
+        return {
+          matched: true,
+          ruleId: 'KB-IDG-BULK-GRID-CONFLICT',
+          title: 'Entrust IDaaS Cloud: Conflicto de Tarjeta Grid Preexistente (Grid Already Assigned)',
+          category: 'Entrust IDaaS Cloud / Aprovisionamiento Masivo (Bulk)',
+          severity: 'ERROR',
+          attribution: '☁️ Entrust IDaaS Migration Tool / Almacén de Identidades Cloud',
+          meaning: 'La tarea de importación masiva intentó asignar una nueva tarjeta Grid a usuarios que ya contaban con una tarjeta Grid activa en el almacén de identidades de Entrust IDaaS.',
+          rootCause: 'Ejecución del proceso de carga por lotes (Bulk IdentityGuard) sin el parámetro de sobrescritura overwriteExistingGrid=true o re-ejecución del lote sobre usuarios previamente aprovisionados.',
+          remediation: '1. En la definición de la tarea masiva, configure el parámetro overwriteExistingGrid=true si requiere reemplazar la tarjeta actual.\n2. Depure el archivo de lote excluyendo los usuarios que ya cuentan con credencial Grid activa.\n3. Ejecute una sincronización diferencial en lugar de una importación completa.\n4. Documentación Oficial: https://docs.trustedauth.com/docs/perform-bulk-operations/',
+          riskLevel: 'Alto (Fallo de Aprovisionamiento en Lote)',
+          manualVersion: 'vIDaaS_docs',
+          docsUrl: 'https://docs.trustedauth.com/docs/perform-bulk-operations/',
+          sectionId: 'sec-idaas-bulk',
+          sectionTitle: 'IDaaS Cloud Bulk Provisioning: Grid Assignment Conflict'
+        };
+      }
+      if (/password|Password will not be migrated|currently has a password/i.test(searchText) || targetCode === 'bulkidentityguard.add.error.password') {
+        return {
+          matched: true,
+          ruleId: 'KB-IDG-BULK-PWD-EXISTS',
+          title: 'Entrust IDaaS Cloud: Contraseña / Credencial de Autenticación ya Existente',
+          category: 'Entrust IDaaS Cloud / Aprovisionamiento Masivo (Bulk)',
+          severity: 'ERROR',
+          attribution: '☁️ Entrust IDaaS Migration Tool / Almacén de Identidades Cloud',
+          meaning: 'El usuario ya posee una contraseña activa en la base de identidades de Entrust IDaaS Cloud. Por política de seguridad, la contraseña del archivo de migración no fue sobrescrita.',
+          rootCause: 'Conflicto de unicidad en el almacén de identidades IDaaS durante la importación masiva de credenciales.',
+          remediation: '1. Habilite el parámetro allowPasswordReset=true si se desea forzar el reemplazo de la contraseña existente.\n2. Verifique las políticas de sincronización con el Directorio Activo (AD/LDAP).\n3. Valide el estado de enrolamiento del usuario en la consola de IDaaS.\n4. Documentación Oficial: https://docs.trustedauth.com/docs/authentication-and-security/',
+          riskLevel: 'Medio (Conflicto de Password)',
+          manualVersion: 'vIDaaS_docs',
+          docsUrl: 'https://docs.trustedauth.com/docs/authentication-and-security/',
+          sectionId: 'sec-idaas-bulk',
+          sectionTitle: 'IDaaS Cloud Bulk Provisioning: Password Credential Conflict'
+        };
+      }
+      if (/qa|question|already has/i.test(searchText) || targetCode === 'bulkidentityguard.add.error.qa') {
+        return {
+          matched: true,
+          ruleId: 'KB-IDG-BULK-QA-EXISTS',
+          title: 'Entrust IDaaS Cloud: Preguntas y Respuestas Secretas (Q&A) Duplicadas / Ya Registradas',
+          category: 'Entrust IDaaS Cloud / Aprovisionamiento Masivo (Bulk)',
+          severity: 'ERROR',
+          attribution: '☁️ Entrust IDaaS Migration Tool / Almacén de Identidades Cloud',
+          meaning: 'El esquema de preguntas y respuestas de desafío (Q&A Challenge/Response) ya fue registrado previamente para este usuario en Entrust IDaaS Cloud.',
+          rootCause: 'Intento de inserción de preguntas de seguridad en usuarios ya enrolados sin habilitar la bandera de actualización de credenciales updateExistingCredentials=true.',
+          remediation: '1. Habilite el parámetro updateExistingCredentials=true en la configuración de la tarea de importación masiva.\n2. Si los usuarios deben mantener sus preguntas actuales, omita la columna Q&A en el archivo CSV de carga.\n3. Valide el estado de enrolamiento del usuario en la consola de IDaaS.\n4. Documentación Oficial: https://docs.trustedauth.com/docs/people-and-access/',
+          riskLevel: 'Medio (Conflicto de Credenciales Q&A)',
+          manualVersion: 'vIDaaS_docs',
+          docsUrl: 'https://docs.trustedauth.com/docs/people-and-access/',
+          sectionId: 'sec-idaas-bulk',
+          sectionTitle: 'IDaaS Cloud Bulk Provisioning: Q&A Challenge Collision'
+        };
+      }
+    }
+
     // Diagnóstico Heurístico Entrust OnPremise AUDxxxx (Sin mensajes de "Consulte el manual")
     const audMatch = searchText.match(/\[(AUD\d+)\]\s*(.*)/i);
     if (audMatch) {
@@ -1662,8 +1720,25 @@ journalctl -u wso2am -n 50 --no-pager`;
     };
   }
 
+  extractErrorCodeFromText(text) {
+    if (!text || typeof text !== 'string') return null;
+    if (/grid already assigned/i.test(text) || /assignedgrid/i.test(text)) {
+      return 'bulkidentityguard.add.error.assignedgrid';
+    }
+    if (/currently has a password|Password will not be migrated|password/i.test(text)) {
+      return 'bulkidentityguard.add.error.password';
+    }
+    if (/already has|qa|question/i.test(text)) {
+      return 'bulkidentityguard.add.error.qa';
+    }
+    const m = text.match(/\[(520\d{4}|AUD\d+|[A-Za-z0-9_\.-]+\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\]/i) ||
+              text.match(/\b(520\d{4}|AUD\d+|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\b/i);
+    if (m) return m[1];
+    return null;
+  }
+
   generateExpertAiOpinion(logs, clientProfile) {
-    const client = clientProfile || { name: 'Cliente Bancario', version: 'Release 13.0', engineer: 'Tomás Acosta' };
+    const client = clientProfile || { name: 'Banco Mercantil C.A.', version: 'IDaaS Cloud v2026', engineer: 'Tomás Acosta' };
     const targetLogs = logs || [];
     
     // Si existe estado global en memoria o en SQLite del Servidor
@@ -1681,6 +1756,12 @@ journalctl -u wso2am -n 50 --no-pager`;
         const code = item.code;
         const occurrences = item.count;
         const diag = this.diagnoseLog(code, code);
+        let service = 'Entrust Core Engine';
+        if (code.includes('assignedgrid')) service = 'IDaaS Bulk Grid Engine';
+        else if (code.includes('password')) service = 'IDaaS Bulk Password Engine';
+        else if (code.includes('qa')) service = 'IDaaS Bulk Q&A Engine';
+        else if (code.includes('bulkidentityguard')) service = 'Entrust IDaaS Cloud';
+
         return {
           code: code,
           occurrences: occurrences,
@@ -1688,7 +1769,7 @@ journalctl -u wso2am -n 50 --no-pager`;
           rootCause: diag.rootCause || 'Fallo operacional en proceso de autenticación o aprovisionamiento.',
           remediation: diag.remediation || 'Verificar parámetros de configuración y consultar catálogo técnico.',
           level: (code.includes('error') || code.startsWith('520') || code.includes('ORA')) ? 'ERROR' : 'INFO',
-          service: code.includes('bulkidentityguard') ? 'Entrust IDaaS Cloud' : 'Entrust Core Engine'
+          service: service
         };
       });
     } else {
@@ -1698,11 +1779,18 @@ journalctl -u wso2am -n 50 --no-pager`;
       targetLogs.forEach(log => {
         const isErr = log.level === 'CRITICAL' || log.level === 'ERROR' || (log.outcome && log.outcome.includes('FAIL'));
         const isWarn = log.level === 'WARN' || log.level === 'WARNING';
-        if (!isErr && !isWarn && !log.entrustCode) return;
+        
+        const rawText = (log.message || '') + ' ' + (log.raw || '');
+        const code = log.entrustCode || this.extractErrorCodeFromText(rawText) || (isErr ? 'INCIDENTE_OPERACIONAL' : log.service);
+        if (!isErr && !isWarn && !log.entrustCode && code === log.service) return;
 
-        const code = log.entrustCode || this.extractErrorCodeFromText(log.message) || log.service || 'EVENTO_GENERAL';
-        const diag = log.diagnostic || this.diagnoseLog(log.message, code);
+        const diag = log.diagnostic || this.diagnoseLog(rawText, code);
         const key = code;
+
+        let service = log.service || 'Entrust Service';
+        if (key.includes('assignedgrid')) service = 'IDaaS Bulk Grid Engine';
+        else if (key.includes('password')) service = 'IDaaS Bulk Password Engine';
+        else if (key.includes('qa')) service = 'IDaaS Bulk Q&A Engine';
 
         if (!findingsMap.has(key)) {
           findingsMap.set(key, {
@@ -1712,7 +1800,7 @@ journalctl -u wso2am -n 50 --no-pager`;
             rootCause: diag.rootCause || 'Fallo en la ejecución del servicio o validación de credenciales.',
             remediation: diag.remediation || 'Revisar parámetros de configuración y trazas del componente.',
             level: log.level || (isErr ? 'ERROR' : 'WARN'),
-            service: log.service || 'Entrust Service'
+            service: service
           });
         } else {
           findingsMap.get(key).occurrences += 1;

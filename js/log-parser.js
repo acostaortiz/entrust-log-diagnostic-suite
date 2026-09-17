@@ -36,8 +36,11 @@ class LogParser {
     }
 
     mergedLines.forEach((line, index) => {
-      let parsed = this.tryParseEntrustIdentityGuard(line, index);
+      let parsed = this.tryParseEntrustMigrationLog(line, index);
 
+      if (!parsed) {
+        parsed = this.tryParseEntrustIdentityGuard(line, index);
+      }
       if (!parsed) {
         parsed = this.tryParseSoapWebService(line, index);
       }
@@ -113,7 +116,8 @@ class LogParser {
 
     for (let i = 0; i < totalMerged; i++) {
       const line = mergedLines[i];
-      let parsed = this.fastParseEntrustBracket(line, i);
+      let parsed = this.tryParseEntrustMigrationLog(line, i);
+      if (!parsed) parsed = this.fastParseEntrustBracket(line, i);
       if (!parsed) parsed = this.tryParseEntrustIdentityGuard(line, i);
       if (!parsed) parsed = this.tryParseSoapWebService(line, i);
       if (!parsed) parsed = this.tryParseTomcatCatalina(line, i);
@@ -405,6 +409,54 @@ class LogParser {
       raw: line,
       user: user,
       clientIp: this.extractClientIp(line),
+      entrustCode: entrustCode
+    };
+  }
+
+  /**
+   * Parser especializado para Entrust IDaaS Cloud / Migration Tool (IMPORT_IDENTITYGUARD-*.txt)
+   */
+  tryParseEntrustMigrationLog(line, lineNum) {
+    if (!line || typeof line !== 'string') return null;
+    if (!line.includes('IdentityGuard migration:')) return null;
+
+    let level = 'INFO';
+    if (/\[ERROR\]/i.test(line) || /error|fail|already/i.test(line)) level = 'ERROR';
+    else if (/\[WARN\]/i.test(line)) level = 'WARN';
+
+    let entrustCode = 'IDG-MIGRATION-EVENT';
+    let service = 'Entrust IDaaS Migration Engine';
+    let user = 'N/A';
+
+    const userMatch = line.match(/user\s+([0-9A-Za-z_\.\-]+)/i);
+    if (userMatch) user = userMatch[1];
+
+    if (/grid already assigned/i.test(line) || /assignedgrid/i.test(line)) {
+      entrustCode = 'bulkidentityguard.add.error.assignedgrid';
+      service = 'IDaaS Bulk Grid Engine';
+    } else if (/currently has a password|Password will not be migrated|password/i.test(line)) {
+      entrustCode = 'bulkidentityguard.add.error.password';
+      service = 'IDaaS Bulk Password Engine';
+    } else if (/already/i.test(line) || /qa|question/i.test(line)) {
+      entrustCode = 'bulkidentityguard.add.error.qa';
+      service = 'IDaaS Bulk Q&A Engine';
+    }
+
+    const timestampMatch = line.match(/(\d{4}[-/.]\d{2}[-/.]\d{2}[\sT]\d{2}:\d{2}:\d{2}(?:\.\d{3})?)/);
+    const timestamp = timestampMatch ? timestampMatch[1] : new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+    return {
+      id: `migration-${lineNum}-${Date.now()}`,
+      lineNum: lineNum + 1,
+      type: 'Entrust IDaaS Cloud (Migration Tool)',
+      timestamp: timestamp,
+      level: level,
+      hostname: 'idaas.entrust.com',
+      service: service,
+      message: line,
+      raw: line,
+      user: user,
+      clientIp: 'local',
       entrustCode: entrustCode
     };
   }
@@ -822,16 +874,46 @@ class LogParser {
     else if (/error|failed|exception/i.test(line)) level = 'ERROR';
     else if (/warning|warn/i.test(line)) level = 'WARN';
 
+    let entrustCode = null;
+    let service = 'Entrust Core';
+
+    if (/grid already assigned/i.test(line) || /assignedgrid/i.test(line)) {
+      entrustCode = 'bulkidentityguard.add.error.assignedgrid';
+      service = 'IDaaS Bulk Grid Engine';
+      level = 'ERROR';
+    } else if (/currently has a password|Password will not be migrated|password/i.test(line)) {
+      entrustCode = 'bulkidentityguard.add.error.password';
+      service = 'IDaaS Bulk Password Engine';
+      level = 'ERROR';
+    } else if (/already/i.test(line) || /qa|question/i.test(line)) {
+      entrustCode = 'bulkidentityguard.add.error.qa';
+      service = 'IDaaS Bulk Q&A Engine';
+      level = 'ERROR';
+    } else {
+      const c520 = line.match(/520\d{4}/);
+      const aud = line.match(/AUD\d{3,4}/i);
+      const ora = line.match(/ORA-\d{5}/);
+      if (c520) { entrustCode = c520[0]; service = 'IdentityGuard Server'; level = 'ERROR'; }
+      else if (aud) { entrustCode = aud[0].toUpperCase(); service = 'IdentityGuard Audit'; }
+      else if (ora) { entrustCode = ora[0]; service = 'Oracle Database'; level = 'ERROR'; }
+    }
+
+    const timestampMatch = line.match(/(\d{4}[-/.]\d{2}[-/.]\d{2}[\sT]\d{2}:\d{2}:\d{2}(?:\.\d{3})?)/);
+    const timestamp = timestampMatch ? timestampMatch[1] : new Date().toISOString().replace('T', ' ').substring(0, 19);
+
     return {
       id: `log-${lineNum}-${Date.now()}`,
       lineNum: lineNum + 1,
       type: 'System',
-      timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+      timestamp: timestamp,
       level: level,
       hostname: 'localhost',
-      service: 'syslog',
+      service: service,
       message: line,
-      raw: line
+      raw: line,
+      user: this.extractUser(line),
+      clientIp: this.extractClientIp(line),
+      entrustCode: entrustCode
     };
   }
 

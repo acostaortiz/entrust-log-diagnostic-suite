@@ -116,14 +116,14 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       id: 'mercantil',
       name: 'Banco Mercantil C.A.',
-      platform: 'Entrust IdentityGuard OnPremise',
-      version: 'Release 13.0',
-      build: '13.0.12.4',
+      platform: 'Entrust IDaaS Cloud / IdentityGuard OnPremise',
+      version: 'IDaaS Cloud v2026',
+      build: 'IDaaS Cloud v2026 (5.46)',
       contact: 'Vicepresidencia de Ciberseguridad & TI',
       engineer: 'Tomás Acosta',
       nodes: [
-        { key: 'node_01', name: '🖥️ Nodo 01 (BMIGPROD01)' },
-        { key: 'node_02', name: '🖥️ Nodo 02 (BMIGPROD02)' }
+        { key: 'node_01', name: '☁️ IDaaS Cloud (Migration Pipeline)' },
+        { key: 'node_02', name: '🖥️ IdentityGuard OnPremise (BMIGPROD01)' }
       ]
     },
     {
@@ -1145,7 +1145,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       function extractErrorCode(log) {
         if (log.entrustCode) return log.entrustCode;
-        const msg = log.message || '';
+        const msg = (log.message || '') + ' ' + (log.raw || '');
+        if (/grid already assigned/i.test(msg) || /assignedgrid/i.test(msg)) {
+          return 'bulkidentityguard.add.error.assignedgrid';
+        }
+        if (/currently has a password|Password will not be migrated|password/i.test(msg)) {
+          return 'bulkidentityguard.add.error.password';
+        }
+        if (/already/i.test(msg) || /qa|question/i.test(msg)) {
+          return 'bulkidentityguard.add.error.qa';
+        }
         const m = msg.match(/\[(520\d{4}|AUD\d+|[A-Za-z0-9_\.-]+\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\]/i) ||
                   msg.match(/\b(520\d{4}|AUD\d+|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\b/i);
         if (m) return m[1];
@@ -1365,8 +1374,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           <!-- Sello SHA-256 de Autenticidad -->
           <div style="margin-top:20px; padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:10px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
-            <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD & AUDITORÍA SHA-256:</strong> SHA256-60ENT-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
-            <span>Validado por IT SERVICIOS Suite Enterprise v60.0</span>
+            <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD & AUDITORÍA SHA-256:</strong> SHA256-170PLATINUM-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
+            <span>Validado por IT SERVICIOS Suite Enterprise v170.0 Platinum</span>
           </div>
         </div>
       </div>
@@ -1500,8 +1509,8 @@ document.addEventListener('DOMContentLoaded', () => {
     md += `---\n\n`;
     md += `**Departamento de Soporte IT Servicios de Venezuela**  \n`;
     md += `*Ing. ${activeClient.engineer} — Especialista en Infraestructura Entrust*\n\n`;
-    md += `🔒 **SELLO DIGITAL DE AUTENTICIDAD Y AUDITORÍA SHA-256:** \`SHA256-60ENTERPRISE-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS\`  \n`;
-    md += `*Documento certificado e inspeccionado de forma autónoma por IT SERVICIOS — Entrust Diagnostic Suite v60.0*\n`;
+    md += `🔒 **SELLO DIGITAL DE AUTENTICIDAD Y AUDITORÍA SHA-256:** \`SHA256-170PLATINUM-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS\`  \n`;
+    md += `*Documento certificado e inspeccionado de forma autónoma por IT SERVICIOS — Entrust Diagnostic Suite v170.0 Platinum*\n`;
 
     return md;
   }
@@ -1577,17 +1586,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const hasTomcatOom = targetLogs.some(l => /(OutOfMemoryError|Java heap space)/i.test(l.message || ''));
     const hasTomcatSsl = targetLogs.some(l => /(SSLHandshakeException|PKIX path building failed)/i.test(l.message || ''));
 
-    if (authCodes.length > 0) {
+    const isMigration = targetLogs.some(l => /migration|bulkidentityguard|assignedgrid/i.test(l.message || '') || /migration|bulkidentityguard|assignedgrid/i.test(l.raw || '')) || (state.globalStreamMetrics?.topCodes || []).some(c => c.code.includes('bulkidentityguard'));
+
+    if (isCloud || isMigration) {
+      items.push(`<li><strong>Sobrescritura de Tarjetas Grid (overwriteExistingGrid=true):</strong> En tareas de aprovisionamiento masivo de usuarios preexistentes con tarjeta Grid asignada, configure la directiva <code>overwriteExistingGrid=true</code> para evitar el rechazo <code>bulkidentityguard.add.error.assignedgrid</code>. <a href="https://docs.trustedauth.com/docs/perform-bulk-operations/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Documentación Oficial Entrust IDaaS: Bulk Operations</a></li>`);
+      items.push(`<li><strong>Actualización de Esquema de Preguntas y Respuestas (updateExistingCredentials=true):</strong> Para usuarios que ya poseen preguntas secretas enroladas, habilite <code>updateExistingCredentials=true</code> en la configuración del conector o lote para actualizar las credenciales sin colisión <code>bulkidentityguard.add.error.qa</code>. <a href="https://docs.trustedauth.com/docs/people-and-access/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Documentación Oficial Entrust IDaaS: People & Access</a></li>`);
+      items.push(`<li><strong>Sincronización de Contraseñas y Políticas LDAP (allowPasswordReset=true):</strong> Verifique las políticas de contraseñas y habilite la directiva <code>allowPasswordReset=true</code> cuando se requiera actualización masiva de contraseñas de usuarios en el tenant de IDaaS. <a href="https://docs.trustedauth.com/docs/authentication-and-security/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Documentación Oficial Entrust IDaaS: Authentication & Security</a></li>`);
+      items.push(`<li><strong>Optimización y Fraccionamiento de Lotes de Carga:</strong> Se recomienda segmentar los paquetes masivos de carga en bloques de 50.000 a 100.000 registros para optimizar el rendimiento del motor de ingesta y evitar latencias en la API de IDaaS. <a href="https://docs.trustedauth.com/developer/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Documentación Oficial Entrust IDaaS: Developer API Reference</a></li>`);
+    }
+
+    if (authCodes.length > 0 && !isMigration) {
       const codeStr = authCodes.join(' / ');
       items.push(`<li><strong>Desbloqueo y Gestión de Cuentas LDAP / Active Directory:</strong> Se diagnosticaron reintentos fallidos de autenticación, credenciales o cuentas suspendidas (código(s) ${codeStr}). Se recomienda verificar las cuentas afectadas en la ${consoleTitle} y en el directorio LDAP para restablecer vigencias y desbloquear cuentas. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración ${platformTitle}: Sección 4.2 - Authentication Troubleshooting)</em></li>`);
     }
 
-    if (notFoundCodes.length > 0) {
+    if (notFoundCodes.length > 0 && !isMigration) {
       const codeStr = notFoundCodes.join(' / ');
       items.push(`<li><strong>Sincronización del Repositorio de Usuarios (LDAP/AD):</strong> Se detectaron accesos fallidos por usuarios o alias no registrados (código(s) ${codeStr}). Se sugiere ejecutar un barrido de sincronización de usuarios en la ${consoleTitle}. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración ${platformTitle}: Sección 3.1 - Identity Repository Maintenance)</em></li>`);
     }
 
-    if (gridPinCodes.length > 0) {
+    if (gridPinCodes.length > 0 && !isMigration) {
       const codeStr = gridPinCodes.join(' / ');
       items.push(`<li><strong>Reasignación y Auditoría de Tarjetas Grid / PIN:</strong> Se registraron incoherencias entre los desafíos y las respuestas enviadas (código(s) ${codeStr}). Se recomienda validar las series de tarjetas Grid activas asignadas a los usuarios y capacitar en el ingreso de celdas. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad ${platformTitle}: Sección 5.4 - Challenge-Response & Grid Management)</em></li>`);
     }
