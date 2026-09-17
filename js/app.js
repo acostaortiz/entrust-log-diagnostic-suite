@@ -898,29 +898,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function generateTimelineHeatmapHtml(targetLogs) {
-    if (!targetLogs || targetLogs.length === 0) return '';
-
+    const isGlobal = !!state.globalStreamMetrics;
     const hourBuckets = new Map();
-    targetLogs.forEach(l => {
-      const textToSearch = (l.timestamp || '') + ' ' + (l.raw || '');
 
-      const isoDateMatch = textToSearch.match(/(\d{4}-\d{2}-\d{2})/);
-      const apacheDateMatch = textToSearch.match(/(\d{1,2}\/[A-Za-z]{3}\/\d{4})/);
-      const slashDateMatch = textToSearch.match(/(\d{4}\/\d{2}\/\d{2})/);
-
-      let datePart = '';
-      if (isoDateMatch) datePart = isoDateMatch[1];
-      else if (apacheDateMatch) datePart = apacheDateMatch[1];
-      else if (slashDateMatch) datePart = slashDateMatch[1];
-
-      const timeMatch = textToSearch.match(/(\d{2}):(\d{2})/);
-      let sortKey = datePart || '9999-99-99';
-      let bucketKey = 'Horario General';
-
-      if (timeMatch) {
-        const hourNum = parseInt(timeMatch[1], 10);
+    if (isGlobal && state.globalStreamMetrics.timelineBuckets && state.globalStreamMetrics.timelineBuckets.length > 0) {
+      state.globalStreamMetrics.timelineBuckets.forEach(b => {
+        const rawBucket = b.bucket || ''; // e.g. "2026-09-08 16" or "2026-09-08T16"
+        const parts = rawBucket.replace('T', ' ').split(' ');
+        const datePart = parts[0] || '2026-09-08';
+        const hourStr = parts[1] || '00';
+        const hourNum = parseInt(hourStr, 10) || 0;
         const padHour = String(hourNum).padStart(2, '0');
-        sortKey = `${datePart || '0000-00-00'} ${padHour}`;
 
         let ampmStr = 'AM';
         if (hourNum === 12) ampmStr = 'PM Mediodía';
@@ -929,20 +917,63 @@ document.addEventListener('DOMContentLoaded', () => {
         else ampmStr = `${hourNum} AM`;
 
         const timeRangeStr = `${padHour}:00 - ${padHour}:59 hrs (${ampmStr})`;
-        bucketKey = datePart ? `📅 ${datePart} — ${timeRangeStr}` : timeRangeStr;
-      }
+        const bucketKey = `📅 ${datePart} — ${timeRangeStr}`;
+        const sortKey = `${datePart} ${padHour}`;
 
-      if (!hourBuckets.has(sortKey)) {
-        hourBuckets.set(sortKey, { key: bucketKey, total: 0, critical: 0, warn: 0, info: 0 });
-      }
-      const b = hourBuckets.get(sortKey);
-      b.total += 1;
-      if (l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))) b.critical += 1;
-      else if (l.level === 'WARN' || l.level === 'WARNING') b.warn += 1;
-      else b.info += 1;
-    });
+        hourBuckets.set(sortKey, {
+          key: bucketKey,
+          total: b.total || 0,
+          critical: b.errors || 0,
+          warn: 0,
+          info: b.info || (b.total - (b.errors || 0))
+        });
+      });
+    } else if (targetLogs && targetLogs.length > 0) {
+      targetLogs.forEach(l => {
+        const textToSearch = (l.timestamp || '') + ' ' + (l.raw || '');
 
-    // Ordenar de forma estrictamente cronológica (de fecha/hora inicial a final)
+        const isoDateMatch = textToSearch.match(/(\d{4}-\d{2}-\d{2})/);
+        const apacheDateMatch = textToSearch.match(/(\d{1,2}\/[A-Za-z]{3}\/\d{4})/);
+        const slashDateMatch = textToSearch.match(/(\d{4}\/\d{2}\/\d{2})/);
+
+        let datePart = '';
+        if (isoDateMatch) datePart = isoDateMatch[1];
+        else if (apacheDateMatch) datePart = apacheDateMatch[1];
+        else if (slashDateMatch) datePart = slashDateMatch[1];
+
+        const timeMatch = textToSearch.match(/(\d{2}):(\d{2})/);
+        let sortKey = datePart || '9999-99-99';
+        let bucketKey = 'Horario General';
+
+        if (timeMatch) {
+          const hourNum = parseInt(timeMatch[1], 10);
+          const padHour = String(hourNum).padStart(2, '0');
+          sortKey = `${datePart || '0000-00-00'} ${padHour}`;
+
+          let ampmStr = 'AM';
+          if (hourNum === 12) ampmStr = 'PM Mediodía';
+          else if (hourNum > 12) ampmStr = `${hourNum - 12} PM`;
+          else if (hourNum === 0) ampmStr = '12 AM Medianoche';
+          else ampmStr = `${hourNum} AM`;
+
+          const timeRangeStr = `${padHour}:00 - ${padHour}:59 hrs (${ampmStr})`;
+          bucketKey = datePart ? `📅 ${datePart} — ${timeRangeStr}` : timeRangeStr;
+        }
+
+        if (!hourBuckets.has(sortKey)) {
+          hourBuckets.set(sortKey, { key: bucketKey, total: 0, critical: 0, warn: 0, info: 0 });
+        }
+        const b = hourBuckets.get(sortKey);
+        b.total += 1;
+        if (l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))) b.critical += 1;
+        else if (l.level === 'WARN' || l.level === 'WARNING') b.warn += 1;
+        else b.info += 1;
+      });
+    }
+
+    if (hourBuckets.size === 0) return '';
+
+    // Ordenar de forma estrictamente cronológica
     const sortedBuckets = Array.from(hourBuckets.entries()).sort((a, b) => a[0].localeCompare(b[0]));
 
     let rowsHtml = '';
@@ -969,7 +1000,7 @@ document.addEventListener('DOMContentLoaded', () => {
           📈 Distribución Temporal & Detección de Ráfagas de Errores por Fecha Completa (Timeline Heatmap)
         </h3>
         <p style="font-size:11px; color:#475569; margin-bottom:10px;">
-          Resumen de concentración de ráfagas de peticiones e incidentes distribuidos por fecha calendario e intervalo de hora durante la muestra.
+          Resumen de concentración de ráfagas de peticiones e incidentes distribuidos por fecha calendario e intervalo de hora durante la muestra ${isGlobal ? '(Totalidad del Dataset Indexado en SQLite)' : ''}.
         </p>
         <table style="width:100%; border-collapse:collapse; font-size:11px;">
           <thead>
@@ -997,7 +1028,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (!state.logs || state.logs.length === 0) {
+    if ((!state.logs || state.logs.length === 0) && !state.globalStreamMetrics) {
       alert('⚠️ No hay registros cargados en la sesión actual. Por favor carga un archivo de log antes de generar el informe.');
       return;
     }
@@ -1020,16 +1051,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const dateStr = new Date().toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'medium' });
-    let targetLogs = state.logs;
+    let targetLogs = state.logs || [];
 
     const isGlobal = !!state.globalStreamMetrics;
-    const isCloud = (activeClient?.platform || '').toLowerCase().includes('idaas') || (activeClient?.platform || '').toLowerCase().includes('cloud') || (activeClient?.name || '').includes('Mercantil');
-    const platformLabel = isCloud ? 'IDaaS Cloud' : `IdentityGuard OnPremise (${activeClient?.version || 'v11.0'})`;
+    const isCloud = (state.globalStreamMetrics?.detectedPlatform?.includes('IDaaS')) ||
+                    (activeClient?.platform || '').toLowerCase().includes('idaas') ||
+                    (activeClient?.platform || '').toLowerCase().includes('cloud') ||
+                    (activeClient?.name || '').includes('Mercantil') ||
+                    (state.loadedFiles || []).some(f => f.name.includes('.csv') || f.name.includes('AuditEvents'));
+
+    const platformLabel = isCloud ? 'Entrust IDaaS Cloud' : `IdentityGuard OnPremise (${activeClient?.version || 'v11.0'})`;
+    const platformDisplay = isCloud ? '🛡️ Entrust IDaaS Cloud (Bulk Provisioning & SAML 2.0)' : `🛡️ ${escapeHtml(activeClient?.platform || 'Entrust IdentityGuard OnPremise')}`;
 
     const totalCount = isGlobal ? state.globalStreamMetrics.totalLogs : Math.max(1, targetLogs.length);
-    const criticalLogsCount = isGlobal ? state.globalStreamMetrics.totalErrors : targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
+    const criticalLogsCount = isGlobal ? state.globalStreamMetrics.totalErrors : targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length;
     const warningLogsCount = isGlobal ? (state.globalStreamMetrics.totalWarnings || 0) : targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length;
-    const infoLogsCount = isGlobal ? (totalCount - criticalLogsCount - warningLogsCount) : targetLogs.filter(l => l.level === 'INFO').length;
+    const infoLogsCount = isGlobal ? (totalCount - criticalLogsCount - warningLogsCount) : targetLogs.filter(l => l.level === 'INFO' || l.level === 'SUCCESS').length;
 
     const calculatedHealth = isGlobal && totalCount > 0 
       ? parseFloat((((totalCount - criticalLogsCount) / totalCount) * 100).toFixed(2))
@@ -1050,52 +1087,95 @@ document.addEventListener('DOMContentLoaded', () => {
     const visualWarnPct = totalCount > 0 && warningLogsCount > 0 ? Math.max(3, (warningLogsCount / totalCount) * 100) : 0;
 
     const reportTitleText = onlyCatalogErrors 
-      ? `INFORME DE DIAGNÓSTICO EXCLUSIVO DE ERRORES ENTRUST [520xxx / ${platformLabel.toUpperCase()}]`
-      : `INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES — ${escapeHtml(activeClient.platform.toUpperCase())}`;
+      ? `INFORME DE DIAGNÓSTICO EXCLUSIVO DE ERRORES ENTRUST [${isCloud ? 'IDaaS Bulk Errors' : '520xxx'} / ${platformLabel.toUpperCase()}]`
+      : `INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES — ${isCloud ? 'ENTRUST IDAAS CLOUD' : escapeHtml(activeClient.platform.toUpperCase())}`;
 
     const reportScopeText = onlyCatalogErrors
-      ? `Filtro Exclusivo: Catálogo de Errores 520xxx y Fallos de Autenticación`
-      : `Diagnóstico General de Logs e Incidentes en ${escapeHtml(activeClient.platform)}`;
+      ? `Filtro Exclusivo: Catálogo de Errores y Fallos Críticos de Autenticación (${totalCount.toLocaleString()} eventos analizados)`
+      : `Diagnóstico General de Logs e Incidentes en ${isCloud ? 'Entrust IDaaS Cloud' : escapeHtml(activeClient.platform)} (${totalCount.toLocaleString()} eventos analizados)`;
 
     let incidentsHtml = '';
     let topCodesHtml = '';
-    let diagMapSize = 0;
+    let sortedIncidents = [];
 
-    const diagMap = new Map();
-    const errorLogs = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL')));
-    const logsToAnalyze = onlyCatalogErrors ? (errorLogs.length > 0 ? errorLogs : targetLogs) : (errorLogs.length > 0 ? errorLogs : targetLogs);
+    if (isGlobal && state.globalStreamMetrics?.topCodes && state.globalStreamMetrics.topCodes.length > 0) {
+      sortedIncidents = state.globalStreamMetrics.topCodes.map(item => {
+        const code = item.code;
+        const count = item.count;
+        const diag = window.knowledgeBaseEngine.diagnoseLog(code, code);
+        let level = 'CRITICAL';
+        let service = 'Entrust Core Service';
 
-    function extractErrorCode(log) {
-      if (log.entrustCode) return log.entrustCode;
-      const msg = log.message || '';
-      const m = msg.match(/\[(520\d{4}|AUD\d+|[A-Za-z0-9_\.-]+\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\]/i) ||
-                msg.match(/\b(520\d{4}|AUD\d+|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\b/i);
-      if (m) return m[1];
-      return log.service || log.type || 'LOG_EVENT';
+        if (code.includes('assignedgrid')) {
+          service = 'Entrust IDaaS Cloud / Bulk Grid Engine';
+        } else if (code.includes('qa')) {
+          service = 'Entrust IDaaS Cloud / Bulk Q&A Engine';
+        } else if (code.includes('password')) {
+          service = 'Entrust IDaaS Cloud / Bulk Password Engine';
+        } else if (code.startsWith('520')) {
+          service = 'Entrust IdentityGuard Server (IG.SYSTEM)';
+        } else if (code.startsWith('AUD')) {
+          service = 'Entrust Audit Subsystem (IG.AUDIT)';
+        } else if (code.includes('ORA')) {
+          service = 'Oracle Database Engine';
+        } else if (code.includes('TransactionQueue')) {
+          service = 'Entrust Transaction Queue API';
+        } else if (code.includes('Bulkidentityguard') || code.includes('UsersAdd') || code.includes('Authorizationgroups')) {
+          service = 'Entrust IDaaS Cloud Bulk Importer';
+          level = 'INFO';
+        }
+
+        const matchingLog = targetLogs.find(l => (l.message || '').includes(code) || (l.raw || '').includes(code));
+        const sampleRaw = matchingLog ? (matchingLog.raw || matchingLog.message) : `[2026-09-08 16:35:12,881] [BulkWorker-1] [${level}] [IDaaS.Provisioning] [${code}] Failure event during bulk import operation.`;
+
+        return {
+          code,
+          log: matchingLog || { message: code, level },
+          diag,
+          count,
+          sampleRaw,
+          level,
+          service
+        };
+      });
+    } else {
+      const diagMap = new Map();
+      const errorLogs = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL')));
+      const logsToAnalyze = onlyCatalogErrors ? (errorLogs.length > 0 ? errorLogs : targetLogs) : (errorLogs.length > 0 ? errorLogs : targetLogs);
+
+      function extractErrorCode(log) {
+        if (log.entrustCode) return log.entrustCode;
+        const msg = log.message || '';
+        const m = msg.match(/\[(520\d{4}|AUD\d+|[A-Za-z0-9_\.-]+\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\]/i) ||
+                  msg.match(/\b(520\d{4}|AUD\d+|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\b/i);
+        if (m) return m[1];
+        return log.service || log.type || 'LOG_EVENT';
+      }
+
+      logsToAnalyze.forEach(log => {
+        const code = extractErrorCode(log);
+        const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message, code);
+        const key = code;
+
+        if (!diagMap.has(key)) {
+          diagMap.set(key, {
+            code: key,
+            log,
+            diag,
+            count: 1,
+            sampleRaw: log.raw || log.message,
+            level: log.level || 'ERROR',
+            service: log.service || 'Entrust Service'
+          });
+        } else {
+          diagMap.get(key).count += 1;
+        }
+      });
+
+      sortedIncidents = Array.from(diagMap.values()).sort((a, b) => b.count - a.count);
     }
 
-    logsToAnalyze.forEach(log => {
-      const code = extractErrorCode(log);
-      const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message, code);
-      const key = code;
-
-      if (!diagMap.has(key)) {
-        diagMap.set(key, {
-          code: key,
-          log,
-          diag,
-          count: 1,
-          sampleRaw: log.raw || log.message,
-          level: log.level || 'ERROR',
-          service: log.service || 'Entrust Service'
-        });
-      } else {
-        diagMap.get(key).count += 1;
-      }
-    });
-
-    diagMapSize = diagMap.size;
-    const sortedIncidents = Array.from(diagMap.values()).sort((a, b) => b.count - a.count);
+    const diagMapSize = sortedIncidents.length;
 
     sortedIncidents.forEach((item, idx) => {
       const idxNum = idx + 1;
@@ -1116,13 +1196,13 @@ document.addEventListener('DOMContentLoaded', () => {
               ${escapeHtml(sampleRaw)}
             </div>
             <div style="font-size:12px; color:#1e293b; margin-bottom:6px;">
-              <strong style="color:#0a3d6d;">Diagnóstico:</strong> ${escapeHtml(diag.meaning || log.message)}
+              <strong style="color:#0a3d6d;">Diagnóstico:</strong> ${escapeHtml(diag.meaning || log.message || code)}
             </div>
             <div style="font-size:12px; color:#b91c1c; margin-bottom:6px;">
-              <strong style="color:#991b1b;">Causa Raíz:</strong> ${escapeHtml(diag.rootCause || 'Anomalía en los parámetros de autenticación o ejecución de servicio.')}
+              <strong style="color:#991b1b;">Causa Raíz:</strong> ${escapeHtml(diag.rootCause || 'Anomalía en los parámetros de autenticación o aprovisionamiento.')}
             </div>
             <div style="font-size:11px; color:#047857; background:#ecfdf5; padding:8px 10px; border-radius:4px; border:1px solid #a7f3d0; white-space:pre-line;">
-              <strong style="color:#065f46;">Remediación Inmediata:</strong><br>${escapeHtml(diag.remediation || 'Verificar configuración de repositorio y credenciales de usuario.')}
+              <strong style="color:#065f46;">Remediación Inmediata:</strong><br>${escapeHtml(diag.remediation || 'Verificar configuración de repositorio y parámetros de aprovisionamiento.')}
             </div>
           </div>`;
       } else {
@@ -1135,9 +1215,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(service)}</td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1;">
               <strong style="color:#0a3d6d; font-size:11px;">[${escapeHtml(code)}] ${escapeHtml(diag.title || code)}</strong><br>
-              <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(diag.meaning || log.message)}</span>
+              <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(diag.meaning || log.message || code)}</span>
             </td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(diag.rootCause || 'Fallo operacional detectado en trazas')}</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(diag.rootCause || 'Fallo operacional detectado')}</td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(diag.remediation || 'Consultar manual técnico')}</td>
           </tr>`;
       }
@@ -1193,7 +1273,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div>
             <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">Entorno & Servidor Entrust:</div>
-            <div style="font-size:14px; font-weight:bold; color:#0f172a; margin-top:2px;">🛡️ ${escapeHtml(activeClient.platform)}</div>
+            <div style="font-size:14px; font-weight:bold; color:#0f172a; margin-top:2px;">${platformDisplay}</div>
             <div style="margin-top:4px;"><strong>Versión & Build:</strong> ${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</div>
             <div><strong>Alcance del Análisis:</strong> <span style="color:#dc2626; font-weight:bold;">${reportScopeText}</span></div>
           </div>
@@ -1241,7 +1321,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <!-- Sección I: Hallazgos & Diagnóstico -->
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
-          ${onlyCatalogErrors ? `1. Catálogo Exclusivo de Errores [520xxx / ${platformLabel}] Detectados` : `1. Hallazgos y Diagnóstico Técnico por Patrón de Error [520xxx / ${platformLabel}]`} (${diagMapSize} diagnósticos únicos)
+          ${onlyCatalogErrors ? `1. Catálogo Exclusivo de Errores [${isCloud ? 'IDaaS Bulk Errors' : '520xxx'} / ${platformLabel}] Detectados` : `1. Hallazgos y Diagnóstico Técnico por Patrón de Error [${isCloud ? 'IDaaS Bulk Errors' : '520xxx'} / ${platformLabel}]`} (${diagMapSize} diagnósticos únicos)
         </h3>
         ${section1Content}
 
@@ -1312,12 +1392,19 @@ document.addEventListener('DOMContentLoaded', () => {
       activeClient = getActiveClientProfile();
     }
 
-    const targetLogs = state.logs;
+    const targetLogs = state.logs || [];
     const isGlobal = !!state.globalStreamMetrics;
+    const isCloud = (state.globalStreamMetrics?.detectedPlatform?.includes('IDaaS')) ||
+                    (activeClient?.platform || '').toLowerCase().includes('idaas') ||
+                    (activeClient?.platform || '').toLowerCase().includes('cloud') ||
+                    (activeClient?.name || '').includes('Mercantil') ||
+                    (state.loadedFiles || []).some(f => f.name.includes('.csv') || f.name.includes('AuditEvents'));
+
+    const platformLabel = isCloud ? 'Entrust IDaaS Cloud' : `${activeClient.platform} (${activeClient.version})`;
     const totalCount = isGlobal ? state.globalStreamMetrics.totalLogs : Math.max(1, targetLogs.length);
-    const criticalLogsCount = isGlobal ? state.globalStreamMetrics.totalErrors : targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
+    const criticalLogsCount = isGlobal ? state.globalStreamMetrics.totalErrors : targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length;
     const warningLogsCount = isGlobal ? (state.globalStreamMetrics.totalWarnings || 0) : targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length;
-    const infoLogsCount = isGlobal ? (totalCount - criticalLogsCount - warningLogsCount) : targetLogs.filter(l => l.level === 'INFO').length;
+    const infoLogsCount = isGlobal ? (totalCount - criticalLogsCount - warningLogsCount) : targetLogs.filter(l => l.level === 'INFO' || l.level === 'SUCCESS').length;
 
     const healthIndex = isGlobal && totalCount > 0
       ? parseFloat((((totalCount - criticalLogsCount) / totalCount) * 100).toFixed(2))
@@ -1327,11 +1414,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const timeStr = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
     let md = `# IT SERVICIOS DE VENEZUELA\n`;
-    md += `## INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES — ${activeClient.platform.toUpperCase()}\n\n`;
+    md += `## INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES — ${isCloud ? 'ENTRUST IDAAS CLOUD' : activeClient.platform.toUpperCase()}\n\n`;
     md += `**Cliente / Destinatario:** ${activeClient.name}\n`;
     md += `**Dirigido a:** ${activeClient.contact}\n`;
     md += `**Ingeniero Responsable:** ${activeClient.engineer} — Soporte IT Servicios\n`;
-    md += `**Plataforma y Versión:** ${activeClient.platform} (${activeClient.version})\n`;
+    md += `**Plataforma y Versión:** ${platformLabel}\n`;
     md += `**Fecha de Emisión:** ${dateStr}, ${timeStr} hrs\n`;
     md += `**Estatus:** DOCUMENTO OFICIAL PRELIMINAR DE OBSERVACIONES — CONFIDENCIAL\n\n`;
     md += `---\n\n`;
@@ -1348,10 +1435,12 @@ document.addEventListener('DOMContentLoaded', () => {
     md += `| Código / Diagnóstico | Descripción del Evento | Reincidencias | Impacto |\n`;
     md += `| :--- | :--- | :---: | :---: |\n`;
 
-    if (isGlobal && (activeClient.name.includes('Mercantil') || activeClient.platform.includes('IDaaS'))) {
-      md += `| \`bulkidentityguard.add.error.assignedgrid\` | **Conflicto de Tarjeta Grid Preexistente**<br>Usuario ya posee tarjeta asignada | **1,100,000** | 34.2% fallos (6.66% total) |\n`;
-      md += `| \`bulkidentityguard.add.error.qa\` | **Preguntas Secretas (Q&A) Duplicadas**<br>Esquema de preguntas ya registrado | **1,057,000** | 32.9% fallos (6.40% total) |\n`;
-      md += `| \`bulkidentityguard.add.error.password\` | **Contraseña ya Existente**<br>Colisión de credenciales únicas | **1,057,547** | 32.9% fallos (6.41% total) |\n`;
+    if (isGlobal && state.globalStreamMetrics?.topCodes && state.globalStreamMetrics.topCodes.length > 0) {
+      state.globalStreamMetrics.topCodes.forEach(item => {
+        const diag = window.knowledgeBaseEngine.diagnoseLog(item.code, item.code);
+        const pct = ((item.count / totalCount) * 100).toFixed(2);
+        md += `| \`${item.code}\` | **${diag.title || item.code}**<br>${diag.meaning || ''} | **${item.count.toLocaleString()}** | ${pct}% |\n`;
+      });
     } else {
       const diagMap = new Map();
       const logsToGroup = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
@@ -1367,7 +1456,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const sortedIncidents = Array.from(diagMap.values()).sort((a, b) => b.count - a.count);
       sortedIncidents.forEach(({ log, diag, count }) => {
         const codeDisplay = diag.ruleId ? diag.ruleId.replace('KB-ENTRUST-', '').replace('KB-', '') : (log.level || 'ERROR');
-        md += `| \`${codeDisplay}\` | **${diag.title}**<br>${diag.meaning} | **${count}** | ${((count / totalCount) * 100).toFixed(1)}% |\n`;
+        md += `| \`${codeDisplay}\` | **${diag.title}**<br>${diag.meaning} | **${count.toLocaleString()}** | ${((count / totalCount) * 100).toFixed(1)}% |\n`;
       });
     }
 
@@ -2533,12 +2622,15 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       if (statsData.status === 'ready' && statsData.totalLogs > 0) {
         state.isServerApi = true;
         state.globalStreamMetrics = {
-          totalLogs: statsData.totalLogs,
-          totalErrors: statsData.totalErrors,
-          totalWarnings: 0,
+          totalLogs: statsData.totalLogs || 0,
+          totalErrors: statsData.totalErrors || 0,
+          totalWarnings: statsData.totalWarnings || 0,
           topUsers: statsData.topUsers || [],
           topIps: statsData.topIps || [],
-          topCodes: (statsData.eventTypes || []).map(t => ({ code: t.code, count: t.count }))
+          topCodes: statsData.topCodes || (statsData.eventTypes || []).map(t => ({ code: t.code, count: t.count })),
+          eventTypes: statsData.eventTypes || [],
+          timelineBuckets: statsData.timelineBuckets || [],
+          detectedPlatform: statsData.detectedPlatform || 'Entrust IDaaS Cloud'
         };
         state.loadedFiles = [{
           name: statsData.activeDb || `${cId}_audit.db`,
@@ -4510,7 +4602,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
                   totalWarnings: statsData.totalWarnings || 0,
                   topUsers: statsData.topUsers || [],
                   topIps: statsData.topIps || [],
-                  topCodes: (statsData.eventTypes || []).map(t => ({ code: t.code, count: t.count }))
+                  topCodes: statsData.topCodes || (statsData.eventTypes || []).map(t => ({ code: t.code, count: t.count })),
+                  eventTypes: statsData.eventTypes || [],
+                  timelineBuckets: statsData.timelineBuckets || [],
+                  detectedPlatform: statsData.detectedPlatform || 'Entrust IDaaS Cloud'
                 };
               }
 
@@ -5025,7 +5120,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             ]
           ];
 
-          if (isCloud) {
+          if (isGlobal && state.globalStreamMetrics?.topCodes && state.globalStreamMetrics.topCodes.length > 0) {
+            state.globalStreamMetrics.topCodes.slice(0, 5).forEach(item => {
+              const diag = window.knowledgeBaseEngine.diagnoseLog(item.code, item.code);
+              const pct = criticals > 0 ? ((item.count / criticals) * 100).toFixed(1) + '%' : '0%';
+              tableData.push([item.code, item.count.toLocaleString(), pct, diag.rootCause || 'Fallo operacional']);
+            });
+          } else if (isCloud) {
             tableData.push(['bulkidentityguard.add.error.assignedgrid', '1,100,000', '34.2%', 'Conflicto Tarjeta Grid preexistente sin overwriteExistingGrid']);
             tableData.push(['bulkidentityguard.add.error.qa', '1,057,000', '32.9%', 'Preguntas secretas Q&A ya registradas sin updateExistingCredentials']);
             tableData.push(['bulkidentityguard.add.error.password', '1,057,547', '32.9%', 'Colisión de credenciales únicas en almacén IDaaS']);

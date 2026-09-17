@@ -1666,42 +1666,61 @@ journalctl -u wso2am -n 50 --no-pager`;
     const client = clientProfile || { name: 'Cliente Bancario', version: 'Release 13.0', engineer: 'Tomás Acosta' };
     const targetLogs = logs || [];
     
-    // Si existe estado global en memoria o en el bundle de 10GB
+    // Si existe estado global en memoria o en SQLite del Servidor
     const isGlobal = !!(window.appState && window.appState.globalStreamMetrics);
     const globalMetrics = window.appState ? window.appState.globalStreamMetrics : null;
 
-    const total = targetLogs.length || (isGlobal && globalMetrics ? globalMetrics.totalLogs : 0);
-    const criticalsCount = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length;
-    const warningsCount = targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length;
+    const total = isGlobal && globalMetrics ? globalMetrics.totalLogs : targetLogs.length;
+    const criticalsCount = isGlobal && globalMetrics ? globalMetrics.totalErrors : targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length;
+    const warningsCount = isGlobal && globalMetrics ? (globalMetrics.totalWarnings || 0) : targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length;
 
-    // Extracción dinámica de hallazgos directamente de los logs procesados
-    const findingsMap = new Map();
+    let uniqueFindings = [];
 
-    targetLogs.forEach(log => {
-      const isErr = log.level === 'CRITICAL' || log.level === 'ERROR' || (log.outcome && log.outcome.includes('FAIL'));
-      const isWarn = log.level === 'WARN' || log.level === 'WARNING';
-      if (!isErr && !isWarn && !log.entrustCode) return;
+    if (isGlobal && globalMetrics && globalMetrics.topCodes && globalMetrics.topCodes.length > 0) {
+      uniqueFindings = globalMetrics.topCodes.map(item => {
+        const code = item.code;
+        const occurrences = item.count;
+        const diag = this.diagnoseLog(code, code);
+        return {
+          code: code,
+          occurrences: occurrences,
+          meaning: diag.meaning || `Evento registrado en plataforma IDaaS/OnPremise (${code})`,
+          rootCause: diag.rootCause || 'Fallo operacional en proceso de autenticación o aprovisionamiento.',
+          remediation: diag.remediation || 'Verificar parámetros de configuración y consultar catálogo técnico.',
+          level: (code.includes('error') || code.startsWith('520') || code.includes('ORA')) ? 'ERROR' : 'INFO',
+          service: code.includes('bulkidentityguard') ? 'Entrust IDaaS Cloud' : 'Entrust Core Engine'
+        };
+      });
+    } else {
+      // Extracción dinámica de hallazgos directamente de los logs procesados en memoria
+      const findingsMap = new Map();
 
-      const code = log.entrustCode || this.extractErrorCodeFromText(log.message) || log.service || 'EVENTO_GENERAL';
-      const diag = log.diagnostic || this.diagnoseLog(log.message, code);
-      const key = code;
+      targetLogs.forEach(log => {
+        const isErr = log.level === 'CRITICAL' || log.level === 'ERROR' || (log.outcome && log.outcome.includes('FAIL'));
+        const isWarn = log.level === 'WARN' || log.level === 'WARNING';
+        if (!isErr && !isWarn && !log.entrustCode) return;
 
-      if (!findingsMap.has(key)) {
-        findingsMap.set(key, {
-          code: key,
-          occurrences: 1,
-          meaning: diag.meaning || log.message,
-          rootCause: diag.rootCause || 'Fallo en la ejecución del servicio o validación de credenciales.',
-          remediation: diag.remediation || 'Revisar parámetros de configuración y trazas del componente.',
-          level: log.level || (isErr ? 'ERROR' : 'WARN'),
-          service: log.service || 'Entrust Service'
-        });
-      } else {
-        findingsMap.get(key).occurrences += 1;
-      }
-    });
+        const code = log.entrustCode || this.extractErrorCodeFromText(log.message) || log.service || 'EVENTO_GENERAL';
+        const diag = log.diagnostic || this.diagnoseLog(log.message, code);
+        const key = code;
 
-    let uniqueFindings = Array.from(findingsMap.values()).sort((a, b) => b.occurrences - a.occurrences);
+        if (!findingsMap.has(key)) {
+          findingsMap.set(key, {
+            code: key,
+            occurrences: 1,
+            meaning: diag.meaning || log.message,
+            rootCause: diag.rootCause || 'Fallo en la ejecución del servicio o validación de credenciales.',
+            remediation: diag.remediation || 'Revisar parámetros de configuración y trazas del componente.',
+            level: log.level || (isErr ? 'ERROR' : 'WARN'),
+            service: log.service || 'Entrust Service'
+          });
+        } else {
+          findingsMap.get(key).occurrences += 1;
+        }
+      });
+
+      uniqueFindings = Array.from(findingsMap.values()).sort((a, b) => b.occurrences - a.occurrences);
+    }
 
     // Si no se detectaron códigos específicos pero hay errores genéricos
     if (uniqueFindings.length === 0 && criticalsCount > 0) {

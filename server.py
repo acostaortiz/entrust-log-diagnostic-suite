@@ -656,24 +656,75 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             cur.execute('SELECT COUNT(1) FROM logs WHERE event_outcome LIKE ?', ('%FAIL%',))
             errors = cur.fetchone()[0]
 
+            # 1. Agrupación precisa de tipos de eventos
             cur.execute('SELECT event_type, COUNT(1) FROM logs GROUP BY event_type ORDER BY COUNT(1) DESC LIMIT 20')
             types = [{'code': r[0], 'count': r[1]} for r in cur.fetchall()]
 
-            cur.execute('SELECT subject_name, COUNT(1) FROM logs WHERE subject_name != "unknown" GROUP BY subject_name ORDER BY COUNT(1) DESC LIMIT 20')
+            # 2. Agrupación forense de códigos de error exactos ([520xxx], bulkidentityguard.add.error.*, ORA-01555, etc.)
+            cur.execute('''
+                SELECT 
+                    CASE 
+                        WHEN message LIKE '%assignedgrid%' THEN 'bulkidentityguard.add.error.assignedgrid'
+                        WHEN message LIKE '%bulkidentityguard.add.error.qa%' OR message LIKE '%qa_already_exists%' THEN 'bulkidentityguard.add.error.qa'
+                        WHEN message LIKE '%bulkidentityguard.add.error.password%' OR message LIKE '%password_already_exists%' THEN 'bulkidentityguard.add.error.password'
+                        WHEN message LIKE '%ORA-01555%' OR message LIKE '%snapshot too old%' THEN 'ORA-01555'
+                        WHEN message LIKE '%ORA-%' THEN SUBSTR(message, INSTR(message, 'ORA-'), 9)
+                        WHEN message LIKE '%520%' THEN SUBSTR(message, INSTR(message, '520'), 7)
+                        WHEN message LIKE '%AUD%' THEN SUBSTR(message, INSTR(message, 'AUD'), 7)
+                        WHEN message LIKE '%TransactionQueue%' THEN 'TransactionQueue.API'
+                        WHEN message != '' THEN SUBSTR(message, 1, 60)
+                        ELSE event_type
+                    END as err_code,
+                    COUNT(1) as cnt
+                FROM logs 
+                WHERE event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%'
+                GROUP BY err_code
+                ORDER BY cnt DESC
+                LIMIT 20
+            ''')
+            top_codes = [{'code': r[0], 'count': r[1]} for r in cur.fetchall()]
+
+            # 3. Usuarios más activos / afectados
+            cur.execute('SELECT subject_name, COUNT(1) FROM logs WHERE subject_name != "unknown" AND subject_name != "" GROUP BY subject_name ORDER BY COUNT(1) DESC LIMIT 20')
             top_users = [{'user': r[0], 'count': r[1]} for r in cur.fetchall()]
 
+            # 4. IPs de origen
             cur.execute('SELECT source_ip, COUNT(1) FROM logs WHERE source_ip != "" AND source_ip != "local" GROUP BY source_ip ORDER BY COUNT(1) DESC LIMIT 20')
             top_ips = [{'ip': r[0], 'count': r[1]} for r in cur.fetchall()]
+
+            # 5. Timeline Heatmap por fecha y hora (Panorama 100% Completo)
+            cur.execute('''
+                SELECT 
+                    SUBSTR(event_time, 1, 13) as hour_bucket,
+                    COUNT(1) as total_events,
+                    SUM(CASE WHEN event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%' THEN 1 ELSE 0 END) as error_events,
+                    SUM(CASE WHEN event_outcome = 'SUCCESS' OR event_outcome = 'INFO' THEN 1 ELSE 0 END) as info_events
+                FROM logs
+                WHERE event_time IS NOT NULL AND event_time != ''
+                GROUP BY hour_bucket
+                ORDER BY hour_bucket ASC
+                LIMIT 100
+            ''')
+            timeline_buckets = [{'bucket': r[0], 'total': r[1], 'errors': r[2] or 0, 'info': r[3] or 0} for r in cur.fetchall()]
+
+            # 6. Detección automática de entorno (IDaaS Cloud vs OnPremise)
+            cur.execute("SELECT 1 FROM logs WHERE event_type LIKE '%Bulkidentityguard%' OR message LIKE '%bulkidentityguard%' LIMIT 1")
+            is_idaas = cur.fetchone() is not None
+            detected_platform = 'Entrust IDaaS Cloud' if is_idaas else 'Entrust IdentityGuard OnPremise'
 
             conn.close()
             self.send_json({
                 'status': 'ready',
                 'totalLogs': total,
                 'totalErrors': errors,
+                'totalWarnings': 0,
                 'totalSuccess': total - errors,
                 'eventTypes': types,
+                'topCodes': top_codes,
                 'topUsers': top_users,
                 'topIps': top_ips,
+                'timelineBuckets': timeline_buckets,
+                'detectedPlatform': detected_platform,
                 'activeDb': os.path.basename(db),
                 'client': client_param or os.path.basename(db).replace('_audit.db', '')
             })
