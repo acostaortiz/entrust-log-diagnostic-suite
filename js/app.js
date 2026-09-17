@@ -167,25 +167,100 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   ];
 
-  function loadClientProfiles() {
-    try {
-      // Limpiar versiones anteriores para evitar residuos
-      ['custom_client_profiles_v1', 'custom_client_profiles_v2', 'custom_client_profiles_v3', 'custom_client_profiles_v4', 'custom_client_profiles_v5', 'custom_client_profiles_v6'].forEach(k => {
-        try { localStorage.removeItem(k); } catch(e){}
-      });
-
-      const stored = localStorage.getItem('custom_client_profiles_v7');
-      if (stored) {
-        state.clientProfiles = JSON.parse(stored);
+  function mergeClientLists(baseList, incomingList) {
+    if (!Array.isArray(incomingList)) return baseList;
+    const result = [...baseList];
+    incomingList.forEach(item => {
+      if (!item || !item.name) return;
+      const existingIdx = result.findIndex(c => (c.id && item.id && c.id === item.id) || (c.name.trim().toLowerCase() === item.name.trim().toLowerCase()));
+      if (existingIdx >= 0) {
+        result[existingIdx] = { ...result[existingIdx], ...item };
       } else {
-        state.clientProfiles = defaultClients;
-        localStorage.setItem('custom_client_profiles_v7', JSON.stringify(defaultClients));
+        result.push(item);
       }
-    } catch (e) {
-      state.clientProfiles = defaultClients;
+    });
+    return result;
+  }
+
+  function persistClientProfiles(profiles) {
+    if (!profiles || !Array.isArray(profiles)) return;
+    try {
+      localStorage.setItem('custom_client_profiles_stable', JSON.stringify(profiles));
+      localStorage.setItem('custom_client_profiles_v7', JSON.stringify(profiles));
+    } catch(e) {
+      console.warn('LocalStorage error:', e);
     }
+
+    if (window.storageEngine && typeof window.storageEngine.saveClientProfiles === 'function') {
+      window.storageEngine.saveClientProfiles(profiles).catch(() => {});
+    }
+
+    try {
+      fetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clients: profiles })
+      }).catch(() => {});
+    } catch(e) {}
+  }
+
+  async function loadClientProfiles() {
+    let merged = [...defaultClients];
+
+    // 1. Recuperar de todas las claves de localStorage (sin borrar ninguna)
+    const storageKeys = [
+      'custom_client_profiles_stable',
+      'custom_client_profiles_v7',
+      'custom_client_profiles_v6',
+      'custom_client_profiles_v5',
+      'custom_client_profiles_v4',
+      'custom_client_profiles_v3',
+      'custom_client_profiles_v2',
+      'custom_client_profiles_v1',
+      'custom_client_profiles'
+    ];
+
+    storageKeys.forEach(k => {
+      try {
+        const item = localStorage.getItem(k);
+        if (item) {
+          const parsed = JSON.parse(item);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            merged = mergeClientLists(merged, parsed);
+          }
+        }
+      } catch(e) {}
+    });
+
+    state.clientProfiles = merged;
     state.activeClientId = state.clientProfiles[0]?.id || 'general';
     populateClientSessionSelectors();
+
+    // 2. Recuperar de IndexedDB
+    try {
+      if (window.storageEngine && typeof window.storageEngine.loadClientProfiles === 'function') {
+        const idbProfiles = await window.storageEngine.loadClientProfiles();
+        if (Array.isArray(idbProfiles) && idbProfiles.length > 0) {
+          state.clientProfiles = mergeClientLists(state.clientProfiles, idbProfiles);
+          populateClientSessionSelectors();
+        }
+      }
+    } catch(e) {}
+
+    // 3. Recuperar del Backend Servidor (/api/clients)
+    try {
+      const res = await fetch('/api/clients');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.clients) && data.clients.length > 0) {
+          state.clientProfiles = mergeClientLists(state.clientProfiles, data.clients);
+          populateClientSessionSelectors();
+        }
+      }
+    } catch(e) {}
+
+    // Guardar versión unificada en todos los niveles
+    persistClientProfiles(state.clientProfiles);
   }
 
   function getActiveClientProfile() {
@@ -274,12 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
       state.activeClientId = state.clientProfiles[0]?.id || null;
     }
 
-    try {
-      localStorage.setItem('custom_client_profiles_v3', JSON.stringify(state.clientProfiles));
-    } catch(e) {
-      console.warn('LocalStorage error:', e);
-    }
-
+    persistClientProfiles(state.clientProfiles);
     populateClientSessionSelectors();
     showAnalysisStatus(false, `🗑️ Cliente Eliminado: ${clientToDelete.name}`, `El perfil del cliente ha sido removido exitosamente.`);
   };
@@ -341,12 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.clientProfiles.push(newProfile);
     state.activeClientId = newId;
 
-    try {
-      localStorage.setItem('custom_client_profiles_v3', JSON.stringify(state.clientProfiles));
-    } catch(e) {
-      console.warn('No se pudo guardar en localStorage:', e);
-    }
-
+    persistClientProfiles(state.clientProfiles);
     populateClientSessionSelectors();
 
     const modal = document.getElementById('client-modal');

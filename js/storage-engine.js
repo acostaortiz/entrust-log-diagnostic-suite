@@ -186,6 +186,44 @@ class StorageEngine {
       }
     });
   }
+
+  async saveClientProfiles(clientProfiles) {
+    await this.initPromise;
+    if (!this.db) return false;
+
+    return new Promise((resolve) => {
+      try {
+        const tx = this.db.transaction('active_session', 'readwrite');
+        const store = tx.objectStore('active_session');
+        store.put({
+          id: 'stored_client_profiles',
+          profiles: clientProfiles || [],
+          updatedAt: new Date().toISOString()
+        });
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => resolve(false);
+      } catch(e) {
+        resolve(false);
+      }
+    });
+  }
+
+  async loadClientProfiles() {
+    await this.initPromise;
+    if (!this.db) return null;
+
+    return new Promise((resolve) => {
+      try {
+        const tx = this.db.transaction('active_session', 'readonly');
+        const store = tx.objectStore('active_session');
+        const req = store.get('stored_client_profiles');
+        req.onsuccess = () => resolve(req.result ? req.result.profiles : null);
+        req.onerror = () => resolve(null);
+      } catch(e) {
+        resolve(null);
+      }
+    });
+  }
 }
 
 window.storageEngine = new StorageEngine();

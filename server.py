@@ -285,6 +285,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_upload_chunk()
         elif path == '/api/ingest-local':
             self.handle_ingest_local()
+        elif path == '/api/clients':
+            self.handle_save_clients()
         else:
             self.send_error(404, 'Endpoint not found')
 
@@ -297,6 +299,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_api_logs(query)
         elif path == '/api/stats':
             self.handle_api_stats(query)
+        elif path == '/api/clients':
+            self.handle_get_clients()
         elif path == '/api/upload-status':
             self.send_json(upload_state)
         elif path == '/api/list-server-files':
@@ -349,6 +353,110 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             'totalErrors': errors,
             'client': client_name
         })
+
+    def handle_get_clients(self):
+        clients_file = os.path.join(DATA_DIR, 'clients.json')
+        if os.path.exists(clients_file):
+            try:
+                with open(clients_file, 'r', encoding='utf-8') as f:
+                    clients_data = json.load(f)
+                if isinstance(clients_data, list) and len(clients_data) > 0:
+                    self.send_json({'success': True, 'clients': clients_data})
+                    return
+            except Exception as e:
+                print(f"Error leyendo clients.json: {e}")
+
+        default_clients = [
+            {
+                "id": "general",
+                "name": "Entorno Entrust General / Multi-Nodo",
+                "platform": "Entrust IdentityGuard OnPremise",
+                "version": "Release 13.0",
+                "build": "General",
+                "contact": "Gerencia de Seguridad & TI",
+                "engineer": "Tomás Acosta",
+                "nodes": [
+                    { "key": "node_01", "name": "🖥️ Servidor Primario (Core)" },
+                    { "key": "node_02", "name": "🖥️ Servidor Secundario (Servicios/HA)" }
+                ]
+            },
+            {
+                "id": "mercantil",
+                "name": "Banco Mercantil C.A.",
+                "platform": "Entrust IdentityGuard OnPremise",
+                "version": "Release 13.0",
+                "build": "13.0.12.4",
+                "contact": "Vicepresidencia de Ciberseguridad & TI",
+                "engineer": "Tomás Acosta",
+                "nodes": [
+                    { "key": "node_01", "name": "🖥️ Nodo 01 (BMIGPROD01)" },
+                    { "key": "node_02", "name": "🖥️ Nodo 02 (BMIGPROD02)" }
+                ]
+            },
+            {
+                "id": "banesco",
+                "name": "Banesco Banco Universal",
+                "platform": "Entrust IdentityGuard OnPremise",
+                "version": "Release 12.0",
+                "build": "Issue 5 (Build 12.4.0)",
+                "contact": "Gerencia de Tecnología & Operaciones",
+                "engineer": "Tomás Acosta",
+                "nodes": [
+                    { "key": "node_01", "name": "🖥️ Nodo 01 (BANESCOIG01)" },
+                    { "key": "node_02", "name": "🖥️ Nodo 02 (BANESCOIG02)" }
+                ]
+            },
+            {
+                "id": "bancamiga",
+                "name": "Bancamiga Banco Universal",
+                "platform": "Entrust IdentityGuard OnPremise",
+                "version": "Release 13.0",
+                "build": "13.0.4.1",
+                "contact": "Seguridad de la Información",
+                "engineer": "Tomás Acosta",
+                "nodes": [
+                    { "key": "node_01", "name": "🖥️ Nodo 01 (BANCAMIGA-IG1)" },
+                    { "key": "node_02", "name": "🖥️ Nodo 02 (BANCAMIGA-IG2)" }
+                ]
+            },
+            {
+                "id": "idaas_cloud",
+                "name": "IDaaS Cloud Latam",
+                "platform": "Entrust IDaaS Cloud",
+                "version": "IDaaS Cloud v2026",
+                "build": "Cloud-Gateway-8921",
+                "contact": "Departamento de SSO & Push MFA",
+                "engineer": "Tomás Acosta",
+                "nodes": [
+                    { "key": "node_pod_east", "name": "☁️ Pod US-East (SSO Gateway)" },
+                    { "key": "node_pod_west", "name": "☁️ Pod US-West (Push MFA)" }
+                ]
+            }
+        ]
+        # Guardar archivo inicial
+        try:
+            with open(clients_file, 'w', encoding='utf-8') as f:
+                json.dump(default_clients, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
+        self.send_json({'success': True, 'clients': default_clients})
+
+    def handle_save_clients(self):
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_length).decode('utf-8')
+            data = json.loads(body)
+            clients = data.get('clients', data) if isinstance(data, dict) else data
+
+            if isinstance(clients, list):
+                clients_file = os.path.join(DATA_DIR, 'clients.json')
+                with open(clients_file, 'w', encoding='utf-8') as f:
+                    json.dump(clients, f, indent=2, ensure_ascii=False)
+                self.send_json({'success': True, 'savedCount': len(clients)})
+            else:
+                self.send_json({'error': 'Formato inválido: se esperaba un array de clientes'}, status=400)
+        except Exception as e:
+            self.send_json({'error': f'Error guardando clientes: {e}'}, status=500)
 
     def handle_list_server_files(self):
         found_files = []
