@@ -52,10 +52,13 @@ def get_client_slug(client_name_or_id):
 
 def resolve_client_db(client_param=None):
     global ACTIVE_DB_PATH
+    
+    # 1. Search by client parameter if provided
     if client_param and str(client_param) not in ['ALL', 'all', 'undefined', 'null', '']:
         slug = get_client_slug(client_param)
         candidate_names = [
             f"{slug}_audit.db",
+            f"banco_{slug}_audit.db",
             f"{slug}.db",
             f"{str(client_param).strip().lower()}_audit.db",
             f"{str(client_param).strip().lower()}.db"
@@ -65,24 +68,27 @@ def resolve_client_db(client_param=None):
             if os.path.exists(target):
                 return target
         
-        # Search for any db starting with slug
+        # Search for any db containing slug in filename
         if os.path.exists(DATA_DIR):
             for f in os.listdir(DATA_DIR):
-                if f.lower().startswith(slug) and f.endswith('.db'):
+                if slug in f.lower() and f.endswith('.db'):
                     return os.path.join(DATA_DIR, f)
-        
-        return os.path.join(DATA_DIR, f"{slug}_audit.db")
 
-    if os.path.exists(ACTIVE_DB_PATH):
+    # 2. Check ACTIVE_DB_PATH
+    if ACTIVE_DB_PATH and os.path.exists(ACTIVE_DB_PATH):
         return ACTIVE_DB_PATH
+        
+    # 3. Check DEFAULT_DB_PATH
     if os.path.exists(DEFAULT_DB_PATH):
         return DEFAULT_DB_PATH
     
-    # Return any available db in data dir
+    # 4. Find the largest .db file in DATA_DIR (e.g. banco_mercantil_audit.db 10.3 GB)
     if os.path.exists(DATA_DIR):
-        for f in os.listdir(DATA_DIR):
-            if f.endswith('_audit.db'):
-                return os.path.join(DATA_DIR, f)
+        db_files = [os.path.join(DATA_DIR, f) for f in os.listdir(DATA_DIR) if f.endswith('.db')]
+        if db_files:
+            db_files.sort(key=lambda p: os.path.getsize(p), reverse=True)
+            return db_files[0]
+            
     return None
 
 def init_db(db_path):
