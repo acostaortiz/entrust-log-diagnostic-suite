@@ -4410,6 +4410,55 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     // Paginación SQL en Vivo (16.5M Registros)
     document.getElementById('btn-page-first')?.addEventListener('click', () => fetchSqlLogs(1));
+
+    window.downloadErrorsCsvGlobal = async function() {
+      try {
+        const res = await fetch('/api/export-errors?client=' + encodeURIComponent(state.activeClientId || 'mercantil'));
+        if (res.ok) {
+          const blob = await res.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Errores_AuditEvents_${state.activeClientId || 'Entrust'}_Export.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+          return;
+        }
+      } catch (e) {}
+
+      const errorLogs = (state.logs || []).filter(l => l.level === 'ERROR' || l.level === 'CRITICAL' || (l.outcome && l.outcome.includes('FAIL')));
+      if (errorLogs.length === 0) {
+        alert('No hay registros de error para exportar en la sesión actual.');
+        return;
+      }
+
+      let csvContent = 'lineNum,eventTime,user,eventType,outcome,message,ip,service\n';
+      errorLogs.forEach(l => {
+        const line = [
+          l.lineNum || '',
+          `"${(l.timestamp || '').replace(/"/g, '""')}"`,
+          `"${(l.user || '').replace(/"/g, '""')}"`,
+          `"${(l.entrustCode || l.type || '').replace(/"/g, '""')}"`,
+          `"${(l.outcome || l.level || '').replace(/"/g, '""')}"`,
+          `"${(l.message || '').replace(/"/g, '""')}"`,
+          `"${(l.clientIp || '').replace(/"/g, '""')}"`,
+          `"${(l.service || '').replace(/"/g, '""')}"`
+        ].join(',');
+        csvContent += line + '\n';
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Errores_AuditEvents_Export.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    };
     document.getElementById('btn-page-prev')?.addEventListener('click', () => fetchSqlLogs(Math.max(1, (state.sqlPage || 1) - 1)));
     document.getElementById('btn-page-next')?.addEventListener('click', () => fetchSqlLogs(Math.min(state.sqlTotalPages || 1, (state.sqlPage || 1) + 1)));
     document.getElementById('btn-page-last')?.addEventListener('click', () => fetchSqlLogs(state.sqlTotalPages || 1));

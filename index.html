@@ -329,9 +329,9 @@
             <button class="btn" id="btn-page-last" style="padding:4px 10px; font-size:0.75rem;">Última ⏭</button>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <a href="/api/export-errors" class="btn" id="btn-export-all-errors-csv" style="background:#dc2626; color:#fff; font-weight:bold; font-size:0.75rem; padding:4px 12px; border-radius:4px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;" title="Descargar archivo CSV con los registros de error filtrados">
+            <button type="button" class="btn" id="btn-export-all-errors-csv" onclick="window.downloadErrorsCsvGlobal && window.downloadErrorsCsvGlobal()" style="background:#dc2626; color:#fff; font-weight:bold; font-size:0.75rem; padding:4px 12px; border-radius:4px; border:none; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" title="Descargar archivo CSV con los registros de error">
               📥 Descargar Errores (.CSV)
-            </a>
+            </button>
           </div>
         </div>
       </div>
