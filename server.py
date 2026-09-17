@@ -114,7 +114,7 @@ def parse_line_for_db(line, line_num):
         return None
     
     # 1. Check IDaaS Cloud CSV format
-    if ',' in line or '\t' in line:
+    if (',' in line or '\t' in line) and not line.startswith('['):
         parts = line.split('\t') if '\t' in line else [p.strip().strip('"') for p in line.split(',')]
         if len(parts) >= 8 and parts[0].lower() != 'id':
             event_time = parts[1].replace('T', ' ').replace('Z', '')[:19] if len(parts) > 1 else ''
@@ -126,19 +126,30 @@ def parse_line_for_db(line, line_num):
             return (line_num, event_time, user, event_type, outcome, msg, ip, line[:500])
 
     # 2. Check Entrust Bracket format: [timestamp] [thread] [LEVEL] [Category] [520xxx/AUD] Message
-    bracket_match = re.match(r'^\[([^\]]+)\]\s*\[([^\]]*)\]\s*\[([A-Z]+)\s*\]\s*\[([^\]]*)\]\s*(.*)$', line)
+    bracket_match = re.match(r'^\[([^\]]+)\]\s*\[([^\]]*)\]\s*\[([A-Za-z]+)\s*\]\s*\[([^\]]*)\]\s*(.*)$', line)
     if bracket_match:
         event_time = bracket_match.group(1)[:19]
         level = bracket_match.group(3).upper()
         category = bracket_match.group(4)
         msg = bracket_match.group(5)
-        outcome = 'FAIL' if any(k in level for k in ['ERR', 'CRIT', 'FATAL']) else 'SUCCESS'
+        outcome = 'FAIL' if any(k in level for k in ['ERR', 'CRIT', 'FATAL']) else ('DEBUG' if level == 'DEBUG' else 'SUCCESS')
         
         c520 = re.search(r'520\d{4}', msg)
         aud = re.search(r'AUD\d{3,4}', msg)
-        event_type = c520.group(0) if c520 else (aud.group(0) if aud else category)
+        ora = re.search(r'ORA-\d{5}', msg) or re.search(r'ORA-\d{5}', line)
         
-        user_match = re.search(r'(?:user|for user|alias)\s+[\'"]?([A-Za-z0-9_\-\.\/@]+)', msg, re.I)
+        if c520:
+            event_type = c520.group(0)
+        elif aud:
+            event_type = aud.group(0)
+        elif ora:
+            event_type = ora.group(0)
+        elif category:
+            event_type = category.split('.')[-2] if '.' in category else category
+        else:
+            event_type = 'ENTRUST_LOG'
+        
+        user_match = re.search(r'(?:user|for user|alias)\s+[\'"]?([A-Za-z0-9_\-\.\/@]+(?:\/[A-Za-z0-9_\-\.\/@]+)?)', msg, re.I)
         user = user_match.group(1) if user_match else 'system'
         
         ip_match = re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', msg)
@@ -146,7 +157,14 @@ def parse_line_for_db(line, line_num):
         
         return (line_num, event_time, user, event_type, outcome, msg, ip, line[:500])
 
-    # 3. Fallback generic line
+    # 3. Check for SQL Exception / ORA Error Stack Trace lines
+    ora_match = re.search(r'ORA-\d{5}', line)
+    is_stack = line.startswith('\tat ') or line.startswith('Caused by:') or 'SQLException' in line or ora_match
+    if is_stack:
+        ora_code = ora_match.group(0) if ora_match else 'SQL_EXCEPTION'
+        return (line_num, time.strftime('%Y-%m-%d %H:%M:%S'), 'system', ora_code, 'FAIL', line.strip()[:300], 'database', line[:500])
+
+    # 4. Fallback generic line
     level = 'FAIL' if any(k in line.lower() for k in ['error', 'fail', 'crit', 'fatal', 'exception']) else 'SUCCESS'
     time_match = re.search(r'\d{4}[-/.]\d{2}[-/.]\d{2}[\sT]\d{2}:\d{2}:\d{2}', line)
     event_time = time_match.group(0) if time_match else time.strftime('%Y-%m-%d %H:%M:%S')

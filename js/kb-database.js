@@ -9,6 +9,37 @@ class KnowledgeBase {
     this.storageKey = 'kb_custom_rules_v1';
     this.defaultRules = [
       // ==========================================
+      // ORACLE DB & ENTRUST CARD REPOSITORY ERRORS (ONPREMISE)
+      // ==========================================
+      {
+        id: 'KB-ORA-01555',
+        title: 'Oracle DB Error [ORA-01555 / ORA-22924]: Snapshot Too Old (Rollback Segment / UNDO Saturation)',
+        category: 'Entrust OnPremise / Base de Datos Oracle JDBC',
+        severity: 'CRITICAL',
+        pattern: /(ORA-01555|ORA-22924|snapshot too old|JdbcCardRepository.*User decode error|BlobAccess\.getBytes)/i,
+        meaning: 'Fallo crítico de lectura de datos históricos/BLOB en la base de datos Oracle de Entrust IdentityGuard. El motor no pudo garantizar la consistencia de lectura de los registros de tarjetas Grid/eGrid de los usuarios.',
+        rootCause: '1. El parámetro `UNDO_RETENTION` en Oracle DB es insuficiente para la duración de la consulta masiva.\n2. El tablespace `UNDO` de Oracle no tiene suficiente espacio asignado o no tiene `AUTOEXTEND ON`.\n3. Lectura prolongada de segmentos LOB/BLOB en tablas de tarjetas (`CARDS` / `ENCRYPTED_DATA`) mientras ocurren escrituras concurrentes.',
+        remediation: '1. Contactar al DBA de Oracle para incrementar `UNDO_RETENTION` (recomendado: mínimo 10,800 segundos / 3 horas):\n   `ALTER SYSTEM SET UNDO_RETENTION = 10800 SCOPE=BOTH;`\n2. Ampliar el tamaño del Tablespace UNDO:\n   `ALTER DATABASE DATAFILE \'+DATA/...\' RESIZE 20G;` o habilitar `AUTOEXTEND ON`.\n3. En la configuración de Entrust IdentityGuard (`identityguard.properties`), ajustar el tamaño de lote JDBC (`jdbc.batch.size=500`) y timeout de lectura.\n4. Si el error persiste en un usuario específico, verificar si el registro BLOB de su tarjeta presenta corrupción física.',
+        riskLevel: 'Crítico (Fallo de Lectura y Autenticación en BD)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-ora-01555',
+        sectionTitle: 'Fallo Oracle: ORA-01555 Snapshot Too Old en Repositorio de Tarjetas'
+      },
+      {
+        id: 'KB-ENTRUST-TX-QUEUE',
+        title: 'Entrust IdentityGuard: Monitoreo de Cola de Transacciones (TransactionQueue)',
+        category: 'Entrust OnPremise / Cola de Transacciones',
+        severity: 'INFO',
+        pattern: /(TransactionQueue\.API|Transaction queue for user.*has \d+ transactions)/i,
+        meaning: 'Inspección nominal de la cola de transacciones de autenticación y enrolamiento pendiente para el usuario bancario.',
+        rootCause: 'Operación normal de sondeo del servicio de administración y sincronización de transacciones de usuarios.',
+        remediation: 'No requiere acción correctiva. Monitoreo nominal del flujo de transacciones.',
+        riskLevel: 'Bajo (Informativo / Nominal)',
+        manualVersion: 'vEntrust',
+        sectionId: 'sec-tx-queue',
+        sectionTitle: 'Monitoreo de Cola de Transacciones'
+      },
+      // ==========================================
       // ENTRUST IDAAS CLOUD & BULK PROVISIONING (BANCO MERCANTIL)
       // ==========================================
       {
