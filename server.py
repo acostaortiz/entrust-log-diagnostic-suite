@@ -156,8 +156,22 @@ def parse_line_for_db(line, line_num):
         else:
             event_type = 'ENTRUST_LOG'
         
-        user_match = re.search(r'(?:user|for user|alias)\s+[\'"]?([A-Za-z0-9_\-\.\/@]+(?:\/[A-Za-z0-9_\-\.\/@]+)?)', msg, re.I)
-        user = user_match.group(1) if user_match else 'system'
+        # User extraction with bracket, action and alias support
+        bracket_u = re.search(r'\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([A-Za-z0-9_\-\.\/@]+)\]', line)
+        user_action = re.search(r'\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:created|failed|logged|assigned|updated)', line, re.I)
+        alias_u = re.search(r'\b(?:user\s+name\s+or\s+alias|alias)\s+[\'"]?([A-Za-z0-9_\-\.\/@]+)', line, re.I)
+        user_match = re.search(r'(?:user|for user|subjectName)\s+[\'"]?([A-Za-z0-9_\-\.\/@]+(?:\/[A-Za-z0-9_\-\.\/@]+)?)', msg, re.I)
+        
+        if bracket_u:
+            user = bracket_u.group(1)
+        elif user_action:
+            user = user_action.group(1)
+        elif alias_u:
+            user = alias_u.group(1)
+        elif user_match:
+            user = user_match.group(1)
+        else:
+            user = 'system'
         
         ip_match = re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', msg)
         ip = ip_match.group(0) if ip_match else 'local'

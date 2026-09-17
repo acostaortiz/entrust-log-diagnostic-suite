@@ -390,13 +390,8 @@ class LogParser {
       }
     }
 
-    // Extracción de usuario rápida
-    let user = null;
-    const userMatch = line.match(/\b(BCClientes[A-Za-z0-9_\-\.\/@]+|BCMercantil[A-Za-z0-9_\-\.\/@]+|BC[A-Za-z0-9_\-\.\/@]+)\b/i) ||
-                      line.match(/(?:for\s+user|user:?|subjectName:?|user\s*=|username\s*=)\s+(['"]?)([A-Za-z0-9_\-\.\/@]+)\1/i);
-    if (userMatch) {
-      user = userMatch[1] || userMatch[2];
-    }
+    // Extracción de usuario rápida y precisa
+    const user = this.extractUser(line);
 
     return {
       id: `entrust-${lineNum}-${Date.now()}`,
@@ -843,8 +838,22 @@ class LogParser {
   extractUser(line) {
     if (!line || typeof line !== 'string') return null;
 
-    // Priorizar usuarios explícitos de Banco del Caribe / Mercantil / Banesco
-    const bcMatch = line.match(/\b(BCClientes[A-Za-z0-9_\-\.\/@]+|BCMercantil[A-Za-z0-9_\-\.\/@]+|BC[A-Za-z0-9_\-\.\/@]+)\b/i);
+    // 1. Usuarios específicos en corchetes de auditoría OnPremise: [AUDxxxx] [default/idgadmin] o [Master1]
+    const bracketUserMatch = line.match(/\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([A-Za-z0-9_\-\.\/@]+)\]/i) ||
+                             line.match(/\[([A-Za-z0-9_\-\.\/@]+)\]\s+Administrator logged in/i) ||
+                             line.match(/\[([A-Za-z0-9_\-\.\/@]+)\]\s+(?:Login to supersh|User [A-Za-z0-9_\-\.\/@]+ created)/i);
+    if (bracketUserMatch) return bracketUserMatch[1];
+
+    // 2. Usuarios en acciones: "User default/admtmp created", "User Itservicios-group/token failed"
+    const userActionMatch = line.match(/\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:created|failed|logged|assigned|updated|deleted)/i);
+    if (userActionMatch) return userActionMatch[1];
+
+    // 3. Usuarios de búsqueda / alias: "user name or alias admtemp", "alias 'admtmp'"
+    const aliasMatch = line.match(/\b(?:user\s+name\s+or\s+alias|alias)\s+['"]?([A-Za-z0-9_\-\.\/@]+)['"]?/i);
+    if (aliasMatch) return aliasMatch[1];
+
+    // 4. Priorizar usuarios explícitos de Banco del Caribe / Mercantil / Banesco / Grupos
+    const bcMatch = line.match(/\b(BCClientes[A-Za-z0-9_\-\.\/@]+|BCMercantil[A-Za-z0-9_\-\.\/@]+|BC[A-Za-z0-9_\-\.\/@]+|Itservicios-group\/[A-Za-z0-9_\-\.\/@]+)\b/i);
     if (bcMatch) return bcMatch[1];
 
     const emailMatch = line.match(/\b([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\b/i);
@@ -853,7 +862,7 @@ class LogParser {
     const match = line.match(/(?:for\s+user|user:?|subjectName:?|user\s*=|username\s*=)\s+(['"]?)([A-Za-z0-9_\-\.\/@]+)\1/i);
     if (match) {
       const candidate = match[2].trim();
-      const blacklist = ['calling', 'info', 'debug', 'warn', 'warning', 'error', 'critical', 'fatal', 'trace', 'main', 'false', 'true', 'null', 'undefined', 'n/a', 'none'];
+      const blacklist = ['calling', 'info', 'debug', 'warn', 'warning', 'error', 'critical', 'fatal', 'trace', 'main', 'false', 'true', 'null', 'undefined', 'n/a', 'none', 'type'];
       if (!blacklist.includes(candidate.toLowerCase()) && !candidate.startsWith('net.sf.') && !candidate.startsWith('org.apache.') && !candidate.startsWith('java.')) {
         return candidate;
       }

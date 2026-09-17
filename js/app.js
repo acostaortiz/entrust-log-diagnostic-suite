@@ -2705,16 +2705,17 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     let rawText = '';
 
-    if (scenario === 'entrust_idg') {
+    if (scenario === 'entrust_idg' || scenario === 'entrust_agenda_admin') {
       rawText = `
-[2026-08-01 10:14:02,112] [main] [INFO ] [IG.AUDIT] [AUD100] First time initialization performed. Initial serial number set to 1001. Maximum number of users set to 5000. License expiry set to 2028-12-31.
-[2026-08-01 10:14:05,230] [main] [INFO ] [IG.AUDIT] [AUD106] Entrust IdentityGuard Administration Service started. Version 12.4.0.12
-[2026-08-01 10:15:10,402] [http-nio-8080-exec-1] [ERROR] [IG.SYSTEM.SystemContext.API] [5202013] Invalid user ID or password provided for user admtmp (Ref:9812401)
-[2026-08-01 10:16:45,889] [http-nio-8080-exec-4] [ERROR] [IG.SYSTEM.UserManagement.API] [5205139] Unable to find a user for user name or alias 'admtmp' (Searchbase: database/LDAP)
-[2026-08-01 10:18:22,104] [http-nio-8080-exec-7] [CRITICAL] [IG.SYSTEM.AuthenticationManagement.API] [5203018] Authentication type 'TOKENRO' is not allowed for user 'admtmp' in group 'itservicios-group'
-[2026-08-01 10:19:01,005] [audit-thread-2] [WARN ] [IG.AUDIT] [AUD6001] User 'admtmp' failed authentication. Authentication Type: TOKENRO
-[2026-08-01 10:20:15,302] [audit-thread-3] [INFO ] [IG.AUDIT] [AUD2300] Token Entrust 87123049 has been assigned to user admtmp.
-[2026-08-01 10:22:04,119] [audit-thread-4] [ERROR] [IG.AUDIT] [AUD2309] Failed delivery of transaction details for token Entrust 87123049 for user admtmp. (SNMP Trap Dispatched)
+[2012-12-03 16:29:35,129] [IG Audit Writer] [INFO ] [IG.AUDIT] [AUD4003] [default/idgadmin] Administrator logged in.
+[2012-12-03 16:30:27,086] [IG Audit Writer] [INFO ] [IG.AUDIT] [AUD6001] [default/idgadmin] User Itservicios-group/token failed authentication. Authentication Type: TOKENRO
+[2012-12-03 17:13:39,325] [http-8443-1] [ERROR] [IG.SYSTEM.AuthenticationManagement.API] [AuthenticationManager:authenticate] EXECUTING \n [5203018] Authentication type TOKENRO is not allowed for user Itservicios-group/token. (Ref:9626034)
+[2012-11-29 11:37:09,492] [IG Audit Writer] [INFO ] [IG.AUDIT] [AUD101] [Master1] Login to supersh.
+[2012-11-29 11:37:09,609] [IG Audit Writer] [INFO ] [IG.AUDIT] [AUD1000] [Master1] User default/admtmp created. Roles: superuser, Searchbase: database
+[2012-11-29 11:37:03,110] [main] [ERROR][IG.SYSTEM.SystemContext.API] \n [5202013] Invalid user ID or password. (Ref:7797664)
+[2012-11-29 11:37:34,340] [main] [ERROR] [IG.SYSTEM.UserManagement.API] [UserManager:createPassword] EXECUTING \n [5205139] Unable to find a user for user name or alias admtemp. (Ref:26188661)
+[2026-08-01 10:20:15,302] [audit-thread-3] [INFO ] [IG.AUDIT] [AUD2300] Token Entrust 87123049 has been assigned to user default/admtmp.
+[2026-08-01 10:22:04,119] [audit-thread-4] [ERROR] [IG.AUDIT] [AUD2309] Failed delivery of transaction details for token Entrust 87123049 for user default/admtmp. (SNMP Trap Dispatched)
 [2026-08-01 10:25:30,900] [audit-thread-5] [WARN ] [IG.AUDIT] [AUD151] Repository PrimaryDB connection failed to URL jdbc:oracle:thin:@db1.itservicios.local:1521/igdb switching to URL jdbc:oracle:thin:@db2.itservicios.local:1521/igdb
 [2026-08-01 10:26:10,450] [audit-thread-5] [INFO ] [IG.AUDIT] [AUD152] The primary connection has been restored for repository PrimaryDB to URL jdbc:oracle:thin:@db1.itservicios.local:1521/igdb
 [2026-08-01 10:28:14,210] [supersh-exec-1] [INFO ] [IG.AUDIT] [AUD116] Master keys update completed. Reason: Rotacion de claves de cifrado anual IT Servicios
