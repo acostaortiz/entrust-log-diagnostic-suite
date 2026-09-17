@@ -4027,12 +4027,18 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       listContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">Buscando archivos en el servidor...</span>';
       try {
         const res = await fetch('/api/list-server-files');
-        if (!res.ok) throw new Error('API server.py no disponible');
-        const data = await res.json();
+        const rawText = await res.text();
+        let data;
+        try {
+          data = JSON.parse(rawText);
+        } catch (parseErr) {
+          throw new Error('El servidor en puerto 8085 requiere reinicio. Ejecuta la opción [5] en ./sync.sh en la terminal.');
+        }
+
         const files = data.files || [];
 
         if (files.length === 0) {
-          listContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">No se encontraron archivos .csv / .log en `/data`. Transfiere tu archivo mediante SCP.</span>';
+          listContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">No se encontraron archivos .csv / .log en `/data`. Transfiere tu archivo mediante SCP o MobaXterm.</span>';
           return;
         }
 
@@ -4054,7 +4060,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         });
         listContainer.innerHTML = html;
       } catch (err) {
-        listContainer.innerHTML = `<span style="color:#ef4444; font-size:0.8rem;">Error listando archivos: ${err.message}</span>`;
+        listContainer.innerHTML = `<span style="color:#ef4444; font-size:0.8rem;">⚠️ ${err.message}</span>`;
       }
     }
 
@@ -4077,8 +4083,15 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           body: JSON.stringify({ filePath, clientName })
         });
 
+        const rawText = await res.text();
+        let errData;
+        try {
+          errData = JSON.parse(rawText);
+        } catch (parseErr) {
+          throw new Error('El servidor en el puerto 8085 requiere reinicio. En tu terminal ejecuta ./sync.sh y selecciona la opción [5].');
+        }
+
         if (!res.ok) {
-          const errData = await res.json();
           throw new Error(errData.error || 'Error al iniciar indexación');
         }
 
