@@ -74,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCloseAddKb: document.getElementById('btn-close-add-kb'),
     btnSaveCustomKb: document.getElementById('btn-save-custom-kb'),
     btnResetSession: document.getElementById('btn-reset-session'),
-    btnLoadMercantil10gb: document.getElementById('btn-load-mercantil-10gb'),
     traceWaterfallContainer: document.getElementById('trace-waterfall-container')
   };
 
@@ -2378,11 +2377,6 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     dom.presetSelector?.addEventListener('change', (e) => {
       loadPresetScenario(e.target.value);
     });
-
-    dom.btnLoadMercantil10gb?.addEventListener('click', (e) => {
-      e.preventDefault();
-      loadMercantil10GbBundle();
-    });
   }
 
   async function loadMercantil10GbBundle() {
@@ -4007,17 +4001,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       for (let fIdx = 0; fIdx < files.length; fIdx++) {
         const file = files[fIdx];
         try {
-          const clientName = extractClientFromFilename(file.name);
+          const clientName = extractClientFromFilename(file.name) || (getActiveClientProfile()?.name) || 'Entrust General';
           const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-
-          // Si el usuario carga el archivo masivo de 10.17 GB de Auditoría Mercantil
-          if (file.name.includes('AuditEvents') || (file.size > 200 * 1024 * 1024 && file.name.endsWith('.csv'))) {
-            showAnalysisStatus(true, `⚡ Archivo Masivo Detectado (${sizeMb} MB)...`, 'Cargando bundle optimizado de 16,504,695 eventos en 0.1s para proteger memoria...');
-            await loadMercantil10GbBundle();
-            return;
-          }
-
-          showAnalysisStatus(true, `⚙️ Procesando [${fIdx + 1}/${files.length}]: ${file.name} (${sizeMb} MB)...`, 'Iniciando motor de alta velocidad...');
+          showAnalysisStatus(true, `⚙️ Procesando [${fIdx + 1}/${files.length}]: ${file.name} (${sizeMb} MB)...`, 'Iniciando motor streaming de alta velocidad...');
 
           let rawEntries = [];
           let realTotalLines = 0;
