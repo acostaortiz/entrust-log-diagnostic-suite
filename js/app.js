@@ -835,7 +835,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function generateTimelineHeatmapHtml(targetLogs) {
     if (!targetLogs || targetLogs.length === 0) return '';
 
-    const hourBuckets = {};
+    const hourBuckets = new Map();
     targetLogs.forEach(l => {
       const textToSearch = (l.timestamp || '') + ' ' + (l.raw || '');
 
@@ -849,11 +849,14 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (slashDateMatch) datePart = slashDateMatch[1];
 
       const timeMatch = textToSearch.match(/(\d{2}):(\d{2})/);
+      let sortKey = datePart || '9999-99-99';
       let bucketKey = 'Horario General';
 
       if (timeMatch) {
         const hourNum = parseInt(timeMatch[1], 10);
         const padHour = String(hourNum).padStart(2, '0');
+        sortKey = `${datePart || '0000-00-00'} ${padHour}`;
+
         let ampmStr = 'AM';
         if (hourNum === 12) ampmStr = 'PM Mediodía';
         else if (hourNum > 12) ampmStr = `${hourNum - 12} PM`;
@@ -864,28 +867,33 @@ document.addEventListener('DOMContentLoaded', () => {
         bucketKey = datePart ? `📅 ${datePart} — ${timeRangeStr}` : timeRangeStr;
       }
 
-      if (!hourBuckets[bucketKey]) {
-        hourBuckets[bucketKey] = { total: 0, critical: 0, warn: 0, info: 0 };
+      if (!hourBuckets.has(sortKey)) {
+        hourBuckets.set(sortKey, { key: bucketKey, total: 0, critical: 0, warn: 0, info: 0 });
       }
-      hourBuckets[bucketKey].total += 1;
-      if (l.level === 'CRITICAL' || l.level === 'ERROR') hourBuckets[bucketKey].critical += 1;
-      else if (l.level === 'WARN' || l.level === 'WARNING') hourBuckets[bucketKey].warn += 1;
-      else hourBuckets[bucketKey].info += 1;
+      const b = hourBuckets.get(sortKey);
+      b.total += 1;
+      if (l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))) b.critical += 1;
+      else if (l.level === 'WARN' || l.level === 'WARNING') b.warn += 1;
+      else b.info += 1;
     });
 
-    const sortedBuckets = Object.entries(hourBuckets).sort((a, b) => b[1].total - a[1].total);
-    const peakBucket = sortedBuckets[0];
+    // Ordenar de forma estrictamente cronológica (de fecha/hora inicial a final)
+    const sortedBuckets = Array.from(hourBuckets.entries()).sort((a, b) => a[0].localeCompare(b[0]));
 
     let rowsHtml = '';
-    sortedBuckets.forEach(([hour, data]) => {
-      const isPeak = peakBucket && peakBucket[0] === hour && data.critical > 0;
+    sortedBuckets.forEach(([sKey, data]) => {
+      const errPct = data.total > 0 ? ((data.critical / data.total) * 100).toFixed(1) : '0';
+      const isBurst = data.critical >= 50 || (data.critical > 0 && parseFloat(errPct) >= 50);
+
       rowsHtml += `
-        <tr style="background:${isPeak ? '#fee2e2' : '#ffffff'};">
-          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; text-align:left;">${hour} ${isPeak ? '🔥 RÁFAGA' : ''}</td>
-          <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; font-weight:bold;">${data.total}</td>
-          <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; color:#dc2626; font-weight:bold;">${data.critical}</td>
-          <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; color:#d97706;">${data.warn}</td>
-          <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; color:#0284c7;">${data.info}</td>
+        <tr style="background:${isBurst ? '#fee2e2' : '#ffffff'}; border-bottom:1px solid #cbd5e1;">
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; text-align:left;">
+            ${escapeHtml(data.key)} ${isBurst ? `<span style="background:#dc2626; color:#fff; padding:2px 6px; border-radius:3px; font-size:10px; margin-left:6px; font-weight:bold;">🔥 RÁFAGA (${errPct}% fallos)</span>` : ''}
+          </td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; font-weight:bold;">${data.total.toLocaleString()}</td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; color:#dc2626; font-weight:bold;">${data.critical.toLocaleString()}</td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; color:#d97706;">${data.warn.toLocaleString()}</td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; color:#0284c7;">${data.info.toLocaleString()}</td>
         </tr>
       `;
     });
