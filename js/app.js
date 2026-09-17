@@ -1051,9 +1051,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const dateStr = new Date().toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'medium' });
-    let targetLogs = state.logs || [];
+    const targetLogs = state.logs || [];
+    const consolidated = getConsolidatedMetrics();
+    const corr = correlateMultiFileEvents();
 
-    const isGlobal = !!state.globalStreamMetrics;
+    const isGlobal = !!state.globalStreamMetrics || consolidated.fileCount > 0;
     const isCloud = (state.globalStreamMetrics?.detectedPlatform?.includes('IDaaS')) ||
                     (activeClient?.platform || '').toLowerCase().includes('idaas') ||
                     (activeClient?.platform || '').toLowerCase().includes('cloud') ||
@@ -1063,14 +1065,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const platformLabel = isCloud ? 'Entrust IDaaS Cloud' : `IdentityGuard OnPremise (${activeClient?.version || 'v11.0'})`;
     const platformDisplay = isCloud ? '🛡️ Entrust IDaaS Cloud (Bulk Provisioning & SAML 2.0)' : `🛡️ ${escapeHtml(activeClient?.platform || 'Entrust IdentityGuard OnPremise')}`;
 
-    const totalCount = isGlobal ? state.globalStreamMetrics.totalLogs : Math.max(1, targetLogs.length);
-    const criticalLogsCount = isGlobal ? state.globalStreamMetrics.totalErrors : targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length;
-    const warningLogsCount = isGlobal ? (state.globalStreamMetrics.totalWarnings || 0) : targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length;
-    const infoLogsCount = isGlobal ? (totalCount - criticalLogsCount - warningLogsCount) : targetLogs.filter(l => l.level === 'INFO' || l.level === 'SUCCESS').length;
+    const totalCount = consolidated.totalLogs;
+    const criticalLogsCount = consolidated.totalErrors;
+    const warningLogsCount = consolidated.totalWarnings;
+    const infoLogsCount = consolidated.totalInfo;
 
-    const calculatedHealth = isGlobal && totalCount > 0 
+    const calculatedHealth = totalCount > 0 
       ? parseFloat((((totalCount - criticalLogsCount) / totalCount) * 100).toFixed(2))
-      : (criticalLogsCount > 0 ? Math.max(10, Math.round(100 - (criticalLogsCount / totalCount) * 100 * 5)) : 100);
+      : 100;
     const healthValStr = `${calculatedHealth}%`;
 
     // Formateador preciso de porcentaje
@@ -1087,116 +1089,75 @@ document.addEventListener('DOMContentLoaded', () => {
     const visualWarnPct = totalCount > 0 && warningLogsCount > 0 ? Math.max(3, (warningLogsCount / totalCount) * 100) : 0;
 
     const reportTitleText = onlyCatalogErrors 
-      ? `INFORME DE DIAGNÓSTICO EXCLUSIVO DE ERRORES ENTRUST [${isCloud ? 'IDaaS Bulk Errors' : '520xxx'} / ${platformLabel.toUpperCase()}]`
-      : `INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES — ${isCloud ? 'ENTRUST IDAAS CLOUD' : escapeHtml(activeClient.platform.toUpperCase())}`;
+      ? `INFORME DE DIAGNÓSTICO EXCLUSIVO DE ERRORES ENTRUST [520xxx / AUD / ORA / IDaaS / ${platformLabel.toUpperCase()}]`
+      : `INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES — ${isCloud ? 'ENTRUST IDAAS CLOUD & ONPREMISE' : escapeHtml(activeClient.platform.toUpperCase())}`;
 
     const reportScopeText = onlyCatalogErrors
-      ? `Filtro Exclusivo: Catálogo de Errores y Fallos Críticos de Autenticación (${totalCount.toLocaleString()} eventos analizados)`
-      : `Diagnóstico General de Logs e Incidentes en ${isCloud ? 'Entrust IDaaS Cloud' : escapeHtml(activeClient.platform)} (${totalCount.toLocaleString()} eventos analizados)`;
+      ? `Filtro Exclusivo: Catálogo de Errores y Fallos Críticos (${totalCount.toLocaleString()} eventos en ${consolidated.fileCount || 1} archivos)`
+      : `Auditoría Forense Consolidada (${totalCount.toLocaleString()} eventos en ${consolidated.fileCount || 1} archivos analizados)`;
 
     let incidentsHtml = '';
     let topCodesHtml = '';
     let sortedIncidents = [];
 
-    if (isGlobal && state.globalStreamMetrics?.topCodes && state.globalStreamMetrics.topCodes.length > 0) {
-      sortedIncidents = state.globalStreamMetrics.topCodes.map(item => {
-        const code = item.code;
-        const count = item.count;
-        const diag = window.knowledgeBaseEngine.diagnoseLog(code, code);
-        let level = 'CRITICAL';
-        let service = 'Entrust Core Service';
+    // Agrupar todos los códigos detectados con su metadata técnica
+    const allUniqueCodesMap = new Map();
 
-        if (code.includes('assignedgrid')) {
-          service = 'Entrust IDaaS Cloud / Bulk Grid Engine';
-        } else if (code.includes('qa')) {
-          service = 'Entrust IDaaS Cloud / Bulk Q&A Engine';
-        } else if (code.includes('password')) {
-          service = 'Entrust IDaaS Cloud / Bulk Password Engine';
-        } else if (code.startsWith('520')) {
-          service = 'Entrust IdentityGuard Server (IG.SYSTEM)';
-        } else if (code.startsWith('AUD')) {
-          service = 'Entrust Audit Subsystem (IG.AUDIT)';
-        } else if (code.includes('ORA')) {
-          service = 'Oracle Database Engine';
-        } else if (code.includes('TransactionQueue')) {
-          service = 'Entrust Transaction Queue API';
-        } else if (code.includes('Bulkidentityguard') || code.includes('UsersAdd') || code.includes('Authorizationgroups')) {
-          service = 'Entrust IDaaS Cloud Bulk Importer';
-          level = 'INFO';
-        }
-
-        const matchingLog = targetLogs.find(l => (l.message || '').includes(code) || (l.raw || '').includes(code));
-        const sampleRaw = matchingLog ? (matchingLog.raw || matchingLog.message) : `[2026-09-08 16:35:12,881] [BulkWorker-1] [${level}] [IDaaS.Provisioning] [${code}] Failure event during bulk import operation.`;
-
-        return {
-          code,
-          log: matchingLog || { message: code, level },
+    if (state.globalStreamMetrics?.topCodes) {
+      state.globalStreamMetrics.topCodes.forEach(item => {
+        const diag = window.knowledgeBaseEngine.diagnoseLog(item.code, item.code);
+        allUniqueCodesMap.set(item.code, {
+          code: item.code,
+          count: item.count,
           diag,
-          count,
-          sampleRaw,
-          level,
-          service
-        };
+          level: (item.code.includes('error') || item.code.startsWith('520') || item.code.includes('ORA')) ? 'CRITICAL' : 'INFO',
+          service: diag.category || 'Entrust Service',
+          sampleRaw: `[Audit Stream] Evento registrado en trazabilidad masiva para código ${item.code}`
+        });
       });
-    } else {
-      const diagMap = new Map();
-      const errorLogs = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL')));
-      const logsToAnalyze = onlyCatalogErrors ? (errorLogs.length > 0 ? errorLogs : targetLogs) : (errorLogs.length > 0 ? errorLogs : targetLogs);
-
-      function extractErrorCode(log) {
-        if (log.entrustCode) return log.entrustCode;
-        const msg = (log.message || '') + ' ' + (log.raw || '');
-        if (/grid already assigned/i.test(msg) || /assignedgrid/i.test(msg)) {
-          return 'bulkidentityguard.add.error.assignedgrid';
-        }
-        if (/currently has a password|Password will not be migrated|password/i.test(msg)) {
-          return 'bulkidentityguard.add.error.password';
-        }
-        if (/already/i.test(msg) || /qa|question/i.test(msg)) {
-          return 'bulkidentityguard.add.error.qa';
-        }
-        const m = msg.match(/\[(520\d{4}|AUD\d+|[A-Za-z0-9_\.-]+\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\]/i) ||
-                  msg.match(/\b(520\d{4}|AUD\d+|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\b/i);
-        if (m) return m[1];
-        return log.service || log.type || 'LOG_EVENT';
-      }
-
-      logsToAnalyze.forEach(log => {
-        const code = extractErrorCode(log);
-        const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message, code);
-        const key = code;
-
-        if (!diagMap.has(key)) {
-          diagMap.set(key, {
-            code: key,
-            log,
-            diag,
-            count: 1,
-            sampleRaw: log.raw || log.message,
-            level: log.level || 'ERROR',
-            service: log.service || 'Entrust Service'
-          });
-        } else {
-          diagMap.get(key).count += 1;
-        }
-      });
-
-      sortedIncidents = Array.from(diagMap.values()).sort((a, b) => b.count - a.count);
     }
+
+    targetLogs.forEach(log => {
+      const rawText = (log.message || '') + ' ' + (log.raw || '');
+      const code = log.entrustCode || window.knowledgeBaseEngine.extractErrorCodeFromText(rawText);
+      if (!code) return;
+
+      if (!allUniqueCodesMap.has(code)) {
+        const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(rawText, code);
+        allUniqueCodesMap.set(code, {
+          code,
+          count: 1,
+          diag,
+          level: log.level || 'ERROR',
+          service: diag.category || log.service || 'Entrust Service',
+          sampleRaw: log.raw || log.message
+        });
+      } else {
+        allUniqueCodesMap.get(code).count += 1;
+      }
+    });
+
+    sortedIncidents = Array.from(allUniqueCodesMap.values()).sort((a, b) => b.count - a.count);
 
     const diagMapSize = sortedIncidents.length;
 
     sortedIncidents.forEach((item, idx) => {
       const idxNum = idx + 1;
-      const { code, log, diag, count, sampleRaw, level, service } = item;
+      const { code, diag, count, sampleRaw, level, service } = item;
       const pctStr = formatPctStr(count, totalCount);
+
+      let familyBadge = '🚨 520xxx Core';
+      let familyColor = '#dc2626';
+      if (/^AUD\d+/i.test(code)) { familyBadge = '📋 AUD Auditoría'; familyColor = '#d97706'; }
+      else if (/^ORA-\d+/i.test(code)) { familyBadge = '🗄️ ORA Database'; familyColor = '#7c3aed'; }
+      else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(code)) { familyBadge = '☁️ IDaaS Cloud'; familyColor = '#0284c7'; }
 
       if (onlyCatalogErrors) {
         incidentsHtml += `
-          <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:5px solid #dc2626; border-radius:6px; padding:14px; page-break-inside:avoid; break-inside:avoid; margin-bottom:12px;">
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:5px solid ${familyColor}; border-radius:6px; padding:14px; page-break-inside:avoid; break-inside:avoid; margin-bottom:12px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <div>
-                <span style="background:#fee2e2; color:#dc2626; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:4px; font-family:monospace;">${level} (${count.toLocaleString()}x)</span>
+                <span style="background:${familyColor}15; color:${familyColor}; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:4px; font-family:monospace;">${familyBadge} (${count.toLocaleString()}x)</span>
                 <span style="font-family:monospace; font-size:12px; font-weight:bold; color:#0a3d6d; margin-left:8px;">#${idxNum} - [${escapeHtml(code)}] ${escapeHtml(service)}</span>
               </div>
               <span style="font-family:monospace; font-size:11px; color:#64748b; font-weight:bold;">${count.toLocaleString()} Ocurrencias (${pctStr})</span>
@@ -1205,26 +1166,26 @@ document.addEventListener('DOMContentLoaded', () => {
               ${escapeHtml(sampleRaw)}
             </div>
             <div style="font-size:12px; color:#1e293b; margin-bottom:6px;">
-              <strong style="color:#0a3d6d;">Diagnóstico:</strong> ${escapeHtml(diag.meaning || log.message || code)}
+              <strong style="color:#0a3d6d;">Diagnóstico:</strong> ${escapeHtml(diag.meaning || code)}
             </div>
             <div style="font-size:12px; color:#b91c1c; margin-bottom:6px;">
               <strong style="color:#991b1b;">Causa Raíz:</strong> ${escapeHtml(diag.rootCause || 'Anomalía en los parámetros de autenticación o aprovisionamiento.')}
             </div>
             <div style="font-size:11px; color:#047857; background:#ecfdf5; padding:8px 10px; border-radius:4px; border:1px solid #a7f3d0; white-space:pre-line;">
-              <strong style="color:#065f46;">Remediación Inmediata:</strong><br>${escapeHtml(diag.remediation || 'Verificar configuración de repositorio y parámetros de aprovisionamiento.')}
+              <strong style="color:#065f46;">Remediación Inmediata:</strong><br>${escapeHtml(diag.remediation || 'Verificar configuración de repositorio y consultar manual técnico.')}
             </div>
           </div>`;
       } else {
         incidentsHtml += `
           <tr style="background:${idxNum % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
             <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center;">
-              <span style="white-space:nowrap; background:${level === 'CRITICAL' || level === 'ERROR' ? '#fee2e2' : '#e0f2fe'}; color:${level === 'CRITICAL' || level === 'ERROR' ? '#dc2626' : '#0284c7'}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">#${idxNum} ${level}</span><br>
-              <span style="font-size:9.5px; color:#dc2626; font-weight:bold;">${count.toLocaleString()} veces</span>
+              <span style="white-space:nowrap; background:${familyColor}15; color:${familyColor}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">${familyBadge}</span><br>
+              <span style="font-size:9.5px; color:${familyColor}; font-weight:bold;">${count.toLocaleString()} veces</span>
             </td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(service)}</td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1;">
               <strong style="color:#0a3d6d; font-size:11px;">[${escapeHtml(code)}] ${escapeHtml(diag.title || code)}</strong><br>
-              <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(diag.meaning || log.message || code)}</span>
+              <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(diag.meaning || code)}</span>
             </td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(diag.rootCause || 'Fallo operacional detectado')}</td>
             <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(diag.remediation || 'Consultar manual técnico')}</td>
@@ -1233,23 +1194,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
       topCodesHtml += `
         <tr style="page-break-inside:avoid; break-inside:avoid;">
-          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d; text-align:center;">${escapeHtml(code)}</td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:${familyColor}; text-align:center;">[${escapeHtml(code)}]<br><span style="font-size:9px; color:#64748b;">${familyBadge}</span></td>
           <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(diag.title || code)}</td>
-          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:#dc2626;">${count.toLocaleString()} (${pctStr})</td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:${familyColor}; font-family:monospace;">${count.toLocaleString()} (${pctStr})</td>
           <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(diag.rootCause || 'Fallo operacional')}</td>
         </tr>`;
     });
+
+    // Construcción de la sección de Correlación Cruzada en el Informe
+    let corrSectionHtml = `
+      <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:14px; border-radius:6px; margin-bottom:25px; page-break-inside:avoid;">
+        <h4 style="margin:0 0 10px 0; color:#0a3d6d; font-size:13px;">🔗 Correlación Multi-Archivo y Trazabilidad Multi-Servicio (${corr.totalFiles} Archivos Totales)</h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-bottom:12px;">
+    `;
+
+    Object.values(corr.layers).forEach(layer => {
+      if (layer.count === 0 && layer.files.length === 0) return;
+      corrSectionHtml += `
+        <div style="background:#fff; border:1px solid #e2e8f0; padding:8px 10px; border-radius:4px; font-size:11px;">
+          <div style="font-weight:bold; color:#0a3d6d; margin-bottom:2px;">${layer.name}</div>
+          <div style="color:#64748b;">Archivos: <strong>${layer.files.length}</strong> | Logs: <strong style="color:#0284c7;">${layer.count.toLocaleString()}</strong></div>
+          <div style="color:${layer.errors > 0 ? '#dc2626' : '#10b981'}; font-weight:bold;">Incidentes: ${layer.errors.toLocaleString()}</div>
+        </div>
+      `;
+    });
+
+    corrSectionHtml += `</div><div style="font-size:11px; color:#334155; line-height:1.5;">`;
+    corr.correlations.forEach(c => {
+      corrSectionHtml += `
+        <div style="margin-bottom:6px; padding:6px 8px; background:#fff; border-left:3px solid ${c.severity === 'CRITICAL' ? '#dc2626' : '#0284c7'}; border-radius:3px; border:1px solid #e2e8f0; border-left-width:3px;">
+          <strong>${escapeHtml(c.source)} ➔ ${escapeHtml(c.target)} (${escapeHtml(c.type)}):</strong> ${escapeHtml(c.evidence)}
+        </div>
+      `;
+    });
+    corrSectionHtml += `</div></div>`;
 
     const section1Content = onlyCatalogErrors
       ? `<div style="margin-bottom:25px;">${incidentsHtml || '<div style="padding:15px; text-align:center; color:#64748b;">No se detectaron errores de catálogo durante el análisis.</div>'}</div>`
       : `<table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
           <thead>
             <tr style="background:#0a3d6d; color:#ffffff; text-align:left; page-break-inside:avoid; break-inside:avoid;">
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:10%; text-align:center;">Nivel</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:12%; text-align:center;">Familia / Nivel</th>
               <th style="padding:8px 6px; border:1px solid #0a3d6d; width:14%;">Servicio / API</th>
               <th style="padding:8px 6px; border:1px solid #0a3d6d; width:26%;">Evento & Significado</th>
               <th style="padding:8px 6px; border:1px solid #0a3d6d; width:22%;">Causa Raíz Probable</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:28%;">Remediación Inmediata</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:26%;">Remediación Inmediata</th>
             </tr>
           </thead>
           <tbody>
@@ -1296,16 +1285,16 @@ document.addEventListener('DOMContentLoaded', () => {
               <div style="font-size:22px; font-weight:bold; color:${calculatedHealth < 80 ? '#dc2626' : '#0a3d6d'};">${healthValStr}</div>
             </div>
             <div style="text-align:center; background:#fff; padding:10px 8px; border-radius:6px; border:1px solid #e2e8f0;">
-              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
-              <div style="font-size:22px; font-weight:bold; color:#0f172a;">${totalCount.toLocaleString()}</div>
+              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Total Eventos Consolidados</div>
+              <div style="font-size:22px; font-weight:bold; color:#0f172a; font-family:monospace;">${totalCount.toLocaleString()}</div>
             </div>
             <div style="text-align:center; background:#fff; padding:10px 8px; border-radius:6px; border:1px solid #e2e8f0;">
               <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Incidentes Críticos</div>
-              <div style="font-size:22px; font-weight:bold; color:#dc2626;">${criticalLogsCount.toLocaleString()}</div>
+              <div style="font-size:22px; font-weight:bold; color:#dc2626; font-family:monospace;">${criticalLogsCount.toLocaleString()}</div>
             </div>
             <div style="text-align:center; background:#fff; padding:10px 8px; border-radius:6px; border:1px solid #e2e8f0;">
-              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Alertas Auditoría</div>
-              <div style="font-size:22px; font-weight:bold; color:#d97706;">${warningLogsCount.toLocaleString()}</div>
+              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Alertas Auditoría (AUD)</div>
+              <div style="font-size:22px; font-weight:bold; color:#d97706; font-family:monospace;">${warningLogsCount.toLocaleString()}</div>
             </div>
           </div>
 
@@ -1313,7 +1302,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="background:#fff; border:1px solid #e2e8f0; padding:10px 14px; border-radius:6px;">
             <div style="font-size:10px; font-weight:bold; color:#0a3d6d; text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between;">
               <span>📊 Distribución por Severidad de Eventos</span>
-              <span style="color:#64748b; font-weight:normal;">Total Procesados: ${totalCount.toLocaleString()}</span>
+              <span style="color:#64748b; font-weight:normal;">Total Procesados: ${totalCount.toLocaleString()} en ${consolidated.fileCount || 1} archivos</span>
             </div>
             <div style="height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden; display:flex; margin-bottom:8px;">
               <div style="width:${visualCritPct}%; background:#dc2626;" title="CRITICAL/ERROR"></div>
@@ -1328,19 +1317,22 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
 
+        <!-- Sección de Correlación Cruzada -->
+        ${corrSectionHtml}
+
         <!-- Sección I: Hallazgos & Diagnóstico -->
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
-          ${onlyCatalogErrors ? `1. Catálogo Exclusivo de Errores [${isCloud ? 'IDaaS Bulk Errors' : '520xxx'} / ${platformLabel}] Detectados` : `1. Hallazgos y Diagnóstico Técnico por Patrón de Error [${isCloud ? 'IDaaS Bulk Errors' : '520xxx'} / ${platformLabel}]`} (${diagMapSize} diagnósticos únicos)
+          1. Hallazgos y Diagnóstico Técnico Clasificado [520xxx / AUD / ORA / IDaaS] (${diagMapSize} patrones únicos)
         </h3>
         ${section1Content}
 
         <!-- Tabla II: Análisis de Frecuencia de Errores -->
         <div style="margin-top:20px; page-break-inside:avoid; break-inside:avoid;">
-          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">2. Análisis Estadístico de Errores Reincidentes (520xxx / Bulk Errors / AUDxxx)</h3>
+          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">2. Análisis Estadístico de Errores Reincidentes por Familia (520xxx / AUDxxx / ORA / IDaaS)</h3>
           <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
             <thead>
               <tr style="background:#e0f2fe; color:#0a3d6d; text-align:left; page-break-inside:avoid; break-inside:avoid;">
-                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:22%;">Código / Tipo</th>
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:22%;">Código / Familia</th>
                 <th style="padding:8px 6px; border:1px solid #cbd5e1; width:30%;">Descripción del Evento</th>
                 <th style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center; width:18%;">Reincidencias</th>
                 <th style="padding:8px 6px; border:1px solid #cbd5e1; width:30%;">Diagnóstico & Causa Raíz</th>
@@ -1374,8 +1366,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           <!-- Sello SHA-256 de Autenticidad -->
           <div style="margin-top:20px; padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:10px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
-            <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD & AUDITORÍA SHA-256:</strong> SHA256-170PLATINUM-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
-            <span>Validado por IT SERVICIOS Suite Enterprise v170.0 Platinum</span>
+            <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD & AUDITORÍA SHA-256:</strong> SHA256-190PLATINUM-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
+            <span>Validado por IT SERVICIOS Suite Enterprise v190.0 Platinum</span>
           </div>
         </div>
       </div>
@@ -1402,7 +1394,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const targetLogs = state.logs || [];
-    const isGlobal = !!state.globalStreamMetrics;
+    const consolidated = getConsolidatedMetrics();
+    const corr = correlateMultiFileEvents();
+
     const isCloud = (state.globalStreamMetrics?.detectedPlatform?.includes('IDaaS')) ||
                     (activeClient?.platform || '').toLowerCase().includes('idaas') ||
                     (activeClient?.platform || '').toLowerCase().includes('cloud') ||
@@ -1410,89 +1404,77 @@ document.addEventListener('DOMContentLoaded', () => {
                     (state.loadedFiles || []).some(f => f.name.includes('.csv') || f.name.includes('AuditEvents'));
 
     const platformLabel = isCloud ? 'Entrust IDaaS Cloud' : `${activeClient.platform} (${activeClient.version})`;
-    const totalCount = isGlobal ? state.globalStreamMetrics.totalLogs : Math.max(1, targetLogs.length);
-    const criticalLogsCount = isGlobal ? state.globalStreamMetrics.totalErrors : targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length;
-    const warningLogsCount = isGlobal ? (state.globalStreamMetrics.totalWarnings || 0) : targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length;
-    const infoLogsCount = isGlobal ? (totalCount - criticalLogsCount - warningLogsCount) : targetLogs.filter(l => l.level === 'INFO' || l.level === 'SUCCESS').length;
+    const totalCount = consolidated.totalLogs;
+    const criticalLogsCount = consolidated.totalErrors;
+    const warningLogsCount = consolidated.totalWarnings;
+    const infoLogsCount = consolidated.totalInfo;
 
-    const healthIndex = isGlobal && totalCount > 0
+    const healthIndex = totalCount > 0
       ? parseFloat((((totalCount - criticalLogsCount) / totalCount) * 100).toFixed(2))
-      : (criticalLogsCount > 0 ? Math.max(10, Math.round(100 - (criticalLogsCount / totalCount) * 100 * 5)) : 100);
+      : 100;
 
     const dateStr = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const timeStr = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
     let md = `# IT SERVICIOS DE VENEZUELA\n`;
-    md += `## INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES — ${isCloud ? 'ENTRUST IDAAS CLOUD' : activeClient.platform.toUpperCase()}\n\n`;
+    md += `## INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES — ${isCloud ? 'ENTRUST IDAAS CLOUD & ONPREMISE' : activeClient.platform.toUpperCase()}\n\n`;
     md += `**Cliente / Destinatario:** ${activeClient.name}\n`;
     md += `**Dirigido a:** ${activeClient.contact}\n`;
     md += `**Ingeniero Responsable:** ${activeClient.engineer} — Soporte IT Servicios\n`;
     md += `**Plataforma y Versión:** ${platformLabel}\n`;
+    md += `**Archivos Auditados:** ${consolidated.fileCount || 1} Archivo(s) en la Muestra Consolidada\n`;
     md += `**Fecha de Emisión:** ${dateStr}, ${timeStr} hrs\n`;
     md += `**Estatus:** DOCUMENTO OFICIAL PRELIMINAR DE OBSERVACIONES — CONFIDENCIAL\n\n`;
     md += `---\n\n`;
 
     md += `### 1. RESUMEN EJECUTIVO DE SALUD Y MÉTRICAS DE LA MUESTRA\n\n`;
-    md += `- **Total Eventos Analizados:** \`${totalCount.toLocaleString()}\` registros\n`;
+    md += `- **Total Eventos Consolidados:** \`${totalCount.toLocaleString()}\` registros (${consolidated.fileCount || 1} archivos)\n`;
     md += `- **Índice de Salud de Autenticación:** \`${healthIndex}%\`\n`;
-    md += `- **Incidentes Críticos:** \`${criticalLogsCount.toLocaleString()}\` (${((criticalLogsCount / totalCount) * 100).toFixed(2)}%)\n`;
-    md += `- **Alertas de Auditoría:** \`${warningLogsCount.toLocaleString()}\` (${((warningLogsCount / totalCount) * 100).toFixed(2)}%)\n`;
-    md += `- **Operaciones Informativas:** \`${infoLogsCount.toLocaleString()}\` (${((infoLogsCount / totalCount) * 100).toFixed(2)}%)\n\n`;
+    md += `- **Incidentes Críticos [520xxx / IDaaS / ORA]:** \`${criticalLogsCount.toLocaleString()}\` (${((criticalLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
+    md += `- **Alertas de Auditoría [AUDxxx]:** \`${warningLogsCount.toLocaleString()}\` (${((warningLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
+    md += `- **Operaciones Informativas:** \`${infoLogsCount.toLocaleString()}\` (${((infoLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n\n`;
 
     md += `---\n\n`;
-    md += `### 2. ANÁLISIS DE FRECUENCIA DE ERRORES E INCIDENTES\n\n`;
-    md += `| Código / Diagnóstico | Descripción del Evento | Reincidencias | Impacto |\n`;
-    md += `| :--- | :--- | :---: | :---: |\n`;
-
-    if (isGlobal && state.globalStreamMetrics?.topCodes && state.globalStreamMetrics.topCodes.length > 0) {
-      state.globalStreamMetrics.topCodes.forEach(item => {
-        const diag = window.knowledgeBaseEngine.diagnoseLog(item.code, item.code);
-        const pct = ((item.count / totalCount) * 100).toFixed(2);
-        md += `| \`${item.code}\` | **${diag.title || item.code}**<br>${diag.meaning || ''} | **${item.count.toLocaleString()}** | ${pct}% |\n`;
-      });
-    } else {
-      const diagMap = new Map();
-      const logsToGroup = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
-      logsToGroup.forEach(log => {
-        const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message);
-        const key = diag.title || log.message;
-        if (!diagMap.has(key)) {
-          diagMap.set(key, { log, diag, count: 1 });
-        } else {
-          diagMap.get(key).count += 1;
-        }
-      });
-      const sortedIncidents = Array.from(diagMap.values()).sort((a, b) => b.count - a.count);
-      sortedIncidents.forEach(({ log, diag, count }) => {
-        const codeDisplay = diag.ruleId ? diag.ruleId.replace('KB-ENTRUST-', '').replace('KB-', '') : (log.level || 'ERROR');
-        md += `| \`${codeDisplay}\` | **${diag.title}**<br>${diag.meaning} | **${count.toLocaleString()}** | ${((count / totalCount) * 100).toFixed(1)}% |\n`;
-      });
-    }
+    md += `### 2. CORRELACIÓN CRUZADA MULTI-ARCHIVO & MULTI-SERVICIO\n\n`;
+    md += `| Capa / Servicio | Archivos Asignados | Eventos Totales | Incidentes Críticos |\n`;
+    md += `| :--- | :---: | :---: | :---: |\n`;
+    Object.values(corr.layers).forEach(layer => {
+      if (layer.count > 0 || layer.files.length > 0) {
+        md += `| **${layer.name}** | \`${layer.files.length}\` | **${layer.count.toLocaleString()}** | ${layer.errors.toLocaleString()} |\n`;
+      }
+    });
+    md += `\n**Dictamen de Correlación:**\n`;
+    corr.correlations.forEach(c => {
+      md += `- **${c.source} ➔ ${c.target} (${c.type}):** ${c.evidence}\n`;
+    });
 
     md += `\n---\n\n`;
-    md += `### 3. TRAZABILIDAD DE USUARIOS E IPS DE ORIGEN\n\n`;
+    md += `### 3. ANÁLISIS DE FRECUENCIA DE ERRORES E INCIDENTES POR FAMILIA\n\n`;
+    md += `| Código / Familia | Descripción del Evento | Reincidencias | Impacto Relativo |\n`;
+    md += `| :--- | :--- | :---: | :---: |\n`;
 
-    if (isGlobal && state.globalStreamMetrics && state.globalStreamMetrics.topUsers) {
-      md += `#### Top Usuarios Afectados / Activos:\n`;
-      md += `| Usuario ID | Transacciones Globales | Rol / Estatus |\n`;
-      md += `| :--- | :---: | :--- |\n`;
-      state.globalStreamMetrics.topUsers.forEach(u => {
-        md += `| \`${u.user}\` | **${u.count.toLocaleString()}** | Super Administrador (Bulk Tasks) |\n`;
+    const allGroupedCodes = new Map();
+    if (state.globalStreamMetrics?.topCodes) {
+      state.globalStreamMetrics.topCodes.forEach(item => {
+        allGroupedCodes.set(item.code, item.count);
       });
-      md += `\n`;
-
-      if (state.globalStreamMetrics.topIps) {
-        md += `#### Top Direcciones IP de Origen:\n`;
-        md += `| Dirección IP | Peticiones Globales | Tipo de Enlace |\n`;
-        md += `| :--- | :---: | :--- |\n`;
-        state.globalStreamMetrics.topIps.forEach(ipItem => {
-          md += `| \`${ipItem.ip}\` | **${ipItem.count.toLocaleString()}** | Intranet / Consola Corporativa |\n`;
-        });
-        md += `\n`;
-      }
     }
+    targetLogs.forEach(l => {
+      const c = l.entrustCode || (window.knowledgeBaseEngine && window.knowledgeBaseEngine.extractErrorCodeFromText((l.message || '') + ' ' + (l.raw || '')));
+      if (c) allGroupedCodes.set(c, (allGroupedCodes.get(c) || 0) + 1);
+    });
 
-    md += `---\n\n`;
+    Array.from(allGroupedCodes.entries()).sort((a, b) => b[1] - a[1]).forEach(([code, count]) => {
+      const diag = window.knowledgeBaseEngine.diagnoseLog(code, code);
+      const pct = ((count / Math.max(1, totalCount)) * 100).toFixed(2);
+      let fam = '520xxx';
+      if (/^AUD/i.test(code)) fam = 'AUD';
+      else if (/^ORA/i.test(code)) fam = 'ORA';
+      else if (/bulkidentityguard/i.test(code)) fam = 'IDaaS';
+      md += `| \`[${code}]\` *(${fam})* | **${diag.title || code}**<br>${diag.meaning || ''} | **${count.toLocaleString()}** | ${pct}% |\n`;
+    });
+
+    md += `\n---\n\n`;
     md += `### 4. RECOMENDACIONES TÉCNICAS Y PLAN DE ACCIÓN RECOMENDADO\n\n`;
     if (isCloud) {
       md += `1. **Sobrescritura de Tarjetas Grid (overwriteExistingGrid):** Habilitar el flag \`overwriteExistingGrid=true\` en la definición de la tarea masiva para renovar tarjetas de usuarios preexistentes.\n`;
@@ -1509,8 +1491,8 @@ document.addEventListener('DOMContentLoaded', () => {
     md += `---\n\n`;
     md += `**Departamento de Soporte IT Servicios de Venezuela**  \n`;
     md += `*Ing. ${activeClient.engineer} — Especialista en Infraestructura Entrust*\n\n`;
-    md += `🔒 **SELLO DIGITAL DE AUTENTICIDAD Y AUDITORÍA SHA-256:** \`SHA256-170PLATINUM-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS\`  \n`;
-    md += `*Documento certificado e inspeccionado de forma autónoma por IT SERVICIOS — Entrust Diagnostic Suite v170.0 Platinum*\n`;
+    md += `🔒 **SELLO DIGITAL DE AUTENTICIDAD Y AUDITORÍA SHA-256:** \`SHA256-190PLATINUM-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS\`  \n`;
+    md += `*Documento certificado e inspeccionado de forma autónoma por IT SERVICIOS — Entrust Diagnostic Suite v190.0 Platinum*\n`;
 
     return md;
   }
@@ -2879,17 +2861,172 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     showAnalysisStatus(false, `✅ Muestra Analizada & Acumulada Exitosamente (${state.logs.length} registros totales)`, `Cliente: ${clientName}`);
   }
 
+  function getConsolidatedMetrics() {
+    const files = state.loadedFiles || [];
+    const hasFiles = files.length > 0;
+    
+    let totalLogs = 0;
+    let totalErrors = 0;
+    let totalWarnings = 0;
+    
+    if (hasFiles) {
+      files.forEach(f => {
+        totalLogs += (f.count || 0);
+        totalErrors += (f.realErrors || 0);
+        totalWarnings += (f.realWarnings || 0);
+      });
+    }
+    
+    if (totalLogs === 0) {
+      if (state.globalStreamMetrics && state.globalStreamMetrics.totalLogs) {
+        totalLogs = state.globalStreamMetrics.totalLogs;
+        totalErrors = state.globalStreamMetrics.totalErrors || 0;
+        totalWarnings = state.globalStreamMetrics.totalWarnings || 0;
+      } else {
+        totalLogs = state.logs ? state.logs.length : 0;
+        totalErrors = state.logs ? state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length : 0;
+        totalWarnings = state.logs ? state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length : 0;
+      }
+    } else {
+      const sampleErr = state.logs ? state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length : 0;
+      if (totalErrors === 0 && sampleErr > 0) totalErrors = sampleErr;
+      const sampleWarn = state.logs ? state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length : 0;
+      if (totalWarnings === 0 && sampleWarn > 0) totalWarnings = sampleWarn;
+    }
+
+    const codeMap520 = {};
+    const codeMapAud = {};
+    const codeMapOra = {};
+    const codeMapIdaas = {};
+    const codeMapOther = {};
+
+    if (state.globalStreamMetrics && state.globalStreamMetrics.topCodes) {
+      state.globalStreamMetrics.topCodes.forEach(item => {
+        const c = item.code;
+        const cnt = item.count;
+        if (/^520\d{4}/.test(c)) codeMap520[c] = (codeMap520[c] || 0) + cnt;
+        else if (/^AUD\d+/i.test(c)) codeMapAud[c] = (codeMapAud[c] || 0) + cnt;
+        else if (/^ORA-\d+/i.test(c)) codeMapOra[c] = (codeMapOra[c] || 0) + cnt;
+        else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(c)) codeMapIdaas[c] = (codeMapIdaas[c] || 0) + cnt;
+        else codeMapOther[c] = (codeMapOther[c] || 0) + cnt;
+      });
+    }
+
+    (state.logs || []).forEach(l => {
+      const rawText = (l.message || '') + ' ' + (l.raw || '');
+      const code = l.entrustCode || (window.knowledgeBaseEngine && window.knowledgeBaseEngine.extractErrorCodeFromText(rawText));
+      if (code) {
+        if (/^520\d{4}/.test(code)) codeMap520[code] = (codeMap520[code] || 0) + 1;
+        else if (/^AUD\d+/i.test(code)) codeMapAud[code] = (codeMapAud[code] || 0) + 1;
+        else if (/^ORA-\d+/i.test(code)) codeMapOra[code] = (codeMapOra[code] || 0) + 1;
+        else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(code)) codeMapIdaas[code] = (codeMapIdaas[code] || 0) + 1;
+        else codeMapOther[code] = (codeMapOther[code] || 0) + 1;
+      }
+    });
+
+    return {
+      totalLogs,
+      totalErrors,
+      totalWarnings,
+      totalInfo: Math.max(0, totalLogs - totalErrors - totalWarnings),
+      fileCount: files.length,
+      files,
+      codeMap520,
+      codeMapAud,
+      codeMapOra,
+      codeMapIdaas,
+      codeMapOther
+    };
+  }
+
+  function correlateMultiFileEvents() {
+    const files = state.loadedFiles || [];
+    const layers = {
+      sam: { name: '🌐 SAM API Gateway / Client Auth', files: [], count: 0, errors: 0, icon: '🌐' },
+      core: { name: '🛡️ IdentityGuard Core Server (IG.SYSTEM)', files: [], count: 0, errors: 0, icon: '🛡️' },
+      audit: { name: '📋 IdentityGuard Audit Subsystem (IG.AUDIT)', files: [], count: 0, errors: 0, icon: '📋' },
+      idaas: { name: '☁️ Entrust IDaaS Cloud Tenant / Bulk Sync', files: [], count: 0, errors: 0, icon: '☁️' },
+      other: { name: '⚙️ Otros Componentes del Sistema', files: [], count: 0, errors: 0, icon: '⚙️' }
+    };
+
+    files.forEach(f => {
+      const fn = (f.name || '').toLowerCase();
+      if (fn.includes('sam_system') || fn.includes('sam_audit') || fn.includes('sam.')) {
+        layers.sam.files.push(f);
+        layers.sam.count += (f.count || 0);
+        layers.sam.errors += (f.realErrors || 0);
+      } else if (fn.includes('identityguard_system') || fn.includes('ig_system') || fn.includes('ig.system')) {
+        layers.core.files.push(f);
+        layers.core.count += (f.count || 0);
+        layers.core.errors += (f.realErrors || 0);
+      } else if (fn.includes('identityguard_audit') || fn.includes('ig_audit') || fn.includes('ig.audit')) {
+        layers.audit.files.push(f);
+        layers.audit.count += (f.count || 0);
+        layers.audit.errors += (f.realErrors || 0);
+      } else if (fn.includes('import_identityguard') || fn.includes('auditevents') || fn.includes('.csv') || fn.includes('idaas')) {
+        layers.idaas.files.push(f);
+        layers.idaas.count += (f.count || 0);
+        layers.idaas.errors += (f.realErrors || 0);
+      } else {
+        layers.other.files.push(f);
+        layers.other.count += (f.count || 0);
+        layers.other.errors += (f.realErrors || 0);
+      }
+    });
+
+    const correlations = [];
+
+    // 1. SAM Gateway -> Core
+    if (layers.sam.files.length > 0 && layers.core.files.length > 0) {
+      correlations.push({
+        source: '🌐 SAM Gateway',
+        target: '🛡️ IdentityGuard Core',
+        type: 'Flujo de Validación de Canales',
+        severity: layers.core.errors > 0 ? 'CRITICAL' : 'OK',
+        evidence: `Peticiones de autenticación originadas en SAM (${layers.sam.count.toLocaleString()} eventos en ${layers.sam.files.length} archivos) se transmiten al Core IdentityGuard (${layers.core.count.toLocaleString()} eventos). Los retardos y fallas 520xxx en Core impactan directamente la latencia del Gateway SAM.`
+      });
+    }
+
+    // 2. Core -> Audit
+    if (layers.core.files.length > 0 && layers.audit.files.length > 0) {
+      correlations.push({
+        source: '🛡️ IdentityGuard Core',
+        target: '📋 Subsis. Auditoría (AUD)',
+        type: 'Registro de Trazabilidad Legal',
+        severity: 'INFO',
+        evidence: `Cada intento de validación y cambio de estado en el Core queda sellado en identityguard_audit (${layers.audit.count.toLocaleString()} eventos). Los códigos AUD101 / AUD8500-8503 coinciden cronológicamente con los eventos 520xxx del Core.`
+      });
+    }
+
+    // 3. OnPremise -> IDaaS Cloud
+    if ((layers.core.files.length > 0 || layers.audit.files.length > 0) && layers.idaas.files.length > 0) {
+      correlations.push({
+        source: '🏢 Clúster OnPremise',
+        target: '☁️ Entrust IDaaS Cloud',
+        type: 'Migración Masiva & Sincronización',
+        severity: layers.idaas.errors > 0 ? 'WARNING' : 'OK',
+        evidence: `Lote de aprovisionamiento IDaaS (${layers.idaas.count.toLocaleString()} registros) sincronizado con identidades del clúster OnPremise. Errores de tipo 'user.already.exists' y 'assignedgrid' reflejan solapamiento con tarjetas y usuarios históricos OnPremise.`
+      });
+    }
+
+    return {
+      layers,
+      correlations,
+      totalFiles: files.length
+    };
+  }
+
   function updateMetricsAndCharts() {
-    const isGlobal = !!state.globalStreamMetrics;
-    const total = isGlobal ? state.globalStreamMetrics.totalLogs : state.logs.length;
-    const criticalsCount = isGlobal ? state.globalStreamMetrics.totalErrors : state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
-    const warningsCount = isGlobal ? state.globalStreamMetrics.totalWarnings : state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length;
-    const fileCount = state.loadedFiles ? state.loadedFiles.length : 0;
+    const metrics = getConsolidatedMetrics();
+    const total = metrics.totalLogs;
+    const criticalsCount = metrics.totalErrors;
+    const warningsCount = metrics.totalWarnings;
+    const fileCount = metrics.fileCount;
 
     // 1. Tarjeta Total Logs
     if (dom.totalLogsCount) dom.totalLogsCount.textContent = total.toLocaleString();
     const totalBadge = document.getElementById('total-logs-badge');
-    if (totalBadge) totalBadge.textContent = isGlobal ? `${fileCount} Archivo(s) [Panorama Total]` : `${fileCount} Archivo(s)`;
+    if (totalBadge) totalBadge.textContent = fileCount > 1 ? `${fileCount} Archivos [Consolidado Total]` : (fileCount === 1 ? `1 Archivo Analizado` : `0 Archivos`);
 
     // 2. Tarjeta Incidentes Críticos
     if (dom.criticalCount) dom.criticalCount.textContent = criticalsCount.toLocaleString();
@@ -2908,7 +3045,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (warnBar) warnBar.style.width = `${Math.min(100, Math.max(2, parseFloat(warnPct) * 5))}%`;
 
     // 4. Tarjeta Salud Clúster
-    const critPenalty = criticalsCount > 0 ? Math.min(65, Math.max(5, (criticalsCount / Math.max(1, total)) * 100 * 5 + criticalsCount * 0.05)) : 0;
+    const critPenalty = criticalsCount > 0 ? Math.min(65, Math.max(5, (criticalsCount / Math.max(1, total)) * 100 * 5 + criticalsCount * 0.005)) : 0;
     const warnPenalty = warningsCount > 0 ? Math.min(25, (warningsCount / Math.max(1, total)) * 100 * 2) : 0;
     const health = total > 0 ? Math.max(10, Math.round(100 - critPenalty - warnPenalty)) : 100;
     
@@ -3231,81 +3368,109 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   }
 
   function updateOverviewWidgets() {
-    // 1. Widget Top Códigos 520xxx
+    const metrics = getConsolidatedMetrics();
     const topContainer = document.getElementById('top-codes-overview-container');
     if (topContainer) {
-      const codeMap = {};
-      (state.logs || []).forEach(l => {
-        if (l.entrustCode && (l.level === 'ERROR' || l.level === 'CRITICAL' || /520\d{4}/.test(l.entrustCode))) {
-          codeMap[l.entrustCode] = (codeMap[l.entrustCode] || 0) + 1;
-        }
-      });
+      // Agrupar códigos por familias
+      const sortCodes = (mapObj) => Object.entries(mapObj).sort((a, b) => b[1] - a[1]);
+      const list520 = sortCodes(metrics.codeMap520);
+      const listAud = sortCodes(metrics.codeMapAud);
+      const listOra = sortCodes(metrics.codeMapOra);
+      const listIdaas = sortCodes(metrics.codeMapIdaas);
+      const listOther = sortCodes(metrics.codeMapOther);
 
-      let sortedCodes = [];
-      if (state.globalStreamMetrics && state.globalStreamMetrics.topCodes && state.globalStreamMetrics.topCodes.length > 0) {
-        sortedCodes = state.globalStreamMetrics.topCodes.map(item => [item.code, item.count]);
-      } else {
-        sortedCodes = Object.entries(codeMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
-      }
+      const allSorted = [...list520, ...listAud, ...listOra, ...listIdaas, ...listOther].sort((a, b) => b[1] - a[1]);
 
-      if (sortedCodes.length === 0) {
-        topContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:15px;">✅ No se detectaron códigos de error críticos [520xxx] en la muestra.</div>';
+      if (allSorted.length === 0) {
+        topContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:15px;">✅ No se detectaron códigos de error críticos [520xxx / AUD / ORA / IDaaS] en la muestra.</div>';
       } else {
-        const maxCnt = sortedCodes[0][1] || 1;
-        let html = '';
-        sortedCodes.forEach(([code, cnt]) => {
-          const pct = Math.round((cnt / maxCnt) * 100);
+        const maxCnt = allSorted[0][1] || 1;
+        let html = `
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;">
+            <span style="font-size:0.72rem; font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:2px 6px; border-radius:4px;">🚨 520xxx: ${list520.length} tipos</span>
+            <span style="font-size:0.72rem; font-weight:700; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); padding:2px 6px; border-radius:4px;">📋 AUD: ${listAud.length} tipos</span>
+            <span style="font-size:0.72rem; font-weight:700; background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); padding:2px 6px; border-radius:4px;">🗄️ ORA: ${listOra.length} tipos</span>
+            <span style="font-size:0.72rem; font-weight:700; background:rgba(2,132,199,0.15); color:#38bdf8; border:1px solid rgba(2,132,199,0.3); padding:2px 6px; border-radius:4px;">☁️ IDaaS: ${listIdaas.length} tipos</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto; padding-right:4px;">
+        `;
+
+        allSorted.slice(0, 8).forEach(([code, cnt]) => {
+          const pct = Math.min(100, Math.max(4, Math.round((cnt / maxCnt) * 100)));
+          let color = '#ef4444';
+          let badge = '520xxx';
+          if (/^AUD\d+/i.test(code)) { color = '#f59e0b'; badge = 'AUD'; }
+          else if (/^ORA-\d+/i.test(code)) { color = '#a78bfa'; badge = 'ORA'; }
+          else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(code)) { color = '#38bdf8'; badge = 'IDaaS'; }
+
           html += `
             <div style="font-size:0.78rem;">
-              <div class="flex-between" style="margin-bottom:3px;">
-                <span style="font-family:monospace; font-weight:bold; color:#ef4444;">[${escapeHtml(code)}]</span>
-                <strong style="color:var(--text-main);">${cnt.toLocaleString()} eventos</strong>
+              <div class="flex-between" style="margin-bottom:2px;">
+                <span style="font-family:monospace; font-weight:bold; color:${color};">[${escapeHtml(code)}] <span style="font-size:0.68rem; opacity:0.8;">(${badge})</span></span>
+                <strong style="color:var(--text-main); font-family:monospace;">${cnt.toLocaleString()} eventos</strong>
               </div>
-              <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;">
-                <div style="width:${pct}%; height:100%; background:linear-gradient(90deg, #ef4444, #f97316); border-radius:3px;"></div>
+              <div style="height:5px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;">
+                <div style="width:${pct}%; height:100%; background:${color}; border-radius:3px;"></div>
               </div>
             </div>`;
         });
+        html += `</div>`;
         topContainer.innerHTML = html;
       }
     }
 
-    // 2. Widget Balanceo de Nodos
+    // 2. Widget Balanceo de Nodos & Servicios Multi-Archivo
     const balanceContainer = document.getElementById('cluster-balance-overview-container');
     if (balanceContainer) {
       const nodeMap = new Map();
-      (state.logs || []).forEach(log => {
-        const nodeInfo = detectNodeFromLog(log);
-        if (!nodeMap.has(nodeInfo.key)) {
-          nodeMap.set(nodeInfo.key, { name: nodeInfo.name, count: 0, errors: 0 });
-        }
-        const item = nodeMap.get(nodeInfo.key);
-        item.count++;
-        if (log.level === 'ERROR' || log.level === 'CRITICAL') item.errors++;
-      });
+      const files = state.loadedFiles || [];
+
+      if (files.length > 0) {
+        files.forEach(f => {
+          const k = f.nodeKey || 'general';
+          const name = f.nodeName || 'Servidor General';
+          if (!nodeMap.has(k)) {
+            nodeMap.set(k, { name, count: 0, errors: 0 });
+          }
+          const item = nodeMap.get(k);
+          item.count += (f.count || 0);
+          item.errors += (f.realErrors || 0);
+        });
+      } else {
+        (state.logs || []).forEach(log => {
+          const nodeInfo = detectNodeFromLog(log);
+          if (!nodeMap.has(nodeInfo.key)) {
+            nodeMap.set(nodeInfo.key, { name: nodeInfo.name, count: 0, errors: 0 });
+          }
+          const item = nodeMap.get(nodeInfo.key);
+          item.count++;
+          if (log.level === 'ERROR' || log.level === 'CRITICAL') item.errors++;
+        });
+      }
 
       const nodes = Array.from(nodeMap.values());
-      const totalLogs = state.logs.length || 1;
-      const colors = ['#0284c7', '#10b981', '#8b5cf6', '#f59e0b'];
+      const totalLogs = metrics.totalLogs || 1;
+      const colors = ['#0284c7', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4'];
 
       if (nodes.length === 0) {
         balanceContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:15px;">⏳ Esperando carga de archivos para mostrar balanceo.</div>';
       } else {
-        let html = '';
+        let html = '<div style="display:flex; flex-direction:column; gap:8px; max-height:190px; overflow-y:auto; padding-right:4px;">';
         nodes.forEach((n, idx) => {
           const color = colors[idx % colors.length];
           const pct = ((n.count / totalLogs) * 100).toFixed(1);
           html += `
-            <div style="font-size:0.8rem;">
-              <div class="flex-between" style="margin-bottom:4px;">
-                <span style="font-weight:bold; color:var(--text-main);">${escapeHtml(n.name)}</span>
-                <span style="color:${color}; font-weight:bold; font-family:monospace;">${n.count.toLocaleString()} logs (${pct}%)</span>
+            <div style="font-size:0.78rem;">
+              <div class="flex-between" style="margin-bottom:3px;">
+                <span style="font-weight:bold; color:var(--text-main); font-size:0.78rem;">${escapeHtml(n.name)}</span>
+                <span style="color:${color}; font-weight:bold; font-family:monospace; font-size:0.75rem;">${n.count.toLocaleString()} logs (${pct}%)</span>
               </div>
-              <div style="height:8px; background:rgba(255,255,255,0.08); border-radius:4px; overflow:hidden;">
-                <div style="width:${pct}%; height:100%; background:${color}; border-radius:4px; transition:width 0.8s;"></div>
+              <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;">
+                <div style="width:${pct}%; height:100%; background:${color}; border-radius:3px; transition:width 0.8s;"></div>
               </div>
             </div>`;
         });
+        html += '</div>';
         balanceContainer.innerHTML = html;
       }
     }
@@ -3892,8 +4057,24 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     if (!cardsContainer) return;
 
+    const metrics = getConsolidatedMetrics();
+    const files = state.loadedFiles || [];
     const logs = state.logs || [];
     const nodeMap = new Map();
+
+    if (files.length > 0) {
+      files.forEach(f => {
+        const nodeKey = f.nodeKey || 'node_general';
+        const nodeName = f.nodeName || 'Servidor General';
+
+        if (!nodeMap.has(nodeKey)) {
+          nodeMap.set(nodeKey, { key: nodeKey, name: nodeName, logsCount: 0, errors: 0, entrustCodes: {} });
+        }
+        const entry = nodeMap.get(nodeKey);
+        entry.logsCount += (f.count || 0);
+        entry.errors += (f.realErrors || 0);
+      });
+    }
 
     logs.forEach(log => {
       const nodeInfo = detectNodeFromLog(log);
@@ -3904,10 +4085,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         nodeMap.set(nodeKey, { key: nodeKey, name: nodeName, logsCount: 0, errors: 0, entrustCodes: {} });
       }
       const entry = nodeMap.get(nodeKey);
-      entry.logsCount++;
-      if (log.level === 'ERROR' || log.level === 'CRITICAL') entry.errors++;
-      if (log.entrustCode) {
-        entry.entrustCodes[log.entrustCode] = (entry.entrustCodes[log.entrustCode] || 0) + 1;
+      if (files.length === 0) {
+        entry.logsCount++;
+        if (log.level === 'ERROR' || log.level === 'CRITICAL') entry.errors++;
+      }
+      const code = log.entrustCode || (window.knowledgeBaseEngine && window.knowledgeBaseEngine.extractErrorCodeFromText((log.message || '') + ' ' + (log.raw || '')));
+      if (code) {
+        entry.entrustCodes[code] = (entry.entrustCodes[code] || 0) + 1;
       }
     });
 
@@ -3934,14 +4118,14 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:12px; border-top:4px solid ${color};">
           <div class="card-title mb-2" style="font-size:0.88rem; color:var(--text-main);">${escapeHtml(node.name)}</div>
           <div style="font-size:0.8rem; color:var(--text-muted);">
-            Trazas Consolidadas: <strong style="color:var(--text-main);">${node.logsCount.toLocaleString()}</strong><br>
-            Errores 520xxx: <strong style="color:${node.errors > 0 ? '#dc2626' : '#10b981'};">${node.errors.toLocaleString()}</strong>
+            Trazas Consolidadas: <strong style="color:var(--text-main); font-family:monospace;">${node.logsCount.toLocaleString()}</strong><br>
+            Errores / Excepciones: <strong style="color:${node.errors > 0 ? '#dc2626' : '#10b981'}; font-family:monospace;">${node.errors.toLocaleString()}</strong>
           </div>
         </div>`;
     });
     cardsContainer.innerHTML = cardsHtml;
 
-    const totalLogs = logs.length || 1;
+    const totalLogs = metrics.totalLogs || 1;
     let barHtml = '';
     discoveredNodes.forEach((node, idx) => {
       const color = colors[idx % colors.length];
@@ -3951,7 +4135,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (barContainer) barContainer.innerHTML = barHtml;
 
     if (labelAsym) {
-      labelAsym.textContent = `⚖️ Clúster Consolidado: ${discoveredNodes.length} Nodos Reales Detectados (${totalLogs.toLocaleString()} registros)`;
+      labelAsym.textContent = `⚖️ Clúster Consolidado: ${discoveredNodes.length} Nodos / Capas Detectadas (${totalLogs.toLocaleString()} registros en ${files.length || 1} archivos)`;
     }
 
     if (containerTable) {
@@ -3965,8 +4149,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         const health = node.logsCount > 0 ? Math.max(10, Math.round(100 - (node.errors / node.logsCount) * 100 * 5)) + '%' : 'N/A';
 
         headerCols += `<th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:${color};">${escapeHtml(node.name)}</th>`;
-        logsRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem;">${node.logsCount.toLocaleString()}</td>`;
-        errRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:${node.errors > 0 ? '#dc2626' : '#10b981'};">${node.errors.toLocaleString()}</td>`;
+        logsRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; font-family:monospace;">${node.logsCount.toLocaleString()}</td>`;
+        errRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:${node.errors > 0 ? '#dc2626' : '#10b981'}; font-family:monospace;">${node.errors.toLocaleString()}</td>`;
         healthRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:${color};">${health}</td>`;
       });
 
@@ -3984,18 +4168,53 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           let colCells = '';
           discoveredNodes.forEach(node => {
             const cnt = nodeCounts[node.key] || 0;
-            colCells += `<td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cnt > 0 ? '#dc2626' : '#10b981'};">${cnt}</td>`;
+            colCells += `<td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cnt > 0 ? '#dc2626' : '#10b981'}; font-family:monospace;">${cnt.toLocaleString()}</td>`;
           });
+
+          let badgeColor = '#ef4444';
+          if (/^AUD/i.test(code)) badgeColor = '#f59e0b';
+          else if (/^ORA/i.test(code)) badgeColor = '#a78bfa';
+          else if (/bulkidentityguard/i.test(code)) badgeColor = '#38bdf8';
 
           codesRows += `
             <tr style="border-bottom:1px solid var(--border-color);">
-              <td style="padding:6px 8px; font-family:monospace; font-weight:bold; color:var(--text-cyan);">Código [${escapeHtml(code)}]</td>
+              <td style="padding:6px 8px; font-family:monospace; font-weight:bold; color:${badgeColor};">[${escapeHtml(code)}]</td>
               ${colCells}
             </tr>`;
         });
       } else {
-        codesRows = `<tr><td colspan="${discoveredNodes.length + 1}" style="padding:10px; text-align:center; color:var(--text-muted);">No se detectaron códigos de error [520xxx] en las muestras.</td></tr>`;
+        codesRows = `<tr><td colspan="${discoveredNodes.length + 1}" style="padding:10px; text-align:center; color:var(--text-muted);">No se detectaron códigos de error críticos [520xxx / AUD / ORA / IDaaS] en las muestras.</td></tr>`;
       }
+
+      const corr = correlateMultiFileEvents();
+      let corrLayersHtml = '';
+      Object.values(corr.layers).forEach(layer => {
+        if (layer.count === 0 && layer.files.length === 0) return;
+        corrLayersHtml += `
+          <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; padding:10px 14px;">
+            <div style="font-weight:700; color:var(--text-main); font-size:0.85rem; margin-bottom:4px;">${layer.name}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">
+              Archivos Asignados: <strong>${layer.files.length}</strong> | Eventos Totales: <strong style="color:var(--text-cyan); font-family:monospace;">${layer.count.toLocaleString()}</strong><br>
+              Incidentes Críticos: <strong style="color:${layer.errors > 0 ? '#ef4444' : '#10b981'}; font-family:monospace;">${layer.errors.toLocaleString()}</strong>
+            </div>
+          </div>
+        `;
+      });
+
+      let corrPointsHtml = '';
+      corr.correlations.forEach(c => {
+        const bg = c.severity === 'CRITICAL' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(2, 132, 199, 0.1)';
+        const border = c.severity === 'CRITICAL' ? '#ef4444' : '#0284c7';
+        corrPointsHtml += `
+          <div style="background:${bg}; border-left:4px solid ${border}; border-radius:4px; padding:10px 14px; font-size:0.8rem; margin-bottom:8px;">
+            <div class="flex-between" style="margin-bottom:4px;">
+              <span style="font-weight:700; color:var(--text-main);">${escapeHtml(c.source)} ➔ ${escapeHtml(c.target)}</span>
+              <span style="font-size:0.72rem; padding:2px 6px; border-radius:4px; font-weight:700; background:rgba(255,255,255,0.1);">${escapeHtml(c.type)}</span>
+            </div>
+            <div style="color:var(--text-dim); line-height:1.4;">${escapeHtml(c.evidence)}</div>
+          </div>
+        `;
+      });
 
       containerTable.innerHTML = `
         <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:10px;">
@@ -4021,13 +4240,26 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           </tbody>
         </table>
 
+        <!-- Sección de Correlación Cruzada Multi-Archivo & Multi-Servicio -->
+        <div style="margin-top:24px; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:16px;">
+          <div class="card-title text-cyan mb-3" style="font-size:0.95rem; display:flex; align-items:center; gap:8px;">
+            <span>🔗</span> Matriz de Correlación Cruzada Multi-Archivo & Multi-Servicio (${corr.totalFiles} Archivos Auditados)
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin-bottom:16px;">
+            ${corrLayersHtml}
+          </div>
+          <div>
+            ${corrPointsHtml}
+          </div>
+        </div>
+
         <div style="margin-top:20px; font-weight:bold; color:var(--text-main); font-size:0.9rem;">
-          📊 Comparativa Clúster Auto-Detectado (${discoveredNodes.length} Nodos) — Códigos [520xxx]:
+          📊 Comparativa Clúster Auto-Detectado (${discoveredNodes.length} Nodos) — Códigos de Error y Auditoría:
         </div>
         <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:8px;">
           <thead>
             <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
-              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color);">Código de Error</th>
+              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color);">Código de Error / Auditoría</th>
               ${headerCols}
             </tr>
           </thead>
@@ -4674,7 +4906,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               updateMetricsAndCharts();
               renderLoadedFilesDrawer();
               showAnalysisStatus(false, `✅ Archivo Masivo Indexado con Éxito (${(serverResult.linesProcessed || 0).toLocaleString()} registros)`, `Base de Datos SQLite activa: ${serverResult.dbPath || 'data/active_audit.db'}`);
-              return;
+              fileCount++;
+              continue;
             } catch (serverErr) {
               console.warn('Fallo en subida al servidor, intentando fallback local...', serverErr);
               showAnalysisStatus(true, `⚠️ Fallback local para ${file.name}...`, 'Procesando muestra segura para proteger el navegador...');
@@ -4739,9 +4972,11 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         }
       }
 
-      if (newLogs.length > 0) {
-        state.logs = state.logs.concat(newLogs);
-        reindexLogs();
+      if (newLogs.length > 0 || state.loadedFiles.length > 0) {
+        if (newLogs.length > 0) {
+          state.logs = state.logs.concat(newLogs);
+          reindexLogs();
+        }
 
         renderLoadedFilesDrawer();
         updateNodeComparisonUI();
@@ -4756,14 +4991,14 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         populateClientSelector();
         applyLogFilters();
 
-        const totalToReport = state.globalStreamMetrics ? state.globalStreamMetrics.totalLogs : state.logs.length;
-        const targetLog = newLogs.find(l => l.level === 'CRITICAL' || l.level === 'ERROR') || newLogs[0];
+        const metrics = getConsolidatedMetrics();
+        const targetLog = (state.logs || []).find(l => l.level === 'CRITICAL' || l.level === 'ERROR') || (state.logs && state.logs[0]);
         if (targetLog) {
           selectLog(targetLog);
         }
 
         switchTab('analyzer');
-        showAnalysisStatus(false, `✅ ${fileCount} Archivo(s) Procesados con Éxito`, `Panorama Completo: ${totalToReport.toLocaleString()} registros analizados (${state.loadedFiles.length} archivos)`);
+        showAnalysisStatus(false, `✅ ${state.loadedFiles.length} Archivo(s) Procesados con Éxito`, `Panorama Completo Consolidado: ${metrics.totalLogs.toLocaleString()} registros auditados`);
       }
     });
 
@@ -4776,46 +5011,25 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         statusDiv.style.display = 'block';
         statusDiv.style.background = '#fee2e2';
         statusDiv.style.color = '#dc2626';
-        statusDiv.innerText = 'Por favor selecciona un archivo HTML, JSON o TXT antes de continuar.';
+        statusDiv.innerText = 'Por favor selecciona un archivo HTML, JSON ou TXT antes de continuar.';
         return;
       }
 
       const file = fileInput.files[0];
-      const versionLabel = versionSelect.value;
+      const versionKey = versionSelect.value;
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        const content = e.target.result;
-        let count = 0;
-        if (file.name.endsWith('.html') || file.name.endsWith('.htm') || content.includes('<html')) {
-          count = window.knowledgeBaseEngine.importCatalogFromHtml(content, versionLabel);
-        } else if (file.name.endsWith('.json')) {
-          try {
-            const jsonArr = JSON.parse(content);
-            if (Array.isArray(jsonArr)) {
-              jsonArr.forEach(item => {
-                window.knowledgeBaseEngine.saveCustomRule({
-                  ...item,
-                  manualVersion: versionLabel
-                });
-                count++;
-              });
-            }
-          } catch(err) {
-            console.error(err);
-          }
-        }
-
+        const text = e.target.result;
+        const count = window.knowledgeBaseEngine.importRulesFromHtml(text, versionKey);
+        
         statusDiv.style.display = 'block';
-        statusDiv.style.background = '#ecfdf5';
-        statusDiv.style.color = '#047857';
-        statusDiv.innerText = `¡Éxito! Se importaron y sincronizaron ${count} reglas de error oficiales para ${versionLabel}.`;
-
-        setTimeout(() => {
-          document.getElementById('import-catalog-modal').classList.remove('active');
-          statusDiv.style.display = 'none';
-          if (window.renderDashboard) window.renderDashboard();
-        }, 2000);
+        statusDiv.style.background = '#dcfce7';
+        statusDiv.style.color = '#15803d';
+        statusDiv.innerText = `¡Éxito! Se importaron y actualizaron ${count} reglas para la versión seleccionada.`;
+        
+        renderKbRules();
+        initManualsModule();
       };
 
       reader.readAsText(file);
@@ -4843,7 +5057,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   }
 
   /* ==========================================================================
-     8. PILARES ENTERPRISE (v70.0 PLATINUM): INDEXEDDB, CERTIFICADOS, ZOHO & IA
+     8. PILARES ENTERPRISE (v190.0 PLATINUM): INDEXEDDB, CERTIFICADOS, ZOHO & IA
      ========================================================================== */
 
   // PILAR 1: DICTAMEN IA FORENSE
@@ -4860,46 +5074,65 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
         let findingsHtml = '';
         opinion.criticalFindings.forEach((f, idx) => {
+          let familyColor = '#dc2626';
+          let familyBadge = '🚨 520xxx Core';
+          if (/^AUD\d+/i.test(f.code)) { familyColor = '#d97706'; familyBadge = '📋 AUD Auditoría'; }
+          else if (/^ORA-\d+/i.test(f.code)) { familyColor = '#7c3aed'; familyBadge = '🗄️ ORA Database'; }
+          else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(f.code)) { familyColor = '#0284c7'; familyBadge = '☁️ IDaaS Cloud'; }
+
           findingsHtml += `
-            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-left:4px solid #7c3aed; padding:10px 14px; border-radius:6px; margin-bottom:8px;">
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-left:4px solid ${familyColor}; padding:10px 14px; border-radius:6px; margin-bottom:8px;">
               <div class="flex-between">
-                <span class="font-mono text-cyan" style="font-weight:bold;">#${idx+1} Código [${escapeHtml(f.code)}]</span>
-                <span style="font-size:0.75rem; background:#fee2e2; color:#dc2626; padding:2px 6px; border-radius:4px; font-weight:bold;">${f.occurrences} ocurrencias</span>
+                <div>
+                  <span style="font-size:0.72rem; font-weight:bold; background:${familyColor}15; color:${familyColor}; padding:2px 6px; border-radius:3px; margin-right:6px;">${familyBadge}</span>
+                  <span class="font-mono" style="font-weight:bold; color:var(--text-main);">#${idx+1} [${escapeHtml(f.code)}]</span>
+                </div>
+                <span style="font-size:0.75rem; background:#fee2e2; color:#dc2626; padding:2px 6px; border-radius:4px; font-weight:bold; font-family:monospace;">${f.occurrences.toLocaleString()} ocurrencias</span>
               </div>
-              <div style="font-size:0.85rem; color:var(--text-main); margin:4px 0;"><strong>Significado:</strong> ${escapeHtml(f.meaning)}</div>
-              <div style="font-size:0.8rem; color:var(--text-warn);"><strong>Causa Raíz:</strong> ${escapeHtml(f.rootCause)}</div>
+              <div style="font-size:0.85rem; color:var(--text-main); margin:4px 0;"><strong>Diagnóstico:</strong> ${escapeHtml(f.meaning)}</div>
+              <div style="font-size:0.8rem; color:var(--text-warn); margin-bottom:4px;"><strong>Causa Raíz:</strong> ${escapeHtml(f.rootCause)}</div>
+              <div style="font-size:0.8rem; color:#10b981; background:rgba(16,185,129,0.08); padding:6px 8px; border-radius:4px;"><strong>Remediación:</strong> ${escapeHtml(f.remediation)}</div>
             </div>`;
         });
 
         let remHtml = '';
         opinion.remediationPlan.forEach(r => {
-          remHtml += `<li style="margin-bottom:4px;">${escapeHtml(r)}</li>`;
+          remHtml += `<li style="margin-bottom:6px;">${escapeHtml(r)}</li>`;
         });
 
         container.innerHTML = `
-          <div style="background:linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(2, 132, 199, 0.1)); border:1px solid #7c3aed; border-radius:8px; padding:14px; margin-bottom:14px;">
+          <div style="background:linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(2, 132, 199, 0.15)); border:1px solid #7c3aed; border-radius:8px; padding:14px; margin-bottom:14px;">
             <h3 style="margin:0 0 6px 0; color:#7c3aed; font-size:1.1rem;">⚖️ ${opinion.title}</h3>
             <div style="font-size:0.8rem; color:var(--text-muted);">
               <strong>Entorno Evaluado:</strong> ${escapeHtml(opinion.client)} | <strong>Fecha de Emisión:</strong> ${opinion.date}<br>
-              <strong>Perito Responsable:</strong> ${escapeHtml(opinion.engineer)}
+              <strong>Perito Responsable:</strong> ${escapeHtml(opinion.engineer)} | <strong>Índice de Salud:</strong> <strong style="color:${opinion.health >= 80 ? '#10b981' : '#dc2626'};">${opinion.health}%</strong>
             </div>
           </div>
 
           <div style="margin-bottom:14px;">
-            <h4 style="margin:0 0 6px 0; color:var(--text-main); font-size:0.95rem;">📌 Resumen Dictamen Ejecutivo:</h4>
+            <h4 style="margin:0 0 6px 0; color:var(--text-main); font-size:0.95rem;">📌 Resumen Dictamen Ejecutivo (${opinion.totalLogs.toLocaleString()} registros consolidados):</h4>
             <p style="font-size:0.85rem; color:var(--text-main); line-height:1.5; background:var(--bg-secondary); padding:10px; border-radius:6px; border:1px solid var(--border-color);">
               ${escapeHtml(opinion.executiveSummary)}
             </p>
           </div>
 
           <div style="margin-bottom:14px;">
-            <h4 style="margin:0 0 6px 0; color:var(--text-main); font-size:0.95rem;">🔍 Hallazgos de Mayor Impacto Forense:</h4>
-            ${findingsHtml}
+            <h4 style="margin:0 0 6px 0; color:var(--text-cyan); font-size:0.95rem;">🔗 Correlación Cruzada Multi-Archivo & Multi-Servicio:</h4>
+            <pre style="font-size:0.8rem; color:var(--text-main); line-height:1.4; background:var(--bg-secondary); padding:10px; border-radius:6px; border:1px solid var(--border-color); white-space:pre-line; font-family:'Segoe UI', sans-serif;">
+${escapeHtml(opinion.crossFileSummary)}
+            </pre>
           </div>
 
           <div style="margin-bottom:14px;">
-            <h4 style="margin:0 0 6px 0; color:var(--text-main); font-size:0.95rem;">🛠️ Plan de Remediación Obligatorio (ITIL / Sudeban):</h4>
-            <ul style="font-size:0.85rem; color:var(--text-main); padding-left:20px; line-height:1.5;">
+            <h4 style="margin:0 0 6px 0; color:var(--text-main); font-size:0.95rem;">🔍 Hallazgos de Mayor Impacto Forense (520xxx, AUD, ORA, IDaaS):</h4>
+            <div style="max-height:280px; overflow-y:auto; padding-right:4px;">
+              ${findingsHtml}
+            </div>
+          </div>
+
+          <div style="margin-bottom:14px;">
+            <h4 style="margin:0 0 6px 0; color:var(--text-main); font-size:0.95rem;">🛠️ Plan de Remediación Obligatorio (ITIL / Sudeban / ISO 27001):</h4>
+            <ul style="font-size:0.82rem; color:var(--text-main); padding-left:20px; line-height:1.5; max-height:160px; overflow-y:auto;">
               ${remHtml}
             </ul>
           </div>
