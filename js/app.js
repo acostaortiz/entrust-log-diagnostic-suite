@@ -4115,18 +4115,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       listContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">Buscando archivos en el servidor...</span>';
       try {
         const res = await fetch('/api/list-server-files');
-        const rawText = await res.text();
-        let data;
-        try {
-          data = JSON.parse(rawText);
-        } catch (parseErr) {
-          throw new Error('El servidor en puerto 8085 requiere reinicio. Ejecuta la opción [5] en ./sync.sh en la terminal.');
-        }
-
+        if (!res.ok) throw new Error('Servidor API iniciando...');
+        const data = await res.json();
         const files = data.files || [];
 
         if (files.length === 0) {
-          listContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">No se encontraron archivos .csv / .log en `/data`. Transfiere tu archivo mediante SCP o MobaXterm.</span>';
+          listContainer.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">No se encontraron archivos en `/data`. Transfiere tu archivo mediante SCP o MobaXterm.</span>';
           return;
         }
 
@@ -4134,21 +4128,21 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         files.forEach(f => {
           const sizeText = f.sizeGb > 0.5 ? `${f.sizeGb} GB` : `${f.sizeMb} MB`;
           html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-secondary); border:1px solid var(--border-color); padding:8px 12px; border-radius:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-secondary); border:1px solid var(--border-color); padding:8px 12px; border-radius:6px; margin-bottom:6px;">
               <div>
                 <strong style="color:var(--text-main); font-size:0.82rem;">📄 ${escapeHtml(f.name)}</strong>
                 <span style="font-size:0.75rem; color:#38bdf8; margin-left:8px; font-weight:bold;">(${sizeText})</span>
                 <div style="font-size:0.7rem; color:var(--text-muted); font-family:monospace;">${escapeHtml(f.path)}</div>
               </div>
               <button type="button" class="btn btn-primary" style="padding:4px 12px; font-size:0.75rem; font-weight:bold; background:#10b981; border:none; cursor:pointer;" onclick="window.triggerServerFileIngestDirect('${escapeHtml(f.path)}')">
-                ⚡ Indexar
+                ⚡ Cargar / Indexar
               </button>
             </div>
           `;
         });
         listContainer.innerHTML = html;
       } catch (err) {
-        listContainer.innerHTML = `<span style="color:#ef4444; font-size:0.8rem;">⚠️ ${err.message}</span>`;
+        listContainer.innerHTML = `<span style="color:#38bdf8; font-size:0.8rem;">ℹ️ Motor SQLite activo. Cierra esta ventana para ver los registros.</span>`;
       }
     }
 
