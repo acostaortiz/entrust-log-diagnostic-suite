@@ -107,8 +107,11 @@ async function processGiantFileStream(file, clientId) {
           ipCounter[parsed.clientIp] = (ipCounter[parsed.clientIp] || 0) + 1;
         }
 
-        // 4. Agregación de Tiempos (Día / Hora)
-        const dateBucket = (parsed.timestamp || '').substring(0, 13); // 'YYYY-MM-DD HH'
+        // 4. Agregación de Tiempos (Día / Hora / Minutos)
+        let dateBucket = (parsed.timestamp || '').substring(0, 16); // 'YYYY-MM-DD HH:mm'
+        if (!dateBucket || dateBucket.length < 10) {
+          dateBucket = (parsed.timestamp || '').substring(0, 13);
+        }
         if (dateBucket && dateBucket.length >= 10) {
           if (!timeBuckets[dateBucket]) timeBuckets[dateBucket] = { total: 0, critical: 0, warn: 0 };
           timeBuckets[dateBucket].total++;
