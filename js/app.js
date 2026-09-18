@@ -761,14 +761,13 @@ document.addEventListener('DOMContentLoaded', () => {
     pageWrapper.style.position = 'absolute';
     pageWrapper.style.top = '0';
     pageWrapper.style.left = '0';
-    pageWrapper.style.width = '800px';
+    pageWrapper.style.width = '780px';
     pageWrapper.style.padding = '24px';
     pageWrapper.style.background = '#ffffff';
     pageWrapper.style.color = '#0f172a';
     pageWrapper.style.fontFamily = "'Segoe UI', Arial, sans-serif";
     pageWrapper.style.boxSizing = 'border-box';
     pageWrapper.style.zIndex = '999999';
-    pageWrapper.style.boxShadow = '0 0 20px rgba(0,0,0,0.2)';
 
     pageWrapper.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #0a3d6d; padding-bottom:10px; margin-bottom:14px;">
@@ -777,49 +776,49 @@ document.addEventListener('DOMContentLoaded', () => {
           <h3 style="color:#e11d48; margin:2px 0 0 0; font-size:12px; text-transform:uppercase;">RESUMEN EJECUTIVO DE INCIDENTES ENTRUST — LÁMINA 1 PÁGINA</h3>
         </div>
         <div style="text-align:right; font-size:10px; color:#64748b;">
-          <strong>Cliente:</strong> ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}<br>
-          <strong>Fecha:</strong> ${dateStamp} | <strong>Ingeniero:</strong> ${escapeHtml(activeClient ? activeClient.engineer : 'Tomás Acosta')}
+          <strong style="color:#0f172a;">Cliente:</strong> ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}<br>
+          <strong style="color:#0f172a;">Fecha:</strong> ${dateStamp} | <strong style="color:#0f172a;">Ingeniero:</strong> ${escapeHtml(activeClient ? activeClient.engineer : 'Tomás Acosta')}
         </div>
       </div>
 
       <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:14px;">
         <div style="background:#f0f9ff; border:1px solid #0284c7; padding:10px; border-radius:6px; text-align:center;">
-          <div style="font-size:20px; font-weight:bold; color:#0284c7;">${calculatedHealth}%</div>
+          <div style="font-size:22px; font-weight:bold; color:#0284c7;">${calculatedHealth}%</div>
           <div style="font-size:9px; color:#475569; text-transform:uppercase; font-weight:bold;">Salud Autenticación</div>
         </div>
         <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:10px; border-radius:6px; text-align:center;">
-          <div style="font-size:20px; font-weight:bold; color:#0f172a;">${totalCount.toLocaleString()}</div>
+          <div style="font-size:22px; font-weight:bold; color:#0f172a;">${totalCount.toLocaleString()}</div>
           <div style="font-size:9px; color:#475569; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
         </div>
         <div style="background:#fef2f2; border:1px solid #ef4444; padding:10px; border-radius:6px; text-align:center;">
-          <div style="font-size:20px; font-weight:bold; color:#dc2626;">${criticalLogsCount.toLocaleString()}</div>
+          <div style="font-size:22px; font-weight:bold; color:#dc2626;">${criticalLogsCount.toLocaleString()}</div>
           <div style="font-size:9px; color:#dc2626; text-transform:uppercase; font-weight:bold;">Errores 520 / Críticos</div>
         </div>
         <div style="background:#fffbeb; border:1px solid #f59e0b; padding:10px; border-radius:6px; text-align:center;">
-          <div style="font-size:20px; font-weight:bold; color:#d97706;">${warningLogsCount.toLocaleString()}</div>
+          <div style="font-size:22px; font-weight:bold; color:#d97706;">${warningLogsCount.toLocaleString()}</div>
           <div style="font-size:9px; color:#d97706; text-transform:uppercase; font-weight:bold;">Alertas Auditoría</div>
         </div>
       </div>
 
       <div style="border:1px solid #cbd5e1; border-radius:6px; padding:12px; margin-bottom:14px; background:#f8fafc;">
         <h4 style="margin:0 0 6px 0; font-size:12px; color:#0a3d6d;">🎯 Hallazgos Forenses y Evaluación de Canales Bancarios:</h4>
-        <p style="font-size:10px; color:#334155; margin:0 0 6px 0; line-height:1.4;">
-          ${criticalLogsCount > 0 ? `⚠️ Se detectaron ${criticalLogsCount.toLocaleString()} eventos críticos que requieren atención inmediata en la infraestructura de autenticación y aprovisionamiento.` : '✅ La plataforma operó con estabilidad aceptable durante el periodo de análisis.'}
+        <p style="font-size:11px; color:#334155; margin:0 0 6px 0; line-height:1.5;">
+          ${criticalLogsCount > 0 ? `⚠️ Se detectaron <strong>${criticalLogsCount.toLocaleString()}</strong> eventos críticos que requieren atención inmediata en la infraestructura de autenticación y aprovisionamiento.` : '✅ La plataforma operó con estabilidad aceptable durante el periodo de análisis.'}
         </p>
       </div>
 
       <div style="margin-bottom:14px;">
         <h4 style="margin:0 0 6px 0; font-size:12px; color:#0a3d6d;">🛠️ Medidas de Remediación Prioritarias (Comandos CLI):</h4>
-        <div style="background:#0f172a; color:#a5f3fc; padding:10px; border-radius:6px; font-family:monospace; font-size:9px; line-height:1.4;">
+        <div style="background:#0f172a; color:#a5f3fc; padding:10px; border-radius:6px; font-family:monospace; font-size:9.5px; line-height:1.5;">
           REM --- Verificación General de Servicios Entrust & WSO2 ---<br>
           sc query "Entrust IdentityGuard Administration Service"<br>
           keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\identityguard.keystore" -storepass changeit
         </div>
       </div>
 
-      <div style="margin-top:16px; padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:9px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
+      <div style="margin-top:16px; padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:9.5px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
         <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD SHA-256:</strong> SHA256-ONEPAGE-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
-        <span>Aprobado por IT SERVICIOS v200.0</span>
+        <span>Aprobado por IT SERVICIOS v205.0</span>
       </div>
     `;
 
@@ -830,7 +829,15 @@ document.addEventListener('DOMContentLoaded', () => {
       margin:       [4, 4, 4, 4],
       filename:     `Lamina_Ejecutiva_Entrust_${clientSanitized}_${dateStamp}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: 800 },
+      html2canvas:  { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false, 
+        backgroundColor: '#ffffff',
+        scrollX: 0, 
+        scrollY: 0, 
+        windowWidth: 800 
+      },
       jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
     };
 
@@ -874,13 +881,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateStamp = new Date().toISOString().slice(0, 10);
     const reportTitle = `Informe_Entrust_${clientSanitized}_${dateStamp}`;
 
-    // Construir un clon limpio en coordenadas visibles en document.body
+    // Construir un clon limpio con estilos explícitos en document.body
     const clone = document.createElement('div');
     clone.id = 'pdf-fullreport-render-container';
     clone.style.position = 'absolute';
     clone.style.top = '0';
     clone.style.left = '0';
-    clone.style.width = '820px';
+    clone.style.width = '800px';
     clone.style.padding = '25px';
     clone.style.background = '#ffffff';
     clone.style.color = '#0f172a';
@@ -930,6 +937,24 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // Asegurar que absolutamente todo el texto tenga colores oscuros legibles
+    clone.querySelectorAll('*').forEach(el => {
+      const tag = el.tagName.toLowerCase();
+      if (tag === 'h1' || tag === 'h2' || tag === 'h3' || tag === 'h4') {
+        el.style.color = '#0a3d6d';
+      } else if (tag === 'th') {
+        el.style.backgroundColor = '#0a3d6d';
+        el.style.color = '#ffffff';
+      } else if (tag === 'code' || tag === 'pre') {
+        el.style.color = '#a5f3fc';
+        el.style.backgroundColor = '#0f172a';
+      } else if (tag === 'td' || tag === 'p' || tag === 'li' || tag === 'span') {
+        if (!el.style.color || el.style.color.includes('var(') || el.style.color === 'rgb(248, 250, 252)') {
+          el.style.color = '#0f172a';
+        }
+      }
+    });
+
     document.body.appendChild(clone);
     window.scrollTo(0, 0);
 
@@ -937,9 +962,17 @@ document.addEventListener('DOMContentLoaded', () => {
       margin:       [8, 8, 8, 8],
       filename:     `${reportTitle}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: 820 },
+      html2canvas:  { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false, 
+        backgroundColor: '#ffffff',
+        scrollX: 0, 
+        scrollY: 0, 
+        windowWidth: 800 
+      },
       jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' },
-      pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', 'h3', 'h4', 'div[style*="border"]'] }
+      pagebreak:    { mode: ['css', 'legacy'] }
     };
 
     try {

@@ -937,6 +937,7 @@ body.dark-theme .text-cyan { color: #38bdf8; }
     margin: 0 !important;
     padding: 0 !important;
     background: #ffffff !important;
+    color: #0f172a !important;
     box-sizing: border-box !important;
   }
 
@@ -945,6 +946,8 @@ body.dark-theme .text-cyan { color: #38bdf8; }
     max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
     box-sizing: border-box !important;
   }
 
@@ -983,3 +986,40 @@ body.dark-theme .text-cyan { color: #38bdf8; }
     page-break-after: avoid !important;
   }
 }
+
+/* Reglas generales para el Contenedor del Informe Ejecutivo en Pantalla */
+#exec-report-container {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  padding: 18px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+
+#exec-report-container * {
+  color: #0f172a;
+}
+
+#exec-report-container h1,
+#exec-report-container h2,
+#exec-report-container h3,
+#exec-report-container h4 {
+  color: #0a3d6d !important;
+}
+
+#exec-report-container table th {
+  background: #0a3d6d !important;
+  color: #ffffff !important;
+}
+
+#exec-report-container table td {
+  color: #0f172a !important;
+}
+
+#exec-report-container .raw-box,
+#exec-report-container pre,
+#exec-report-container code {
+  color: #a5f3fc !important;
+  background: #0f172a !important;
+}
+
