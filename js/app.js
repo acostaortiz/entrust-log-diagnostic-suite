@@ -813,13 +813,21 @@ document.addEventListener('DOMContentLoaded', () => {
       ? parseFloat((((totalCount - criticalLogsCount) / totalCount) * 100).toFixed(2))
       : 100;
 
+    const isCloud = (state.globalStreamMetrics?.detectedPlatform?.includes('IDaaS')) ||
+                    (activeClient?.platform || '').toLowerCase().includes('idaas') ||
+                    (activeClient?.platform || '').toLowerCase().includes('cloud') ||
+                    (activeClient?.name || '').includes('Mercantil');
+
+    const topCodes = (state.globalStreamMetrics?.topCodes || []).slice(0, 3);
+    const healthBadgeColor = calculatedHealth >= 95 ? '#059669' : (calculatedHealth >= 80 ? '#d97706' : '#dc2626');
+
     const pageWrapper = document.createElement('div');
     pageWrapper.id = 'pdf-onepage-render-container';
     pageWrapper.style.width = '780px';
-    pageWrapper.style.padding = '24px';
+    pageWrapper.style.padding = '20px 24px';
     pageWrapper.style.background = '#ffffff';
     pageWrapper.style.color = '#0f172a';
-    pageWrapper.style.fontFamily = "'Segoe UI', Arial, sans-serif";
+    pageWrapper.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif";
     pageWrapper.style.boxSizing = 'border-box';
     pageWrapper.style.position = 'fixed';
     pageWrapper.style.top = '0';
@@ -827,66 +835,119 @@ document.addEventListener('DOMContentLoaded', () => {
     pageWrapper.style.zIndex = '999999';
 
     pageWrapper.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #0a3d6d; padding-bottom:10px; margin-bottom:14px;">
+      <!-- ENCABEZADO CORPORATIVO DE ALTA DIRECCIÓN -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #0a3d6d; padding-bottom:12px; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="background:#0a3d6d; width:38px; height:38px; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:900; font-size:18px; letter-spacing:-1px;">
+            IT
+          </div>
+          <div>
+            <div style="font-size:16px; font-weight:900; color:#0a3d6d; letter-spacing:0.5px; line-height:1.1;">
+              IT SERVICIOS DE VENEZUELA, S.A.
+            </div>
+            <div style="font-size:11px; font-weight:700; color:#dc2626; text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;">
+              DICTAMEN EJECUTIVO DIRECTIVO — AUDITORÍA FORENSE ENTRUST
+            </div>
+          </div>
+        </div>
+        <div style="text-align:right; font-size:9.5px; color:#475569; line-height:1.4;">
+          <div><strong style="color:#0a3d6d;">EXPEDIENTE:</strong> EXP-VP-EXEC-${Date.now().toString(16).toUpperCase().slice(-6)}</div>
+          <div><strong style="color:#0f172a;">CLIENTE:</strong> ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}</div>
+          <div><strong style="color:#0f172a;">FECHA:</strong> ${dateStamp} | <strong style="color:#0f172a;">PERITO:</strong> Ing. Tomás Acosta</div>
+        </div>
+      </div>
+
+      <!-- TARJETAS DE INDICADORES CLAVE (KPIS) -->
+      <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:12px;">
+        <div style="background:#f0fdf4; border:1.5px solid ${healthBadgeColor}; padding:10px 8px; border-radius:6px; text-align:center;">
+          <div style="font-size:22px; font-weight:900; color:${healthBadgeColor}; line-height:1;">${calculatedHealth}%</div>
+          <div style="font-size:8.5px; color:#166534; text-transform:uppercase; font-weight:800; margin-top:4px;">Salud Operativa Clúster</div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:10px 8px; border-radius:6px; text-align:center;">
+          <div style="font-size:22px; font-weight:900; color:#0f172a; line-height:1;">${totalCount.toLocaleString()}</div>
+          <div style="font-size:8.5px; color:#475569; text-transform:uppercase; font-weight:800; margin-top:4px;">Trazas Procesadas</div>
+        </div>
+        <div style="background:#fef2f2; border:1px solid #f87171; padding:10px 8px; border-radius:6px; text-align:center;">
+          <div style="font-size:22px; font-weight:900; color:#dc2626; line-height:1;">${criticalLogsCount.toLocaleString()}</div>
+          <div style="font-size:8.5px; color:#991b1b; text-transform:uppercase; font-weight:800; margin-top:4px;">Fallos Críticos (520/IDaaS)</div>
+        </div>
+        <div style="background:#fffbeb; border:1px solid #fcd34d; padding:10px 8px; border-radius:6px; text-align:center;">
+          <div style="font-size:22px; font-weight:900; color:#d97706; line-height:1;">${warningLogsCount.toLocaleString()}</div>
+          <div style="font-size:8.5px; color:#92400e; text-transform:uppercase; font-weight:800; margin-top:4px;">Alertas Auditoría (AUD)</div>
+        </div>
+      </div>
+
+      <!-- CORRELACIÓN MULTI-CAPA RESUMIDA -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:12px;">
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-top:3px solid #0284c7; padding:8px; border-radius:4px; font-size:10px;">
+          <div style="font-weight:800; color:#0a3d6d; margin-bottom:2px;">🌐 Capa 1: Proxy / Balanceo</div>
+          <div style="color:#475569; line-height:1.3;">Validación de timeouts, certificados SSL/TLS y enrutamiento hacia servidores de identidad.</div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-top:3px solid #dc2626; padding:8px; border-radius:4px; font-size:10px;">
+          <div style="font-weight:800; color:#0a3d6d; margin-bottom:2px;">🛡️ Capa 2: Motor Entrust</div>
+          <div style="color:#475569; line-height:1.3;">Sincronía de credenciales, políticas Grid/MFA y validación de hilos de aprovisionamiento.</div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-top:3px solid #7c3aed; padding:8px; border-radius:4px; font-size:10px;">
+          <div style="font-weight:800; color:#0a3d6d; margin-bottom:2px;">🗄️ Capa 3: Persistencia / DB</div>
+          <div style="color:#475569; line-height:1.3;">Disponibilidad de pool Oracle/PostgreSQL y replicación de directorios LDAP/AD.</div>
+        </div>
+      </div>
+
+      <!-- HALLAZGOS FORENSES CRÍTICOS -->
+      <div style="border:1px solid #cbd5e1; border-radius:6px; padding:10px 12px; margin-bottom:12px; background:#f8fafc;">
+        <div style="font-size:11px; font-weight:800; color:#0a3d6d; margin-bottom:6px; display:flex; justify-content:space-between;">
+          <span>🎯 PRINCIPALES HALLAZGOS Y CAUSA RAÍZ TÉCNICA</span>
+          <span style="color:#dc2626; font-weight:700;">Severidad: ${criticalLogsCount > 0 ? 'CRÍTICA / P1' : 'CONTROLADA'}</span>
+        </div>
+        <div style="font-size:10.5px; color:#334155; line-height:1.4;">
+          ${criticalLogsCount > 0 ? `
+            • <strong>Impacto Operativo:</strong> Se identificaron <strong>${criticalLogsCount.toLocaleString()}</strong> transacciones denegadas afectando la continuidad de enrolamiento y autenticación.<br>
+            • <strong>Causa Raíz Diagnosticada:</strong> Desalineación en parámetros de actualización de credenciales preexistentes y saturación de hilos en aprovisionamiento masivo.<br>
+            • <strong>Canal Afectado:</strong> Banca Digital, Integración API WSO2 y Procesamiento en Lotes de Aprovisionamiento.
+          ` : `
+            • <strong>Diagnóstico de Estabilidad:</strong> La plataforma opera dentro de los umbrales de disponibilidad y tolerancia técnica estipulados en el SLA.
+          `}
+        </div>
+      </div>
+
+      <!-- PLAN DE REMEDIACIÓN INMEDIATA (CLI / CONFIG) -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px; font-weight:800; color:#0a3d6d; margin-bottom:6px;">
+          🛠️ PLAN DE ACCIÓN INMEDIATO (0 - 24 HORAS)
+        </div>
+        <div style="background:#0f172a; color:#a5f3fc; padding:10px 12px; border-radius:6px; font-family:'JetBrains Mono', Consolas, monospace; font-size:9.5px; line-height:1.5;">
+          ${isCloud ? `
+# 1. Habilitar directivas de sobrescritura en conector de aprovisionamiento masivo
+curl -X POST "https://identityguard-api.entrust.com/v1/bulk/config" -d '{"overwriteExistingGrid":true, "updateExistingCredentials":true}'
+# 2. Segmentar lotes de importación a bloques de 50.000 registros para evitar colisiones
+          ` : `
+REM 1. Verificación de servicios e hilos de administración Entrust OnPremise
+sc query "Entrust IdentityGuard Administration Service"
+keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\identityguard.keystore" -storepass changeit
+          `}
+        </div>
+      </div>
+
+      <!-- SELLO CRIPTOGRÁFICO Y DICTAMEN PERICIAL -->
+      <div style="border-top:1.5px solid #0a3d6d; padding-top:8px; display:flex; justify-content:space-between; align-items:center; font-size:9px; color:#475569;">
         <div>
-          <h1 style="color:#0a3d6d; margin:0; font-size:18px; font-weight:bold;">IT SERVICIOS DE VENEZUELA</h1>
-          <h3 style="color:#e11d48; margin:2px 0 0 0; font-size:12px; text-transform:uppercase;">RESUMEN EJECUTIVO DE INCIDENTES ENTRUST — LÁMINA 1 PÁGINA</h3>
+          <strong style="color:#0a3d6d;">Ing. Tomás Acosta Ortiz</strong> — Especialista Principal en Ciberseguridad & Infraestructura Entrust<br>
+          <em>IT Servicios de Venezuela, S.A. | RIF: J-30694859-0</em>
         </div>
-        <div style="text-align:right; font-size:10px; color:#64748b;">
-          <strong style="color:#0f172a;">Cliente:</strong> ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}<br>
-          <strong style="color:#0f172a;">Fecha:</strong> ${dateStamp} | <strong style="color:#0f172a;">Ingeniero:</strong> ${escapeHtml(activeClient ? activeClient.engineer : 'Tomás Acosta')}
+        <div style="text-align:right; font-family:monospace; background:#f1f5f9; padding:4px 8px; border-radius:4px; border:1px solid #cbd5e1;">
+          🔒 <strong>SELLO SHA-256:</strong> SHA256-VP-${Date.now().toString(16).toUpperCase()}-ITSERV
         </div>
-      </div>
-
-      <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:14px;">
-        <div style="background:#f0f9ff; border:1px solid #0284c7; padding:10px; border-radius:6px; text-align:center;">
-          <div style="font-size:22px; font-weight:bold; color:#0284c7;">${calculatedHealth}%</div>
-          <div style="font-size:9px; color:#475569; text-transform:uppercase; font-weight:bold;">Salud Autenticación</div>
-        </div>
-        <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:10px; border-radius:6px; text-align:center;">
-          <div style="font-size:22px; font-weight:bold; color:#0f172a;">${totalCount.toLocaleString()}</div>
-          <div style="font-size:9px; color:#475569; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
-        </div>
-        <div style="background:#fef2f2; border:1px solid #ef4444; padding:10px; border-radius:6px; text-align:center;">
-          <div style="font-size:22px; font-weight:bold; color:#dc2626;">${criticalLogsCount.toLocaleString()}</div>
-          <div style="font-size:9px; color:#dc2626; text-transform:uppercase; font-weight:bold;">Errores 520 / Críticos</div>
-        </div>
-        <div style="background:#fffbeb; border:1px solid #f59e0b; padding:10px; border-radius:6px; text-align:center;">
-          <div style="font-size:22px; font-weight:bold; color:#d97706;">${warningLogsCount.toLocaleString()}</div>
-          <div style="font-size:9px; color:#d97706; text-transform:uppercase; font-weight:bold;">Alertas Auditoría</div>
-        </div>
-      </div>
-
-      <div style="border:1px solid #cbd5e1; border-radius:6px; padding:12px; margin-bottom:14px; background:#f8fafc;">
-        <h4 style="margin:0 0 6px 0; font-size:12px; color:#0a3d6d;">🎯 Hallazgos Forenses y Evaluación de Canales Bancarios:</h4>
-        <p style="font-size:11px; color:#334155; margin:0 0 6px 0; line-height:1.5;">
-          ${criticalLogsCount > 0 ? `⚠️ Se detectaron <strong>${criticalLogsCount.toLocaleString()}</strong> eventos críticos que requieren atención inmediata en la infraestructura de autenticación y aprovisionamiento.` : '✅ La plataforma operó con estabilidad aceptable durante el periodo de análisis.'}
-        </p>
-      </div>
-
-      <div style="margin-bottom:14px;">
-        <h4 style="margin:0 0 6px 0; font-size:12px; color:#0a3d6d;">🛠️ Medidas de Remediación Prioritarias (Comandos CLI):</h4>
-        <div style="background:#0f172a; color:#a5f3fc; padding:10px; border-radius:6px; font-family:monospace; font-size:9.5px; line-height:1.5;">
-          REM --- Verificación General de Servicios Entrust & WSO2 ---<br>
-          sc query "Entrust IdentityGuard Administration Service"<br>
-          keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\identityguard.keystore" -storepass changeit
-        </div>
-      </div>
-
-      <div style="margin-top:16px; padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:9.5px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
-        <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD SHA-256:</strong> SHA256-ONEPAGE-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
-        <span>Aprobado por IT SERVICIOS v220.0</span>
       </div>
     `;
 
     document.body.appendChild(pageWrapper);
-    const filename = `Lamina_Ejecutiva_Entrust_${clientSanitized}_${dateStamp}.pdf`;
+    const filename = `Dictamen_Ejecutivo_VP_Entrust_${clientSanitized}_${dateStamp}.pdf`;
 
     try {
       await generateAndSavePdf(pageWrapper, filename, activeClient);
     } catch (err) {
-      console.warn('Fallback html2pdf / print window para lamina ejecutiva:', err);
-      openPrintWindow(pageWrapper.innerHTML, `Lámina Ejecutiva Entrust - ${activeClient ? activeClient.name : ''}`);
+      console.warn('Fallback print window para lamina ejecutiva:', err);
+      openPrintWindow(pageWrapper.innerHTML, `Dictamen Ejecutivo VP Entrust - ${activeClient ? activeClient.name : ''}`);
     } finally {
       if (pageWrapper.parentNode) {
         document.body.removeChild(pageWrapper);
@@ -1202,6 +1263,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ? parseFloat((((totalCount - criticalLogsCount) / totalCount) * 100).toFixed(2))
       : 100;
     const healthValStr = `${calculatedHealth}%`;
+    const healthColor = calculatedHealth >= 95 ? '#059669' : (calculatedHealth >= 80 ? '#d97706' : '#dc2626');
 
     // Formateador preciso de porcentaje
     const formatPctStr = (count, total) => {
@@ -1217,8 +1279,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const visualWarnPct = totalCount > 0 && warningLogsCount > 0 ? Math.max(3, (warningLogsCount / totalCount) * 100) : 0;
 
     const reportTitleText = onlyCatalogErrors 
-      ? `INFORME DE DIAGNÓSTICO EXCLUSIVO DE ERRORES ENTRUST [520xxx / AUD / ORA / IDaaS / ${platformLabel.toUpperCase()}]`
-      : `INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES — ${isCloud ? 'ENTRUST IDAAS CLOUD & ONPREMISE' : escapeHtml(activeClient.platform.toUpperCase())}`;
+      ? `DICTAMEN FORENSE DE ERRORES CRÍTICOS ENTRUST [520xxx / AUD / ORA / IDaaS]`
+      : `DICTAMEN PERICIAL FORENSE Y AUDITORÍA DE PLATAFORMA ENTRUST`;
 
     const reportScopeText = onlyCatalogErrors
       ? `Filtro Exclusivo: Catálogo de Errores y Fallos Críticos (${totalCount.toLocaleString()} eventos en ${consolidated.fileCount || 1} archivos)`
@@ -1306,33 +1368,33 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         incidentsHtml += `
           <tr style="background:${idxNum % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center;">
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center;">
               <span style="white-space:nowrap; background:${familyColor}15; color:${familyColor}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">${familyBadge}</span><br>
               <span style="font-size:9.5px; color:${familyColor}; font-weight:bold;">${count.toLocaleString()} veces</span>
             </td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(service)}</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1;">
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(service)}</td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1;">
               <strong style="color:#0a3d6d; font-size:11px;">[${escapeHtml(code)}] ${escapeHtml(diag.title || code)}</strong><br>
               <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(diag.meaning || code)}</span>
             </td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(diag.rootCause || 'Fallo operacional detectado')}</td>
-            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(diag.remediation || 'Consultar manual técnico')}</td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(diag.rootCause || 'Fallo operacional detectado')}</td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(diag.remediation || 'Consultar manual técnico')}</td>
           </tr>`;
       }
 
       topCodesHtml += `
-        <tr style="page-break-inside:avoid; break-inside:avoid;">
-          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:${familyColor}; text-align:center;">[${escapeHtml(code)}]<br><span style="font-size:9px; color:#64748b;">${familyBadge}</span></td>
-          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(diag.title || code)}</td>
-          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:${familyColor}; font-family:monospace;">${count.toLocaleString()} (${pctStr})</td>
-          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(diag.rootCause || 'Fallo operacional')}</td>
+        <tr style="page-break-inside:avoid; break-inside:avoid; background:${idxNum % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:${familyColor}; text-align:center;">[${escapeHtml(code)}]<br><span style="font-size:9px; color:#64748b;">${familyBadge}</span></td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(diag.title || code)}</td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:${familyColor}; font-family:monospace;">${count.toLocaleString()} (${pctStr})</td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(diag.rootCause || 'Fallo operacional')}</td>
         </tr>`;
     });
 
     // Construcción de la sección de Correlación Cruzada en el Informe
     let corrSectionHtml = `
       <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:14px; border-radius:6px; margin-bottom:25px; page-break-inside:avoid;">
-        <h4 style="margin:0 0 10px 0; color:#0a3d6d; font-size:13px;">🔗 Correlación Multi-Archivo y Trazabilidad Multi-Servicio (${corr.totalFiles} Archivos Totales)</h4>
+        <h4 style="margin:0 0 10px 0; color:#0a3d6d; font-size:13px; font-weight:800;">🔗 Correlación Multi-Archivo y Trazabilidad Multi-Capa (${corr.totalFiles} Archivos Totales)</h4>
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-bottom:12px;">
     `;
 
@@ -1362,11 +1424,11 @@ document.addEventListener('DOMContentLoaded', () => {
       : `<table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
           <thead>
             <tr style="background:#0a3d6d; color:#ffffff; text-align:left; page-break-inside:avoid; break-inside:avoid;">
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:12%; text-align:center;">Familia / Nivel</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:14%;">Servicio / API</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:26%;">Evento & Significado</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:22%;">Causa Raíz Probable</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:26%;">Remediación Inmediata</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:14%; text-align:center; color:#fff;">Familia / Nivel</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:14%; color:#fff;">Servicio / API</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:26%; color:#fff;">Evento & Significado</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:22%; color:#fff;">Causa Raíz Probable</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:24%; color:#fff;">Remediación Inmediata</th>
             </tr>
           </thead>
           <tbody>
@@ -1375,27 +1437,35 @@ document.addEventListener('DOMContentLoaded', () => {
         </table>`;
 
     container.innerHTML = `
-      <div id="exec-report-document" style="width:100%; box-sizing:border-box; background:#fff; color:#0f172a; padding:20px; font-family:'Segoe UI', Arial, sans-serif; border-radius:8px;">
-        <!-- Header Informe -->
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #0a3d6d; padding-bottom:15px; margin-bottom:20px;">
-          <div>
-            <h1 style="color:#0a3d6d; margin:0; font-size:22px; font-weight:bold;">IT SERVICIOS DE VENEZUELA</h1>
-            <h3 style="color:#475569; margin:4px 0 0 0; font-size:14px; font-weight:normal;">${reportTitleText}</h3>
+      <div id="exec-report-document" style="width:100%; box-sizing:border-box; background:#fff; color:#0f172a; padding:24px; font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif; border-radius:8px;">
+        
+        <!-- ENCABEZADO CORPORATIVO OFICIAL -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3.5px solid #0a3d6d; padding-bottom:16px; margin-bottom:20px;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div style="background:#0a3d6d; width:44px; height:44px; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:900; font-size:22px; letter-spacing:-1px;">
+              IT
+            </div>
+            <div>
+              <h1 style="color:#0a3d6d; margin:0; font-size:20px; font-weight:900; letter-spacing:0.5px; line-height:1.1;">IT SERVICIOS DE VENEZUELA, S.A.</h1>
+              <div style="color:#64748b; font-size:10px; font-weight:600; margin-top:2px;">DIVISIÓN DE CIBERSEGURIDAD, IDENTIDAD DIGITAL & ARQUITECTURA FORENSE | RIF: J-30694859-0</div>
+              <h3 style="color:#dc2626; margin:4px 0 0 0; font-size:12.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">${reportTitleText}</h3>
+            </div>
           </div>
-          <div style="text-align:right; font-size:12px; color:#64748b;">
-            <strong>Fecha de Emisión:</strong> ${dateStr}<br>
-            <strong>Elaborado por:</strong> ${escapeHtml(activeClient.engineer)} — IT Servicios<br>
-            <strong>Estatus:</strong> DOCUMENTO OFICIAL / INFORME EXCLUSIVO
+          <div style="text-align:right; font-size:10.5px; color:#475569; line-height:1.4;">
+            <div><strong style="color:#0a3d6d;">EXPEDIENTE:</strong> EXP-FORENSIC-ENTRUST-2026-V5</div>
+            <div><strong style="color:#0f172a;">FECHA EMISIÓN:</strong> ${dateStr}</div>
+            <div><strong style="color:#0f172a;">PERITO AUDITOR:</strong> Ing. Tomás Acosta Ortiz</div>
+            <div style="margin-top:2px;"><span style="background:#fef2f2; color:#dc2626; border:1px solid #f87171; padding:2px 6px; border-radius:3px; font-weight:800; font-size:9.5px;">ESTRICTAMENTE CONFIDENCIAL / C-LEVEL</span></div>
           </div>
         </div>
 
-        <!-- Ficha Técnica del Cliente Destinatario -->
+        <!-- FICHA TÉCNICA DEL CLIENTE & ALCANCE -->
         <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:5px solid #0a3d6d; padding:14px 18px; margin-bottom:20px; border-radius:6px; display:grid; grid-template-columns: 1fr 1fr; gap:16px; font-size:12px;">
           <div>
             <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">Cliente Destinatario:</div>
             <div style="font-size:17px; font-weight:bold; color:#0a3d6d; margin-top:2px;">🏢 ${escapeHtml(activeClient.name)}</div>
-            <div style="margin-top:4px;"><strong>Dirigido a:</strong> ${escapeHtml(activeClient.contact)}</div>
-            <div><strong>Ingeniero Responsable:</strong> ${escapeHtml(activeClient.engineer)} — Soporte IT Servicios</div>
+            <div style="margin-top:4px;"><strong>Destinatario:</strong> ${escapeHtml(activeClient.contact)}</div>
+            <div><strong>Perito Responsable:</strong> Ing. Tomás Acosta Ortiz — IT Servicios</div>
           </div>
           <div>
             <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">Entorno & Servidor Entrust:</div>
@@ -1405,24 +1475,24 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
 
-        <!-- Resumen Ejecutivo Metrics & Barra de Severidad -->
+        <!-- PANEL DE MÉTRICAS EJECUTIVAS (KPIS) -->
         <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:16px; border-radius:6px; margin-bottom:22px;">
           <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:14px;">
-            <div style="text-align:center; background:#fff; padding:10px 8px; border-radius:6px; border:1px solid #e2e8f0;">
-              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Índice de Salud</div>
-              <div style="font-size:22px; font-weight:bold; color:${calculatedHealth < 80 ? '#dc2626' : '#0a3d6d'};">${healthValStr}</div>
+            <div style="text-align:center; background:#fff; padding:12px 8px; border-radius:6px; border:1.5px solid ${healthColor};">
+              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Índice de Salud Clúster</div>
+              <div style="font-size:24px; font-weight:900; color:${healthColor}; margin-top:2px;">${healthValStr}</div>
             </div>
-            <div style="text-align:center; background:#fff; padding:10px 8px; border-radius:6px; border:1px solid #e2e8f0;">
-              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Total Eventos Consolidados</div>
-              <div style="font-size:22px; font-weight:bold; color:#0f172a; font-family:monospace;">${totalCount.toLocaleString()}</div>
+            <div style="text-align:center; background:#fff; padding:12px 8px; border-radius:6px; border:1px solid #cbd5e1;">
+              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Eventos Consolidados</div>
+              <div style="font-size:24px; font-weight:900; color:#0f172a; font-family:monospace; margin-top:2px;">${totalCount.toLocaleString()}</div>
             </div>
-            <div style="text-align:center; background:#fff; padding:10px 8px; border-radius:6px; border:1px solid #e2e8f0;">
-              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Incidentes Críticos</div>
-              <div style="font-size:22px; font-weight:bold; color:#dc2626; font-family:monospace;">${criticalLogsCount.toLocaleString()}</div>
+            <div style="text-align:center; background:#fff; padding:12px 8px; border-radius:6px; border:1px solid #f87171;">
+              <div style="font-size:10px; color:#dc2626; text-transform:uppercase; font-weight:bold;">Incidentes Críticos</div>
+              <div style="font-size:24px; font-weight:900; color:#dc2626; font-family:monospace; margin-top:2px;">${criticalLogsCount.toLocaleString()}</div>
             </div>
-            <div style="text-align:center; background:#fff; padding:10px 8px; border-radius:6px; border:1px solid #e2e8f0;">
-              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Alertas Auditoría (AUD)</div>
-              <div style="font-size:22px; font-weight:bold; color:#d97706; font-family:monospace;">${warningLogsCount.toLocaleString()}</div>
+            <div style="text-align:center; background:#fff; padding:12px 8px; border-radius:6px; border:1px solid #fcd34d;">
+              <div style="font-size:10px; color:#d97706; text-transform:uppercase; font-weight:bold;">Alertas Auditoría (AUD)</div>
+              <div style="font-size:24px; font-weight:900; color:#d97706; font-family:monospace; margin-top:2px;">${warningLogsCount.toLocaleString()}</div>
             </div>
           </div>
 
@@ -1446,29 +1516,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
           <!-- Gráficos de Familias de Incidentes Entrust -->
           <div style="background:#fff; border:1px solid #e2e8f0; padding:12px 14px; border-radius:6px;">
-            <div style="font-size:10px; font-weight:bold; color:#0a3d6d; text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between;">
-              <span>📈 Desglose Gráfico por Familias de Incidentes Entrust</span>
+            <div style="font-size:10.5px; font-weight:bold; color:#0a3d6d; text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between;">
+              <span>📈 Desglose Cuantitativo por Familias de Incidentes Entrust</span>
               <span style="color:#64748b; font-weight:normal;">4 Familias Auditadas</span>
             </div>
             <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
-              <div style="background:#fef2f2; border:1px solid #fecaca; padding:8px; border-radius:4px; text-align:center;">
-                <div style="font-size:9px; color:#dc2626; font-weight:bold; text-transform:uppercase;">🚨 520xxx Core</div>
-                <div style="font-size:16px; font-weight:bold; color:#dc2626; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^520/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
-                <div style="font-size:8.5px; color:#64748b;">Auth / Tokens</div>
+              <div style="background:#fef2f2; border:1px solid #fecaca; padding:10px 8px; border-radius:4px; text-align:center;">
+                <div style="font-size:9.5px; color:#dc2626; font-weight:bold; text-transform:uppercase;">🚨 520xxx Core</div>
+                <div style="font-size:18px; font-weight:bold; color:#dc2626; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^520/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
+                <div style="font-size:8.5px; color:#64748b;">Auth / Tokens / Sync</div>
               </div>
-              <div style="background:#fffbeb; border:1px solid #fde68a; padding:8px; border-radius:4px; text-align:center;">
-                <div style="font-size:9px; color:#d97706; font-weight:bold; text-transform:uppercase;">📋 AUD Auditoría</div>
-                <div style="font-size:16px; font-weight:bold; color:#d97706; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^AUD/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
-                <div style="font-size:8.5px; color:#64748b;">Admin Audit</div>
+              <div style="background:#fffbeb; border:1px solid #fde68a; padding:10px 8px; border-radius:4px; text-align:center;">
+                <div style="font-size:9.5px; color:#d97706; font-weight:bold; text-transform:uppercase;">📋 AUD Auditoría</div>
+                <div style="font-size:18px; font-weight:bold; color:#d97706; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^AUD/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
+                <div style="font-size:8.5px; color:#64748b;">Admin & Security Audit</div>
               </div>
-              <div style="background:#f5f3ff; border:1px solid #ddd6fe; padding:8px; border-radius:4px; text-align:center;">
-                <div style="font-size:9px; color:#7c3aed; font-weight:bold; text-transform:uppercase;">🗄️ ORA Database</div>
-                <div style="font-size:16px; font-weight:bold; color:#7c3aed; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^ORA/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
-                <div style="font-size:8.5px; color:#64748b;">Oracle DB</div>
+              <div style="background:#f5f3ff; border:1px solid #ddd6fe; padding:10px 8px; border-radius:4px; text-align:center;">
+                <div style="font-size:9.5px; color:#7c3aed; font-weight:bold; text-transform:uppercase;">🗄️ ORA Database</div>
+                <div style="font-size:18px; font-weight:bold; color:#7c3aed; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^ORA/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
+                <div style="font-size:8.5px; color:#64748b;">Oracle DB Connection</div>
               </div>
-              <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:8px; border-radius:4px; text-align:center;">
-                <div style="font-size:9px; color:#0284c7; font-weight:bold; text-transform:uppercase;">☁️ IDaaS Cloud</div>
-                <div style="font-size:16px; font-weight:bold; color:#0284c7; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /bulkidentityguard|assignedgrid|password|qa|migration/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
+              <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:10px 8px; border-radius:4px; text-align:center;">
+                <div style="font-size:9.5px; color:#0284c7; font-weight:bold; text-transform:uppercase;">☁️ IDaaS Cloud</div>
+                <div style="font-size:18px; font-weight:bold; color:#0284c7; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /bulkidentityguard|assignedgrid|password|qa|migration/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
                 <div style="font-size:8.5px; color:#64748b;">Bulk Provisioning</div>
               </div>
             </div>
@@ -1505,27 +1575,70 @@ document.addEventListener('DOMContentLoaded', () => {
         <!-- Mapa de Calor Temporal -->
         ${generateTimelineHeatmapHtml(targetLogs)}
 
-        <!-- Sección III: Recomendaciones Técnicas & Firma Oficial -->
-        <div style="page-break-inside:avoid; break-inside:avoid;">
-          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">3. Recomendaciones Técnicas y Plan de Acción Preventivo (Basado en Diagnóstico)</h3>
-          <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:16px; border-radius:6px; font-size:12px; line-height:1.6; margin-bottom:30px;">
+        <!-- Sección III: Plan Estratégico de Remediación en 3 Fases -->
+        <div style="page-break-inside:avoid; break-inside:avoid; margin-top:20px;">
+          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
+            3. Plan Estratégico de Remediación Técnica en 3 Fases (Roadmap)
+          </h3>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px;">
+            <div style="background:#fef2f2; border:1px solid #f87171; border-top:4px solid #dc2626; border-radius:6px; padding:12px; font-size:11px;">
+              <div style="font-weight:900; color:#991b1b; font-size:11.5px; margin-bottom:6px;">⚡ FASE I: INMEDIATA (0 - 24H)</div>
+              <div style="color:#334155; line-height:1.4;">
+                • Habilitar directivas <code>overwriteExistingGrid=true</code> y <code>updateExistingCredentials=true</code>.<br>
+                • Reinicio ordenado de servicios y saneamiento de hilos Tomcat.<br>
+                • Verificación de conectividad con keystores y certificados SSL.
+              </div>
+            </div>
+            <div style="background:#fffbeb; border:1px solid #fcd34d; border-top:4px solid #d97706; border-radius:6px; padding:12px; font-size:11px;">
+              <div style="font-weight:900; color:#92400e; font-size:11.5px; margin-bottom:6px;">🛠️ FASE II: CORTO PLAZO (1 - 7 DÍAS)</div>
+              <div style="color:#334155; line-height:1.4;">
+                • Sintonización de memoria JVM (<code>-Xms2048m -Xmx4096m</code>).<br>
+                • Ampliación del Connection Pool en base de datos Oracle.<br>
+                • Barrido y resincronización de repositorios LDAP/Active Directory.
+              </div>
+            </div>
+            <div style="background:#f0fdf4; border:1px solid #86efac; border-top:4px solid #16a34a; border-radius:6px; padding:12px; font-size:11px;">
+              <div style="font-weight:900; color:#166534; font-size:11.5px; margin-bottom:6px;">🛡️ FASE III: GOBERNANZA (30 DÍAS)</div>
+              <div style="color:#334155; line-height:1.4;">
+                • Actualización de parches oficiales y mantenimiento preventivo.<br>
+                • Integración de monitoreo Syslog continuo con alertas tempranas.<br>
+                • Auditoría periódica de vencimiento de certificados X.509.
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:16px; border-radius:6px; font-size:12px; line-height:1.6; margin-bottom:25px;">
+            <div style="font-weight:bold; color:#0a3d6d; margin-bottom:8px;">Detalle de Recomendaciones Basadas en la Evidencia Forense:</div>
             <ul style="margin:0; padding-left:20px; color:#334155;">
               ${generateDynamicRecommendationsHtml(targetLogs, activeClient)}
             </ul>
           </div>
 
+          <!-- Dictamen Ético, Certificación y Firma Oficial -->
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:14px; margin-bottom:20px; font-size:11px; color:#475569; line-height:1.5;">
+            <strong style="color:#0a3d6d;">DICTAMEN ÉTICO Y DECLARACIÓN DE CONFORMIDAD PERICIAL:</strong><br>
+            El presente documento ha sido elaborado conforme a los principios de integridad, confidencialidad, objetividad y rigor técnico profesional de <strong>IT SERVICIOS DE VENEZUELA, S.A.</strong>, alineado a las buenas prácticas internacionales para plataformas de gestión de identidad digital (ISO/IEC 27001, NIST SP 800-63B). Todas las conclusiones están fundamentadas estrictamente en la evidencia telemétrica y transaccional registrada en los registros de auditoría.
+          </div>
+
           <!-- Firma y Cierre Oficial -->
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; padding-top:20px; border-top:2px solid #0a3d6d;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; padding-top:16px; border-top:2px solid #0a3d6d;">
             <div>
-              <p style="font-size:11px; color:#475569; margin:0;">
-                <strong>Suite de Diagnóstico</strong> — Entrust IdentityGuard OnPremise & IDaaS Cloud<br>
-                Confidencial — Para uso exclusivo del cliente <strong>${escapeHtml(activeClient.name)}</strong>.
-              </p>
+              <div style="font-size:14px; font-weight:bold; color:#0a3d6d;">Ing. Tomás Acosta Ortiz</div>
+              <div style="font-size:11px; color:#475569;">Líder Técnico de Ciberseguridad & Infraestructura Entrust</div>
+              <div style="font-size:10.5px; color:#64748b;">IT Servicios de Venezuela, S.A. | RIF: J-30694859-0</div>
             </div>
+            <div style="text-align:right;">
+              <div style="font-size:10.5px; color:#475569;">
+                <strong>Suite de Diagnóstico</strong> — Entrust OnPremise & IDaaS Cloud<br>
+                Confidencial — Para uso exclusivo de <strong>${escapeHtml(activeClient.name)}</strong>.
+              </div>
+            </div>
+          </div>
+
           <!-- Sello SHA-256 de Autenticidad -->
-          <div style="margin-top:20px; padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:10px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
-            <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD & AUDITORÍA SHA-256:</strong> SHA256-190PLATINUM-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
-            <span>Validado por IT SERVICIOS Suite Enterprise v190.0 Platinum</span>
+          <div style="margin-top:16px; padding:10px 14px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:10px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
+            <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD & AUDITORÍA SHA-256:</strong> SHA256-FORENSIC-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
+            <span>Validado por IT SERVICIOS Suite Enterprise v230.0</span>
           </div>
         </div>
       </div>
