@@ -737,6 +737,63 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  async function generateAndSavePdf(sourceElement, filename, activeClient) {
+    const hasH2C = typeof window.html2canvas === 'function';
+    const jsPdfClass = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+
+    if (!hasH2C || !jsPdfClass) {
+      throw new Error('html2canvas o jsPDF no inicializados en window');
+    }
+
+    // Capturar visualmente el elemento con alta resolución
+    const canvas = await window.html2canvas(sourceElement, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: sourceElement.scrollWidth || 800
+    });
+
+    if (!canvas || canvas.width === 0 || canvas.height === 0) {
+      throw new Error('Canvas renderizado vacío');
+    }
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+    const pdf = new jsPdfClass({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'letter',
+      compress: true
+    });
+
+    const pageWidth = 215.9; // Carta mm
+    const pageHeight = 279.4; // Carta mm
+    const margin = 8;
+    const printWidth = pageWidth - (margin * 2);
+    const printHeight = (canvas.height * printWidth) / canvas.width;
+    const pageContentHeight = pageHeight - (margin * 2);
+
+    let heightLeft = printHeight;
+    let position = margin;
+
+    // Página 1
+    pdf.addImage(imgData, 'JPEG', margin, position, printWidth, printHeight);
+    heightLeft -= pageContentHeight;
+
+    // Páginas subsecuentes
+    while (heightLeft > 0) {
+      position = margin - (printHeight - heightLeft);
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', margin, position, printWidth, printHeight);
+      heightLeft -= pageContentHeight;
+    }
+
+    pdf.save(filename);
+  }
+
   async function downloadOnePageExecutivePdf() {
     const btn = document.getElementById('btn-download-onepage-exec-report');
     const origHtml = btn ? btn.innerHTML : '';
@@ -758,15 +815,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const pageWrapper = document.createElement('div');
     pageWrapper.id = 'pdf-onepage-render-container';
-    pageWrapper.style.position = 'absolute';
-    pageWrapper.style.top = '0';
-    pageWrapper.style.left = '0';
     pageWrapper.style.width = '780px';
     pageWrapper.style.padding = '24px';
     pageWrapper.style.background = '#ffffff';
     pageWrapper.style.color = '#0f172a';
     pageWrapper.style.fontFamily = "'Segoe UI', Arial, sans-serif";
     pageWrapper.style.boxSizing = 'border-box';
+    pageWrapper.style.position = 'fixed';
+    pageWrapper.style.top = '0';
+    pageWrapper.style.left = '0';
     pageWrapper.style.zIndex = '999999';
 
     pageWrapper.innerHTML = `
@@ -818,37 +875,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
       <div style="margin-top:16px; padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:9.5px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
         <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD SHA-256:</strong> SHA256-ONEPAGE-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
-        <span>Aprobado por IT SERVICIOS v205.0</span>
+        <span>Aprobado por IT SERVICIOS v220.0</span>
       </div>
     `;
 
     document.body.appendChild(pageWrapper);
-    window.scrollTo(0, 0);
-
-    const opt = {
-      margin:       [4, 4, 4, 4],
-      filename:     `Lamina_Ejecutiva_Entrust_${clientSanitized}_${dateStamp}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { 
-        scale: 2, 
-        useCORS: true, 
-        logging: false, 
-        backgroundColor: '#ffffff',
-        scrollX: 0, 
-        scrollY: 0, 
-        windowWidth: 800 
-      },
-      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
-    };
+    const filename = `Lamina_Ejecutiva_Entrust_${clientSanitized}_${dateStamp}.pdf`;
 
     try {
-      if (window.html2pdf) {
-        await window.html2pdf().set(opt).from(pageWrapper).save();
-      } else {
-        openPrintWindow(pageWrapper.innerHTML, `Lámina Ejecutiva Entrust - ${activeClient ? activeClient.name : ''}`);
-      }
+      await generateAndSavePdf(pageWrapper, filename, activeClient);
     } catch (err) {
-      console.warn('html2pdf fallback invoked:', err);
+      console.warn('Fallback html2pdf / print window para lamina ejecutiva:', err);
       openPrintWindow(pageWrapper.innerHTML, `Lámina Ejecutiva Entrust - ${activeClient ? activeClient.name : ''}`);
     } finally {
       if (pageWrapper.parentNode) {
@@ -879,115 +916,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeClient = getActiveClientProfile();
     const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
     const dateStamp = new Date().toISOString().slice(0, 10);
-    const reportTitle = `Informe_Entrust_${clientSanitized}_${dateStamp}`;
-
-    // Construir un clon limpio con estilos explícitos en document.body
-    const clone = document.createElement('div');
-    clone.id = 'pdf-fullreport-render-container';
-    clone.style.position = 'absolute';
-    clone.style.top = '0';
-    clone.style.left = '0';
-    clone.style.width = '800px';
-    clone.style.padding = '25px';
-    clone.style.background = '#ffffff';
-    clone.style.color = '#0f172a';
-    clone.style.fontFamily = "'Segoe UI', Arial, sans-serif";
-    clone.style.boxSizing = 'border-box';
-    clone.style.zIndex = '999999';
-    clone.innerHTML = container.innerHTML;
-
-    // Convertir gráficos de dona y tendencia a imágenes PNG estables
-    const trendCanvas = document.getElementById('chart-trend');
-    const sevCanvas = document.getElementById('chart-severity');
-    const embeddedCharts = clone.querySelector('#report-embedded-charts') || document.createElement('div');
-    embeddedCharts.id = 'report-embedded-charts';
-    embeddedCharts.style.display = 'flex';
-    embeddedCharts.style.gap = '15px';
-    embeddedCharts.style.justifyContent = 'center';
-    embeddedCharts.style.margin = '15px 0';
-    embeddedCharts.innerHTML = '';
-
-    if (trendCanvas) {
-      try {
-        const imgTrend = document.createElement('img');
-        imgTrend.src = trendCanvas.toDataURL('image/png');
-        imgTrend.style.maxWidth = '48%';
-        imgTrend.style.border = '1px solid #cbd5e1';
-        imgTrend.style.borderRadius = '6px';
-        embeddedCharts.appendChild(imgTrend);
-      } catch(e) {}
-    }
-    if (sevCanvas) {
-      try {
-        const imgSev = document.createElement('img');
-        imgSev.src = sevCanvas.toDataURL('image/png');
-        imgSev.style.maxWidth = '48%';
-        imgSev.style.border = '1px solid #cbd5e1';
-        imgSev.style.borderRadius = '6px';
-        embeddedCharts.appendChild(imgSev);
-      } catch(e) {}
-    }
-
-    if (embeddedCharts.children.length > 0 && !clone.contains(embeddedCharts)) {
-      const firstSection = clone.querySelector('div');
-      if (firstSection && firstSection.nextSibling) {
-        clone.insertBefore(embeddedCharts, firstSection.nextSibling);
-      } else {
-        clone.appendChild(embeddedCharts);
-      }
-    }
-
-    // Asegurar que absolutamente todo el texto tenga colores oscuros legibles
-    clone.querySelectorAll('*').forEach(el => {
-      const tag = el.tagName.toLowerCase();
-      if (tag === 'h1' || tag === 'h2' || tag === 'h3' || tag === 'h4') {
-        el.style.color = '#0a3d6d';
-      } else if (tag === 'th') {
-        el.style.backgroundColor = '#0a3d6d';
-        el.style.color = '#ffffff';
-      } else if (tag === 'code' || tag === 'pre') {
-        el.style.color = '#a5f3fc';
-        el.style.backgroundColor = '#0f172a';
-      } else if (tag === 'td' || tag === 'p' || tag === 'li' || tag === 'span') {
-        if (!el.style.color || el.style.color.includes('var(') || el.style.color === 'rgb(248, 250, 252)') {
-          el.style.color = '#0f172a';
-        }
-      }
-    });
-
-    document.body.appendChild(clone);
-    window.scrollTo(0, 0);
-
-    const opt = {
-      margin:       [8, 8, 8, 8],
-      filename:     `${reportTitle}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { 
-        scale: 2, 
-        useCORS: true, 
-        logging: false, 
-        backgroundColor: '#ffffff',
-        scrollX: 0, 
-        scrollY: 0, 
-        windowWidth: 800 
-      },
-      jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' },
-      pagebreak:    { mode: ['css', 'legacy'] }
-    };
+    const filename = `Informe_Entrust_${clientSanitized}_${dateStamp}.pdf`;
 
     try {
-      if (window.html2pdf) {
-        await window.html2pdf().set(opt).from(clone).save();
-      } else {
-        openPrintWindow(clone.innerHTML, `Informe Oficial Entrust - ${activeClient ? activeClient.name : 'Entrust'}`);
-      }
+      await generateAndSavePdf(container, filename, activeClient);
     } catch (err) {
-      console.warn('Fallo generación html2pdf, abriendo ventana de impresión nativa:', err);
-      openPrintWindow(clone.innerHTML, `Informe Oficial Entrust - ${activeClient ? activeClient.name : 'Entrust'}`);
+      console.warn('Fallo generación directa jsPDF/html2canvas, abriendo ventana de impresión nativa:', err);
+      openPrintWindow(container.innerHTML, `Informe Oficial Entrust - ${activeClient ? activeClient.name : 'Entrust'}`);
     } finally {
-      if (clone.parentNode) {
-        document.body.removeChild(clone);
-      }
       if (btn) {
         btn.disabled = false;
         btn.innerHTML = origHtml;
@@ -1491,7 +1427,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
 
           <!-- Barra de Distribución Porcentual -->
-          <div style="background:#fff; border:1px solid #e2e8f0; padding:10px 14px; border-radius:6px;">
+          <div style="background:#fff; border:1px solid #e2e8f0; padding:10px 14px; border-radius:6px; margin-bottom:12px;">
             <div style="font-size:10px; font-weight:bold; color:#0a3d6d; text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between;">
               <span>📊 Distribución por Severidad de Eventos</span>
               <span style="color:#64748b; font-weight:normal;">Total Procesados: ${totalCount.toLocaleString()} en ${consolidated.fileCount || 1} archivos</span>
@@ -1505,6 +1441,36 @@ document.addEventListener('DOMContentLoaded', () => {
               <div><span style="display:inline-block; width:8px; height:8px; background:#dc2626; border-radius:2px; margin-right:4px;"></span> <strong>CRITICAL/ERROR:</strong> ${criticalLogsCount.toLocaleString()} (${formatPctStr(criticalLogsCount, totalCount)})</div>
               <div><span style="display:inline-block; width:8px; height:8px; background:#f59e0b; border-radius:2px; margin-right:4px;"></span> <strong>WARN (Auditoría):</strong> ${warningLogsCount.toLocaleString()} (${formatPctStr(warningLogsCount, totalCount)})</div>
               <div><span style="display:inline-block; width:8px; height:8px; background:#0284c7; border-radius:2px; margin-right:4px;"></span> <strong>INFO:</strong> ${infoLogsCount.toLocaleString()} (${formatPctStr(infoLogsCount, totalCount)})</div>
+            </div>
+          </div>
+
+          <!-- Gráficos de Familias de Incidentes Entrust -->
+          <div style="background:#fff; border:1px solid #e2e8f0; padding:12px 14px; border-radius:6px;">
+            <div style="font-size:10px; font-weight:bold; color:#0a3d6d; text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between;">
+              <span>📈 Desglose Gráfico por Familias de Incidentes Entrust</span>
+              <span style="color:#64748b; font-weight:normal;">4 Familias Auditadas</span>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
+              <div style="background:#fef2f2; border:1px solid #fecaca; padding:8px; border-radius:4px; text-align:center;">
+                <div style="font-size:9px; color:#dc2626; font-weight:bold; text-transform:uppercase;">🚨 520xxx Core</div>
+                <div style="font-size:16px; font-weight:bold; color:#dc2626; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^520/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
+                <div style="font-size:8.5px; color:#64748b;">Auth / Tokens</div>
+              </div>
+              <div style="background:#fffbeb; border:1px solid #fde68a; padding:8px; border-radius:4px; text-align:center;">
+                <div style="font-size:9px; color:#d97706; font-weight:bold; text-transform:uppercase;">📋 AUD Auditoría</div>
+                <div style="font-size:16px; font-weight:bold; color:#d97706; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^AUD/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
+                <div style="font-size:8.5px; color:#64748b;">Admin Audit</div>
+              </div>
+              <div style="background:#f5f3ff; border:1px solid #ddd6fe; padding:8px; border-radius:4px; text-align:center;">
+                <div style="font-size:9px; color:#7c3aed; font-weight:bold; text-transform:uppercase;">🗄️ ORA Database</div>
+                <div style="font-size:16px; font-weight:bold; color:#7c3aed; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^ORA/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
+                <div style="font-size:8.5px; color:#64748b;">Oracle DB</div>
+              </div>
+              <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:8px; border-radius:4px; text-align:center;">
+                <div style="font-size:9px; color:#0284c7; font-weight:bold; text-transform:uppercase;">☁️ IDaaS Cloud</div>
+                <div style="font-size:16px; font-weight:bold; color:#0284c7; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /bulkidentityguard|assignedgrid|password|qa|migration/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
+                <div style="font-size:8.5px; color:#64748b;">Bulk Provisioning</div>
+              </div>
             </div>
           </div>
         </div>
