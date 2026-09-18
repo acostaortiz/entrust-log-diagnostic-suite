@@ -636,6 +636,48 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================================
      2. GENERADOR DE INFORMES DE DIAGNÓSTICO PRELIMINAR (EXECUTIVE REPORT)
      ========================================================================== */
+  function openPrintWindow(htmlContent, title) {
+    const printWindow = window.open('', '_blank', 'width=960,height=850');
+    if (!printWindow) {
+      alert('⚠️ Por favor permita ventanas emergentes (popups) en su navegador para imprimir o exportar como PDF.');
+      return;
+    }
+    printWindow.document.open();
+    printWindow.document.write(`<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>${title || 'Informe Oficial Entrust - IT SERVICIOS'}</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, -apple-system, BlinkMacSystemFont, sans-serif; background: #ffffff; color: #0f172a; padding: 25px; margin: 0; font-size: 12px; }
+    h1, h2, h3, h4 { color: #0a3d6d; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; page-break-inside: avoid; }
+    th, td { border: 1px solid #cbd5e1; padding: 6px 8px; font-size: 11px; text-align: left; }
+    th { background: #0a3d6d; color: #ffffff; font-weight: bold; }
+    tr:nth-child(even) { background: #f8fafc; }
+    pre, code { font-family: 'JetBrains Mono', Consolas, monospace; }
+    @media print {
+      body { padding: 0; }
+      @page { margin: 12mm 10mm; size: letter portrait; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  ${htmlContent}
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.focus();
+        window.print();
+      }, 400);
+    };
+  </script>
+</body>
+</html>`);
+    printWindow.document.close();
+  }
+
   function initExecReportModule() {
     const btnGen = document.getElementById('btn-generate-exec-report');
     const btnClose = document.getElementById('btn-close-exec-report');
@@ -674,23 +716,45 @@ document.addEventListener('DOMContentLoaded', () => {
       downloadExecutiveReportCsv();
     });
 
+    document.getElementById('btn-download-exec-report-md')?.addEventListener('click', () => {
+      downloadExecutiveReportMarkdown();
+    });
+
+    document.getElementById('btn-copy-exec-report-md')?.addEventListener('click', () => {
+      copyExecutiveReportMarkdown();
+    });
+
     if (btnPrint) {
       btnPrint.addEventListener('click', () => {
-        window.print();
+        const container = document.getElementById('exec-report-container');
+        const activeClient = getActiveClientProfile();
+        if (container) {
+          openPrintWindow(container.innerHTML, `Informe Oficial Entrust - ${activeClient ? activeClient.name : 'Entrust'}`);
+        } else {
+          window.print();
+        }
       });
     }
   }
 
-  function downloadOnePageExecutivePdf() {
+  async function downloadOnePageExecutivePdf() {
+    const btn = document.getElementById('btn-download-onepage-exec-report');
+    const origHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Generando PDF...';
+    }
+
     const activeClient = getActiveClientProfile();
     const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
     const dateStamp = new Date().toISOString().slice(0, 10);
-    const targetLogs = state.logs || [];
-    const totalCount = Math.max(1, targetLogs.length);
-    const criticalLogs = targetLogs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
-    const warningLogs = targetLogs.filter(l => l.level === 'WARN' || l.level === 'WARNING');
-    const critPenalty = criticalLogs.length > 0 ? Math.min(65, Math.max(5, (criticalLogs.length / totalCount) * 100 * 5 + criticalLogs.length * 0.2)) : 0;
-    const healthIndex = Math.max(10, Math.round(100 - critPenalty));
+    const consolidated = getConsolidatedMetrics();
+    const totalCount = consolidated.totalLogs;
+    const criticalLogsCount = consolidated.totalErrors;
+    const warningLogsCount = consolidated.totalWarnings;
+    const calculatedHealth = totalCount > 0 
+      ? parseFloat((((totalCount - criticalLogsCount) / totalCount) * 100).toFixed(2))
+      : 100;
 
     const pageWrapper = document.createElement('div');
     pageWrapper.style.width = '790px';
@@ -699,6 +763,10 @@ document.addEventListener('DOMContentLoaded', () => {
     pageWrapper.style.color = '#0f172a';
     pageWrapper.style.fontFamily = "'Segoe UI', Arial, sans-serif";
     pageWrapper.style.boxSizing = 'border-box';
+    pageWrapper.style.position = 'fixed';
+    pageWrapper.style.left = '-9999px';
+    pageWrapper.style.top = '0';
+    pageWrapper.style.zIndex = '-9999';
 
     pageWrapper.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #0a3d6d; padding-bottom:10px; margin-bottom:12px;">
@@ -707,26 +775,26 @@ document.addEventListener('DOMContentLoaded', () => {
           <h3 style="color:#e11d48; margin:2px 0 0 0; font-size:12px; text-transform:uppercase;">RESUMEN EJECUTIVO DE INCIDENTES ENTRUST — LÁMINA 1 PÁGINA</h3>
         </div>
         <div style="text-align:right; font-size:10px; color:#64748b;">
-          <strong>Cliente:</strong> ${escapeHtml(activeClient.name)}<br>
-          <strong>Fecha:</strong> ${dateStamp} | <strong>Ingeniero:</strong> ${escapeHtml(activeClient.engineer)}
+          <strong>Cliente:</strong> ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}<br>
+          <strong>Fecha:</strong> ${dateStamp} | <strong>Ingeniero:</strong> ${escapeHtml(activeClient ? activeClient.engineer : 'Tomás Acosta')}
         </div>
       </div>
 
       <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:14px;">
         <div style="background:#f0f9ff; border:1px solid #0284c7; padding:8px; border-radius:6px; text-align:center;">
-          <div style="font-size:18px; font-weight:bold; color:#0284c7;">${healthIndex}%</div>
+          <div style="font-size:18px; font-weight:bold; color:#0284c7;">${calculatedHealth}%</div>
           <div style="font-size:9px; color:#475569; text-transform:uppercase; font-weight:bold;">Salud Autenticación</div>
         </div>
         <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:8px; border-radius:6px; text-align:center;">
-          <div style="font-size:18px; font-weight:bold; color:#0f172a;">${totalCount}</div>
+          <div style="font-size:18px; font-weight:bold; color:#0f172a;">${totalCount.toLocaleString()}</div>
           <div style="font-size:9px; color:#475569; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
         </div>
         <div style="background:#fef2f2; border:1px solid #ef4444; padding:8px; border-radius:6px; text-align:center;">
-          <div style="font-size:18px; font-weight:bold; color:#dc2626;">${criticalLogs.length}</div>
+          <div style="font-size:18px; font-weight:bold; color:#dc2626;">${criticalLogsCount.toLocaleString()}</div>
           <div style="font-size:9px; color:#dc2626; text-transform:uppercase; font-weight:bold;">Errores 520 / Críticos</div>
         </div>
         <div style="background:#fffbeb; border:1px solid #f59e0b; padding:8px; border-radius:6px; text-align:center;">
-          <div style="font-size:18px; font-weight:bold; color:#d97706;">${warningLogs.length}</div>
+          <div style="font-size:18px; font-weight:bold; color:#d97706;">${warningLogsCount.toLocaleString()}</div>
           <div style="font-size:9px; color:#d97706; text-transform:uppercase; font-weight:bold;">Alertas Auditoría</div>
         </div>
       </div>
@@ -734,7 +802,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div style="border:1px solid #cbd5e1; border-radius:6px; padding:10px; margin-bottom:12px; background:#f8fafc;">
         <h4 style="margin:0 0 6px 0; font-size:12px; color:#0a3d6d;">🎯 Hallazgos Forenses y Evaluación de Canales Bancarios:</h4>
         <p style="font-size:10px; color:#334155; margin:0 0 6px 0; line-height:1.4;">
-          ${criticalLogs.length > 0 ? `⚠️ Se detectaron ${criticalLogs.length} eventos críticos que requieren atención inmediata en la infraestructura de autenticación.` : '✅ La plataforma operó con estabilidad aceptable durante el periodo de análisis.'}
+          ${criticalLogsCount > 0 ? `⚠️ Se detectaron ${criticalLogsCount.toLocaleString()} eventos críticos que requieren atención inmediata en la infraestructura de autenticación y aprovisionamiento.` : '✅ La plataforma operó con estabilidad aceptable durante el periodo de análisis.'}
         </p>
       </div>
 
@@ -749,7 +817,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       <div style="margin-top:14px; padding:8px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:9px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
         <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD SHA-256:</strong> SHA256-ONEPAGE-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
-        <span>Aprobado por IT SERVICIOS v62.0</span>
+        <span>Aprobado por IT SERVICIOS v200.0</span>
       </div>
     `;
 
@@ -759,84 +827,142 @@ document.addEventListener('DOMContentLoaded', () => {
       margin:       [4, 4, 4, 4],
       filename:     `Lamina_Ejecutiva_Entrust_${clientSanitized}_${dateStamp}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, logging: false },
+      html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: 790 },
       jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
     };
 
-    if (window.html2pdf) {
-      window.html2pdf().set(opt).from(pageWrapper).save().then(() => {
+    try {
+      if (window.html2pdf) {
+        await window.html2pdf().set(opt).from(pageWrapper).save();
+      } else {
+        openPrintWindow(pageWrapper.innerHTML, `Lámina Ejecutiva Entrust - ${activeClient ? activeClient.name : ''}`);
+      }
+    } catch (err) {
+      console.warn('html2pdf fallback invoked:', err);
+      openPrintWindow(pageWrapper.innerHTML, `Lámina Ejecutiva Entrust - ${activeClient ? activeClient.name : ''}`);
+    } finally {
+      if (pageWrapper.parentNode) {
         document.body.removeChild(pageWrapper);
-      });
-    } else {
-      window.print();
-      document.body.removeChild(pageWrapper);
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
     }
   }
 
-  function downloadExecutiveReportPdf() {
-    const element = document.getElementById('exec-report-container');
-    if (!element) return;
-
-    // Convertir gráficos de dona y tendencia a imágenes PNG para el PDF
-    const trendCanvas = document.getElementById('chart-trend');
-    const sevCanvas = document.getElementById('chart-severity');
-    let chartsContainer = document.getElementById('report-embedded-charts');
-
-    if (!chartsContainer) {
-      chartsContainer = document.createElement('div');
-      chartsContainer.id = 'report-embedded-charts';
-      chartsContainer.style.display = 'flex';
-      chartsContainer.style.gap = '20px';
-      chartsContainer.style.justifyContent = 'center';
-      chartsContainer.style.margin = '20px 0';
-      element.appendChild(chartsContainer);
+  async function downloadExecutiveReportPdf() {
+    const btn = document.getElementById('btn-download-pdf-exec-report');
+    const origHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Generando PDF...';
     }
 
-    chartsContainer.innerHTML = '';
+    const container = document.getElementById('exec-report-container');
+    if (!container) {
+      if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
+      alert('⚠️ No se encontró el informe generado.');
+      return;
+    }
+
+    const activeClient = getActiveClientProfile();
+    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+    const reportTitle = `Informe_Entrust_${clientSanitized}_${dateStamp}`;
+
+    // Construir un clon limpio y desacoplado fuera de la pantalla
+    const clone = document.createElement('div');
+    clone.style.width = '820px';
+    clone.style.padding = '25px';
+    clone.style.background = '#ffffff';
+    clone.style.color = '#0f172a';
+    clone.style.fontFamily = "'Segoe UI', Arial, sans-serif";
+    clone.style.boxSizing = 'border-box';
+    clone.style.position = 'fixed';
+    clone.style.left = '-9999px';
+    clone.style.top = '0';
+    clone.style.zIndex = '-9999';
+    clone.innerHTML = container.innerHTML;
+
+    // Convertir gráficos de dona y tendencia a imágenes PNG estables
+    const trendCanvas = document.getElementById('chart-trend');
+    const sevCanvas = document.getElementById('chart-severity');
+    const embeddedCharts = clone.querySelector('#report-embedded-charts') || document.createElement('div');
+    embeddedCharts.id = 'report-embedded-charts';
+    embeddedCharts.style.display = 'flex';
+    embeddedCharts.style.gap = '15px';
+    embeddedCharts.style.justifyContent = 'center';
+    embeddedCharts.style.margin = '15px 0';
+    embeddedCharts.innerHTML = '';
+
     if (trendCanvas) {
       try {
         const imgTrend = document.createElement('img');
         imgTrend.src = trendCanvas.toDataURL('image/png');
-        imgTrend.style.maxWidth = '45%';
+        imgTrend.style.maxWidth = '48%';
         imgTrend.style.border = '1px solid #cbd5e1';
         imgTrend.style.borderRadius = '6px';
-        chartsContainer.appendChild(imgTrend);
+        embeddedCharts.appendChild(imgTrend);
       } catch(e) {}
     }
     if (sevCanvas) {
       try {
         const imgSev = document.createElement('img');
         imgSev.src = sevCanvas.toDataURL('image/png');
-        imgSev.style.maxWidth = '45%';
+        imgSev.style.maxWidth = '48%';
         imgSev.style.border = '1px solid #cbd5e1';
         imgSev.style.borderRadius = '6px';
-        chartsContainer.appendChild(imgSev);
+        embeddedCharts.appendChild(imgSev);
       } catch(e) {}
     }
 
-    const activeClient = getActiveClientProfile();
-    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
-    const dateStamp = new Date().toISOString().slice(0, 10);
+    if (embeddedCharts.children.length > 0 && !clone.contains(embeddedCharts)) {
+      const firstSection = clone.querySelector('div');
+      if (firstSection && firstSection.nextSibling) {
+        clone.insertBefore(embeddedCharts, firstSection.nextSibling);
+      } else {
+        clone.appendChild(embeddedCharts);
+      }
+    }
+
+    document.body.appendChild(clone);
 
     const opt = {
       margin:       [8, 8, 8, 8],
-      filename:     `Informe_Entrust_${clientSanitized}_${dateStamp}.pdf`,
+      filename:     `${reportTitle}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: 820 },
       jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' },
-      pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', 'h3', 'div[style*="border"]'] }
+      pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', 'h3', 'h4', 'div[style*="border"]'] }
     };
 
-    if (window.html2pdf) {
-      window.html2pdf().set(opt).from(element).save();
-    } else {
-      window.print();
+    try {
+      if (window.html2pdf) {
+        await window.html2pdf().set(opt).from(clone).save();
+      } else {
+        openPrintWindow(clone.innerHTML, `Informe Oficial Entrust - ${activeClient ? activeClient.name : 'Entrust'}`);
+      }
+    } catch (err) {
+      console.warn('Fallo generación html2pdf, abriendo ventana de impresión nativa:', err);
+      openPrintWindow(clone.innerHTML, `Informe Oficial Entrust - ${activeClient ? activeClient.name : 'Entrust'}`);
+    } finally {
+      if (clone.parentNode) {
+        document.body.removeChild(clone);
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
     }
   }
 
   function downloadExecutiveReportHtml() {
     const container = document.getElementById('exec-report-container');
-    if (!container) return;
+    if (!container) {
+      alert('⚠️ No hay informe generado para exportar.');
+      return;
+    }
 
     const activeClient = getActiveClientProfile();
     const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
@@ -846,18 +972,25 @@ document.addEventListener('DOMContentLoaded', () => {
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Informe Oficial Entrust - ${escapeHtml(activeClient.name)}</title>
+  <title>Informe Oficial Entrust - ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}</title>
   <style>
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; color: #0f172a; padding: 30px; margin: 0; }
-    #exec-report-document { max-width: 1000px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    #exec-report-document { max-width: 960px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-    th, td { border: 1px solid #cbd5e1; padding: 8px; font-size: 11px; }
-    th { background: #0a3d6d; color: #ffffff; }
+    th, td { border: 1px solid #cbd5e1; padding: 8px; font-size: 11px; text-align: left; }
+    th { background: #0a3d6d; color: #ffffff; font-weight: bold; }
     tr:nth-child(even) { background: #f8fafc; }
+    @media print {
+      body { padding: 0; background: #fff; }
+      #exec-report-document { box-shadow: none; padding: 0; max-width: 100%; }
+      @page { margin: 10mm; }
+    }
   </style>
 </head>
 <body>
-  ${container.innerHTML}
+  <div id="exec-report-document">
+    ${container.innerHTML}
+  </div>
 </body>
 </html>`;
 
@@ -865,36 +998,57 @@ document.addEventListener('DOMContentLoaded', () => {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `Informe_Entrust_${clientSanitized}_${dateStamp}.html`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
   }
 
   function downloadExecutiveReportCsv() {
-    if (!state.logs || state.logs.length === 0) {
-      alert('No hay registros cargados para exportar a CSV.');
-      return;
-    }
-
+    const consolidated = getConsolidatedMetrics();
     const activeClient = getActiveClientProfile();
     const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
     const dateStamp = new Date().toISOString().slice(0, 10);
 
-    let csvContent = 'ID Linea,Timestamp,Severidad,Tipo,Servicio/API,Mensaje Log,Diagnostico,Causa Raiz,Remediacion\n';
+    const logsToExport = (state.logs && state.logs.length > 0) ? state.logs : [];
+    
+    if (logsToExport.length === 0 && (!state.globalStreamMetrics || !state.globalStreamMetrics.topCodes)) {
+      alert('⚠️ No hay registros cargados para exportar a CSV.');
+      return;
+    }
 
-    state.logs.forEach(l => {
-      const diag = l.diagnostic || window.knowledgeBaseEngine.diagnoseLog(l.message);
-      const cleanMsg = (l.message || '').replace(/"/g, '""');
-      const cleanDiag = (diag.title || '').replace(/"/g, '""');
-      const cleanCause = (diag.rootCause || '').replace(/"/g, '""');
-      const cleanRemediation = (diag.remediation || '').replace(/"/g, '""');
+    let csvContent = '\uFEFFID Linea,Archivo,Timestamp,Severidad,Tipo,Servicio/API,Codigo Entrust,Mensaje Log,Diagnostico,Causa Raiz,Remediacion\n';
 
-      csvContent += `"${l.lineNum}","${l.timestamp}","${l.level}","${l.type}","${l.service}","${cleanMsg}","${cleanDiag}","${cleanCause}","${cleanRemediation}"\n`;
-    });
+    if (logsToExport.length > 0) {
+      logsToExport.forEach(l => {
+        const diag = l.diagnostic || (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message) : {});
+        const cleanFile = (l.fileName || l.file || '').replace(/"/g, '""');
+        const cleanMsg = (l.message || l.raw || '').replace(/"/g, '""');
+        const cleanDiag = (diag.title || '').replace(/"/g, '""');
+        const cleanCause = (diag.rootCause || '').replace(/"/g, '""');
+        const cleanRemediation = (diag.remediation || '').replace(/"/g, '""');
+        const code = (l.entrustCode || '').replace(/"/g, '""');
 
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        csvContent += `"${l.lineNum || ''}","${cleanFile}","${l.timestamp || ''}","${l.level || ''}","${l.type || ''}","${l.service || ''}","${code}","${cleanMsg}","${cleanDiag}","${cleanCause}","${cleanRemediation}"\n`;
+      });
+    } else if (state.globalStreamMetrics && state.globalStreamMetrics.topCodes) {
+      state.globalStreamMetrics.topCodes.forEach((tc, idx) => {
+        const diag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(tc.code, tc.code) : {};
+        const cleanDiag = (diag.title || tc.code).replace(/"/g, '""');
+        const cleanCause = (diag.rootCause || '').replace(/"/g, '""');
+        const cleanRemediation = (diag.remediation || '').replace(/"/g, '""');
+        csvContent += `"${idx + 1}","Indexado SQLite","","ERROR","IDaaS/520","${tc.code}","${tc.code}","Total Ocurrencias: ${tc.count}","${cleanDiag}","${cleanCause}","${cleanRemediation}"\n`;
+      });
+    }
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `Resumen_Incidentes_Entrust_${clientSanitized}_${dateStamp}.csv`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
   }
 
   function generateTimelineHeatmapHtml(targetLogs) {
@@ -1527,11 +1681,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function downloadExecutiveReportMarkdown() {
     const mdContent = generateMarkdownReportString();
-    const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });
+    const activeClient = getActiveClientProfile();
+    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+    const blob = new Blob(['\uFEFF' + mdContent], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `informe_preliminar_entrust_${new Date().toISOString().substring(0, 10)}.md`;
+    a.download = `Informe_Entrust_${clientSanitized}_${dateStamp}.md`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
