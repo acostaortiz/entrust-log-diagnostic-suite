@@ -757,19 +757,21 @@ document.addEventListener('DOMContentLoaded', () => {
       : 100;
 
     const pageWrapper = document.createElement('div');
-    pageWrapper.style.width = '790px';
-    pageWrapper.style.padding = '20px';
+    pageWrapper.id = 'pdf-onepage-render-container';
+    pageWrapper.style.position = 'absolute';
+    pageWrapper.style.top = '0';
+    pageWrapper.style.left = '0';
+    pageWrapper.style.width = '800px';
+    pageWrapper.style.padding = '24px';
     pageWrapper.style.background = '#ffffff';
     pageWrapper.style.color = '#0f172a';
     pageWrapper.style.fontFamily = "'Segoe UI', Arial, sans-serif";
     pageWrapper.style.boxSizing = 'border-box';
-    pageWrapper.style.position = 'fixed';
-    pageWrapper.style.left = '-9999px';
-    pageWrapper.style.top = '0';
-    pageWrapper.style.zIndex = '-9999';
+    pageWrapper.style.zIndex = '999999';
+    pageWrapper.style.boxShadow = '0 0 20px rgba(0,0,0,0.2)';
 
     pageWrapper.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #0a3d6d; padding-bottom:10px; margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #0a3d6d; padding-bottom:10px; margin-bottom:14px;">
         <div>
           <h1 style="color:#0a3d6d; margin:0; font-size:18px; font-weight:bold;">IT SERVICIOS DE VENEZUELA</h1>
           <h3 style="color:#e11d48; margin:2px 0 0 0; font-size:12px; text-transform:uppercase;">RESUMEN EJECUTIVO DE INCIDENTES ENTRUST — LÁMINA 1 PÁGINA</h3>
@@ -781,53 +783,54 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:14px;">
-        <div style="background:#f0f9ff; border:1px solid #0284c7; padding:8px; border-radius:6px; text-align:center;">
-          <div style="font-size:18px; font-weight:bold; color:#0284c7;">${calculatedHealth}%</div>
+        <div style="background:#f0f9ff; border:1px solid #0284c7; padding:10px; border-radius:6px; text-align:center;">
+          <div style="font-size:20px; font-weight:bold; color:#0284c7;">${calculatedHealth}%</div>
           <div style="font-size:9px; color:#475569; text-transform:uppercase; font-weight:bold;">Salud Autenticación</div>
         </div>
-        <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:8px; border-radius:6px; text-align:center;">
-          <div style="font-size:18px; font-weight:bold; color:#0f172a;">${totalCount.toLocaleString()}</div>
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:10px; border-radius:6px; text-align:center;">
+          <div style="font-size:20px; font-weight:bold; color:#0f172a;">${totalCount.toLocaleString()}</div>
           <div style="font-size:9px; color:#475569; text-transform:uppercase; font-weight:bold;">Total Eventos</div>
         </div>
-        <div style="background:#fef2f2; border:1px solid #ef4444; padding:8px; border-radius:6px; text-align:center;">
-          <div style="font-size:18px; font-weight:bold; color:#dc2626;">${criticalLogsCount.toLocaleString()}</div>
+        <div style="background:#fef2f2; border:1px solid #ef4444; padding:10px; border-radius:6px; text-align:center;">
+          <div style="font-size:20px; font-weight:bold; color:#dc2626;">${criticalLogsCount.toLocaleString()}</div>
           <div style="font-size:9px; color:#dc2626; text-transform:uppercase; font-weight:bold;">Errores 520 / Críticos</div>
         </div>
-        <div style="background:#fffbeb; border:1px solid #f59e0b; padding:8px; border-radius:6px; text-align:center;">
-          <div style="font-size:18px; font-weight:bold; color:#d97706;">${warningLogsCount.toLocaleString()}</div>
+        <div style="background:#fffbeb; border:1px solid #f59e0b; padding:10px; border-radius:6px; text-align:center;">
+          <div style="font-size:20px; font-weight:bold; color:#d97706;">${warningLogsCount.toLocaleString()}</div>
           <div style="font-size:9px; color:#d97706; text-transform:uppercase; font-weight:bold;">Alertas Auditoría</div>
         </div>
       </div>
 
-      <div style="border:1px solid #cbd5e1; border-radius:6px; padding:10px; margin-bottom:12px; background:#f8fafc;">
+      <div style="border:1px solid #cbd5e1; border-radius:6px; padding:12px; margin-bottom:14px; background:#f8fafc;">
         <h4 style="margin:0 0 6px 0; font-size:12px; color:#0a3d6d;">🎯 Hallazgos Forenses y Evaluación de Canales Bancarios:</h4>
         <p style="font-size:10px; color:#334155; margin:0 0 6px 0; line-height:1.4;">
           ${criticalLogsCount > 0 ? `⚠️ Se detectaron ${criticalLogsCount.toLocaleString()} eventos críticos que requieren atención inmediata en la infraestructura de autenticación y aprovisionamiento.` : '✅ La plataforma operó con estabilidad aceptable durante el periodo de análisis.'}
         </p>
       </div>
 
-      <div style="margin-bottom:12px;">
+      <div style="margin-bottom:14px;">
         <h4 style="margin:0 0 6px 0; font-size:12px; color:#0a3d6d;">🛠️ Medidas de Remediación Prioritarias (Comandos CLI):</h4>
-        <div style="background:#0f172a; color:#a5f3fc; padding:8px; border-radius:6px; font-family:monospace; font-size:9px; line-height:1.4;">
+        <div style="background:#0f172a; color:#a5f3fc; padding:10px; border-radius:6px; font-family:monospace; font-size:9px; line-height:1.4;">
           REM --- Verificación General de Servicios Entrust & WSO2 ---<br>
           sc query "Entrust IdentityGuard Administration Service"<br>
           keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\identityguard.keystore" -storepass changeit
         </div>
       </div>
 
-      <div style="margin-top:14px; padding:8px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:9px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
+      <div style="margin-top:16px; padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:9px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
         <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD SHA-256:</strong> SHA256-ONEPAGE-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
         <span>Aprobado por IT SERVICIOS v200.0</span>
       </div>
     `;
 
     document.body.appendChild(pageWrapper);
+    window.scrollTo(0, 0);
 
     const opt = {
       margin:       [4, 4, 4, 4],
       filename:     `Lamina_Ejecutiva_Entrust_${clientSanitized}_${dateStamp}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: 790 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: 800 },
       jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
     };
 
@@ -871,18 +874,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateStamp = new Date().toISOString().slice(0, 10);
     const reportTitle = `Informe_Entrust_${clientSanitized}_${dateStamp}`;
 
-    // Construir un clon limpio y desacoplado fuera de la pantalla
+    // Construir un clon limpio en coordenadas visibles en document.body
     const clone = document.createElement('div');
+    clone.id = 'pdf-fullreport-render-container';
+    clone.style.position = 'absolute';
+    clone.style.top = '0';
+    clone.style.left = '0';
     clone.style.width = '820px';
     clone.style.padding = '25px';
     clone.style.background = '#ffffff';
     clone.style.color = '#0f172a';
     clone.style.fontFamily = "'Segoe UI', Arial, sans-serif";
     clone.style.boxSizing = 'border-box';
-    clone.style.position = 'fixed';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.zIndex = '-9999';
+    clone.style.zIndex = '999999';
     clone.innerHTML = container.innerHTML;
 
     // Convertir gráficos de dona y tendencia a imágenes PNG estables
@@ -927,6 +931,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.body.appendChild(clone);
+    window.scrollTo(0, 0);
 
     const opt = {
       margin:       [8, 8, 8, 8],
