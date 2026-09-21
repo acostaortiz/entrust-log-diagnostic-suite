@@ -382,19 +382,25 @@ document.addEventListener('DOMContentLoaded', () => {
       (state.clientProfiles || []).forEach(c => {
         const opt = document.createElement('option');
         opt.value = c.id;
-        opt.textContent = `🏢 ${c.name} (${c.version})`;
+        opt.textContent = `${c.name} (${c.version})`;
         headerSelect.appendChild(opt);
       });
-      if (state.activeClientId) headerSelect.value = state.activeClientId;
+      if (state.activeClientId) {
+        headerSelect.value = state.activeClientId;
+      }
+      if (!headerSelect.value && headerSelect.options.length > 0) {
+        headerSelect.selectedIndex = 0;
+        state.activeClientId = headerSelect.value;
+      }
     }
 
     if (toolbarSelect) {
       const currentVal = toolbarSelect.value || 'ALL';
-      toolbarSelect.innerHTML = '<option value="ALL">🏢 Todos los Clientes</option>';
+      toolbarSelect.innerHTML = '<option value="ALL">Todos los Clientes</option>';
       (state.clientProfiles || []).forEach(c => {
         const opt = document.createElement('option');
         opt.value = c.name;
-        opt.textContent = `🏢 ${c.name}`;
+        opt.textContent = c.name;
         toolbarSelect.appendChild(opt);
       });
       toolbarSelect.value = currentVal;
@@ -3332,7 +3338,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         await fetchSqlLogs(1);
         updateMetricsAndCharts();
         renderLoadedFilesDrawer();
-        showAnalysisStatus(false, `✅ Base de Datos Conectada: ${currentClient.name}`, `${statsData.totalLogs.toLocaleString()} eventos indexados en el Servidor.`);
+        renderUserAndIpAnalytics();
+        updateOverviewWidgets();
+        showAnalysisStatus(false, `Base de Datos Conectada: ${currentClient.name}`, `${statsData.totalLogs.toLocaleString()} eventos indexados en el Servidor.`);
         return true;
       } else {
         if (state.isServerApi) {

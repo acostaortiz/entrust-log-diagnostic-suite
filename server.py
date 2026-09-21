@@ -722,6 +722,20 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         try:
             conn = sqlite3.connect(db)
             cur = conn.cursor()
+            
+            # Fast Check: cached stats in server_stats table (< 0.5 ms)
+            cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='server_stats'")
+            if cur.fetchone():
+                cur.execute("SELECT value FROM server_stats WHERE key='stats_json'")
+                row = cur.fetchone()
+                if row and row[0]:
+                    stats_cached = json.loads(row[0])
+                    stats_cached['activeDb'] = os.path.basename(db)
+                    stats_cached['client'] = client_param or os.path.basename(db).replace('_audit.db', '')
+                    conn.close()
+                    self.send_json(stats_cached)
+                    return
+
             cur.execute('SELECT COUNT(1) FROM logs')
             total = cur.fetchone()[0]
 

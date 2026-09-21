@@ -17,7 +17,7 @@
   <script src="js/html2pdf.bundle.min.js"></script>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/styles.css?v=350.0">
+  <link rel="stylesheet" href="css/styles.css?v=355.0">
 </head>
 <body>
 
@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust OnPremise & IDaaS Cloud</span>
-            <span style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3);">v350.0</span>
+            <span style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3);">v355.0</span>
           </div>
         </div>
       </div>
@@ -363,19 +363,15 @@
             <div class="card-subtitle">Carga masiva, soporte de archivos rotados (.log, .1, .2) y análisis acumulativo por Nodos</div>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-            <!-- Selector de Modo Acumulativo -->
-            <label style="display:flex; align-items:center; gap:6px; background:var(--bg-primary); border:1px solid var(--border-color); padding:6px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; color:var(--text-main); font-weight:600;" title="Si está activo, los nuevos archivos cargados se sumarán al análisis actual sin borrar los anteriores">
-              <input type="checkbox" id="chk-accumulate-mode" checked style="cursor:pointer; accent-color:#0284c7;">
-              <span>➕ Modo Acumulativo (Sumar a sesión)</span>
+            <!-- Selector de Modo Acumulativo (Desactivado por defecto para auto-limpieza) -->
+            <label style="display:flex; align-items:center; gap:6px; background:var(--bg-primary); border:1px solid var(--border-color); padding:6px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; color:var(--text-main); font-weight:600;" title="Si se activa, los nuevos archivos cargados se sumarán al análisis actual">
+              <input type="checkbox" id="chk-accumulate-mode" style="cursor:pointer; accent-color:#0284c7;">
+              <span>Modo Acumulativo (Sumar a sesión)</span>
             </label>
 
-            <button class="btn btn-danger" id="btn-reset-session" onclick="window.resetAppSession && window.resetAppSession()" title="Eliminar todos los logs y limpiar la muestra actual" style="font-size:0.8rem; padding:6px 12px;">🧹 Limpiar Todo</button>
-            <button class="btn" id="btn-export-report" style="font-size:0.8rem; padding:6px 12px;">📥 Exportar JSON</button>
-            <button class="btn" id="btn-open-server-ingest" style="background:linear-gradient(135deg, #10b981, #059669); border:1px solid #34d399; color:#fff; font-weight:700; font-size:0.82rem; padding:8px 16px; border-radius:6px; box-shadow:0 0 12px rgba(16,185,129,0.3); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Indexar archivos gigantes (>3GB/10GB) directamente en el Servidor Ubuntu sin consumir memoria del navegador">
-              ⚡ Ingesta Servidor (> 3 GB)
-            </button>
-            <label class="btn btn-primary" style="margin:0; font-size:0.82rem; padding:8px 18px; background:linear-gradient(135deg, #0284c7, #0369a1); border:1px solid #38bdf8; cursor:pointer; font-weight:700; display:inline-flex; align-items:center; gap:8px; box-shadow:0 0 12px rgba(2,132,199,0.35);">
-              📂 Cargar Archivos (.log, .txt, .json, .csv)
+            <button class="btn btn-danger" id="btn-reset-session" onclick="window.resetAppSession && window.resetAppSession()" title="Eliminar todos los logs y reiniciar la sesión" style="font-size:0.8rem; padding:6px 12px; font-weight:700;">Limpiar Todo</button>
+            <label class="btn btn-primary" style="margin:0; font-size:0.84rem; padding:8px 20px; background:linear-gradient(135deg, #0284c7, #0369a1); border:1px solid #38bdf8; cursor:pointer; font-weight:700; display:inline-flex; align-items:center; gap:8px; box-shadow:0 0 12px rgba(2,132,199,0.35);">
+              Cargar Archivos (.log, .txt, .json, .csv)
               <input type="file" id="file-input" accept=".log,.txt,.json,.csv" multiple style="display:none;">
             </label>
           </div>
@@ -1440,22 +1436,22 @@ db.connection.pool.max=20
 
   <!-- Scripts JavaScript -->
   <script src="js/pptxgen.bundle.js"></script>
-  <script src="js/topology-engine.js?v=350.0"></script>
-  <script src="js/kb-database.js?v=350.0"></script>
-  <script src="js/manuals-engine.js?v=350.0"></script>
-  <script src="js/bancomercantil_data.js?v=350.0"></script>
-  <script src="js/log-parser.js?v=350.0"></script>
-  <script src="js/storage-engine.js?v=350.0"></script>
-    <script src="js/threat-radar.js?v=350.0"></script>
-  <script src="js/remediation-engine.js?v=350.0"></script>
-  <script src="js/copilot-engine.js?v=350.0"></script>
-  <script src="js/compliance-auditor.js?v=350.0"></script>
-  <script src="js/config-diff-engine.js?v=350.0"></script>
-  <script src="js/siem-exporter.js?v=350.0"></script>
+  <script src="js/topology-engine.js?v=355.0"></script>
+  <script src="js/kb-database.js?v=355.0"></script>
+  <script src="js/manuals-engine.js?v=355.0"></script>
+  <script src="js/bancomercantil_data.js?v=355.0"></script>
+  <script src="js/log-parser.js?v=355.0"></script>
+  <script src="js/storage-engine.js?v=355.0"></script>
+    <script src="js/threat-radar.js?v=355.0"></script>
+  <script src="js/remediation-engine.js?v=355.0"></script>
+  <script src="js/copilot-engine.js?v=355.0"></script>
+  <script src="js/compliance-auditor.js?v=355.0"></script>
+  <script src="js/config-diff-engine.js?v=355.0"></script>
+  <script src="js/siem-exporter.js?v=355.0"></script>
 
-  <script src="js/cert-auditor.js?v=350.0"></script>
-  <script src="js/syslog-collector.js?v=350.0"></script>
-  <script src="js/app.js?v=350.0"></script>
+  <script src="js/cert-auditor.js?v=355.0"></script>
+  <script src="js/syslog-collector.js?v=355.0"></script>
+  <script src="js/app.js?v=355.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->
