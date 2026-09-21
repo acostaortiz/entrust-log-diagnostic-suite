@@ -578,7 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function initHeaderDropdowns() {
     const dropdowns = document.querySelectorAll('.header-dropdown');
     dropdowns.forEach(dd => {
-      const btn = dd.querySelector('.header-dropdown-btn');
+      const btn = dd.querySelector('.header-dropdown-btn, .dropdown-toggle-btn');
       if (btn) {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -586,6 +586,14 @@ document.addEventListener('DOMContentLoaded', () => {
           dd.classList.toggle('open');
         });
       }
+
+      // Cerrar dropdown al seleccionar un ítem
+      const items = dd.querySelectorAll('.header-dropdown-item');
+      items.forEach(item => {
+        item.addEventListener('click', () => {
+          dd.classList.remove('open');
+        });
+      });
     });
 
     document.addEventListener('click', () => {
@@ -2136,6 +2144,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
   let currentInspectorCategory = '520';
   let currentInspectorData = [];
 
+  window.openKpiInspectorModal = function(cat) { openKpiInspectorModal(cat); };
   function openKpiInspectorModal(category = '520') {
     currentInspectorCategory = category;
     const modal = document.getElementById('modal-kpi-inspector');
