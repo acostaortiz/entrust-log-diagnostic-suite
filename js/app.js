@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicialización Segura por Módulos
   try { initTheme(); } catch (e) { console.error('Error al inicializar Tema:', e); }
   try { initClientProfilesModule(); } catch (e) { console.error('Error al inicializar Perfiles de Cliente:', e); }
-  try { initNavigation(); } catch (e) { console.error('Error al inicializar Navegación:', e); }
+  try { initNavigation(); try { initHeaderDropdowns(); } catch(e) {} } catch (e) { console.error('Error al inicializar Navegación:', e); }
   try { initCharts(); } catch (e) { console.error('Error al inicializar Gráficos:', e); }
   try { initPresets(); } catch (e) { console.error('Error al inicializar Escenarios:', e); }
   try { initManualsModule(); } catch (e) { console.error('Error al inicializar Manuales:', e); }
@@ -520,6 +520,26 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================================
      1. NAVEGACIÓN POR PESTAÑAS
      ========================================================================== */
+  
+  // Manejo Robusto de Dropdowns del Header
+  function initHeaderDropdowns() {
+    const dropdowns = document.querySelectorAll('.header-dropdown');
+    dropdowns.forEach(dd => {
+      const btn = dd.querySelector('.header-dropdown-btn');
+      if (btn) {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dropdowns.forEach(other => { if (other !== dd) other.classList.remove('open'); });
+          dd.classList.toggle('open');
+        });
+      }
+    });
+
+    document.addEventListener('click', () => {
+      dropdowns.forEach(dd => dd.classList.remove('open'));
+    });
+  }
+
   function initNavigation() {
     dom.navBtns.forEach(btn => {
       btn.addEventListener('click', () => {

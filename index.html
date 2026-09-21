@@ -17,11 +17,12 @@
   <script src="js/html2pdf.bundle.min.js"></script>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/styles.css?v=260.0">
+  <link rel="stylesheet" href="css/styles.css?v=270.0">
 </head>
 <body>
 
   <!-- Header & App Navbar Corporativo IT SERVICIOS -->
+    <!-- Header & App Navbar Corporativo IT SERVICIOS (Rediseño Ejecutivo Espacioso v270.0) -->
   <header class="app-header">
     <!-- FILA SUPERIOR: Marca, Cliente Activo, Usuario & Tema -->
     <div class="header-top-row">
@@ -34,7 +35,10 @@
           <span class="it-logo-text-servicios">SERVICIOS</span>
         </div>
         <div>
-          <div class="brand-subtitle">Suite de Diagnóstico — Entrust OnPremise & IDaaS Cloud</div>
+          <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
+            <span>Suite de Diagnóstico — Entrust OnPremise & IDaaS Cloud</span>
+            <span style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3);">v270.0</span>
+          </div>
         </div>
       </div>
 
@@ -55,46 +59,93 @@
       </div>
     </div>
 
-    <!-- FILA INFERIOR: Pestañas de Navegación & Botones de Acción -->
+    <!-- FILA INFERIOR: Pestañas de Navegación & Botones de Acción Agrupados -->
     <div class="header-bottom-row">
-      <nav class="nav-tabs">
-        <button class="nav-btn active" data-tab="overview">📊 Visión General</button>
-        <button class="nav-btn" data-tab="analyzer">🔍 Analizador & Diagnóstico</button>
-        <button class="nav-btn" data-tab="traces">⚡ Trazas Distribuidas</button>
-        <button class="nav-btn" data-tab="nodes">🏢 Comparativa Multi-Nodo</button>
-        <button class="nav-btn" data-tab="syslog" style="color:#38bdf8; font-weight:bold;">📡 Monitoreo Syslog (Tiempo Real)</button>
-        <button class="nav-btn" data-tab="certificates" style="color:#f59e0b; font-weight:bold;">🔐 Auditoría Certificados</button>
-        <button class="nav-btn" data-tab="topology" style="color:#0284c7; font-weight:bold;">🌐 Topología Multi-Capa</button>
-        <button class="nav-btn" data-tab="compare" style="color:#10b981; font-weight:bold;">📈 Comparativa Histórica</button>
-        <button class="nav-btn" data-tab="radar" style="color:#f43f5e; font-weight:bold;">🎯 Threat Radar (Fuerza Bruta)</button>
-        <button class="nav-btn" data-tab="kb">🧠 Base de Conocimientos</button>
-        <button class="nav-btn" data-tab="manuals">📚 Manuales Administrativos</button>
+      <nav class="nav-tabs" id="main-nav-tabs">
+        <button class="nav-btn active" data-tab="overview"><span>📊</span> Visión General</button>
+        <button class="nav-btn" data-tab="analyzer"><span>🔍</span> Analizador & Diagnóstico</button>
+        <button class="nav-btn" data-tab="radar" style="color:#f43f5e; font-weight:700;"><span>🎯</span> Threat Radar</button>
+        <button class="nav-btn" data-tab="topology" style="color:#0284c7; font-weight:700;"><span>🌐</span> Topología</button>
+        <button class="nav-btn" data-tab="nodes"><span>🏢</span> Multi-Nodo</button>
+        <button class="nav-btn" data-tab="traces"><span>⚡</span> Trazas</button>
+        <button class="nav-btn" data-tab="syslog" style="color:#38bdf8; font-weight:700;"><span>📡</span> Syslog</button>
+        <button class="nav-btn" data-tab="certificates" style="color:#f59e0b; font-weight:700;"><span>🔐</span> Certificados</button>
+        <button class="nav-btn" data-tab="compare" style="color:#10b981; font-weight:700;"><span>📈</span> Comparativa</button>
+        <button class="nav-btn" data-tab="kb"><span>🧠</span> Base KB</button>
+        <button class="nav-btn" data-tab="manuals"><span>📚</span> Manuales</button>
       </nav>
 
-      <div class="header-actions" style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-        <button class="btn" id="btn-open-ai-opinion" style="background:#0a3d6d; border:1px solid #0284c7; color:#38bdf8; font-weight:600; font-size:0.8rem; padding:6px 12px; border-radius:6px; display:flex; align-items:center; gap:6px;" title="Generar Dictamen Técnico Pericial con IA Forense">
-          🤖 Dictamen IA
-        </button>
-        <button class="btn" id="btn-export-pptx" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.8rem; padding:6px 10px; border-radius:6px;" title="Exportar Presentación Ejecutiva PowerPoint (.pptx)">
-          📊 PPTX Directiva
-        </button>
-        <button class="btn" id="btn-open-zoho-modal" style="background:var(--bg-primary); border:1px solid var(--border-color); color:#0284c7; font-weight:600; font-size:0.8rem; padding:6px 10px; border-radius:6px;" title="Crear Ticket de Soporte Oficial en Zoho Desk / Zoho Tickets">
-          🎫 Ticket Zoho Desk
-        </button>
-        <button class="btn" id="btn-open-saved-cases" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.8rem; padding:6px 10px; border-radius:6px;" title="Ver y Administrar Casos Históricos de Incidentes Guardados">
-          📂 Casos Guardados
-        </button>
-        <button class="btn btn-import-html" id="btn-open-import-catalog" onclick="document.getElementById('import-catalog-modal').classList.add('active');" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-muted); font-size:0.8rem; padding:6px 10px; border-radius:6px;" title="Importar catálogo oficial de errores HTML para cualquier versión">
-          📥 Importar HTML
-        </button>
-        <button class="btn" id="btn-export-excel" style="background:#065f46; border:1px solid #10b981; color:#34d399; font-weight:700; font-size:0.8rem; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:6px;" title="Exportar Informe Multitabla a Microsoft Excel (.XLSX)">
-          📗 Excel (.xlsx)
-        </button>
-        <button class="btn" id="btn-open-remediation-modal" style="background:linear-gradient(135deg, #4f46e5, #4338ca); border:1px solid #818cf8; color:#fff; font-weight:700; font-size:0.8rem; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:6px;" title="Generador de Scripts de Auto-Remediación (.BAT / .SH)">
-          ⚡ Auto-Remediación
-        </button>
-        <button class="btn btn-primary" id="btn-generate-exec-report" style="background:#0284c7; border:none; color:#fff; font-weight:700; font-size:0.82rem; padding:6px 14px; border-radius:6px; box-shadow:0 2px 6px rgba(2, 132, 199, 0.3);">
-          📄 Generar Informe
+      <div class="header-actions">
+        <!-- Dropdown 1: Exportar e Informes -->
+        <div class="header-dropdown" id="dropdown-export">
+          <button class="header-dropdown-btn" id="btn-toggle-dropdown-export" style="border-color:#10b981; color:#059669; background:rgba(16, 185, 129, 0.08);">
+            <span>📥</span> <span>Exportar</span> <span style="font-size:0.65rem; margin-left:2px;">▼</span>
+          </button>
+          <div class="header-dropdown-menu" id="menu-export">
+            <button class="header-dropdown-item" id="btn-export-excel" style="color:#059669;">
+              <span style="font-size:1.15rem;">📗</span> 
+              <div>
+                <div style="font-weight:700;">Libro Excel (.xlsx)</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">4 Hojas: KPIs, Fallos, Radar, Auditoría</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item" id="btn-export-pptx" style="color:#0284c7;">
+              <span style="font-size:1.15rem;">📊</span> 
+              <div>
+                <div style="font-weight:700;">Presentación PPTX</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Láminas ejecutivas para junta directiva</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item" id="btn-open-ai-opinion" style="color:#6366f1;">
+              <span style="font-size:1.15rem;">🤖</span> 
+              <div>
+                <div style="font-weight:700;">Dictamen Forense IA</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Peritaje técnico automatizado</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dropdown 2: Herramientas & Utilidades -->
+        <div class="header-dropdown" id="dropdown-tools">
+          <button class="header-dropdown-btn" id="btn-toggle-dropdown-tools" style="border-color:#6366f1; color:#4f46e5; background:rgba(99, 102, 241, 0.08);">
+            <span>🛠️</span> <span>Herramientas</span> <span style="font-size:0.65rem; margin-left:2px;">▼</span>
+          </button>
+          <div class="header-dropdown-menu" id="menu-tools">
+            <button class="header-dropdown-item" id="btn-open-remediation-modal" style="color:#4f46e5;">
+              <span style="font-size:1.15rem;">⚡</span>
+              <div>
+                <div style="font-weight:700;">Auto-Remediación (.BAT/.SH)</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Generador de scripts Windows / Linux</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item" id="btn-open-zoho-modal" style="color:#0284c7;">
+              <span style="font-size:1.15rem;">🎫</span>
+              <div>
+                <div style="font-weight:700;">Ticket Zoho Desk</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Crear ticket de soporte ITIL</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item" id="btn-open-saved-cases">
+              <span style="font-size:1.15rem;">📂</span>
+              <div>
+                <div style="font-weight:700;">Casos Guardados</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Historial de incidentes guardados</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item" id="btn-open-import-catalog" onclick="document.getElementById('import-catalog-modal').classList.add('active');">
+              <span style="font-size:1.15rem;">📥</span>
+              <div>
+                <div style="font-weight:700;">Importar Catálogo HTML</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Cargar errores desde archivos web</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón Destacado: Generar Informe -->
+        <button class="btn btn-primary" id="btn-generate-exec-report" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#fff; font-weight:800; font-size:0.84rem; padding:8px 16px; border-radius:8px; box-shadow:0 3px 10px rgba(2, 132, 199, 0.35); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Generar Informe Ejecutivo Integral (PDF / DOCX / HTML / CSV / Excel)">
+          <span>📄</span> Generar Informe
         </button>
       </div>
     </div>
@@ -1127,18 +1178,18 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
 
   <!-- Scripts JavaScript -->
   <script src="js/pptxgen.bundle.js"></script>
-  <script src="js/topology-engine.js?v=260.0"></script>
-  <script src="js/kb-database.js?v=260.0"></script>
-  <script src="js/manuals-engine.js?v=260.0"></script>
-  <script src="js/bancomercantil_data.js?v=260.0"></script>
-  <script src="js/log-parser.js?v=260.0"></script>
-  <script src="js/storage-engine.js?v=260.0"></script>
-    <script src="js/threat-radar.js?v=260.0"></script>
-  <script src="js/remediation-engine.js?v=260.0"></script>
-  <script src="js/sla-engine.js?v=260.0"></script>
-  <script src="js/cert-auditor.js?v=260.0"></script>
-  <script src="js/syslog-collector.js?v=260.0"></script>
-  <script src="js/app.js?v=260.0"></script>
+  <script src="js/topology-engine.js?v=270.0"></script>
+  <script src="js/kb-database.js?v=270.0"></script>
+  <script src="js/manuals-engine.js?v=270.0"></script>
+  <script src="js/bancomercantil_data.js?v=270.0"></script>
+  <script src="js/log-parser.js?v=270.0"></script>
+  <script src="js/storage-engine.js?v=270.0"></script>
+    <script src="js/threat-radar.js?v=270.0"></script>
+  <script src="js/remediation-engine.js?v=270.0"></script>
+  <script src="js/sla-engine.js?v=270.0"></script>
+  <script src="js/cert-auditor.js?v=270.0"></script>
+  <script src="js/syslog-collector.js?v=270.0"></script>
+  <script src="js/app.js?v=270.0"></script>
 
 </body>
 </html>
