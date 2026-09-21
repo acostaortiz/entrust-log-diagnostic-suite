@@ -549,8 +549,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function switchTab(targetTab) {
-    dom.navBtns.forEach(b => b.classList.remove('active'));
+    function switchTab(targetTab) {
+    // Actualizar botones de navegación
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     dom.tabPanes.forEach(p => p.classList.remove('active'));
 
     const btn = document.querySelector(`.nav-btn[data-tab="${targetTab}"]`);
@@ -558,6 +559,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const activePane = document.getElementById(`tab-${targetTab}`);
     if (activePane) activePane.classList.add('active');
+
+    // Manejo de estado para el dropdown 'Más Vistas'
+    const btnNavMore = document.getElementById('btn-nav-more');
+    const labelNavMore = document.getElementById('label-nav-more');
+    const dropdownNavMore = document.getElementById('dropdown-nav-more');
+
+    const subTabLabels = {
+      'kb': '🧠 Base KB',
+      'manuals': '📚 Manuales',
+      'nodes': '🏢 Multi-Nodo',
+      'traces': '⚡ Trazas',
+      'compare': '📈 Comparativa'
+    };
+
+    if (subTabLabels[targetTab]) {
+      if (btnNavMore) {
+        btnNavMore.classList.add('active');
+        if (labelNavMore) labelNavMore.textContent = subTabLabels[targetTab];
+      }
+    } else {
+      if (btnNavMore) {
+        btnNavMore.classList.remove('active');
+        if (labelNavMore) labelNavMore.textContent = 'Más Vistas';
+      }
+    }
+
+    if (dropdownNavMore) {
+      dropdownNavMore.classList.remove('open');
+    }
 
     if (targetTab === 'analyzer' && state.isServerApi && (!state.logs || state.logs.length === 0)) {
       fetchSqlLogs(1);
