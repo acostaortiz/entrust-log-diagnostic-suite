@@ -1028,6 +1028,171 @@ class LogParser {
 
     return parsed;
   }
+
+  async parseLargeFileWithWorker(file, clientId, onProgress) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let worker;
+        try {
+          worker = new Worker('js/log-parser-worker.js?v=450.0');
+        } catch (workerErr) {
+          console.warn('Web Worker no disponible, ejecutando en streaming directo:', workerErr);
+          const res = await this.parseFileStreaming(file, clientId, onProgress);
+          return resolve(res);
+        }
+
+        worker.onmessage = (e) => {
+          const data = e.data;
+          if (data.type === 'progress') {
+            if (onProgress) {
+              const currentMb = data.mbProcessed || ((data.current || 0) / (1024 * 1024)).toFixed(0);
+              const totalMb = data.totalMb || ((data.total || file.size) / (1024 * 1024)).toFixed(0);
+              const pct = data.pct || Math.round(((data.current || 0) / (data.total || file.size)) * 100);
+              onProgress(data.current || 0, data.total || file.size, `⚡ Indexando: ${currentMb} MB / ${totalMb} MB (${pct}%) — ${(data.lineCount || 0).toLocaleString()} eventos`);
+            }
+          } else if (data.type === 'complete' || data.type === 'done') {
+            worker.terminate();
+            resolve({
+              parsedLogs: data.parsedLogs || [],
+              totalLinesProcessed: data.totalLinesProcessed || (data.parsedLogs ? data.parsedLogs.length : 0),
+              totalErrors: data.totalErrors || 0,
+              totalWarnings: data.totalWarnings || 0,
+              globalMetrics: data.globalMetrics || null
+            });
+          } else if (data.type === 'error') {
+            worker.terminate();
+            console.error('Error en Web Worker, usando fallback directo:', data.error);
+            this.parseFileStreaming(file, clientId, onProgress).then(resolve).catch(reject);
+          }
+        };
+
+        worker.onerror = (err) => {
+          console.error('Error en Web Worker onerror, usando fallback directo:', err);
+          worker.terminate();
+          this.parseFileStreaming(file, clientId, onProgress).then(resolve).catch(reject);
+        };
+
+        worker.postMessage({
+          file: file,
+          mode: 'fileBlob',
+          clientId: clientId
+        });
+      } catch (err) {
+        console.error('Fallo iniciando parseLargeFileWithWorker, ejecutando fallback:', err);
+        this.parseFileStreaming(file, clientId, onProgress).then(resolve).catch(reject);
+      }
+    });
+  }
+
+  async parseFileStreaming(file, clientId, onProgress) {
+    const fileSize = file.size;
+    const chunkSize = 8 * 1024 * 1024; // 8 MB chunks
+    let offset = 0;
+    let leftover = '';
+    let lineCount = 0;
+    let totalErrors = 0;
+    let totalWarnings = 0;
+
+    const userCounter = {};
+    const ipCounter = {};
+    const codeCounter = {};
+    const timeBuckets = {};
+
+    const displayLogs = [];
+    const MAX_DISPLAY_LOGS = 15000;
+    let displayErrorCount = 0;
+
+    while (offset < fileSize) {
+      const slice = file.slice(offset, Math.min(offset + chunkSize, fileSize));
+      const chunkText = await slice.text();
+      offset += chunkSize;
+
+      const fullText = leftover + chunkText;
+      const lines = fullText.split(/\r?\n/);
+
+      if (offset < fileSize) {
+        leftover = lines.pop() || '';
+      } else {
+        leftover = '';
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        lineCount++;
+
+        let parsed = this.tryParseEntrustMigrationLog(line, lineCount);
+        if (!parsed) parsed = this.fastParseEntrustBracket(line, lineCount);
+        if (!parsed) parsed = this.tryParseEntrustIdentityGuard(line, lineCount);
+        if (!parsed) parsed = this.tryParseCsv(line, lineCount);
+        if (!parsed) parsed = this.tryParseJson(line, lineCount);
+        if (!parsed) parsed = this.tryParseSyslog(line, lineCount);
+        if (!parsed) parsed = this.fallbackParse(line, lineCount);
+
+        if (parsed) {
+          if (clientId) parsed.client = clientId;
+          const isError = parsed.level === 'ERROR' || parsed.level === 'CRITICAL';
+          const isWarn = parsed.level === 'WARN';
+          if (isError) totalErrors++;
+          if (isWarn) totalWarnings++;
+
+          const codeKey = parsed.entrustCode || parsed.code || parsed.service || 'UNKNOWN';
+          codeCounter[codeKey] = (codeCounter[codeKey] || 0) + 1;
+
+          if (parsed.user && parsed.user !== 'unknown' && parsed.user !== 'N/A') {
+            userCounter[parsed.user] = (userCounter[parsed.user] || 0) + 1;
+          }
+          if (parsed.clientIp && parsed.clientIp !== 'N/A') {
+            ipCounter[parsed.clientIp] = (ipCounter[parsed.clientIp] || 0) + 1;
+          }
+
+          if (isError && displayErrorCount < 5000) {
+            displayErrorCount++;
+            displayLogs.push(parsed);
+          } else if (!isError && displayLogs.length < MAX_DISPLAY_LOGS && (lineCount % 1000 === 0 || displayLogs.length < 1000)) {
+            displayLogs.push(parsed);
+          }
+        }
+      }
+
+      if (onProgress) {
+        const currentMb = (Math.min(offset, fileSize) / (1024 * 1024)).toFixed(0);
+        const totalMb = (fileSize / (1024 * 1024)).toFixed(0);
+        const pct = Math.min(99, Math.round((Math.min(offset, fileSize) / fileSize) * 100));
+        onProgress(Math.min(offset, fileSize), fileSize, `⚡ Procesando streaming: ${currentMb} MB / ${totalMb} MB (${pct}%) — ${lineCount.toLocaleString()} eventos`);
+      }
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    if (leftover && leftover.trim()) {
+      lineCount++;
+      const parsed = this.fallbackParse(leftover.trim(), lineCount);
+      if (parsed) {
+        if (clientId) parsed.client = clientId;
+        displayLogs.push(parsed);
+      }
+    }
+
+    const topUsers = Object.entries(userCounter).sort((a, b) => b[1] - a[1]).slice(0, 50).map(([user, count]) => ({ user, count }));
+    const topIps = Object.entries(ipCounter).sort((a, b) => b[1] - a[1]).slice(0, 50).map(([ip, count]) => ({ ip, count }));
+    const topCodes = Object.entries(codeCounter).sort((a, b) => b[1] - a[1]).slice(0, 20).map(([code, count]) => ({ code, count }));
+
+    return {
+      parsedLogs: displayLogs,
+      totalLinesProcessed: lineCount,
+      totalErrors: totalErrors,
+      totalWarnings: totalWarnings,
+      globalMetrics: {
+        totalLogs: lineCount,
+        totalErrors: totalErrors,
+        totalWarnings: totalWarnings,
+        topUsers: topUsers,
+        topIps: topIps,
+        topCodes: topCodes,
+        timelineBuckets: Object.entries(timeBuckets).map(([time, data]) => ({ time, ...data }))
+      }
+    };
+  }
 }
 
 window.logParser = new LogParser();
