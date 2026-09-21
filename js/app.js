@@ -2888,6 +2888,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       updateTrendChart();
       renderUserAndIpAnalytics();
       updateOverviewWidgets();
+    if (window.slaEngine) {
+      window.slaEngine.render('sla-calculator-overview-container', total, criticalsCount, warningsCount);
+    }
+    if (window.threatRadarEngine) {
+      window.threatRadarEngine.render('threat-radar-overview-container', state.filteredLogs || state.logs);
+      window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
+    }
       renderTraceWaterfall();
       renderLogTable();
 
@@ -3431,6 +3438,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     updateTrendChart();
     updateSeverityChart();
     updateOverviewWidgets();
+    if (window.slaEngine) {
+      window.slaEngine.render('sla-calculator-overview-container', total, criticalsCount, warningsCount);
+    }
+    if (window.threatRadarEngine) {
+      window.threatRadarEngine.render('threat-radar-overview-container', state.filteredLogs || state.logs);
+      window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
+    }
   }
 
   function initCharts() {
@@ -3912,6 +3926,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     renderLogTable();
     renderUserAndIpAnalytics();
     updateOverviewWidgets();
+    if (window.slaEngine) {
+      window.slaEngine.render('sla-calculator-overview-container', total, criticalsCount, warningsCount);
+    }
+    if (window.threatRadarEngine) {
+      window.threatRadarEngine.render('threat-radar-overview-container', state.filteredLogs || state.logs);
+      window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
+    }
     updateNodeComparisonUI();
     renderTraceWaterfall();
 
@@ -6259,6 +6280,444 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       downloadExecutiveReportDocx();
     });
 
+
+  
+  /* ==========================================================================
+     11. EXPORTADOR MULTITABLA A MICROSOFT EXCEL (.XLSX - XML SPREADSHEETML) (v260.0)
+     ========================================================================== */
+  function downloadExecutiveReportExcel() {
+    const consolidated = getConsolidatedMetrics();
+    const activeClient = getActiveClientProfile();
+    const clientName = activeClient ? activeClient.name : 'Entrust General';
+    const clientSanitized = clientName.replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+    const dateStr = new Date().toLocaleDateString('es-VE', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    const total = consolidated.totalLogs || (state.logs ? state.logs.length : 0);
+    const criticals = consolidated.totalErrors || (state.logs ? state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length : 0);
+    const warnings = consolidated.totalWarnings || (state.logs ? state.logs.filter(l => l.level === 'WARN').length : 0);
+    const health = total > 0 ? parseFloat((((total - criticals) / total) * 100).toFixed(2)) : 100;
+    const uptimePct = total > 0 ? (((total - criticals) / total) * 100).toFixed(2) : '100.00';
+    const downtimeMin = parseFloat(((100 - parseFloat(uptimePct)) * 432).toFixed(1));
+
+    const escapeXml = (str) => {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    };
+
+    // Construcción de SpreadsheetML
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="TitleStyle">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Font ss:FontName="Calibri" ss:Size="14" ss:Color="#0A3D6D" ss:Bold="1"/>
+   <Interior ss:Color="#E0F2FE" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="HeaderBlue">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0284C7"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0284C7"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0284C7"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0284C7"/>
+   </Borders>
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#FFFFFF" ss:Bold="1"/>
+   <Interior ss:Color="#0284C7" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="HeaderRed">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DC2626"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DC2626"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DC2626"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#DC2626"/>
+   </Borders>
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#FFFFFF" ss:Bold="1"/>
+   <Interior ss:Color="#DC2626" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="HeaderDark">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0F172A"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0F172A"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0F172A"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#0F172A"/>
+   </Borders>
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#FFFFFF" ss:Bold="1"/>
+   <Interior ss:Color="#0F172A" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="KpiLabel">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#334155" ss:Bold="1"/>
+   <Interior ss:Color="#F8FAFC" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="KpiVal">
+   <Alignment ss:Horizontal="Right"/>
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#0284C7" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="CritVal">
+   <Alignment ss:Horizontal="Right"/>
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#DC2626" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="WarnVal">
+   <Alignment ss:Horizontal="Right"/>
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#D97706" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="CellData">
+   <Font ss:FontName="Calibri" ss:Size="10" ss:Color="#1E293B"/>
+  </Style>
+  <Style ss:ID="CellDataCenter">
+   <Alignment ss:Horizontal="Center"/>
+   <Font ss:FontName="Calibri" ss:Size="10" ss:Color="#1E293B"/>
+  </Style>
+  <Style ss:ID="CellDataCrit">
+   <Font ss:FontName="Calibri" ss:Size="10" ss:Color="#991B1B" ss:Bold="1"/>
+   <Interior ss:Color="#FEE2E2" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="CellDataNominal">
+   <Font ss:FontName="Calibri" ss:Size="10" ss:Color="#065F46"/>
+   <Interior ss:Color="#D1FAE5" ss:Pattern="Solid"/>
+  </Style>
+ </Styles>`;
+
+    // --- HOJA 1: RESUMEN EJECUTIVO & SLA ---
+    xml += `
+ <Worksheet ss:Name="1. Resumen KPIs y SLA">
+  <Table ss:DefaultRowHeight="20">
+   <Column ss:Width="220"/>
+   <Column ss:Width="280"/>
+   <Column ss:Width="160"/>
+   <Row ss:Height="26">
+    <Cell ss:MergeAcross="2" ss:StyleID="TitleStyle"><Data ss:Type="String">IT SERVICIOS DE VENEZUELA | INFORME EJECUTIVO DE AUDITORÍA ENTRUST</Data></Cell>
+   </Row>
+   <Row ss:Height="18">
+    <Cell ss:StyleID="KpiLabel"><Data ss:Type="String">Cliente / Institución:</Data></Cell>
+    <Cell ss:MergeAcross="1"><Data ss:Type="String">${escapeXml(clientName)}</Data></Cell>
+   </Row>
+   <Row ss:Height="18">
+    <Cell ss:StyleID="KpiLabel"><Data ss:Type="String">Plataforma &amp; Versión:</Data></Cell>
+    <Cell ss:MergeAcross="1"><Data ss:Type="String">${escapeXml(activeClient ? activeClient.platform + ' ' + (activeClient.version || '') : 'Entrust IdentityGuard')}</Data></Cell>
+   </Row>
+   <Row ss:Height="18">
+    <Cell ss:StyleID="KpiLabel"><Data ss:Type="String">Fecha de Emisión:</Data></Cell>
+    <Cell ss:MergeAcross="1"><Data ss:Type="String">${escapeXml(dateStr)}</Data></Cell>
+   </Row>
+   <Row ss:Height="18">
+    <Cell ss:StyleID="KpiLabel"><Data ss:Type="String">Perito Responsable:</Data></Cell>
+    <Cell ss:MergeAcross="1"><Data ss:Type="String">${escapeXml(activeClient ? activeClient.engineer : 'Tomás Acosta')}</Data></Cell>
+   </Row>
+   <Row ss:Height="10"></Row>
+   <Row ss:Height="22">
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">Métrica / KPI Operacional</Data></Cell>
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">Valor Observado</Data></Cell>
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">Evaluación Normativa</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="KpiLabel"><Data ss:Type="String">Total Transacciones Procesadas</Data></Cell>
+    <Cell ss:StyleID="KpiVal"><Data ss:Type="Number">${total}</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">100% Muestra Auditada</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="KpiLabel"><Data ss:Type="String">Incidentes Críticos / Fallos Reales</Data></Cell>
+    <Cell ss:StyleID="CritVal"><Data ss:Type="Number">${criticals}</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${criticals === 0 ? 'Sin Falla P1' : 'P1 / P2 Requiere Remediación'}</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="KpiLabel"><Data ss:Type="String">Eventos de Auditoría / Nominal</Data></Cell>
+    <Cell ss:StyleID="WarnVal"><Data ss:Type="Number">${warnings}</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">Operación Segura</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="KpiLabel"><Data ss:Type="String">Salud Global del Clúster</Data></Cell>
+    <Cell ss:StyleID="KpiVal"><Data ss:Type="String">${health}%</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${health >= 80 ? 'ÓPTIMO' : (health >= 50 ? 'DEGRADADO' : 'CRÍTICO')}</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="KpiLabel"><Data ss:Type="String">Disponibilidad SLA Bancario</Data></Cell>
+    <Cell ss:StyleID="KpiVal"><Data ss:Type="String">${uptimePct}%</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${parseFloat(uptimePct) >= 99.95 ? '✅ Cumple Sudeban (>=99.95%)' : '⚠️ Alerta de Incumplimiento'}</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="KpiLabel"><Data ss:Type="String">Indisponibilidad Calculada (Mes)</Data></Cell>
+    <Cell ss:StyleID="CritVal"><Data ss:Type="String">${downtimeMin} min</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">Tolerancia máx: 21.6 min</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>`;
+
+    // --- HOJA 2: MATRIZ DETALLADA DE INCIDENTES & FALLOS ---
+    const logsToExport = (state.logs && state.logs.length > 0) ? state.logs : [];
+    xml += `
+ <Worksheet ss:Name="2. Matriz de Fallos">
+  <Table ss:DefaultRowHeight="18">
+   <Column ss:Width="60"/>
+   <Column ss:Width="160"/>
+   <Column ss:Width="130"/>
+   <Column ss:Width="90"/>
+   <Column ss:Width="110"/>
+   <Column ss:Width="140"/>
+   <Column ss:Width="250"/>
+   <Column ss:Width="220"/>
+   <Column ss:Width="280"/>
+   <Row ss:Height="22">
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">ID</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Archivo Origen</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Timestamp</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Severidad</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Código Entrust</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Servicio / Módulo</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Diagnóstico Oficial</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Causa Raíz</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Procedimiento de Remediación</Data></Cell>
+   </Row>`;
+
+    if (logsToExport.length > 0) {
+      logsToExport.slice(0, 5000).forEach((l, idx) => {
+        const diag = l.diagnostic || (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message, l.entrustCode) : {});
+        const isCrit = l.level === 'CRITICAL' || l.level === 'ERROR';
+        xml += `
+   <Row>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="Number">${idx + 1}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(l.sourceFile || l.fileName || 'N/A')}</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${escapeXml(l.timestamp || l.time || 'N/A')}</Data></Cell>
+    <Cell ss:StyleID="${isCrit ? 'CellDataCrit' : 'CellDataCenter'}"><Data ss:Type="String">${escapeXml(l.level || 'INFO')}</Data></Cell>
+    <Cell ss:StyleID="${isCrit ? 'CellDataCrit' : 'CellDataCenter'}"><Data ss:Type="String">${escapeXml(l.entrustCode || 'N/A')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(l.service || l.type || 'IdentityGuard')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(diag.title || l.message || '')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(diag.rootCause || 'N/A')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(diag.remediation || 'N/A')}</Data></Cell>
+   </Row>`;
+      });
+    } else if (state.globalStreamMetrics && state.globalStreamMetrics.topCodes) {
+      state.globalStreamMetrics.topCodes.forEach((tc, idx) => {
+        const diag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(tc.code, tc.code) : {};
+        xml += `
+   <Row>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="Number">${idx + 1}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">Indexado SQLite Servidor</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">Consolidado</Data></Cell>
+    <Cell ss:StyleID="CellDataCrit"><Data ss:Type="String">ERROR</Data></Cell>
+    <Cell ss:StyleID="CellDataCrit"><Data ss:Type="String">${escapeXml(tc.code)}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">IDaaS Cloud / Bulk</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(diag.title || tc.code)} (Ocurrencias: ${tc.count})</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(diag.rootCause || 'N/A')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(diag.remediation || 'N/A')}</Data></Cell>
+   </Row>`;
+      });
+    }
+    xml += `
+  </Table>
+ </Worksheet>`;
+
+    // --- HOJA 3: THREAT RADAR & CUENTAS ATACADAS ---
+    const threatReport = window.threatRadarEngine ? window.threatRadarEngine.analyzeThreats(state.logs || []) : { topTargetUsers: [], topAttackingIPs: [] };
+    xml += `
+ <Worksheet ss:Name="3. Threat Radar y Cuentas">
+  <Table ss:DefaultRowHeight="18">
+   <Column ss:Width="50"/>
+   <Column ss:Width="180"/>
+   <Column ss:Width="110"/>
+   <Column ss:Width="130"/>
+   <Column ss:Width="140"/>
+   <Column ss:Width="150"/>
+   <Column ss:Width="150"/>
+   <Row ss:Height="22">
+    <Cell ss:StyleID="HeaderRed"><Data ss:Type="String">#</Data></Cell>
+    <Cell ss:StyleID="HeaderRed"><Data ss:Type="String">Usuario / Cédula / Tarjeta</Data></Cell>
+    <Cell ss:StyleID="HeaderRed"><Data ss:Type="String">Intentos Fallidos</Data></Cell>
+    <Cell ss:StyleID="HeaderRed"><Data ss:Type="String">Códigos Detectados</Data></Cell>
+    <Cell ss:StyleID="HeaderRed"><Data ss:Type="String">Estado de la Cuenta</Data></Cell>
+    <Cell ss:StyleID="HeaderRed"><Data ss:Type="String">Nivel de Riesgo SOC</Data></Cell>
+    <Cell ss:StyleID="HeaderRed"><Data ss:Type="String">Última Actividad</Data></Cell>
+   </Row>`;
+
+    if (threatReport.topTargetUsers && threatReport.topTargetUsers.length > 0) {
+      threatReport.topTargetUsers.forEach((u, idx) => {
+        const isCrit = u.riskLevel && u.riskLevel.includes('CRITICAL');
+        xml += `
+   <Row>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="Number">${idx + 1}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(u.user)}</Data></Cell>
+    <Cell ss:StyleID="${isCrit ? 'CritVal' : 'KpiVal'}"><Data ss:Type="Number">${u.attempts}</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${escapeXml(u.codesList || '5202013')}</Data></Cell>
+    <Cell ss:StyleID="${u.isLocked ? 'CellDataCrit' : 'CellDataCenter'}"><Data ss:Type="String">${u.isLocked ? 'BLOQUEADA' : 'ACTIVA / EN RIESGO'}</Data></Cell>
+    <Cell ss:StyleID="${isCrit ? 'CellDataCrit' : 'CellData'}"><Data ss:Type="String">${escapeXml(u.riskLevel)}</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${escapeXml(u.lastSeen || 'N/A')}</Data></Cell>
+   </Row>`;
+      });
+    } else {
+      xml += `
+   <Row>
+    <Cell ss:MergeAcross="6" ss:StyleID="CellDataCenter"><Data ss:Type="String">No se detectaron cuentas bajo ataque focalizado en la muestra de logs.</Data></Cell>
+   </Row>`;
+    }
+    xml += `
+  </Table>
+ </Worksheet>`;
+
+    // --- HOJA 4: AUDITORÍA NOMINAL ---
+    xml += `
+ <Worksheet ss:Name="4. Auditoria Nominal">
+  <Table ss:DefaultRowHeight="18">
+   <Column ss:Width="110"/>
+   <Column ss:Width="220"/>
+   <Column ss:Width="300"/>
+   <Column ss:Width="180"/>
+   <Row ss:Height="22">
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">Código Auditoría</Data></Cell>
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">Tipo de Evento</Data></Cell>
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">Descripción Operacional</Data></Cell>
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">Impacto en Salud Clúster</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="CellDataNominal"><Data ss:Type="String">AUD101</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">Login Administrativo Exitoso</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">Sesión de gestión de seguridad autenticada en consola IdentityGuard</Data></Cell>
+    <Cell ss:StyleID="CellDataNominal"><Data ss:Type="String">0% Penalización (Nominal)</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="CellDataNominal"><Data ss:Type="String">AUD154</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">Cierre de Sesión por Inactividad</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">Mecanismo automático de protección de sesión de consola</Data></Cell>
+    <Cell ss:StyleID="CellDataNominal"><Data ss:Type="String">0% Penalización (Nominal)</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:StyleID="CellDataNominal"><Data ss:Type="String">AUD8500-8503</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">Monitoreo &amp; Heartbeat de Nodos</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">Sincronización periódica de clúster y balanceo de carga</Data></Cell>
+    <Cell ss:StyleID="CellDataNominal"><Data ss:Type="String">0% Penalización (Nominal)</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+</Workbook>`;
+
+    const blob = new Blob([xml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Auditoria_Entrust_${clientSanitized}_${dateStamp}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  }
+
+  /* ==========================================================================
+     12. MÓDULO DE AUTO-REMEDIACIÓN AUTOMÁTICA (.BAT / .SH) (v260.0)
+     ========================================================================== */
+  function initRemediationModule() {
+    const btnOpenModal = document.getElementById('btn-open-remediation-modal');
+    const modal = document.getElementById('remediation-scripts-modal');
+    const btnClose = document.getElementById('btn-close-remediation-modal');
+    const btnTabBat = document.getElementById('btn-tab-script-bat');
+    const btnTabSh = document.getElementById('btn-tab-script-sh');
+    const preview = document.getElementById('remediation-script-preview');
+    const btnCopy = document.getElementById('btn-copy-remediation-script');
+    const btnDownloadBat = document.getElementById('btn-download-bat-action');
+    const btnDownloadSh = document.getElementById('btn-download-sh-action');
+
+    let currentScriptMode = 'bat';
+
+    const updatePreview = () => {
+      if (!preview || !window.remediationEngine) return;
+      const client = getActiveClientProfile();
+      const logs = state.logs || [];
+      if (currentScriptMode === 'bat') {
+        preview.value = window.remediationEngine.generateWindowsBat(logs, client);
+        if (btnTabBat) { btnTabBat.className = 'btn btn-primary'; }
+        if (btnTabSh) { btnTabSh.className = 'btn btn-secondary'; }
+      } else {
+        preview.value = window.remediationEngine.generateLinuxSh(logs, client);
+        if (btnTabBat) { btnTabBat.className = 'btn btn-secondary'; }
+        if (btnTabSh) { btnTabSh.className = 'btn btn-primary'; }
+      }
+    };
+
+    if (btnOpenModal) {
+      btnOpenModal.addEventListener('click', () => {
+        updatePreview();
+        if (modal) modal.style.display = 'flex';
+      });
+    }
+
+    if (btnClose) {
+      btnClose.addEventListener('click', () => {
+        if (modal) modal.style.display = 'none';
+      });
+    }
+
+    if (btnTabBat) {
+      btnTabBat.addEventListener('click', () => {
+        currentScriptMode = 'bat';
+        updatePreview();
+      });
+    }
+
+    if (btnTabSh) {
+      btnTabSh.addEventListener('click', () => {
+        currentScriptMode = 'sh';
+        updatePreview();
+      });
+    }
+
+    if (btnCopy) {
+      btnCopy.addEventListener('click', () => {
+        if (!preview) return;
+        navigator.clipboard.writeText(preview.value).then(() => {
+          alert(`📋 ¡Script de remediación (${currentScriptMode.toUpperCase()}) copiado al portapapeles!`);
+        });
+      });
+    }
+
+    if (btnDownloadBat) {
+      btnDownloadBat.addEventListener('click', () => {
+        if (window.remediationEngine) {
+          window.remediationEngine.downloadScript('bat', state.logs || [], getActiveClientProfile());
+        }
+      });
+    }
+
+    if (btnDownloadSh) {
+      btnDownloadSh.addEventListener('click', () => {
+        if (window.remediationEngine) {
+          window.remediationEngine.downloadScript('sh', state.logs || [], getActiveClientProfile());
+        }
+      });
+    }
+
+    // Threat Radar export button
+    document.getElementById('btn-export-soc-report')?.addEventListener('click', () => {
+      if (window.threatRadarEngine) {
+        window.threatRadarEngine.exportSocReport(state.logs || [], getActiveClientProfile());
+      }
+    });
+
+    // Excel export button in top header & modal
+    document.getElementById('btn-export-excel')?.addEventListener('click', () => {
+      downloadExecutiveReportExcel();
+    });
+
+    document.getElementById('btn-download-excel-exec-report')?.addEventListener('click', () => {
+      downloadExecutiveReportExcel();
+    });
+  }
 
   function escapeHtml(text) {
     if (!text) return '';

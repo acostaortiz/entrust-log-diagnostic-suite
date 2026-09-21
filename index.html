@@ -17,7 +17,7 @@
   <script src="js/html2pdf.bundle.min.js"></script>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/styles.css?v=250.0">
+  <link rel="stylesheet" href="css/styles.css?v=260.0">
 </head>
 <body>
 
@@ -66,6 +66,7 @@
         <button class="nav-btn" data-tab="certificates" style="color:#f59e0b; font-weight:bold;">🔐 Auditoría Certificados</button>
         <button class="nav-btn" data-tab="topology" style="color:#0284c7; font-weight:bold;">🌐 Topología Multi-Capa</button>
         <button class="nav-btn" data-tab="compare" style="color:#10b981; font-weight:bold;">📈 Comparativa Histórica</button>
+        <button class="nav-btn" data-tab="radar" style="color:#f43f5e; font-weight:bold;">🎯 Threat Radar (Fuerza Bruta)</button>
         <button class="nav-btn" data-tab="kb">🧠 Base de Conocimientos</button>
         <button class="nav-btn" data-tab="manuals">📚 Manuales Administrativos</button>
       </nav>
@@ -85,6 +86,12 @@
         </button>
         <button class="btn btn-import-html" id="btn-open-import-catalog" onclick="document.getElementById('import-catalog-modal').classList.add('active');" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-muted); font-size:0.8rem; padding:6px 10px; border-radius:6px;" title="Importar catálogo oficial de errores HTML para cualquier versión">
           📥 Importar HTML
+        </button>
+        <button class="btn" id="btn-export-excel" style="background:#065f46; border:1px solid #10b981; color:#34d399; font-weight:700; font-size:0.8rem; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:6px;" title="Exportar Informe Multitabla a Microsoft Excel (.XLSX)">
+          📗 Excel (.xlsx)
+        </button>
+        <button class="btn" id="btn-open-remediation-modal" style="background:linear-gradient(135deg, #4f46e5, #4338ca); border:1px solid #818cf8; color:#fff; font-weight:700; font-size:0.8rem; padding:6px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:6px;" title="Generador de Scripts de Auto-Remediación (.BAT / .SH)">
+          ⚡ Auto-Remediación
         </button>
         <button class="btn btn-primary" id="btn-generate-exec-report" style="background:#0284c7; border:none; color:#fff; font-weight:700; font-size:0.82rem; padding:6px 14px; border-radius:6px; box-shadow:0 2px 6px rgba(2, 132, 199, 0.3);">
           📄 Generar Informe
@@ -164,6 +171,9 @@
         </div>
       </div>
 
+      <!-- Contenedor Dinámico: Calculadora de SLA Bancario & Cumplimiento Regulatorio -->
+      <div id="sla-calculator-overview-container" style="margin-bottom:20px;"></div>
+
       <!-- Fila 1 de Gráficos: Tendencia Temporal Real & Distribución de Severidad -->
       <div class="dashboard-grid-2" style="display:grid; grid-template-columns: 2fr 1fr; gap:16px; margin-bottom:20px;">
         <div class="glass-card" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; padding:18px;">
@@ -188,6 +198,19 @@
             <canvas id="chart-severity"></canvas>
           </div>
         </div>
+      </div>
+
+      <!-- Widget Ejecutivo: Radar de Cuentas Atacadas & Fuerza Bruta -->
+      <div class="glass-card" style="background:var(--bg-card); border:1.5px solid rgba(244, 63, 94, 0.4); border-radius:10px; padding:18px; margin-bottom:20px;">
+        <div class="card-header flex-between" style="margin-bottom:12px;">
+          <div class="card-title" style="color:#f43f5e; font-size:0.95rem; font-weight:700; display:flex; align-items:center; gap:8px;">
+            <span>🎯</span> Radar de Cuentas Afectadas & Ataques de Fuerza Bruta
+          </div>
+          <button class="btn" onclick="document.querySelector(\'[data-tab="radar"]\')?.click()" style="background:rgba(244, 63, 94, 0.15); border:1px solid #f43f5e; color:#f43f5e; font-size:0.75rem; font-weight:bold; padding:3px 10px; border-radius:4px; cursor:pointer;">
+            Ver Radar Completo ➔
+          </button>
+        </div>
+        <div id="threat-radar-overview-container"></div>
       </div>
 
       <!-- Fila 2 de Widgets Ejecutivos: Top Errores 520xxx y Balanceo de Nodos -->
@@ -755,7 +778,11 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
 
           <!-- GRUPO 2: FORMATOS DE DATOS -->
           <div style="display:flex; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; padding:2px; gap:2px;">
-            <button class="btn" id="btn-download-docx-exec-report" style="background:transparent; border:none; color:#0284c7; font-weight:bold; font-size:0.78rem; padding:6px 8px; border-radius:4px;" title="Exportar Documento Oficial a Microsoft Word (.doc / .docx)">📝 Word (.doc)</button>
+            <button class="btn" id="btn-download-docx-exec-report">
+            📄 Descargar DOCX
+          </button>
+          <button class="btn" id="btn-download-excel-exec-report" style="background:#065f46; border:1px solid #10b981; color:#34d399; font-weight:700; font-size:0.8rem; padding:6px 12px; border-radius:6px; cursor:pointer;" title="Descargar Matriz y Resumen en Excel Multitabla">
+            📗 Descargar Excel (.xlsx) style="background:transparent; border:none; color:#0284c7; font-weight:bold; font-size:0.78rem; padding:6px 8px; border-radius:4px;" title="Exportar Documento Oficial a Microsoft Word (.doc / .docx)">📝 Word (.doc)</button>
             <button class="btn" id="btn-download-html-exec-report" style="background:transparent; border:none; color:var(--text-main); font-size:0.78rem; padding:6px 8px; border-radius:4px;" title="Exportar HTML Autónomo">🌐 HTML</button>
             <button class="btn" id="btn-download-csv-exec-report" style="background:transparent; border:none; color:var(--text-main); font-size:0.78rem; padding:6px 8px; border-radius:4px;" title="Exportar Excel CSV">📊 CSV</button>
             <button class="btn" id="btn-download-exec-report-md" style="background:transparent; border:none; color:var(--text-main); font-size:0.78rem; padding:6px 8px; border-radius:4px;" title="Descargar archivo Markdown .MD">📝 .MD</button>
@@ -1056,17 +1083,62 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
     </div>
   </div>
 
+  
+  <!-- Modal: Generador de Scripts de Auto-Remediación (.BAT / .SH) -->
+  <div class="modal-overlay" id="remediation-scripts-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center;">
+    <div class="modal-card" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; max-width:820px; width:94%; padding:24px; box-shadow:0 20px 50px rgba(0,0,0,0.6);">
+      <div class="modal-header flex-between" style="border-bottom:2px solid #6366f1; padding-bottom:12px; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:1.6rem;">⚡</span>
+          <div>
+            <h3 style="margin:0; font-size:1.2rem; color:#818cf8;">Generador de Scripts de Auto-Remediación</h3>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Automatización de corrección de incidentes Entrust OnPremise y IDaaS Cloud</span>
+          </div>
+        </div>
+        <button class="btn-close-modal" id="btn-close-remediation-modal" style="background:none; border:none; font-size:1.4rem; color:var(--text-muted); cursor:pointer;">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <button class="btn btn-primary" id="btn-tab-script-bat" style="padding:6px 16px; font-size:0.82rem; font-weight:700;">🪟 Windows Server (.BAT)</button>
+          <button class="btn btn-secondary" id="btn-tab-script-sh" style="padding:6px 16px; font-size:0.82rem; font-weight:700;">🐧 Linux / Ubuntu Server (.SH)</button>
+        </div>
+
+        <div style="position:relative; margin-bottom:16px;">
+          <textarea id="remediation-script-preview" readonly style="width:100%; height:260px; background:#0f172a; color:#a5f3fc; border:1px solid var(--border-color); border-radius:8px; padding:12px; font-family:'JetBrains Mono', monospace; font-size:0.8rem; line-height:1.4; resize:none;"></textarea>
+        </div>
+
+        <div class="flex-between" style="flex-wrap:wrap; gap:10px;">
+          <button class="btn btn-secondary" id="btn-copy-remediation-script" style="font-size:0.82rem; padding:8px 16px;">
+            📋 Copiar al Portapapeles
+          </button>
+          <div style="display:flex; gap:8px;">
+            <button class="btn" id="btn-download-bat-action" style="background:#0284c7; color:#fff; font-weight:700; font-size:0.82rem; padding:8px 16px; border-radius:6px;">
+              💾 Descargar .BAT (Windows)
+            </button>
+            <button class="btn" id="btn-download-sh-action" style="background:#10b981; color:#fff; font-weight:700; font-size:0.82rem; padding:8px 16px; border-radius:6px;">
+              💾 Descargar .SH (Linux)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts JavaScript -->
   <script src="js/pptxgen.bundle.js"></script>
-  <script src="js/topology-engine.js?v=250.0"></script>
-  <script src="js/kb-database.js?v=250.0"></script>
-  <script src="js/manuals-engine.js?v=250.0"></script>
-  <script src="js/bancomercantil_data.js?v=250.0"></script>
-  <script src="js/log-parser.js?v=250.0"></script>
-  <script src="js/storage-engine.js?v=250.0"></script>
-  <script src="js/cert-auditor.js?v=250.0"></script>
-  <script src="js/syslog-collector.js?v=250.0"></script>
-  <script src="js/app.js?v=250.0"></script>
+  <script src="js/topology-engine.js?v=260.0"></script>
+  <script src="js/kb-database.js?v=260.0"></script>
+  <script src="js/manuals-engine.js?v=260.0"></script>
+  <script src="js/bancomercantil_data.js?v=260.0"></script>
+  <script src="js/log-parser.js?v=260.0"></script>
+  <script src="js/storage-engine.js?v=260.0"></script>
+    <script src="js/threat-radar.js?v=260.0"></script>
+  <script src="js/remediation-engine.js?v=260.0"></script>
+  <script src="js/sla-engine.js?v=260.0"></script>
+  <script src="js/cert-auditor.js?v=260.0"></script>
+  <script src="js/syslog-collector.js?v=260.0"></script>
+  <script src="js/app.js?v=260.0"></script>
 
 </body>
 </html>
