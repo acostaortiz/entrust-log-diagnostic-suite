@@ -549,7 +549,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-    function switchTab(targetTab) {
+    window.switchTabGlobal = switchTab;
+  function switchTab(targetTab) {
     // Actualizar botones de navegación
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     dom.tabPanes.forEach(p => p.classList.remove('active'));
@@ -591,6 +592,10 @@ document.addEventListener('DOMContentLoaded', () => {
       dropdownNavMore.classList.remove('open');
     }
 
+    
+    if (targetTab === 'radar' && window.threatRadarEngine) {
+      window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
+    }
     if (targetTab === 'analyzer' && state.isServerApi && (!state.logs || state.logs.length === 0)) {
       fetchSqlLogs(1);
     }
@@ -3521,7 +3526,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             labels: ['Inicio', 'Cargando...'],
             datasets: [
               {
-                label: 'Transacciones Totales (Nominales)',
+                label: 'Transacciones Totales (Nominales)', pointRadius: 1.5, pointHoverRadius: 5,
                 data: [0, 0],
                 borderColor: '#0284c7',
                 backgroundColor: 'rgba(2, 132, 199, 0.12)',
@@ -3530,7 +3535,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
                 yAxisID: 'y'
               },
               {
-                label: 'Errores [520xxx / Fallas]',
+                label: 'Errores [520xxx / Fallas]', pointRadius: 1.5, pointHoverRadius: 5,
                 data: [0, 0],
                 borderColor: '#ef4444',
                 backgroundColor: 'rgba(239, 68, 68, 0.15)',
@@ -3555,7 +3560,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               }
             },
             scales: {
-              x: { grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+              x: { grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 }, maxTicksLimit: 8, maxRotation: 0, autoSkip: true } },
               y: {
                 type: 'linear',
                 display: true,
