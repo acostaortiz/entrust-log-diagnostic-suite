@@ -30,7 +30,7 @@ class SyslogCollectorEngine {
       const osc = this.audioCtx.createOscillator();
       const gain = this.audioCtx.createGain();
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(880, this.audioCtx.currentTime); // Nota A5
+      osc.frequency.setValueAtTime(880, this.audioCtx.currentTime);
       gain.gain.setValueAtTime(0.15, this.audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.3);
       osc.connect(gain);
@@ -45,12 +45,17 @@ class SyslogCollectorEngine {
     this.isLive = true;
     this.initAudio();
 
-    const nodes = ['SACVWIG01 (Canal Web)', 'SACVWIG02 (Canal Móvil)', 'SACVWIG03 (Canal Empresas)', 'SACVWIG04 (Gateway APIs)'];
+    const currentClient = (typeof window.getActiveClientProfileGlobal === 'function' ? window.getActiveClientProfileGlobal() : null) || (window.appState && window.appState.clientProfiles && window.appState.clientProfiles[0]);
+    let nodes = ['Servidor Primario (Core)', 'Servidor Secundario (Servicios/HA)'];
+    if (currentClient && currentClient.nodes && Array.isArray(currentClient.nodes) && currentClient.nodes.length > 0) {
+      nodes = currentClient.nodes.map(n => n.name.replace(/^[^\w]+/, '').trim());
+    }
+
     const codes = [
       { code: '5202000', msg: 'Authentication successful for user', level: 'INFO' },
       { code: '5202013', msg: 'Invalid user ID or password provided', level: 'ERROR' },
       { code: '5202404', msg: 'Database connection pool exhausted in identityguard.properties', level: 'CRITICAL' },
-      { code: '5205150', msg: 'Authorization Failure: Client Secret Invalid for Pago Móvil API', level: 'CRITICAL' },
+      { code: '5205150', msg: 'Authorization Failure: Client Secret Invalid for API endpoint', level: 'CRITICAL' },
       { code: 'AUD106', msg: 'Entrust IdentityGuard Administration Service pulse check OK', level: 'INFO' },
       { code: 'AUD2300', msg: 'Soft token challenge processed successfully', level: 'INFO' }
     ];
@@ -98,10 +103,19 @@ class SyslogCollectorEngine {
     }, 150);
   }
 
-  stopStream() {
+  stopSimulation() {
     this.isLive = false;
-    if (this.timer) clearInterval(this.timer);
-    this.timer = null;
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  }
+
+  clear() {
+    this.totalEvents = 0;
+    this.criticalEvents = 0;
+    this.ratePerSec = 0;
+    this.buffer = [];
   }
 }
 

@@ -289,6 +289,14 @@ def index_file_in_background(file_path, client_name='Entrust Client'):
         cur.execute('PRAGMA synchronous = OFF;')
         cur.execute('PRAGMA journal_mode = WAL;')
         
+        import collections
+        user_counts = collections.Counter()
+        ip_counts = collections.Counter()
+        code_counts = collections.Counter()
+        type_counts = collections.Counter()
+        hour_counts = collections.defaultdict(lambda: {'total': 0, 'errors': 0, 'info': 0})
+        is_idaas = False
+
         batch = []
         batch_size = 25000
         line_num = 0
@@ -304,8 +312,36 @@ def index_file_in_background(file_path, client_name='Entrust Client'):
             
             parsed = parse_line_for_db(line_str, line_num)
             if parsed:
-                if 'FAIL' in parsed[4] or 'ERR' in parsed[4]:
+                outcome = parsed[4]
+                is_err = 'FAIL' in outcome or 'ERR' in outcome
+                if is_err:
                     total_errors += 1
+                
+                # In-memory streaming aggregation (0 cost)
+                user = parsed[2]
+                if user and user not in ['unknown', 'system', '']:
+                    user_counts[user] += 1
+                
+                ip = parsed[6]
+                if ip and ip not in ['local', '127.0.0.1', '']:
+                    ip_counts[ip] += 1
+                    
+                etype = parsed[3]
+                if etype:
+                    type_counts[etype] += 1
+                    code_counts[etype] += 1
+                    if 'bulkidentityguard' in etype.lower():
+                        is_idaas = True
+                        
+                t_str = parsed[1]
+                if t_str and len(t_str) >= 13:
+                    h_bucket = t_str[:13]
+                    hour_counts[h_bucket]['total'] += 1
+                    if is_err:
+                        hour_counts[h_bucket]['errors'] += 1
+                    else:
+                        hour_counts[h_bucket]['info'] += 1
+                
                 batch.append(parsed)
             
             if len(batch) >= batch_size:
@@ -319,7 +355,26 @@ def index_file_in_background(file_path, client_name='Entrust Client'):
         if batch:
             cur.executemany('INSERT INTO logs VALUES (?,?,?,?,?,?,?,?)', batch)
             conn.commit()
-            
+
+        # Build instant cached stats object (< 0.1 ms)
+        stats_obj = {
+            'status': 'ready',
+            'totalLogs': line_num,
+            'totalErrors': total_errors,
+            'totalWarnings': 0,
+            'totalSuccess': line_num - total_errors,
+            'eventTypes': [{'code': k, 'count': v} for k, v in type_counts.most_common(20)],
+            'topCodes': [{'code': k, 'count': v} for k, v in code_counts.most_common(20)],
+            'topUsers': [{'user': k, 'count': v} for k, v in user_counts.most_common(20)],
+            'topIps': [{'ip': k, 'count': v} for k, v in ip_counts.most_common(20)],
+            'timelineBuckets': [{'bucket': k, 'total': v['total'], 'errors': v['errors'], 'info': v['info']} for k, v in sorted(hour_counts.items())[:100]],
+            'detectedPlatform': 'Entrust IDaaS Cloud' if is_idaas else 'Entrust IdentityGuard OnPremise',
+            'activeDb': os.path.basename(target_db),
+            'client': client_name
+        }
+        cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
+        cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_obj, ensure_ascii=False)))
+        conn.commit()
         conn.close()
         
         ACTIVE_DB_PATH = target_db
