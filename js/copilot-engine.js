@@ -30,7 +30,7 @@
         answer = `📊 **Dictamen de Estado Operativo para ${client.name}**:\n\n` +
                  `• **Total de Transacciones**: ${total.toLocaleString()} eventos auditados.\n` +
                  `• **Incidentes Críticos**: ${criticals.length.toLocaleString()} fallos detectados (${total > 0 ? ((criticals.length/total)*100).toFixed(2) : '0'}% de la muestra).\n` +
-                 `• **Disponibilidad Técnica SLA**: **${uptime}%** (Meta Sudeban: 99.95%).\n` +
+                 `• **Índice de Estabilidad**: **${uptime}%** de operaciones completadas sin excepciones críticas.\n` +
                  `• **Veredicto Pericial**: ${criticals.length === 0 ? '🟢 Clúster en condición óptima.' : '⚠️ Se requiere ejecutar el script de Auto-Remediación en Fase I para mitigar fallos detectados.'}`;
       }
       // 2. Pregunta sobre usuarios, cuentas o fuerza bruta
@@ -90,7 +90,7 @@
                  `💡 Puedes preguntarme sobre:\n` +
                  `• *"¿Cuáles son las cuentas más atacadas?"*\n` +
                  `• *"¿Qué códigos de error tienen mayor impacto?"*\n` +
-                 `• *"¿Cumplimos con el SLA de Sudeban?"*\n` +
+                 `• *"¿Cuál es el volumen de errores y distribución?"*\n` +
                  `• *"¿Cómo está distribuida la carga entre los servidores?"*`;
       }
 

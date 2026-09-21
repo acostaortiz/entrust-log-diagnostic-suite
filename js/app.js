@@ -95,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
   try { initConfigDiffModule(); } catch (e) { console.error('Error al inicializar Config Diff:', e); }
   try { initSiemExporterModule(); } catch (e) { console.error('Error al inicializar SIEM Exporter:', e); }
   try { initRemediationModule(); } catch (e) { console.error('Error al inicializar Remediación:', e); }
-  try { initSlaModule(); } catch (e) { console.error('Error al inicializar SLA Calculator:', e); }
   try { initCertAuditorModule(); } catch (e) { console.error('Error al inicializar Certificados:', e); }
   try { initSyslogCollector(); } catch (e) { console.error('Error al inicializar Syslog:', e); }
   try { initEventListeners(); } catch (e) { console.error('Error al inicializar EventListeners:', e); }
@@ -2959,9 +2958,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (window.complianceAuditorEngine) {
       window.complianceAuditorEngine.render('compliance-auditor-main-container', state.logs || [], getActiveClientProfile());
     }
-    if (window.slaEngine) {
-      window.slaEngine.render('sla-calculator-overview-container', total, criticalsCount, warningsCount);
-    }
+
     if (window.threatRadarEngine) {
       window.threatRadarEngine.render('threat-radar-overview-container', state.filteredLogs || state.logs);
       window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
@@ -3512,9 +3509,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (window.complianceAuditorEngine) {
       window.complianceAuditorEngine.render('compliance-auditor-main-container', state.logs || [], getActiveClientProfile());
     }
-    if (window.slaEngine) {
-      window.slaEngine.render('sla-calculator-overview-container', total, criticalsCount, warningsCount);
-    }
+
     if (window.threatRadarEngine) {
       window.threatRadarEngine.render('threat-radar-overview-container', state.filteredLogs || state.logs);
       window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
@@ -4003,9 +3998,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (window.complianceAuditorEngine) {
       window.complianceAuditorEngine.render('compliance-auditor-main-container', state.logs || [], getActiveClientProfile());
     }
-    if (window.slaEngine) {
-      window.slaEngine.render('sla-calculator-overview-container', total, criticalsCount, warningsCount);
-    }
+
     if (window.threatRadarEngine) {
       window.threatRadarEngine.render('threat-radar-overview-container', state.filteredLogs || state.logs);
       window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
@@ -7053,15 +7046,8 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     });
   }
 
-  // 13.7 SLA BANCARIO & SUDEBAN
-  function initSlaModule() {
-    if (window.slaEngine) {
-      const totalLogs = state.logs.length || (state.globalStreamMetrics ? state.globalStreamMetrics.totalLogs : 0);
-      const crit = state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length || (state.globalStreamMetrics ? state.globalStreamMetrics.totalErrors : 0);
-      const warn = state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length || (state.globalStreamMetrics ? state.globalStreamMetrics.totalWarnings : 0);
-      window.slaEngine.render('sla-calculator-overview-container', totalLogs, crit, warn);
-    }
-  }
+// 13.7 SLA Module (Removed as per executive decision)
+  function initSlaModule() {}
 
   // 13.8 AUDITOR DE CERTIFICADOS
   function initCertAuditorModule() {
