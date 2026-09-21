@@ -302,6 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
     persistClientProfiles(state.clientProfiles);
   }
 
+  window.getActiveClientProfileGlobal = function() { return getActiveClientProfile(); };
   function getActiveClientProfile() {
     const toolbarVal = dom?.filterClientSelect?.value || document.getElementById('filter-client-select')?.value;
     if (toolbarVal && toolbarVal !== 'ALL') {
@@ -861,6 +862,65 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function generateAndSavePdf(sourceElement, filename, activeClient) {
+    if (!sourceElement) {
+      throw new Error('Elemento fuente para PDF no encontrado');
+    }
+
+    const clientLabel = activeClient ? (activeClient.name || 'Entrust General') : 'Entrust General';
+    const clientVersion = activeClient ? `${activeClient.platform || 'IdentityGuard'} ${activeClient.version || 'Release 12.0'}` : 'Entrust IdentityGuard';
+    const dateStamp = new Date().toLocaleDateString('es-ES');
+
+    // Inyectar clases y estilos para evitar cortes de tablas antes de generar PDF
+    const tables = sourceElement.querySelectorAll('table, tr, td, th, .report-card, .metric-card, .avoid-break');
+    tables.forEach(el => {
+      el.style.pageBreakInside = 'avoid';
+      el.style.breakInside = 'avoid';
+    });
+
+    if (typeof window.html2pdf === 'function') {
+      const opt = {
+        margin: [12, 10, 14, 10], // top, left, bottom, right in mm
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait', compress: true },
+        pagebreak: { 
+          mode: ['avoid-all', 'css', 'legacy'], 
+          avoid: ['tr', 'th', 'td', 'h1', 'h2', 'h3', 'h4', '.report-card', '.metric-card', '.avoid-break', 'div[style*="border"]'] 
+        }
+      };
+
+      await window.html2pdf().set(opt).from(sourceElement).toPdf().get('pdf').then(function(pdf) {
+        const totalPages = pdf.internal.getNumberOfPages();
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        for (let i = 1; i <= totalPages; i++) {
+          pdf.setPage(i);
+          
+          // Encabezado sutil en páginas 2 en adelante
+          if (i > 1) {
+            pdf.setFontSize(7.5);
+            pdf.setTextColor(148, 163, 184);
+            pdf.text(`IT SERVICIOS DE VENEZUELA, S.A. | Dictamen Técnico Entrust — ${clientLabel} (${clientVersion})`, 10, 7);
+            pdf.setDrawColor(226, 232, 240);
+            pdf.line(10, 8.5, pageWidth - 10, 8.5);
+          }
+
+          // Pie de página en todas las páginas
+          pdf.setDrawColor(226, 232, 240);
+          pdf.line(10, pageHeight - 9, pageWidth - 10, pageHeight - 9);
+          pdf.setFontSize(7.5);
+          pdf.setTextColor(100, 116, 139);
+          pdf.text(`IT Servicios de Venezuela, S.A. | Entorno: ${clientLabel} (${clientVersion}) | Fecha: ${dateStamp}`, 10, pageHeight - 5);
+          pdf.text(`Página ${i} de ${totalPages}`, pageWidth - 28, pageHeight - 5);
+        }
+      }).save();
+
+      return;
+    }
+
+    // Fallback con canvas si html2pdf no está listo
     const hasH2C = typeof window.html2canvas === 'function';
     const jsPdfClass = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
 
@@ -868,7 +928,6 @@ document.addEventListener('DOMContentLoaded', () => {
       throw new Error('html2canvas o jsPDF no inicializados en window');
     }
 
-    // Capturar visualmente el elemento con alta resolución
     const canvas = await window.html2canvas(sourceElement, {
       scale: 2,
       useCORS: true,
@@ -879,21 +938,10 @@ document.addEventListener('DOMContentLoaded', () => {
       windowWidth: sourceElement.scrollWidth || 800
     });
 
-    if (!canvas || canvas.width === 0 || canvas.height === 0) {
-      throw new Error('Canvas renderizado vacío');
-    }
-
     const imgData = canvas.toDataURL('image/jpeg', 0.95);
-
-    const pdf = new jsPdfClass({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'letter',
-      compress: true
-    });
-
-    const pageWidth = 215.9; // Carta mm
-    const pageHeight = 279.4; // Carta mm
+    const pdf = new jsPdfClass({ orientation: 'portrait', unit: 'mm', format: 'letter', compress: true });
+    const pageWidth = 215.9;
+    const pageHeight = 279.4;
     const margin = 8;
     const printWidth = pageWidth - (margin * 2);
     const printHeight = (canvas.height * printWidth) / canvas.width;
@@ -902,11 +950,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let heightLeft = printHeight;
     let position = margin;
 
-    // Página 1
     pdf.addImage(imgData, 'JPEG', margin, position, printWidth, printHeight);
     heightLeft -= pageContentHeight;
 
-    // Páginas subsecuentes
     while (heightLeft > 0) {
       position = margin - (printHeight - heightLeft);
       pdf.addPage();
@@ -914,26 +960,13 @@ document.addEventListener('DOMContentLoaded', () => {
       heightLeft -= pageContentHeight;
     }
 
-    // Paginación y Sellos Vectoriales en todas las páginas generadas
     const totalPages = pdf.internal.getNumberOfPages();
-    const dateStamp = new Date().toLocaleDateString('es-ES');
-    const clientLabel = activeClient ? activeClient.name : 'Entrust';
-
     for (let i = 1; i <= totalPages; i++) {
       pdf.setPage(i);
-
-      // Pie de página vectorial
       pdf.setFontSize(8);
       pdf.setTextColor(100, 116, 139);
-      pdf.text(`IT SERVICIOS DE VENEZUELA, S.A. | Dictamen Pericial Entrust (${clientLabel})`, margin, pageHeight - 3.5);
+      pdf.text(`IT SERVICIOS DE VENEZUELA, S.A. | Dictamen Entrust (${clientLabel} - ${clientVersion})`, margin, pageHeight - 3.5);
       pdf.text(`Página ${i} de ${totalPages}`, pageWidth - margin - 22, pageHeight - 3.5);
-
-      // Encabezado sutil en páginas 2+
-      if (i > 1) {
-        pdf.setFontSize(7.5);
-        pdf.setTextColor(148, 163, 184);
-        pdf.text(`EXPEDIENTE: EXP-FORENSIC-ENTRUST-2026-V5 — ${clientLabel} — Fecha: ${dateStamp}`, margin, 5);
-      }
     }
 
     pdf.save(filename);
@@ -1442,7 +1475,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
                     (activeClient?.name || '').includes('Mercantil') ||
                     (state.loadedFiles || []).some(f => f.name.includes('.csv') || f.name.includes('AuditEvents'));
 
-    const platformLabel = isCloud ? 'Entrust IDaaS Cloud' : `IdentityGuard OnPremise (${activeClient?.version || 'v11.0'})`;
+    const platformLabel = isCloud ? 'Entrust IDaaS Cloud' : `IdentityGuard OnPremise (${activeClient?.version || 'Release 12.0'})`;
     const platformDisplay = isCloud ? '🛡️ Entrust IDaaS Cloud (Bulk Provisioning & SAML 2.0)' : `🛡️ ${escapeHtml(activeClient?.platform || 'Entrust IdentityGuard OnPremise')}`;
 
     const totalCount = consolidated.totalLogs;
@@ -2006,7 +2039,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
   function generateDynamicRecommendationsHtml(targetLogs, activeClient) {
     const items = [];
     const isCloud = (activeClient?.platform || '').toLowerCase().includes('idaas') || (activeClient?.platform || '').toLowerCase().includes('cloud');
-    const platformTitle = isCloud ? 'Entrust IDaaS Cloud' : `Entrust IdentityGuard OnPremise (${activeClient?.version || 'Release 11.0'})`;
+    const platformTitle = isCloud ? 'Entrust IDaaS Cloud' : `Entrust IdentityGuard OnPremise (${activeClient?.version || 'Release 12.0'})`;
     const consoleTitle = isCloud ? 'Consola Entrust IDaaS Cloud' : 'Consola de Administración Entrust IdentityGuard OnPremise';
 
     // Función auxiliar para extraer los códigos de error exactos presentes en la muestra
@@ -2116,62 +2149,25 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
     modal.style.display = 'flex';
 
     const activeClient = getActiveClientProfile();
+    const clientLabel = activeClient ? activeClient.name : 'Entorno Entrust';
+    const clientVersion = activeClient ? `${activeClient.platform || 'IdentityGuard'} ${activeClient.version || 'Release 12.0'}` : 'Entrust IdentityGuard';
     const logs = state.logs || [];
-    const serverMetrics = state.globalStreamMetrics || {};
 
     let codesMap = new Map();
     let catTitle = '';
     let catSubtitle = '';
+    let colHeader1 = 'Código / Patrón';
+    let colHeader3 = 'Significado Oficial & Diagnóstico';
+    let colHeader4 = 'Causa Raíz Identificada';
+    let colHeader5 = 'Acciones Recomendadas';
 
-    if (category === 'idaas') {
-      catTitle = 'Catálogo Forense de Incidentes & Eventos IDaaS Cloud';
-      catSubtitle = `Extracción y análisis de directivas de aprovisionamiento, asignación de Grid, contraseñas, QA y SAML (${activeClient.name})`;
-      
-      // Buscar logs IDaaS
-      logs.forEach(l => {
-        const msg = (l.message || '') + ' ' + (l.raw || '');
-        if (/bulkidentityguard|assignedgrid|password|qa|migration|idaas|saml|oidc/i.test(msg) || (l.type && l.type.includes('IDaaS'))) {
-          const match = msg.match(/(bulkidentityguard\.[a-zA-Z0-9_\.]+|idaas\.[a-zA-Z0-9_\.]+)/i);
-          const code = match ? match[1] : (l.entrustCode || 'IDaaS.Event.General');
-          if (!codesMap.has(code)) {
-            codesMap.set(code, { code, count: 0, sample: msg, service: l.service || 'IDaaS Provisioning' });
-          }
-          codesMap.get(code).count++;
-        }
-      });
-
-      // Fallback si no hay logs directos pero hay muestra o servidor
-      if (codesMap.size === 0) {
-        codesMap.set('bulkidentityguard.add.error.assignedgrid', { code: 'bulkidentityguard.add.error.assignedgrid', count: 18420, sample: 'Error asignando tarjeta Grid a usuario en pipeline IDaaS', service: 'IDaaS Bulk Provisioning' });
-        codesMap.set('bulkidentityguard.add.error.qa', { code: 'bulkidentityguard.add.error.qa', count: 14210, sample: 'Respuestas de desafío QA no cumplen política IDaaS', service: 'IDaaS Challenge QA' });
-        codesMap.set('bulkidentityguard.add.error.password', { code: 'bulkidentityguard.add.error.password', count: 12850, sample: 'Complejidad de contraseña rechazada en sincronización', service: 'IDaaS Credential Sync' });
-      }
-
-    } else if (category === '520') {
-      catTitle = 'Catálogo Oficial de Errores IdentityGuard [520xxx] (OnPremise)';
-      catSubtitle = `Códigos oficiales de error de autenticación, políticas, base de datos y ciclo de vida de tokens (${activeClient.name})`;
-
-      logs.forEach(l => {
-        const msg = (l.message || '') + ' ' + (l.raw || '');
-        const match = msg.match(/520\d{4}/i);
-        if (match) {
-          const code = match[0];
-          if (!codesMap.has(code)) {
-            codesMap.set(code, { code, count: 0, sample: msg, service: l.service || 'IdentityGuard Core' });
-          }
-          codesMap.get(code).count++;
-        }
-      });
-
-      if (codesMap.size === 0) {
-        codesMap.set('5202013', { code: '5202013', count: 3214547, sample: '[5202013] Invalid user ID specified during authentication sequence', service: 'Authentication Engine' });
-        codesMap.set('5205079', { code: '5205079', count: 8520, sample: '[5205079] User password is locked due to repeated failed attempts', service: 'Security Policy' });
-        codesMap.set('5201006', { code: '5201006', count: 4210, sample: '[5201006] Token synchronization failure during OTP verification', service: 'Token Service' });
-      }
-
-    } else if (category === 'audit') {
-      catTitle = 'Registro Forense de Alertas de Auditoría & Seguridad [AUDxxx]';
-      catSubtitle = `Eventos de auditoría de seguridad, inicios de sesión de administradores y cambios de directivas (${activeClient.name})`;
+    if (category === 'audit') {
+      catTitle = '📋 Eventos de Auditoría y Trazabilidad de Seguridad (AUD)';
+      catSubtitle = `Eventos de gobernanza, accesos administrativos, cambios de directivas y trazabilidad operacional (${clientLabel} - ${clientVersion})`;
+      colHeader1 = 'Código AUD';
+      colHeader3 = 'Evento & Acción Registrada';
+      colHeader4 = 'Actor / Origen & Contexto';
+      colHeader5 = 'Control & Gobernanza Recomendada';
 
       logs.forEach(l => {
         const msg = (l.message || '') + ' ' + (l.raw || '');
@@ -2186,13 +2182,69 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       });
 
       if (codesMap.size === 0) {
-        codesMap.set('AUD001', { code: 'AUD001', count: 120, sample: '[AUD001] Administrator console login success from 10.16.13.175', service: 'Admin Console' });
-        codesMap.set('AUD004', { code: 'AUD004', count: 45, sample: '[AUD004] User authentication policy modified by security administrator', service: 'Policy Management' });
+        codesMap.set('AUD001', { code: 'AUD001', count: 120, sample: '[AUD001] Administrator console login success from 10.16.13.175', service: 'Consola de Administración' });
+        codesMap.set('AUD004', { code: 'AUD004', count: 45, sample: '[AUD004] User authentication policy modified by security administrator', service: 'Gestión de Políticas' });
+      }
+
+    } else if (category === '520') {
+      catTitle = '🚨 Errores y Excepciones de Autenticación [520xxx]';
+      catSubtitle = `Códigos oficiales de error técnico, fallos de autenticación y validación de credenciales (${clientLabel} - ${clientVersion})`;
+      colHeader1 = 'Código Entrust';
+      colHeader3 = 'Diagnóstico Técnico Oficial';
+      colHeader4 = 'Causa Raíz Técnica';
+      colHeader5 = 'Remediación Oficial Entrust';
+
+      logs.forEach(l => {
+        const msg = (l.message || '') + ' ' + (l.raw || '');
+        const match = msg.match(/520\d{4}/i);
+        if (match) {
+          const code = match[0];
+          if (!codesMap.has(code)) {
+            codesMap.set(code, { code, count: 0, sample: msg, service: l.service || 'IdentityGuard Core' });
+          }
+          codesMap.get(code).count++;
+        }
+      });
+
+      if (codesMap.size === 0) {
+        codesMap.set('5202013', { code: '5202013', count: 3214547, sample: '[5202013] Invalid user ID specified during authentication sequence', service: 'Motor de Autenticación' });
+        codesMap.set('5205079', { code: '5205079', count: 8520, sample: '[5205079] User password is locked due to repeated failed attempts', service: 'Políticas de Seguridad' });
+        codesMap.set('5201006', { code: '5201006', count: 4210, sample: '[5201006] Token synchronization failure during OTP verification', service: 'Servicio de Tokens OTP' });
+      }
+
+    } else if (category === 'idaas') {
+      catTitle = '☁️ Sincronización e Ingesta Masiva (IDaaS / Provisionamiento)';
+      catSubtitle = `Carga de usuarios, configuración RBA, asignación de Grid y credenciales (${clientLabel} - ${clientVersion})`;
+      colHeader1 = 'Operación / Directiva';
+      colHeader3 = 'Descripción de la Operación';
+      colHeader4 = 'Impacto en Ingesta / Migración';
+      colHeader5 = 'Acciones de Resolución';
+
+      logs.forEach(l => {
+        const msg = (l.message || '') + ' ' + (l.raw || '');
+        if (/bulkidentityguard|assignedgrid|password|qa|migration|idaas|saml|oidc|tokenpush/i.test(msg) || (l.type && l.type.includes('IDaaS'))) {
+          const match = msg.match(/(bulkidentityguard\.[a-zA-Z0-9_\.]+|identityguard_import_[a-zA-Z0-9_]+|assignedgrid|rbasetting|password|qa|user|tokenpush_authentication_succeeded)/i);
+          const code = match ? match[1] : (l.entrustCode || 'IDaaS.Event.General');
+          if (!codesMap.has(code)) {
+            codesMap.set(code, { code, count: 0, sample: msg, service: l.service || 'IDaaS Provisioning' });
+          }
+          codesMap.get(code).count++;
+        }
+      });
+
+      if (codesMap.size === 0) {
+        codesMap.set('bulkidentityguard.add.error.assignedgrid', { code: 'bulkidentityguard.add.error.assignedgrid', count: 18420, sample: 'Error asignando tarjeta Grid a usuario en pipeline IDaaS', service: 'IDaaS Bulk Provisioning' });
+        codesMap.set('bulkidentityguard.add.error.qa', { code: 'bulkidentityguard.add.error.qa', count: 14210, sample: 'Respuestas de desafío QA no cumplen política IDaaS', service: 'IDaaS Challenge QA' });
+        codesMap.set('bulkidentityguard.add.error.password', { code: 'bulkidentityguard.add.error.password', count: 12850, sample: 'Complejidad de contraseña rechazada en sincronización', service: 'IDaaS Credential Sync' });
       }
 
     } else if (category === 'traffic') {
-      catTitle = 'Desglose de Transacciones, APIs & Métodos Invocados';
-      catSubtitle = `Análisis de consumo por servicio, endpoints de autenticación y transacciones registradas (${activeClient.name})`;
+      catTitle = '⚡ Transacciones y Métodos de API Invocados';
+      catSubtitle = `Análisis de consumo por servicio, endpoints de autenticación y transacciones (${clientLabel} - ${clientVersion})`;
+      colHeader1 = 'Servicio / Endpoint';
+      colHeader3 = 'Propósito del Servicio';
+      colHeader4 = 'Modalidad de Invocación';
+      colHeader5 = 'Estado Operacional';
 
       logs.forEach(l => {
         const srv = l.service || l.type || 'IdentityGuard.API';
@@ -2209,8 +2261,12 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       }
 
     } else if (category === 'health') {
-      catTitle = 'Desglose de Evaluación del Índice de Salud del Clúster';
-      catSubtitle = `Ponderación de estabilidad técnica, ratio de éxito y penalizaciones operacionales (${activeClient.name})`;
+      catTitle = '🏥 Desglose de Evaluación del Índice de Salud del Clúster';
+      catSubtitle = `Ponderación de estabilidad técnica, ratio de éxito y penalizaciones operacionales (${clientLabel} - ${clientVersion})`;
+      colHeader1 = 'Métrica de Salud';
+      colHeader3 = 'Definición & Ponderación';
+      colHeader4 = 'Impacto en Índice';
+      colHeader5 = 'Objetivo SLA';
 
       codesMap.set('Ratio de Éxito Transaccional', { code: 'HEALTH-SUCCESS-RATE', count: 100, sample: 'Porcentaje de transacciones completadas sin errores de nivel CRITICAL', service: 'Índice Base' });
       codesMap.set('Penalización por Errores 520xxx', { code: 'PENALTY-520', count: 0, sample: 'Descuento ponderado por fallos de catálogo Core', service: 'Severidad Crítica' });
@@ -2226,9 +2282,9 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
     const totalOccurrences = dataArray.reduce((acc, curr) => acc + curr.count, 0);
 
     summaryBar.innerHTML = `
-      <div><strong>Códigos Únicos Detectados:</strong> <span style="color:#38bdf8; font-family:monospace; font-weight:bold;">${dataArray.length}</span></div>
-      <div><strong>Total Eventos de esta Categoría:</strong> <span style="color:#f43f5e; font-family:monospace; font-weight:bold;">${totalOccurrences.toLocaleString()}</span></div>
-      <div><strong>Entorno Activo:</strong> <span style="color:var(--text-main); font-weight:600;">${escapeHtml(activeClient.name)}</span></div>
+      <div><strong>Registros Únicos Detectados:</strong> <span style="color:#38bdf8; font-family:monospace; font-weight:bold;">${dataArray.length}</span></div>
+      <div><strong>Total Eventos de esta Categoría:</strong> <span style="color:${category === 'audit' ? '#0d9488' : (category === '520' ? '#f43f5e' : '#38bdf8')}; font-family:monospace; font-weight:bold;">${totalOccurrences.toLocaleString()}</span></div>
+      <div><strong>Entorno & Versión Activa:</strong> <span style="color:var(--text-main); font-weight:600;">${escapeHtml(clientLabel)} (${escapeHtml(clientVersion)})</span></div>
     `;
 
     let rowsHtml = '';
@@ -2239,24 +2295,25 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       }
 
       const pct = totalOccurrences > 0 ? ((item.count / totalOccurrences) * 100).toFixed(1) : '0';
+      const isAudit = category === 'audit' || (item.code && item.code.startsWith('AUD'));
 
       rowsHtml += `
         <tr style="border-bottom:1px solid var(--border-color); background:${idx % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.03)'};">
-          <td style="padding:10px; font-family:'JetBrains Mono', monospace; font-weight:bold; color:#0284c7; white-space:nowrap;">
+          <td style="padding:10px; font-family:'JetBrains Mono', monospace; font-weight:bold; color:${isAudit ? '#0d9488' : '#0284c7'}; white-space:nowrap;">
             ${escapeHtml(item.code)}
           </td>
-          <td style="padding:10px; text-align:center; font-family:'JetBrains Mono', monospace; font-weight:bold; color:${category === '520' ? '#ef4444' : (category === 'idaas' ? '#c084fc' : '#38bdf8')};">
+          <td style="padding:10px; text-align:center; font-family:'JetBrains Mono', monospace; font-weight:bold; color:${category === '520' ? '#ef4444' : (category === 'idaas' ? '#c084fc' : (category === 'audit' ? '#0d9488' : '#38bdf8'))};">
             ${item.count.toLocaleString()}<br><span style="font-size:0.7rem; color:var(--text-muted); font-weight:normal;">(${pct}%)</span>
           </td>
           <td style="padding:10px; font-size:0.8rem; color:var(--text-main);">
             <strong>${escapeHtml(diag.title || item.code)}</strong><br>
             <span style="font-size:0.75rem; color:var(--text-muted); line-height:1.3;">${escapeHtml(diag.meaning || item.sample)}</span>
           </td>
-          <td style="padding:10px; font-size:0.75rem; color:#b91c1c;">
-            ${escapeHtml(diag.rootCause || 'Anomalía en flujo de credenciales')}
+          <td style="padding:10px; font-size:0.75rem; color:${isAudit ? '#334155' : '#b91c1c'};">
+            ${escapeHtml(diag.rootCause || 'Operación registrada en el flujo del clúster')}
           </td>
           <td style="padding:10px; font-size:0.75rem; color:#047857; white-space:pre-line;">
-            ${escapeHtml(diag.remediation || 'Consultar manual técnico')}
+            ${escapeHtml(diag.governanceControl || diag.remediation || 'Operación estándar sin fallos')}
           </td>
         </tr>
       `;
@@ -2266,11 +2323,11 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.8rem;">
         <thead>
           <tr style="background:var(--bg-secondary); border-bottom:2px solid var(--border-color); color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">
-            <th style="padding:10px;">Código / Patrón</th>
+            <th style="padding:10px;">${colHeader1}</th>
             <th style="padding:10px; text-align:center;">Frecuencia</th>
-            <th style="padding:10px;">Significado Oficial &amp; Diagnóstico</th>
-            <th style="padding:10px;">Causa Raíz Probable</th>
-            <th style="padding:10px;">Remediación Recomendada</th>
+            <th style="padding:10px;">${colHeader3}</th>
+            <th style="padding:10px;">${colHeader4}</th>
+            <th style="padding:10px;">${colHeader5}</th>
           </tr>
         </thead>
         <tbody>

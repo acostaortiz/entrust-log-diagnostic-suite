@@ -616,17 +616,55 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       }
 
       const activeClient = this.getClientProfile();
-      const filename = `Informe_Trazabilidad_Usuarios_${(activeClient.name || 'Entrust').replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+      const clientLabel = activeClient ? (activeClient.name || 'Entrust General') : 'Entrust General';
+      const clientVersion = activeClient ? `${activeClient.platform || 'IdentityGuard'} ${activeClient.version || 'Release 12.0'}` : 'Entrust IdentityGuard';
+      const dateStamp = new Date().toLocaleDateString('es-ES');
+      const filename = `Informe_Trazabilidad_Usuarios_${clientLabel.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
+
+      // Prevenir cortes de filas en tablas
+      const tables = el.querySelectorAll('table, tr, td, th, .report-card, .metric-card, .avoid-break');
+      tables.forEach(node => {
+        node.style.pageBreakInside = 'avoid';
+        node.style.breakInside = 'avoid';
+      });
 
       if (window.html2pdf) {
         const opt = {
-          margin: [10, 10, 10, 10],
+          margin: [12, 10, 14, 10],
           filename: filename,
           image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, logging: false },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
+          jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait', compress: true },
+          pagebreak: { 
+            mode: ['avoid-all', 'css', 'legacy'], 
+            avoid: ['tr', 'th', 'td', 'h1', 'h2', 'h3', 'h4', '.report-card', '.metric-card', '.avoid-break', 'div[style*="border"]'] 
+          }
         };
-        window.html2pdf().set(opt).from(el).save();
+
+        window.html2pdf().set(opt).from(el).toPdf().get('pdf').then(function(pdf) {
+          const totalPages = pdf.internal.getNumberOfPages();
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const pageHeight = pdf.internal.pageSize.getHeight();
+
+          for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            
+            if (i > 1) {
+              pdf.setFontSize(7.5);
+              pdf.setTextColor(148, 163, 184);
+              pdf.text(`IT SERVICIOS DE VENEZUELA, S.A. | Trazabilidad de Usuario — ${clientLabel} (${clientVersion})`, 10, 7);
+              pdf.setDrawColor(226, 232, 240);
+              pdf.line(10, 8.5, pageWidth - 10, 8.5);
+            }
+
+            pdf.setDrawColor(226, 232, 240);
+            pdf.line(10, pageHeight - 9, pageWidth - 10, pageHeight - 9);
+            pdf.setFontSize(7.5);
+            pdf.setTextColor(100, 116, 139);
+            pdf.text(`IT Servicios de Venezuela, S.A. | Trazabilidad de Seguridad | ${clientLabel} (${clientVersion}) | ${dateStamp}`, 10, pageHeight - 5);
+            pdf.text(`Página ${i} de ${totalPages}`, pageWidth - 28, pageHeight - 5);
+          }
+        }).save();
       } else {
         window.print();
       }

@@ -1211,6 +1211,27 @@ class KnowledgeBase {
     if (!logText && !targetCode) return null;
     const searchText = logText || (targetCode ? `[${targetCode}]` : '');
 
+    // Determinar la versión activa de la plataforma del cliente en sesión (v12, v13, v11, IDaaS)
+    let activeVersionLabel = 'Entrust IdentityGuard (Admin Guide)';
+    let activeVersionKey = 'v12_0_webhelp';
+    if (typeof window !== 'undefined') {
+      let client = null;
+      if (typeof window.getActiveClientProfileGlobal === 'function') {
+        client = window.getActiveClientProfileGlobal();
+      } else if (window.state && window.state.activeClientId) {
+        client = (window.state.clientProfiles || []).find(p => p.id === window.state.activeClientId);
+      }
+      if (client) {
+        const pVer = client.version || 'Release 12.0';
+        const pPlat = client.platform || 'Entrust IdentityGuard OnPremise';
+        activeVersionLabel = `${pPlat} (${pVer})`;
+        if (/11/i.test(pVer)) activeVersionKey = 'v11_0_webhelp';
+        else if (/12/i.test(pVer)) activeVersionKey = 'v12_0_webhelp';
+        else if (/13/i.test(pVer)) activeVersionKey = 'v13_0_webhelp';
+        else if (/idaas|cloud/i.test(pVer) || /idaas|cloud/i.test(pPlat)) activeVersionKey = 'vIDaaS_docs';
+      }
+    }
+
     // 0. Búsqueda exacta e instantánea en el Catálogo de Precisión Oficial
     const cleanCode = (targetCode || (typeof this.extractErrorCodeFromText === 'function' ? this.extractErrorCodeFromText(searchText) : '') || '').trim();
     if (cleanCode && typeof ENTRUST_EXACT_CATALOG !== 'undefined' && ENTRUST_EXACT_CATALOG[cleanCode]) {
@@ -1223,17 +1244,37 @@ class KnowledgeBase {
         severity: entry.severity,
         meaning: entry.meaning,
         rootCause: entry.rootCause,
+        governanceControl: entry.governanceControl || entry.remediation,
         remediation: entry.remediation,
-        riskLevel: entry.severity === 'CRITICAL' ? 'Crítico (P1)' : (entry.severity === 'ERROR' ? 'Alto (P2)' : 'Nominal / Auditoría'),
-        manualVersion: 'vEntrust',
-        sectionId: `sec-${cleanCode.toLowerCase()}`,
+        riskLevel: entry.severity === 'CRITICAL' ? 'Crítico (P1)' : (entry.severity === 'ERROR' ? 'Alto (P2)' : (entry.severity === 'WARN' ? 'Medio (Advertencia)' : 'Nominal / Auditoría')),
+        manualVersion: activeVersionLabel,
+        sectionId: `sec-${cleanCode.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
         sectionTitle: `Código [${cleanCode}]: ${entry.title}`
       };
     }
 
-    // Si se especificó un código objetivo, buscar primero la regla que coincida de forma estricta con ese código
+    // 1. Si el usuario cargó manuales específicos para la versión activa (v11, v12, v13), buscar primero en las reglas de esa versión
     if (targetCode) {
-      const specRule = this.rules.find(r => r.id === `KB-ENTRUST-${targetCode}` || r.pattern.test(`[${targetCode}]`));
+      const specRuleVersion = this.rules.find(r => (r.manualVersion === activeVersionKey || r.manualVersion === activeVersionLabel) && (r.id === `KB-ENTRUST-${targetCode}` || (r.pattern && r.pattern.test(`[${targetCode}]`))));
+      if (specRuleVersion) {
+        return {
+          matched: true,
+          ruleId: specRuleVersion.id,
+          title: specRuleVersion.title,
+          category: specRuleVersion.category,
+          severity: specRuleVersion.severity,
+          meaning: specRuleVersion.meaning,
+          rootCause: specRuleVersion.rootCause,
+          governanceControl: specRuleVersion.remediation,
+          remediation: specRuleVersion.remediation,
+          riskLevel: specRuleVersion.riskLevel,
+          manualVersion: activeVersionLabel,
+          sectionId: specRuleVersion.sectionId,
+          sectionTitle: specRuleVersion.sectionTitle
+        };
+      }
+
+      const specRule = this.rules.find(r => r.id === `KB-ENTRUST-${targetCode}` || (r.pattern && r.pattern.test(`[${targetCode}]`)));
       if (specRule) {
         return {
           matched: true,
@@ -1243,17 +1284,19 @@ class KnowledgeBase {
           severity: specRule.severity,
           meaning: specRule.meaning,
           rootCause: specRule.rootCause,
+          governanceControl: specRule.remediation,
           remediation: specRule.remediation,
           riskLevel: specRule.riskLevel,
-          manualVersion: specRule.manualVersion,
+          manualVersion: activeVersionLabel,
           sectionId: specRule.sectionId,
           sectionTitle: specRule.sectionTitle
         };
       }
     }
 
+    // 2. Buscar en todas las reglas cargadas en memoria
     for (const rule of this.rules) {
-      if (rule.pattern.test(searchText)) {
+      if (rule.pattern && rule.pattern.test(searchText)) {
         return {
           matched: true,
           ruleId: rule.id,
@@ -1262,16 +1305,17 @@ class KnowledgeBase {
           severity: rule.severity,
           meaning: rule.meaning,
           rootCause: rule.rootCause,
+          governanceControl: rule.remediation,
           remediation: rule.remediation,
           riskLevel: rule.riskLevel,
-          manualVersion: rule.manualVersion,
+          manualVersion: activeVersionLabel,
           sectionId: rule.sectionId,
           sectionTitle: rule.sectionTitle
         };
       }
     }
 
-    // Diagnóstico Especializado para Entrust IDaaS Migration Tool / Bulk Import
+    // 3. Diagnóstico Especializado para Entrust IDaaS Migration Tool / Bulk Import
     if (/IdentityGuard migration:|bulkidentityguard\.add\.error/i.test(searchText) || (targetCode && targetCode.startsWith('bulkidentityguard'))) {
       if (/assignedgrid|grid already assigned/i.test(searchText) || targetCode === 'bulkidentityguard.add.error.assignedgrid') {
         return {
@@ -1283,9 +1327,10 @@ class KnowledgeBase {
           attribution: '☁️ Entrust IDaaS Migration Tool / Almacén de Identidades Cloud',
           meaning: 'La tarea de importación masiva intentó asignar una nueva tarjeta Grid a usuarios que ya contaban con una tarjeta Grid activa en el almacén de identidades de Entrust IDaaS.',
           rootCause: 'Ejecución del proceso de carga por lotes (Bulk IdentityGuard) sin el parámetro de sobrescritura overwriteExistingGrid=true o re-ejecución del lote sobre usuarios previamente aprovisionados.',
-          remediation: '1. En la definición de la tarea masiva, configure el parámetro overwriteExistingGrid=true si requiere reemplazar la tarjeta actual.\n2. Depure el archivo de lote excluyendo los usuarios que ya cuentan con credencial Grid activa.\n3. Ejecute una sincronización diferencial en lugar de una importación completa.\n4. Documentación Oficial: https://docs.trustedauth.com/docs/perform-bulk-operations/',
+          governanceControl: 'Configurar overwriteExistingGrid=true en el pipeline masivo si se requiere reemplazo de credencial.',
+          remediation: '1. En la definición de la tarea masiva, configure el parámetro overwriteExistingGrid=true si requiere reemplazar la tarjeta actual.\n2. Depure el archivo de lote excluyendo los usuarios que ya cuentan con credencial Grid activa.\n3. Ejecute una sincronización diferencial en lugar de una importación completa.',
           riskLevel: 'Alto (Fallo de Aprovisionamiento en Lote)',
-          manualVersion: 'vIDaaS_docs',
+          manualVersion: activeVersionLabel,
           docsUrl: 'https://docs.trustedauth.com/docs/perform-bulk-operations/',
           sectionId: 'sec-idaas-bulk',
           sectionTitle: 'IDaaS Cloud Bulk Provisioning: Grid Assignment Conflict'
@@ -1301,9 +1346,10 @@ class KnowledgeBase {
           attribution: '☁️ Entrust IDaaS Migration Tool / Almacén de Identidades Cloud',
           meaning: 'El usuario ya posee una contraseña activa en la base de identidades de Entrust IDaaS Cloud. Por política de seguridad, la contraseña del archivo de migración no fue sobrescrita.',
           rootCause: 'Conflicto de unicidad en el almacén de identidades IDaaS durante la importación masiva de credenciales.',
-          remediation: '1. Habilite el parámetro allowPasswordReset=true si se desea forzar el reemplazo de la contraseña existente.\n2. Verifique las políticas de sincronización con el Directorio Activo (AD/LDAP).\n3. Valide el estado de enrolamiento del usuario en la consola de IDaaS.\n4. Documentación Oficial: https://docs.trustedauth.com/docs/authentication-and-security/',
+          governanceControl: 'Habilitar allowPasswordReset=true en el conector masivo si se desea forzar actualización.',
+          remediation: '1. Habilite el parámetro allowPasswordReset=true si se desea forzar el reemplazo de la contraseña existente.\n2. Verifique las políticas de sincronización con el Directorio Activo (AD/LDAP).\n3. Valide el estado de enrolamiento del usuario en la consola de IDaaS.',
           riskLevel: 'Medio (Conflicto de Password)',
-          manualVersion: 'vIDaaS_docs',
+          manualVersion: activeVersionLabel,
           docsUrl: 'https://docs.trustedauth.com/docs/authentication-and-security/',
           sectionId: 'sec-idaas-bulk',
           sectionTitle: 'IDaaS Cloud Bulk Provisioning: Password Credential Conflict'
@@ -1319,9 +1365,10 @@ class KnowledgeBase {
           attribution: '☁️ Entrust IDaaS Migration Tool / Almacén de Identidades Cloud',
           meaning: 'El esquema de preguntas y respuestas de desafío (Q&A Challenge/Response) ya fue registrado previamente para este usuario en Entrust IDaaS Cloud.',
           rootCause: 'Intento de inserción de preguntas de seguridad en usuarios ya enrolados sin habilitar la bandera de actualización de credenciales updateExistingCredentials=true.',
-          remediation: '1. Habilite el parámetro updateExistingCredentials=true en la configuración de la tarea de importación masiva.\n2. Si los usuarios deben mantener sus preguntas actuales, omita la columna Q&A en el archivo CSV de carga.\n3. Valide el estado de enrolamiento del usuario en la consola de IDaaS.\n4. Documentación Oficial: https://docs.trustedauth.com/docs/people-and-access/',
+          governanceControl: 'Configurar updateExistingCredentials=true para actualización de cuestionario.',
+          remediation: '1. Habilite el parámetro updateExistingCredentials=true en la configuración de la tarea de importación masiva.\n2. Si los usuarios deben mantener sus preguntas actuales, omita la columna Q&A en el archivo CSV de carga.',
           riskLevel: 'Medio (Conflicto de Credenciales Q&A)',
-          manualVersion: 'vIDaaS_docs',
+          manualVersion: activeVersionLabel,
           docsUrl: 'https://docs.trustedauth.com/docs/people-and-access/',
           sectionId: 'sec-idaas-bulk',
           sectionTitle: 'IDaaS Cloud Bulk Provisioning: Q&A Challenge Collision'
@@ -1329,33 +1376,56 @@ class KnowledgeBase {
       }
     }
 
-    // Diagnóstico Heurístico Entrust OnPremise AUDxxxx (Sin mensajes de "Consulte el manual")
+    // 4. Diagnóstico Heurístico Entrust OnPremise AUDxxxx
     const audMatch = searchText.match(/\[(AUD\d+)\]\s*(.*)/i);
     if (audMatch) {
       const audCode = targetCode || audMatch[1].toUpperCase();
-      const audDetail = audMatch[2] ? audMatch[2].trim() : 'Evento de auditoría en la plataforma Entrust.';
+      const audDetail = audMatch[2] ? audMatch[2].trim() : 'Evento de auditoría registrado en el subsistema de trazabilidad.';
+      
+      let audTitle = `Entrust Audit: Evento [${audCode}]`;
+      let audMeaning = `Se registró el evento de auditoría [${audCode}] en el módulo IG.AUDIT: ${audDetail}`;
+      let audContext = 'Operación registrada por el subsistema de auditoría de seguridad y control de accesos.';
+      let audControl = '1. Verificar que el evento corresponda a una actividad autorizada en el sistema.\n2. Validar correspondencia con la bitácora de administración o RFC.';
+      let audSeverity = 'INFO';
+
+      if (/login.*success|auth.*success/i.test(audDetail)) {
+        audTitle = `Inicio de Sesión Exitoso [${audCode}]`;
+        audContext = 'Acceso autenticado y autorizado de operador / administrador.';
+        audControl = 'Verificar que la IP de origen se encuentre dentro de la red administrativa.';
+      } else if (/fail|error|denied|invalid/i.test(audDetail)) {
+        audTitle = `Alerta de Seguridad / Intento Fallido [${audCode}]`;
+        audContext = 'Intento de acceso o validación de credenciales no satisfactorio.';
+        audControl = 'Auditar origen y frecuencia para descartar posibles ataques de fuerza bruta.';
+        audSeverity = 'WARN';
+      } else if (/policy|directiva|rule/i.test(audDetail)) {
+        audTitle = `Modificación de Política de Seguridad [${audCode}]`;
+        audContext = 'Ajuste de parámetros o directivas de autenticación.';
+        audControl = 'Validar que el cambio esté respaldado por un requerimiento de cambio (RFC) formal aprobado.';
+      }
+
       return {
         matched: true,
         ruleId: `KB-ENTRUST-${audCode}`,
-        title: `Entrust Audit: Evento [${audCode}]`,
-        category: 'Entrust OnPremise Audit',
-        severity: 'INFO',
-        meaning: `Se registró el evento de auditoría [${audCode}] en el módulo IG.AUDIT: ${audDetail}`,
-        rootCause: 'Operación o cambio de estado ejecutado por un usuario, administrador o tarea programada.',
-        remediation: '1. Verifique que el evento corresponda a una actividad autorizada en el sistema.\n2. En caso de ser una alerta de conexión o servicio, revise la conectividad del componente afectado.',
-        riskLevel: 'Bajo (Registro de Auditoría)',
-        manualVersion: 'vEntrust',
+        title: audTitle,
+        category: 'Auditoría & Trazabilidad de Seguridad (AUD)',
+        severity: audSeverity,
+        meaning: audMeaning,
+        rootCause: audContext,
+        governanceControl: audControl,
+        remediation: audControl,
+        riskLevel: audSeverity === 'WARN' ? 'Medio (Alerta de Auditoría)' : 'Nominal (Auditoría de Seguridad)',
+        manualVersion: activeVersionLabel,
         sectionId: `sec-${audCode.toLowerCase()}`,
         sectionTitle: `Código [${audCode}]: Evento de Auditoría Entrust`
       };
     }
 
-    // Diagnóstico Heurístico Entrust OnPremise 520xxx (Remediación técnica explícita)
-    const regexToUse = targetCode ? new RegExp('\\[(' + targetCode + ')\\]\\s*(.*)', 'i') : /\[(520\d{4})\]\s*(.*)/;
-    const entrustMatch = searchText.match(regexToUse) || searchText.match(/\[(520\d{4})\]\s*(.*)/);
+    // 5. Diagnóstico Heurístico Entrust OnPremise 520xxx
+    const regexToUse = targetCode ? new RegExp('\\[(' + targetCode + ')\\]\\s*(.*)', 'i') : /\\[(520\d{4})\\]\\s*(.*)/;
+    const entrustMatch = searchText.match(regexToUse) || searchText.match(/\\[(520\d{4})\\]\\s*(.*)/);
     if (entrustMatch) {
       const code = targetCode || entrustMatch[1];
-      const detail = entrustMatch[2] ? entrustMatch[2].trim() : 'Error en la transacción de autenticación/administración.';
+      const detail = entrustMatch[2] ? entrustMatch[2].trim() : 'Error en la transacción de autenticación o validación de políticas.';
 
       let causeText = 'Fallo reportado por el servidor de autenticación/administración de Entrust IdentityGuard.';
       let remediationText = '1. Revise el estado de la cuenta del usuario y sus credenciales activas en la consola de Entrust.\n2. Compruebe si el usuario o token alcanzó el límite de reintentos fallidos y desbloquee la cuenta.\n3. Valide la conectividad y sincronización entre el servidor web y la base de datos de repositorios.';
@@ -1381,329 +1451,55 @@ class KnowledgeBase {
         matched: true,
         ruleId: `KB-ENTRUST-${code}`,
         title: `Entrust IdentityGuard Error [${code}]`,
-        category: 'Entrust OnPremise Suite',
+        category: 'Errores IdentityGuard Core (520xxx)',
         severity: 'ERROR',
         meaning: `Se registró el código de error [${code}]: ${detail}`,
         rootCause: causeText,
+        governanceControl: remediationText,
         remediation: remediationText,
-        riskLevel: 'Medio (Error de Sistema IdentityGuard)',
-        manualVersion: 'vEntrust',
+        riskLevel: 'Alto (Error de Sistema IdentityGuard)',
+        manualVersion: activeVersionLabel,
         sectionId: `sec-${code}`,
         sectionTitle: `Código [${code}]: Error Entrust IdentityGuard`
       };
     }
 
-    // Diagnóstico Heurístico Entrust (Adaptable OnPremise / Cloud)
-    if (/IDaaS|SAML|OIDC|OAuth2|Push|MFA|Radius/i.test(logText)) {
+    // 6. Diagnóstico Heurístico para Códigos ORA
+    const oraMatch = searchText.match(/ORA-\d{5}/i);
+    if (oraMatch) {
+      const oraCode = targetCode || oraMatch[0].toUpperCase();
       return {
         matched: true,
-        ruleId: 'KB-ENTRUST-MFA',
-        title: 'Evento de Autenticación / Federación Entrust',
-        category: 'Entrust IdentityGuard Suite',
-        severity: /failed|error|rejected|timeout/i.test(logText) ? 'ERROR' : 'INFO',
-        attribution: '🔒 Servicios de Identidad & Federación',
-        meaning: 'Registro de evento de autenticación, token o evaluación de regla MFA en la plataforma Entrust.',
-        rootCause: 'Solicitud de token, sincronización de identidad o evaluación de política MFA.',
-        remediation: '1. Verifique el estado de la política de autenticación en la Consola Entrust.\n2. Compruebe la validez del certificado SAML 2.0 / OIDC.\n3. Verifique la conectividad con la pasarela MFA.',
-        riskLevel: 'Medio (Evento de Identidad)',
-        manualVersion: 'vEntrust',
-        sectionId: 'sec-idaas-saml',
-        sectionTitle: 'Manual de Diagnóstico Entrust IdentityGuard'
-      };
-    }
-
-    // Diagnóstico heurístico para logs de Tomcat / Catalina (Servidor de Aplicaciones Entrust)
-    if (/OutOfMemoryError|Java heap space/i.test(logText)) {
-      return {
-        matched: true,
-        ruleId: 'KB-CATALINA-OOM',
-        title: 'Tomcat Catalina: OutOfMemoryError (Agotamiento de Memoria JVM Heap)',
-        category: 'Tomcat Catalina / Servidor de Aplicaciones',
+        ruleId: `KB-ORA-${oraCode}`,
+        title: `Excepción Oracle Database [${oraCode}]`,
+        category: 'Persistencia & Base de Datos (ORA)',
         severity: 'CRITICAL',
-        meaning: 'La máquina virtual Java (JVM) de Tomcat que ejecuta Entrust IdentityGuard agotó su memoria RAM disponible.',
-        rootCause: 'Asignación insuficiente del tamaño de Heap (-Xmx) en Tomcat o alta concurrencia de sesiones de autenticación.',
-        remediation: '1. Aumente la memoria JVM en setenv.sh / catalina.sh (ej. -Xms2048m -Xmx4096m).\n2. Reinicie el servicio Tomcat/IdentityGuard.\n3. Monitoree la recolección de basura (GC) con jstat / VisualVM. (Ref. Manual Entrust IDG Tomcat Tuning: Sección 9.3 - JVM Heap Settings)',
-        riskLevel: 'Crítico (Caída del Servidor de Aplicaciones)',
-        manualVersion: 'vEntrust',
-        sectionId: 'sec-aud-codes',
-        sectionTitle: 'Manual de Ajuste JVM y Servidor Tomcat'
+        meaning: `Error transaccional generado por el motor de base de datos Oracle durante la operación de Entrust.`,
+        rootCause: 'Saturación en tablespace, timeout de red o inconsistencia en sesión JDBC de Tomcat.',
+        governanceControl: 'Comprobar espacio en disco, estado del listener Oracle y pool JDBC en Tomcat.',
+        remediation: '1. Comprobar disponibilidad de almacenamiento en el tablespace de Entrust.\n2. Verificar conectividad TCP con el puerto 1521 del servidor Oracle.\n3. Reiniciar el pool de conexiones en el servidor de aplicaciones.',
+        riskLevel: 'Crítico (Persistencia DB)',
+        manualVersion: activeVersionLabel,
+        sectionId: `sec-${oraCode.toLowerCase()}`,
+        sectionTitle: `Excepción Oracle [${oraCode}]`
       };
     }
 
-    if (/SQLException|Cannot get a connection|ConnectionPool/i.test(logText)) {
-      return {
-        matched: true,
-        ruleId: 'KB-CATALINA-JDBC',
-        title: 'Tomcat Catalina: Fallo de Conexión a Base de Datos (JDBC Connection Pool)',
-        category: 'Tomcat Catalina / Base de Datos',
-        severity: 'CRITICAL',
-        meaning: 'El contenedor de servlets Tomcat no pudo obtener una conexión activa con la base de datos SQL de Entrust.',
-        rootCause: 'Pool de conexiones JDBC agotado (maxActive alcanzado) o caída del servidor de base de datos SQL.',
-        remediation: '1. Incremente maxActive y maxWaitSec en context.xml / server.xml de Tomcat.\n2. Verifique la conectividad de red con el puerto SQL (ej. 1433/1521/5432).\n3. Reinicie el pool de conexiones. (Ref. Manual de Administración Entrust: Sección 7.1 - Tomcat JDBC Connection Pooling)',
-        riskLevel: 'Alto (Base de Datos Inalcanzable)',
-        manualVersion: 'vEntrust',
-        sectionId: 'sec-aud154',
-        sectionTitle: 'Manual de Configuración de Pool JDBC Tomcat'
-      };
-    }
-
-    if (/SSLHandshakeException|PKIX path building failed/i.test(logText)) {
-      return {
-        matched: true,
-        ruleId: 'KB-CATALINA-SSL',
-        title: 'Tomcat Catalina: Fallo de Certificado TLS/SSL (PKIX CertPath Builder Failed)',
-        category: 'Tomcat Catalina / Seguridad SSL',
-        severity: 'ERROR',
-        meaning: 'Tomcat no pudo validar la cadena de confianza del certificado SSL/TLS al conectar con un directorio LDAP o IDaaS Cloud.',
-        rootCause: 'Falta el certificado CA raíz o intermedio en el Keystore / Truststore (cacerts) de la JVM de Tomcat.',
-        remediation: '1. Importe el certificado CA usando: keytool -importcert -keystore $JAVA_HOME/lib/security/cacerts -alias entrust-ca -file ca-cert.crt.\n2. Reinicie Tomcat para recargar la cadena de certificados SSL. (Ref. Guía de Seguridad Entrust TLS: Sección 6.2 - Keystore Management)',
-        riskLevel: 'Alto (Conexión TLS Rechazada)',
-        manualVersion: 'vEntrust',
-        sectionId: 'sec-aud125',
-        sectionTitle: 'Guía de Certificados SSL/TLS en Tomcat'
-      };
-    }
-
-    if (/ClientAbortException|Broken pipe/i.test(logText)) {
-      return {
-        matched: true,
-        ruleId: 'KB-CATALINA-CLIENT-ABORT',
-        title: 'Tomcat Catalina: Cancelación de Conexión Cliente (ClientAbortException)',
-        category: 'Tomcat Catalina / Red & Proxy',
-        severity: 'WARN',
-        meaning: 'El proxy inverso (Nginx / F5 / NetScaler) o el usuario cerró la conexión socket antes de recibir la respuesta.',
-        rootCause: 'Tiempo de espera (timeout) muy corto en el proxy inverso o abandono del usuario durante la transacción.',
-        remediation: '1. Incremente proxy_read_timeout y proxy_connect_timeout a 60s en Nginx/Apache.\n2. Ajuste connectionTimeout="20000" en server.xml de Tomcat. (Ref. Manual de Arquitectura Entrust Web Proxy: Sección 4.5 - Reverse Proxy Tuning)',
-        riskLevel: 'Medio (Timeout de Conexión Proxy)',
-        manualVersion: 'vEntrust',
-        sectionId: 'sec-aud126',
-        sectionTitle: 'Guía de Proxy Inverso y Timeouts HTTP'
-      };
-    }
-
-    // Diagnóstico heurístico para Web Services SOAP de Entrust IdentityGuard
-    if (/soapenv:Fault|SOAPFault|wsse:FailedAuthentication|AuthenticationService|AdministrationService/i.test(logText)) {
-      return {
-        matched: true,
-        ruleId: 'KB-SOAP-IDG',
-        title: 'Entrust IDG: Excepción en Web Service SOAP (Authentication / Administration API)',
-        category: 'Entrust OnPremise / Web Services SOAP',
-        severity: /Fault|FailedAuthentication|ERROR|500/i.test(logText) ? 'ERROR' : 'INFO',
-        attribution: '🖥️ Cliente SOAP / Integración de Aplicación',
-        meaning: 'Transacción rechazada o excepción registrada en los puntos de enlace SOAP (WSDL) de Entrust IdentityGuard.',
-        rootCause: 'Firma WS-Security inválida, credenciales del cliente SOAP incorrectas, o excepción en la lógica del servicio web.',
-        remediation: '1. Revise el elemento <wsse:Security> y el Password Digest en el mensaje SOAP de la solicitud.\n2. Verifique en la Consola Entrust > Web Services Clients la vigencia de la clave del canal.\n3. (Ref. Guía de Integración Entrust SOAP Web Services: Sección 4.1 - WS-Security & WSDL Specifications)',
-        riskLevel: 'Alto (Rechazo en API SOAP)',
-        manualVersion: 'vEntrust',
-        sectionId: 'sec-aud-codes',
-        sectionTitle: 'Manual de Integración SOAP Web Services Entrust'
-      };
-    }
-
-    // Diagnóstico especializado de Códigos de Estado HTTP (200, 400, 401, 403, 404, 429, 500, 502, 503, 504)
-    const httpStatusMatch = logText.match(/"\s+(200|201|400|401|403|404|429|500|502|503|504)\s+\d+/i) ||
-                            logText.match(/\bHTTP\/\d\.\d"\s+(200|201|400|401|403|404|429|500|502|503|504)\b/i) ||
-                            logText.match(/\b(200|201|400|401|403|404|429|500|502|503|504)\b/);
-
-    if (httpStatusMatch) {
-      const code = httpStatusMatch[1];
-
-      if (code === '400') {
-        return {
-          matched: true,
-          ruleId: 'KB-HTTP-400',
-          title: 'HTTP 400 Bad Request: Solicitud API Mal Formada o Parámetros Inválidos',
-          category: 'HTTP Protocol / Error de Cliente API',
-          severity: 'ERROR',
-          attribution: '⚠️ Aplicación Cliente / Integración Frontend',
-          meaning: 'El cliente web o la aplicación móvil envió una petición HTTP con sintaxis incorrecta, formato JSON/XML inválido o parámetros requeridos ausentes.',
-          rootCause: 'Parámetros obligatorios ausentes en el Query String (ej. uid, pwd, login o aleatorio faltantes) o cuerpo HTTP mal formado.',
-          remediation: '1. Valide el formato de los parámetros enviados a los endpoints /idgserv/action/rest/.\n2. Asegure la codificación de caracteres URL (URL encoding) de los parámetros.\n3. (Ref. Guía de Integración REST API Entrust: Sección 3.2 - HTTP Error Codes)',
-          riskLevel: 'Medio (Rechazo por Formato de Solicitud)',
-          manualVersion: 'vEntrust',
-          sectionId: 'sec-aud-codes',
-          sectionTitle: 'Guía de Errores HTTP REST Entrust'
-        };
-      }
-
-      if (code === '401') {
-        return {
-          matched: true,
-          ruleId: 'KB-HTTP-401',
-          title: 'HTTP 401 Unauthorized: No Autorizado / Credenciales o Token Inválidos',
-          category: 'HTTP Protocol / Autenticación de Cliente',
-          severity: 'ERROR',
-          attribution: '👤 Usuario Final / Aplicación Cliente',
-          meaning: 'La petición carece de credenciales de autenticación válidas, el token OAuth2/JWT está caducado o el secreto de API es incorrecto.',
-          rootCause: 'Clave API de aplicación caducada, token de sesión vencido o firma de solicitud rechazada por el servidor.',
-          remediation: '1. Solicite un nuevo Bearer Token OAuth2 a la API de Entrust IDaaS/IDG.\n2. Compruebe la vigencia del Client Secret del canal cliente.\n3. (Ref. Guía de Seguridad Entrust API: Sección 2.1 - Bearer Token Authentication)',
-          riskLevel: 'Alto (Fallo de Autenticación API)',
-          manualVersion: 'vEntrust',
-          sectionId: 'sec-aud-codes',
-          sectionTitle: 'Guía de Errores HTTP REST Entrust'
-        };
-      }
-
-      if (code === '403') {
-        return {
-          matched: true,
-          ruleId: 'KB-HTTP-403',
-          title: 'HTTP 403 Forbidden: Acceso Prohibido / Permisos Insuficientes',
-          category: 'HTTP Protocol / Autorización & Políticas',
-          severity: 'ERROR',
-          attribution: '🛡️ Política de Seguridad / Permisos de Usuario',
-          meaning: 'El servidor comprendió la solicitud pero se niega a autorizarla según las políticas de acceso de Entrust.',
-          rootCause: 'El usuario o aplicación cliente autenticada carece del rol necesario o viola una regla de política MFA.',
-          remediation: '1. Verifique los grupos de autorización asignados al usuario o canal.\n2. Revise las políticas de acceso en la Consola Entrust (Authentication Policies).\n3. (Ref. Manual de Administración Entrust: Sección 4.3 - Access Control Rules)',
-          riskLevel: 'Alto (Acceso Denegado por Política)',
-          manualVersion: 'vEntrust',
-          sectionId: 'sec-aud-codes',
-          sectionTitle: 'Guía de Errores HTTP REST Entrust'
-        };
-      }
-
-      if (code === '404') {
-        return {
-          matched: true,
-          ruleId: 'KB-HTTP-404',
-          title: 'HTTP 404 Not Found: Endpoint o Recurso No Encontrado',
-          category: 'HTTP Protocol / Error de Ruta Client-side',
-          severity: 'WARN',
-          attribution: '⚠️ Aplicación Cliente (Ruta URL Incorrecta)',
-          meaning: 'El punto de enlace URL solicitado no existe en el servidor Tomcat o el recurso indicado no fue localizado.',
-          rootCause: 'Error tipográfico en la URI de la llamada API REST (ej. ruta incorrecta en /idgserv/action/rest/) o servlet desinstalado.',
-          remediation: '1. Verifique que el context path /idgserv/ esté desplegado activamente en Tomcat.\n2. Confirme que la ruta del endpoint coincida exactamente con la documentación OpenAPI/Swagger de Entrust.\n3. (Ref. Guía de Integración REST API Entrust: Sección 1.4 - API Endpoints Overview)',
-          riskLevel: 'Bajo (Ruta Inexistente)',
-          manualVersion: 'vEntrust',
-          sectionId: 'sec-aud-codes',
-          sectionTitle: 'Guía de Errores HTTP REST Entrust'
-        };
-      }
-
-      if (code === '429') {
-        return {
-          matched: true,
-          ruleId: 'KB-HTTP-429',
-          title: 'HTTP 429 Too Many Requests: Límite de Tasa Superado (Rate Limiting)',
-          category: 'HTTP Protocol / Protección Anti-Bruteforce',
-          severity: 'WARN',
-          attribution: '⚡ Script de Cliente / Consumo Excesivo',
-          meaning: 'Se enviaron más solicitudes por segundo de las permitidas por la política de protección anti-fuerza bruta de Entrust.',
-          rootCause: 'Bucle descontrolado en la aplicación cliente o intento de escaneo masivo sobre los endpoints de autenticación.',
-          remediation: '1. Implemente reintentos con retardo exponencial (exponential backoff & jitter) en el cliente.\n2. Ajuste los límites de tasa (Rate Limit Thresholds) en la Consola Entrust IDaaS.\n3. (Ref. Guía de Protección Entrust API: Sección 8.1 - Rate Limiting & Throttling)',
-          riskLevel: 'Medio (Límite de Tasa Alcanzado)',
-          manualVersion: 'vEntrust',
-          sectionId: 'sec-aud-codes',
-          sectionTitle: 'Guía de Errores HTTP REST Entrust'
-        };
-      }
-
-      if (code === '500') {
-        return {
-          matched: true,
-          ruleId: 'KB-HTTP-500',
-          title: 'HTTP 500 Internal Server Error: Fallo Interno en Servidor Entrust / Tomcat',
-          category: 'HTTP Protocol / Error Crítico de Servidor',
-          severity: 'CRITICAL',
-          attribution: '🖥️ Servidor Entrust / Tomcat / Base de Datos',
-          meaning: 'El servidor de aplicaciones Tomcat experimentó un fallo no manejado o la API no pudo comunicarse con la base de datos de repositorios.',
-          rootCause: 'Excepción Java no capturada (SQLException / OutOfMemoryError / NullPointerException) o agotamiento del pool JDBC.',
-          remediation: '1. Revise catalina.out y los logs de aplicación a la hora exacta del incidente.\n2. Verifique la conectividad con la base de datos repositorio y amplíe el pool JDBC en context.xml.\n3. (Ref. Manual de Administración Entrust: Sección 7.1 - Database Connection Pooling)',
-          riskLevel: 'Crítico (Fallo de Respuesta API Backend)',
-          manualVersion: 'vEntrust',
-          sectionId: 'sec-aud-codes',
-          sectionTitle: 'Guía de Errores HTTP REST Entrust'
-        };
-      }
-
-      if (code === '502' || code === '503') {
-        return {
-          matched: true,
-          ruleId: `KB-HTTP-${code}`,
-          title: `HTTP ${code}: Servicio No Disponible / Proxy Inverso Desconectado`,
-          category: 'HTTP Protocol / Infraestructura & Proxy',
-          severity: 'CRITICAL',
-          attribution: '🔌 Proxy Inverso (Nginx/Apache) / Servicio Tomcat Caído',
-          meaning: 'El balanceador de carga o proxy inverso no pudo conectar con el servidor Tomcat de Entrust o el servicio está detenido.',
-          rootCause: 'Servicio Tomcat7 detenido, proceso Java colgado por falta de memoria o puerto 8080/8443 inalcanzable.',
-          remediation: '1. Verifique el estado del servicio Tomcat7 mediante: systemctl status tomcat.\n2. Verifique la pila de procesos Java y reinicie el servicio de ser necesario.\n3. (Ref. Guía de Mantenimiento Entrust Infrastructure: Sección 3.2 - Service Recovery)',
-          riskLevel: 'Crítico (Servicio Web Caído)',
-          manualVersion: 'vEntrust',
-          sectionId: 'sec-aud-codes',
-          sectionTitle: 'Guía de Errores HTTP REST Entrust'
-        };
-      }
-
-      if (code === '504') {
-        return {
-          matched: true,
-          ruleId: 'KB-HTTP-504',
-          title: 'HTTP 504 Gateway Timeout: Tiempo de Espera Agotado en Backend',
-          category: 'HTTP Protocol / Timeouts de Infraestructura',
-          severity: 'ERROR',
-          attribution: '⏳ Servidor Backend Entrust / Latencia de Base de Datos',
-          meaning: 'El proxy inverso no recibió una respuesta oportuna del servidor Tomcat antes de que expirara el tiempo de espera (timeout).',
-          rootCause: 'Consultas SQL extremadamente lentas en la base de datos o bloqueos de transacciones en la JVM de Tomcat.',
-          remediation: '1. Incremente proxy_read_timeout 60s; en Nginx/Apache.\n2. Analice las consultas lentas en la base de datos de repositorios Entrust.\n3. (Ref. Manual Entrust Web Proxy: Sección 4.5 - Timeout Adjustments)',
-          riskLevel: 'Alto (Timeout de Respuesta Backend)',
-          manualVersion: 'vEntrust',
-          sectionId: 'sec-aud-codes',
-          sectionTitle: 'Guía de Errores HTTP REST Entrust'
-        };
-      }
-
-      if (code === '200' || code === '201') {
-        return {
-          matched: true,
-          ruleId: 'KB-HTTP-200',
-          title: `HTTP ${code} OK: Operación API Procesada Exitosamente`,
-          category: 'HTTP Protocol / Respuesta Exitosa',
-          severity: 'INFO',
-          attribution: '✅ Operación Normal / Petición Válida',
-          meaning: 'La solicitud HTTP enviada a la API REST de Entrust fue recibida, procesada y respondida sin errores.',
-          rootCause: 'Funcionamiento correcto del canal API y procesamiento sin excepciones.',
-          remediation: 'No se requiere acción correctiva. La transacción completó de forma nominal.',
-          riskLevel: 'Ninguno (Operación Nominal Exitosamente Completada)',
-          manualVersion: 'vEntrust',
-          sectionId: 'sec-aud-codes',
-          sectionTitle: 'Guía de Errores HTTP REST Entrust'
-        };
-      }
-    }
-
-    // Diagnóstico heurístico general
-    if (/error|fail|exception|fatal|panic|critical|500/i.test(logText)) {
-      return {
-        matched: false,
-        ruleId: 'KB-GEN-999',
-        title: 'Excepción o Fallo Crítico Registrado en Servidor Entrust',
-        category: 'Detección Heurística General',
-        severity: /fatal|panic|critical|500/i.test(logText) ? 'CRITICAL' : 'ERROR',
-        attribution: '🖥️ Servidor Entrust / Backend Application',
-        meaning: 'Se detectó un fallo crítico o excepción en la ejecución de la solicitud. El mensaje contiene términos de error o respuesta HTTP 500.',
-        rootCause: 'Condición de fallo en la ejecución del servicio web o excepción de aplicación en Tomcat/Java.',
-        remediation: '1. Inspeccione la traza completa (Stacktrace) en catalina.out a la hora exacta del evento.\n2. Verifique la conectividad con los repositorios de base de datos.',
-        riskLevel: 'Alto (Fallo de Servicio)',
-        manualVersion: 'vEntrust',
-        sectionId: 'sec-aud-codes',
-        sectionTitle: 'Manual Administrativo Operativo'
-      };
-    }
-
+    // 7. Diagnóstico Heurístico Genérico
     return {
       matched: false,
-      ruleId: 'KB-INFO-000',
-      title: 'Evento Operativo Normal',
-      category: 'Informativo',
+      ruleId: 'KB-GENERIC',
+      title: cleanCode ? `Evento / Operación [${cleanCode}]` : 'Evento Transaccional Entrust',
+      category: 'Operaciones de Servicio & APIs',
       severity: 'INFO',
-      attribution: '✅ Operación Normal del Sistema',
-      meaning: 'Registro de actividad estándar o estado transitorio sin indicios de fallos críticos en el sistema.',
-      rootCause: 'Ejecución regular de tareas programadas, accesos autorizados o señales de salud.',
-      remediation: 'No requiere ninguna acción correctiva inmediata.',
-      riskLevel: 'Bajo (Sin Riesgo)',
-      manualVersion: 'vEntrust',
-      sectionId: 'sec-aud-codes',
-      sectionTitle: 'Manual Administrativo Operativo'
+      meaning: searchText || 'Evento registrado en el flujo de ejecución del clúster.',
+      rootCause: 'Invocación estándar de API o servicio de autenticación.',
+      governanceControl: 'Monitorear la tasa de éxito y tiempos de respuesta.',
+      remediation: 'Operación normal sin fallos críticos reportados.',
+      riskLevel: 'Nominal',
+      manualVersion: activeVersionLabel,
+      sectionId: 'sec-general',
+      sectionTitle: 'Manual de Operación Entrust'
     };
   }
 
