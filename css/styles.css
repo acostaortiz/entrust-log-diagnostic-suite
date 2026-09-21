@@ -1023,3 +1023,26 @@ body.dark-theme .text-cyan { color: #38bdf8; }
   background: #0f172a !important;
 }
 
+/* Animaciones y estilos de la Topología Transaccional */
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+}
+
+.topology-node-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.topology-node-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+

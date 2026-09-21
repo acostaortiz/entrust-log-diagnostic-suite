@@ -8,6 +8,11 @@ import sys
 import threading
 import time
 import urllib.parse
+import gzip
+import zipfile
+import tarfile
+import bz2
+import io
 
 PORT = 8085
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -215,6 +220,43 @@ def parse_line_for_db(line, line_num):
     event_time = time_match.group(0) if time_match else time.strftime('%Y-%m-%d %H:%M:%S')
     return (line_num, event_time, 'unknown', 'SYSTEM_LOG', level, line[:200], 'local', line[:500])
 
+def stream_lines_from_archive_or_file(file_path):
+    """
+    Seamless streaming generator yielding lines from plain text, .gz, .zip, .tar.gz, .tgz, or .bz2
+    without generating huge decompressed files on disk.
+    """
+    lower = file_path.lower()
+    if lower.endswith('.gz') and not (lower.endswith('.tar.gz') or lower.endswith('.tgz')):
+        with gzip.open(file_path, 'rt', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                yield line
+    elif lower.endswith('.bz2'):
+        with bz2.open(file_path, 'rt', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                yield line
+    elif lower.endswith('.zip'):
+        with zipfile.ZipFile(file_path, 'r') as z:
+            for filename in z.namelist():
+                if filename.endswith('/') or filename.startswith('__MACOSX') or filename.startswith('.'):
+                    continue
+                with z.open(filename, 'r') as zf:
+                    with io.TextIOWrapper(zf, encoding='utf-8', errors='ignore') as f:
+                        for line in f:
+                            yield line
+    elif lower.endswith('.tar.gz') or lower.endswith('.tgz') or lower.endswith('.tar'):
+        with tarfile.open(file_path, 'r:*') as tar:
+            for member in tar.getmembers():
+                if member.isfile():
+                    f = tar.extractfile(member)
+                    if f:
+                        with io.TextIOWrapper(f, encoding='utf-8', errors='ignore') as tf:
+                            for line in tf:
+                                yield line
+    else:
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                yield line
+
 def index_file_in_background(file_path, client_name='Entrust Client'):
     global upload_state, ACTIVE_DB_PATH
     client_slug = get_client_slug(client_name)
@@ -251,29 +293,28 @@ def index_file_in_background(file_path, client_name='Entrust Client'):
         batch_size = 25000
         line_num = 0
         total_errors = 0
-        bytes_read = 0
+        bytes_est = 0
         
-        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-            for line in f:
-                line_str = line.strip()
-                if not line_str:
-                    continue
-                line_num += 1
-                bytes_read += len(line)
-                
-                parsed = parse_line_for_db(line_str, line_num)
-                if parsed:
-                    if 'FAIL' in parsed[4] or 'ERR' in parsed[4]:
-                        total_errors += 1
-                    batch.append(parsed)
-                
-                if len(batch) >= batch_size:
-                    cur.executemany('INSERT INTO logs VALUES (?,?,?,?,?,?,?,?)', batch)
-                    conn.commit()
-                    batch = []
-                    upload_state['linesProcessed'] = line_num
-                    upload_state['totalErrors'] = total_errors
-                    upload_state['progress'] = min(99, int((bytes_read / max(1, file_size)) * 100))
+        for line in stream_lines_from_archive_or_file(file_path):
+            line_str = line.strip()
+            if not line_str:
+                continue
+            line_num += 1
+            bytes_est += len(line)
+            
+            parsed = parse_line_for_db(line_str, line_num)
+            if parsed:
+                if 'FAIL' in parsed[4] or 'ERR' in parsed[4]:
+                    total_errors += 1
+                batch.append(parsed)
+            
+            if len(batch) >= batch_size:
+                cur.executemany('INSERT INTO logs VALUES (?,?,?,?,?,?,?,?)', batch)
+                conn.commit()
+                batch = []
+                upload_state['linesProcessed'] = line_num
+                upload_state['totalErrors'] = total_errors
+                upload_state['progress'] = min(99, int((bytes_est / max(1, file_size)) * 100))
         
         if batch:
             cur.executemany('INSERT INTO logs VALUES (?,?,?,?,?,?,?,?)', batch)

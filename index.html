@@ -17,7 +17,7 @@
   <script src="js/html2pdf.bundle.min.js"></script>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/styles.css?v=230.0">
+  <link rel="stylesheet" href="css/styles.css?v=240.0">
 </head>
 <body>
 
@@ -64,6 +64,8 @@
         <button class="nav-btn" data-tab="nodes">🏢 Comparativa Multi-Nodo</button>
         <button class="nav-btn" data-tab="syslog" style="color:#38bdf8; font-weight:bold;">📡 Monitoreo Syslog (Tiempo Real)</button>
         <button class="nav-btn" data-tab="certificates" style="color:#f59e0b; font-weight:bold;">🔐 Auditoría Certificados</button>
+        <button class="nav-btn" data-tab="topology" style="color:#0284c7; font-weight:bold;">🌐 Topología Multi-Capa</button>
+        <button class="nav-btn" data-tab="compare" style="color:#10b981; font-weight:bold;">📈 Comparativa Histórica</button>
         <button class="nav-btn" data-tab="kb">🧠 Base de Conocimientos</button>
         <button class="nav-btn" data-tab="manuals">📚 Manuales Administrativos</button>
       </nav>
@@ -552,6 +554,50 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
       </div>
     </div>
 
+
+    <!-- 9. PESTAÑA: TOPOLOGÍA TRANSACCIONAL & MAPA DE FLUJO MULTI-CAPA -->
+    <div class="tab-pane" id="tab-topology">
+      <div id="topology-diagram-container">
+        <!-- Renderizado dinámicamente por TopologyEngine -->
+      </div>
+    </div>
+
+    <!-- 10. PESTAÑA: COMPARATIVA HISTÓRICA DE AUDITORÍAS -->
+    <div class="tab-pane" id="tab-compare">
+      <div class="glass-card mb-4">
+        <div class="card-header flex-between" style="flex-wrap:wrap; gap:10px;">
+          <div>
+            <div class="card-title" style="color:#10b981; font-size:1.1rem;">📈 Comparativa Histórica & Auditoría Evolutiva</div>
+            <div class="card-subtitle">Comparación de deltas de salud clúster, mitigación de fallos y evolución de incidentes entre auditorías</div>
+          </div>
+          <button class="btn btn-primary" id="btn-save-audit-snapshot" style="background:#059669; border-color:#059669;">💾 Guardar Auditoría Actual como Línea Base</button>
+        </div>
+
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:16px; margin-top:14px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:12px; align-items:flex-end;">
+            <div>
+              <label style="font-size:0.8rem; font-weight:bold; color:var(--text-main); display:block; margin-bottom:4px;">Auditoría A (Línea Base Previa):</label>
+              <select class="form-control" id="compare-snapshot-a" style="font-size:0.82rem;">
+                <option value="CURRENT">📊 Sesión Actual en Pantalla</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.8rem; font-weight:bold; color:var(--text-main); display:block; margin-bottom:4px;">Auditoría B (Evaluación Posterior):</label>
+              <select class="form-control" id="compare-snapshot-b" style="font-size:0.82rem;">
+                <option value="CURRENT">📊 Sesión Actual en Pantalla</option>
+              </select>
+            </div>
+            <div>
+              <button class="btn btn-primary" id="btn-run-snapshot-compare" style="background:#0284c7; padding:8px 18px; font-weight:bold; font-size:0.85rem;">⚡ Comparar Auditorías</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="historical-compare-results-container">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </div>
+    </div>
   </main>
 
   <!-- MODAL: TICKET OFICIAL ZOHO DESK (PILAR 5) -->
@@ -709,6 +755,7 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
 
           <!-- GRUPO 2: FORMATOS DE DATOS -->
           <div style="display:flex; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; padding:2px; gap:2px;">
+            <button class="btn" id="btn-download-docx-exec-report" style="background:transparent; border:none; color:#0284c7; font-weight:bold; font-size:0.78rem; padding:6px 8px; border-radius:4px;" title="Exportar Documento Oficial a Microsoft Word (.doc / .docx)">📝 Word (.doc)</button>
             <button class="btn" id="btn-download-html-exec-report" style="background:transparent; border:none; color:var(--text-main); font-size:0.78rem; padding:6px 8px; border-radius:4px;" title="Exportar HTML Autónomo">🌐 HTML</button>
             <button class="btn" id="btn-download-csv-exec-report" style="background:transparent; border:none; color:var(--text-main); font-size:0.78rem; padding:6px 8px; border-radius:4px;" title="Exportar Excel CSV">📊 CSV</button>
             <button class="btn" id="btn-download-exec-report-md" style="background:transparent; border:none; color:var(--text-main); font-size:0.78rem; padding:6px 8px; border-radius:4px;" title="Descargar archivo Markdown .MD">📝 .MD</button>
@@ -1011,14 +1058,15 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
 
   <!-- Scripts JavaScript -->
   <script src="js/pptxgen.bundle.js"></script>
-  <script src="js/kb-database.js?v=230.0"></script>
-  <script src="js/manuals-engine.js?v=230.0"></script>
-  <script src="js/bancomercantil_data.js?v=230.0"></script>
-  <script src="js/log-parser.js?v=230.0"></script>
-  <script src="js/storage-engine.js?v=230.0"></script>
-  <script src="js/cert-auditor.js?v=230.0"></script>
-  <script src="js/syslog-collector.js?v=230.0"></script>
-  <script src="js/app.js?v=230.0"></script>
+  <script src="js/topology-engine.js?v=240.0"></script>
+  <script src="js/kb-database.js?v=240.0"></script>
+  <script src="js/manuals-engine.js?v=240.0"></script>
+  <script src="js/bancomercantil_data.js?v=240.0"></script>
+  <script src="js/log-parser.js?v=240.0"></script>
+  <script src="js/storage-engine.js?v=240.0"></script>
+  <script src="js/cert-auditor.js?v=240.0"></script>
+  <script src="js/syslog-collector.js?v=240.0"></script>
+  <script src="js/app.js?v=240.0"></script>
 
 </body>
 </html>

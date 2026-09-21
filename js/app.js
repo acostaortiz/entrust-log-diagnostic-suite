@@ -558,6 +558,16 @@ document.addEventListener('DOMContentLoaded', () => {
         state.dirtyTabs.nodes = false;
       }, 10);
     }
+    if (targetTab === 'topology' && window.topologyEngine) {
+      setTimeout(() => {
+        window.topologyEngine.render('topology-diagram-container', state.logs, state.globalStreamMetrics);
+      }, 10);
+    }
+    if (targetTab === 'compare') {
+      setTimeout(() => {
+        renderHistoricalComparisonUI();
+      }, 10);
+    }
   }
 
   function renderNodeComparison() {
@@ -791,7 +801,75 @@ document.addEventListener('DOMContentLoaded', () => {
       heightLeft -= pageContentHeight;
     }
 
+    // Paginación y Sellos Vectoriales en todas las páginas generadas
+    const totalPages = pdf.internal.getNumberOfPages();
+    const dateStamp = new Date().toLocaleDateString('es-ES');
+    const clientLabel = activeClient ? activeClient.name : 'Entrust';
+
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+
+      // Pie de página vectorial
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 116, 139);
+      pdf.text(`IT SERVICIOS DE VENEZUELA, S.A. | Dictamen Pericial Entrust (${clientLabel})`, margin, pageHeight - 3.5);
+      pdf.text(`Página ${i} de ${totalPages}`, pageWidth - margin - 22, pageHeight - 3.5);
+
+      // Encabezado sutil en páginas 2+
+      if (i > 1) {
+        pdf.setFontSize(7.5);
+        pdf.setTextColor(148, 163, 184);
+        pdf.text(`EXPEDIENTE: EXP-FORENSIC-ENTRUST-2026-V5 — ${clientLabel} — Fecha: ${dateStamp}`, margin, 5);
+      }
+    }
+
     pdf.save(filename);
+  }
+
+  function downloadExecutiveReportDocx() {
+    const container = document.getElementById('exec-report-container');
+    if (!container) {
+      alert('⚠️ No hay informe generado para exportar a Word.');
+      return;
+    }
+
+    const activeClient = getActiveClientProfile();
+    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+
+    const docContent = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset='utf-8'>
+        <title>Informe Dictamen Forense Entrust - ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}</title>
+        <style>
+          body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #0f172a; }
+          h1 { color: #0a3d6d; font-size: 18pt; margin-bottom: 4pt; }
+          h2 { color: #0a3d6d; font-size: 14pt; margin-top: 12pt; }
+          h3 { color: #0a3d6d; font-size: 12pt; margin-top: 10pt; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 12pt; }
+          th, td { border: 1px solid #cbd5e1; padding: 6pt; font-size: 9.5pt; text-align: left; }
+          th { background: #0a3d6d; color: #ffffff; font-weight: bold; }
+          tr:nth-child(even) { background: #f8fafc; }
+          .badge { font-weight: bold; padding: 2pt 4pt; }
+        </style>
+      </head>
+      <body>
+        ${container.innerHTML}
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob(['\uFEFF' + docContent], {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'
+    });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Dictamen_Forense_Entrust_${clientSanitized}_${dateStamp}.doc`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
   }
 
   async function downloadOnePageExecutivePdf() {
@@ -5935,6 +6013,202 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
   }
 
   // Inicialización de componentes al cargar el DOM
+  
+  /* ==========================================================================
+     9. DETECTOR DE ANOMALÍAS, RÁFAGAS & COMPARATIVA HISTÓRICA (v240.0)
+     ========================================================================== */
+
+  function detectAnomalyBursts(targetLogs = []) {
+    const logs = targetLogs.length > 0 ? targetLogs : (state.logs || []);
+    if (logs.length === 0) {
+      return { bursts: [], maxRate: 0, hasAttackPattern: false };
+    }
+
+    const minuteBuckets = new Map();
+    logs.forEach(l => {
+      const isErr = l.level === 'CRITICAL' || l.level === 'ERROR' || (l.entrustCode && (l.entrustCode.startsWith('520') || l.entrustCode.startsWith('ORA')));
+      if (!isErr) return;
+
+      const tStr = l.timestamp || l.time || '';
+      const minKey = tStr.slice(0, 16); // YYYY-MM-DD HH:MM
+      if (minKey.length >= 16) {
+        minuteBuckets.set(minKey, (minuteBuckets.get(minKey) || 0) + 1);
+      }
+    });
+
+    const bursts = [];
+    let maxRate = 0;
+    minuteBuckets.forEach((count, minKey) => {
+      if (count > maxRate) maxRate = count;
+      if (count >= 15) { // Más de 15 errores por minuto se considera ráfaga
+        bursts.push({ minute: minKey, errorCount: count });
+      }
+    });
+
+    bursts.sort((a, b) => b.errorCount - a.errorCount);
+    const hasAttackPattern = maxRate > 50 || bursts.length > 3;
+
+    return {
+      bursts: bursts.slice(0, 5),
+      maxRate,
+      hasAttackPattern,
+      totalBurstMinutes: bursts.length
+    };
+  }
+
+  function initHistoricalComparisonModule() {
+    const btnSaveSnapshot = document.getElementById('btn-save-audit-snapshot');
+    const btnRunCompare = document.getElementById('btn-run-snapshot-compare');
+    const selectA = document.getElementById('compare-snapshot-a');
+    const selectB = document.getElementById('compare-snapshot-b');
+
+    if (btnSaveSnapshot) {
+      btnSaveSnapshot.addEventListener('click', () => {
+        const client = getActiveClientProfile();
+        const clientName = client ? client.name : 'Entrust';
+        const snapshotName = prompt('Nombre identificador para esta Auditoría (Ej: "Auditoría Pre-Parche", "Línea Base Septiembre"):', `Auditoría ${clientName} - ${new Date().toLocaleDateString('es-ES')}`);
+        if (!snapshotName) return;
+
+        const consolidated = getConsolidatedMetrics();
+        const total = consolidated.totalLogs;
+        const errors = consolidated.totalErrors;
+        const warnings = consolidated.totalWarnings;
+        const health = total > 0 ? parseFloat((((total - errors) / total) * 100).toFixed(2)) : 100;
+
+        const snapshot = {
+          id: 'SNAP_' + Date.now(),
+          name: snapshotName,
+          client: clientName,
+          date: new Date().toISOString(),
+          totalLogs: total,
+          totalErrors: errors,
+          totalWarnings: warnings,
+          health: health,
+          topCodes: (state.globalStreamMetrics?.topCodes || []).slice(0, 5)
+        };
+
+        const existing = JSON.parse(localStorage.getItem('entrust_audit_snapshots') || '[]');
+        existing.push(snapshot);
+        localStorage.setItem('entrust_audit_snapshots', JSON.stringify(existing));
+
+        alert(`✅ Instantánea "${snapshotName}" guardada exitosamente.`);
+        renderHistoricalComparisonUI();
+      });
+    }
+
+    if (btnRunCompare) {
+      btnRunCompare.addEventListener('click', () => {
+        renderHistoricalComparisonUI();
+      });
+    }
+  }
+
+  function renderHistoricalComparisonUI() {
+    const container = document.getElementById('historical-compare-results-container');
+    const selectA = document.getElementById('compare-snapshot-a');
+    const selectB = document.getElementById('compare-snapshot-b');
+    if (!container || !selectA || !selectB) return;
+
+    const snapshots = JSON.parse(localStorage.getItem('entrust_audit_snapshots') || '[]');
+    
+    // Poblar selectores si tienen opciones desactualizadas
+    const populateSelect = (sel) => {
+      const currentVal = sel.value;
+      sel.innerHTML = '<option value="CURRENT">📊 Sesión Actual en Pantalla</option>';
+      snapshots.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = `📁 ${s.name} (${s.health}%)`;
+        sel.appendChild(opt);
+      });
+      if (currentVal) sel.value = currentVal;
+    };
+
+    populateSelect(selectA);
+    populateSelect(selectB);
+
+    // Obtener data de snapshot A y B
+    const getSnapData = (val) => {
+      if (val === 'CURRENT') {
+        const consolidated = getConsolidatedMetrics();
+        const total = consolidated.totalLogs;
+        const errors = consolidated.totalErrors;
+        const warnings = consolidated.totalWarnings;
+        const health = total > 0 ? parseFloat((((total - errors) / total) * 100).toFixed(2)) : 100;
+        return {
+          name: 'Sesión Actual',
+          date: new Date().toISOString(),
+          totalLogs: total,
+          totalErrors: errors,
+          totalWarnings: warnings,
+          health: health,
+          topCodes: (state.globalStreamMetrics?.topCodes || []).slice(0, 5)
+        };
+      }
+      return snapshots.find(s => s.id === val) || null;
+    };
+
+    const snapA = getSnapData(selectA.value);
+    const snapB = getSnapData(selectB.value);
+
+    if (!snapA || !snapB) {
+      container.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted);">Seleccione dos auditorías para calcular la comparativa evolutiva.</div>';
+      return;
+    }
+
+    const deltaHealth = (snapB.health - snapA.health).toFixed(2);
+    const deltaErrors = snapB.totalErrors - snapA.totalErrors;
+    const deltaPctErrors = snapA.totalErrors > 0 ? (((snapB.totalErrors - snapA.totalErrors) / snapA.totalErrors) * 100).toFixed(1) : '0';
+
+    const healthImproved = parseFloat(deltaHealth) >= 0;
+    const errorsReduced = deltaErrors <= 0;
+
+    container.innerHTML = `
+      <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:10px; padding:20px; margin-top:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:12px; margin-bottom:16px;">
+          <h3 style="margin:0; color:#0284c7; font-size:1.1rem;">📈 Dictamen Comparativo Evolutivo</h3>
+          <span style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(snapA.name)} ➔ ${escapeHtml(snapB.name)}</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-bottom:16px;">
+          <div style="background:var(--bg-secondary); border:1.5px solid ${healthImproved ? '#10b981' : '#dc2626'}; border-radius:8px; padding:14px; text-align:center;">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:bold;">Variación Salud Clúster</div>
+            <div style="font-size:1.6rem; font-weight:900; color:${healthImproved ? '#10b981' : '#dc2626'}; margin:4px 0;">
+              ${healthImproved ? '▲ +' : '▼ '}${deltaHealth}%
+            </div>
+            <div style="font-size:0.78rem; color:var(--text-muted);">${snapA.health}% ➔ ${snapB.health}%</div>
+          </div>
+
+          <div style="background:var(--bg-secondary); border:1.5px solid ${errorsReduced ? '#10b981' : '#dc2626'}; border-radius:8px; padding:14px; text-align:center;">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:bold;">Reducción de Fallos Críticos</div>
+            <div style="font-size:1.6rem; font-weight:900; color:${errorsReduced ? '#10b981' : '#dc2626'}; margin:4px 0;">
+              ${errorsReduced ? '▼ ' : '▲ +'}${Math.abs(deltaErrors).toLocaleString()} (${deltaPctErrors}%)
+            </div>
+            <div style="font-size:0.78rem; color:var(--text-muted);">${snapA.totalErrors.toLocaleString()} ➔ ${snapB.totalErrors.toLocaleString()}</div>
+          </div>
+
+          <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px; padding:14px; text-align:center;">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); font-weight:bold;">Volumen de Trazas</div>
+            <div style="font-size:1.6rem; font-weight:900; color:var(--text-main); margin:4px 0;">
+              ${snapB.totalLogs.toLocaleString()}
+            </div>
+            <div style="font-size:0.78rem; color:var(--text-muted);">Delta: ${(snapB.totalLogs - snapA.totalLogs).toLocaleString()} ops</div>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:6px; padding:12px; font-size:0.85rem; line-height:1.5;">
+          <strong style="color:#0284c7;">Conclusión para la Junta Directiva:</strong><br>
+          ${errorsReduced ? `
+            ✅ <strong>Evolución Altamente Favorable:</strong> Se evidencia una mitigación efectiva de incidentes en la infraestructura Entrust con una reducción del <strong>${Math.abs(parseFloat(deltaPctErrors))}%</strong> en fallos críticos entre ambas auditorías, validando la efectividad de las remediaciones aplicadas.
+          ` : `
+            ⚠️ <strong>Alerta Operativa:</strong> Se observó un incremento en la tasa de incidentes que requiere la ejecución inmediata de la Fase I del Plan Estratégico de Remediación.
+          `}
+        </div>
+      </div>
+    `;
+  }
+
+  initHistoricalComparisonModule();
   initSyslogCollectorModule();
   initStoragePersistence();
   initCertificatesModule();
@@ -5942,6 +6216,11 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
   initAiOpinionModule();
   initPptxExportModule();
   initNodeGroupingModule();
+
+    document.getElementById('btn-download-docx-exec-report')?.addEventListener('click', () => {
+      downloadExecutiveReportDocx();
+    });
+
 
   function escapeHtml(text) {
     if (!text) return '';
