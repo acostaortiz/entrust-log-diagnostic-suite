@@ -2410,7 +2410,7 @@ function initMetricCardsInteractivity() {
 
       <!-- Impacto al Negocio Bancario -->
       <div class="diag-field mb-3" style="background:rgba(239, 68, 68, 0.08); border:1px solid rgba(239, 68, 68, 0.25); border-radius:6px; padding:10px 12px;">
-        <div class="diag-label" style="font-weight:700; color:#f87171; margin-bottom:4px;">🏦 IMPACTO EN EL NEGOCIO BANCARIO & CANALES</div>
+        <div class="diag-label" style="font-weight:700; color:#f87171; margin-bottom:4px;">⚖️ IMPACTO EN EL NEGOCIO BANCARIO & CANALES</div>
         <div style="font-size:0.85rem; color:#fca5a5;">
           ${diag.severity === 'CRITICAL' || diag.severity === 'ERROR' 
             ? `⚠️ <strong>Alto Riesgo de Interrupción:</strong> Afecta autenticaciones de clientes en <strong>Banca en Línea / App Móvil / Pago Móvil</strong>. Puede causar rechazos transaccionales o fallos en gateways WSO2.`

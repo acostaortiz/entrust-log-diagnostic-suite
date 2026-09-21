@@ -66,7 +66,7 @@
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
             <div style="display:flex; align-items:center; gap:10px;">
               <div style="width:38px; height:38px; border-radius:8px; background:rgba(2,132,199,0.12); display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
-                🏦
+                ⚖️
               </div>
               <div>
                 <div style="font-size:1.05rem; font-weight:800; color:var(--text-main);">

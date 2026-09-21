@@ -76,7 +76,7 @@
       // 5. Pregunta sobre SLA y Sudeban
       else if (q.includes('sla') || q.includes('sudeban') || q.includes('normativa') || q.includes('regulatorio') || q.includes('basilea')) {
         const sla = window.slaEngine ? window.slaEngine.computeSlaMetrics(total, criticals.length, warnings.length) : {};
-        answer = `🏦 **Evaluación Regulatoria & SLA Bancario**:\n\n` +
+        answer = `⚖️ **Evaluación de Disponibilidad & SLA Sudeban**:\n\n` +
                  `• **Disponibilidad Actual**: **${sla.uptimePct}%**\n` +
                  `• **Meta Regulatoria Sudeban**: ${sla.targetSlaTier1}%\n` +
                  `• **Estatus de Conformidad**: **${sla.statusLabel}**\n` +
