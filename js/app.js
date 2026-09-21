@@ -447,7 +447,11 @@ document.addEventListener('DOMContentLoaded', () => {
   window.saveClientProfileGlobal = saveClientProfileGlobal;
 
   function initClientProfilesModule() {
-    loadClientProfiles();
+    loadClientProfiles().then(() => {
+      if (typeof syncClientSessionWithServer === 'function') {
+        syncClientSessionWithServer(state.activeClientId);
+      }
+    });
 
     const headerSelect = document.getElementById('active-client-session-select');
     const btnOpenModal = document.getElementById('btn-open-create-client-modal');
@@ -2406,6 +2410,10 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
      4. ANALIZADOR DE LOGS Y MUESTRA
      ========================================================================== */
   function applyLogFilters() {
+    if (state.isServerApi) {
+      fetchSqlLogs(1);
+      return;
+    }
     let result = [...state.logs];
 
     if (state.activeFilterMode === '520_ONLY') {
@@ -3367,7 +3375,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       if (!res.ok) throw new Error('API server.py no disponible, usando modo estático');
       const data = await res.json();
 
-      if (!data.logs || data.logs.length === 0) {
+      if (!data || (!data.logs && data.status === 'empty')) {
         if (typeof loadMercantil10GbBundle === 'function') {
           loadMercantil10GbBundle();
           return true;
@@ -3714,11 +3722,22 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (critRateBadge) critRateBadge.textContent = `${critPct}% Tasa Falla`;
     if (critBar) critBar.style.width = `${Math.min(100, Math.max(2, parseFloat(critPct) * 10))}%`;
 
-    // 3. Tarjeta Alertas de Auditoría
-    if (dom.warningCount) dom.warningCount.textContent = warningsCount.toLocaleString();
+    // 4. Tarjeta IDaaS Cloud
+    const idaasCount = Object.values(metrics.codeMapIdaas || {}).reduce((a, b) => a + b, 0);
+    const idaasEl = document.getElementById('idaas-events-count');
+    const idaasBadge = document.getElementById('idaas-rate-badge');
+    const idaasBar = document.getElementById('idaas-progress-bar');
+    if (idaasEl) idaasEl.textContent = idaasCount.toLocaleString();
+    if (idaasBadge) idaasBadge.textContent = idaasCount > 0 ? `${((idaasCount / Math.max(1, total)) * 100).toFixed(1)}% IDaaS` : 'Cloud Hub';
+    if (idaasBar) idaasBar.style.width = `${Math.min(100, Math.max(2, (idaasCount / Math.max(1, total)) * 100 * 5))}%`;
+
+    // 5. Tarjeta Alertas de Auditoría AUDxxx
+    const audCount = Object.values(metrics.codeMapAud || {}).reduce((a, b) => a + b, 0);
+    const finalAudCount = warningsCount > 0 ? warningsCount : audCount;
+    if (dom.warningCount) dom.warningCount.textContent = finalAudCount.toLocaleString();
     const auditRateBadge = document.getElementById('audit-rate-badge');
     const warnBar = document.getElementById('warn-progress-bar');
-    const warnPct = total > 0 ? ((warningsCount / total) * 100).toFixed(1) : '0';
+    const warnPct = total > 0 ? ((finalAudCount / total) * 100).toFixed(1) : '0';
     if (auditRateBadge) auditRateBadge.textContent = `${warnPct}% Auditoría`;
     if (warnBar) warnBar.style.width = `${Math.min(100, Math.max(2, parseFloat(warnPct) * 5))}%`;
 
@@ -5584,6 +5603,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               });
 
               state.isServerApi = true;
+              await syncClientSessionWithServer(clientName);
               await fetchSqlLogs(1);
               updateMetricsAndCharts();
               renderLoadedFilesDrawer();
@@ -5654,11 +5674,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         }
       }
 
-      if (newLogs.length > 0 || state.loadedFiles.length > 0) {
-        if (newLogs.length > 0) {
-          state.logs = state.logs.concat(newLogs);
-          reindexLogs();
-        }
+      if (newLogs.length > 0) {
+        state.logs = state.logs.concat(newLogs);
+        reindexLogs();
 
         renderLoadedFilesDrawer();
         updateNodeComparisonUI();
@@ -5681,6 +5699,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
         switchTab('analyzer');
         showAnalysisStatus(false, `✅ ${state.loadedFiles.length} Archivo(s) Procesados con Éxito`, `Panorama Completo Consolidado: ${metrics.totalLogs.toLocaleString()} registros auditados`);
+      } else if (state.isServerApi) {
+        await fetchSqlLogs(1);
+        updateMetricsAndCharts();
+        renderLoadedFilesDrawer();
+        renderUserAndIpAnalytics();
+        switchTab('analyzer');
       }
     });
 

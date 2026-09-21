@@ -856,6 +856,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     'user': r[2],
                     'service': 'Administration Portal',
                     'entrustCode': r[3],
+                    'type': r[3],
                     'level': 'ERROR' if is_err else 'INFO',
                     'outcome': r[4],
                     'message': f'[{r[3]}] {r[5]} (Outcome: {r[4]})',
