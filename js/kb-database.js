@@ -1,3 +1,58 @@
+
+// ==========================================================================
+// CATÁLOGO OFICIAL Y EXACTO DE CÓDIGOS DE ERROR Y EVENTOS ENTRUST & AUDITORÍA
+// ==========================================================================
+const ENTRUST_EXACT_CATALOG = {
+  // 5201xxx: Tarjetas Grid, OTP y Desafíos de Autenticación
+  '5201000': { title: 'Fallo Interno del Servidor (Server Failure)', category: 'Motor Entrust Core', severity: 'CRITICAL', meaning: 'Fallo crítico no controlado en el motor de autenticación Entrust.', rootCause: 'Pérdida de conectividad con la base de datos o corrupción de llaves maestras .enc', remediation: 'Reiniciar el servicio de administración y validar la conectividad con la base de datos.' },
+  '5201006': { title: 'Número de Respuestas No Coincide con Desafíos (Response Count Mismatch)', category: 'Tarjetas Grid & OTP', severity: 'ERROR', meaning: 'El número de respuestas enviadas por el usuario no coincide con el número de celdas solicitadas en el desafío Grid.', rootCause: 'El usuario omitió el ingreso de una coordenada de la tarjeta Grid o la aplicación envió parámetros incompletos.', remediation: 'Verificar que la aplicación cliente envíe exactamente el número de respuestas solicitadas y solicitar al usuario reintentar.' },
+  '5201007': { title: 'La Respuesta No Coincide con el Desafío (Response Mismatch)', category: 'Tarjetas Grid & OTP', severity: 'ERROR', meaning: 'La coordenada Grid o valor OTP ingresado por el usuario es incorrecto.', rootCause: 'Ingreso erróneo de la celda de la tarjeta Grid o token de software desincronizado.', remediation: 'Verificar que el usuario esté utilizando la tarjeta Grid activa correspondiente a su número de serie.' },
+  '5201008': { title: 'La Tarjeta Grid No Coincide con el Desafío (Card Mismatch)', category: 'Tarjetas Grid', severity: 'ERROR', meaning: 'El número de serie de la tarjeta Grid utilizada no coincide con el desafío emitido por el servidor.', rootCause: 'El usuario tiene asignada una tarjeta Grid anterior que fue reemplazada o reasignada.', remediation: 'Verificar en la consola de administración el número de serie de la tarjeta activa asignada al usuario.' },
+  '5201009': { title: 'Fallo al Generar Desafío de Autenticación (Failed Challenge)', category: 'Motor de Desafíos', severity: 'ERROR', meaning: 'El servidor Entrust no pudo generar el reto de coordenadas para la sesión.', rootCause: 'El usuario no posee tarjetas Grid activas asignadas o la plantilla de desafíos está corrupta.', remediation: 'Asignar un autenticador o paquete de tarjetas Grid válido al perfil del usuario.' },
+  '5201010': { title: 'Tarjeta Grid Bloqueada por Intentos Fallidos', category: 'Tarjetas Grid', severity: 'ERROR', meaning: 'La tarjeta Grid fue bloqueada tras superar el umbral máximo de intentos de desafío incorrectos.', rootCause: 'Múltiples intentos erróneos consecutivos por parte del usuario.', remediation: 'Desbloquear la tarjeta Grid del usuario en la consola de administración de Entrust.' },
+
+  // 5202xxx: Autenticación, Credenciales, Tokens y APIs
+  '5202013': { title: 'Credenciales Inválidas (Invalid User ID or Password)', category: 'Autenticación & Credenciales', severity: 'CRITICAL', meaning: 'El identificador de usuario o la contraseña ingresada son inválidos.', rootCause: 'Contraseña incorrecta ingresada por el usuario o usuario no registrado en el Directorio Activo/LDAP.', remediation: 'Verificar que el usuario exista en Active Directory, desbloquear la cuenta si está suspendida y restablecer la contraseña.' },
+  '5202050': { title: 'PIN de Token Inválido o Desincronizado', category: 'Tokens de Software', severity: 'ERROR', meaning: 'El PIN de seguridad o código OTP ingresado no coincide con el registro del token.', rootCause: 'Desfase temporal del token OTP o ingreso de PIN erróneo.', remediation: 'Ejecutar procedimiento de resincronización de token OTP en la consola de administración.' },
+  '5202057': { title: 'Token de Software Bloqueado', category: 'Tokens de Software', severity: 'ERROR', meaning: 'El token OTP alcanzó el límite de intentos fallidos permitidos por la directiva.', rootCause: 'Reintentos fallidos consecutivos con contraseñas temporales erróneas.', remediation: 'Desbloquear el token OTP en la consola de administración de IdentityGuard.' },
+  '5202340': { title: 'Fallo de Autorización de Aplicación Cliente (Authorization Failure)', category: 'API de Integración', severity: 'ERROR', meaning: 'La aplicación cliente (WSO2 / API Gateway) no tiene permisos autorizados para invocar la API de Entrust.', rootCause: 'Clave compartida (Client Secret) incorrecta o dirección IP no autorizada en la política del canal.', remediation: 'Verificar la clave de integración y la lista de direcciones IP permitidas en la política del canal en Entrust.' },
+  '5202404': { title: 'Recurso o Conexión No Encontrada en Repositorio', category: 'Repositorio de Identidad', severity: 'ERROR', meaning: 'El servidor no pudo localizar el registro de identidad en el repositorio de datos.', rootCause: 'Problemas de indexación o desconexión temporal con la base de datos.', remediation: 'Comprobar la conectividad JDBC y reindexar las tablas de usuarios en el repositorio.' },
+
+  // 5203xxx: Gestión de Usuarios y Políticas
+  '5203000': { title: 'Usuario No Encontrado en Directorio (User Not Found)', category: 'Directorio de Identidades', severity: 'ERROR', meaning: 'El usuario especificado no existe en la base de datos de Entrust ni en el repositorio LDAP.', rootCause: 'El usuario fue eliminado del directorio o el identificador fue tipeado erróneamente.', remediation: 'Ejecutar sincronización con Active Directory para importar los usuarios faltantes.' },
+  '5203016': { title: 'El Usuario No Posee Contraseña Configurada', category: 'Autenticación & Credenciales', severity: 'ERROR', meaning: 'El usuario intentó autenticarse con contraseña pero su perfil no tiene una contraseña asignada.', rootCause: 'Perfil de usuario incompleto o recién creado sin enrolamiento de contraseña.', remediation: 'Establecer una contraseña inicial para el usuario o enrolarlo en el portal de autoservicio.' },
+  '5203019': { title: 'La Contraseña Ha Expirado', category: 'Políticas de Seguridad', severity: 'WARN', meaning: 'La contraseña del usuario superó el tiempo máximo de vigencia permitido por la política.', rootCause: 'Expiración natural de vigencia de contraseña según la directiva bancaria.', remediation: 'Solicitar al usuario la renovación de su contraseña mediante el portal de autoservicio.' },
+  '5203020': { title: 'La Contraseña Debe Ser Cambiada en el Primer Inicio', category: 'Políticas de Seguridad', severity: 'INFO', meaning: 'El usuario debe cambiar su contraseña temporal por una definitiva.', rootCause: 'Nueva cuenta o contraseña restablecida por un administrador.', remediation: 'Guiar al usuario a través del flujo de cambio de clave inicial.' },
+
+  // 5205xxx: Validación de Credenciales & Bloqueos
+  '5205079': { title: 'Cuenta Bloqueada por Intentos Fallidos Consecutivos', category: 'Políticas de Seguridad', severity: 'CRITICAL', meaning: 'La cuenta del usuario fue suspendida temporalmente tras superar el límite de intentos fallidos.', rootCause: 'Posible ataque de fuerza bruta o usuario ingresando credenciales desactualizadas repetidamente.', remediation: 'Desbloquear la cuenta en la consola de Entrust IdentityGuard y restablecer el contador de intentos fallidos.' },
+  '5205080': { title: 'Cuenta Deshabilitada por Administración', category: 'Gestión de Cuentas', severity: 'ERROR', meaning: 'La cuenta se encuentra en estado inactivo o deshabilitada por decisión administrativa.', rootCause: 'Suspensión manual por parte de un oficial de seguridad o baja en nómina/LDAP.', remediation: 'Verificar el estado del usuario en el Directorio Activo y reactivar en la consola de administración si corresponde.' },
+  '5205139': { title: 'Alias de Usuario Duplicado o No Válido', category: 'Gestión de Identidades', severity: 'ERROR', meaning: 'El alias o identificador secundario de usuario colisiona con otro registro.', rootCause: 'Asignación duplicada de alias en el proceso de carga o sincronización.', remediation: 'Depurar el alias en la consola de administración para garantizar unicidad.' },
+  '5205150': { title: 'Método de Autenticación No Permitido por la Política', category: 'Políticas de Acceso', severity: 'ERROR', meaning: 'El usuario intentó autenticarse con un método que no está habilitado en su grupo de políticas.', rootCause: 'El grupo de usuarios no tiene asignada la directiva de tarjetas Grid o tokens.', remediation: 'Editar la política del grupo de usuarios en la consola de Entrust y habilitar el método requerido.' },
+
+  // AUDxxx: Auditoría Administrativa & Eventos Nominales
+  'AUD101': { title: 'Inicio de Sesión de Administrador Master en supersh', category: 'Auditoría Administrativa', severity: 'INFO', meaning: 'Un administrador con privilegios Master inició sesión en la consola interactiva supersh.', rootCause: 'Mantenimiento o ejecución de tareas administrativas autorizadas.', remediation: 'Auditar que las acciones ejecutadas coincidan con la ventana de cambio.' },
+  'AUD102': { title: 'Cierre de Sesión de Administrador Master en supersh', category: 'Auditoría Administrativa', severity: 'INFO', meaning: 'El administrador Master cerró la sesión interactiva supersh.', rootCause: 'Finalización de la sesión de administración.', remediation: 'Registro de auditoría nominal.' },
+  'AUD150': { title: 'Inicio de Sesión Administrativo Exitoso', category: 'Auditoría Administrativa', severity: 'INFO', meaning: 'Autenticación exitosa de un operador en la consola Web de Entrust IdentityGuard.', rootCause: 'Acceso nominal a la interfaz de administración.', remediation: 'Registro de auditoría nominal.' },
+  'AUD154': { title: 'Cierre de Sesión Administrativa por Inactividad', category: 'Auditoría Administrativa', severity: 'INFO', meaning: 'La sesión del operador web fue terminada automáticamente tras superar el límite de inactividad.', rootCause: 'Protección automática contra sesiones huérfanas en terminales desatendidas.', remediation: 'Registro de auditoría nominal y preventiva.' },
+  'AUD155': { title: 'Cierre Manual de Sesión Administrativa', category: 'Auditoría Administrativa', severity: 'INFO', meaning: 'El operador cerró sesión voluntariamente mediante el botón Logout.', rootCause: 'Operación nominal de desconexión del operador.', remediation: 'Registro de auditoría nominal.' },
+  'AUD2309': { title: 'Fallo en la Entrega de Notificación Push MFA', category: 'Pasarela Móvil MFA', severity: 'WARN', meaning: 'El servidor de notificaciones no pudo entregar el mensaje de autenticación Push al teléfono del usuario.', rootCause: 'Dispositivo móvil sin conexión a Internet, token revocado o certificado APNs/FCM desactualizado.', remediation: 'Verificar la conectividad del dispositivo y comprobar la vigencia de los certificados push en el servidor.' },
+  'AUD8500': { title: 'Inicio de Exportación Masiva para Migración a IDaaS Cloud', category: 'Herramienta de Migración IDaaS', severity: 'INFO', meaning: 'Se inició el proceso de extracción y cifrado de credenciales para migración a la nube.', rootCause: 'Ejecución de la herramienta IG_Migration_Tool.', remediation: 'Monitorear la finalización exitosa de las 3 fases de exportación.' },
+  'AUD8502': { title: 'Exportación Masiva a IDaaS Cloud Completada con Éxito', category: 'Herramienta de Migración IDaaS', severity: 'INFO', meaning: 'La exportación de tarjetas y usuarios finalizó al 100% generando el paquete .dat cifrado.', rootCause: 'Extracción completa de credenciales desde la base de datos OnPremise.', remediation: 'Proceder a la importación en la consola de Entrust IDaaS Cloud.' },
+  'AUD8503': { title: 'Generación y Despliegue de Contraseña de Cifrado (.dat)', category: 'Herramienta de Migración IDaaS', severity: 'INFO', meaning: 'La clave de cifrado del paquete de migración fue generada y mostrada en pantalla al usuario Master.', rootCause: 'Protocolo de seguridad criptográfica de custodia de identidades.', remediation: 'Custodiar la clave para su ingreso en la consola Cloud de IDaaS.' },
+
+  // ORA-xxxxx: Errores de Base de Datos Oracle
+  'ORA-01555': { title: 'Saturación de Tablespace UNDO / Snapshot Too Old', category: 'Persistencia Oracle DB', severity: 'CRITICAL', meaning: 'Fallo de lectura consistente en tablas de tarjetas Grid y datos cifrados de usuarios en Oracle DB.', rootCause: 'Parámetro UNDO_RETENTION insuficiente o espacio insuficiente en el tablespace UNDO.', remediation: 'Ejecutar ALTER SYSTEM SET UNDO_RETENTION = 10800 SCOPE=BOTH y ampliar el Tablespace UNDO con AUTOEXTEND ON.' },
+  'ORA-00001': { title: 'Violación de Clave Única (Unique Constraint Violated)', category: 'Persistencia Oracle DB', severity: 'ERROR', meaning: 'Intento de inserción de un registro con identificador o clave duplicada en la base de datos.', rootCause: 'Colisión de identificadores de usuario o números de serie de tarjetas Grid durante la inserción.', remediation: 'Verificar la unicidad de las claves y realizar limpieza de registros huérfanos.' },
+  'ORA-01000': { title: 'Límite Máximo de Cursores Abiertos Superado', category: 'Persistencia Oracle DB', severity: 'CRITICAL', meaning: 'La aplicación agotó el número de cursores permitidos por sesión en la base de datos Oracle.', rootCause: 'Fuga de conexiones o cursores JDBC no cerrados en el pool de Tomcat.', remediation: 'Incrementar OPEN_CURSORS en Oracle (mínimo 1000) y verificar el cierre de statements en el connection pool.' },
+  'ORA-03113': { title: 'Fin de Archivo en Canal de Comunicación (End-of-File)', category: 'Persistencia Oracle DB', severity: 'CRITICAL', meaning: 'Se interrumpió abruptamente la conexión TCP/IP entre Entrust IdentityGuard y Oracle DB.', rootCause: 'Reinicio de la instancia Oracle, corte de red entre servidores o firewall cerrando conexiones inactivas.', remediation: 'Verificar la estabilidad del enlace de red y configurar Keep-Alive en el listener de Oracle.' },
+
+  // IDaaS Bulk: Aprovisionamiento Masivo en la Nube
+  'bulkidentityguard.add.error.assignedgrid': { title: 'Conflicto de Tarjeta Grid Preexistente en Lote Masivo', category: 'Aprovisionamiento IDaaS Cloud', severity: 'ERROR', meaning: 'La tarea masiva intentó asignar una tarjeta Grid a un usuario que ya posee una tarjeta activa.', rootCause: 'Ejecución del lote sin la directiva overwriteExistingGrid=true.', remediation: 'Configurar el parámetro overwriteExistingGrid=true en la tarea masiva para permitir reemplazo.' },
+  'bulkidentityguard.add.error.qa': { title: 'Preguntas y Respuestas Secretas (Q&A) Ya Registradas', category: 'Aprovisionamiento IDaaS Cloud', severity: 'ERROR', meaning: 'El usuario ya cuenta con preguntas de seguridad registradas en el tenant de IDaaS.', rootCause: 'Intento de importación sin la directiva updateExistingCredentials=true.', remediation: 'Habilitar updateExistingCredentials=true en la configuración del lote para actualizar el esquema Q&A.' },
+  'bulkidentityguard.add.error.password': { title: 'Colisión de Contraseña en Lote Masivo', category: 'Aprovisionamiento IDaaS Cloud', severity: 'ERROR', meaning: 'La contraseña enviada en el lote colisiona con una credencial existente.', rootCause: 'Falta de la directiva allowPasswordReset=true en la importación masiva.', remediation: 'Habilitar allowPasswordReset=true para permitir actualización de contraseñas de usuarios en el tenant.' }
+};
+
 /**
  * KB-DATABASE: Base de Conocimientos de Diagnóstico de Logs, Auditoría y Trazas
  * Soporta Entrust IdentityGuard OnPremise (Errores 520xxx y Auditoría AUDxxx)
@@ -1139,6 +1194,26 @@ class KnowledgeBase {
   diagnoseLog(logText, targetCode) {
     if (!logText && !targetCode) return null;
     const searchText = logText || (targetCode ? `[${targetCode}]` : '');
+
+    // 0. Búsqueda exacta e instantánea en el Catálogo de Precisión Oficial
+    const cleanCode = (targetCode || (typeof this.extractErrorCodeFromText === 'function' ? this.extractErrorCodeFromText(searchText) : '') || '').trim();
+    if (cleanCode && typeof ENTRUST_EXACT_CATALOG !== 'undefined' && ENTRUST_EXACT_CATALOG[cleanCode]) {
+      const entry = ENTRUST_EXACT_CATALOG[cleanCode];
+      return {
+        matched: true,
+        ruleId: `KB-EXACT-${cleanCode}`,
+        title: `[${cleanCode}] ${entry.title}`,
+        category: entry.category,
+        severity: entry.severity,
+        meaning: entry.meaning,
+        rootCause: entry.rootCause,
+        remediation: entry.remediation,
+        riskLevel: entry.severity === 'CRITICAL' ? 'Crítico (P1)' : (entry.severity === 'ERROR' ? 'Alto (P2)' : 'Nominal / Auditoría'),
+        manualVersion: 'vEntrust',
+        sectionId: `sec-${cleanCode.toLowerCase()}`,
+        sectionTitle: `Código [${cleanCode}]: ${entry.title}`
+      };
+    }
 
     // Si se especificó un código objetivo, buscar primero la regla que coincida de forma estricta con ese código
     if (targetCode) {

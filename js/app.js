@@ -1357,7 +1357,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
     const visualWarnPct = totalCount > 0 && warningLogsCount > 0 ? Math.max(3, (warningLogsCount / totalCount) * 100) : 0;
 
     const reportTitleText = onlyCatalogErrors 
-      ? `DICTAMEN FORENSE DE ERRORES CRÍTICOS ENTRUST [520xxx / AUD / ORA / IDaaS]`
+      ? `DICTAMEN FORENSE DE ERRORES CRÍTICOS Y AUDITORÍA ENTRUST`
       : `DICTAMEN PERICIAL FORENSE Y AUDITORÍA DE PLATAFORMA ENTRUST`;
 
     const reportScopeText = onlyCatalogErrors
@@ -1414,7 +1414,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       const { code, diag, count, sampleRaw, level, service } = item;
       const pctStr = formatPctStr(count, totalCount);
 
-      let familyBadge = '🚨 520xxx Core';
+      let familyBadge = '🛡️ Autenticación & Credenciales';
       let familyColor = '#dc2626';
       if (/^AUD\d+/i.test(code)) { familyBadge = '📋 AUD Auditoría'; familyColor = '#d97706'; }
       else if (/^ORA-\d+/i.test(code)) { familyBadge = '🗄️ ORA Database'; familyColor = '#7c3aed'; }
@@ -1600,7 +1600,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
             </div>
             <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
               <div style="background:#fef2f2; border:1px solid #fecaca; padding:10px 8px; border-radius:4px; text-align:center;">
-                <div style="font-size:9.5px; color:#dc2626; font-weight:bold; text-transform:uppercase;">🚨 520xxx Core</div>
+                <div style="font-size:9.5px; color:#dc2626; font-weight:bold; text-transform:uppercase;">🛡️ Autenticación & Credenciales</div>
                 <div style="font-size:18px; font-weight:bold; color:#dc2626; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^520/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
                 <div style="font-size:8.5px; color:#64748b;">Auth / Tokens / Sync</div>
               </div>
@@ -1628,13 +1628,13 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
 
         <!-- Sección I: Hallazgos & Diagnóstico -->
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
-          1. Hallazgos y Diagnóstico Técnico Clasificado [520xxx / AUD / ORA / IDaaS] (${diagMapSize} patrones únicos)
+          1. Hallazgos y Diagnóstico Técnico Detallado por Código Oficial (${diagMapSize} patrones únicos)
         </h3>
         ${section1Content}
 
         <!-- Tabla II: Análisis de Frecuencia de Errores -->
         <div style="margin-top:20px; page-break-inside:avoid; break-inside:avoid;">
-          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">2. Análisis Estadístico de Errores Reincidentes por Familia (520xxx / AUDxxx / ORA / IDaaS)</h3>
+          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">2. Análisis Estadístico de Códigos de Error e Incidentes Reincidentes</h3>
           <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
             <thead>
               <tr style="background:#e0f2fe; color:#0a3d6d; text-align:left; page-break-inside:avoid; break-inside:avoid;">
@@ -1779,8 +1779,8 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
     md += `### 1. RESUMEN EJECUTIVO DE SALUD Y MÉTRICAS DE LA MUESTRA\n\n`;
     md += `- **Total Eventos Consolidados:** \`${totalCount.toLocaleString()}\` registros (${consolidated.fileCount || 1} archivos)\n`;
     md += `- **Índice de Salud de Autenticación:** \`${healthIndex}%\`\n`;
-    md += `- **Incidentes Críticos [520xxx / IDaaS / ORA]:** \`${criticalLogsCount.toLocaleString()}\` (${((criticalLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
-    md += `- **Alertas de Auditoría [AUDxxx]:** \`${warningLogsCount.toLocaleString()}\` (${((warningLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
+    md += `- **Incidentes Críticos de Autenticación & Aprovisionamiento:** \`${criticalLogsCount.toLocaleString()}\` (${((criticalLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
+    md += `- **Eventos de Auditoría Administrativa:** \`${warningLogsCount.toLocaleString()}\` (${((warningLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
     md += `- **Operaciones Informativas:** \`${infoLogsCount.toLocaleString()}\` (${((infoLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n\n`;
 
     md += `---\n\n`;
@@ -3575,11 +3575,11 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           <div style="font-weight:bold; margin-bottom:10px; color:var(--text-main);">📊 Tendencia Visual de Eventos</div>
           <div style="display:flex; flex-direction:column; gap:8px;">
             <div>
-              <div class="flex-between mb-1"><span>Errores Críticos / 520xxx</span><strong style="color:#dc2626;">${criticalCount.toLocaleString()} (${((criticalCount/total)*100).toFixed(1)}%)</strong></div>
+              <div class="flex-between mb-1"><span>Fallos Críticos de Autenticación</span><strong style="color:#dc2626;">${criticalCount.toLocaleString()} (${((criticalCount/total)*100).toFixed(1)}%)</strong></div>
               <div style="height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden;"><div style="width:${Math.min(100, (criticalCount/total)*100)}%; background:#dc2626; height:100%;"></div></div>
             </div>
             <div>
-              <div class="flex-between mb-1"><span>Alertas Auditoría AUDxxx</span><strong style="color:#f59e0b;">${warnCount.toLocaleString()} (${((warnCount/total)*100).toFixed(1)}%)</strong></div>
+              <div class="flex-between mb-1"><span>Eventos de Auditoría</span><strong style="color:#f59e0b;">${warnCount.toLocaleString()} (${((warnCount/total)*100).toFixed(1)}%)</strong></div>
               <div style="height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden;"><div style="width:${Math.min(100, (warnCount/total)*100)}%; background:#f59e0b; height:100%;"></div></div>
             </div>
             <div>
@@ -3739,7 +3739,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         const maxCnt = allSorted[0][1] || 1;
         let html = `
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;">
-            <span style="font-size:0.72rem; font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:2px 6px; border-radius:4px;">🚨 520xxx: ${list520.length} tipos</span>
+            <span style="font-size:0.72rem; font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:2px 6px; border-radius:4px;">🛡️ Autenticación: ${list520.length} tipos</span>
             <span style="font-size:0.72rem; font-weight:700; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); padding:2px 6px; border-radius:4px;">📋 AUD: ${listAud.length} tipos</span>
             <span style="font-size:0.72rem; font-weight:700; background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); padding:2px 6px; border-radius:4px;">🗄️ ORA: ${listOra.length} tipos</span>
             <span style="font-size:0.72rem; font-weight:700; background:rgba(2,132,199,0.15); color:#38bdf8; border:1px solid rgba(2,132,199,0.3); padding:2px 6px; border-radius:4px;">☁️ IDaaS: ${listIdaas.length} tipos</span>
@@ -4582,7 +4582,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               ${logsRowCols}
             </tr>
             <tr>
-              <td style="padding:8px; font-weight:bold;">Errores Críticos / 520xxx</td>
+              <td style="padding:8px; font-weight:bold;">Fallos Críticos de Autenticación</td>
               ${errRowCols}
             </tr>
             <tr>
@@ -5427,7 +5427,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         let findingsHtml = '';
         opinion.criticalFindings.forEach((f, idx) => {
           let familyColor = '#dc2626';
-          let familyBadge = '🚨 520xxx Core';
+          let familyBadge = '🛡️ Autenticación & Credenciales';
           if (/^AUD\d+/i.test(f.code)) { familyColor = '#d97706'; familyBadge = '📋 AUD Auditoría'; }
           else if (/^ORA-\d+/i.test(f.code)) { familyColor = '#7c3aed'; familyBadge = '🗄️ ORA Database'; }
           else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(f.code)) { familyColor = '#0284c7'; familyBadge = '☁️ IDaaS Cloud'; }
@@ -5763,7 +5763,7 @@ ${escapeHtml(opinion.crossFileSummary)}
             tableData.push(['bulkidentityguard.add.error.qa', '1,057,000', '32.9%', 'Preguntas secretas Q&A ya registradas sin updateExistingCredentials']);
             tableData.push(['bulkidentityguard.add.error.password', '1,057,547', '32.9%', 'Colisión de credenciales únicas en almacén IDaaS']);
           } else {
-            tableData.push(['Errores Entrust Core 520xxx', criticals.toLocaleString(), '100%', 'Fallo de autenticación / credenciales']);
+            tableData.push(['Fallos de Autenticación Entrust', criticals.toLocaleString(), '100%', 'Fallo de autenticación / credenciales']);
           }
 
           slide3.addTable(tableData, { x: 0.8, y: 1.4, w: 8.8, fill: { color: '1E293B' }, color: 'FFFFFF', fontSize: 11, border: { pt: 1, color: '334155' } });
@@ -5831,7 +5831,7 @@ Fecha de Registro: ${new Date().toISOString()}
 
 --- RESUMEN EJECUTIVO DEL INCIDENTE ---
 Se procesaron ${total.toLocaleString()} eventos de auditoría y se detectaron ${criticalsCount.toLocaleString()} eventos críticos.
-${isCloud ? 'Patrones Críticos: bulkidentityguard.add.error.assignedgrid (1.1M), error.qa (1.05M), error.password (1.05M)' : 'Patrones Críticos: Errores de Autenticación Entrust 520xxx'}
+${isCloud ? 'Patrones Críticos: bulkidentityguard.add.error.assignedgrid (1.1M), error.qa (1.05M), error.password (1.05M)' : 'Patrones Críticos: Fallos Críticos de Autenticación'}
 
 --- IMPACTO EN NEGOCIO & CANALES ---
 - Canal Afectado: Canales Digitales / Aprovisionamiento Masivo de Clientes
@@ -6209,6 +6209,44 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
   }
 
   initHistoricalComparisonModule();
+  initErrorCodeInspector();
+
+  /* ==========================================================================
+     10. INSPECTOR & BUSCADOR EN VIVO DE CÓDIGOS OFICIALES ENTRUST (v250.0)
+     ========================================================================== */
+  function initErrorCodeInspector() {
+    const input = document.getElementById('kb-quick-code-search');
+    const resultBox = document.getElementById('kb-quick-code-result');
+    if (!input || !resultBox) return;
+
+    input.addEventListener('input', () => {
+      const q = input.value.trim();
+      if (!q) {
+        resultBox.style.display = 'none';
+        return;
+      }
+
+      const diag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog('', q) : null;
+      if (diag && diag.matched) {
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = `
+          <div style="background:var(--bg-secondary); border:1.5px solid #0284c7; border-radius:8px; padding:14px; margin-top:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <strong style="color:#0284c7; font-size:0.95rem;">${escapeHtml(diag.title)}</strong>
+              <span style="background:rgba(2,132,199,0.15); color:#0284c7; font-size:0.75rem; font-weight:bold; padding:2px 8px; border-radius:4px;">${escapeHtml(diag.category)}</span>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-main); margin-bottom:6px;"><strong>Diagnóstico Oficial:</strong> ${escapeHtml(diag.meaning)}</div>
+            <div style="font-size:0.82rem; color:#dc2626; margin-bottom:6px;"><strong>Causa Raíz Probable:</strong> ${escapeHtml(diag.rootCause)}</div>
+            <div style="font-size:0.82rem; color:#059669; background:rgba(5,150,105,0.08); padding:8px 10px; border-radius:6px; border:1px solid rgba(5,150,105,0.2); white-space:pre-line;"><strong>Procedimiento de Remediación:</strong><br>${escapeHtml(diag.remediation)}</div>
+          </div>
+        `;
+      } else {
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = `<div style="padding:10px; color:var(--text-muted); font-size:0.82rem; text-align:center;">No se encontró una ficha específica para el código "${escapeHtml(q)}". Ingrese un código como 5202013, 5205079, AUD154 u ORA-01555.</div>`;
+      }
+    });
+  }
+
   initSyslogCollectorModule();
   initStoragePersistence();
   initCertificatesModule();
