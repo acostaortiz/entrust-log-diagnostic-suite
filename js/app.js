@@ -599,6 +599,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const activePane = document.getElementById(`tab-${targetTab}`);
     if (activePane) activePane.classList.add('active');
 
+    if (targetTab === 'overview') {
+      try { updateMetricsAndCharts(); } catch(e) {}
+    }
+
     // Manejo de estado para el dropdown 'Más Vistas'
     const btnNavMore = document.getElementById('btn-nav-more');
     const labelNavMore = document.getElementById('label-nav-more');
@@ -5590,13 +5594,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const files = Array.from(e.target.files);
       if (files.length === 0) return;
 
+      state.isServerApi = false;
       const isAccumulate = document.getElementById('chk-accumulate-mode')?.checked ?? false;
       if (!isAccumulate) {
         state.logs = [];
         state.filteredLogs = [];
         state.loadedFiles = [];
         state.globalStreamMetrics = null;
-        state.isServerApi = false;
       }
       state.executiveReportCache = null;
 
@@ -5743,6 +5747,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
         populateClientSelector();
         applyLogFilters();
+        updateMetricsAndCharts();
+        updateOverviewWidgets();
 
         const metrics = getConsolidatedMetrics();
         const targetLog = (state.logs || []).find(l => l.level === 'CRITICAL' || l.level === 'ERROR') || (state.logs && state.logs[0]);

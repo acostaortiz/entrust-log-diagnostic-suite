@@ -140,6 +140,9 @@ body {
 }
 
 #active-client-session-select {
+  background: var(--bg-secondary);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
   width: 240px;
   height: 32px;
   font-size: 0.8rem;

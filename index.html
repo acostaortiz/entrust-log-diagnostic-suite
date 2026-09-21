@@ -22,8 +22,8 @@
 <body>
 
   <!-- Header & App Navbar Corporativo IT SERVICIOS -->
-    <!-- Header & App Navbar Corporativo IT SERVICIOS (Rediseño Ejecutivo Espacioso v410.0) -->
-    <!-- Header & App Navbar Corporativo IT SERVICIOS (Arquitectura Ejecutiva v410.0) -->
+    <!-- Header & App Navbar Corporativo IT SERVICIOS (Rediseño Ejecutivo Espacioso v420.0) -->
+    <!-- Header & App Navbar Corporativo IT SERVICIOS (Arquitectura Ejecutiva v420.0) -->
   <header class="app-header">
     <!-- FILA SUPERIOR: Marca, Cliente Activo, Usuario & Tema -->
     <div class="header-top-row">
@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust OnPremise & IDaaS Cloud</span>
-            <span style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3);">v410.0</span>
+            <span style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3);">v420.0</span>
           </div>
         </div>
       </div>
@@ -46,8 +46,12 @@
       <div class="header-top-right">
         <div class="active-client-badge">
           <span class="active-client-label">🏢 Cliente Activo:</span>
-          <select class="form-control" id="active-client-session-select">
-            <!-- Opciones inyectadas por JS -->
+          <select class="form-control" id="active-client-session-select" style="background:var(--bg-secondary); color:var(--text-main); font-weight:700; border:1px solid var(--border-color); font-size:0.8rem; height:32px; width:250px; padding:2px 8px; cursor:pointer;">
+            <option value="mercantil" selected>Banco Mercantil C.A. (IDaaS Cloud v2026)</option>
+            <option value="general">Entorno Entrust General / Multi-Nodo (Release 13.0)</option>
+            <option value="banesco">Banesco Banco Universal (Release 12.0)</option>
+            <option value="bancamiga">Bancamiga Banco Universal (Release 13.0)</option>
+            <option value="idaas_cloud">IDaaS Cloud Latam (IDaaS Cloud v2026)</option>
           </select>
           <button class="btn btn-primary" id="btn-open-create-client-modal" onclick="document.getElementById('client-modal').classList.add('active');" style="padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer;" title="Registrar o editar perfil de cliente">+ Cliente</button>
         </div>
@@ -554,12 +558,12 @@
           <span style="font-size:0.85rem; font-weight:600; color:var(--text-muted); align-self:center;">Acceso Rápido:</span>
           <button class="btn btn-secondary relnote-quick-btn" data-ver="vIDaaS_docs" style="font-size:0.8rem; padding:4px 10px; background:linear-gradient(135deg, #0284c7, #0369a1); color:#fff; border-color:#38bdf8; font-weight:700;">🌐 Entrust IDaaS Cloud Docs (trustedauth.com)</button>
           <button class="btn btn-secondary relnote-quick-btn" data-ver="vIDaaS" style="font-size:0.8rem; padding:4px 10px;">☁️ IDaaS Troubleshooting</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="v13_0_webhelp" style="font-size:0.8rem; padding:4px 10px;">📖 WebHelp v410.0</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="v12_0_webhelp" style="font-size:0.8rem; padding:4px 10px;">📖 WebHelp v410.0</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="v11_0_webhelp" style="font-size:0.8rem; padding:4px 10px;">📖 WebHelp v410.0</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="v13_0_relnotes" style="font-size:0.8rem; padding:4px 10px;">📋 Release Notes v410.0</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="v12_0_relnotes" style="font-size:0.8rem; padding:4px 10px;">📋 Release Notes v410.0</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="v11_0_relnotes" style="font-size:0.8rem; padding:4px 10px;">📋 Release Notes v410.0</button>
+          <button class="btn btn-secondary relnote-quick-btn" data-ver="v13_0_webhelp" style="font-size:0.8rem; padding:4px 10px;">📖 WebHelp v420.0</button>
+          <button class="btn btn-secondary relnote-quick-btn" data-ver="v12_0_webhelp" style="font-size:0.8rem; padding:4px 10px;">📖 WebHelp v420.0</button>
+          <button class="btn btn-secondary relnote-quick-btn" data-ver="v11_0_webhelp" style="font-size:0.8rem; padding:4px 10px;">📖 WebHelp v420.0</button>
+          <button class="btn btn-secondary relnote-quick-btn" data-ver="v13_0_relnotes" style="font-size:0.8rem; padding:4px 10px;">📋 Release Notes v420.0</button>
+          <button class="btn btn-secondary relnote-quick-btn" data-ver="v12_0_relnotes" style="font-size:0.8rem; padding:4px 10px;">📋 Release Notes v420.0</button>
+          <button class="btn btn-secondary relnote-quick-btn" data-ver="v11_0_relnotes" style="font-size:0.8rem; padding:4px 10px;">📋 Release Notes v420.0</button>
         </div>
 
         <div class="manual-layout">
@@ -1167,7 +1171,7 @@ db.connection.pool.max=20
         <select class="form-control" id="custom-kb-manual-ver">
           <option value="vEntrust">vEntrust - Entrust IdentityGuard Errores 520xxx</option>
           <option value="vIDaaS">vIDaaS - Entrust IDaaS Cloud Troubleshooting</option>
-          <option value="v410.0">v410.0 - Microservicios & Base de Datos Enterprise</option>
+          <option value="v420.0">v420.0 - Microservicios & Base de Datos Enterprise</option>
           <option value="v2.5">v2.5 - Kubernetes Cloud Native & Runbook</option>
         </select>
       </div>
