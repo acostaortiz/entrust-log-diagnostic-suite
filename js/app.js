@@ -566,6 +566,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropdownNavMore = document.getElementById('dropdown-nav-more');
 
     const subTabLabels = {
+      'compliance': '⚖️ Sudeban / ISO',
+      'diff': '🔍 Config Diff',
       'kb': '🧠 Base KB',
       'manuals': '📚 Manuales',
       'nodes': '🏢 Multi-Nodo',
@@ -2938,6 +2940,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       updateTrendChart();
       renderUserAndIpAnalytics();
       updateOverviewWidgets();
+    if (window.complianceAuditorEngine) {
+      window.complianceAuditorEngine.render('compliance-auditor-main-container', state.logs || [], getActiveClientProfile());
+    }
     if (window.slaEngine) {
       window.slaEngine.render('sla-calculator-overview-container', total, criticalsCount, warningsCount);
     }
@@ -3488,6 +3493,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     updateTrendChart();
     updateSeverityChart();
     updateOverviewWidgets();
+    if (window.complianceAuditorEngine) {
+      window.complianceAuditorEngine.render('compliance-auditor-main-container', state.logs || [], getActiveClientProfile());
+    }
     if (window.slaEngine) {
       window.slaEngine.render('sla-calculator-overview-container', total, criticalsCount, warningsCount);
     }
@@ -3976,6 +3984,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     renderLogTable();
     renderUserAndIpAnalytics();
     updateOverviewWidgets();
+    if (window.complianceAuditorEngine) {
+      window.complianceAuditorEngine.render('compliance-auditor-main-container', state.logs || [], getActiveClientProfile());
+    }
     if (window.slaEngine) {
       window.slaEngine.render('sla-calculator-overview-container', total, criticalsCount, warningsCount);
     }
@@ -6766,6 +6777,148 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
 
     document.getElementById('btn-download-excel-exec-report')?.addEventListener('click', () => {
       downloadExecutiveReportExcel();
+    });
+  }
+
+  
+  /* ==========================================================================
+     13. MÓDULOS ENTERPRISE TIER-1 (COPILOT, COMPLIANCE, CONFIG DIFF, SIEM) (v290.0)
+     ========================================================================== */
+
+  // 13.1 ENTRUST FORENSICS COPILOT
+  function initCopilotModule() {
+    const btnToggle = document.getElementById('btn-toggle-copilot-drawer');
+    const drawer = document.getElementById('copilot-drawer');
+    const btnClose = document.getElementById('btn-close-copilot');
+    const input = document.getElementById('copilot-input-query');
+    const btnSend = document.getElementById('btn-send-copilot');
+    const msgContainer = document.getElementById('copilot-messages-container');
+    const pills = document.querySelectorAll('.copilot-pill');
+
+    if (!btnToggle || !drawer) return;
+
+    btnToggle.addEventListener('click', () => {
+      drawer.style.display = drawer.style.display === 'none' || !drawer.style.display ? 'flex' : 'none';
+      if (drawer.style.display === 'flex' && input) input.focus();
+    });
+
+    btnClose?.addEventListener('click', () => {
+      drawer.style.display = 'none';
+    });
+
+    const submitQuery = (qText) => {
+      const text = (qText || input?.value || '').trim();
+      if (!text || !window.copilotEngine || !msgContainer) return;
+
+      // Append User message
+      const userBubble = document.createElement('div');
+      userBubble.style.cssText = 'background:#0284c7; color:#fff; padding:8px 12px; border-radius:10px 10px 2px 10px; align-self:flex-end; max-width:85%; font-weight:600;';
+      userBubble.textContent = text;
+      msgContainer.appendChild(userBubble);
+
+      if (input) input.value = '';
+
+      // Ask Copilot Engine
+      const res = window.copilotEngine.ask(text, state);
+
+      // Append Copilot response
+      const botBubble = document.createElement('div');
+      botBubble.style.cssText = 'background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); padding:10px 12px; border-radius:10px 10px 10px 2px; align-self:flex-start; max-width:92%; white-space:pre-line;';
+      botBubble.innerHTML = res.answer
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+      msgContainer.appendChild(botBubble);
+
+      msgContainer.scrollTop = msgContainer.scrollHeight;
+    };
+
+    btnSend?.addEventListener('click', () => submitQuery());
+    input?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitQuery();
+    });
+
+    pills.forEach(p => {
+      p.addEventListener('click', () => {
+        const q = p.getAttribute('data-query');
+        submitQuery(q);
+      });
+    });
+  }
+
+  // 13.2 COMPARADOR FORENSE DE CONFIGURACIONES (DIFF)
+  function initConfigDiffModule() {
+    const btnExec = document.getElementById('btn-execute-config-diff');
+    const inputA = document.getElementById('diff-input-a');
+    const inputB = document.getElementById('diff-input-b');
+    const container = document.getElementById('diff-results-container');
+
+    if (!btnExec || !container || !window.configDiffEngine) return;
+
+    const runDiff = () => {
+      const client = getActiveClientProfile();
+      const nodeA = client?.nodes?.[0]?.name || '🖥️ Nodo 01 (Primario)';
+      const nodeB = client?.nodes?.[1]?.name || '🖥️ Nodo 02 (Secundario)';
+
+      const res = window.configDiffEngine.compareConfigs(inputA?.value || '', inputB?.value || '', nodeA, nodeB);
+
+      if (res.diffsCount === 0) {
+        container.innerHTML = `
+          <div style="background:rgba(16,185,129,0.12); border:1.5px solid #10b981; border-radius:8px; padding:16px; text-align:center; color:#10b981;">
+            <strong>✅ 100% Sincronización Perfecta:</strong> No se encontraron discrepancias en las ${res.totalKeys} directivas evaluadas entre ambos nodos.
+          </div>`;
+        return;
+      }
+
+      let rows = res.diffs.map(d => `
+        <tr style="border-bottom:1px solid var(--border-color); background:${d.isCritical ? 'rgba(239,68,68,0.06)' : 'transparent'};">
+          <td style="padding:8px 10px; font-family:monospace; font-weight:bold; color:${d.isCritical ? '#dc2626' : '#0284c7'};">${escapeHtml(d.key)}</td>
+          <td style="padding:8px 10px; font-family:monospace; font-size:0.78rem; color:#a5f3fc; background:rgba(15,23,42,0.6);">${escapeHtml(d.valA)}</td>
+          <td style="padding:8px 10px; font-family:monospace; font-size:0.78rem; color:#86efac; background:rgba(15,23,42,0.6);">${escapeHtml(d.valB)}</td>
+          <td style="padding:8px 10px; font-size:0.75rem; color:${d.isCritical ? '#ef4444' : 'var(--text-muted)'};">${escapeHtml(d.impact)}</td>
+        </tr>
+      `).join('');
+
+      container.innerHTML = `
+        <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px; padding:14px; margin-top:12px;">
+          <div class="flex-between mb-3">
+            <span style="font-weight:bold; color:var(--text-main); font-size:0.9rem;">
+              Discrepancias Detectadas: <strong>${res.diffsCount}</strong> (${res.criticalDiffsCount} críticas)
+            </span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Total parámetros: ${res.totalKeys}</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.8rem;">
+              <thead>
+                <tr style="background:var(--bg-primary); border-bottom:2px solid var(--border-color);">
+                  <th style="padding:8px 10px;">Parámetro / Clave</th>
+                  <th style="padding:8px 10px;">${escapeHtml(res.nameA)}</th>
+                  <th style="padding:8px 10px;">${escapeHtml(res.nameB)}</th>
+                  <th style="padding:8px 10px;">Impacto Técnico</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+    };
+
+    btnExec.addEventListener('click', runDiff);
+  }
+
+  // 13.3 EXPORTACIÓN SIEM (CEF / ELASTIC ECS)
+  function initSiemExporterModule() {
+    document.getElementById('btn-export-cef')?.addEventListener('click', () => {
+      if (window.siemExporterEngine) {
+        window.siemExporterEngine.downloadSiem('cef', state.logs || [], getActiveClientProfile());
+      }
+    });
+
+    document.getElementById('btn-export-ecs')?.addEventListener('click', () => {
+      if (window.siemExporterEngine) {
+        window.siemExporterEngine.downloadSiem('ecs', state.logs || [], getActiveClientProfile());
+      }
     });
   }
 

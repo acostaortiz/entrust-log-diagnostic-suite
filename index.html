@@ -17,7 +17,7 @@
   <script src="js/html2pdf.bundle.min.js"></script>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/styles.css?v=280.0">
+  <link rel="stylesheet" href="css/styles.css?v=290.0">
 </head>
 <body>
 
@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust OnPremise & IDaaS Cloud</span>
-            <span style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3);">v280.0</span>
+            <span style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3);">v290.0</span>
           </div>
         </div>
       </div>
@@ -75,11 +75,57 @@
           <button class="nav-btn dropdown-toggle-btn" id="btn-nav-more" style="color:#10b981; font-weight:700;">
             <span>📂</span> <span id="label-nav-more">Más Vistas</span> <span style="font-size:0.65rem; margin-left:2px;">▼</span>
           </button>
-          <div class="header-dropdown-menu" style="left:0; right:auto; min-width:280px;">
+                    <div class="header-dropdown-menu" style="left:0; right:auto; min-width:300px;">
+            <button class="header-dropdown-item nav-btn" data-tab="compliance" style="color:#059669;">
+              <span style="font-size:1.2rem;">⚖️</span>
+              <div>
+                <div style="font-weight:700;">Auditoría Sudeban & ISO 27001</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Checklist y conformidad regulatoria</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item nav-btn" data-tab="diff" style="color:#6366f1;">
+              <span style="font-size:1.2rem;">🔍</span>
+              <div>
+                <div style="font-weight:700;">Comparador Config (Diff)</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Discrepancias XML/Properties entre nodos</div>
+              </div>
+            </button>
             <button class="header-dropdown-item nav-btn" data-tab="kb" style="color:#ec4899;">
               <span style="font-size:1.2rem;">🧠</span>
               <div>
                 <div style="font-weight:700;">Base de Conocimientos (KB)</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Catálogo de códigos oficiales & remediación</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item nav-btn" data-tab="manuals" style="color:#0284c7;">
+              <span style="font-size:1.2rem;">📚</span>
+              <div>
+                <div style="font-weight:700;">Manuales Administrativos</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Documentación WebHelp Entrust e IDaaS</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item nav-btn" data-tab="nodes" style="color:#3b82f6;">
+              <span style="font-size:1.2rem;">🏢</span>
+              <div>
+                <div style="font-weight:700;">Comparativa Multi-Nodo</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Balanceo de carga y servidores</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item nav-btn" data-tab="traces" style="color:#d97706;">
+              <span style="font-size:1.2rem;">⚡</span>
+              <div>
+                <div style="font-weight:700;">Trazas Distribuidas</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Cascada temporal de transacciones</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item nav-btn" data-tab="compare" style="color:#10b981;">
+              <span style="font-size:1.2rem;">📈</span>
+              <div>
+                <div style="font-weight:700;">Comparativa Histórica</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Auditorías previas vs sesión actual</div>
+              </div>
+            </button>
+          </div>
                 <div style="font-size:0.7rem; color:var(--text-muted);">Catálogo de códigos oficiales & remediación</div>
               </div>
             </button>
@@ -143,124 +189,22 @@
                 <div style="font-size:0.7rem; color:var(--text-muted);">Peritaje técnico automatizado</div>
               </div>
             </button>
-          </div>
-        </div>
-
-        <!-- Dropdown 2: Herramientas & Utilidades -->
-        <div class="header-dropdown" id="dropdown-tools">
-          <button class="header-dropdown-btn" id="btn-toggle-dropdown-tools" style="border-color:#6366f1; color:#4f46e5; background:rgba(99, 102, 241, 0.08);">
-            <span>🛠️</span> <span>Herramientas</span> <span style="font-size:0.65rem; margin-left:2px;">▼</span>
-          </button>
-          <div class="header-dropdown-menu" id="menu-tools">
-            <button class="header-dropdown-item" id="btn-open-remediation-modal" style="color:#4f46e5;">
-              <span style="font-size:1.15rem;">⚡</span>
+            <button class="header-dropdown-item" id="btn-export-cef" style="color:#d97706;">
+              <span style="font-size:1.15rem;">🛡️</span> 
               <div>
-                <div style="font-weight:700;">Auto-Remediación (.BAT/.SH)</div>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Generador de scripts Windows / Linux</div>
+                <div style="font-weight:700;">Exportar SIEM (CEF)</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Para Splunk / ArcSight / QRadar</div>
               </div>
             </button>
-            <button class="header-dropdown-item" id="btn-open-zoho-modal" style="color:#0284c7;">
-              <span style="font-size:1.15rem;">🎫</span>
+            <button class="header-dropdown-item" id="btn-export-ecs" style="color:#0284c7;">
+              <span style="font-size:1.15rem;">📦</span> 
               <div>
-                <div style="font-weight:700;">Ticket Zoho Desk</div>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Crear ticket de soporte ITIL</div>
-              </div>
-            </button>
-            <button class="header-dropdown-item" id="btn-open-saved-cases">
-              <span style="font-size:1.15rem;">📂</span>
-              <div>
-                <div style="font-weight:700;">Casos Guardados</div>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Historial de incidentes guardados</div>
-              </div>
-            </button>
-            <button class="header-dropdown-item" id="btn-open-import-catalog" onclick="document.getElementById('import-catalog-modal').classList.add('active');">
-              <span style="font-size:1.15rem;">📥</span>
-              <div>
-                <div style="font-weight:700;">Importar Catálogo HTML</div>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Cargar errores desde archivos web</div>
+                <div style="font-weight:700;">Exportar Elastic ECS (JSON)</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Formato Elastic Common Schema</div>
               </div>
             </button>
           </div>
         </div>
-
-        <!-- Botón Destacado: Generar Informe -->
-        <button class="btn btn-primary" id="btn-generate-exec-report" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#fff; font-weight:800; font-size:0.84rem; padding:8px 16px; border-radius:8px; box-shadow:0 3px 10px rgba(2, 132, 199, 0.35); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Generar Informe Ejecutivo Integral (PDF / DOCX / HTML / CSV / Excel)">
-          <span>📄</span> Generar Informe
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Content Body -->
-  <main class="main-content">
-
-    <!-- 1. PESTAÑA: VISIÓN GENERAL -->
-    <div class="tab-pane active" id="tab-overview">
-      <div class="metrics-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; margin-bottom:20px;">
-        <!-- Card 1: Salud -->
-        <div class="metric-card success" id="card-health" style="background:var(--bg-card); border:1px solid var(--border-color); border-top:4px solid #10b981; padding:18px; border-radius:10px; cursor:pointer; position:relative; box-shadow:var(--shadow-sm);">
-          <div class="flex-between" style="margin-bottom:8px;">
-            <span class="metric-label" style="font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Índice de Salud Clúster</span>
-            <span id="health-status-badge" style="background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); font-weight:700; font-size:0.72rem; padding:2px 8px; border-radius:4px;">ÓPTIMO</span>
-          </div>
-          <div class="metric-value text-cyan" id="health-index" style="font-size:2.2rem; font-weight:800; font-family:'JetBrains Mono', monospace; line-height:1.1; margin-bottom:6px;">100%</div>
-          <div style="height:5px; width:100%; background:rgba(255,255,255,0.08); border-radius:3px; margin-bottom:8px; overflow:hidden;">
-            <div id="health-progress-bar" style="width:100%; height:100%; background:#10b981; border-radius:3px; transition:width 0.8s ease;"></div>
-          </div>
-          <div class="metric-sub" style="font-size:0.78rem; color:var(--text-dim); display:flex; justify-content:space-between;">
-            <span>Entrust OnPremise & IDaaS</span>
-            <span style="color:var(--text-cyan); font-weight:600;">Ver detalles ➔</span>
-          </div>
-        </div>
-
-        <!-- Card 2: Total Logs -->
-        <div class="metric-card" id="card-total-logs" style="background:var(--bg-card); border:1px solid var(--border-color); border-top:4px solid #0284c7; padding:18px; border-radius:10px; cursor:pointer; position:relative; box-shadow:var(--shadow-sm);">
-          <div class="flex-between" style="margin-bottom:8px;">
-            <span class="metric-label" style="font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Total Transacciones</span>
-            <span id="total-logs-badge" style="background:rgba(2, 132, 199, 0.15); color:#38bdf8; border:1px solid rgba(2, 132, 199, 0.3); font-weight:700; font-size:0.72rem; padding:2px 8px; border-radius:4px;">0 Archivos</span>
-          </div>
-          <div class="metric-value" id="total-logs-count" style="font-size:2.2rem; font-weight:800; font-family:'JetBrains Mono', monospace; color:var(--text-main); line-height:1.1; margin-bottom:6px;">0</div>
-          <div style="height:5px; width:100%; background:rgba(255,255,255,0.08); border-radius:3px; margin-bottom:8px; overflow:hidden;">
-            <div style="width:100%; height:100%; background:#0284c7; border-radius:3px;"></div>
-          </div>
-          <div class="metric-sub" style="font-size:0.78rem; color:var(--text-dim); display:flex; justify-content:space-between;">
-            <span>Registros Indexados 100%</span>
-            <span style="color:var(--text-cyan); font-weight:600;">Ver todos ➔</span>
-          </div>
-        </div>
-
-        <!-- Card 3: Errores 520xxx -->
-        <div class="metric-card critical" id="card-entrust-errors" style="background:var(--bg-card); border:1px solid var(--border-color); border-top:4px solid #ef4444; padding:18px; border-radius:10px; cursor:pointer; position:relative; box-shadow:var(--shadow-sm);" title="Haz clic para filtrar solo incidentes [520xxx]">
-          <div class="flex-between" style="margin-bottom:8px;">
-            <span class="metric-label" style="font-size:0.82rem; font-weight:700; color:#ef4444; text-transform:uppercase;">Errores [520xxx / IDaaS]</span>
-            <span id="critical-rate-badge" style="background:rgba(239, 68, 68, 0.15); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.3); font-weight:700; font-size:0.72rem; padding:2px 8px; border-radius:4px;">0% Falla</span>
-          </div>
-          <div class="metric-value text-danger" id="critical-count" style="font-size:2.2rem; font-weight:800; font-family:'JetBrains Mono', monospace; color:#ef4444; line-height:1.1; margin-bottom:6px;">0</div>
-          <div style="height:5px; width:100%; background:rgba(255,255,255,0.08); border-radius:3px; margin-bottom:8px; overflow:hidden;">
-            <div id="critical-progress-bar" style="width:0%; height:100%; background:#ef4444; border-radius:3px; transition:width 0.8s ease;"></div>
-          </div>
-          <div class="metric-sub" style="font-size:0.78rem; color:var(--text-dim); display:flex; justify-content:space-between;">
-            <span>Fallos de Política & BD</span>
-            <span style="color:#ef4444; font-weight:700;">🔍 Filtrar Errores ➔</span>
-          </div>
-        </div>
-
-        <!-- Card 4: Alertas Auditoría -->
-        <div class="metric-card warning" id="card-audit-alerts" style="background:var(--bg-card); border:1px solid var(--border-color); border-top:4px solid #f59e0b; padding:18px; border-radius:10px; cursor:pointer; position:relative; box-shadow:var(--shadow-sm);" title="Haz clic para ver eventos de auditoría">
-          <div class="flex-between" style="margin-bottom:8px;">
-            <span class="metric-label" style="font-size:0.82rem; font-weight:700; color:#f59e0b; text-transform:uppercase;">Alertas de Auditoría [AUDxxx]</span>
-            <span id="audit-rate-badge" style="background:rgba(245, 158, 11, 0.15); color:#f59e0b; border:1px solid rgba(245, 158, 11, 0.3); font-weight:700; font-size:0.72rem; padding:2px 8px; border-radius:4px;">Seguridad</span>
-          </div>
-          <div class="metric-value text-warn" id="warning-count" style="font-size:2.2rem; font-weight:800; font-family:'JetBrains Mono', monospace; color:#f59e0b; line-height:1.1; margin-bottom:6px;">0</div>
-          <div style="height:5px; width:100%; background:rgba(255,255,255,0.08); border-radius:3px; margin-bottom:8px; overflow:hidden;">
-            <div id="warn-progress-bar" style="width:0%; height:100%; background:#f59e0b; border-radius:3px; transition:width 0.8s ease;"></div>
-          </div>
-          <div class="metric-sub" style="font-size:0.78rem; color:var(--text-dim); display:flex; justify-content:space-between;">
-            <span>Intentos y Accesos Admin</span>
-            <span style="color:#f59e0b; font-weight:600;">Ver auditoría ➔</span>
-          </div>
-        </div>
-      </div>
 
       <!-- Contenedor Dinámico: Calculadora de SLA Bancario & Cumplimiento Regulatorio -->
       <div id="sla-calculator-overview-container" style="margin-bottom:20px;"></div>
@@ -1216,20 +1160,67 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
     </div>
   </div>
 
+  
+  <!-- Floating Copilot Button -->
+  <button id="btn-toggle-copilot-drawer" style="position:fixed; bottom:24px; right:24px; z-index:9990; background:linear-gradient(135deg, #0a3d6d, #0284c7); border:2px solid #38bdf8; color:#fff; font-weight:800; font-size:0.85rem; padding:10px 18px; border-radius:30px; box-shadow:0 8px 24px rgba(2, 132, 199, 0.4); display:flex; align-items:center; gap:8px; cursor:pointer; transition:all 0.2s ease;">
+    <span style="font-size:1.2rem;">🤖</span>
+    <span>Entrust Copilot</span>
+  </button>
+
+  <!-- Copilot Drawer Modal -->
+  <div id="copilot-drawer" style="display:none; position:fixed; bottom:80px; right:24px; width:420px; max-width:92vw; height:520px; background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,0.5); z-index:9995; flex-direction:column; overflow:hidden; backdrop-filter:blur(16px);">
+    <div style="background:linear-gradient(135deg, #0a3d6d, #0f172a); border-bottom:2px solid #0284c7; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; color:#fff;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:1.4rem;">🤖</span>
+        <div>
+          <div style="font-weight:800; font-size:0.95rem; color:#38bdf8;">Entrust Forensics Copilot</div>
+          <div style="font-size:0.7rem; color:#94a3b8;">Asistente Pericial en Tiempo Real</div>
+        </div>
+      </div>
+      <button id="btn-close-copilot" style="background:none; border:none; color:#94a3b8; font-size:1.3rem; cursor:pointer;">&times;</button>
+    </div>
+
+    <!-- Quick Query Pills -->
+    <div style="padding:8px 12px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); display:flex; gap:6px; overflow-x:auto; scrollbar-width:none;">
+      <button class="copilot-pill" data-query="resumen operativo" style="white-space:nowrap; background:rgba(2,132,199,0.12); border:1px solid #0284c7; color:#0284c7; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:12px; cursor:pointer;">📊 Resumen</button>
+      <button class="copilot-pill" data-query="cuentas atacadas" style="white-space:nowrap; background:rgba(244,63,94,0.12); border:1px solid #f43f5e; color:#f43f5e; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:12px; cursor:pointer;">🎯 Cuentas</button>
+      <button class="copilot-pill" data-query="top errores" style="white-space:nowrap; background:rgba(239,68,68,0.12); border:1px solid #ef4444; color:#ef4444; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:12px; cursor:pointer;">🚨 Errores</button>
+      <button class="copilot-pill" data-query="sla sudeban" style="white-space:nowrap; background:rgba(16,185,129,0.12); border:1px solid #10b981; color:#10b981; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:12px; cursor:pointer;">🏦 SLA Sudeban</button>
+    </div>
+
+    <!-- Chat Messages Scroll Area -->
+    <div id="copilot-messages-container" style="flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; font-size:0.82rem; line-height:1.4;">
+      <div style="background:rgba(2,132,199,0.1); border:1px solid rgba(2,132,199,0.25); padding:10px; border-radius:8px; color:var(--text-main);">
+        👋 ¡Hola, Tomás! Soy tu <strong>Asistente Forense Entrust</strong>. Pregúntame sobre la muestra de transacciones cargada, incidentes críticos, cuentas bajo ataque o cumplimiento regulatorio Sudeban.
+      </div>
+    </div>
+
+    <!-- Chat Input Form -->
+    <div style="padding:10px; background:var(--bg-secondary); border-top:1px solid var(--border-color); display:flex; gap:6px;">
+      <input type="text" id="copilot-input-query" class="form-control" placeholder="Escribe tu consulta pericial..." style="flex:1; font-size:0.8rem; padding:6px 10px;">
+      <button id="btn-send-copilot" class="btn btn-primary" style="padding:6px 14px; font-size:0.8rem; font-weight:bold;">Enviar</button>
+    </div>
+  </div>
+
   <!-- Scripts JavaScript -->
   <script src="js/pptxgen.bundle.js"></script>
-  <script src="js/topology-engine.js?v=280.0"></script>
-  <script src="js/kb-database.js?v=280.0"></script>
-  <script src="js/manuals-engine.js?v=280.0"></script>
-  <script src="js/bancomercantil_data.js?v=280.0"></script>
-  <script src="js/log-parser.js?v=280.0"></script>
-  <script src="js/storage-engine.js?v=280.0"></script>
-    <script src="js/threat-radar.js?v=280.0"></script>
-  <script src="js/remediation-engine.js?v=280.0"></script>
-  <script src="js/sla-engine.js?v=280.0"></script>
-  <script src="js/cert-auditor.js?v=280.0"></script>
-  <script src="js/syslog-collector.js?v=280.0"></script>
-  <script src="js/app.js?v=280.0"></script>
+  <script src="js/topology-engine.js?v=290.0"></script>
+  <script src="js/kb-database.js?v=290.0"></script>
+  <script src="js/manuals-engine.js?v=290.0"></script>
+  <script src="js/bancomercantil_data.js?v=290.0"></script>
+  <script src="js/log-parser.js?v=290.0"></script>
+  <script src="js/storage-engine.js?v=290.0"></script>
+    <script src="js/threat-radar.js?v=290.0"></script>
+  <script src="js/remediation-engine.js?v=290.0"></script>
+  <script src="js/sla-engine.js?v=290.0"></script>
+  <script src="js/copilot-engine.js?v=290.0"></script>
+  <script src="js/compliance-auditor.js?v=290.0"></script>
+  <script src="js/config-diff-engine.js?v=290.0"></script>
+  <script src="js/siem-exporter.js?v=290.0"></script>
+
+  <script src="js/cert-auditor.js?v=290.0"></script>
+  <script src="js/syslog-collector.js?v=290.0"></script>
+  <script src="js/app.js?v=290.0"></script>
 
 </body>
 </html>
