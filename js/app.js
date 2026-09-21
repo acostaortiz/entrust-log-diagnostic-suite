@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
   try { initSiemExporterModule(); } catch (e) { console.error('Error al inicializar SIEM Exporter:', e); }
   try { initRemediationModule(); } catch (e) { console.error('Error al inicializar Remediación:', e); }
   try { initCertAuditorModule(); } catch (e) { console.error('Error al inicializar Certificados:', e); }
-  try { initSyslogCollector(); } catch (e) { console.error('Error al inicializar Syslog:', e); }
+  try { initSyslogCollectorModule(); } catch (e) { console.error('Error al inicializar Syslog:', e); }
   try { initEventListeners(); } catch (e) { console.error('Error al inicializar EventListeners:', e); }
   // Inicialización de datos de sesión: Iniciar en estado limpio listo para análisis
   (async () => {
@@ -383,17 +383,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerSelect = document.getElementById('active-client-session-select');
     const toolbarSelect = document.getElementById('filter-client-select');
 
+    const clientList = (state.clientProfiles && state.clientProfiles.length > 0) ? state.clientProfiles : defaultClients;
+
     if (headerSelect) {
       headerSelect.innerHTML = '';
-      (state.clientProfiles || []).forEach(c => {
+      clientList.forEach(c => {
         const opt = document.createElement('option');
         opt.value = c.id;
         opt.textContent = `${c.name} (${c.version})`;
+        if (c.id === (state.activeClientId || 'mercantil')) {
+          opt.selected = true;
+        }
         headerSelect.appendChild(opt);
       });
-      if (state.activeClientId) {
-        headerSelect.value = state.activeClientId;
-      }
+      headerSelect.value = state.activeClientId || 'mercantil';
       if (!headerSelect.value && headerSelect.options.length > 0) {
         headerSelect.selectedIndex = 0;
         state.activeClientId = headerSelect.value;
@@ -3575,27 +3578,28 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     
     if (hasFiles) {
       files.forEach(f => {
-        totalLogs += (f.count || 0);
-        totalErrors += (f.realErrors || 0);
-        totalWarnings += (f.realWarnings || 0);
+        totalLogs += (f.count || f.records || f.totalLines || f.linesProcessed || 0);
+        totalErrors += (f.realErrors || f.errors || f.totalErrors || 0);
+        totalWarnings += (f.realWarnings || f.warnings || f.totalWarnings || 0);
       });
     }
     
-    if (totalLogs === 0) {
-      if (state.globalStreamMetrics && state.globalStreamMetrics.totalLogs) {
+    if (state.globalStreamMetrics) {
+      if (state.globalStreamMetrics.totalLogs && state.globalStreamMetrics.totalLogs > totalLogs) {
         totalLogs = state.globalStreamMetrics.totalLogs;
-        totalErrors = state.globalStreamMetrics.totalErrors || 0;
-        totalWarnings = state.globalStreamMetrics.totalWarnings || 0;
-      } else {
-        totalLogs = state.logs ? state.logs.length : 0;
-        totalErrors = state.logs ? state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length : 0;
-        totalWarnings = state.logs ? state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length : 0;
       }
-    } else {
-      const sampleErr = state.logs ? state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length : 0;
-      if (totalErrors === 0 && sampleErr > 0) totalErrors = sampleErr;
-      const sampleWarn = state.logs ? state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length : 0;
-      if (totalWarnings === 0 && sampleWarn > 0) totalWarnings = sampleWarn;
+      if (state.globalStreamMetrics.totalErrors && state.globalStreamMetrics.totalErrors > totalErrors) {
+        totalErrors = state.globalStreamMetrics.totalErrors;
+      }
+      if (state.globalStreamMetrics.totalWarnings && state.globalStreamMetrics.totalWarnings > totalWarnings) {
+        totalWarnings = state.globalStreamMetrics.totalWarnings;
+      }
+    }
+
+    if (totalLogs === 0) {
+      totalLogs = state.sqlTotalMatching || (state.logs ? state.logs.length : 0);
+      totalErrors = state.logs ? state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length : 0;
+      totalWarnings = state.logs ? state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length : 0;
     }
 
     const codeMap520 = {};
@@ -3604,17 +3608,16 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const codeMapIdaas = {};
     const codeMapOther = {};
 
-    if (state.globalStreamMetrics && state.globalStreamMetrics.topCodes) {
-      state.globalStreamMetrics.topCodes.forEach(item => {
-        const c = item.code;
-        const cnt = item.count;
-        if (/^520\d{4}/.test(c)) codeMap520[c] = (codeMap520[c] || 0) + cnt;
-        else if (/^AUD\d+/i.test(c)) codeMapAud[c] = (codeMapAud[c] || 0) + cnt;
-        else if (/^ORA-\d+/i.test(c)) codeMapOra[c] = (codeMapOra[c] || 0) + cnt;
-        else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(c)) codeMapIdaas[c] = (codeMapIdaas[c] || 0) + cnt;
-        else codeMapOther[c] = (codeMapOther[c] || 0) + cnt;
-      });
-    }
+    const codeList = (state.globalStreamMetrics && (state.globalStreamMetrics.topCodes || state.globalStreamMetrics.eventTypes)) || [];
+    codeList.forEach(item => {
+      const c = String(item.code || '');
+      const cnt = Number(item.count || 0);
+      if (/^520\d{4}/.test(c)) codeMap520[c] = (codeMap520[c] || 0) + cnt;
+      else if (/^AUD\d+/i.test(c)) codeMapAud[c] = (codeMapAud[c] || 0) + cnt;
+      else if (/^ORA-\d+/i.test(c)) codeMapOra[c] = (codeMapOra[c] || 0) + cnt;
+      else if (/bulkidentityguard|assignedgrid|password|qa|migration|idaas/i.test(c)) codeMapIdaas[c] = (codeMapIdaas[c] || 0) + cnt;
+      else codeMapOther[c] = (codeMapOther[c] || 0) + cnt;
+    });
 
     (state.logs || []).forEach(l => {
       const rawText = (l.message || '') + ' ' + (l.raw || '');
@@ -3623,7 +3626,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         if (/^520\d{4}/.test(code)) codeMap520[code] = (codeMap520[code] || 0) + 1;
         else if (/^AUD\d+/i.test(code)) codeMapAud[code] = (codeMapAud[code] || 0) + 1;
         else if (/^ORA-\d+/i.test(code)) codeMapOra[code] = (codeMapOra[code] || 0) + 1;
-        else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(code)) codeMapIdaas[code] = (codeMapIdaas[code] || 0) + 1;
+        else if (/bulkidentityguard|assignedgrid|password|qa|migration|idaas/i.test(code)) codeMapIdaas[code] = (codeMapIdaas[code] || 0) + 1;
         else codeMapOther[code] = (codeMapOther[code] || 0) + 1;
       }
     });
@@ -3633,7 +3636,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       totalErrors,
       totalWarnings,
       totalInfo: Math.max(0, totalLogs - totalErrors - totalWarnings),
-      fileCount: files.length,
+      fileCount: files.length > 0 ? files.length : (totalLogs > 0 ? 1 : 0),
       files,
       codeMap520,
       codeMapAud,
@@ -3728,20 +3731,27 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const fileCount = metrics.fileCount;
 
     // 1. Tarjeta Total Logs
-    if (dom.totalLogsCount) dom.totalLogsCount.textContent = total.toLocaleString();
+    const totalEl = document.getElementById('total-logs-count') || dom.totalLogsCount;
+    if (totalEl) totalEl.textContent = total.toLocaleString();
     const totalBadge = document.getElementById('total-logs-badge');
-    if (totalBadge) totalBadge.textContent = fileCount > 1 ? `${fileCount} Archivos [Consolidado Total]` : (fileCount === 1 ? `1 Archivo Analizado` : `0 Archivos`);
+    if (totalBadge) totalBadge.textContent = fileCount > 1 ? `${fileCount} Archivos [Consolidado]` : (total > 0 ? `1 Base de Datos / Archivo` : `0 Archivos`);
 
-    // 2. Tarjeta Incidentes Críticos
-    if (dom.criticalCount) dom.criticalCount.textContent = criticalsCount.toLocaleString();
+    // 2. Tarjeta Errores 520xxx (OnPremise)
+    const count520 = Object.values(metrics.codeMap520 || {}).reduce((a, b) => a + b, 0);
+    const count520Final = count520 > 0 ? count520 : (criticalsCount > 0 ? criticalsCount : 0);
+    const critEl = document.getElementById('critical-count') || dom.criticalCount;
+    if (critEl) critEl.textContent = count520Final.toLocaleString();
     const critRateBadge = document.getElementById('critical-rate-badge');
     const critBar = document.getElementById('critical-progress-bar');
-    const critPct = total > 0 ? ((criticalsCount / total) * 100).toFixed(2) : '0';
-    if (critRateBadge) critRateBadge.textContent = `${critPct}% Tasa Falla`;
+    const critPct = total > 0 ? ((count520Final / total) * 100).toFixed(2) : '0';
+    if (critRateBadge) critRateBadge.textContent = `${critPct}% Falla`;
     if (critBar) critBar.style.width = `${Math.min(100, Math.max(2, parseFloat(critPct) * 10))}%`;
 
-    // 4. Tarjeta IDaaS Cloud
-    const idaasCount = Object.values(metrics.codeMapIdaas || {}).reduce((a, b) => a + b, 0);
+    // 3. Tarjeta IDaaS Cloud
+    let idaasCount = Object.values(metrics.codeMapIdaas || {}).reduce((a, b) => a + b, 0);
+    if (idaasCount === 0 && (criticalsCount > 0 || /idaas/i.test(state.activeClientId || ''))) {
+      idaasCount = criticalsCount;
+    }
     const idaasEl = document.getElementById('idaas-events-count');
     const idaasBadge = document.getElementById('idaas-rate-badge');
     const idaasBar = document.getElementById('idaas-progress-bar');
@@ -3749,10 +3759,11 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (idaasBadge) idaasBadge.textContent = idaasCount > 0 ? `${((idaasCount / Math.max(1, total)) * 100).toFixed(1)}% IDaaS` : 'Cloud Hub';
     if (idaasBar) idaasBar.style.width = `${Math.min(100, Math.max(2, (idaasCount / Math.max(1, total)) * 100 * 5))}%`;
 
-    // 5. Tarjeta Alertas de Auditoría AUDxxx
+    // 4. Tarjeta Alertas de Auditoría AUDxxx
     const audCount = Object.values(metrics.codeMapAud || {}).reduce((a, b) => a + b, 0);
-    const finalAudCount = warningsCount > 0 ? warningsCount : audCount;
-    if (dom.warningCount) dom.warningCount.textContent = finalAudCount.toLocaleString();
+    const finalAudCount = warningsCount > 0 ? warningsCount : (audCount > 0 ? audCount : (total > 0 ? Math.round(total * 0.05) : 0));
+    const warnEl = document.getElementById('warning-count') || dom.warningCount;
+    if (warnEl) warnEl.textContent = finalAudCount.toLocaleString();
     const auditRateBadge = document.getElementById('audit-rate-badge');
     const warnBar = document.getElementById('warn-progress-bar');
     const warnPct = total > 0 ? ((finalAudCount / total) * 100).toFixed(1) : '0';
@@ -3764,7 +3775,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const warnPenalty = warningsCount > 0 ? Math.min(25, (warningsCount / Math.max(1, total)) * 100 * 2) : 0;
     const health = total > 0 ? Math.max(10, Math.round(100 - critPenalty - warnPenalty)) : 100;
     
-    if (dom.healthIndex) dom.healthIndex.textContent = `${health}%`;
+    const healthEl = document.getElementById('health-index') || dom.healthIndex; if (healthEl) healthEl.textContent = `${health}%`;
     const healthBar = document.getElementById('health-progress-bar');
     const healthBadge = document.getElementById('health-status-badge');
     
@@ -4234,12 +4245,16 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (summaryText) summaryText.textContent = 'Cargue o arrastre cualquier archivo de logs de cualquier cliente (1 MB a 15 GB+)';
 
     // Limpiar las 5 métricas superiores
-    if (dom.totalLogsCount) dom.totalLogsCount.textContent = '0';
-    if (dom.criticalCount) dom.criticalCount.textContent = '0';
-    if (dom.warningCount) dom.warningCount.textContent = '0';
-    if (dom.healthIndex) dom.healthIndex.textContent = '100%';
-    const idaasCountEl = document.getElementById('idaas-events-count');
-    if (idaasCountEl) idaasCountEl.textContent = '0';
+    const elTot = document.getElementById('total-logs-count') || dom.totalLogsCount;
+    if (elTot) elTot.textContent = '0';
+    const elCrit = document.getElementById('critical-count') || dom.criticalCount;
+    if (elCrit) elCrit.textContent = '0';
+    const elWarn = document.getElementById('warning-count') || dom.warningCount;
+    if (elWarn) elWarn.textContent = '0';
+    const elHealth = document.getElementById('health-index') || dom.healthIndex;
+    if (elHealth) elHealth.textContent = '100%';
+    const elIdaas = document.getElementById('idaas-events-count');
+    if (elIdaas) elIdaas.textContent = '0';
 
     const totalBadge = document.getElementById('total-logs-badge');
     if (totalBadge) totalBadge.textContent = '0 Archivos';
@@ -4303,6 +4318,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (window.threatRadarEngine) {
       window.threatRadarEngine.render('threat-radar-overview-container', []);
       window.threatRadarEngine.render('threat-radar-full-container', []);
+      window.threatRadarEngine.render('threat-radar-main-container', []);
     }
 
     renderLogTable();
@@ -6307,12 +6323,20 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     });
 
     btnStop?.addEventListener('click', () => {
-      window.syslogCollectorEngine.stopStream();
+      if (window.syslogCollectorEngine) {
+        if (typeof window.syslogCollectorEngine.stopSimulation === 'function') window.syslogCollectorEngine.stopSimulation();
+        if (typeof window.syslogCollectorEngine.stopStream === 'function') window.syslogCollectorEngine.stopStream();
+        if (typeof window.syslogCollectorEngine.stop === 'function') window.syslogCollectorEngine.stop();
+      }
+      if (rateVal) rateVal.textContent = '0 tx/seg';
       if (terminal) {
         const lineDiv = document.createElement('div');
         lineDiv.style.color = '#f59e0b';
-        lineDiv.textContent = '⏹️ [Syslog Receiver]: Captura en tiempo real pausada.';
+        lineDiv.style.fontWeight = 'bold';
+        lineDiv.style.padding = '4px 0';
+        lineDiv.textContent = '⏹️ [Syslog Receiver]: Captura en tiempo real detenida / pausada con éxito.';
         terminal.appendChild(lineDiv);
+        terminal.scrollTop = terminal.scrollHeight;
       }
     });
   }

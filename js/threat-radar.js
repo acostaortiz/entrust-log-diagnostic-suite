@@ -16,11 +16,17 @@
      * Analiza los logs para extraer cuentas atacadas y patrones de fuerza bruta
      */
     analyzeThreats(logs = []) {
-      let targetLogs = logs;
-      
-      // Si no hay logs en memoria directa, buscar en el bundle activo de Banco Mercantil / SQLite
-      if ((!targetLogs || targetLogs.length === 0) && window.__BANCO_MERCANTIL_10GB_BUNDLE__ && window.__BANCO_MERCANTIL_10GB_BUNDLE__.parsedLogs) {
-        targetLogs = window.__BANCO_MERCANTIL_10GB_BUNDLE__.parsedLogs;
+      const targetLogs = Array.isArray(logs) ? logs : [];
+
+      // Si no hay logs en la sesión actual, retornar estado 100% limpio
+      if (!targetLogs || targetLogs.length === 0) {
+        return {
+          totalFailedAuth: 0,
+          topTargetUsers: [],
+          topAttackingIPs: [],
+          isUnderMassiveAttack: false,
+          detectedVictimsCount: 0
+        };
       }
 
       const userMap = new Map();

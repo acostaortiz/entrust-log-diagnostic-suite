@@ -111,6 +111,18 @@ class SyslogCollectorEngine {
     }
   }
 
+  stopStream() {
+    this.stopSimulation();
+  }
+
+  stop() {
+    this.stopSimulation();
+  }
+
+  pause() {
+    this.stopSimulation();
+  }
+
   clear() {
     this.totalEvents = 0;
     this.criticalEvents = 0;
