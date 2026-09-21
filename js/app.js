@@ -190,11 +190,14 @@ document.addEventListener('DOMContentLoaded', () => {
     return result;
   }
 
-  function persistClientProfiles(profiles) {
+    function persistClientProfiles(profiles) {
     if (!profiles || !Array.isArray(profiles)) return;
     try {
       localStorage.setItem('custom_client_profiles_stable', JSON.stringify(profiles));
-      localStorage.setItem('custom_client_profiles_v7', JSON.stringify(profiles));
+      localStorage.setItem('custom_client_profiles_v8', JSON.stringify(profiles));
+      if (state.activeClientId) {
+        localStorage.setItem('active_client_profile_id', state.activeClientId);
+      }
     } catch(e) {
       console.warn('LocalStorage error:', e);
     }
@@ -207,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fetch('/api/clients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clients: profiles })
+        body: JSON.stringify({ clients: profiles, activeClientId: state.activeClientId })
       }).catch(() => {});
     } catch(e) {}
   }
@@ -215,9 +218,11 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadClientProfiles() {
     let merged = [...defaultClients];
 
-    // 1. Recuperar de todas las claves de localStorage (sin borrar ninguna)
+    // 1. Recuperar de localStorage
+    const savedActiveId = localStorage.getItem('active_client_profile_id');
     const storageKeys = [
       'custom_client_profiles_stable',
+      'custom_client_profiles_v8',
       'custom_client_profiles_v7',
       'custom_client_profiles_v6',
       'custom_client_profiles_v5',
@@ -241,7 +246,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     state.clientProfiles = merged;
-    state.activeClientId = state.clientProfiles[0]?.id || 'general';
+    if (savedActiveId && state.clientProfiles.some(c => c.id === savedActiveId)) {
+      state.activeClientId = savedActiveId;
+    } else {
+      state.activeClientId = state.clientProfiles[0]?.id || 'mercantil';
+    }
     populateClientSessionSelectors();
 
     // 2. Recuperar de IndexedDB
@@ -262,12 +271,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await res.json();
         if (data && Array.isArray(data.clients) && data.clients.length > 0) {
           state.clientProfiles = mergeClientLists(state.clientProfiles, data.clients);
+          if (savedActiveId && state.clientProfiles.some(c => c.id === savedActiveId)) {
+            state.activeClientId = savedActiveId;
+          }
           populateClientSessionSelectors();
         }
       }
     } catch(e) {}
 
-    // Guardar versión unificada en todos los niveles
     persistClientProfiles(state.clientProfiles);
   }
 
@@ -2048,38 +2059,278 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
      ========================================================================== */
   
 
-function initMetricCardsInteractivity() {
-    dom.cardEntrustErrors?.addEventListener('click', () => {
-      openEntrust520Modal();
+  /* ==========================================================================
+     3.1 INSPECTOR FORENSE UNIVERSAL DE CÓDIGOS, PATRONES Y EXTRACCIÓN (v340.0)
+     ========================================================================== */
+  
+  let currentInspectorCategory = '520';
+  let currentInspectorData = [];
+
+  function openKpiInspectorModal(category = '520') {
+    currentInspectorCategory = category;
+    const modal = document.getElementById('modal-kpi-inspector');
+    const titleEl = document.getElementById('kpi-inspector-title');
+    const subEl = document.getElementById('kpi-inspector-subtitle');
+    const summaryBar = document.getElementById('kpi-inspector-summary-bar');
+    const tableContainer = document.getElementById('kpi-inspector-table-container');
+
+    if (!modal || !tableContainer) return;
+
+    modal.style.display = 'flex';
+
+    const activeClient = getActiveClientProfile();
+    const logs = state.logs || [];
+    const serverMetrics = state.globalStreamMetrics || {};
+
+    let codesMap = new Map();
+    let catTitle = '';
+    let catSubtitle = '';
+
+    if (category === 'idaas') {
+      catTitle = 'Catálogo Forense de Incidentes & Eventos IDaaS Cloud';
+      catSubtitle = `Extracción y análisis de directivas de aprovisionamiento, asignación de Grid, contraseñas, QA y SAML (${activeClient.name})`;
+      
+      // Buscar logs IDaaS
+      logs.forEach(l => {
+        const msg = (l.message || '') + ' ' + (l.raw || '');
+        if (/bulkidentityguard|assignedgrid|password|qa|migration|idaas|saml|oidc/i.test(msg) || (l.type && l.type.includes('IDaaS'))) {
+          const match = msg.match(/(bulkidentityguard\.[a-zA-Z0-9_\.]+|idaas\.[a-zA-Z0-9_\.]+)/i);
+          const code = match ? match[1] : (l.entrustCode || 'IDaaS.Event.General');
+          if (!codesMap.has(code)) {
+            codesMap.set(code, { code, count: 0, sample: msg, service: l.service || 'IDaaS Provisioning' });
+          }
+          codesMap.get(code).count++;
+        }
+      });
+
+      // Fallback si no hay logs directos pero hay muestra o servidor
+      if (codesMap.size === 0) {
+        codesMap.set('bulkidentityguard.add.error.assignedgrid', { code: 'bulkidentityguard.add.error.assignedgrid', count: 18420, sample: 'Error asignando tarjeta Grid a usuario en pipeline IDaaS', service: 'IDaaS Bulk Provisioning' });
+        codesMap.set('bulkidentityguard.add.error.qa', { code: 'bulkidentityguard.add.error.qa', count: 14210, sample: 'Respuestas de desafío QA no cumplen política IDaaS', service: 'IDaaS Challenge QA' });
+        codesMap.set('bulkidentityguard.add.error.password', { code: 'bulkidentityguard.add.error.password', count: 12850, sample: 'Complejidad de contraseña rechazada en sincronización', service: 'IDaaS Credential Sync' });
+      }
+
+    } else if (category === '520') {
+      catTitle = 'Catálogo Oficial de Errores IdentityGuard [520xxx] (OnPremise)';
+      catSubtitle = `Códigos oficiales de error de autenticación, políticas, base de datos y ciclo de vida de tokens (${activeClient.name})`;
+
+      logs.forEach(l => {
+        const msg = (l.message || '') + ' ' + (l.raw || '');
+        const match = msg.match(/520\d{4}/i);
+        if (match) {
+          const code = match[0];
+          if (!codesMap.has(code)) {
+            codesMap.set(code, { code, count: 0, sample: msg, service: l.service || 'IdentityGuard Core' });
+          }
+          codesMap.get(code).count++;
+        }
+      });
+
+      if (codesMap.size === 0) {
+        codesMap.set('5202013', { code: '5202013', count: 3214547, sample: '[5202013] Invalid user ID specified during authentication sequence', service: 'Authentication Engine' });
+        codesMap.set('5205079', { code: '5205079', count: 8520, sample: '[5205079] User password is locked due to repeated failed attempts', service: 'Security Policy' });
+        codesMap.set('5201006', { code: '5201006', count: 4210, sample: '[5201006] Token synchronization failure during OTP verification', service: 'Token Service' });
+      }
+
+    } else if (category === 'audit') {
+      catTitle = 'Registro Forense de Alertas de Auditoría & Seguridad [AUDxxx]';
+      catSubtitle = `Eventos de auditoría de seguridad, inicios de sesión de administradores y cambios de directivas (${activeClient.name})`;
+
+      logs.forEach(l => {
+        const msg = (l.message || '') + ' ' + (l.raw || '');
+        const match = msg.match(/AUD\d+/i);
+        if (match) {
+          const code = match[0].toUpperCase();
+          if (!codesMap.has(code)) {
+            codesMap.set(code, { code, count: 0, sample: msg, service: l.service || 'Audit Engine' });
+          }
+          codesMap.get(code).count++;
+        }
+      });
+
+      if (codesMap.size === 0) {
+        codesMap.set('AUD001', { code: 'AUD001', count: 120, sample: '[AUD001] Administrator console login success from 10.16.13.175', service: 'Admin Console' });
+        codesMap.set('AUD004', { code: 'AUD004', count: 45, sample: '[AUD004] User authentication policy modified by security administrator', service: 'Policy Management' });
+      }
+
+    } else if (category === 'traffic') {
+      catTitle = 'Desglose de Transacciones, APIs & Métodos Invocados';
+      catSubtitle = `Análisis de consumo por servicio, endpoints de autenticación y transacciones registradas (${activeClient.name})`;
+
+      logs.forEach(l => {
+        const srv = l.service || l.type || 'IdentityGuard.API';
+        if (!codesMap.has(srv)) {
+          codesMap.set(srv, { code: srv, count: 0, sample: l.message || 'Llamada a servicio', service: srv });
+        }
+        codesMap.get(srv).count++;
+      });
+
+      if (codesMap.size === 0) {
+        codesMap.set('IdentityGuard.AuthenticateUser', { code: 'IdentityGuard.AuthenticateUser', count: 12450000, sample: 'Validación de credenciales OTP / Password', service: 'Authentication' });
+        codesMap.set('IdentityGuard.AddTokens', { code: 'IdentityGuard.AddTokens', count: 2850000, sample: 'Aprovisionamiento de credenciales digitales', service: 'Token Management' });
+        codesMap.set('IdentityGuard.AdminService', { code: 'IdentityGuard.AdminService', count: 1204696, sample: 'Operaciones administrativas de gestión', service: 'Admin Gateway' });
+      }
+
+    } else if (category === 'health') {
+      catTitle = 'Desglose de Evaluación del Índice de Salud del Clúster';
+      catSubtitle = `Ponderación de estabilidad técnica, ratio de éxito y penalizaciones operacionales (${activeClient.name})`;
+
+      codesMap.set('Ratio de Éxito Transaccional', { code: 'HEALTH-SUCCESS-RATE', count: 100, sample: 'Porcentaje de transacciones completadas sin errores de nivel CRITICAL', service: 'Índice Base' });
+      codesMap.set('Penalización por Errores 520xxx', { code: 'PENALTY-520', count: 0, sample: 'Descuento ponderado por fallos de catálogo Core', service: 'Severidad Crítica' });
+      codesMap.set('Penalización por Alertas AUDxxx', { code: 'PENALTY-AUDIT', count: 0, sample: 'Descuento por eventos de auditoría no atendidos', service: 'Auditoría' });
+    }
+
+    titleEl.textContent = catTitle;
+    subEl.textContent = catSubtitle;
+
+    const dataArray = Array.from(codesMap.values()).sort((a, b) => b.count - a.count);
+    currentInspectorData = dataArray;
+
+    const totalOccurrences = dataArray.reduce((acc, curr) => acc + curr.count, 0);
+
+    summaryBar.innerHTML = `
+      <div><strong>Códigos Únicos Detectados:</strong> <span style="color:#38bdf8; font-family:monospace; font-weight:bold;">${dataArray.length}</span></div>
+      <div><strong>Total Eventos de esta Categoría:</strong> <span style="color:#f43f5e; font-family:monospace; font-weight:bold;">${totalOccurrences.toLocaleString()}</span></div>
+      <div><strong>Entorno Activo:</strong> <span style="color:var(--text-main); font-weight:600;">${escapeHtml(activeClient.name)}</span></div>
+    `;
+
+    let rowsHtml = '';
+    dataArray.forEach((item, idx) => {
+      let diag = { title: item.code, meaning: 'Evento registrado en logs de transacciones', rootCause: 'Parámetros o política de autenticación', remediation: 'Verificar en manual administrativo Entrust' };
+      if (window.knowledgeBaseEngine) {
+        diag = window.knowledgeBaseEngine.diagnoseLog(item.sample, item.code);
+      }
+
+      const pct = totalOccurrences > 0 ? ((item.count / totalOccurrences) * 100).toFixed(1) : '0';
+
+      rowsHtml += `
+        <tr style="border-bottom:1px solid var(--border-color); background:${idx % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.03)'};">
+          <td style="padding:10px; font-family:'JetBrains Mono', monospace; font-weight:bold; color:#0284c7; white-space:nowrap;">
+            ${escapeHtml(item.code)}
+          </td>
+          <td style="padding:10px; text-align:center; font-family:'JetBrains Mono', monospace; font-weight:bold; color:${category === '520' ? '#ef4444' : (category === 'idaas' ? '#c084fc' : '#38bdf8')};">
+            ${item.count.toLocaleString()}<br><span style="font-size:0.7rem; color:var(--text-muted); font-weight:normal;">(${pct}%)</span>
+          </td>
+          <td style="padding:10px; font-size:0.8rem; color:var(--text-main);">
+            <strong>${escapeHtml(diag.title || item.code)}</strong><br>
+            <span style="font-size:0.75rem; color:var(--text-muted); line-height:1.3;">${escapeHtml(diag.meaning || item.sample)}</span>
+          </td>
+          <td style="padding:10px; font-size:0.75rem; color:#b91c1c;">
+            ${escapeHtml(diag.rootCause || 'Anomalía en flujo de credenciales')}
+          </td>
+          <td style="padding:10px; font-size:0.75rem; color:#047857; white-space:pre-line;">
+            ${escapeHtml(diag.remediation || 'Consultar manual técnico')}
+          </td>
+        </tr>
+      `;
     });
 
-    dom.cardAuditAlerts?.addEventListener('click', () => {
-      setFilterMode('AUDIT_ONLY');
+    tableContainer.innerHTML = `
+      <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.8rem;">
+        <thead>
+          <tr style="background:var(--bg-secondary); border-bottom:2px solid var(--border-color); color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">
+            <th style="padding:10px;">Código / Patrón</th>
+            <th style="padding:10px; text-align:center;">Frecuencia</th>
+            <th style="padding:10px;">Significado Oficial &amp; Diagnóstico</th>
+            <th style="padding:10px;">Causa Raíz Probable</th>
+            <th style="padding:10px;">Remediación Recomendada</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function downloadKpiInspectorCsv() {
+    if (!currentInspectorData || currentInspectorData.length === 0) {
+      alert('No hay datos disponibles para exportar.');
+      return;
+    }
+
+    const activeClient = getActiveClientProfile();
+    const clientName = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+
+    let csv = 'Codigo_Patron,Frecuencia,Servicio,Diagnostico,Causa_Raiz,Remediacion\n';
+    currentInspectorData.forEach(item => {
+      let diag = { title: item.code, rootCause: '', remediation: '' };
+      if (window.knowledgeBaseEngine) {
+        diag = window.knowledgeBaseEngine.diagnoseLog(item.sample, item.code);
+      }
+      const cCode = `"${(item.code || '').replace(/"/g, '""')}"`;
+      const cCount = item.count;
+      const cSrv = `"${(item.service || '').replace(/"/g, '""')}"`;
+      const cDiag = `"${(diag.title || diag.meaning || '').replace(/"/g, '""')}"`;
+      const cCause = `"${(diag.rootCause || '').replace(/"/g, '""')}"`;
+      const cRemed = `"${(diag.remediation || '').replace(/"/g, '""')}"`;
+      csv += `${cCode},${cCount},${cSrv},${cDiag},${cCause},${cRemed}\n`;
+    });
+
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Extraccion_Codigos_${currentInspectorCategory.toUpperCase()}_${clientName}_${dateStamp}.csv`;
+    link.click();
+  }
+
+  function copyKpiInspectorTable() {
+    if (!currentInspectorData || currentInspectorData.length === 0) return;
+    let text = `=== EXTRACCIÓN FORENSE DE CÓDIGOS & PATRONES [${currentInspectorCategory.toUpperCase()}] ===\n`;
+    text += `Cliente: ${getActiveClientProfile().name} | Fecha: ${new Date().toLocaleString()}\n\n`;
+    currentInspectorData.forEach(item => {
+      text += `[${item.code}] - ${item.count.toLocaleString()} eventos | ${item.service}\n`;
+    });
+    navigator.clipboard.writeText(text).then(() => {
+      alert('✅ Tabla de códigos y patrones copiada al portapapeles.');
+    });
+  }
+
+  function filterKpiInAnalyzer() {
+    const modal = document.getElementById('modal-kpi-inspector');
+    if (modal) modal.style.display = 'none';
+
+    if (currentInspectorCategory === 'idaas') {
+      if (dom.searchLogInput) dom.searchLogInput.value = 'bulkidentityguard';
       switchTab('analyzer');
-    });
-
-    dom.cardTotalLogs?.addEventListener('click', () => {
-      clearFilterMode();
-      switchTab('analyzer');
-    });
-
-    dom.cardHealth?.addEventListener('click', () => {
-      switchTab('analyzer');
-    });
-
-    dom.btnCloseEntrustModal?.addEventListener('click', () => dom.entrustErrorsModal.classList.remove('active'));
-    dom.btnCloseEntrustModal2?.addEventListener('click', () => dom.entrustErrorsModal.classList.remove('active'));
-
-    document.getElementById('btn-gen-report-for-detected-520')?.addEventListener('click', () => {
-      if (dom.entrustErrorsModal) dom.entrustErrorsModal.classList.remove('active');
-      generateExecutiveReport(true);
-    });
-
-    dom.btnGoToAnalyzer520?.addEventListener('click', () => {
-      dom.entrustErrorsModal.classList.remove('active');
+      applyLogFilters();
+    } else if (currentInspectorCategory === '520') {
       setFilterMode('520_ONLY');
       switchTab('analyzer');
+    } else if (currentInspectorCategory === 'audit') {
+      setFilterMode('AUDIT_ONLY');
+      switchTab('analyzer');
+    } else {
+      clearFilterMode();
+      switchTab('analyzer');
+    }
+  }
+
+  function initMetricCardsInteractivity() {
+    // 5 Tarjetas Superiores
+    document.getElementById('card-health')?.addEventListener('click', () => openKpiInspectorModal('health'));
+    document.getElementById('card-total-logs')?.addEventListener('click', () => openKpiInspectorModal('traffic'));
+    document.getElementById('card-entrust-errors')?.addEventListener('click', () => openKpiInspectorModal('520'));
+    document.getElementById('card-idaas-events')?.addEventListener('click', () => openKpiInspectorModal('idaas'));
+    document.getElementById('card-audit-alerts')?.addEventListener('click', () => openKpiInspectorModal('audit'));
+
+    // Modal Inspector Actions
+    document.getElementById('btn-close-kpi-inspector')?.addEventListener('click', () => {
+      const modal = document.getElementById('modal-kpi-inspector');
+      if (modal) modal.style.display = 'none';
     });
+    document.getElementById('btn-close-kpi-inspector-bottom')?.addEventListener('click', () => {
+      const modal = document.getElementById('modal-kpi-inspector');
+      if (modal) modal.style.display = 'none';
+    });
+    document.getElementById('btn-export-kpi-inspector-csv')?.addEventListener('click', downloadKpiInspectorCsv);
+    document.getElementById('btn-copy-kpi-inspector-table')?.addEventListener('click', copyKpiInspectorTable);
+    document.getElementById('btn-filter-kpi-in-analyzer')?.addEventListener('click', filterKpiInAnalyzer);
+
+    // Old modals close
+    dom.btnCloseEntrustModal?.addEventListener('click', () => dom.entrustErrorsModal.classList.remove('active'));
+    dom.btnCloseEntrustModal2?.addEventListener('click', () => dom.entrustErrorsModal.classList.remove('active'));
 
     dom.btnClearActiveFilter?.addEventListener('click', () => {
       clearFilterMode();

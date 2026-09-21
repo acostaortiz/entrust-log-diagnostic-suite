@@ -1,0 +1,97 @@
+[
+  {
+    "id": "mercantil",
+    "name": "Banco Mercantil C.A.",
+    "platform": "Entrust IDaaS Cloud / IdentityGuard OnPremise",
+    "version": "IDaaS Cloud v2026",
+    "build": "IDaaS Cloud v2026 (5.46)",
+    "contact": "Vicepresidencia de Ciberseguridad & TI",
+    "engineer": "Tomás Acosta",
+    "nodes": [
+      {
+        "key": "node_01",
+        "name": "Servidor Primario IDaaS Cloud"
+      },
+      {
+        "key": "node_02",
+        "name": "IdentityGuard OnPremise (BMIGPROD01)"
+      }
+    ]
+  },
+  {
+    "id": "banesco",
+    "name": "Banesco Banco Universal",
+    "platform": "Entrust IdentityGuard OnPremise",
+    "version": "Release 12.0",
+    "build": "Issue 5 (Build 12.4.0)",
+    "contact": "Gerencia de Tecnología & Operaciones",
+    "engineer": "Tomás Acosta",
+    "nodes": [
+      {
+        "key": "node_01",
+        "name": "Servidor Primario (BANESCOIG01)"
+      },
+      {
+        "key": "node_02",
+        "name": "Servidor Secundario (BANESCOIG02)"
+      }
+    ]
+  },
+  {
+    "id": "bancamiga",
+    "name": "Bancamiga Banco Universal",
+    "platform": "Entrust IdentityGuard OnPremise",
+    "version": "Release 13.0",
+    "build": "13.0.4.1",
+    "contact": "Seguridad de la Información",
+    "engineer": "Tomás Acosta",
+    "nodes": [
+      {
+        "key": "node_01",
+        "name": "Servidor Primario (BANCAMIGA-IG1)"
+      },
+      {
+        "key": "node_02",
+        "name": "Servidor Secundario (BANCAMIGA-IG2)"
+      }
+    ]
+  },
+  {
+    "id": "idaas_cloud",
+    "name": "IDaaS Cloud Latam",
+    "platform": "Entrust IDaaS Cloud",
+    "version": "IDaaS Cloud v2026",
+    "build": "Cloud-Gateway-8921",
+    "contact": "Departamento de SSO & Push MFA",
+    "engineer": "Tomás Acosta",
+    "nodes": [
+      {
+        "key": "node_pod_east",
+        "name": "Pod US-East (SSO Gateway)"
+      },
+      {
+        "key": "node_pod_west",
+        "name": "Pod US-West (Push MFA)"
+      }
+    ]
+  },
+  {
+    "id": "general",
+    "name": "Entorno Entrust General / Multi-Nodo",
+    "platform": "Entrust IdentityGuard OnPremise",
+    "version": "Release 13.0",
+    "build": "General",
+    "contact": "Gerencia de Seguridad & TI",
+    "engineer": "Tomás Acosta",
+    "nodes": [
+      {
+        "key": "node_01",
+        "name": "Servidor Primario (Core)"
+      },
+      {
+        "key": "node_02",
+        "name": "Servidor Secundario (Servicios/HA)"
+      }
+    ]
+  }
+]
