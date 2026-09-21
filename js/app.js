@@ -2468,6 +2468,21 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
     }
 
     state.filteredLogs = result;
+
+    // Actualizar barra de paginación para logs locales en memoria
+    const showingBadge = document.getElementById('pagination-showing-badge');
+    const pageBadge = document.getElementById('pagination-current-page');
+    const totalPagesBadge = document.getElementById('pagination-total-pages');
+    if (showingBadge) {
+      const count = result.length;
+      showingBadge.textContent = count > 0 ? `1 - ${Math.min(50, count)} de ${count.toLocaleString()}` : `0 - 0 de 0`;
+    }
+    if (pageBadge) pageBadge.textContent = '1';
+    if (totalPagesBadge) {
+      const totalPages = Math.max(1, Math.ceil(result.length / 50));
+      totalPagesBadge.textContent = totalPages.toLocaleString();
+    }
+
     renderLogTable();
     updateMetricsAndCharts();
     renderUserAndIpAnalytics();
