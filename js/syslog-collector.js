@@ -1,3 +1,19 @@
+// Global HTML sanitizer
+if (typeof window !== 'undefined' && !window.escapeHtml) {
+  window.escapeHtml = function(text) {
+    if (text === null || text === undefined) return '';
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
+}
+if (typeof escapeHtml === 'undefined') {
+  var escapeHtml = window.escapeHtml;
+}
+
 /* ==========================================================================
    ENTRUST LOG DIAGNOSTIC SUITE - RECEPTOR SYSLOG Y MONITOREO EN TIEMPO REAL
    Modo SOC / NOC Preventivo (Opción D) — Captura UDP/TCP 514 / WebSocket Stream

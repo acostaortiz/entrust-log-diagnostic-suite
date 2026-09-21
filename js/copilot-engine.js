@@ -1,3 +1,19 @@
+// Global HTML sanitizer
+if (typeof window !== 'undefined' && !window.escapeHtml) {
+  window.escapeHtml = function(text) {
+    if (text === null || text === undefined) return '';
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
+}
+if (typeof escapeHtml === 'undefined') {
+  var escapeHtml = window.escapeHtml;
+}
+
 /**
  * IT SERVICIOS DE VENEZUELA, S.A.
  * Entrust Forensics Copilot Engine (Asistente Pericial en Tiempo Real)

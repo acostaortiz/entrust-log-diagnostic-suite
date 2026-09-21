@@ -1,3 +1,19 @@
+// Global HTML sanitizer
+if (typeof window !== 'undefined' && !window.escapeHtml) {
+  window.escapeHtml = function(text) {
+    if (text === null || text === undefined) return '';
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
+}
+if (typeof escapeHtml === 'undefined') {
+  var escapeHtml = window.escapeHtml;
+}
+
 /**
  * LOG-PARSER: Motor de Lectura, Extracción y Análisis Multi-Formato
  * Soporta Entrust IdentityGuard OnPremise (Errores 520xxx y Auditoría AUDxxx),

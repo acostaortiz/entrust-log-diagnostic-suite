@@ -275,17 +275,18 @@ body.dark-theme .nav-tabs {
 
 .nav-btn {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: var(--text-muted);
   padding: 8px 16px;
-  font-size: 0.85rem;
+  border-radius: var(--radius-sm);
   font-weight: 600;
-  border-radius: 6px;
+  font-size: 0.84rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .nav-btn:hover {
@@ -1138,14 +1139,27 @@ body.dark-theme .header-dropdown-menu {
   transition: all 0.15s ease;
 }
 
+.header-dropdown-item div:first-child {
+  color: var(--text-main);
+  transition: color 0.15s ease;
+}
+
 .header-dropdown-item:hover {
   background: rgba(2, 132, 199, 0.12);
   color: #0284c7;
   transform: translateX(4px);
 }
 
+.header-dropdown-item:hover div:first-child {
+  color: #0284c7;
+}
+
 body.dark-theme .header-dropdown-item:hover {
   background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+}
+
+body.dark-theme .header-dropdown-item:hover div:first-child {
   color: #38bdf8;
 }
 

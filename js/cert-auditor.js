@@ -1,3 +1,19 @@
+// Global HTML sanitizer
+if (typeof window !== 'undefined' && !window.escapeHtml) {
+  window.escapeHtml = function(text) {
+    if (text === null || text === undefined) return '';
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
+}
+if (typeof escapeHtml === 'undefined') {
+  var escapeHtml = window.escapeHtml;
+}
+
 /* ==========================================================================
    ENTRUST LOG DIAGNOSTIC SUITE - AUDITOR FORENSE DE CERTIFICADOS SSL/TLS & JKS
    Pilar 3: Inspección X.509, Keystores Java (identityguard.keystore / cacerts)

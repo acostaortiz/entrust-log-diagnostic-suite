@@ -1,4 +1,18 @@
 /**
+ * Helper Global de Sanitización HTML Oficial IT SERVICIOS
+ */
+function escapeHtml(text) {
+  if (text === null || text === undefined) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+window.escapeHtml = escapeHtml;
+
+/**
  * APP.JS: Controlador Principal del Dashboard de Diagnóstico de Logs, Auditoría y Manuales
  * Soporta Modo Claro Corporativo / Oscuro, Entrust OnPremise y IDaaS Cloud.
  */

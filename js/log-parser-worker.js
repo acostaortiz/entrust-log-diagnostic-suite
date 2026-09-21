@@ -1,3 +1,19 @@
+// Global HTML sanitizer
+if (typeof window !== 'undefined' && !window.escapeHtml) {
+  window.escapeHtml = function(text) {
+    if (text === null || text === undefined) return '';
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
+}
+if (typeof escapeHtml === 'undefined') {
+  var escapeHtml = window.escapeHtml;
+}
+
 /* ==========================================================================
    ENTRUST LOG DIAGNOSTIC SUITE - WEB WORKER MULTIHILO ULTRA-RÁPIDO (v77.0)
    Procesamiento asíncrono en segundo plano (350.000+ líneas/segundo)

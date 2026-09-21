@@ -1,3 +1,19 @@
+// Global HTML sanitizer
+if (typeof window !== 'undefined' && !window.escapeHtml) {
+  window.escapeHtml = function(text) {
+    if (text === null || text === undefined) return '';
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
+}
+if (typeof escapeHtml === 'undefined') {
+  var escapeHtml = window.escapeHtml;
+}
+
 /* ==========================================================================
    ENTRUST LOG DIAGNOSTIC SUITE - MOTOR DE ALMACENAMIENTO PERSISTENTE INDEXEDDB
    Gestión de Sesiones Masivas (10M+ Líneas) y Casos Históricos de Incidentes
