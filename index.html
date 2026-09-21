@@ -141,6 +141,12 @@
             Exportar <span style="font-size:0.72rem;">▼</span>
           </button>
           <div class="header-dropdown-menu" id="menu-export">
+            <button class="header-dropdown-item" id="btn-open-user-trace-report">
+              <div>
+                <div style="font-weight:700;">Informe de Trazabilidad y Seguridad de Usuario</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Expediente de actividad, códigos y fallas (1 o varios usuarios)</div>
+              </div>
+            </button>
             <button class="header-dropdown-item" id="btn-export-excel">
               <div>
                 <div style="font-weight:700;">Libro Excel Integral (.XLSX)</div>
@@ -155,8 +161,8 @@
             </button>
             <button class="header-dropdown-item" id="btn-open-ai-opinion">
               <div>
-                <div style="font-weight:700;">Dictamen Pericial Oficial</div>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Formato pericial para Sudeban / Auditoría</div>
+                <div style="font-weight:700;">Informe Técnico de Auditoría</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Formato técnico oficial para Sudeban e ISO 27001</div>
               </div>
             </button>
             <button class="header-dropdown-item" id="btn-export-cef">
@@ -180,6 +186,12 @@
             Herramientas <span style="font-size:0.72rem;">▼</span>
           </button>
           <div class="header-dropdown-menu" id="menu-tools">
+            <button class="header-dropdown-item" id="btn-tools-user-trace-report">
+              <div>
+                <div style="font-weight:700;">Trazabilidad y Seguridad de Usuarios</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Expediente forense individual o multi-usuario</div>
+              </div>
+            </button>
             <button class="header-dropdown-item btn-toggle-copilot-drawer" id="btn-menu-copilot">
               <div>
                 <div style="font-weight:700;">Entrust Copilot IA</div>
@@ -1076,7 +1088,98 @@ db.connection.pool.max=20
 
       <div class="mt-4">
         <div class="diag-label">Código HTML Completo del Manual:</div>
-        <textarea class="form-control font-mono" id="custom-manual-html" rows="10" placeholder="<html><body><h1>1.1 Código [5202013]...</h1></body></html>"></textarea>
+        <textarea class="form-control font-mono" id="custom-manual-html" rows="10" placeholder="<html><body><h1>1.1 Código [5202013]...</h1>
+  <!-- MODAL: INFORME DE TRAZABILIDAD Y SEGURIDAD DE USUARIOS (MULTI-USUARIO & FORENSE) -->
+  <div class="modal-overlay" id="modal-user-trace-report" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:9998; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+    <div style="background:var(--bg-card); border:1.5px solid var(--border-color); width:1150px; max-width:96vw; height:90vh; max-height:92vh; border-radius:12px; display:flex; flex-direction:column; box-shadow:0 25px 60px rgba(0,0,0,0.6); overflow:hidden;">
+      
+      <!-- Modal Header -->
+      <div style="padding:14px 20px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-size:1.15rem; font-weight:800; color:var(--text-main); display:flex; align-items:center; gap:8px;">
+            <span>📋</span> Informe de Trazabilidad y Seguridad de Usuarios
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+            Expediente técnico de actividad, códigos de error/auditoría y análisis de incidentes (Soporta 1 o múltiples usuarios)
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button class="btn btn-primary" id="btn-trace-export-pdf" style="background:#0284c7; border:none; font-size:0.78rem; padding:6px 12px; font-weight:700; border-radius:6px; cursor:pointer;" title="Descargar PDF Oficial Membretado">
+            📄 Descargar PDF
+          </button>
+          <button class="btn" id="btn-trace-export-docx" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px; cursor:pointer;" title="Descargar Documento Word">
+            📝 Word (.DOC)
+          </button>
+          <button class="btn" id="btn-trace-export-csv" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px; cursor:pointer;" title="Descargar Tabla CSV">
+            📊 CSV
+          </button>
+          <button class="btn" id="btn-trace-print" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px; cursor:pointer;" title="Imprimir Informe">
+            🖨️ Imprimir
+          </button>
+          <button class="btn" id="btn-trace-copy" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px; cursor:pointer;" title="Copiar Texto al Portapapeles">
+            📋 Copiar
+          </button>
+          <button id="btn-close-user-trace-modal" style="background:none; border:none; color:var(--text-muted); font-size:1.6rem; line-height:1; cursor:pointer; padding:0 6px;">&times;</button>
+        </div>
+      </div>
+
+      <!-- Modal Body (2-Columns Layout: Selector Izquierdo + Previsualizador Derecho) -->
+      <div style="flex:1; display:flex; overflow:hidden;">
+        
+        <!-- Panel Lateral: Selector de Usuarios (Multi-Usuario) -->
+        <div style="width:340px; border-right:1px solid var(--border-color); background:var(--bg-primary); display:flex; flex-direction:column; padding:12px; gap:10px;">
+          
+          <div>
+            <label style="font-size:0.78rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">🔍 Buscar o Filtrar Usuarios:</label>
+            <input type="text" id="user-trace-search-user" class="form-control" placeholder="Escribe para buscar..." style="font-size:0.78rem; padding:6px 10px; width:100%;">
+          </div>
+
+          <!-- Acciones Rápidas de Selección -->
+          <div style="display:flex; gap:4px; flex-wrap:wrap;">
+            <button id="btn-trace-select-top-errors" class="btn" style="background:rgba(239,68,68,0.12); border:1px solid #ef4444; color:#ef4444; font-size:0.7rem; font-weight:700; padding:3px 8px; border-radius:4px; cursor:pointer;">⚡ Top Fallas</button>
+            <button id="btn-trace-select-all" class="btn" style="background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.7rem; font-weight:600; padding:3px 8px; border-radius:4px; cursor:pointer;">Todos</button>
+            <button id="btn-trace-clear-selection" class="btn" style="background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-muted); font-size:0.7rem; font-weight:600; padding:3px 8px; border-radius:4px; cursor:pointer;">Limpiar</button>
+          </div>
+
+          <!-- Lista de Usuarios con Checkboxes -->
+          <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">Usuarios en la Muestra:</div>
+          <div id="user-trace-checklist-container" style="flex:1; overflow-y:auto; border:1px solid var(--border-color); background:var(--bg-secondary); border-radius:6px; padding:6px;">
+            <!-- Renderizado dinámicamente -->
+          </div>
+
+          <!-- Agregar Usuario Manual -->
+          <div style="border-top:1px solid var(--border-color); padding-top:8px;">
+            <label style="font-size:0.72rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:4px;">Agregar Usuario Manualmente:</label>
+            <div style="display:flex; gap:4px;">
+              <input type="text" id="input-trace-custom-user" class="form-control" placeholder="ej. user_3238, admin" style="font-size:0.75rem; padding:4px 8px; flex:1;">
+              <button id="btn-trace-add-custom-user" class="btn btn-primary" style="padding:4px 10px; font-size:0.75rem; font-weight:bold;">+ Agregar</button>
+            </div>
+          </div>
+
+          <button id="btn-trace-generate-report" class="btn btn-primary" style="background:linear-gradient(135deg, #0a3d6d, #0284c7); border:none; font-weight:800; font-size:0.82rem; padding:8px; width:100%; cursor:pointer;">
+            🔄 Actualizar Expediente
+          </button>
+        </div>
+
+        <!-- Panel Principal: Vista Previa del Informe -->
+        <div style="flex:1; display:flex; flex-direction:column; background:var(--bg-card); overflow:hidden;">
+          <div id="user-trace-report-preview" style="flex:1; overflow-y:auto; padding:24px 30px; background:#ffffff;">
+            <!-- Inyectado dinámicamente -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="padding:10px 20px; background:var(--bg-secondary); border-top:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted);">
+        <span>IT Servicios de Venezuela | Módulo de Trazabilidad y Seguridad de Usuarios</span>
+        <button class="btn" id="btn-close-user-trace-modal-bottom" style="font-size:0.75rem; padding:4px 14px; cursor:pointer;">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+
+</body></html>"></textarea>
       </div>
 
       <div class="flex-between mt-4">
@@ -1409,6 +1512,7 @@ db.connection.pool.max=20
 
   <script src="js/cert-auditor.js?v=450.0"></script>
   <script src="js/syslog-collector.js?v=450.0"></script>
+  <script src="js/user-trace-report.js?v=450.0"></script>
   <script src="js/app.js?v=450.0"></script>
 
 
@@ -1455,6 +1559,97 @@ db.connection.pool.max=20
         <span id="kpi-inspector-footer-info">IT Servicios de Venezuela | Suite de Diagnóstico Entrust</span>
         <button class="btn" id="btn-close-kpi-inspector-bottom" style="font-size:0.75rem; padding:4px 12px; cursor:pointer;">Cerrar</button>
       </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: INFORME DE TRAZABILIDAD Y SEGURIDAD DE USUARIOS (MULTI-USUARIO & FORENSE) -->
+  <div class="modal-overlay" id="modal-user-trace-report" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:9998; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+    <div style="background:var(--bg-card); border:1.5px solid var(--border-color); width:1150px; max-width:96vw; height:90vh; max-height:92vh; border-radius:12px; display:flex; flex-direction:column; box-shadow:0 25px 60px rgba(0,0,0,0.6); overflow:hidden;">
+      
+      <!-- Modal Header -->
+      <div style="padding:14px 20px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-size:1.15rem; font-weight:800; color:var(--text-main); display:flex; align-items:center; gap:8px;">
+            <span>📋</span> Informe de Trazabilidad y Seguridad de Usuarios
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+            Expediente técnico de actividad, códigos de error/auditoría y análisis de incidentes (Soporta 1 o múltiples usuarios)
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button class="btn btn-primary" id="btn-trace-export-pdf" style="background:#0284c7; border:none; font-size:0.78rem; padding:6px 12px; font-weight:700; border-radius:6px; cursor:pointer;" title="Descargar PDF Oficial Membretado">
+            📄 Descargar PDF
+          </button>
+          <button class="btn" id="btn-trace-export-docx" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px; cursor:pointer;" title="Descargar Documento Word">
+            📝 Word (.DOC)
+          </button>
+          <button class="btn" id="btn-trace-export-csv" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px; cursor:pointer;" title="Descargar Tabla CSV">
+            📊 CSV
+          </button>
+          <button class="btn" id="btn-trace-print" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px; cursor:pointer;" title="Imprimir Informe">
+            🖨️ Imprimir
+          </button>
+          <button class="btn" id="btn-trace-copy" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px; cursor:pointer;" title="Copiar Texto al Portapapeles">
+            📋 Copiar
+          </button>
+          <button id="btn-close-user-trace-modal" style="background:none; border:none; color:var(--text-muted); font-size:1.6rem; line-height:1; cursor:pointer; padding:0 6px;">&times;</button>
+        </div>
+      </div>
+
+      <!-- Modal Body (2-Columns Layout: Selector Izquierdo + Previsualizador Derecho) -->
+      <div style="flex:1; display:flex; overflow:hidden;">
+        
+        <!-- Panel Lateral: Selector de Usuarios (Multi-Usuario) -->
+        <div style="width:340px; border-right:1px solid var(--border-color); background:var(--bg-primary); display:flex; flex-direction:column; padding:12px; gap:10px;">
+          
+          <div>
+            <label style="font-size:0.78rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">🔍 Buscar o Filtrar Usuarios:</label>
+            <input type="text" id="user-trace-search-user" class="form-control" placeholder="Escribe para buscar..." style="font-size:0.78rem; padding:6px 10px; width:100%;">
+          </div>
+
+          <!-- Acciones Rápidas de Selección -->
+          <div style="display:flex; gap:4px; flex-wrap:wrap;">
+            <button id="btn-trace-select-top-errors" class="btn" style="background:rgba(239,68,68,0.12); border:1px solid #ef4444; color:#ef4444; font-size:0.7rem; font-weight:700; padding:3px 8px; border-radius:4px; cursor:pointer;">⚡ Top Fallas</button>
+            <button id="btn-trace-select-all" class="btn" style="background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.7rem; font-weight:600; padding:3px 8px; border-radius:4px; cursor:pointer;">Todos</button>
+            <button id="btn-trace-clear-selection" class="btn" style="background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-muted); font-size:0.7rem; font-weight:600; padding:3px 8px; border-radius:4px; cursor:pointer;">Limpiar</button>
+          </div>
+
+          <!-- Lista de Usuarios con Checkboxes -->
+          <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">Usuarios en la Muestra:</div>
+          <div id="user-trace-checklist-container" style="flex:1; overflow-y:auto; border:1px solid var(--border-color); background:var(--bg-secondary); border-radius:6px; padding:6px;">
+            <!-- Renderizado dinámicamente -->
+          </div>
+
+          <!-- Agregar Usuario Manual -->
+          <div style="border-top:1px solid var(--border-color); padding-top:8px;">
+            <label style="font-size:0.72rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:4px;">Agregar Usuario Manualmente:</label>
+            <div style="display:flex; gap:4px;">
+              <input type="text" id="input-trace-custom-user" class="form-control" placeholder="ej. user_3238, admin" style="font-size:0.75rem; padding:4px 8px; flex:1;">
+              <button id="btn-trace-add-custom-user" class="btn btn-primary" style="padding:4px 10px; font-size:0.75rem; font-weight:bold;">+ Agregar</button>
+            </div>
+          </div>
+
+          <button id="btn-trace-generate-report" class="btn btn-primary" style="background:linear-gradient(135deg, #0a3d6d, #0284c7); border:none; font-weight:800; font-size:0.82rem; padding:8px; width:100%; cursor:pointer;">
+            🔄 Actualizar Expediente
+          </button>
+        </div>
+
+        <!-- Panel Principal: Vista Previa del Informe -->
+        <div style="flex:1; display:flex; flex-direction:column; background:var(--bg-card); overflow:hidden;">
+          <div id="user-trace-report-preview" style="flex:1; overflow-y:auto; padding:24px 30px; background:#ffffff;">
+            <!-- Inyectado dinámicamente -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="padding:10px 20px; background:var(--bg-secondary); border-top:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted);">
+        <span>IT Servicios de Venezuela | Módulo de Trazabilidad y Seguridad de Usuarios</span>
+        <button class="btn" id="btn-close-user-trace-modal-bottom" style="font-size:0.75rem; padding:4px 14px; cursor:pointer;">Cerrar</button>
+      </div>
+
     </div>
   </div>
 

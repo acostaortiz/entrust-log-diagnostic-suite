@@ -148,7 +148,10 @@ window.escapeHtml = escapeHtml;
         rowsHtml += `
           <tr style="border-bottom:1px solid var(--border-color); background:${idx % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.02)'};">
             <td style="padding:10px; font-weight:700; color:var(--text-main); font-family:'JetBrains Mono', monospace; font-size:0.82rem;">
-              👤 ${escapeHtml(u.user)} ${u.isLocked ? '<span style="color:#ef4444; font-size:10px; font-weight:800; background:rgba(239,68,68,0.15); padding:1px 6px; border-radius:3px; margin-left:4px;">BLOQUEADO</span>' : ''}
+              <span style="cursor:pointer; color:#0284c7; text-decoration:underline;" onclick="window.UserTraceReport ? window.UserTraceReport.openModal('${escapeHtml(u.user)}') : null" title="Haga clic para ver el Informe de Trazabilidad y Seguridad de este usuario">
+                👤 ${escapeHtml(u.user)}
+              </span>
+              ${u.isLocked ? '<span style="color:#ef4444; font-size:10px; font-weight:800; background:rgba(239,68,68,0.15); padding:1px 6px; border-radius:3px; margin-left:4px;">BLOQUEADO</span>' : ''}
             </td>
             <td style="padding:10px; text-align:center; font-weight:900; color:#ef4444; font-family:'JetBrains Mono', monospace; font-size:0.85rem;">
               ${u.attempts.toLocaleString()}
@@ -173,10 +176,10 @@ window.escapeHtml = escapeHtml;
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
             <div>
               <div style="font-size:0.95rem; font-weight:800; color:#f43f5e; display:flex; align-items:center; gap:8px;">
-                <span>🎯</span> Identidades Bancarias Bajo Ataque Reiterado o Conflicto
+                <span>🎯</span> Radar de Cuentas Afectadas &amp; Intentos Fallidos
               </div>
-              <div style="font-size:0.75rem; color:var(--text-muted);">
-                Extracción forense de cuentas afectadas por fallos masivos o intentos de autenticación
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+                Identificación de identidades con volumen anómalo de fallas y códigos 520
               </div>
             </div>
             ${report.isUnderMassiveAttack ? `
@@ -209,9 +212,14 @@ window.escapeHtml = escapeHtml;
 
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:0.75rem; color:var(--text-muted);">
             <span>Total Transacciones Denegadas: <strong style="color:#ef4444;">${report.totalFailedAuth.toLocaleString()}</strong> | Identidades Únicas: <strong style="color:var(--text-main);">${report.detectedVictimsCount.toLocaleString()}</strong></span>
-            <button class="btn btn-primary" id="btn-export-soc-report-mini" style="background:#dc2626; border-color:#dc2626; font-size:0.75rem; padding:4px 10px; border-radius:4px; font-weight:bold; cursor:pointer;">
-              📋 Exportar Ficha SOC / Fraude
-            </button>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-primary" onclick="window.UserTraceReport ? window.UserTraceReport.openModal() : null" style="background:#0284c7; border:none; font-size:0.75rem; padding:5px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">
+                📋 Informe de Trazabilidad de Usuarios
+              </button>
+              <button class="btn" id="btn-export-soc-report-mini" style="background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.75rem; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer;">
+                Copiar Ficha Rápida
+              </button>
+            </div>
           </div>
         </div>
       `;
