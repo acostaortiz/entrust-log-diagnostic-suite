@@ -603,14 +603,15 @@ select.form-control {
 
 .log-row {
   display: grid;
-  grid-template-columns: 65px 120px 80px 110px 140px 1fr 100px;
+  grid-template-columns: 65px 140px 85px 130px 140px 1fr 110px;
   padding: 8px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
   transition: background 0.15s ease;
   overflow: hidden;
+  color: #f1f5f9;
 }
 
 .log-row:hover {

@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     activeFilterMode: null,
     theme: localStorage.getItem('app_theme') || 'light',
     clientProfiles: [],
-    activeClientId: 'general'
+    activeClientId: 'mercantil'
   };
   window.appState = state;
 
@@ -98,10 +98,16 @@ document.addEventListener('DOMContentLoaded', () => {
   try { initCertAuditorModule(); } catch (e) { console.error('Error al inicializar Certificados:', e); }
   try { initSyslogCollector(); } catch (e) { console.error('Error al inicializar Syslog:', e); }
   try { initEventListeners(); } catch (e) { console.error('Error al inicializar EventListeners:', e); }
-
   // Inicialización de datos de sesión: Iniciar en estado limpio listo para análisis
   (async () => {
-    // Listo para carga de archivos de logs o ingesta de servidor
+    try {
+      await loadClientProfiles();
+      const initialClient = state.activeClientId || 'mercantil';
+      await syncClientSessionWithServer(initialClient);
+      await fetchSqlLogs(1);
+    } catch(e) {
+      console.warn('Error en inicialización de sesión:', e);
+    }
   })();
 
   /* ==========================================================================
@@ -249,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedActiveId && state.clientProfiles.some(c => c.id === savedActiveId)) {
       state.activeClientId = savedActiveId;
     } else {
-      state.activeClientId = state.clientProfiles[0]?.id || 'mercantil';
+      state.activeClientId = savedActiveId || 'mercantil';
     }
     populateClientSessionSelectors();
 
@@ -2491,8 +2497,20 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
     if (!dom.logScrollArea) return;
     dom.logScrollArea.innerHTML = '';
 
+    const hasSessionData = (state.sqlTotalMatching > 0) || (state.logs && state.logs.length > 0) || (state.loadedFiles && state.loadedFiles.length > 0);
+
     if (state.filteredLogs.length === 0) {
-      if (!state.logs || state.logs.length === 0) {
+      if (hasSessionData) {
+        dom.logScrollArea.innerHTML = `
+          <div style="padding: 35px 20px; text-align: center; color: var(--text-muted);">
+            <div style="font-size: 1.8rem; margin-bottom: 8px;">🔍</div>
+            <strong style="font-size: 0.95rem; color: var(--text-main); display: block; margin-bottom: 6px;">No hay registros que coincidan con los filtros actuales</strong>
+            <p style="margin-bottom:14px; font-size:0.82rem;">La base de datos contiene ${(state.sqlTotalMatching || state.logs.length || 0).toLocaleString()} registros. Ajuste los filtros de severidad, tipo o búsqueda.</p>
+            <button type="button" class="btn btn-secondary" onclick="window.resetTableFiltersGlobal && window.resetTableFiltersGlobal();" style="font-size:0.82rem; padding:6px 16px; cursor:pointer;">
+              ✖ Restablecer Filtros
+            </button>
+          </div>`;
+      } else {
         dom.logScrollArea.innerHTML = `
           <div style="padding: 40px 20px; text-align: center; color: var(--text-muted);">
             <div style="font-size: 2.2rem; margin-bottom: 8px;">📂</div>
@@ -2507,14 +2525,6 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
                 ⚡ Ingesta Servidor (> 3 GB)
               </button>
             </div>
-          </div>`;
-      } else {
-        dom.logScrollArea.innerHTML = `
-          <div style="padding: 30px; text-align: center; color: var(--text-muted);">
-            <p style="margin-bottom:12px; font-size:0.88rem;">No se encontraron registros de log que coincidan con los filtros aplicados.</p>
-            <button type="button" class="btn btn-secondary" onclick="if(dom.filterLevelSelect) dom.filterLevelSelect.value='ALL'; if(dom.filterTypeSelect) dom.filterTypeSelect.value='ALL'; if(dom.filterClientSelect) dom.filterClientSelect.value='ALL'; if(dom.searchLogInput) dom.searchLogInput.value=''; applyLogFilters();" style="font-size:0.82rem; padding:6px 16px; cursor:pointer;">
-              ✖ Restablecer Todos los Filtros
-            </button>
           </div>`;
       }
       return;
@@ -2532,13 +2542,13 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       const clientName = log.client || 'Entrust OnPremise';
 
       row.innerHTML = `
-        <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">#${log.lineNum}</div>
+        <div style="font-weight:700; color:#38bdf8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">#${log.lineNum}</div>
         <div class="font-mono" style="font-size:0.75rem; color:#94a3b8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${log.timestamp}</div>
         <div><span class="badge-sev ${log.level}">${log.level}</span></div>
-        <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><span class="badge-client font-mono" style="font-size:0.7rem; background:rgba(99,102,241,0.18); color:#818cf8; padding:2px 6px; border-radius:4px; font-weight:600; border:1px solid rgba(99,102,241,0.35); display:inline-block; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(clientName)}">🏢 ${escapeHtml(clientName)}</span></div>
-        <div class="font-mono" style="font-size:0.8rem; color:#38bdf8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(log.service)}</div>
-        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(log.message)}</div>
-        <div style="font-size:0.75rem; color:#94a3b8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${log.diagnostic?.matched ? '🧠 Entrust KB' : log.type}</div>
+        <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><span class="badge-client font-mono" style="font-size:0.7rem; background:rgba(99,102,241,0.22); color:#a5b4fc; padding:2px 6px; border-radius:4px; font-weight:600; border:1px solid rgba(99,102,241,0.4); display:inline-block; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(clientName)}">🏢 ${escapeHtml(clientName)}</span></div>
+        <div class="font-mono" style="font-size:0.78rem; color:#38bdf8; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(log.service)}</div>
+        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color:#f8fafc; font-weight:500;">${escapeHtml(log.message)}</div>
+        <div style="font-size:0.75rem; color:#cbd5e1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${log.diagnostic?.matched ? '🧠 Entrust KB' : log.type}</div>
       `;
 
       row.addEventListener('click', () => selectLog(log));
@@ -4253,7 +4263,15 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
 
     // Resetear Tabla de Logs
-    renderLogsList([]);
+        state.sqlTotalMatching = 0;
+    state.sqlPage = 1;
+    state.sqlTotalPages = 1;
+    const pageBadge = document.getElementById('pagination-current-page');
+    const totalPagesBadge = document.getElementById('pagination-total-pages');
+    const showingBadge = document.getElementById('pagination-showing-badge');
+    if (pageBadge) pageBadge.textContent = '1';
+    if (totalPagesBadge) totalPagesBadge.textContent = '1';
+    if (showingBadge) showingBadge.textContent = '0 - 0 de 0';
 
     // Resetear Gráficos
     try {
