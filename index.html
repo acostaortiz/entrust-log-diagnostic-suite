@@ -17,7 +17,7 @@
   <script src="js/html2pdf.bundle.min.js"></script>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/styles.css?v=310.0">
+  <link rel="stylesheet" href="css/styles.css?v=320.0">
 </head>
 <body>
 
@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust OnPremise & IDaaS Cloud</span>
-            <span style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3);">v310.0</span>
+            <span style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3);">v320.0</span>
           </div>
         </div>
       </div>
@@ -75,7 +75,7 @@
           <button class="nav-btn dropdown-toggle-btn" id="btn-nav-more" style="color:#10b981; font-weight:700;">
             <span>📂</span> <span id="label-nav-more">Más Vistas</span> <span style="font-size:0.65rem; margin-left:2px;">▼</span>
           </button>
-                    <div class="header-dropdown-menu" style="left:0; right:auto; min-width:300px;">
+          <div class="header-dropdown-menu" style="left:0; right:auto; min-width:300px;">
             <button class="header-dropdown-item nav-btn" data-tab="compliance" style="color:#059669;">
               <span style="font-size:1.2rem;">⚖️</span>
               <div>
@@ -126,42 +126,10 @@
               </div>
             </button>
           </div>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Catálogo de códigos oficiales & remediación</div>
-              </div>
-            </button>
-            <button class="header-dropdown-item nav-btn" data-tab="manuals" style="color:#059669;">
-              <span style="font-size:1.2rem;">📚</span>
-              <div>
-                <div style="font-weight:700;">Manuales Administrativos</div>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Documentación WebHelp Entrust e IDaaS</div>
-              </div>
-            </button>
-            <button class="header-dropdown-item nav-btn" data-tab="nodes" style="color:#0284c7;">
-              <span style="font-size:1.2rem;">🏢</span>
-              <div>
-                <div style="font-weight:700;">Comparativa Multi-Nodo</div>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Balanceo de carga y discrepancias por servidor</div>
-              </div>
-            </button>
-            <button class="header-dropdown-item nav-btn" data-tab="traces" style="color:#d97706;">
-              <span style="font-size:1.2rem;">⚡</span>
-              <div>
-                <div style="font-weight:700;">Trazas Distribuidas</div>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Cascada temporal de transacciones</div>
-              </div>
-            </button>
-            <button class="header-dropdown-item nav-btn" data-tab="compare" style="color:#10b981;">
-              <span style="font-size:1.2rem;">📈</span>
-              <div>
-                <div style="font-weight:700;">Comparativa Histórica</div>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Auditorías previas vs sesión actual</div>
-              </div>
-            </button>
-          </div>
         </div>
       </nav>
 
-      <div class="header-actions">
+      <div class="header-actions" style="display:flex; align-items:center; gap:8px;">
         <!-- Dropdown 1: Exportar e Informes -->
         <div class="header-dropdown" id="dropdown-export">
           <button class="header-dropdown-btn" id="btn-toggle-dropdown-export" style="border-color:#10b981; color:#059669; background:rgba(16, 185, 129, 0.08);">
@@ -206,6 +174,122 @@
           </div>
         </div>
 
+        <!-- Dropdown 2: Herramientas Avanzadas -->
+        <div class="header-dropdown" id="dropdown-tools">
+          <button class="header-dropdown-btn" id="btn-toggle-dropdown-tools" style="border-color:#0284c7; color:#0284c7; background:rgba(2, 132, 199, 0.08);">
+            <span>🛠️</span> <span>Herramientas</span> <span style="font-size:0.65rem; margin-left:2px;">▼</span>
+          </button>
+          <div class="header-dropdown-menu" id="menu-tools">
+            <button class="header-dropdown-item" id="btn-toggle-copilot-drawer" style="color:#0284c7;">
+              <span style="font-size:1.15rem;">💬</span>
+              <div>
+                <div style="font-weight:700;">Entrust Copilot IA</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Asistente interactivo de logs y arquitectura</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item" id="btn-open-remediation-modal" style="color:#6366f1;">
+              <span style="font-size:1.15rem;">⚡</span>
+              <div>
+                <div style="font-weight:700;">Auto-Remediación (.BAT/.SH)</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Generador de scripts automáticos</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item" id="btn-open-saved-cases" style="color:#d97706;">
+              <span style="font-size:1.15rem;">💾</span>
+              <div>
+                <div style="font-weight:700;">Historial de Incidentes</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Casos persistidos en IndexedDB</div>
+              </div>
+            </button>
+            <button class="header-dropdown-item" id="btn-open-zoho-modal" style="color:#ec4899;">
+              <span style="font-size:1.15rem;">🎫</span>
+              <div>
+                <div style="font-weight:700;">Crear Ticket Zoho Desk</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Integración ITIL / Webhook</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón Destacado: Generar Informe -->
+        <button class="btn btn-primary" id="btn-generate-exec-report" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:none; color:#fff; font-weight:800; font-size:0.84rem; padding:8px 16px; border-radius:8px; box-shadow:0 3px 10px rgba(2, 132, 199, 0.35); display:inline-flex; align-items:center; gap:6px; cursor:pointer;" title="Generar Informe Ejecutivo Integral (PDF / DOCX / HTML / CSV / Excel)">
+          <span>📄</span> Generar Informe
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+
+    <!-- 1. PESTAÑA: VISIÓN GENERAL -->
+    <div class="tab-pane active" id="tab-overview">
+      <div class="metrics-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px; margin-bottom:20px;">
+        <!-- Card 1: Salud -->
+        <div class="metric-card success" id="card-health" style="background:var(--bg-card); border:1px solid var(--border-color); border-top:4px solid #10b981; padding:18px; border-radius:10px; cursor:pointer; position:relative; box-shadow:var(--shadow-sm);">
+          <div class="flex-between" style="margin-bottom:8px;">
+            <span class="metric-label" style="font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Índice de Salud Clúster</span>
+            <span id="health-status-badge" style="background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16, 185, 129, 0.3); font-weight:700; font-size:0.72rem; padding:2px 8px; border-radius:4px;">ÓPTIMO</span>
+          </div>
+          <div class="metric-value text-cyan" id="health-index" style="font-size:2.2rem; font-weight:800; font-family:'JetBrains Mono', monospace; line-height:1.1; margin-bottom:6px;">100%</div>
+          <div style="height:5px; width:100%; background:rgba(255,255,255,0.08); border-radius:3px; margin-bottom:8px; overflow:hidden;">
+            <div id="health-progress-bar" style="width:100%; height:100%; background:#10b981; border-radius:3px; transition:width 0.8s ease;"></div>
+          </div>
+          <div class="metric-sub" style="font-size:0.78rem; color:var(--text-dim); display:flex; justify-content:space-between;">
+            <span>Entrust OnPremise & IDaaS</span>
+            <span style="color:var(--text-cyan); font-weight:600;">Ver detalles ➔</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Total Logs -->
+        <div class="metric-card" id="card-total-logs" style="background:var(--bg-card); border:1px solid var(--border-color); border-top:4px solid #0284c7; padding:18px; border-radius:10px; cursor:pointer; position:relative; box-shadow:var(--shadow-sm);">
+          <div class="flex-between" style="margin-bottom:8px;">
+            <span class="metric-label" style="font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Total Transacciones</span>
+            <span id="total-logs-badge" style="background:rgba(2, 132, 199, 0.15); color:#38bdf8; border:1px solid rgba(2, 132, 199, 0.3); font-weight:700; font-size:0.72rem; padding:2px 8px; border-radius:4px;">0 Archivos</span>
+          </div>
+          <div class="metric-value" id="total-logs-count" style="font-size:2.2rem; font-weight:800; font-family:'JetBrains Mono', monospace; color:var(--text-main); line-height:1.1; margin-bottom:6px;">0</div>
+          <div style="height:5px; width:100%; background:rgba(255,255,255,0.08); border-radius:3px; margin-bottom:8px; overflow:hidden;">
+            <div style="width:100%; height:100%; background:#0284c7; border-radius:3px;"></div>
+          </div>
+          <div class="metric-sub" style="font-size:0.78rem; color:var(--text-dim); display:flex; justify-content:space-between;">
+            <span>Registros Indexados 100%</span>
+            <span style="color:var(--text-cyan); font-weight:600;">Ver todos ➔</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Errores 520xxx -->
+        <div class="metric-card critical" id="card-entrust-errors" style="background:var(--bg-card); border:1px solid var(--border-color); border-top:4px solid #ef4444; padding:18px; border-radius:10px; cursor:pointer; position:relative; box-shadow:var(--shadow-sm);" title="Haz clic para filtrar solo incidentes [520xxx]">
+          <div class="flex-between" style="margin-bottom:8px;">
+            <span class="metric-label" style="font-size:0.82rem; font-weight:700; color:#ef4444; text-transform:uppercase;">Errores [520xxx / IDaaS]</span>
+            <span id="critical-rate-badge" style="background:rgba(239, 68, 68, 0.15); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.3); font-weight:700; font-size:0.72rem; padding:2px 8px; border-radius:4px;">0% Falla</span>
+          </div>
+          <div class="metric-value text-danger" id="critical-count" style="font-size:2.2rem; font-weight:800; font-family:'JetBrains Mono', monospace; color:#ef4444; line-height:1.1; margin-bottom:6px;">0</div>
+          <div style="height:5px; width:100%; background:rgba(255,255,255,0.08); border-radius:3px; margin-bottom:8px; overflow:hidden;">
+            <div id="critical-progress-bar" style="width:0%; height:100%; background:#ef4444; border-radius:3px; transition:width 0.8s ease;"></div>
+          </div>
+          <div class="metric-sub" style="font-size:0.78rem; color:var(--text-dim); display:flex; justify-content:space-between;">
+            <span>Fallos de Política & BD</span>
+            <span style="color:#ef4444; font-weight:700;">🔍 Filtrar Errores ➔</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Alertas Auditoría -->
+        <div class="metric-card warning" id="card-audit-alerts" style="background:var(--bg-card); border:1px solid var(--border-color); border-top:4px solid #f59e0b; padding:18px; border-radius:10px; cursor:pointer; position:relative; box-shadow:var(--shadow-sm);" title="Haz clic para ver eventos de auditoría">
+          <div class="flex-between" style="margin-bottom:8px;">
+            <span class="metric-label" style="font-size:0.82rem; font-weight:700; color:#f59e0b; text-transform:uppercase;">Alertas de Auditoría [AUDxxx]</span>
+            <span id="audit-rate-badge" style="background:rgba(245, 158, 11, 0.15); color:#f59e0b; border:1px solid rgba(245, 158, 11, 0.3); font-weight:700; font-size:0.72rem; padding:2px 8px; border-radius:4px;">Seguridad</span>
+          </div>
+          <div class="metric-value text-warn" id="warning-count" style="font-size:2.2rem; font-weight:800; font-family:'JetBrains Mono', monospace; color:#f59e0b; line-height:1.1; margin-bottom:6px;">0</div>
+          <div style="height:5px; width:100%; background:rgba(255,255,255,0.08); border-radius:3px; margin-bottom:8px; overflow:hidden;">
+            <div id="warn-progress-bar" style="width:0%; height:100%; background:#f59e0b; border-radius:3px; transition:width 0.8s ease;"></div>
+          </div>
+          <div class="metric-sub" style="font-size:0.78rem; color:var(--text-dim); display:flex; justify-content:space-between;">
+            <span>Intentos y Accesos Admin</span>
+            <span style="color:#f59e0b; font-weight:600;">Ver auditoría ➔</span>
+          </div>
+        </div>
+      </div>
+      
       <!-- Contenedor Dinámico: Calculadora de SLA Bancario & Cumplimiento Regulatorio -->
       <div id="sla-calculator-overview-container" style="margin-bottom:20px;"></div>
 
@@ -1205,23 +1289,23 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
 
   <!-- Scripts JavaScript -->
   <script src="js/pptxgen.bundle.js"></script>
-  <script src="js/topology-engine.js?v=310.0"></script>
-  <script src="js/kb-database.js?v=310.0"></script>
-  <script src="js/manuals-engine.js?v=310.0"></script>
-  <script src="js/bancomercantil_data.js?v=310.0"></script>
-  <script src="js/log-parser.js?v=310.0"></script>
-  <script src="js/storage-engine.js?v=310.0"></script>
-    <script src="js/threat-radar.js?v=310.0"></script>
-  <script src="js/remediation-engine.js?v=310.0"></script>
-  <script src="js/sla-engine.js?v=310.0"></script>
-  <script src="js/copilot-engine.js?v=310.0"></script>
-  <script src="js/compliance-auditor.js?v=310.0"></script>
-  <script src="js/config-diff-engine.js?v=310.0"></script>
-  <script src="js/siem-exporter.js?v=310.0"></script>
+  <script src="js/topology-engine.js?v=320.0"></script>
+  <script src="js/kb-database.js?v=320.0"></script>
+  <script src="js/manuals-engine.js?v=320.0"></script>
+  <script src="js/bancomercantil_data.js?v=320.0"></script>
+  <script src="js/log-parser.js?v=320.0"></script>
+  <script src="js/storage-engine.js?v=320.0"></script>
+    <script src="js/threat-radar.js?v=320.0"></script>
+  <script src="js/remediation-engine.js?v=320.0"></script>
+  <script src="js/sla-engine.js?v=320.0"></script>
+  <script src="js/copilot-engine.js?v=320.0"></script>
+  <script src="js/compliance-auditor.js?v=320.0"></script>
+  <script src="js/config-diff-engine.js?v=320.0"></script>
+  <script src="js/siem-exporter.js?v=320.0"></script>
 
-  <script src="js/cert-auditor.js?v=310.0"></script>
-  <script src="js/syslog-collector.js?v=310.0"></script>
-  <script src="js/app.js?v=310.0"></script>
+  <script src="js/cert-auditor.js?v=320.0"></script>
+  <script src="js/syslog-collector.js?v=320.0"></script>
+  <script src="js/app.js?v=320.0"></script>
 
 </body>
 </html>
