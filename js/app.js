@@ -89,6 +89,15 @@ document.addEventListener('DOMContentLoaded', () => {
   try { initExecReportModule(); } catch (e) { console.error('Error al inicializar Informe:', e); }
   try { initNodeComparisonModule(); } catch (e) { console.error('Error al inicializar Comparativa Multi-Nodo:', e); }
   try { initServerIngestModule(); } catch (e) { console.error('Error al inicializar Ingesta Servidor:', e); }
+  try { initCopilotModule(); } catch (e) { console.error('Error al inicializar Copilot:', e); }
+  try { initThreatRadarModule(); } catch (e) { console.error('Error al inicializar Threat Radar:', e); }
+  try { initComplianceModule(); } catch (e) { console.error('Error al inicializar Compliance:', e); }
+  try { initConfigDiffModule(); } catch (e) { console.error('Error al inicializar Config Diff:', e); }
+  try { initSiemExporterModule(); } catch (e) { console.error('Error al inicializar SIEM Exporter:', e); }
+  try { initRemediationModule(); } catch (e) { console.error('Error al inicializar Remediación:', e); }
+  try { initSlaModule(); } catch (e) { console.error('Error al inicializar SLA Calculator:', e); }
+  try { initCertAuditorModule(); } catch (e) { console.error('Error al inicializar Certificados:', e); }
+  try { initSyslogCollector(); } catch (e) { console.error('Error al inicializar Syslog:', e); }
   try { initEventListeners(); } catch (e) { console.error('Error al inicializar EventListeners:', e); }
 
   // Inicialización de datos de sesión: Iniciar en estado limpio listo para análisis
@@ -658,14 +667,912 @@ document.addEventListener('DOMContentLoaded', () => {
     const errB = logsB.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
 
     tableContainer.innerHTML = `
-      <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
+      <table class="report-table" style="width:100%; border-collapse:collapse; font-size:12px; margin-top:10px;">
+        <thead>
+          <tr style="background:var(--bg-primary); color:var(--text-primary);">
+            <th style="padding:10px; border:1px solid var(--border-color); text-align:left;">Métrica Comparativa de Servidor / Nodo</th>
+            <th style="padding:10px; border:1px solid var(--border-color); text-align:center; color:var(--it-blue);">🖥️ Nodo A (${escapeHtml(nodeAVal)})</th>
+            <th style="padding:10px; border:1px solid var(--border-color); text-align:center; color:var(--text-cyan);">🖥️ Nodo B (${escapeHtml(nodeBVal)})</th>
+            <th style="padding:10px; border:1px solid var(--border-color); text-align:center;">Estado & Evaluación de Salud</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:10px; border:1px solid var(--border-color); font-weight:600;">Total Peticiones Processadas en Muestra</td>
+            <td style="padding:10px; border:1px solid var(--border-color); text-align:center; font-family:monospace; font-weight:bold;">${countA} logs</td>
+            <td style="padding:10px; border:1px solid var(--border-color); text-align:center; font-family:monospace; font-weight:bold;">${countB} logs</td>
+            <td style="padding:10px; border:1px solid var(--border-color); text-align:center;">${Math.abs(pctA - pctB) > 30 ? '⚠️ Desbalanceo Severo de Carga' : '✅ Balanceo Normal de Carga'}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px; border:1px solid var(--border-color); font-weight:600;">Incidentes Críticos & Excepciones</td>
+            <td style="padding:10px; border:1px solid var(--border-color); text-align:center; font-family:monospace; color:#f43f5e; font-weight:bold;">${errA} errores</td>
+            <td style="padding:10px; border:1px solid var(--border-color); text-align:center; font-family:monospace; color:#f43f5e; font-weight:bold;">${errB} errores</td>
+            <td style="padding:10px; border:1px solid var(--border-color); text-align:center;">${errA > errB ? '⚠️ Mayor Impacto en Nodo A' : (errB > errA ? '⚠️ Mayor Impacto en Nodo B' : '✅ Salud Igualada en Ambos Nodos')}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px; border:1px solid var(--border-color); font-weight:600;">Recomendación Operativa HA</td>
+            <td colspan="3" style="padding:10px; border:1px solid var(--border-color); font-size:11px; color:var(--text-muted);">
+              ${Math.abs(pctA - pctB) > 30 ? 'Se recomienda revisar las políticas de Balanceo Round-Robin / Least Connections en F5/Nginx para distribuir equitativamente el tráfico de autenticación Entrust.' : 'La arquitectura de Alta Disponibilidad mantiene un reparto de carga simétrico entre los dos nodos.'}
+            </td>
+          </tr>
+        </tbody>
+      </table>`;
+  }
+
+  function initNodeComparisonModule() {
+    const btnRefresh = document.getElementById('btn-refresh-node-comparison');
+    const selectA = document.getElementById('node-a-select');
+    const selectB = document.getElementById('node-b-select');
+
+    btnRefresh?.addEventListener('click', renderNodeComparison);
+    selectA?.addEventListener('change', renderNodeComparison);
+    selectB?.addEventListener('change', renderNodeComparison);
+  }
+
+  /* ==========================================================================
+     2. GENERADOR DE INFORMES DE DIAGNÓSTICO PRELIMINAR (EXECUTIVE REPORT)
+     ========================================================================== */
+  function openPrintWindow(htmlContent, title) {
+    const printWindow = window.open('', '_blank', 'width=960,height=850');
+    if (!printWindow) {
+      alert('⚠️ Por favor permita ventanas emergentes (popups) en su navegador para imprimir o exportar como PDF.');
+      return;
+    }
+    printWindow.document.open();
+    printWindow.document.write(`<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>${title || 'Informe Oficial Entrust - IT SERVICIOS'}</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, -apple-system, BlinkMacSystemFont, sans-serif; background: #ffffff; color: #0f172a; padding: 25px; margin: 0; font-size: 12px; }
+    h1, h2, h3, h4 { color: #0a3d6d; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; page-break-inside: avoid; }
+    th, td { border: 1px solid #cbd5e1; padding: 6px 8px; font-size: 11px; text-align: left; }
+    th { background: #0a3d6d; color: #ffffff; font-weight: bold; }
+    tr:nth-child(even) { background: #f8fafc; }
+    pre, code { font-family: 'JetBrains Mono', Consolas, monospace; }
+    @media print {
+      body { padding: 0; }
+      @page { margin: 12mm 10mm; size: letter portrait; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  ${htmlContent}
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.focus();
+        window.print();
+      }, 400);
+    };
+  </script>
+</body>
+</html>`);
+    printWindow.document.close();
+  }
+
+  function initExecReportModule() {
+    const btnGen = document.getElementById('btn-generate-exec-report');
+    const btnClose = document.getElementById('btn-close-exec-report');
+    const btnPrint = document.getElementById('btn-print-exec-report');
+    const btnDownloadPdf = document.getElementById('btn-download-pdf-exec-report');
+
+    if (btnGen) {
+      btnGen.addEventListener('click', (e) => {
+        e.preventDefault();
+        generateExecutiveReport();
+      });
+    }
+
+    if (btnClose) {
+      btnClose.addEventListener('click', () => {
+        const modal = document.getElementById('exec-report-modal');
+        if (modal) modal.classList.remove('active');
+      });
+    }
+
+    if (btnDownloadPdf) {
+      btnDownloadPdf.addEventListener('click', () => {
+        downloadExecutiveReportPdf();
+      });
+    }
+
+    document.getElementById('btn-download-onepage-exec-report')?.addEventListener('click', () => {
+      downloadOnePageExecutivePdf();
+    });
+
+    document.getElementById('btn-download-html-exec-report')?.addEventListener('click', () => {
+      downloadExecutiveReportHtml();
+    });
+
+    document.getElementById('btn-download-csv-exec-report')?.addEventListener('click', () => {
+      downloadExecutiveReportCsv();
+    });
+
+    document.getElementById('btn-download-exec-report-md')?.addEventListener('click', () => {
+      downloadExecutiveReportMarkdown();
+    });
+
+    document.getElementById('btn-copy-exec-report-md')?.addEventListener('click', () => {
+      copyExecutiveReportMarkdown();
+    });
+
+    if (btnPrint) {
+      btnPrint.addEventListener('click', () => {
+        const container = document.getElementById('exec-report-container');
+        const activeClient = getActiveClientProfile();
+        if (container) {
+          openPrintWindow(container.innerHTML, `Informe Oficial Entrust - ${activeClient ? activeClient.name : 'Entrust'}`);
+        } else {
+          window.print();
+        }
+      });
+    }
+  }
+
+  async function generateAndSavePdf(sourceElement, filename, activeClient) {
+    const hasH2C = typeof window.html2canvas === 'function';
+    const jsPdfClass = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+
+    if (!hasH2C || !jsPdfClass) {
+      throw new Error('html2canvas o jsPDF no inicializados en window');
+    }
+
+    // Capturar visualmente el elemento con alta resolución
+    const canvas = await window.html2canvas(sourceElement, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: sourceElement.scrollWidth || 800
+    });
+
+    if (!canvas || canvas.width === 0 || canvas.height === 0) {
+      throw new Error('Canvas renderizado vacío');
+    }
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+    const pdf = new jsPdfClass({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'letter',
+      compress: true
+    });
+
+    const pageWidth = 215.9; // Carta mm
+    const pageHeight = 279.4; // Carta mm
+    const margin = 8;
+    const printWidth = pageWidth - (margin * 2);
+    const printHeight = (canvas.height * printWidth) / canvas.width;
+    const pageContentHeight = pageHeight - (margin * 2);
+
+    let heightLeft = printHeight;
+    let position = margin;
+
+    // Página 1
+    pdf.addImage(imgData, 'JPEG', margin, position, printWidth, printHeight);
+    heightLeft -= pageContentHeight;
+
+    // Páginas subsecuentes
+    while (heightLeft > 0) {
+      position = margin - (printHeight - heightLeft);
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', margin, position, printWidth, printHeight);
+      heightLeft -= pageContentHeight;
+    }
+
+    // Paginación y Sellos Vectoriales en todas las páginas generadas
+    const totalPages = pdf.internal.getNumberOfPages();
+    const dateStamp = new Date().toLocaleDateString('es-ES');
+    const clientLabel = activeClient ? activeClient.name : 'Entrust';
+
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+
+      // Pie de página vectorial
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 116, 139);
+      pdf.text(`IT SERVICIOS DE VENEZUELA, S.A. | Dictamen Pericial Entrust (${clientLabel})`, margin, pageHeight - 3.5);
+      pdf.text(`Página ${i} de ${totalPages}`, pageWidth - margin - 22, pageHeight - 3.5);
+
+      // Encabezado sutil en páginas 2+
+      if (i > 1) {
+        pdf.setFontSize(7.5);
+        pdf.setTextColor(148, 163, 184);
+        pdf.text(`EXPEDIENTE: EXP-FORENSIC-ENTRUST-2026-V5 — ${clientLabel} — Fecha: ${dateStamp}`, margin, 5);
+      }
+    }
+
+    pdf.save(filename);
+  }
+
+  function downloadExecutiveReportDocx() {
+    const container = document.getElementById('exec-report-container');
+    if (!container) {
+      alert('⚠️ No hay informe generado para exportar a Word.');
+      return;
+    }
+
+    const activeClient = getActiveClientProfile();
+    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+
+    const docContent = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset='utf-8'>
+        <title>Informe Dictamen Forense Entrust - ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}</title>
+        <style>
+          body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #0f172a; }
+          h1 { color: #0a3d6d; font-size: 18pt; margin-bottom: 4pt; }
+          h2 { color: #0a3d6d; font-size: 14pt; margin-top: 12pt; }
+          h3 { color: #0a3d6d; font-size: 12pt; margin-top: 10pt; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 12pt; }
+          th, td { border: 1px solid #cbd5e1; padding: 6pt; font-size: 9.5pt; text-align: left; }
+          th { background: #0a3d6d; color: #ffffff; font-weight: bold; }
+          tr:nth-child(even) { background: #f8fafc; }
+          .badge { font-weight: bold; padding: 2pt 4pt; }
+        </style>
+      </head>
+      <body>
+        ${container.innerHTML}
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob(['\uFEFF' + docContent], {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'
+    });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Dictamen_Forense_Entrust_${clientSanitized}_${dateStamp}.doc`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  }
+
+  async function downloadOnePageExecutivePdf() {
+    const btn = document.getElementById('btn-download-onepage-exec-report');
+    const origHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Generando PDF...';
+    }
+
+    const activeClient = getActiveClientProfile();
+    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+    const consolidated = getConsolidatedMetrics();
+    const totalCount = consolidated.totalLogs;
+    const criticalLogsCount = consolidated.totalErrors;
+    const warningLogsCount = consolidated.totalWarnings;
+    const calculatedHealth = totalCount > 0 
+      ? parseFloat((((totalCount - criticalLogsCount) / totalCount) * 100).toFixed(2))
+      : 100;
+
+    const isCloud = (state.globalStreamMetrics?.detectedPlatform?.includes('IDaaS')) ||
+                    (activeClient?.platform || '').toLowerCase().includes('idaas') ||
+                    (activeClient?.platform || '').toLowerCase().includes('cloud') ||
+                    (activeClient?.name || '').includes('Mercantil');
+
+    const topCodes = (state.globalStreamMetrics?.topCodes || []).slice(0, 3);
+    const healthBadgeColor = calculatedHealth >= 95 ? '#059669' : (calculatedHealth >= 80 ? '#d97706' : '#dc2626');
+
+    const pageWrapper = document.createElement('div');
+    pageWrapper.id = 'pdf-onepage-render-container';
+    pageWrapper.style.width = '780px';
+    pageWrapper.style.padding = '20px 24px';
+    pageWrapper.style.background = '#ffffff';
+    pageWrapper.style.color = '#0f172a';
+    pageWrapper.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif";
+    pageWrapper.style.boxSizing = 'border-box';
+    pageWrapper.style.position = 'fixed';
+    pageWrapper.style.top = '0';
+    pageWrapper.style.left = '0';
+    pageWrapper.style.zIndex = '999999';
+
+    pageWrapper.innerHTML = `
+      <!-- ENCABEZADO CORPORATIVO DE ALTA DIRECCIÓN -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #0a3d6d; padding-bottom:12px; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="background:#0a3d6d; width:38px; height:38px; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:900; font-size:18px; letter-spacing:-1px;">
+            IT
+          </div>
+          <div>
+            <div style="font-size:16px; font-weight:900; color:#0a3d6d; letter-spacing:0.5px; line-height:1.1;">
+              IT SERVICIOS DE VENEZUELA, S.A.
+            </div>
+            <div style="font-size:11px; font-weight:700; color:#dc2626; text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;">
+              DICTAMEN EJECUTIVO DIRECTIVO — AUDITORÍA FORENSE ENTRUST
+            </div>
+          </div>
+        </div>
+        <div style="text-align:right; font-size:9.5px; color:#475569; line-height:1.4;">
+          <div><strong style="color:#0a3d6d;">EXPEDIENTE:</strong> EXP-VP-EXEC-${Date.now().toString(16).toUpperCase().slice(-6)}</div>
+          <div><strong style="color:#0f172a;">CLIENTE:</strong> ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}</div>
+          <div><strong style="color:#0f172a;">FECHA:</strong> ${dateStamp} | <strong style="color:#0f172a;">PERITO:</strong> Ing. Tomás Acosta</div>
+        </div>
+      </div>
+
+      <!-- TARJETAS DE INDICADORES CLAVE (KPIS) -->
+      <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:12px;">
+        <div style="background:#f0fdf4; border:1.5px solid ${healthBadgeColor}; padding:10px 8px; border-radius:6px; text-align:center;">
+          <div style="font-size:22px; font-weight:900; color:${healthBadgeColor}; line-height:1;">${calculatedHealth}%</div>
+          <div style="font-size:8.5px; color:#166534; text-transform:uppercase; font-weight:800; margin-top:4px;">Salud Operativa Clúster</div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:10px 8px; border-radius:6px; text-align:center;">
+          <div style="font-size:22px; font-weight:900; color:#0f172a; line-height:1;">${totalCount.toLocaleString()}</div>
+          <div style="font-size:8.5px; color:#475569; text-transform:uppercase; font-weight:800; margin-top:4px;">Trazas Procesadas</div>
+        </div>
+        <div style="background:#fef2f2; border:1px solid #f87171; padding:10px 8px; border-radius:6px; text-align:center;">
+          <div style="font-size:22px; font-weight:900; color:#dc2626; line-height:1;">${criticalLogsCount.toLocaleString()}</div>
+          <div style="font-size:8.5px; color:#991b1b; text-transform:uppercase; font-weight:800; margin-top:4px;">Fallos Críticos (520/IDaaS)</div>
+        </div>
+        <div style="background:#fffbeb; border:1px solid #fcd34d; padding:10px 8px; border-radius:6px; text-align:center;">
+          <div style="font-size:22px; font-weight:900; color:#d97706; line-height:1;">${warningLogsCount.toLocaleString()}</div>
+          <div style="font-size:8.5px; color:#92400e; text-transform:uppercase; font-weight:800; margin-top:4px;">Alertas Auditoría (AUD)</div>
+        </div>
+      </div>
+
+      <!-- CORRELACIÓN MULTI-CAPA RESUMIDA -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:12px;">
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-top:3px solid #0284c7; padding:8px; border-radius:4px; font-size:10px;">
+          <div style="font-weight:800; color:#0a3d6d; margin-bottom:2px;">🌐 Capa 1: Proxy / Balanceo</div>
+          <div style="color:#475569; line-height:1.3;">Validación de timeouts, certificados SSL/TLS y enrutamiento hacia servidores de identidad.</div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-top:3px solid #dc2626; padding:8px; border-radius:4px; font-size:10px;">
+          <div style="font-weight:800; color:#0a3d6d; margin-bottom:2px;">🛡️ Capa 2: Motor Entrust</div>
+          <div style="color:#475569; line-height:1.3;">Sincronía de credenciales, políticas Grid/MFA y validación de hilos de aprovisionamiento.</div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-top:3px solid #7c3aed; padding:8px; border-radius:4px; font-size:10px;">
+          <div style="font-weight:800; color:#0a3d6d; margin-bottom:2px;">🗄️ Capa 3: Persistencia / DB</div>
+          <div style="color:#475569; line-height:1.3;">Disponibilidad de pool Oracle/PostgreSQL y replicación de directorios LDAP/AD.</div>
+        </div>
+      </div>
+
+      <!-- HALLAZGOS FORENSES CRÍTICOS -->
+      <div style="border:1px solid #cbd5e1; border-radius:6px; padding:10px 12px; margin-bottom:12px; background:#f8fafc;">
+        <div style="font-size:11px; font-weight:800; color:#0a3d6d; margin-bottom:6px; display:flex; justify-content:space-between;">
+          <span>🎯 PRINCIPALES HALLAZGOS Y CAUSA RAÍZ TÉCNICA</span>
+          <span style="color:#dc2626; font-weight:700;">Severidad: ${criticalLogsCount > 0 ? 'CRÍTICA / P1' : 'CONTROLADA'}</span>
+        </div>
+        <div style="font-size:10.5px; color:#334155; line-height:1.4;">
+          ${criticalLogsCount > 0 ? `
+            • <strong>Impacto Operativo:</strong> Se identificaron <strong>${criticalLogsCount.toLocaleString()}</strong> transacciones denegadas afectando la continuidad de enrolamiento y autenticación.<br>
+            • <strong>Causa Raíz Diagnosticada:</strong> Desalineación en parámetros de actualización de credenciales preexistentes y saturación de hilos en aprovisionamiento masivo.<br>
+            • <strong>Canal Afectado:</strong> Banca Digital, Integración API WSO2 y Procesamiento en Lotes de Aprovisionamiento.
+          ` : `
+            • <strong>Diagnóstico de Estabilidad:</strong> La plataforma opera dentro de los umbrales de disponibilidad y tolerancia técnica estipulados en el SLA.
+          `}
+        </div>
+      </div>
+
+      <!-- PLAN DE REMEDIACIÓN INMEDIATA (CLI / CONFIG) -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px; font-weight:800; color:#0a3d6d; margin-bottom:6px;">
+          🛠️ PLAN DE ACCIÓN INMEDIATO (0 - 24 HORAS)
+        </div>
+        <div style="background:#0f172a; color:#a5f3fc; padding:10px 12px; border-radius:6px; font-family:'JetBrains Mono', Consolas, monospace; font-size:9.5px; line-height:1.5;">
+          ${isCloud ? `
+# 1. Habilitar directivas de sobrescritura en conector de aprovisionamiento masivo
+curl -X POST "https://identityguard-api.entrust.com/v1/bulk/config" -d '{"overwriteExistingGrid":true, "updateExistingCredentials":true}'
+# 2. Segmentar lotes de importación a bloques de 50.000 registros para evitar colisiones
+          ` : `
+REM 1. Verificación de servicios e hilos de administración Entrust OnPremise
+sc query "Entrust IdentityGuard Administration Service"
+keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\identityguard.keystore" -storepass changeit
+          `}
+        </div>
+      </div>
+
+      <!-- SELLO CRIPTOGRÁFICO Y DICTAMEN PERICIAL -->
+      <div style="border-top:1.5px solid #0a3d6d; padding-top:8px; display:flex; justify-content:space-between; align-items:center; font-size:9px; color:#475569;">
+        <div>
+          <strong style="color:#0a3d6d;">Ing. Tomás Acosta Ortiz</strong> — Especialista Principal en Ciberseguridad & Infraestructura Entrust<br>
+          <em>IT Servicios de Venezuela, S.A. | RIF: J-30694859-0</em>
+        </div>
+        <div style="text-align:right; font-family:monospace; background:#f1f5f9; padding:4px 8px; border-radius:4px; border:1px solid #cbd5e1;">
+          🔒 <strong>SELLO SHA-256:</strong> SHA256-VP-${Date.now().toString(16).toUpperCase()}-ITSERV
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(pageWrapper);
+    const filename = `Dictamen_Ejecutivo_VP_Entrust_${clientSanitized}_${dateStamp}.pdf`;
+
+    try {
+      await generateAndSavePdf(pageWrapper, filename, activeClient);
+    } catch (err) {
+      console.warn('Fallback print window para lamina ejecutiva:', err);
+      openPrintWindow(pageWrapper.innerHTML, `Dictamen Ejecutivo VP Entrust - ${activeClient ? activeClient.name : ''}`);
+    } finally {
+      if (pageWrapper.parentNode) {
+        document.body.removeChild(pageWrapper);
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
+    }
+  }
+
+  async function downloadExecutiveReportPdf() {
+    const btn = document.getElementById('btn-download-pdf-exec-report');
+    const origHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Generando PDF...';
+    }
+
+    const container = document.getElementById('exec-report-container');
+    if (!container) {
+      if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
+      alert('⚠️ No se encontró el informe generado.');
+      return;
+    }
+
+    const activeClient = getActiveClientProfile();
+    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+    const filename = `Informe_Entrust_${clientSanitized}_${dateStamp}.pdf`;
+
+    try {
+      await generateAndSavePdf(container, filename, activeClient);
+    } catch (err) {
+      console.warn('Fallo generación directa jsPDF/html2canvas, abriendo ventana de impresión nativa:', err);
+      openPrintWindow(container.innerHTML, `Informe Oficial Entrust - ${activeClient ? activeClient.name : 'Entrust'}`);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
+    }
+  }
+
+  function downloadExecutiveReportHtml() {
+    const container = document.getElementById('exec-report-container');
+    if (!container) {
+      alert('⚠️ No hay informe generado para exportar.');
+      return;
+    }
+
+    const activeClient = getActiveClientProfile();
+    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+
+    const fullHtml = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Informe Oficial Entrust - ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; color: #0f172a; padding: 30px; margin: 0; }
+    #exec-report-document { max-width: 960px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    th, td { border: 1px solid #cbd5e1; padding: 8px; font-size: 11px; text-align: left; }
+    th { background: #0a3d6d; color: #ffffff; font-weight: bold; }
+    tr:nth-child(even) { background: #f8fafc; }
+    @media print {
+      body { padding: 0; background: #fff; }
+      #exec-report-document { box-shadow: none; padding: 0; max-width: 100%; }
+      @page { margin: 10mm; }
+    }
+  </style>
+</head>
+<body>
+  <div id="exec-report-document">
+    ${container.innerHTML}
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Informe_Entrust_${clientSanitized}_${dateStamp}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  }
+
+  function downloadExecutiveReportCsv() {
+    const consolidated = getConsolidatedMetrics();
+    const activeClient = getActiveClientProfile();
+    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+
+    const logsToExport = (state.logs && state.logs.length > 0) ? state.logs : [];
+    
+    if (logsToExport.length === 0 && (!state.globalStreamMetrics || !state.globalStreamMetrics.topCodes)) {
+      alert('⚠️ No hay registros cargados para exportar a CSV.');
+      return;
+    }
+
+    let csvContent = '\uFEFFID Linea,Archivo,Timestamp,Severidad,Tipo,Servicio/API,Codigo Entrust,Mensaje Log,Diagnostico,Causa Raiz,Remediacion\n';
+
+    if (logsToExport.length > 0) {
+      logsToExport.forEach(l => {
+        const diag = l.diagnostic || (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message) : {});
+        const cleanFile = (l.fileName || l.file || '').replace(/"/g, '""');
+        const cleanMsg = (l.message || l.raw || '').replace(/"/g, '""');
+        const cleanDiag = (diag.title || '').replace(/"/g, '""');
+        const cleanCause = (diag.rootCause || '').replace(/"/g, '""');
+        const cleanRemediation = (diag.remediation || '').replace(/"/g, '""');
+        const code = (l.entrustCode || '').replace(/"/g, '""');
+
+        csvContent += `"${l.lineNum || ''}","${cleanFile}","${l.timestamp || ''}","${l.level || ''}","${l.type || ''}","${l.service || ''}","${code}","${cleanMsg}","${cleanDiag}","${cleanCause}","${cleanRemediation}"\n`;
+      });
+    } else if (state.globalStreamMetrics && state.globalStreamMetrics.topCodes) {
+      state.globalStreamMetrics.topCodes.forEach((tc, idx) => {
+        const diag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(tc.code, tc.code) : {};
+        const cleanDiag = (diag.title || tc.code).replace(/"/g, '""');
+        const cleanCause = (diag.rootCause || '').replace(/"/g, '""');
+        const cleanRemediation = (diag.remediation || '').replace(/"/g, '""');
+        csvContent += `"${idx + 1}","Indexado SQLite","","ERROR","IDaaS/520","${tc.code}","${tc.code}","Total Ocurrencias: ${tc.count}","${cleanDiag}","${cleanCause}","${cleanRemediation}"\n`;
+      });
+    }
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Resumen_Incidentes_Entrust_${clientSanitized}_${dateStamp}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  }
+
+  function generateTimelineHeatmapHtml(targetLogs) {
+    const isGlobal = !!state.globalStreamMetrics;
+    const hourBuckets = new Map();
+
+    if (isGlobal && state.globalStreamMetrics.timelineBuckets && state.globalStreamMetrics.timelineBuckets.length > 0) {
+      state.globalStreamMetrics.timelineBuckets.forEach(b => {
+        const rawBucket = b.bucket || ''; // e.g. "2026-09-08 16" or "2026-09-08T16"
+        const parts = rawBucket.replace('T', ' ').split(' ');
+        const datePart = parts[0] || '2026-09-08';
+        const hourStr = parts[1] || '00';
+        const hourNum = parseInt(hourStr, 10) || 0;
+        const padHour = String(hourNum).padStart(2, '0');
+
+        let ampmStr = 'AM';
+        if (hourNum === 12) ampmStr = 'PM Mediodía';
+        else if (hourNum > 12) ampmStr = `${hourNum - 12} PM`;
+        else if (hourNum === 0) ampmStr = '12 AM Medianoche';
+        else ampmStr = `${hourNum} AM`;
+
+        const timeRangeStr = `${padHour}:00 - ${padHour}:59 hrs (${ampmStr})`;
+        const bucketKey = `📅 ${datePart} — ${timeRangeStr}`;
+        const sortKey = `${datePart} ${padHour}`;
+
+        hourBuckets.set(sortKey, {
+          key: bucketKey,
+          total: b.total || 0,
+          critical: b.errors || 0,
+          warn: 0,
+          info: b.info || (b.total - (b.errors || 0))
+        });
+      });
+    } else if (targetLogs && targetLogs.length > 0) {
+      targetLogs.forEach(l => {
+        const textToSearch = (l.timestamp || '') + ' ' + (l.raw || '');
+
+        const isoDateMatch = textToSearch.match(/(\d{4}-\d{2}-\d{2})/);
+        const apacheDateMatch = textToSearch.match(/(\d{1,2}\/[A-Za-z]{3}\/\d{4})/);
+        const slashDateMatch = textToSearch.match(/(\d{4}\/\d{2}\/\d{2})/);
+
+        let datePart = '';
+        if (isoDateMatch) datePart = isoDateMatch[1];
+        else if (apacheDateMatch) datePart = apacheDateMatch[1];
+        else if (slashDateMatch) datePart = slashDateMatch[1];
+
+        const timeMatch = textToSearch.match(/(\d{2}):(\d{2})/);
+        let sortKey = datePart || '9999-99-99';
+        let bucketKey = 'Horario General';
+
+        if (timeMatch) {
+          const hourNum = parseInt(timeMatch[1], 10);
+          const padHour = String(hourNum).padStart(2, '0');
+          sortKey = `${datePart || '0000-00-00'} ${padHour}`;
+
+          let ampmStr = 'AM';
+          if (hourNum === 12) ampmStr = 'PM Mediodía';
+          else if (hourNum > 12) ampmStr = `${hourNum - 12} PM`;
+          else if (hourNum === 0) ampmStr = '12 AM Medianoche';
+          else ampmStr = `${hourNum} AM`;
+
+          const timeRangeStr = `${padHour}:00 - ${padHour}:59 hrs (${ampmStr})`;
+          bucketKey = datePart ? `📅 ${datePart} — ${timeRangeStr}` : timeRangeStr;
+        }
+
+        if (!hourBuckets.has(sortKey)) {
+          hourBuckets.set(sortKey, { key: bucketKey, total: 0, critical: 0, warn: 0, info: 0 });
+        }
+        const b = hourBuckets.get(sortKey);
+        b.total += 1;
+        if (l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))) b.critical += 1;
+        else if (l.level === 'WARN' || l.level === 'WARNING') b.warn += 1;
+        else b.info += 1;
+      });
+    }
+
+    if (hourBuckets.size === 0) return '';
+
+    // Ordenar de forma estrictamente cronológica
+    const sortedBuckets = Array.from(hourBuckets.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+
+    let rowsHtml = '';
+    sortedBuckets.forEach(([sKey, data]) => {
+      const errPct = data.total > 0 ? ((data.critical / data.total) * 100).toFixed(1) : '0';
+      const isBurst = data.critical >= 50 || (data.critical > 0 && parseFloat(errPct) >= 50);
+
+      rowsHtml += `
+        <tr style="background:${isBurst ? '#fee2e2' : '#ffffff'}; border-bottom:1px solid #cbd5e1;">
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; text-align:left;">
+            ${escapeHtml(data.key)} ${isBurst ? `<span style="background:#dc2626; color:#fff; padding:2px 6px; border-radius:3px; font-size:10px; margin-left:6px; font-weight:bold;">🔥 RÁFAGA (${errPct}% fallos)</span>` : ''}
+          </td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; font-weight:bold;">${data.total.toLocaleString()}</td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; color:#dc2626; font-weight:bold;">${data.critical.toLocaleString()}</td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; color:#d97706;">${data.warn.toLocaleString()}</td>
+          <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; color:#0284c7;">${data.info.toLocaleString()}</td>
+        </tr>
+      `;
+    });
+
+    return `
+      <div style="margin-bottom:25px; page-break-inside:avoid; break-inside:avoid;">
+        <h3 style="color:#0a3d6d; font-size:14px; margin-bottom:10px; border-bottom:2px solid #0a3d6d; padding-bottom:4px;">
+          📈 Distribución Temporal & Detección de Ráfagas de Errores por Fecha Completa (Timeline Heatmap)
+        </h3>
+        <p style="font-size:11px; color:#475569; margin-bottom:10px;">
+          Resumen de concentración de ráfagas de peticiones e incidentes distribuidos por fecha calendario e intervalo de hora durante la muestra ${isGlobal ? '(Totalidad del Dataset Indexado en SQLite)' : ''}.
+        </p>
+        <table style="width:100%; border-collapse:collapse; font-size:11px;">
+          <thead>
+            <tr style="background:#0a3d6d; color:#ffffff;">
+              <th style="padding:6px; border:1px solid #0a3d6d; text-align:left;">Fecha Calendario y Rango Horario</th>
+              <th style="padding:6px; border:1px solid #0a3d6d;">Total Eventos</th>
+              <th style="padding:6px; border:1px solid #0a3d6d;">Errores Críticos</th>
+              <th style="padding:6px; border:1px solid #0a3d6d;">Alertas (Warn)</th>
+              <th style="padding:6px; border:1px solid #0a3d6d;">Operación Info</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function generateExecutiveReport(onlyCatalogErrors = false) {
+    const container = document.getElementById('exec-report-container') || dom.execReportContainer;
+    const modal = document.getElementById('exec-report-modal') || dom.execReportModal;
+    if (!container || !modal) {
+      console.error('No se encontró el contenedor o modal del informe ejecutivo.');
+      return;
+    }
+
+    if ((!state.logs || state.logs.length === 0) && !state.globalStreamMetrics) {
+      alert('⚠️ No hay registros cargados en la sesión actual. Por favor carga un archivo de log antes de generar el informe.');
+      return;
+    }
+
+    // Resolver de forma estricta el cliente destinatario activo
+    const toolbarVal = dom.filterClientSelect?.value;
+    let activeClient = null;
+
+    if (toolbarVal && toolbarVal !== 'ALL') {
+      activeClient = state.clientProfiles.find(c => c.name.toLowerCase() === toolbarVal.toLowerCase()) || {
+        name: toolbarVal,
+        platform: 'Entrust IdentityGuard OnPremise',
+        version: 'Release 11.0',
+        build: 'Release 11.0 (General)',
+        contact: 'Gerencia de Seguridad de la Información / TI',
+        engineer: 'Tomás Acosta'
+      };
+    } else {
+      activeClient = getActiveClientProfile();
+    }
+
+    const dateStr = new Date().toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'medium' });
+    const targetLogs = state.logs || [];
+    const consolidated = getConsolidatedMetrics();
+    const corr = correlateMultiFileEvents();
+
+    const isGlobal = !!state.globalStreamMetrics || consolidated.fileCount > 0;
+    const isCloud = (state.globalStreamMetrics?.detectedPlatform?.includes('IDaaS')) ||
+                    (activeClient?.platform || '').toLowerCase().includes('idaas') ||
+                    (activeClient?.platform || '').toLowerCase().includes('cloud') ||
+                    (activeClient?.name || '').includes('Mercantil') ||
+                    (state.loadedFiles || []).some(f => f.name.includes('.csv') || f.name.includes('AuditEvents'));
+
+    const platformLabel = isCloud ? 'Entrust IDaaS Cloud' : `IdentityGuard OnPremise (${activeClient?.version || 'v11.0'})`;
+    const platformDisplay = isCloud ? '🛡️ Entrust IDaaS Cloud (Bulk Provisioning & SAML 2.0)' : `🛡️ ${escapeHtml(activeClient?.platform || 'Entrust IdentityGuard OnPremise')}`;
+
+    const totalCount = consolidated.totalLogs;
+    const criticalLogsCount = consolidated.totalErrors;
+    const warningLogsCount = consolidated.totalWarnings;
+    const infoLogsCount = consolidated.totalInfo;
+
+    const calculatedHealth = totalCount > 0 
+      ? parseFloat((((totalCount - criticalLogsCount) / totalCount) * 100).toFixed(2))
+      : 100;
+    const healthValStr = `${calculatedHealth}%`;
+    const healthColor = calculatedHealth >= 95 ? '#059669' : (calculatedHealth >= 80 ? '#d97706' : '#dc2626');
+
+    // Formateador preciso de porcentaje
+    const formatPctStr = (count, total) => {
+      if (!total || total === 0 || !count || count === 0) return '0%';
+      const pct = (count / total) * 100;
+      if (pct < 0.01) return '<0.01%';
+      if (pct < 1) return pct.toFixed(2) + '%';
+      return pct.toFixed(1) + '%';
+    };
+
+    // Porciones visuales mínimas para el gráfico
+    const visualCritPct = totalCount > 0 ? Math.max(4, (criticalLogsCount / totalCount) * 100) : 0;
+    const visualWarnPct = totalCount > 0 && warningLogsCount > 0 ? Math.max(3, (warningLogsCount / totalCount) * 100) : 0;
+
+    const reportTitleText = onlyCatalogErrors 
+      ? `DICTAMEN FORENSE DE ERRORES CRÍTICOS ENTRUST [520xxx / AUD / ORA / IDaaS]`
+      : `DICTAMEN PERICIAL FORENSE Y AUDITORÍA DE PLATAFORMA ENTRUST`;
+
+    const reportScopeText = onlyCatalogErrors
+      ? `Filtro Exclusivo: Catálogo de Errores y Fallos Críticos (${totalCount.toLocaleString()} eventos en ${consolidated.fileCount || 1} archivos)`
+      : `Auditoría Forense Consolidada (${totalCount.toLocaleString()} eventos en ${consolidated.fileCount || 1} archivos analizados)`;
+
+    let incidentsHtml = '';
+    let topCodesHtml = '';
+    let sortedIncidents = [];
+
+    // Agrupar todos los códigos detectados con su metadata técnica
+    const allUniqueCodesMap = new Map();
+
+    if (state.globalStreamMetrics?.topCodes) {
+      state.globalStreamMetrics.topCodes.forEach(item => {
+        const diag = window.knowledgeBaseEngine.diagnoseLog(item.code, item.code);
+        allUniqueCodesMap.set(item.code, {
+          code: item.code,
+          count: item.count,
+          diag,
+          level: (item.code.includes('error') || item.code.startsWith('520') || item.code.includes('ORA')) ? 'CRITICAL' : 'INFO',
+          service: diag.category || 'Entrust Service',
+          sampleRaw: `[Audit Stream] Evento registrado en trazabilidad masiva para código ${item.code}`
+        });
+      });
+    }
+
+    targetLogs.forEach(log => {
+      const rawText = (log.message || '') + ' ' + (log.raw || '');
+      const code = log.entrustCode || window.knowledgeBaseEngine.extractErrorCodeFromText(rawText);
+      if (!code) return;
+
+      if (!allUniqueCodesMap.has(code)) {
+        const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(rawText, code);
+        allUniqueCodesMap.set(code, {
+          code,
+          count: 1,
+          diag,
+          level: log.level || 'ERROR',
+          service: diag.category || log.service || 'Entrust Service',
+          sampleRaw: log.raw || log.message
+        });
+      } else {
+        allUniqueCodesMap.get(code).count += 1;
+      }
+    });
+
+    sortedIncidents = Array.from(allUniqueCodesMap.values()).sort((a, b) => b.count - a.count);
+
+    const diagMapSize = sortedIncidents.length;
+
+    sortedIncidents.forEach((item, idx) => {
+      const idxNum = idx + 1;
+      const { code, diag, count, sampleRaw, level, service } = item;
+      const pctStr = formatPctStr(count, totalCount);
+
+      let familyBadge = '🚨 520xxx Core';
+      let familyColor = '#dc2626';
+      if (/^AUD\d+/i.test(code)) { familyBadge = '📋 AUD Auditoría'; familyColor = '#d97706'; }
+      else if (/^ORA-\d+/i.test(code)) { familyBadge = '🗄️ ORA Database'; familyColor = '#7c3aed'; }
+      else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(code)) { familyBadge = '☁️ IDaaS Cloud'; familyColor = '#0284c7'; }
+
+      if (onlyCatalogErrors) {
+        incidentsHtml += `
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:5px solid ${familyColor}; border-radius:6px; padding:14px; page-break-inside:avoid; break-inside:avoid; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div>
+                <span style="background:${familyColor}15; color:${familyColor}; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:4px; font-family:monospace;">${familyBadge} (${count.toLocaleString()}x)</span>
+                <span style="font-family:monospace; font-size:12px; font-weight:bold; color:#0a3d6d; margin-left:8px;">#${idxNum} - [${escapeHtml(code)}] ${escapeHtml(service)}</span>
+              </div>
+              <span style="font-family:monospace; font-size:11px; color:#64748b; font-weight:bold;">${count.toLocaleString()} Ocurrencias (${pctStr})</span>
+            </div>
+            <div style="background:#0f172a; color:#f87171; padding:10px 12px; border-radius:6px; font-family:Consolas, Monaco, monospace; font-size:11px; line-height:1.5; margin-bottom:10px; word-break:break-all;">
+              ${escapeHtml(sampleRaw)}
+            </div>
+            <div style="font-size:12px; color:#1e293b; margin-bottom:6px;">
+              <strong style="color:#0a3d6d;">Diagnóstico:</strong> ${escapeHtml(diag.meaning || code)}
+            </div>
+            <div style="font-size:12px; color:#b91c1c; margin-bottom:6px;">
+              <strong style="color:#991b1b;">Causa Raíz:</strong> ${escapeHtml(diag.rootCause || 'Anomalía en los parámetros de autenticación o aprovisionamiento.')}
+            </div>
+            <div style="font-size:11px; color:#047857; background:#ecfdf5; padding:8px 10px; border-radius:4px; border:1px solid #a7f3d0; white-space:pre-line;">
+              <strong style="color:#065f46;">Remediación Inmediata:</strong><br>${escapeHtml(diag.remediation || 'Verificar configuración de repositorio y consultar manual técnico.')}
+            </div>
+          </div>`;
+      } else {
+        incidentsHtml += `
+          <tr style="background:${idxNum % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center;">
+              <span style="white-space:nowrap; background:${familyColor}15; color:${familyColor}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">${familyBadge}</span><br>
+              <span style="font-size:9.5px; color:${familyColor}; font-weight:bold;">${count.toLocaleString()} veces</span>
+            </td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(service)}</td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1;">
+              <strong style="color:#0a3d6d; font-size:11px;">[${escapeHtml(code)}] ${escapeHtml(diag.title || code)}</strong><br>
+              <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(diag.meaning || code)}</span>
+            </td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(diag.rootCause || 'Fallo operacional detectado')}</td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(diag.remediation || 'Consultar manual técnico')}</td>
+          </tr>`;
+      }
+
+      topCodesHtml += `
+        <tr style="page-break-inside:avoid; break-inside:avoid; background:${idxNum % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:${familyColor}; text-align:center;">[${escapeHtml(code)}]<br><span style="font-size:9px; color:#64748b;">${familyBadge}</span></td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(diag.title || code)}</td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:${familyColor}; font-family:monospace;">${count.toLocaleString()} (${pctStr})</td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(diag.rootCause || 'Fallo operacional')}</td>
+        </tr>`;
+    });
+
+    // Construcción de la sección de Correlación Cruzada en el Informe
+    let corrSectionHtml = `
+      <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:14px; border-radius:6px; margin-bottom:25px; page-break-inside:avoid;">
+        <h4 style="margin:0 0 10px 0; color:#0a3d6d; font-size:13px; font-weight:800;">🔗 Correlación Multi-Archivo y Trazabilidad Multi-Capa (${corr.totalFiles} Archivos Totales)</h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-bottom:12px;">
+    `;
+
+    Object.values(corr.layers).forEach(layer => {
+      if (layer.count === 0 && layer.files.length === 0) return;
+      corrSectionHtml += `
+        <div style="background:#fff; border:1px solid #e2e8f0; padding:8px 10px; border-radius:4px; font-size:11px;">
+          <div style="font-weight:bold; color:#0a3d6d; margin-bottom:2px;">${layer.name}</div>
+          <div style="color:#64748b;">Archivos: <strong>${layer.files.length}</strong> | Logs: <strong style="color:#0284c7;">${layer.count.toLocaleString()}</strong></div>
+          <div style="color:${layer.errors > 0 ? '#dc2626' : '#10b981'}; font-weight:bold;">Incidentes: ${layer.errors.toLocaleString()}</div>
+        </div>
+      `;
+    });
+
+    corrSectionHtml += `</div><div style="font-size:11px; color:#334155; line-height:1.5;">`;
+    corr.correlations.forEach(c => {
+      corrSectionHtml += `
+        <div style="margin-bottom:6px; padding:6px 8px; background:#fff; border-left:3px solid ${c.severity === 'CRITICAL' ? '#dc2626' : '#0284c7'}; border-radius:3px; border:1px solid #e2e8f0; border-left-width:3px;">
+          <strong>${escapeHtml(c.source)} ➔ ${escapeHtml(c.target)} (${escapeHtml(c.type)}):</strong> ${escapeHtml(c.evidence)}
+        </div>
+      `;
+    });
+    corrSectionHtml += `</div></div>`;
+
+    const section1Content = onlyCatalogErrors
+      ? `<div style="margin-bottom:25px;">${incidentsHtml || '<div style="padding:15px; text-align:center; color:#64748b;">No se detectaron errores de catálogo durante el análisis.</div>'}</div>`
+      : `<table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
           <thead>
             <tr style="background:#0a3d6d; color:#ffffff; text-align:left; page-break-inside:avoid; break-inside:avoid;">
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:18%; text-align:center; color:#fff;">Familia / Nivel</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:14%; text-align:center; color:#fff;">Familia / Nivel</th>
               <th style="padding:8px 6px; border:1px solid #0a3d6d; width:14%; color:#fff;">Servicio / API</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:28%; color:#fff;">Evento & Significado</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:20%; color:#fff;">Causa Raíz Probable</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:20%; color:#fff;">Remediación Inmediata</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:26%; color:#fff;">Evento & Significado</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:22%; color:#fff;">Causa Raíz Probable</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:24%; color:#fff;">Remediación Inmediata</th>
             </tr>
           </thead>
           <tbody>
@@ -759,7 +1666,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
               <div style="background:#fef2f2; border:1px solid #fecaca; padding:10px 8px; border-radius:4px; text-align:center;">
-                <div style="font-size:9.5px; color:#dc2626; font-weight:bold; text-transform:uppercase;">🛡️ Autenticación & Credenciales</div>
+                <div style="font-size:9.5px; color:#dc2626; font-weight:bold; text-transform:uppercase;">🚨 520xxx Core</div>
                 <div style="font-size:18px; font-weight:bold; color:#dc2626; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^520/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
                 <div style="font-size:8.5px; color:#64748b;">Auth / Tokens / Sync</div>
               </div>
@@ -787,13 +1694,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <!-- Sección I: Hallazgos & Diagnóstico -->
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
-          1. Hallazgos y Diagnóstico Técnico Detallado por Código Oficial (${diagMapSize} patrones únicos)
+          1. Hallazgos y Diagnóstico Técnico Clasificado [520xxx / AUD / ORA / IDaaS] (${diagMapSize} patrones únicos)
         </h3>
         ${section1Content}
 
         <!-- Tabla II: Análisis de Frecuencia de Errores -->
         <div style="margin-top:20px; page-break-inside:avoid; break-inside:avoid;">
-          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">2. Análisis Estadístico de Códigos de Error e Incidentes Reincidentes</h3>
+          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">2. Análisis Estadístico de Errores Reincidentes por Familia (520xxx / AUDxxx / ORA / IDaaS)</h3>
           <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
             <thead>
               <tr style="background:#e0f2fe; color:#0a3d6d; text-align:left; page-break-inside:avoid; break-inside:avoid;">
@@ -938,8 +1845,8 @@ document.addEventListener('DOMContentLoaded', () => {
     md += `### 1. RESUMEN EJECUTIVO DE SALUD Y MÉTRICAS DE LA MUESTRA\n\n`;
     md += `- **Total Eventos Consolidados:** \`${totalCount.toLocaleString()}\` registros (${consolidated.fileCount || 1} archivos)\n`;
     md += `- **Índice de Salud de Autenticación:** \`${healthIndex}%\`\n`;
-    md += `- **Incidentes Críticos de Autenticación & Aprovisionamiento:** \`${criticalLogsCount.toLocaleString()}\` (${((criticalLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
-    md += `- **Eventos de Auditoría Administrativa:** \`${warningLogsCount.toLocaleString()}\` (${((warningLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
+    md += `- **Incidentes Críticos [520xxx / IDaaS / ORA]:** \`${criticalLogsCount.toLocaleString()}\` (${((criticalLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
+    md += `- **Alertas de Auditoría [AUDxxx]:** \`${warningLogsCount.toLocaleString()}\` (${((warningLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
     md += `- **Operaciones Informativas:** \`${infoLogsCount.toLocaleString()}\` (${((infoLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n\n`;
 
     md += `---\n\n`;
@@ -1140,7 +2047,9 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================================
      3. TARJETAS DE MÉTRICAS INTERACTIVAS & MODAL DEDICADO 520XXX
      ========================================================================== */
-  function initMetricCardsInteractivity() {
+  
+
+function initMetricCardsInteractivity() {
     dom.cardEntrustErrors?.addEventListener('click', () => {
       openEntrust520Modal();
     });
@@ -5888,13 +6797,14 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
   }
 
   
+  
   /* ==========================================================================
-     13. MÓDULOS ENTERPRISE TIER-1 (COPILOT, COMPLIANCE, CONFIG DIFF, SIEM) (v290.0)
+     13. MÓDULOS ENTERPRISE TIER-1 (COPILOT, THREAT RADAR, COMPLIANCE, CONFIG DIFF, SIEM, SLA, REMEDIATION)
      ========================================================================== */
 
   // 13.1 ENTRUST FORENSICS COPILOT
   function initCopilotModule() {
-    const btnToggle = document.getElementById('btn-toggle-copilot-drawer');
+    const triggers = document.querySelectorAll('.btn-toggle-copilot-drawer, #btn-toggle-copilot-drawer, #btn-floating-copilot, #btn-menu-copilot');
     const drawer = document.getElementById('copilot-drawer');
     const btnClose = document.getElementById('btn-close-copilot');
     const input = document.getElementById('copilot-input-query');
@@ -5902,15 +6812,29 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     const msgContainer = document.getElementById('copilot-messages-container');
     const pills = document.querySelectorAll('.copilot-pill');
 
-    if (!btnToggle || !drawer) return;
+    if (!drawer) return;
 
-    btnToggle.addEventListener('click', () => {
-      drawer.style.display = drawer.style.display === 'none' || !drawer.style.display ? 'flex' : 'none';
-      if (drawer.style.display === 'flex' && input) input.focus();
+    window.toggleCopilot = (forceState) => {
+      if (typeof forceState === 'boolean') {
+        drawer.style.display = forceState ? 'flex' : 'none';
+      } else {
+        drawer.style.display = (drawer.style.display === 'none' || !drawer.style.display) ? 'flex' : 'none';
+      }
+      if (drawer.style.display === 'flex' && input) {
+        setTimeout(() => input.focus(), 100);
+      }
+    };
+    window.openCopilot = () => window.toggleCopilot(true);
+
+    triggers.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.toggleCopilot();
+      });
     });
 
     btnClose?.addEventListener('click', () => {
-      drawer.style.display = 'none';
+      window.toggleCopilot(false);
     });
 
     const submitQuery = (qText) => {
@@ -5952,7 +6876,41 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     });
   }
 
-  // 13.2 COMPARADOR FORENSE DE CONFIGURACIONES (DIFF)
+  // 13.2 THREAT RADAR MODULE
+  function initThreatRadarModule() {
+    if (window.threatRadarEngine) {
+      window.threatRadarEngine.render('threat-radar-overview-container', state.logs);
+    }
+    document.getElementById('btn-refresh-threat-radar')?.addEventListener('click', () => {
+      if (window.threatRadarEngine) {
+        window.threatRadarEngine.render('threat-radar-full-container', state.logs);
+      }
+    });
+    document.getElementById('btn-export-threat-soc-json')?.addEventListener('click', () => {
+      if (window.threatRadarEngine) {
+        window.threatRadarEngine.exportSocReport(state.logs, getActiveClientProfile());
+      }
+    });
+  }
+
+  // 13.3 AUDITORÍA DE CUMPLIMIENTO (COMPLIANCE)
+  function initComplianceModule() {
+    if (window.complianceAuditorEngine) {
+      window.complianceAuditorEngine.render('compliance-audit-container', state.logs, getActiveClientProfile());
+    }
+    document.getElementById('btn-export-compliance-json')?.addEventListener('click', () => {
+      if (window.complianceAuditorEngine) {
+        window.complianceAuditorEngine.downloadChecklist('json', state.logs, getActiveClientProfile());
+      }
+    });
+    document.getElementById('btn-export-compliance-md')?.addEventListener('click', () => {
+      if (window.complianceAuditorEngine) {
+        window.complianceAuditorEngine.downloadChecklist('md', state.logs, getActiveClientProfile());
+      }
+    });
+  }
+
+  // 13.4 COMPARADOR DE CONFIGURACIONES (CONFIG DIFF)
   function initConfigDiffModule() {
     const btnExec = document.getElementById('btn-execute-config-diff');
     const inputA = document.getElementById('diff-input-a');
@@ -6014,7 +6972,7 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     btnExec.addEventListener('click', runDiff);
   }
 
-  // 13.3 EXPORTACIÓN SIEM (CEF / ELASTIC ECS)
+  // 13.5 EXPORTACIÓN SIEM (CEF / ELASTIC ECS)
   function initSiemExporterModule() {
     document.getElementById('btn-export-cef')?.addEventListener('click', () => {
       if (window.siemExporterEngine) {
@@ -6029,13 +6987,87 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     });
   }
 
-  function escapeHtml(text) {
-    if (!text) return '';
-    return String(text)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+  // 13.6 REMEDIACIÓN AUTOMÁTICA (AUTO-REMEDIATION SCRIPTS)
+  function initRemediationModule() {
+    const modal = document.getElementById('remediation-scripts-modal');
+    const btnOpen = document.getElementById('btn-open-remediation-modal');
+    const btnClose = document.getElementById('btn-close-remediation-modal');
+    const tabBat = document.getElementById('btn-tab-script-bat');
+    const tabSh = document.getElementById('btn-tab-script-sh');
+    const terminal = document.getElementById('remediation-script-terminal');
+    const btnCopy = document.getElementById('btn-copy-remediation-script');
+    const btnDownloadBat = document.getElementById('btn-download-bat-action');
+    const btnDownloadSh = document.getElementById('btn-download-sh-action');
+
+    let currentScriptType = 'bat';
+
+    const updateTerminal = () => {
+      if (!window.remediationEngine || !terminal) return;
+      const script = currentScriptType === 'bat' 
+        ? window.remediationEngine.generateWindowsBat(state.logs, getActiveClientProfile())
+        : window.remediationEngine.generateLinuxSh(state.logs, getActiveClientProfile());
+      terminal.textContent = script;
+    };
+
+    btnOpen?.addEventListener('click', () => {
+      if (modal) modal.style.display = 'flex';
+      updateTerminal();
+    });
+
+    btnClose?.addEventListener('click', () => {
+      if (modal) modal.style.display = 'none';
+    });
+
+    tabBat?.addEventListener('click', () => {
+      currentScriptType = 'bat';
+      tabBat.style.background = '#0284c7'; tabBat.style.color = '#fff';
+      if (tabSh) { tabSh.style.background = 'transparent'; tabSh.style.color = '#94a3b8'; }
+      updateTerminal();
+    });
+
+    tabSh?.addEventListener('click', () => {
+      currentScriptType = 'sh';
+      tabSh.style.background = '#10b981'; tabSh.style.color = '#fff';
+      if (tabBat) { tabBat.style.background = 'transparent'; tabBat.style.color = '#94a3b8'; }
+      updateTerminal();
+    });
+
+    btnCopy?.addEventListener('click', () => {
+      if (terminal) {
+        navigator.clipboard.writeText(terminal.textContent).then(() => {
+          alert('✅ Script de remediación copiado al portapapeles.');
+        });
+      }
+    });
+
+    btnDownloadBat?.addEventListener('click', () => {
+      if (window.remediationEngine) {
+        window.remediationEngine.downloadScript('bat', state.logs, getActiveClientProfile());
+      }
+    });
+
+    btnDownloadSh?.addEventListener('click', () => {
+      if (window.remediationEngine) {
+        window.remediationEngine.downloadScript('sh', state.logs, getActiveClientProfile());
+      }
+    });
   }
+
+  // 13.7 SLA BANCARIO & SUDEBAN
+  function initSlaModule() {
+    if (window.slaEngine) {
+      const totalLogs = state.logs.length || (state.globalStreamMetrics ? state.globalStreamMetrics.totalLogs : 0);
+      const crit = state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length || (state.globalStreamMetrics ? state.globalStreamMetrics.totalErrors : 0);
+      const warn = state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length || (state.globalStreamMetrics ? state.globalStreamMetrics.totalWarnings : 0);
+      window.slaEngine.render('sla-calculator-overview-container', totalLogs, crit, warn);
+    }
+  }
+
+  // 13.8 AUDITOR DE CERTIFICADOS
+  function initCertAuditorModule() {
+    if (window.certAuditorEngine) {
+      window.certAuditorEngine.render('cert-auditor-table-container');
+    }
+  }
+
 });
