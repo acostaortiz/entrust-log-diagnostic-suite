@@ -1217,3 +1217,55 @@ body.dark-theme .nav-btn.active {
   padding-top: 8px;
   flex-wrap: nowrap;
 }
+
+
+/* ==========================================================================
+   ESTILOS DE CÓDIGO ELEGANTES Y TABLAS EJECUTIVAS (v310.0)
+   ========================================================================== */
+#exec-report-document code,
+.report-table code,
+.glass-card code {
+  background: #f1f5f9 !important;
+  color: #0369a1 !important;
+  border: 1px solid #cbd5e1 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-family: 'JetBrains Mono', Consolas, monospace !important;
+  font-size: 0.84em !important;
+  font-weight: 600 !important;
+  white-space: normal !important;
+  display: inline !important;
+}
+
+#exec-report-document a {
+  color: #0284c7 !important;
+  text-decoration: underline !important;
+  font-weight: 600 !important;
+}
+
+#exec-report-document a:hover {
+  color: #0369a1 !important;
+}
+
+.report-table {
+  width: 100% !important;
+  table-layout: fixed !important;
+  border-collapse: collapse !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.report-table th,
+.report-table td {
+  overflow: hidden !important;
+  word-break: break-word !important;
+  vertical-align: top !important;
+}
+
+.report-badge {
+  display: inline-block !important;
+  max-width: 100% !important;
+  word-break: break-word !important;
+  line-height: 1.25 !important;
+  text-align: center !important;
+}
