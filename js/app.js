@@ -4271,12 +4271,23 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     // Limpiar Top Errores y Radar
     const topCodesContainer = document.getElementById('top-codes-overview-container');
-    if (topCodesContainer) topCodesContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; padding:10px; text-align:center;">Sin errores en la sesión actual.</div>';
+    if (topCodesContainer) topCodesContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; padding:15px; text-align:center;">Sin errores en la sesión actual.</div>';
 
-    const radarContainer = document.getElementById('threat-radar-overview-container');
-    if (radarContainer && window.threatRadarEngine) {
+    const balanceContainer = document.getElementById('cluster-balance-overview-container');
+    if (balanceContainer) balanceContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:15px;">Esperando carga de archivos para mostrar balanceo.</div>';
+
+    const userContainer = document.getElementById('user-analytics-container');
+    if (userContainer) userContainer.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">Cargue un archivo de logs para analizar usuarios activos.</div>';
+
+    const ipContainer = document.getElementById('ip-analytics-container');
+    if (ipContainer) ipContainer.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">Cargue un archivo de logs para analizar direcciones IP de origen.</div>';
+
+    if (window.threatRadarEngine) {
       window.threatRadarEngine.render('threat-radar-overview-container', []);
+      window.threatRadarEngine.render('threat-radar-full-container', []);
     }
+
+    renderLogTable();
 
     showAnalysisStatus(false, '🧹 Sesión Limpia', 'Se restablecieron todos los datos en memoria. Listo para cargar nuevos archivos de logs.');
   }

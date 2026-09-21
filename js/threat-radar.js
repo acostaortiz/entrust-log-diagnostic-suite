@@ -27,24 +27,14 @@
       const ipMap = new Map();
       let totalFailedAuth = 0;
 
-      // Si aún no hay logs, generar cuentas de muestra forense representativas del cliente
+      // Si no hay logs en la sesión actual, retornar estado limpio
       if (!targetLogs || targetLogs.length === 0) {
         return {
-          totalFailedAuth: 3214547,
-          topTargetUsers: [
-            { user: 'bancomercantil/0002970782', attempts: 18420, codesList: 'bulkidentityguard.add.error.assignedgrid', lastSeen: '2026-09-08 15:00:01', isLocked: true, riskLevel: 'CRITICAL (Fuerza Bruta)' },
-            { user: 'bancomercantil/0012751625', attempts: 14210, codesList: 'bulkidentityguard.add.error.qa', lastSeen: '2026-09-08 15:00:02', isLocked: true, riskLevel: 'CRITICAL (Fuerza Bruta)' },
-            { user: 'bancomercantil/0012751216', attempts: 12850, codesList: 'bulkidentityguard.add.error.password', lastSeen: '2026-09-08 15:00:03', isLocked: true, riskLevel: 'CRITICAL (Fuerza Bruta)' },
-            { user: 'usr_sacvw_admin', attempts: 840, codesList: '5202013 (Invalid User ID)', lastSeen: '2026-09-08 15:10:20', isLocked: false, riskLevel: 'HIGH' },
-            { user: 'V-14892041', attempts: 520, codesList: '5205079 (Password Locked)', lastSeen: '2026-09-08 15:12:44', isLocked: true, riskLevel: 'HIGH' },
-            { user: 'V-20184922', attempts: 310, codesList: '5201006 (Grid Sync Fail)', lastSeen: '2026-09-08 15:14:02', isLocked: false, riskLevel: 'MEDIUM' }
-          ],
-          topAttackingIPs: [
-            { ip: '200.3.1.6', count: 3214547 },
-            { ip: '10.16.13.175', count: 8520 }
-          ],
-          isUnderMassiveAttack: true,
-          detectedVictimsCount: 6059451
+          totalFailedAuth: 0,
+          topTargetUsers: [],
+          topAttackingIPs: [],
+          isUnderMassiveAttack: false,
+          detectedVictimsCount: 0
         };
       }
 
@@ -106,14 +96,10 @@
 
       return {
         totalFailedAuth,
-        topTargetUsers: topTargetUsers.length > 0 ? topTargetUsers : [
-          { user: 'bancomercantil/0002970782', attempts: 18420, codesList: 'bulkidentityguard.add.error.assignedgrid', lastSeen: '2026-09-08 15:00:01', isLocked: true, riskLevel: 'CRITICAL (Fuerza Bruta)' },
-          { user: 'bancomercantil/0012751625', attempts: 14210, codesList: 'bulkidentityguard.add.error.qa', lastSeen: '2026-09-08 15:00:02', isLocked: true, riskLevel: 'CRITICAL (Fuerza Bruta)' },
-          { user: 'bancomercantil/0012751216', attempts: 12850, codesList: 'bulkidentityguard.add.error.password', lastSeen: '2026-09-08 15:00:03', isLocked: true, riskLevel: 'CRITICAL (Fuerza Bruta)' }
-        ],
+        topTargetUsers: topTargetUsers,
         topAttackingIPs,
-        isUnderMassiveAttack: true,
-        detectedVictimsCount: userMap.size || 3214547
+        isUnderMassiveAttack,
+        detectedVictimsCount: userMap.size
       };
     }
 
@@ -122,6 +108,16 @@
       if (!container) return;
 
       const report = this.analyzeThreats(logs);
+
+      if (!report.topTargetUsers || report.topTargetUsers.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+            <div style="font-size: 1.6rem; margin-bottom: 6px;">🛡️</div>
+            <strong style="color: var(--text-main); display: block; margin-bottom: 4px;">Sesión Limpia — Sin incidentes de seguridad detectados</strong>
+            <span>Cargue un archivo de logs para auditar intentos fallidos de autenticación y patrones de fuerza bruta.</span>
+          </div>`;
+        return;
+      }
 
       let rowsHtml = '';
       report.topTargetUsers.forEach((u, idx) => {
