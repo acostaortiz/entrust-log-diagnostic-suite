@@ -2060,7 +2060,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
   
 
   /* ==========================================================================
-     3.1 INSPECTOR FORENSE UNIVERSAL DE CÓDIGOS, PATRONES Y EXTRACCIÓN (v340.0)
+     3.1 INSPECTOR FORENSE UNIVERSAL DE CÓDIGOS, PATRONES Y EXTRACCIÓN (v345.0)
      ========================================================================== */
   
   let currentInspectorCategory = '520';
@@ -4162,7 +4162,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
   }
 
-  function resetSession() {
+    function resetSession() {
     state.logs = [];
     state.filteredLogs = [];
     state.selectedLog = null;
@@ -4196,23 +4196,28 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const summaryText = document.getElementById('loaded-files-summary-text');
     if (summaryText) summaryText.textContent = 'Cargue o arrastre cualquier archivo de logs de cualquier cliente (1 MB a 15 GB+)';
 
-    // Limpiar métricas superiores
+    // Limpiar las 5 métricas superiores
     if (dom.totalLogsCount) dom.totalLogsCount.textContent = '0';
     if (dom.criticalCount) dom.criticalCount.textContent = '0';
     if (dom.warningCount) dom.warningCount.textContent = '0';
     if (dom.healthIndex) dom.healthIndex.textContent = '100%';
+    const idaasCountEl = document.getElementById('idaas-events-count');
+    if (idaasCountEl) idaasCountEl.textContent = '0';
+
     const totalBadge = document.getElementById('total-logs-badge');
     if (totalBadge) totalBadge.textContent = '0 Archivos';
     const critRateBadge = document.getElementById('critical-rate-badge');
     if (critRateBadge) critRateBadge.textContent = '0% Falla';
     const critBar = document.getElementById('critical-progress-bar');
     if (critBar) critBar.style.width = '0%';
+    const idaasBar = document.getElementById('idaas-progress-bar');
+    if (idaasBar) idaasBar.style.width = '0%';
     const auditRateBadge = document.getElementById('audit-rate-badge');
-    if (auditRateBadge) auditRateBadge.textContent = '0% Auditoría';
+    if (auditRateBadge) auditRateBadge.textContent = '0 Auditoría';
     const warnBar = document.getElementById('warn-progress-bar');
     if (warnBar) warnBar.style.width = '0%';
     const healthBar = document.getElementById('health-progress-bar');
-    if (healthBar) { healthBar.style.width = '100%'; healthBar.style.background = '#10b981'; }
+    if (healthBar) healthBar.style.width = '100%';
     const healthBadge = document.getElementById('health-status-badge');
     if (healthBadge) {
       healthBadge.textContent = 'ÓPTIMO';
@@ -4220,52 +4225,35 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       healthBadge.style.background = 'rgba(16, 185, 129, 0.15)';
     }
 
-    // Limpiar paginación
-    const pageBadge = document.getElementById('pagination-current-page');
-    const totalPagesBadge = document.getElementById('pagination-total-pages');
-    const showingBadge = document.getElementById('pagination-showing-badge');
-    if (pageBadge) pageBadge.textContent = '1';
-    if (totalPagesBadge) totalPagesBadge.textContent = '1';
-    if (showingBadge) showingBadge.textContent = '0 - 0 de 0';
+    // Resetear Tabla de Logs
+    renderLogsList([]);
 
-    // Limpiar gráficos
-    if (state.charts.trend) {
-      state.charts.trend.data.labels = ['Sin Datos'];
-      state.charts.trend.data.datasets[0].data = [0];
-      state.charts.trend.data.datasets[1].data = [0];
-      state.charts.trend.update();
-    }
-    if (state.charts.severity) {
-      state.charts.severity.data.datasets[0].data = [0, 0, 0, 0];
-      state.charts.severity.update();
-    }
+    // Resetear Gráficos
+    try {
+      if (state.charts.severity) {
+        state.charts.severity.data.datasets[0].data = [1, 0, 0, 0];
+        state.charts.severity.update();
+      }
+      if (state.charts.trend) {
+        state.charts.trend.data.labels = ['Inicio'];
+        state.charts.trend.data.datasets[0].data = [0];
+        state.charts.trend.data.datasets[1].data = [0];
+        state.charts.trend.update();
+      }
+    } catch(e) {}
 
-    // Renderizar vistas vacías
-    renderLoadedFilesDrawer();
-    populateClientSelector();
-    renderLogTable();
-    renderUserAndIpAnalytics();
-    updateOverviewWidgets();
-    if (window.complianceAuditorEngine) {
-      window.complianceAuditorEngine.render('compliance-auditor-main-container', state.logs || [], getActiveClientProfile());
+    // Limpiar Top Errores y Radar
+    const topCodesContainer = document.getElementById('top-codes-overview-container');
+    if (topCodesContainer) topCodesContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; padding:10px; text-align:center;">Sin errores en la sesión actual.</div>';
+
+    const radarContainer = document.getElementById('threat-radar-overview-container');
+    if (radarContainer && window.threatRadarEngine) {
+      window.threatRadarEngine.render('threat-radar-overview-container', []);
     }
 
-    if (window.threatRadarEngine) {
-      window.threatRadarEngine.render('threat-radar-overview-container', state.filteredLogs || state.logs);
-      window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
-    }
-    updateNodeComparisonUI();
-    renderTraceWaterfall();
-
-    if (dom.diagnosticCard) {
-      dom.diagnosticCard.innerHTML = `
-        <div style="padding:40px; text-align:center; color: var(--text-muted);">
-          <div style="font-size:32px; margin-bottom:10px;">🧹</div>
-          <strong style="color:var(--text-primary); font-size:16px;">Consola y Sesión Limpias</strong><br>
-          <span style="font-size:13px; color:var(--text-muted);">Se eliminaron todos los registros. Arrastra o carga un nuevo archivo de logs (.log, .txt, .json, .csv) para iniciar un análisis desde cero.</span>
-        </div>`;
-    }
+    showAnalysisStatus(false, '🧹 Sesión Limpia', 'Se restablecieron todos los datos en memoria. Listo para cargar nuevos archivos de logs.');
   }
+
   window.resetAppSession = resetSession;
   window.resetSession = resetSession;
   window.resetSessionGlobal = resetSession;
@@ -5530,7 +5518,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const files = Array.from(e.target.files);
       if (files.length === 0) return;
 
-      const isAccumulate = document.getElementById('chk-accumulate-mode')?.checked ?? true;
+      const isAccumulate = document.getElementById('chk-accumulate-mode')?.checked ?? false;
       if (!isAccumulate) {
         state.logs = [];
         state.filteredLogs = [];
