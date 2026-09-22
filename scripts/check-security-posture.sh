@@ -24,7 +24,7 @@ printf "${BLUE}${BOLD}==========================================================
 
 # 1. UFW
 printf "1. Estado del Firewall UFW:                     "
-if sudo ufw status 2>/dev/null | grep -qw "active"; then
+if sudo ufw status 2>/dev/null | grep -qw "active" || ufw status 2>/dev/null | grep -qw "active"; then
   printf "${GREEN}[ ACTIVO - 100%% ]${NC}\n"
   SCORE=$((SCORE + 1))
 else
@@ -33,7 +33,7 @@ fi
 
 # 2. Fail2ban
 printf "2. Sistema de Prevención de Intrusos (Fail2ban): "
-if systemctl is-active --quiet fail2ban 2>/dev/null; then
+if systemctl is-active --quiet fail2ban 2>/dev/null || pgrep -x fail2ban-server >/dev/null 2>&1; then
   printf "${GREEN}[ ACTIVO - PROTEGIDO ]${NC}\n"
   SCORE=$((SCORE + 1))
 else
@@ -42,7 +42,14 @@ fi
 
 # 3. SSH Root Login
 printf "3. Acceso SSH Root Directo:                     "
-if grep -Eiq "^\s*PermitRootLogin\s+no" /etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf 2>/dev/null; then
+SSH_SECURE=0
+if grep -Eiq "^\s*PermitRootLogin\s+no" /etc/ssh/sshd_config 2>/dev/null; then
+  SSH_SECURE=1
+elif grep -Eiq "^\s*PermitRootLogin\s+no" /etc/ssh/sshd_config.d/*.conf 2>/dev/null; then
+  SSH_SECURE=1
+fi
+
+if [ "$SSH_SECURE" -eq 1 ]; then
   printf "${GREEN}[ DESHABILITADO - SEGURO ]${NC}\n"
   SCORE=$((SCORE + 1))
 else
@@ -60,7 +67,8 @@ fi
 
 # 5. Puertos Abiertos
 printf "5. Inspección de Puertos Escuchando:            "
-OPEN_PORTS=$(sudo ss -tulpn 2>/dev/null | grep LISTEN | awk '{print $5}' | awk -F: '{print $NF}' | sort -un | tr '\n' ' ')
+OPEN_PORTS=$(ss -tulpn 2>/dev/null | grep LISTEN | awk '{print $5}' | awk -F: '{print $NF}' | sort -un | tr '\n' ' ')
+[ -z "$OPEN_PORTS" ] && OPEN_PORTS=$(netstat -tuln 2>/dev/null | grep LISTEN | awk '{print $4}' | awk -F: '{print $NF}' | sort -un | tr '\n' ' ')
 printf "${WHITE}%s${NC}\n" "$OPEN_PORTS"
 SCORE=$((SCORE + 1))
 

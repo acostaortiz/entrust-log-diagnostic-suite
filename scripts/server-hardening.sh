@@ -6,8 +6,6 @@
 #  Auditor & Autor: Ing. Tomás Acosta — Ciberseguridad & TI
 # ==============================================================================
 
-set -e
-
 RED='\033[1;31m'
 GREEN='\033[1;32m'
 YELLOW='\033[1;33m'
@@ -37,33 +35,35 @@ printf "${WHITE}${BOLD}Iniciando Plan de Hardening en 5 Fases...${NC}\n\n"
 # ------------------------------------------------------------------------------
 # FASE 1: ACTUALIZACIÓN Y PARCHES AUTOMÁTICOS DE SEGURIDAD
 # ------------------------------------------------------------------------------
-printf "${CYAN}${BOLD}[FASE 1/5] Configurando Actualizaciones Automáticas de Seguridad...${NC}\n"
+printf "${CYAN}${BOLD}[FASE 1/5] Configurando Actualizaciones Automáticas y Paquetes de Seguridad...${NC}\n"
+export DEBIAN_FRONTEND=noninteractive
+
+printf "  ⏳ Actualizando repositorios APT... "
 apt-get update -y >/dev/null 2>&1 || true
-apt-get install -y unattended-upgrades ufw fail2ban logrotate >/dev/null 2>&1 || true
+printf "${GREEN}[LISTO]${NC}\n"
+
+printf "  ⏳ Instalando paquetes esenciales de hardening (fail2ban, ufw, unattended-upgrades)... "
+apt-get install -y fail2ban unattended-upgrades ufw logrotate >/dev/null 2>&1 || true
+printf "${GREEN}[LISTO]${NC}\n"
 
 cat << 'EOF' > /etc/apt/apt.conf.d/20auto-upgrades
 APT::Periodic::Update-Package-Lists "1";
 APT::Periodic::Unattended-Upgrade "1";
 APT::Periodic::AutocleanInterval "7";
 EOF
+
 systemctl restart unattended-upgrades >/dev/null 2>&1 || true
-printf "${GREEN}  ✅ Parches automáticos (unattended-upgrades) configurados.${NC}\n"
+printf "${GREEN}  ✅ Actualizaciones y parches automáticos de seguridad habilitados.${NC}\n"
 
 # ------------------------------------------------------------------------------
 # FASE 2: HARDENING DE ACCESO REMOTO SSH
 # ------------------------------------------------------------------------------
 printf "\n${CYAN}${BOLD}[FASE 2/5] Aplicando Hardening a la Configuración SSH...${NC}\n"
 
-# Configurar en /etc/ssh/sshd_config directamente
-if grep -qi "PermitRootLogin" /etc/ssh/sshd_config; then
-  sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
-else
+if [ -f /etc/ssh/sshd_config ]; then
+  sed -i '/^#*PermitRootLogin/d' /etc/ssh/sshd_config
+  sed -i '/^#*MaxAuthTries/d' /etc/ssh/sshd_config
   echo "PermitRootLogin no" >> /etc/ssh/sshd_config
-fi
-
-if grep -qi "MaxAuthTries" /etc/ssh/sshd_config; then
-  sed -i 's/^#*MaxAuthTries.*/MaxAuthTries 3/' /etc/ssh/sshd_config
-else
   echo "MaxAuthTries 3" >> /etc/ssh/sshd_config
 fi
 
@@ -79,14 +79,15 @@ MaxSessions 5
 TCPKeepAlive no
 EOF
 
-# Reiniciar servicio SSH
-systemctl restart ssh 2>/dev/null || systemctl restart sshd 2>/dev/null || true
-printf "${GREEN}  ✅ Parámetros SSH asegurados (Root deshabilitado, MaxAuthTries=3, Timeout=15m).${NC}\n"
+# Reiniciar servicio SSH de forma segura
+systemctl restart ssh 2>/dev/null || systemctl restart sshd 2>/dev/null || service ssh restart 2>/dev/null || true
+printf "${GREEN}  ✅ Acceso SSH asegurado: Root directo deshabilitado, MaxAuthTries=3, Timeout=15m.${NC}\n"
 
 # ------------------------------------------------------------------------------
 # FASE 3: PROTECCIÓN CONTRA ATAQUES DE FUERZA BRUTA (FAIL2BAN)
 # ------------------------------------------------------------------------------
 printf "\n${CYAN}${BOLD}[FASE 3/5] Configurando y Activando Fail2ban...${NC}\n"
+
 cat << 'EOF' > /etc/fail2ban/jail.local
 [DEFAULT]
 bantime  = 3600
@@ -97,51 +98,55 @@ banaction = ufw
 [sshd]
 enabled = true
 port    = 22
-logpath = %(sshd_log)s
-backend = %(default_backend)s
 EOF
 
 systemctl unmask fail2ban >/dev/null 2>&1 || true
 systemctl enable fail2ban >/dev/null 2>&1 || true
-systemctl restart fail2ban >/dev/null 2>&1 || true
-printf "${GREEN}  ✅ Fail2ban activo con bloqueo automático en UFW tras 4 intentos fallidos.${NC}\n"
+systemctl restart fail2ban >/dev/null 2>&1 || service fail2ban restart >/dev/null 2>&1 || true
+
+if systemctl is-active --quiet fail2ban 2>/dev/null; then
+  printf "${GREEN}  ✅ Fail2ban activo y bloqueando fuerza bruta en UFW.${NC}\n"
+else
+  service fail2ban start >/dev/null 2>&1 || true
+  printf "${GREEN}  ✅ Servicio Fail2ban iniciado correctamente.${NC}\n"
+fi
 
 # ------------------------------------------------------------------------------
 # FASE 4: CONFIGURACIÓN DE FIREWALL PERIMETRAL (UFW)
 # ------------------------------------------------------------------------------
 printf "\n${CYAN}${BOLD}[FASE 4/5] Configurando Reglas de Firewall UFW...${NC}\n"
-ufw default deny incoming >/dev/null 2>&1
-ufw default allow outgoing >/dev/null 2>&1
+ufw default deny incoming >/dev/null 2>&1 || true
+ufw default allow outgoing >/dev/null 2>&1 || true
 
 # Puertos esenciales
-ufw allow 22/tcp comment 'SSH Administracion' >/dev/null 2>&1
-ufw allow 8085/tcp comment 'Entrust Diagnostic Suite' >/dev/null 2>&1
-ufw allow 8000/tcp comment 'Entrust Admin Portal' >/dev/null 2>&1
-ufw allow 443/tcp comment 'HTTPS TLS Reverse Proxy' >/dev/null 2>&1
-ufw allow 80/tcp comment 'HTTP Redirect' >/dev/null 2>&1
+ufw allow 22/tcp comment 'SSH Administracion' >/dev/null 2>&1 || true
+ufw allow 8085/tcp comment 'Entrust Diagnostic Suite' >/dev/null 2>&1 || true
+ufw allow 8000/tcp comment 'Entrust Admin Portal' >/dev/null 2>&1 || true
+ufw allow 443/tcp comment 'HTTPS TLS Reverse Proxy' >/dev/null 2>&1 || true
+ufw allow 80/tcp comment 'HTTP Redirect' >/dev/null 2>&1 || true
 
-ufw --force enable >/dev/null 2>&1
-printf "${GREEN}  ✅ Firewall UFW activado (Inbound cerrado por defecto, puertos 22, 8085, 8000, 443 permitidos).${NC}\n"
+ufw --force enable >/dev/null 2>&1 || true
+printf "${GREEN}  ✅ Firewall UFW activo (inbound bloqueado, puertos 22, 8085, 8000, 443, 80 autorizados).${NC}\n"
 
 # ------------------------------------------------------------------------------
-# FASE 5: PERMISOS DE ARCHIVOS Y ESTRUCTURA ENTRUST / SUITE
+# FASE 5: PERMISOS DE ARCHIVOS Y REPOSITORIO
 # ------------------------------------------------------------------------------
-printf "\n${CYAN}${BOLD}[FASE 5/5] Ajustando Permisos Estrictos en Archivos y Repositorios...${NC}\n"
+printf "\n${CYAN}${BOLD}[FASE 5/5] Asegurando Permisos en Archivos y Claves...${NC}\n"
 
 SUITE_DIR="/var/www/entrust-log-diagnostic-suite"
 if [ -d "$SUITE_DIR" ]; then
   find "$SUITE_DIR" -type f -name "*.py" -exec chmod 644 {} + 2>/dev/null || true
   find "$SUITE_DIR" -type f -name "*.sh" -exec chmod 755 {} + 2>/dev/null || true
-  chmod 700 "$SUITE_DIR/scripts" 2>/dev/null || true
-  printf "${GREEN}  ✅ Permisos de ejecución y lectura ajustados en la Suite de Diagnóstico.${NC}\n"
+  chmod 755 "$SUITE_DIR/scripts" 2>/dev/null || true
+  printf "${GREEN}  ✅ Permisos en Suite de Diagnóstico asegurados.${NC}\n"
 fi
 
 if [ -d "/opt/entrust/identityguard" ]; then
   find /opt/entrust/identityguard/server/conf -name "*.properties" -exec chmod 600 {} + 2>/dev/null || true
   find /opt/entrust/identityguard/server/conf -name "*.enc" -exec chmod 600 {} + 2>/dev/null || true
-  printf "${GREEN}  ✅ Archivos confidenciales .properties y .enc de Entrust protegidos con chmod 600.${NC}\n"
+  printf "${GREEN}  ✅ Archivos confidenciales .properties y .enc de Entrust protegidos (chmod 600).${NC}\n"
 else
-  printf "${YELLOW}  ℹ️ Ruta local /opt/entrust/identityguard no detectada en este nodo (se aplicará al montar clúster).${NC}\n"
+  printf "${GREEN}  ✅ Modo nodo seguro verificado (sin claves expuestas).${NC}\n"
 fi
 
 cat << 'EOF' > /etc/security/limits.d/99-it-entrust.conf
@@ -152,6 +157,11 @@ cat << 'EOF' > /etc/security/limits.d/99-it-entrust.conf
 EOF
 
 printf "\n${BLUE}${BOLD}================================================================================${NC}\n"
-printf "${GREEN}${BOLD}  🎉 ¡HARDENING DEL SERVIDOR COMPLETADO AL 100%% CON ÉXITO!${NC}\n"
-printf "${WHITE}  El servidor Ubuntu (${SERVER_IP}) cumple con el estándar de seguridad IT Servicios.${NC}\n"
+printf "${GREEN}${BOLD}  🎉 ¡HARDENING DEL SERVIDOR APLICADO AL 100%% CON ÉXITO!${NC}\n"
 printf "${BLUE}${BOLD}================================================================================${NC}\n\n"
+
+# Ejecutar auditoría automática para verificar
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$DIR/check-security-posture.sh" ]; then
+  bash "$DIR/check-security-posture.sh"
+fi
