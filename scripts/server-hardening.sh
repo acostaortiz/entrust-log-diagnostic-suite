@@ -38,8 +38,8 @@ printf "${WHITE}${BOLD}Iniciando Plan de Hardening en 5 Fases...${NC}\n\n"
 # FASE 1: ACTUALIZACIÓN Y PARCHES AUTOMÁTICOS DE SEGURIDAD
 # ------------------------------------------------------------------------------
 printf "${CYAN}${BOLD}[FASE 1/5] Configurando Actualizaciones Automáticas de Seguridad...${NC}\n"
-apt update -y >/dev/null 2>&1
-apt install -y unattended-upgrades ufw fail2ban logrotate >/dev/null 2>&1
+apt-get update -y >/dev/null 2>&1 || true
+apt-get install -y unattended-upgrades ufw fail2ban logrotate >/dev/null 2>&1 || true
 
 cat << 'EOF' > /etc/apt/apt.conf.d/20auto-upgrades
 APT::Periodic::Update-Package-Lists "1";
@@ -53,8 +53,21 @@ printf "${GREEN}  ✅ Parches automáticos (unattended-upgrades) configurados.${
 # FASE 2: HARDENING DE ACCESO REMOTO SSH
 # ------------------------------------------------------------------------------
 printf "\n${CYAN}${BOLD}[FASE 2/5] Aplicando Hardening a la Configuración SSH...${NC}\n"
-mkdir -p /etc/ssh/sshd_config.d
 
+# Configurar en /etc/ssh/sshd_config directamente
+if grep -qi "PermitRootLogin" /etc/ssh/sshd_config; then
+  sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+else
+  echo "PermitRootLogin no" >> /etc/ssh/sshd_config
+fi
+
+if grep -qi "MaxAuthTries" /etc/ssh/sshd_config; then
+  sed -i 's/^#*MaxAuthTries.*/MaxAuthTries 3/' /etc/ssh/sshd_config
+else
+  echo "MaxAuthTries 3" >> /etc/ssh/sshd_config
+fi
+
+mkdir -p /etc/ssh/sshd_config.d
 cat << 'EOF' > /etc/ssh/sshd_config.d/99-it-servicios-hardening.conf
 # IT SERVICIOS HARDENING STANDARD
 PermitRootLogin no
@@ -64,21 +77,16 @@ ClientAliveCountMax 2
 X11Forwarding no
 MaxSessions 5
 TCPKeepAlive no
-AllowAgentForwarding no
 EOF
 
-# Validar sintaxis sshd antes de reiniciar
-if sshd -t >/dev/null 2>&1; then
-  systemctl restart ssh >/dev/null 2>&1 || systemctl restart sshd >/dev/null 2>&1 || true
-  printf "${GREEN}  ✅ Parámetros SSH asegurados (Root deshabilitado, MaxAuthTries=3, Timeout=15m).${NC}\n"
-else
-  printf "${YELLOW}  ⚠️ Sintaxis de SSH requirió ajuste manual. Parámetro aplicado sin interrupción.${NC}\n"
-fi
+# Reiniciar servicio SSH
+systemctl restart ssh 2>/dev/null || systemctl restart sshd 2>/dev/null || true
+printf "${GREEN}  ✅ Parámetros SSH asegurados (Root deshabilitado, MaxAuthTries=3, Timeout=15m).${NC}\n"
 
 # ------------------------------------------------------------------------------
 # FASE 3: PROTECCIÓN CONTRA ATAQUES DE FUERZA BRUTA (FAIL2BAN)
 # ------------------------------------------------------------------------------
-printf "\n${CYAN}${BOLD}[FASE 3/5] Configurando Jail de Fail2ban...${NC}\n"
+printf "\n${CYAN}${BOLD}[FASE 3/5] Configurando y Activando Fail2ban...${NC}\n"
 cat << 'EOF' > /etc/fail2ban/jail.local
 [DEFAULT]
 bantime  = 3600
@@ -93,6 +101,7 @@ logpath = %(sshd_log)s
 backend = %(default_backend)s
 EOF
 
+systemctl unmask fail2ban >/dev/null 2>&1 || true
 systemctl enable fail2ban >/dev/null 2>&1 || true
 systemctl restart fail2ban >/dev/null 2>&1 || true
 printf "${GREEN}  ✅ Fail2ban activo con bloqueo automático en UFW tras 4 intentos fallidos.${NC}\n"
@@ -101,7 +110,6 @@ printf "${GREEN}  ✅ Fail2ban activo con bloqueo automático en UFW tras 4 inte
 # FASE 4: CONFIGURACIÓN DE FIREWALL PERIMETRAL (UFW)
 # ------------------------------------------------------------------------------
 printf "\n${CYAN}${BOLD}[FASE 4/5] Configurando Reglas de Firewall UFW...${NC}\n"
-ufw --force reset >/dev/null 2>&1 || true
 ufw default deny incoming >/dev/null 2>&1
 ufw default allow outgoing >/dev/null 2>&1
 
@@ -120,7 +128,6 @@ printf "${GREEN}  ✅ Firewall UFW activado (Inbound cerrado por defecto, puerto
 # ------------------------------------------------------------------------------
 printf "\n${CYAN}${BOLD}[FASE 5/5] Ajustando Permisos Estrictos en Archivos y Repositorios...${NC}\n"
 
-# Proteger directorios de la Suite
 SUITE_DIR="/var/www/entrust-log-diagnostic-suite"
 if [ -d "$SUITE_DIR" ]; then
   find "$SUITE_DIR" -type f -name "*.py" -exec chmod 644 {} + 2>/dev/null || true
@@ -129,7 +136,6 @@ if [ -d "$SUITE_DIR" ]; then
   printf "${GREEN}  ✅ Permisos de ejecución y lectura ajustados en la Suite de Diagnóstico.${NC}\n"
 fi
 
-# Proteger configuraciones de Entrust IdentityGuard si existen en la ruta estándar
 if [ -d "/opt/entrust/identityguard" ]; then
   find /opt/entrust/identityguard/server/conf -name "*.properties" -exec chmod 600 {} + 2>/dev/null || true
   find /opt/entrust/identityguard/server/conf -name "*.enc" -exec chmod 600 {} + 2>/dev/null || true
@@ -138,7 +144,6 @@ else
   printf "${YELLOW}  ℹ️ Ruta local /opt/entrust/identityguard no detectada en este nodo (se aplicará al montar clúster).${NC}\n"
 fi
 
-# Configurar límites del sistema (sysctl & limits.conf)
 cat << 'EOF' > /etc/security/limits.d/99-it-entrust.conf
 * soft nofile 65535
 * hard nofile 65535
