@@ -593,7 +593,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
                 <div style="font-size:0.82rem; color:#334155;">Radiografía integral de comportamiento de identidades, usuarios con fallas, bloqueos y registros exitosos</div>
               </div>
               <div style="font-size:0.78rem; text-align:right; color:#475569;">
-                <div><strong>Entorno / Cliente:</strong> ${escapeHtml(clientLabel)}</div>
+                <div><strong>Entorno / Cliente:</strong> ${escapeHtml(clientLabel)}</div>\n                <div><strong>Ambiente de Operación:</strong> <span style="font-weight:700; color:${(window.state?.activeEnvironment === 'PROD' || !window.state?.activeEnvironment) ? '#15803d' : (window.state?.activeEnvironment === 'QA' ? '#b45309' : '#0284c7')};">${window.state?.activeEnvironment === 'PROD' ? '🟢 Producción (PROD)' : (window.state?.activeEnvironment === 'QA' ? '🟡 Pruebas / QA (STAGING)' : '🔵 Desarrollo (DEV)')}</span></div>
                 <div><strong>Plataforma &amp; Versión:</strong> ${escapeHtml(clientVersion)}</div>
                 <div><strong>Fecha de Emisión:</strong> ${nowFormatted}</div>
                 <div><strong>Auditor Responsable:</strong> Tomás Acosta (IT Servicios de Venezuela)</div>

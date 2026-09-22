@@ -124,6 +124,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })();
 
+    // GESTIÓN DE AMBIENTES (PRODUCCIÓN, QA, DESARROLLO)
+  const savedEnv = localStorage.getItem('active_environment_level') || 'PROD';
+  state.activeEnvironment = savedEnv;
+
+  window.setActiveEnvironmentGlobal = function(envKey) {
+    state.activeEnvironment = envKey || 'PROD';
+    localStorage.setItem('active_environment_level', state.activeEnvironment);
+    
+    const envSelect = document.getElementById('active-environment-select');
+    if (envSelect && envSelect.value !== state.activeEnvironment) {
+      envSelect.value = state.activeEnvironment;
+    }
+
+    // Actualizar indicador visual en el perfil del cliente
+    try {
+      if (typeof updateMetricsAndCharts === 'function') updateMetricsAndCharts();
+      if (typeof renderOverviewKpis === 'function') renderOverviewKpis();
+    } catch(e) {}
+  };
+
   /* ==========================================================================
      0.1 GESTIÓN Y REGISTRO DE PERFILES DE CLIENTES & ENTORNOS ENTRUST
      ========================================================================== */
