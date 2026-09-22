@@ -140,6 +140,30 @@ start_portal_8000() {
     fi
 }
 
+run_hardening() {
+    printf "\n${CYAN}${BOLD}🛡️ Ejecutando Hardening Integral del Servidor Ubuntu...${NC}\n"
+    print_line
+    if [ -f "$DIR_DIAGNOSTIC/scripts/server-hardening.sh" ]; then
+        sudo bash "$DIR_DIAGNOSTIC/scripts/server-hardening.sh"
+    elif [ -f "./scripts/server-hardening.sh" ]; then
+        sudo bash "./scripts/server-hardening.sh"
+    else
+        printf "${RED}❌ Script de hardening no encontrado.${NC}\n"
+    fi
+}
+
+run_audit() {
+    printf "\n${CYAN}${BOLD}🔍 Ejecutando Auditoría de Postura de Seguridad...${NC}\n"
+    print_line
+    if [ -f "$DIR_DIAGNOSTIC/scripts/check-security-posture.sh" ]; then
+        sudo bash "$DIR_DIAGNOSTIC/scripts/check-security-posture.sh"
+    elif [ -f "./scripts/check-security-posture.sh" ]; then
+        sudo bash "./scripts/check-security-posture.sh"
+    else
+        printf "${RED}❌ Script de auditoría no encontrado.${NC}\n"
+    fi
+}
+
 start_server_8085() {
     printf "\n${CYAN}${BOLD}? Levantando Suite de DiagnÃ³stico en Puerto 8085...${NC}\n"
     print_line
@@ -189,11 +213,13 @@ while true; do
     printf "  ${CYAN}[3]${NC} ?? Sincronizar AMBOS Proyectos\n"
     printf "  ${CYAN}[4]${NC} ?? Activar Portal Laravel en ${BOLD}Puerto 8000${NC}\n"
     printf "  ${CYAN}[5]${NC} ? Activar Suite DiagnÃ³stico en ${BOLD}Puerto 8085${NC}\n"
-    printf "  ${CYAN}[6]${NC} ?? Ver Historial de Sincronizaciones\n"
-    printf "  ${CYAN}[7]${NC} ?? Salir\n"
+    printf "  ${CYAN}[6]${NC} 🛡️ Ejecutar Hardening Integral del Servidor\n"
+    printf "  ${CYAN}[7]${NC} 🔍 Auditoría de Postura de Seguridad\n"
+    printf "  ${CYAN}[8]${NC} 📜 Ver Historial de Sincronizaciones\n"
+    printf "  ${CYAN}[9]${NC} 🚪 Salir\n"
     print_line
 
-    read -rp "Ingresa tu opciÃ³n [1-7]: " opt
+    read -rp "Ingresa tu opción [1-9]: " opt
 
     case $opt in
         1) sync_portal; read -rp $'\nPresiona [Enter] para continuar...' ;;
@@ -201,15 +227,17 @@ while true; do
         3) sync_portal; sync_diagnostic; read -rp $'\nPresiona [Enter] para continuar...' ;;
         4) start_portal_8000; read -rp $'\nPresiona [Enter] para continuar...' ;;
         5) start_server_8085; read -rp $'\nPresiona [Enter] para continuar...' ;;
-        6)
+        6) run_hardening; read -rp $'\nPresiona [Enter] para continuar...' ;;
+        7) run_audit; read -rp $'\nPresiona [Enter] para continuar...' ;;
+        8)
             print_header
-            printf "${CYAN}${BOLD}?? HISTORIAL AUDITADO DE SINCRONIZACIONES${NC}\n"
+            printf "${CYAN}${BOLD}📜 HISTORIAL AUDITADO DE SINCRONIZACIONES${NC}\n"
             print_line
-            if [ -f "$LOG_FILE" ]; then tail -n 15 "$LOG_FILE"; else printf "${YELLOW}Sin registros aÃºn.${NC}\n"; fi
+            if [ -f "$LOG_FILE" ]; then tail -n 15 "$LOG_FILE"; else printf "${YELLOW}Sin registros aún.${NC}\n"; fi
             print_line
             read -rp $'\nPresiona [Enter] para continuar...'
             ;;
-        7) printf "\n${GREEN}${BOLD}Â¡Hasta luego, TomÃ¡s! OperaciÃ³n finalizada.${NC}\n\n"; exit 0 ;;
-        *) printf "\n${RED}OpciÃ³n invÃ¡lida.${NC}\n"; sleep 1.5 ;;
+        9) printf "\n${GREEN}${BOLD}¡Hasta luego, Tomás! Operación finalizada con éxito.${NC}\n\n"; exit 0 ;;
+        *) printf "\n${RED}Opción inválida.${NC}\n"; sleep 1.5 ;;
     esac
 done
