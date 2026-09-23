@@ -467,10 +467,11 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         return;
       }
 
+      const isEn = window.state && window.state.reportLanguage === 'en';
       const activeClient = this.getClientProfile();
       const clientLabel = activeClient ? (activeClient.name || 'Entrust General') : 'Entrust General';
       const clientVersion = activeClient ? `${activeClient.platform || 'IdentityGuard'} ${activeClient.version || 'Release 12.0'}` : 'Entrust IdentityGuard';
-      const nowFormatted = new Date().toLocaleString('es-VE', { dateStyle: 'long', timeStyle: 'medium' });
+      const nowFormatted = new Date().toLocaleString(isEn ? 'en-US' : 'es-VE', { dateStyle: 'long', timeStyle: 'medium' });
 
       const logs = this.getAllLogs();
       const targetUsers = Array.from(this.selectedUsers);
@@ -563,6 +564,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         if (window.knowledgeBaseEngine) {
           diag = window.knowledgeBaseEngine.diagnoseLog('', code);
         }
+        const bDiag = window.getBilingualDiagnosticGlobal ? window.getBilingualDiagnosticGlobal(diag, code, diag.category, isEn) : diag;
         const isAud = code.startsWith('AUD');
         const isErr = diag.severity === 'CRITICAL' || diag.severity === 'ERROR';
 
@@ -574,11 +576,11 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
               <span style="background:${isErr ? '#fee2e2' : (isAud ? '#ccfbf1' : '#e0f2fe')}; color:${isErr ? '#b91c1c' : (isAud ? '#0f766e' : '#0369a1')}; padding:2px 8px; border-radius:10px; font-weight:800; font-size:0.68rem;">${escapeHtml(diag.severity || 'INFO')}</span>
             </td>
             <td style="padding:8px 10px;">
-              <strong>${escapeHtml(diag.title || code)}</strong><br>
-              <span style="font-size:0.72rem; color:#475569;">${escapeHtml(diag.meaning || '')}</span>
+              <strong>${escapeHtml(bDiag.title || code)}</strong><br>
+              <span style="font-size:0.72rem; color:#475569;">${escapeHtml(bDiag.meaning || '')}</span>
             </td>
             <td style="padding:8px 10px; font-size:0.72rem; color:#047857; white-space:pre-line;">
-              ${escapeHtml(diag.governanceControl || diag.remediation || 'No requiere acción correctiva')}
+              ${escapeHtml(bDiag.remediation || diag.governanceControl || (isEn ? 'Nominal operation / No corrective action required' : 'No requiere acción correctiva'))}
             </td>
           </tr>
         `;

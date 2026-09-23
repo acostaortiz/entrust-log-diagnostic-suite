@@ -1033,6 +1033,347 @@ document.addEventListener('DOMContentLoaded', () => {
     return REPORT_I18N[lang];
   }
 
+  const ENTRUST_CATALOG_TRANSLATIONS_EN = {
+    // 5201xxx: Grid Cards, OTP & Challenges
+    '5201000': {
+      title: 'Internal Server Failure (Server Failure)',
+      category: 'Entrust Core Engine',
+      meaning: 'Uncontrolled critical failure in the Entrust authentication engine.',
+      rootCause: 'Loss of database connectivity or master key .enc file corruption.',
+      remediation: 'Restart administration service and validate database connectivity.'
+    },
+    '5201006': {
+      title: 'Response Count Mismatch with Challenge',
+      category: 'Grid Cards & OTP',
+      meaning: 'Number of responses submitted by user does not match the requested challenge cells.',
+      rootCause: 'User omitted a Grid card coordinate or client application sent incomplete parameters.',
+      remediation: 'Ensure client application sends exact number of requested responses and request user retry.'
+    },
+    '5201007': {
+      title: 'Response Mismatch with Challenge',
+      category: 'Grid Cards & OTP',
+      meaning: 'Grid coordinate or OTP value entered by user is incorrect.',
+      rootCause: 'Incorrect Grid card cell entry or out-of-sync software token.',
+      remediation: 'Ensure user is utilizing the active Grid card matching their serial number.'
+    },
+    '5201008': {
+      title: 'Grid Card Mismatch with Challenge',
+      category: 'Grid Cards',
+      meaning: 'Serial number of Grid card used does not match the challenge issued by server.',
+      rootCause: 'User possesses an old Grid card that was replaced or reassigned.',
+      remediation: 'Check active card serial number assigned to user in administration console.'
+    },
+    '5201009': {
+      title: 'Failed to Generate Authentication Challenge',
+      category: 'Challenge Engine',
+      meaning: 'Entrust server was unable to generate coordinate challenge for the session.',
+      rootCause: 'User has no active Grid cards assigned or challenge template is corrupted.',
+      remediation: 'Assign a valid authenticator or Grid card pack to the user profile.'
+    },
+    '5201010': {
+      title: 'Grid Card Locked due to Failed Attempts',
+      category: 'Grid Cards',
+      meaning: 'Grid card was locked after exceeding maximum failed challenge threshold.',
+      rootCause: 'Multiple consecutive incorrect challenge attempts by the user.',
+      remediation: 'Unlock user Grid card in Entrust administration console.'
+    },
+
+    // 5202xxx: Authentication, Credentials, Tokens & APIs
+    '5202013': {
+      title: 'Invalid Credentials (Invalid User ID or Password)',
+      category: 'Authentication & Credentials',
+      meaning: 'User identifier or entered password is invalid.',
+      rootCause: 'Incorrect password entered by user or user not registered in Active Directory / LDAP.',
+      remediation: 'Verify user exists in Active Directory, unlock account if suspended, and reset password.'
+    },
+    '5202050': {
+      title: 'Invalid or Out-of-Sync Token PIN',
+      category: 'Software Tokens',
+      meaning: 'Security PIN or OTP code does not match the token record.',
+      rootCause: 'OTP token time drift or incorrect PIN entry.',
+      remediation: 'Run token resynchronization procedure in administration console.'
+    },
+    '5202057': {
+      title: 'Software Token Locked',
+      category: 'Software Tokens',
+      meaning: 'OTP token reached maximum allowed failed attempts threshold.',
+      rootCause: 'Consecutive failed retries with invalid one-time passwords.',
+      remediation: 'Unlock OTP token in IdentityGuard administration console.'
+    },
+    '5202340': {
+      title: 'Client Application Authorization Failure',
+      category: 'Integration API',
+      meaning: 'Client application (WSO2 / API Gateway) lacks authorization to call Entrust API.',
+      rootCause: 'Incorrect Client Secret or unauthorized IP address in channel policy.',
+      remediation: 'Verify integration secret and permitted IP address list in Entrust channel policy.'
+    },
+    '5202404': {
+      title: 'Resource or Connection Not Found in Repository',
+      category: 'Identity Repository',
+      meaning: 'Server was unable to locate identity record in data repository.',
+      rootCause: 'Indexing anomalies or temporary database disconnection.',
+      remediation: 'Check JDBC connectivity and reindex user tables in repository.'
+    },
+
+    // 5203xxx: User Management & Policies
+    '5203000': {
+      title: 'User Not Found in Directory (User Not Found)',
+      category: 'Identity Directory',
+      meaning: 'Specified user does not exist in Entrust database or LDAP repository.',
+      rootCause: 'User was deleted from directory or identifier was mistyped.',
+      remediation: 'Perform Active Directory synchronization to import missing users.'
+    },
+    '5203016': {
+      title: 'User Has No Password Configured',
+      category: 'Authentication & Credentials',
+      meaning: 'User attempted password authentication but profile has no password assigned.',
+      rootCause: 'Incomplete user profile or freshly created without password enrollment.',
+      remediation: 'Set initial password for user or enroll via self-service portal.'
+    },
+    '5203019': {
+      title: 'Password Has Expired',
+      category: 'Security Policies',
+      meaning: 'User password exceeded maximum validity period defined by policy.',
+      rootCause: 'Natural expiration of password validity per banking security policy.',
+      remediation: 'Prompt user to renew password via self-service portal.'
+    },
+    '5203020': {
+      title: 'Password Must Be Changed on First Login',
+      category: 'Security Policies',
+      meaning: 'User must change temporary password to a permanent one.',
+      rootCause: 'New account or password reset by administrator.',
+      remediation: 'Guide user through initial password change workflow.'
+    },
+
+    // 5205xxx: Credential Validation & Lockouts
+    '5205079': {
+      title: 'Account Locked Due to Consecutive Failed Attempts',
+      category: 'Security Policies',
+      meaning: 'User account was temporarily suspended after exceeding failed attempt limit.',
+      rootCause: 'Possible brute force attack or user repeatedly entering outdated credentials.',
+      remediation: 'Unlock account in Entrust IdentityGuard console and reset failed attempt counter.'
+    },
+    '5205080': {
+      title: 'Account Disabled by Administration',
+      category: 'Account Management',
+      meaning: 'Account is inactive or disabled by administrative decision.',
+      rootCause: 'Manual suspension by security officer or termination in HR/LDAP.',
+      remediation: 'Verify user status in Active Directory and reactivate in admin console if appropriate.'
+    },
+    '5205139': {
+      title: 'Duplicate or Invalid User Alias',
+      category: 'Identity Management',
+      meaning: 'User secondary alias or identifier conflicts with another record.',
+      rootCause: 'Duplicate alias assignment during batch upload or synchronization.',
+      remediation: 'Sanitize alias in administration console to ensure uniqueness.'
+    },
+    '5205150': {
+      title: 'Authentication Method Not Allowed by Policy',
+      category: 'Access Policies',
+      meaning: 'User attempted to authenticate with a method not enabled in their policy group.',
+      rootCause: 'User group lacks Grid card or token policy assignment.',
+      remediation: 'Edit user group policy in Entrust console and enable required method.'
+    },
+
+    // AUDxxx: Administrative Audit
+    'AUD101': {
+      title: 'Master Administrator supersh Login',
+      category: 'Administrative Audit',
+      meaning: 'Administrator with Master privileges logged into interactive supersh CLI.',
+      rootCause: 'Maintenance or authorized administrative task execution.',
+      remediation: 'Audit executed actions against the approved change window.'
+    },
+    'AUD102': {
+      title: 'Master Administrator supersh Logout',
+      category: 'Administrative Audit',
+      meaning: 'Master administrator terminated interactive supersh CLI session.',
+      rootCause: 'Administrative session completion.',
+      remediation: 'Nominal audit record.'
+    },
+    'AUD150': {
+      title: 'Successful Administrative Web Login',
+      category: 'Administrative Audit',
+      meaning: 'Successful authentication of operator in Entrust IdentityGuard Web console.',
+      rootCause: 'Nominal administration interface access.',
+      remediation: 'Nominal audit record.'
+    },
+    'AUD154': {
+      title: 'Administrative Session Terminated due to Inactivity',
+      category: 'Administrative Audit',
+      meaning: 'Web operator session automatically closed after exceeding idle threshold.',
+      rootCause: 'Automatic defense against orphaned sessions on unattended terminals.',
+      remediation: 'Nominal and preventive audit log.'
+    },
+    'AUD155': {
+      title: 'Manual Administrative Session Logout',
+      category: 'Administrative Audit',
+      meaning: 'Operator voluntarily logged out via Logout button.',
+      rootCause: 'Nominal operator disconnection.',
+      remediation: 'Nominal audit record.'
+    },
+    'AUD2309': {
+      title: 'Push Notification MFA Delivery Failure',
+      category: 'Mobile MFA Gateway',
+      meaning: 'Notification server failed to deliver Push authentication to user mobile device.',
+      rootCause: 'Mobile device without internet connection, revoked token, or outdated APNs/FCM certificate.',
+      remediation: 'Check device connectivity and verify push certificate validity on server.'
+    },
+    'AUD8500': {
+      title: 'Bulk Export Started for IDaaS Cloud Migration',
+      category: 'IDaaS Migration Tool',
+      meaning: 'Credential extraction and encryption initiated for cloud migration.',
+      rootCause: 'Execution of IG_Migration_Tool authexport.',
+      remediation: 'Monitor successful completion of all 3 export phases.'
+    },
+    'AUD8502': {
+      title: 'Bulk Export to IDaaS Cloud Completed Successfully',
+      category: 'IDaaS Migration Tool',
+      meaning: 'Export of cards and users completed 100%, generating encrypted .dat archive.',
+      rootCause: 'Full credential extraction from OnPremise database.',
+      remediation: 'Proceed with import in Entrust IDaaS Cloud console.'
+    },
+    'AUD8503': {
+      title: 'Encryption Password (.dat) Generated and Displayed',
+      category: 'IDaaS Migration Tool',
+      meaning: 'Symmetric encryption key generated and displayed on-screen to Master user.',
+      rootCause: 'Cryptographic identity custody security protocol.',
+      remediation: 'Securely custody the password for entry in IDaaS Cloud console.'
+    },
+
+    // ORA-xxxxx: Oracle DB Persistence
+    'ORA-01555': {
+      title: 'UNDO Tablespace Saturation / Snapshot Too Old',
+      category: 'Oracle DB Persistence',
+      meaning: 'Consistent read failure on Grid card and encrypted user data in Oracle DB.',
+      rootCause: 'Insufficient UNDO_RETENTION or insufficient space in UNDO tablespace.',
+      remediation: 'Run ALTER SYSTEM SET UNDO_RETENTION = 10800 SCOPE=BOTH and expand UNDO tablespace with AUTOEXTEND ON.'
+    },
+    'ORA-00001': {
+      title: 'Unique Constraint Violated',
+      category: 'Oracle DB Persistence',
+      meaning: 'Attempt to insert a record with duplicate key/identifier in database.',
+      rootCause: 'User ID or Grid card serial number collision during insertion.',
+      remediation: 'Verify key uniqueness and clean up orphan records.'
+    },
+    'ORA-01000': {
+      title: 'Maximum Open Cursors Exceeded',
+      category: 'Oracle DB Persistence',
+      meaning: 'Application exhausted maximum open cursors permitted per session in Oracle DB.',
+      rootCause: 'JDBC connection or statement leak in Tomcat connection pool.',
+      remediation: 'Increase OPEN_CURSORS in Oracle (minimum 1000) and verify proper statement closing in connection pool.'
+    },
+    'ORA-03113': {
+      title: 'End-of-File on Communication Channel',
+      category: 'Oracle DB Persistence',
+      meaning: 'TCP/IP connection between Entrust IdentityGuard and Oracle DB was abruptly dropped.',
+      rootCause: 'Oracle instance restart, network interruption, or firewall dropping idle connections.',
+      remediation: 'Verify network link stability and configure Keep-Alive on Oracle listener.'
+    },
+
+    // IDaaS Bulk: Bulk Provisioning
+    'bulkidentityguard.add.error.assignedgrid': {
+      title: 'Preexisting Grid Card Conflict in Bulk Batch',
+      category: 'IDaaS Cloud Provisioning',
+      meaning: 'The bulk task attempted to assign a Grid card to a user who already possesses an active card.',
+      rootCause: 'Executing bulk import without the overwriteExistingGrid=true directive.',
+      remediation: 'Configure overwriteExistingGrid=true in the bulk task settings to allow replacement.'
+    },
+    'bulkidentityguard.add.error.qa': {
+      title: 'Secret Questions & Answers (Q&A) Already Registered',
+      category: 'IDaaS Cloud Provisioning',
+      meaning: 'The user already has security questions and answers enrolled in the IDaaS tenant.',
+      rootCause: 'Import attempt without the updateExistingCredentials=true directive.',
+      remediation: 'Enable updateExistingCredentials=true in batch configuration to update the Q&A schema.'
+    },
+    'bulkidentityguard.add.error.password': {
+      title: 'Password Collision in Bulk Batch',
+      category: 'IDaaS Cloud Provisioning',
+      meaning: 'Password submitted in the bulk file conflicts with an existing user credential.',
+      rootCause: 'Missing allowPasswordReset=true directive during bulk import.',
+      remediation: 'Enable allowPasswordReset=true to allow updating user passwords in the tenant.'
+    }
+  };
+
+  const CATEGORY_TRANSLATIONS_EN = {
+    'Aprovisionamiento IDaaS Cloud': 'IDaaS Cloud Provisioning',
+    'Autenticación & Credenciales': 'Authentication & Credentials',
+    'Tarjetas Grid & OTP': 'Grid Cards & OTP',
+    'Tarjetas Grid': 'Grid Cards',
+    'Motor de Desafíos': 'Challenge Engine',
+    'Motor Entrust Core': 'Entrust Core Engine',
+    'Tokens de Software': 'Software Tokens',
+    'API de Integración': 'Integration API',
+    'Repositorio de Identidad': 'Identity Repository',
+    'Directorio de Identidades': 'Identity Directory',
+    'Políticas de Seguridad': 'Security Policies',
+    'Gestión de Cuentas': 'Account Management',
+    'Gestión de Identidades': 'Identity Management',
+    'Políticas de Acceso': 'Access Policies',
+    'Auditoría Administrativa': 'Administrative Audit',
+    'Pasarela Móvil MFA': 'Mobile MFA Gateway',
+    'Herramienta de Migración IDaaS': 'IDaaS Migration Tool',
+    'Persistencia Oracle DB': 'Oracle DB Persistence',
+    'Operaciones de Servicio & APIs': 'Service Operations & APIs',
+    'Operaciones de Servicio': 'Service Operations',
+    'Entrust Service': 'Entrust Service',
+    'Entrust OnPremise / Base de Datos Oracle JDBC': 'Entrust OnPremise / Oracle DB JDBC',
+    'Entrust OnPremise / Cola de Transacciones': 'Entrust OnPremise / Transaction Queue',
+    'Entrust OnPremise / Migración a IDaaS Cloud': 'Entrust OnPremise / Migration to IDaaS Cloud',
+    'Entrust OnPremise / Auditoría de Acceso Master': 'Entrust OnPremise / Master Access Audit',
+    'Entrust IDaaS Cloud / Aprovisionamiento Masivo (Bulk)': 'Entrust IDaaS Cloud / Bulk Provisioning',
+    'Entrust IDaaS Cloud / Políticas RBA': 'Entrust IDaaS Cloud / RBA Policies',
+    'Entrust IDaaS Cloud / SSO & Aplicaciones': 'Entrust IDaaS Cloud / SSO & Applications',
+    'Entrust IDaaS Cloud / Autenticación Adaptativa MFA': 'Entrust IDaaS Cloud / Adaptive MFA Authentication',
+    'Entrust IDaaS Cloud / Gateways & Conectividad': 'Entrust IDaaS Cloud / Gateways & Connectivity',
+    'Entrust OnPremise / Conectividad HTTP': 'Entrust OnPremise / HTTP Connectivity',
+    'Entrust OnPremise / Servicios & HA': 'Entrust OnPremise / Services & HA',
+    'Entrust OnPremise / Plantillas Smart Credentials': 'Entrust OnPremise / Smart Credential Templates',
+    'Entrust OnPremise / Operaciones de Claves Maestras': 'Entrust OnPremise / Master Key Operations',
+    'Entrust OnPremise / Operaciones de Repositorio': 'Entrust OnPremise / Repository Operations',
+    'Entrust OnPremise / Auditoría de User Tokens': 'Entrust OnPremise / User Tokens Audit',
+    'Entrust OnPremise / Auditoría de Soft Tokens': 'Entrust OnPremise / Soft Tokens Audit',
+    'Entrust IDaaS / SSO & SAML 2.0': 'Entrust IDaaS / SSO & SAML 2.0',
+    'Entrust OnPremise / Motor Principal': 'Entrust OnPremise / Core Engine',
+    'Entrust OnPremise / Autenticación Grid & OTP': 'Entrust OnPremise / Grid & OTP Authentication'
+  };
+
+  function getBilingualDiagnostic(diag = {}, code = '', service = '', isEn = false) {
+    if (!isEn) {
+      return {
+        title: diag.title || code,
+        category: diag.category || service || 'Servicio Entrust',
+        service: service || diag.category || 'Servicio Entrust',
+        meaning: diag.meaning || code,
+        rootCause: diag.rootCause || 'Fallo operacional detectado.',
+        remediation: diag.remediation || 'Verificar configuración y consultar manual técnico.'
+      };
+    }
+
+    const enExact = ENTRUST_CATALOG_TRANSLATIONS_EN[code];
+    if (enExact) {
+      return {
+        title: enExact.title,
+        category: enExact.category,
+        service: CATEGORY_TRANSLATIONS_EN[service] || enExact.category,
+        meaning: enExact.meaning,
+        rootCause: enExact.rootCause,
+        remediation: enExact.remediation
+      };
+    }
+
+    const transService = CATEGORY_TRANSLATIONS_EN[service] || CATEGORY_TRANSLATIONS_EN[diag.category] || service || 'Entrust Service';
+    return {
+      title: diag.title || code,
+      category: CATEGORY_TRANSLATIONS_EN[diag.category] || transService,
+      service: transService,
+      meaning: diag.meaning || (code ? `Event pattern registered for code [${code}]` : 'Operational incident recorded in audit trace.'),
+      rootCause: diag.rootCause || 'Operational anomaly detected in authentication or provisioning flow.',
+      remediation: diag.remediation || 'Verify repository configuration and consult technical manual.'
+    };
+  }
+
+  window.getBilingualDiagnosticGlobal = getBilingualDiagnostic;
+
   window.setReportLanguageGlobal = function(lang) {
     state.reportLanguage = lang === 'en' ? 'en' : 'es';
     try {
@@ -1562,42 +1903,51 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
     const activeClient = getActiveClientProfile();
     const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
     const dateStamp = new Date().toISOString().slice(0, 10);
+    const isEn = state.reportLanguage === 'en';
 
     const logsToExport = (state.logs && state.logs.length > 0) ? state.logs : [];
     
     if (logsToExport.length === 0 && (!state.globalStreamMetrics || !state.globalStreamMetrics.topCodes)) {
-      alert('⚠️ No hay registros cargados para exportar a CSV.');
+      alert(isEn ? '⚠️ No records loaded to export to CSV.' : '⚠️ No hay registros cargados para exportar a CSV.');
       return;
     }
 
-    let csvContent = '\uFEFFID Linea,Archivo,Timestamp,Severidad,Tipo,Servicio/API,Codigo Entrust,Mensaje Log,Diagnostico,Causa Raiz,Remediacion\n';
+    let csvContent = isEn
+      ? '\uFEFFLine ID,File,Timestamp,Severity,Type,Service/API,Entrust Code,Log Message,Diagnosis,Root Cause,Remediation\n'
+      : '\uFEFFID Linea,Archivo,Timestamp,Severidad,Tipo,Servicio/API,Codigo Entrust,Mensaje Log,Diagnostico,Causa Raiz,Remediacion\n';
 
     if (logsToExport.length > 0) {
       logsToExport.forEach(l => {
-        const diag = l.diagnostic || (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message) : {});
+        const rawDiag = l.diagnostic || (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message, l.entrustCode) : {});
+        const code = (l.entrustCode || '').replace(/"/g, '""');
+        const bDiag = getBilingualDiagnostic(rawDiag, code, l.service, isEn);
         const cleanFile = (l.fileName || l.file || '').replace(/"/g, '""');
         const cleanMsg = (l.message || l.raw || '').replace(/"/g, '""');
-        const cleanDiag = (diag.title || '').replace(/"/g, '""');
-        const cleanCause = (diag.rootCause || '').replace(/"/g, '""');
-        const cleanRemediation = (diag.remediation || '').replace(/"/g, '""');
-        const code = (l.entrustCode || '').replace(/"/g, '""');
+        const cleanDiag = (bDiag.title || '').replace(/"/g, '""');
+        const cleanCause = (bDiag.rootCause || '').replace(/"/g, '""');
+        const cleanRemediation = (bDiag.remediation || '').replace(/"/g, '""');
+        const cleanService = (bDiag.service || l.service || '').replace(/"/g, '""');
 
-        csvContent += `"${l.lineNum || ''}","${cleanFile}","${l.timestamp || ''}","${l.level || ''}","${l.type || ''}","${l.service || ''}","${code}","${cleanMsg}","${cleanDiag}","${cleanCause}","${cleanRemediation}"\n`;
+        csvContent += `"${l.lineNum || ''}","${cleanFile}","${l.timestamp || ''}","${l.level || ''}","${l.type || ''}","${cleanService}","${code}","${cleanMsg}","${cleanDiag}","${cleanCause}","${cleanRemediation}"\n`;
       });
     } else if (state.globalStreamMetrics && state.globalStreamMetrics.topCodes) {
       state.globalStreamMetrics.topCodes.forEach((tc, idx) => {
-        const diag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(tc.code, tc.code) : {};
-        const cleanDiag = (diag.title || tc.code).replace(/"/g, '""');
-        const cleanCause = (diag.rootCause || '').replace(/"/g, '""');
-        const cleanRemediation = (diag.remediation || '').replace(/"/g, '""');
-        csvContent += `"${idx + 1}","Indexado SQLite","","ERROR","IDaaS/520","${tc.code}","${tc.code}","Total Ocurrencias: ${tc.count}","${cleanDiag}","${cleanCause}","${cleanRemediation}"\n`;
+        const rawDiag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(tc.code, tc.code) : {};
+        const bDiag = getBilingualDiagnostic(rawDiag, tc.code, rawDiag.category, isEn);
+        const cleanDiag = (bDiag.title || tc.code).replace(/"/g, '""');
+        const cleanCause = (bDiag.rootCause || '').replace(/"/g, '""');
+        const cleanRemediation = (bDiag.remediation || '').replace(/"/g, '""');
+        const cleanService = (bDiag.service || 'IDaaS/520').replace(/"/g, '""');
+        const msgStr = isEn ? `Total Occurrences: ${tc.count}` : `Total Ocurrencias: ${tc.count}`;
+        const srcStr = isEn ? 'Indexed SQLite' : 'Indexado SQLite';
+        csvContent += `"${idx + 1}","${srcStr}","","ERROR","${cleanService}","${tc.code}","${tc.code}","${msgStr}","${cleanDiag}","${cleanCause}","${cleanRemediation}"\n`;
       });
     }
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `Resumen_Incidentes_Entrust_${clientSanitized}_${dateStamp}.csv`;
+    link.download = isEn ? `Entrust_Incident_Summary_${clientSanitized}_${dateStamp}.csv` : `Resumen_Incidentes_Entrust_${clientSanitized}_${dateStamp}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1850,6 +2200,7 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
     sortedIncidents.forEach((item, idx) => {
       const idxNum = idx + 1;
       const { code, diag, count, sampleRaw, level, service } = item;
+      const bDiag = getBilingualDiagnostic(diag, code, service, isEn);
       const pctStr = formatPctStr(count, totalCount);
 
       let familyBadge = i18n.fam520Title;
@@ -1864,7 +2215,7 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <div>
                 <span style="background:${familyColor}15; color:${familyColor}; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:4px; font-family:monospace;">${familyBadge} (${count.toLocaleString()}x)</span>
-                <span style="font-family:monospace; font-size:12px; font-weight:bold; color:#0a3d6d; margin-left:8px;">#${idxNum} - [${escapeHtml(code)}] ${escapeHtml(service)}</span>
+                <span style="font-family:monospace; font-size:12px; font-weight:bold; color:#0a3d6d; margin-left:8px;">#${idxNum} - [${escapeHtml(code)}] ${escapeHtml(bDiag.service)}</span>
               </div>
               <span style="font-family:monospace; font-size:11px; color:#64748b; font-weight:bold;">${count.toLocaleString()} ${i18n.occurrences} (${pctStr})</span>
             </div>
@@ -1872,13 +2223,13 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
               ${escapeHtml(sampleRaw)}
             </div>
             <div style="font-size:12px; color:#1e293b; margin-bottom:6px;">
-              <strong style="color:#0a3d6d;">${i18n.diagnosis}</strong> ${escapeHtml(diag.meaning || code)}
+              <strong style="color:#0a3d6d;">${i18n.diagnosis}</strong> ${escapeHtml(bDiag.meaning || code)}
             </div>
             <div style="font-size:12px; color:#b91c1c; margin-bottom:6px;">
-              <strong style="color:#991b1b;">${i18n.rootCause}</strong> ${escapeHtml(diag.rootCause || (isEn ? 'Anomaly in authentication or provisioning parameters.' : 'Anomalía en los parámetros de autenticación o aprovisionamiento.'))}
+              <strong style="color:#991b1b;">${i18n.rootCause}</strong> ${escapeHtml(bDiag.rootCause)}
             </div>
             <div style="font-size:11px; color:#047857; background:#ecfdf5; padding:8px 10px; border-radius:4px; border:1px solid #a7f3d0; white-space:pre-line;">
-              <strong style="color:#065f46;">${i18n.thRemediation}:</strong><br>${escapeHtml(diag.remediation || (isEn ? 'Verify repository configuration and consult technical manual.' : 'Verificar configuración de repositorio y consultar manual técnico.'))}
+              <strong style="color:#065f46;">${i18n.thRemediation}:</strong><br>${escapeHtml(bDiag.remediation)}
             </div>
           </div>`;
       } else {
@@ -1888,22 +2239,22 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
               <span style="white-space:nowrap; background:${familyColor}15; color:${familyColor}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">${familyBadge}</span><br>
               <span style="font-size:9.5px; color:${familyColor}; font-weight:bold;">${count.toLocaleString()} ${i18n.times}</span>
             </td>
-            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(service)}</td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(bDiag.service)}</td>
             <td style="padding:8px 6px; border:1px solid #cbd5e1;">
-              <strong style="color:#0a3d6d; font-size:11px;">[${escapeHtml(code)}] ${escapeHtml(diag.title || code)}</strong><br>
-              <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(diag.meaning || code)}</span>
+              <strong style="color:#0a3d6d; font-size:11px;">[${escapeHtml(code)}] ${escapeHtml(bDiag.title || code)}</strong><br>
+              <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(bDiag.meaning || code)}</span>
             </td>
-            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(diag.rootCause || (isEn ? 'Operational failure detected' : 'Fallo operacional detectado'))}</td>
-            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(diag.remediation || (isEn ? 'Consult technical manual' : 'Consultar manual técnico'))}</td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(bDiag.rootCause)}</td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(bDiag.remediation)}</td>
           </tr>`;
       }
 
       topCodesHtml += `
         <tr style="page-break-inside:avoid; break-inside:avoid; background:${idxNum % 2 === 0 ? '#ffffff' : '#f8fafc'};">
           <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:${familyColor}; text-align:center;">[${escapeHtml(code)}]<br><span style="font-size:9px; color:#64748b;">${familyBadge}</span></td>
-          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(diag.title || code)}</td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(bDiag.title || code)}</td>
           <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:${familyColor}; font-family:monospace;">${count.toLocaleString()} (${pctStr})</td>
-          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(diag.rootCause || (isEn ? 'Operational incident' : 'Fallo operacional'))}</td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(bDiag.rootCause)}</td>
         </tr>`;
     });
 
@@ -2247,7 +2598,8 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
     });
 
     Array.from(allGroupedCodes.entries()).sort((a, b) => b[1] - a[1]).forEach(([code, count]) => {
-      const diag = window.knowledgeBaseEngine.diagnoseLog(code, code);
+      const rawDiag = window.knowledgeBaseEngine.diagnoseLog(code, code);
+      const diag = getBilingualDiagnostic(rawDiag, code, rawDiag.category, isEn);
       const pct = ((count / Math.max(1, totalCount)) * 100).toFixed(2);
       let fam = '520xxx';
       if (/^AUD/i.test(code)) fam = 'AUD';
@@ -7362,7 +7714,7 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     // --- HOJA 2: MATRIZ DETALLADA DE INCIDENTES & FALLOS ---
     const logsToExport = (state.logs && state.logs.length > 0) ? state.logs : [];
     xml += `
- <Worksheet ss:Name="2. Matriz de Fallos">
+ <Worksheet ss:Name="${isEn ? '2. Incident Matrix' : '2. Matriz de Fallos'}">
   <Table ss:DefaultRowHeight="18">
    <Column ss:Width="60"/>
    <Column ss:Width="160"/>
@@ -7375,19 +7727,20 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
    <Column ss:Width="280"/>
    <Row ss:Height="22">
     <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">ID</Data></Cell>
-    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Archivo Origen</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">${isEn ? 'Source File' : 'Archivo Origen'}</Data></Cell>
     <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Timestamp</Data></Cell>
-    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Severidad</Data></Cell>
-    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Código Entrust</Data></Cell>
-    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Servicio / Módulo</Data></Cell>
-    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Diagnóstico Oficial</Data></Cell>
-    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Causa Raíz</Data></Cell>
-    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">Procedimiento de Remediación</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">${isEn ? 'Severity' : 'Severidad'}</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">${isEn ? 'Entrust Code' : 'Código Entrust'}</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">${isEn ? 'Service / Module' : 'Servicio / Módulo'}</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">${isEn ? 'Official Diagnosis' : 'Diagnóstico Oficial'}</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">${isEn ? 'Root Cause' : 'Causa Raíz'}</Data></Cell>
+    <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">${isEn ? 'Remediation Procedure' : 'Procedimiento de Remediación'}</Data></Cell>
    </Row>`;
 
     if (logsToExport.length > 0) {
       logsToExport.slice(0, 5000).forEach((l, idx) => {
-        const diag = l.diagnostic || (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message, l.entrustCode) : {});
+        const rawDiag = l.diagnostic || (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message, l.entrustCode) : {});
+        const bDiag = getBilingualDiagnostic(rawDiag, l.entrustCode, l.service, isEn);
         const isCrit = l.level === 'CRITICAL' || l.level === 'ERROR';
         xml += `
    <Row>
@@ -7396,26 +7749,29 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${escapeXml(l.timestamp || l.time || 'N/A')}</Data></Cell>
     <Cell ss:StyleID="${isCrit ? 'CellDataCrit' : 'CellDataCenter'}"><Data ss:Type="String">${escapeXml(l.level || 'INFO')}</Data></Cell>
     <Cell ss:StyleID="${isCrit ? 'CellDataCrit' : 'CellDataCenter'}"><Data ss:Type="String">${escapeXml(l.entrustCode || 'N/A')}</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(l.service || l.type || 'IdentityGuard')}</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(diag.title || l.message || '')}</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(diag.rootCause || 'N/A')}</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(diag.remediation || 'N/A')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.service || l.service || l.type || 'IdentityGuard')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.title || l.message || '')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.rootCause || 'N/A')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.remediation || 'N/A')}</Data></Cell>
    </Row>`;
       });
     } else if (state.globalStreamMetrics && state.globalStreamMetrics.topCodes) {
       state.globalStreamMetrics.topCodes.forEach((tc, idx) => {
-        const diag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(tc.code, tc.code) : {};
+        const rawDiag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(tc.code, tc.code) : {};
+        const bDiag = getBilingualDiagnostic(rawDiag, tc.code, rawDiag.category, isEn);
+        const occLabel = isEn ? `(Occurrences: ${tc.count})` : `(Ocurrencias: ${tc.count})`;
+        const srcLabel = isEn ? 'Server Indexed SQLite' : 'Indexado SQLite Servidor';
         xml += `
    <Row>
     <Cell ss:StyleID="CellDataCenter"><Data ss:Type="Number">${idx + 1}</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">Indexado SQLite Servidor</Data></Cell>
-    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">Consolidado</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${srcLabel}</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${isEn ? 'Consolidated' : 'Consolidado'}</Data></Cell>
     <Cell ss:StyleID="CellDataCrit"><Data ss:Type="String">ERROR</Data></Cell>
     <Cell ss:StyleID="CellDataCrit"><Data ss:Type="String">${escapeXml(tc.code)}</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">IDaaS Cloud / Bulk</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(diag.title || tc.code)} (Ocurrencias: ${tc.count})</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(diag.rootCause || 'N/A')}</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(diag.remediation || 'N/A')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.service || 'IDaaS Cloud / Bulk')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.title || tc.code)} ${occLabel}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.rootCause || 'N/A')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.remediation || 'N/A')}</Data></Cell>
    </Row>`;
       });
     }
@@ -7426,7 +7782,7 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     // --- HOJA 3: THREAT RADAR & CUENTAS ATACADAS ---
     const threatReport = window.threatRadarEngine ? window.threatRadarEngine.analyzeThreats(state.logs || []) : { topTargetUsers: [], topAttackingIPs: [] };
     xml += `
- <Worksheet ss:Name="3. Threat Radar y Cuentas">
+ <Worksheet ss:Name="${isEn ? '3. Threat Radar & Accounts' : '3. Threat Radar y Cuentas'}">
   <Table ss:DefaultRowHeight="18">
    <Column ss:Width="50"/>
    <Column ss:Width="180"/>
