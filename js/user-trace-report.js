@@ -109,7 +109,8 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
               };
             }
             inputCustomUser.value = '';
-            this.renderUserChecklist();
+            this.updateLanguageButtons();
+      this.renderUserChecklist();
             this.generateReport();
           }
         };
@@ -126,6 +127,23 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       }
 
       // Exportar PDF, DOCX, CSV, Imprimir, Copiar
+            // Selector de idioma User Trace (ES / EN)
+      const btnTraceLangEs = document.getElementById('btn-trace-lang-es');
+      const btnTraceLangEn = document.getElementById('btn-trace-lang-en');
+      if (btnTraceLangEs) {
+        btnTraceLangEs.addEventListener('click', () => {
+          if (window.setReportLanguageGlobal) window.setReportLanguageGlobal('es');
+          this.updateLanguageButtons();
+          this.generateReport();
+        });
+      }
+      if (btnTraceLangEn) {
+        btnTraceLangEn.addEventListener('click', () => {
+          if (window.setReportLanguageGlobal) window.setReportLanguageGlobal('en');
+          this.updateLanguageButtons();
+          this.generateReport();
+        });
+      }
       const btnPdf = document.getElementById('btn-trace-export-pdf');
       if (btnPdf) btnPdf.addEventListener('click', () => this.downloadPdf());
 
@@ -167,6 +185,25 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       };
     },
 
+        updateLanguageButtons() {
+      const isEn = window.state && window.state.reportLanguage === 'en';
+      const btnEs = document.getElementById('btn-trace-lang-es');
+      const btnEn = document.getElementById('btn-trace-lang-en');
+      if (btnEs && btnEn) {
+        if (!isEn) {
+          btnEs.style.background = '#0284c7';
+          btnEs.style.color = '#fff';
+          btnEn.style.background = 'transparent';
+          btnEn.style.color = 'var(--text-muted)';
+        } else {
+          btnEn.style.background = '#0284c7';
+          btnEn.style.color = '#fff';
+          btnEs.style.background = 'transparent';
+          btnEs.style.color = 'var(--text-muted)';
+        }
+      }
+    },
+
     openModal(initialUsers) {
       const modal = document.getElementById('modal-user-trace-report');
       if (!modal) return;
@@ -186,6 +223,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       }
 
       this.updateSidebarCounters();
+      this.updateLanguageButtons();
       this.renderUserChecklist();
       this.generateReport();
 
@@ -351,6 +389,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       } else {
         this.selectedUsers.delete(username);
       }
+      this.updateLanguageButtons();
       this.renderUserChecklist();
       this.generateReport();
     },
@@ -370,6 +409,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
     selectAllUsers() {
       this.selectedUsers.clear();
       Object.keys(this.cachedStats).forEach(u => this.selectedUsers.add(u));
+      this.updateLanguageButtons();
       this.renderUserChecklist();
       this.generateReport();
     },
@@ -381,6 +421,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           this.selectedUsers.add(u.username);
         }
       });
+      this.updateLanguageButtons();
       this.renderUserChecklist();
       this.generateReport();
     },
@@ -392,12 +433,14 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           this.selectedUsers.add(u.username);
         }
       });
+      this.updateLanguageButtons();
       this.renderUserChecklist();
       this.generateReport();
     },
 
     clearSelection() {
       this.selectedUsers.clear();
+      this.updateLanguageButtons();
       this.renderUserChecklist();
       this.generateReport();
     },

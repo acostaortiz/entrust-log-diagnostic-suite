@@ -1010,6 +1010,12 @@ db.connection.pool.max=20
         </div>
 
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <!-- SELECTOR DE IDIOMA BILINGÜE (ES / EN) -->
+          <div style="display:flex; background:var(--bg-primary); border:1.5px solid var(--border-color); border-radius:6px; padding:2px; gap:2px; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.1);" title="Seleccionar Idioma del Informe / Select Report Language">
+            <button class="btn" id="btn-report-lang-es" style="background:#0284c7; color:#fff; font-size:0.75rem; padding:4px 9px; font-weight:800; border-radius:4px; border:none; cursor:pointer;" title="Generar Informe en Español">🇪🇸 ES</button>
+            <button class="btn" id="btn-report-lang-en" style="background:transparent; color:var(--text-muted); font-size:0.75rem; padding:4px 9px; font-weight:800; border-radius:4px; border:none; cursor:pointer;" title="Generate Report in English">🇺🇸 EN</button>
+          </div>
+
           <!-- GRUPO 1: DESCARGAS PDF EJECUTIVAS -->
           <div style="display:flex; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; padding:2px; gap:2px;">
             <button class="btn btn-primary" id="btn-download-pdf-exec-report" style="background:#0a3d6d; border:none; color:#fff; font-size:0.78rem; padding:6px 12px; font-weight:600; border-radius:4px;" title="Descargar Informe Técnico Completo en PDF">
@@ -1497,6 +1503,11 @@ db.connection.pool.max=20
           </div>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
+          <!-- SELECTOR DE IDIOMA USER TRACE (ES / EN) -->
+          <div style="display:flex; background:var(--bg-primary); border:1.5px solid var(--border-color); border-radius:6px; padding:2px; gap:2px; align-items:center;" title="Seleccionar Idioma / Select Language">
+            <button class="btn" id="btn-trace-lang-es" style="background:#0284c7; color:#fff; font-size:0.75rem; padding:4px 8px; font-weight:800; border-radius:4px; border:none; cursor:pointer;" title="Informe en Español">🇪🇸 ES</button>
+            <button class="btn" id="btn-trace-lang-en" style="background:transparent; color:var(--text-muted); font-size:0.75rem; padding:4px 8px; font-weight:800; border-radius:4px; border:none; cursor:pointer;" title="Report in English">🇺🇸 EN</button>
+          </div>
           <button class="btn btn-primary" id="btn-trace-export-pdf" style="background:#0284c7; border:none; font-size:0.78rem; padding:6px 12px; font-weight:700; border-radius:6px; cursor:pointer;" title="Descargar PDF Oficial Membretado">
             📄 Descargar PDF
           </button>

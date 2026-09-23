@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
     activeFilterMode: null,
     theme: localStorage.getItem('app_theme') || 'light',
     clientProfiles: [],
-    activeClientId: 'mercantil'
+    activeClientId: 'mercantil',
+    reportLanguage: localStorage.getItem('app_report_language') || 'es'
   };
   window.appState = state;
 
@@ -830,11 +831,266 @@ document.addEventListener('DOMContentLoaded', () => {
     printWindow.document.close();
   }
 
+  
+  /* ==========================================================================
+     CATÁLOGO DE INTERNACIONALIZACIÓN BILINGÜE PARA INFORMES (ESPAÑOL / ENGLISH)
+     ========================================================================== */
+  const REPORT_I18N = {
+    es: {
+      langCode: 'es-ES',
+      division: 'DIVISIÓN DE CIBERSEGURIDAD, IDENTIDAD DIGITAL & ARQUITECTURA FORENSE | RIF: J-30694859-0',
+      titleDefault: 'DICTAMEN PERICIAL FORENSE Y AUDITORÍA DE PLATAFORMA ENTRUST',
+      titleCatalog: 'DICTAMEN FORENSE DE ERRORES CRÍTICOS ENTRUST [520xxx / AUD / ORA / IDaaS]',
+      dossier: 'EXPEDIENTE:',
+      issueDate: 'FECHA EMISIÓN:',
+      leadAuditor: 'PERITO AUDITOR:',
+      confidential: 'ESTRICTAMENTE CONFIDENCIAL / C-LEVEL',
+      targetClient: 'Cliente Destinatario:',
+      addressee: 'Destinatario:',
+      expertInCharge: 'Perito Responsable:',
+      environmentPlatform: 'Entorno & Servidor Entrust:',
+      versionBuild: 'Versión & Build:',
+      analysisScope: 'Alcance del Análisis:',
+      scopeCatalog: 'Filtro Exclusivo: Catálogo de Errores y Fallos Críticos ({count} eventos en {files} archivos)',
+      scopeConsolidated: 'Auditoría Forense Consolidada ({count} eventos en {files} archivos analizados)',
+      healthIndex: 'Índice de Salud Clúster',
+      consolidatedEvents: 'Eventos Consolidados',
+      criticalIncidents: 'Incidentes Críticos',
+      auditAlerts: 'Alertas Auditoría (AUD)',
+      severityDistribution: '📊 Distribución por Severidad de Eventos',
+      totalProcessed: 'Total Procesados: {count} en {files} archivos',
+      familyBreakdownTitle: '📈 Desglose Cuantitativo por Familias de Incidentes Entrust',
+      familyCountLabel: '4 Familias Auditadas',
+      fam520Title: '🚨 520xxx Core',
+      fam520Sub: 'Auth / Tokens / Sync',
+      famAudTitle: '📋 AUD Auditoría',
+      famAudSub: 'Admin & Security Audit',
+      famOraTitle: '🗄️ ORA Database',
+      famOraSub: 'Oracle DB Connection',
+      famIdaasTitle: '☁️ IDaaS Cloud',
+      famIdaasSub: 'Bulk Provisioning',
+      multiFileCorrelation: '🔗 Correlación Multi-Archivo y Trazabilidad Multi-Capa ({files} Archivos Totales)',
+      filesLabel: 'Archivos:',
+      logsLabel: 'Logs:',
+      incidentsLabel: 'Incidentes:',
+      sec1Title: '1. Hallazgos y Diagnóstico Técnico Clasificado [520xxx / AUD / ORA / IDaaS] ({count} patrones únicos)',
+      thFamily: 'Familia / Nivel',
+      thService: 'Servicio / API',
+      thEventMeaning: 'Evento & Significado',
+      thRootCause: 'Causa Raíz Probable',
+      thRemediation: 'Remediación Inmediata',
+      noCatalogErrors: 'No se detectaron errores de catálogo durante el análisis.',
+      noCriticalFailures: 'No se detectaron fallos críticos durante el periodo de análisis.',
+      occurrences: 'Ocurrencias',
+      times: 'veces',
+      diagnosis: 'Diagnóstico:',
+      rootCause: 'Causa Raíz:',
+      sec2Title: '2. Análisis Estadístico de Errores Reincidentes por Familia (520xxx / AUDxxx / ORA / IDaaS)',
+      thCodeFamily: 'Código / Familia',
+      thEventDesc: 'Descripción del Evento',
+      thReoccurrences: 'Reincidencias',
+      thDiagRootCause: 'Diagnóstico & Causa Raíz',
+      timelineHeatmapTitle: '📈 Distribución Temporal & Detección de Ráfagas de Errores por Fecha Completa (Timeline Heatmap)',
+      timelineHeatmapSub: 'Resumen de concentración de ráfagas de peticiones e incidentes distribuidos por fecha calendario e intervalo de hora durante la muestra.',
+      thDateHour: 'Fecha Calendario y Rango Horario',
+      thTotalEvents: 'Total Eventos',
+      thCriticalErrors: 'Errores Críticos',
+      thWarnAlerts: 'Alertas (Warn)',
+      thInfoOps: 'Operación Info',
+      burstBadge: '🔥 RÁFAGA ({pct}% fallos)',
+      sec3Title: '3. Plan Estratégico de Remediación Técnica en 3 Fases (Roadmap)',
+      phase1Title: '⚡ FASE I: INMEDIATA (0 - 24H)',
+      phase1Body: '• Habilitar directivas <code>overwriteExistingGrid=true</code> y <code>updateExistingCredentials=true</code>.<br>• Reinicio ordenado de servicios y saneamiento de hilos Tomcat.<br>• Verificación de conectividad con keystores y certificados SSL.',
+      phase2Title: '🛠️ FASE II: CORTO PLAZO (1 - 7 DÍAS)',
+      phase2Body: '• Sintonización de memoria JVM (<code>-Xms2048m -Xmx4096m</code>).<br>• Ampliación del Connection Pool en base de datos Oracle.<br>• Barrido y resincronización de repositorios LDAP/Active Directory.',
+      phase3Title: '🛡️ FASE III: GOBERNANZA (30 DÍAS)',
+      phase3Body: '• Actualización de parches oficiales y mantenimiento preventivo.<br>• Integración de monitoreo Syslog continuo con alertas tempranas.<br>• Auditoría periódica de vencimiento de certificados X.509.',
+      sec4Title: 'Detalle de Recomendaciones Basadas en la Evidencia Forense:',
+      ethicalTitle: 'DICTAMEN ÉTICO Y DECLARACIÓN DE CONFORMIDAD PERICIAL:',
+      ethicalBody: 'El presente documento ha sido elaborado conforme a los principios de integridad, confidencialidad, objetividad y rigor técnico profesional de <strong>IT SERVICIOS DE VENEZUELA, S.A.</strong>, alineado a las buenas prácticas internacionales para plataformas de gestión de identidad digital (ISO/IEC 27001, NIST SP 800-63B). Todas las conclusiones están fundamentadas estrictamente en la evidencia telemétrica y transaccional registrada en los registros de auditoría.',
+      signatureName: 'Ing. Tomás Acosta Ortiz',
+      signatureRole: 'Líder Técnico de Ciberseguridad & Infraestructura Entrust',
+      suiteLabel: 'Suite de Diagnóstico',
+      confidentialUse: 'Confidencial — Para uso exclusivo de <strong>{client}</strong>.',
+      digitalSeal: '🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD & AUDITORÍA SHA-256:</strong>',
+      validatedBy: 'Validado por IT SERVICIOS Suite Enterprise v230.0',
+      onePageTitle: 'DICTAMEN EJECUTIVO DIRECTIVO — AUDITORÍA FORENSE ENTRUST',
+      onePageHealth: 'Salud Operativa Clúster',
+      onePageTraces: 'Trazas Procesadas',
+      onePageFailures: 'Fallos Críticos (520/IDaaS)',
+      onePageAlerts: 'Alertas Auditoría (AUD)',
+      onePageLayer1Title: '🌐 Capa 1: Proxy / Balanceo',
+      onePageLayer1Body: 'Validación de timeouts, certificados SSL/TLS y enrutamiento hacia servidores de identidad.',
+      onePageLayer2Title: '🛡️ Capa 2: Motor Entrust',
+      onePageLayer2Body: 'Sincronía de credenciales, políticas Grid/MFA y validación de hilos de aprovisionamiento.',
+      onePageLayer3Title: '🗄️ Capa 3: Persistencia / DB',
+      onePageLayer3Body: 'Disponibilidad de pool Oracle/PostgreSQL y replicación de directorios LDAP/AD.',
+      onePageFindingsTitle: '🎯 PRINCIPALES HALLAZGOS Y CAUSA RAÍZ TÉCNICA',
+      onePageSeverityCrit: 'Severidad: CRÍTICA / P1',
+      onePageSeverityOk: 'Severidad: CONTROLADA',
+      onePageRemediationTitle: '🛠️ PLAN DE ACCIÓN INMEDIATO (0 - 24 HORAS)',
+      wordDocTitle: 'Informe Oficial de Incidentes Entrust - IT Servicios de Venezuela'
+    },
+    en: {
+      langCode: 'en-US',
+      division: 'CYBERSECURITY, DIGITAL IDENTITY & FORENSIC ARCHITECTURE DIVISION | TAX ID: J-30694859-0',
+      titleDefault: 'FORENSIC EXPERT OPINION & ENTRUST PLATFORM AUDIT REPORT',
+      titleCatalog: 'FORENSIC CRITICAL ERROR ASSESSMENT [520xxx / AUD / ORA / IDaaS]',
+      dossier: 'CASE FILE / DOSSIER:',
+      issueDate: 'ISSUE DATE:',
+      leadAuditor: 'LEAD FORENSIC AUDITOR:',
+      confidential: 'STRICTLY CONFIDENTIAL / C-LEVEL ONLY',
+      targetClient: 'Target Client / Recipient:',
+      addressee: 'Addressee:',
+      expertInCharge: 'Forensic Expert in Charge:',
+      environmentPlatform: 'Environment & Entrust Server:',
+      versionBuild: 'Version & Build:',
+      analysisScope: 'Scope of Analysis:',
+      scopeCatalog: 'Exclusive Filter: Error Catalog & Critical Failures ({count} events across {files} files)',
+      scopeConsolidated: 'Consolidated Forensic Audit ({count} events across {files} analyzed files)',
+      healthIndex: 'Cluster Health Index',
+      consolidatedEvents: 'Consolidated Events',
+      criticalIncidents: 'Critical Incidents',
+      auditAlerts: 'Audit Alerts (AUD)',
+      severityDistribution: '📊 Event Severity Distribution',
+      totalProcessed: 'Total Processed: {count} across {files} files',
+      familyBreakdownTitle: '📈 Quantitative Breakdown by Entrust Incident Families',
+      familyCountLabel: '4 Audited Incident Families',
+      fam520Title: '🚨 520xxx Core',
+      fam520Sub: 'Auth / Tokens / Sync',
+      famAudTitle: '📋 AUD Audit',
+      famAudSub: 'Admin & Security Audit',
+      famOraTitle: '🗄️ ORA Database',
+      famOraSub: 'Oracle DB Connection',
+      famIdaasTitle: '☁️ IDaaS Cloud',
+      famIdaasSub: 'Bulk Provisioning',
+      multiFileCorrelation: '🔗 Multi-File Correlation & Multi-Layer Traceability ({files} Total Files)',
+      filesLabel: 'Files:',
+      logsLabel: 'Logs:',
+      incidentsLabel: 'Incidents:',
+      sec1Title: '1. Classified Technical Findings & Diagnostics [520xxx / AUD / ORA / IDaaS] ({count} unique patterns)',
+      thFamily: 'Family / Severity',
+      thService: 'Service / API',
+      thEventMeaning: 'Event & Meaning',
+      thRootCause: 'Probable Root Cause',
+      thRemediation: 'Immediate Remediation',
+      noCatalogErrors: 'No catalog errors were detected during this audit analysis.',
+      noCriticalFailures: 'No critical failures were detected during the analysis timeframe.',
+      occurrences: 'Occurrences',
+      times: 'times',
+      diagnosis: 'Diagnosis:',
+      rootCause: 'Root Cause:',
+      sec2Title: '2. Statistical Analysis of Reoccurring Errors by Family (520xxx / AUDxxx / ORA / IDaaS)',
+      thCodeFamily: 'Code / Family',
+      thEventDesc: 'Event Description',
+      thReoccurrences: 'Occurrences',
+      thDiagRootCause: 'Diagnosis & Root Cause',
+      timelineHeatmapTitle: '📈 Timeline Heatmap & Full-Date Incident Burst Detection',
+      timelineHeatmapSub: 'Concentration of request spikes and operational incidents grouped by calendar date and hourly intervals throughout the audit sample.',
+      thDateHour: 'Calendar Date & Hourly Range',
+      thTotalEvents: 'Total Events',
+      thCriticalErrors: 'Critical Errors',
+      thWarnAlerts: 'Alerts (Warn)',
+      thInfoOps: 'Informational Ops',
+      burstBadge: '🔥 BURST ({pct}% failures)',
+      sec3Title: '3. Strategic 3-Phase Technical Remediation Plan (Roadmap)',
+      phase1Title: '⚡ PHASE I: IMMEDIATE (0 - 24H)',
+      phase1Body: '• Enable directives <code>overwriteExistingGrid=true</code> and <code>updateExistingCredentials=true</code>.<br>• Perform orderly service restarts and sanitize Tomcat thread pools.<br>• Verify end-to-end connectivity with keystores and SSL certificates.',
+      phase2Title: '🛠️ PHASE II: SHORT-TERM (1 - 7 DAYS)',
+      phase2Body: '• JVM heap memory fine-tuning (<code>-Xms2048m -Xmx4096m</code>).<br>• Expand Oracle Database Connection Pool limits and timeout thresholds.<br>• Resynchronize and audit LDAP / Active Directory identity stores.',
+      phase3Title: '🛡️ PHASE III: GOVERNANCE (30 DAYS)',
+      phase3Body: '• Deploy official Entrust vendor security patches and preventive maintenance.<br>• Implement continuous Syslog monitoring with early threat alerting.<br>• Conduct periodic X.509 certificate expiration audits.',
+      sec4Title: 'Detailed Technical Recommendations Based on Forensic Evidence:',
+      ethicalTitle: 'ETHICAL OPINION & STATEMENT OF FORENSIC COMPLIANCE:',
+      ethicalBody: 'This document has been prepared strictly in accordance with the principles of integrity, confidentiality, objectivity, and technical rigor of <strong>IT SERVICIOS DE VENEZUELA, S.A.</strong>, aligned with international digital identity security standards (ISO/IEC 27001, NIST SP 800-63B). All conclusions are strictly substantiated by the telemetric and transactional audit records analyzed.',
+      signatureName: 'Eng. Tomás Acosta Ortiz',
+      signatureRole: 'Lead Cybersecurity & Entrust Infrastructure Specialist',
+      suiteLabel: 'Diagnostic Suite',
+      confidentialUse: 'Confidential — For the exclusive use of <strong>{client}</strong>.',
+      digitalSeal: '🔒 <strong>SHA-256 DIGITAL AUDIT & AUTHENTICITY SEAL:</strong>',
+      validatedBy: 'Validated by IT SERVICIOS Suite Enterprise v230.0',
+      onePageTitle: 'EXECUTIVE BOARD BRIEFING — ENTRUST FORENSIC AUDIT',
+      onePageHealth: 'Cluster Health Index',
+      onePageTraces: 'Processed Logs',
+      onePageFailures: 'Critical Failures (520/IDaaS)',
+      onePageAlerts: 'Audit Alerts (AUD)',
+      onePageLayer1Title: '🌐 Layer 1: Proxy / Load Balancing',
+      onePageLayer1Body: 'Timeout validation, SSL/TLS certificates and routing to identity services.',
+      onePageLayer2Title: '🛡️ Layer 2: Entrust Core Engine',
+      onePageLayer2Body: 'Credential synchronization, Grid/MFA policy checks and provisioning threads.',
+      onePageLayer3Title: '🗄️ Layer 3: Persistence / Database',
+      onePageLayer3Body: 'Oracle/PostgreSQL connection pool availability and LDAP/AD replication.',
+      onePageFindingsTitle: '🎯 KEY FORENSIC FINDINGS & ROOT CAUSE ANALYSIS',
+      onePageSeverityCrit: 'Severity: CRITICAL / P1',
+      onePageSeverityOk: 'Severity: NORMAL / CONTROLLED',
+      onePageRemediationTitle: '🛠️ IMMEDIATE ACTION PLAN (0 - 24 HOURS)',
+      wordDocTitle: 'Official Entrust Incident Report - IT Servicios de Venezuela'
+    }
+  };
+
+  function getReportI18n() {
+    const lang = state.reportLanguage === 'en' ? 'en' : 'es';
+    return REPORT_I18N[lang];
+  }
+
+  window.setReportLanguageGlobal = function(lang) {
+    state.reportLanguage = lang === 'en' ? 'en' : 'es';
+    try {
+      localStorage.setItem('app_report_language', state.reportLanguage);
+    } catch(e) {}
+    
+    // Update button styles in modal header
+    const btnEs = document.getElementById('btn-report-lang-es');
+    const btnEn = document.getElementById('btn-report-lang-en');
+    if (btnEs && btnEn) {
+      if (state.reportLanguage === 'es') {
+        btnEs.style.background = '#0284c7';
+        btnEs.style.color = '#fff';
+        btnEn.style.background = 'transparent';
+        btnEn.style.color = 'var(--text-muted)';
+      } else {
+        btnEn.style.background = '#0284c7';
+        btnEn.style.color = '#fff';
+        btnEs.style.background = 'transparent';
+        btnEs.style.color = 'var(--text-muted)';
+      }
+    }
+
+    // Update modal title and subtitle
+    const modalTitle = document.getElementById('report-modal-header-title');
+    const modalSubtitle = document.getElementById('report-modal-header-subtitle');
+    if (modalTitle) modalTitle.textContent = state.reportLanguage === 'en' ? 'Official Entrust Incident Report' : 'Informe Oficial de Incidentes Entrust';
+    if (modalSubtitle) modalSubtitle.textContent = state.reportLanguage === 'en' ? 'IT SERVICIOS DE VENEZUELA — Certified Forensic Audit & Expert Report' : 'IT SERVICIOS DE VENEZUELA — Documento Pericial y Auditoría Forense Certificada';
+
+    // Re-render report if open
+    const modal = document.getElementById('exec-report-modal');
+    if (modal && modal.classList.contains('active')) {
+      generateExecutiveReport(state.lastReportOnlyCatalog || false);
+    }
+  };
+
   function initExecReportModule() {
     const btnGen = document.getElementById('btn-generate-exec-report');
     const btnClose = document.getElementById('btn-close-exec-report');
     const btnPrint = document.getElementById('btn-print-exec-report');
     const btnDownloadPdf = document.getElementById('btn-download-pdf-exec-report');
+    const btnLangEs = document.getElementById('btn-report-lang-es');
+    const btnLangEn = document.getElementById('btn-report-lang-en');
+
+    if (btnLangEs) {
+      btnLangEs.addEventListener('click', () => window.setReportLanguageGlobal('es'));
+    }
+    if (btnLangEn) {
+      btnLangEn.addEventListener('click', () => window.setReportLanguageGlobal('en'));
+    }
+
+    // Inicializar estado visual del botón según idioma guardado
+    if (state.reportLanguage === 'en' && btnLangEn && btnLangEs) {
+      btnLangEn.style.background = '#0284c7';
+      btnLangEn.style.color = '#fff';
+      btnLangEs.style.background = 'transparent';
+      btnLangEs.style.color = 'var(--text-muted)';
+    }
 
     if (btnGen) {
       btnGen.addEventListener('click', (e) => {
@@ -1049,9 +1305,12 @@ document.addEventListener('DOMContentLoaded', () => {
   async function downloadOnePageExecutivePdf() {
     const btn = document.getElementById('btn-download-onepage-exec-report');
     const origHtml = btn ? btn.innerHTML : '';
+    const i18n = getReportI18n();
+    const isEn = state.reportLanguage === 'en';
+
     if (btn) {
       btn.disabled = true;
-      btn.innerHTML = '⏳ Generando PDF...';
+      btn.innerHTML = isEn ? '⏳ Generating PDF...' : '⏳ Generando PDF...';
     }
 
     const activeClient = getActiveClientProfile();
@@ -1098,14 +1357,14 @@ document.addEventListener('DOMContentLoaded', () => {
               IT SERVICIOS DE VENEZUELA, S.A.
             </div>
             <div style="font-size:11px; font-weight:700; color:#dc2626; text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;">
-              DICTAMEN EJECUTIVO DIRECTIVO — AUDITORÍA FORENSE ENTRUST
+              ${i18n.onePageTitle}
             </div>
           </div>
         </div>
         <div style="text-align:right; font-size:9.5px; color:#475569; line-height:1.4;">
-          <div><strong style="color:#0a3d6d;">EXPEDIENTE:</strong> EXP-VP-EXEC-${Date.now().toString(16).toUpperCase().slice(-6)}</div>
-          <div><strong style="color:#0f172a;">CLIENTE:</strong> ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}</div>
-          <div><strong style="color:#0f172a;">FECHA:</strong> ${dateStamp} | <strong style="color:#0f172a;">PERITO:</strong> Ing. Tomás Acosta</div>
+          <div><strong style="color:#0a3d6d;">${i18n.dossier}</strong> EXP-VP-EXEC-${Date.now().toString(16).toUpperCase().slice(-6)}</div>
+          <div><strong style="color:#0f172a;">${isEn ? 'CLIENT:' : 'CLIENTE:'}</strong> ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}</div>
+          <div><strong style="color:#0f172a;">${isEn ? 'DATE:' : 'FECHA:'}</strong> ${dateStamp} | <strong style="color:#0f172a;">${isEn ? 'AUDITOR:' : 'PERITO:'}</strong> ${i18n.signatureName}</div>
         </div>
       </div>
 
@@ -1113,69 +1372,75 @@ document.addEventListener('DOMContentLoaded', () => {
       <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:12px;">
         <div style="background:#f0fdf4; border:1.5px solid ${healthBadgeColor}; padding:10px 8px; border-radius:6px; text-align:center;">
           <div style="font-size:22px; font-weight:900; color:${healthBadgeColor}; line-height:1;">${calculatedHealth}%</div>
-          <div style="font-size:8.5px; color:#166534; text-transform:uppercase; font-weight:800; margin-top:4px;">Salud Operativa Clúster</div>
+          <div style="font-size:8.5px; color:#166534; text-transform:uppercase; font-weight:800; margin-top:4px;">${i18n.onePageHealth}</div>
         </div>
         <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:10px 8px; border-radius:6px; text-align:center;">
           <div style="font-size:22px; font-weight:900; color:#0f172a; line-height:1;">${totalCount.toLocaleString()}</div>
-          <div style="font-size:8.5px; color:#475569; text-transform:uppercase; font-weight:800; margin-top:4px;">Trazas Procesadas</div>
+          <div style="font-size:8.5px; color:#475569; text-transform:uppercase; font-weight:800; margin-top:4px;">${i18n.onePageTraces}</div>
         </div>
         <div style="background:#fef2f2; border:1px solid #f87171; padding:10px 8px; border-radius:6px; text-align:center;">
           <div style="font-size:22px; font-weight:900; color:#dc2626; line-height:1;">${criticalLogsCount.toLocaleString()}</div>
-          <div style="font-size:8.5px; color:#991b1b; text-transform:uppercase; font-weight:800; margin-top:4px;">Fallos Críticos (520/IDaaS)</div>
+          <div style="font-size:8.5px; color:#991b1b; text-transform:uppercase; font-weight:800; margin-top:4px;">${i18n.onePageFailures}</div>
         </div>
         <div style="background:#fffbeb; border:1px solid #fcd34d; padding:10px 8px; border-radius:6px; text-align:center;">
           <div style="font-size:22px; font-weight:900; color:#d97706; line-height:1;">${warningLogsCount.toLocaleString()}</div>
-          <div style="font-size:8.5px; color:#92400e; text-transform:uppercase; font-weight:800; margin-top:4px;">Alertas Auditoría (AUD)</div>
+          <div style="font-size:8.5px; color:#92400e; text-transform:uppercase; font-weight:800; margin-top:4px;">${i18n.onePageAlerts}</div>
         </div>
       </div>
 
       <!-- CORRELACIÓN MULTI-CAPA RESUMIDA -->
       <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:12px;">
         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-top:3px solid #0284c7; padding:8px; border-radius:4px; font-size:10px;">
-          <div style="font-weight:800; color:#0a3d6d; margin-bottom:2px;">🌐 Capa 1: Proxy / Balanceo</div>
-          <div style="color:#475569; line-height:1.3;">Validación de timeouts, certificados SSL/TLS y enrutamiento hacia servidores de identidad.</div>
+          <div style="font-weight:800; color:#0a3d6d; margin-bottom:2px;">${i18n.onePageLayer1Title}</div>
+          <div style="color:#475569; line-height:1.3;">${i18n.onePageLayer1Body}</div>
         </div>
         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-top:3px solid #dc2626; padding:8px; border-radius:4px; font-size:10px;">
-          <div style="font-weight:800; color:#0a3d6d; margin-bottom:2px;">🛡️ Capa 2: Motor Entrust</div>
-          <div style="color:#475569; line-height:1.3;">Sincronía de credenciales, políticas Grid/MFA y validación de hilos de aprovisionamiento.</div>
+          <div style="font-weight:800; color:#0a3d6d; margin-bottom:2px;">${i18n.onePageLayer2Title}</div>
+          <div style="color:#475569; line-height:1.3;">${i18n.onePageLayer2Body}</div>
         </div>
         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-top:3px solid #7c3aed; padding:8px; border-radius:4px; font-size:10px;">
-          <div style="font-weight:800; color:#0a3d6d; margin-bottom:2px;">🗄️ Capa 3: Persistencia / DB</div>
-          <div style="color:#475569; line-height:1.3;">Disponibilidad de pool Oracle/PostgreSQL y replicación de directorios LDAP/AD.</div>
+          <div style="font-weight:800; color:#0a3d6d; margin-bottom:2px;">${i18n.onePageLayer3Title}</div>
+          <div style="color:#475569; line-height:1.3;">${i18n.onePageLayer3Body}</div>
         </div>
       </div>
 
       <!-- HALLAZGOS FORENSES CRÍTICOS -->
       <div style="border:1px solid #cbd5e1; border-radius:6px; padding:10px 12px; margin-bottom:12px; background:#f8fafc;">
         <div style="font-size:11px; font-weight:800; color:#0a3d6d; margin-bottom:6px; display:flex; justify-content:space-between;">
-          <span>🎯 PRINCIPALES HALLAZGOS Y CAUSA RAÍZ TÉCNICA</span>
-          <span style="color:#dc2626; font-weight:700;">Severidad: ${criticalLogsCount > 0 ? 'CRÍTICA / P1' : 'CONTROLADA'}</span>
+          <span>${i18n.onePageFindingsTitle}</span>
+          <span style="color:#dc2626; font-weight:700;">${criticalLogsCount > 0 ? i18n.onePageSeverityCrit : i18n.onePageSeverityOk}</span>
         </div>
         <div style="font-size:10.5px; color:#334155; line-height:1.4;">
-          ${criticalLogsCount > 0 ? `
+          ${criticalLogsCount > 0 ? (isEn ? `
+            • <strong>Operational Impact:</strong> Identified <strong>${criticalLogsCount.toLocaleString()}</strong> rejected transactions impacting user enrollment and authentication continuity.<br>
+            • <strong>Diagnosed Root Cause:</strong> Misalignment in existing credential update flags and worker thread saturation during bulk ingestion.<br>
+            • <strong>Impacted Channels:</strong> Digital Banking, WSO2 API Gateway Integration, and Batch Provisioning.
+          ` : `
             • <strong>Impacto Operativo:</strong> Se identificaron <strong>${criticalLogsCount.toLocaleString()}</strong> transacciones denegadas afectando la continuidad de enrolamiento y autenticación.<br>
             • <strong>Causa Raíz Diagnosticada:</strong> Desalineación en parámetros de actualización de credenciales preexistentes y saturación de hilos en aprovisionamiento masivo.<br>
             • <strong>Canal Afectado:</strong> Banca Digital, Integración API WSO2 y Procesamiento en Lotes de Aprovisionamiento.
+          `) : (isEn ? `
+            • <strong>Stability Status:</strong> The platform is operating within all established SLA availability and technical tolerance thresholds.
           ` : `
             • <strong>Diagnóstico de Estabilidad:</strong> La plataforma opera dentro de los umbrales de disponibilidad y tolerancia técnica estipulados en el SLA.
-          `}
+          `)}
         </div>
       </div>
 
       <!-- PLAN DE REMEDIACIÓN INMEDIATA (CLI / CONFIG) -->
       <div style="margin-bottom:12px;">
         <div style="font-size:11px; font-weight:800; color:#0a3d6d; margin-bottom:6px;">
-          🛠️ PLAN DE ACCIÓN INMEDIATO (0 - 24 HORAS)
+          ${i18n.onePageRemediationTitle}
         </div>
         <div style="background:#0f172a; color:#a5f3fc; padding:10px 12px; border-radius:6px; font-family:'JetBrains Mono', Consolas, monospace; font-size:9.5px; line-height:1.5;">
           ${isCloud ? `
-# 1. Habilitar directivas de sobrescritura en conector de aprovisionamiento masivo
+# 1. ${isEn ? 'Enable overwrite directives in bulk connector definition' : 'Habilitar directivas de sobrescritura en conector de aprovisionamiento masivo'}
 curl -X POST "https://identityguard-api.entrust.com/v1/bulk/config" -d '{"overwriteExistingGrid":true, "updateExistingCredentials":true}'
-# 2. Segmentar lotes de importación a bloques de 50.000 registros para evitar colisiones
+# 2. ${isEn ? 'Segment batch imports into 50k blocks to prevent collisions' : 'Segmentar lotes de importación a bloques de 50.000 registros para evitar colisiones'}
           ` : `
-REM 1. Verificación de servicios e hilos de administración Entrust OnPremise
+REM 1. ${isEn ? 'Entrust OnPremise services and threads health verification' : 'Verificación de servicios e hilos de administración Entrust OnPremise'}
 sc query "Entrust IdentityGuard Administration Service"
-keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\identityguard.keystore" -storepass changeit
+keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identityguard.keystore" -storepass changeit
           `}
         </div>
       </div>
@@ -1183,11 +1448,11 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       <!-- SELLO CRIPTOGRÁFICO Y DICTAMEN PERICIAL -->
       <div style="border-top:1.5px solid #0a3d6d; padding-top:8px; display:flex; justify-content:space-between; align-items:center; font-size:9px; color:#475569;">
         <div>
-          <strong style="color:#0a3d6d;">Ing. Tomás Acosta Ortiz</strong> — Especialista Principal en Ciberseguridad & Infraestructura Entrust<br>
+          <strong style="color:#0a3d6d;">${i18n.signatureName}</strong> — ${i18n.signatureRole}<br>
           <em>IT Servicios de Venezuela, S.A. | RIF: J-30694859-0</em>
         </div>
         <div style="text-align:right; font-family:monospace; background:#f1f5f9; padding:4px 8px; border-radius:4px; border:1px solid #cbd5e1;">
-          🔒 <strong>SELLO SHA-256:</strong> SHA256-VP-${Date.now().toString(16).toUpperCase()}-ITSERV
+          🔒 <strong>${isEn ? 'SHA-256 SEAL:' : 'SELLO SHA-256:'}</strong> SHA256-VP-${Date.now().toString(16).toUpperCase()}-ITSERV
         </div>
       </div>
     `;
@@ -1210,6 +1475,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       }
     }
   }
+
 
   async function downloadExecutiveReportPdf() {
     const btn = document.getElementById('btn-download-pdf-exec-report');
@@ -1341,10 +1607,12 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
   function generateTimelineHeatmapHtml(targetLogs) {
     const isGlobal = !!state.globalStreamMetrics;
     const hourBuckets = new Map();
+    const i18n = getReportI18n();
+    const isEn = state.reportLanguage === 'en';
 
     if (isGlobal && state.globalStreamMetrics.timelineBuckets && state.globalStreamMetrics.timelineBuckets.length > 0) {
       state.globalStreamMetrics.timelineBuckets.forEach(b => {
-        const rawBucket = b.bucket || ''; // e.g. "2026-09-08 16" or "2026-09-08T16"
+        const rawBucket = b.bucket || '';
         const parts = rawBucket.replace('T', ' ').split(' ');
         const datePart = parts[0] || '2026-09-08';
         const hourStr = parts[1] || '00';
@@ -1352,9 +1620,9 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
         const padHour = String(hourNum).padStart(2, '0');
 
         let ampmStr = 'AM';
-        if (hourNum === 12) ampmStr = 'PM Mediodía';
+        if (hourNum === 12) ampmStr = isEn ? '12 PM Noon' : 'PM Mediodía';
         else if (hourNum > 12) ampmStr = `${hourNum - 12} PM`;
-        else if (hourNum === 0) ampmStr = '12 AM Medianoche';
+        else if (hourNum === 0) ampmStr = isEn ? '12 AM Midnight' : '12 AM Medianoche';
         else ampmStr = `${hourNum} AM`;
 
         const timeRangeStr = `${padHour}:00 - ${padHour}:59 hrs (${ampmStr})`;
@@ -1384,7 +1652,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
 
         const timeMatch = textToSearch.match(/(\d{2}):(\d{2})/);
         let sortKey = datePart || '9999-99-99';
-        let bucketKey = 'Horario General';
+        let bucketKey = isEn ? 'General Schedule' : 'Horario General';
 
         if (timeMatch) {
           const hourNum = parseInt(timeMatch[1], 10);
@@ -1392,9 +1660,9 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
           sortKey = `${datePart || '0000-00-00'} ${padHour}`;
 
           let ampmStr = 'AM';
-          if (hourNum === 12) ampmStr = 'PM Mediodía';
+          if (hourNum === 12) ampmStr = isEn ? '12 PM Noon' : 'PM Mediodía';
           else if (hourNum > 12) ampmStr = `${hourNum - 12} PM`;
-          else if (hourNum === 0) ampmStr = '12 AM Medianoche';
+          else if (hourNum === 0) ampmStr = isEn ? '12 AM Midnight' : '12 AM Medianoche';
           else ampmStr = `${hourNum} AM`;
 
           const timeRangeStr = `${padHour}:00 - ${padHour}:59 hrs (${ampmStr})`;
@@ -1414,7 +1682,6 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
 
     if (hourBuckets.size === 0) return '';
 
-    // Ordenar de forma estrictamente cronológica
     const sortedBuckets = Array.from(hourBuckets.entries()).sort((a, b) => a[0].localeCompare(b[0]));
 
     let rowsHtml = '';
@@ -1425,7 +1692,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       rowsHtml += `
         <tr style="background:${isBurst ? '#fee2e2' : '#ffffff'}; border-bottom:1px solid #cbd5e1;">
           <td style="padding:6px 8px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; text-align:left;">
-            ${escapeHtml(data.key)} ${isBurst ? `<span style="background:#dc2626; color:#fff; padding:2px 6px; border-radius:3px; font-size:10px; margin-left:6px; font-weight:bold;">🔥 RÁFAGA (${errPct}% fallos)</span>` : ''}
+            ${escapeHtml(data.key)} ${isBurst ? `<span style="background:#dc2626; color:#fff; padding:2px 6px; border-radius:3px; font-size:10px; margin-left:6px; font-weight:bold;">${i18n.burstBadge.replace('{pct}', errPct)}</span>` : ''}
           </td>
           <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; font-weight:bold;">${data.total.toLocaleString()}</td>
           <td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; color:#dc2626; font-weight:bold;">${data.critical.toLocaleString()}</td>
@@ -1438,19 +1705,19 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
     return `
       <div style="margin-bottom:25px; page-break-inside:avoid; break-inside:avoid;">
         <h3 style="color:#0a3d6d; font-size:14px; margin-bottom:10px; border-bottom:2px solid #0a3d6d; padding-bottom:4px;">
-          📈 Distribución Temporal & Detección de Ráfagas de Errores por Fecha Completa (Timeline Heatmap)
+          ${i18n.timelineHeatmapTitle}
         </h3>
         <p style="font-size:11px; color:#475569; margin-bottom:10px;">
-          Resumen de concentración de ráfagas de peticiones e incidentes distribuidos por fecha calendario e intervalo de hora durante la muestra ${isGlobal ? '(Totalidad del Dataset Indexado en SQLite)' : ''}.
+          ${i18n.timelineHeatmapSub} ${isGlobal ? (isEn ? '(Entire SQLite Indexed Dataset)' : '(Totalidad del Dataset Indexado en SQLite)') : ''}
         </p>
         <table style="width:100%; border-collapse:collapse; font-size:11px;">
           <thead>
             <tr style="background:#0a3d6d; color:#ffffff;">
-              <th style="padding:6px; border:1px solid #0a3d6d; text-align:left;">Fecha Calendario y Rango Horario</th>
-              <th style="padding:6px; border:1px solid #0a3d6d;">Total Eventos</th>
-              <th style="padding:6px; border:1px solid #0a3d6d;">Errores Críticos</th>
-              <th style="padding:6px; border:1px solid #0a3d6d;">Alertas (Warn)</th>
-              <th style="padding:6px; border:1px solid #0a3d6d;">Operación Info</th>
+              <th style="padding:6px; border:1px solid #0a3d6d; text-align:left;">${i18n.thDateHour}</th>
+              <th style="padding:6px; border:1px solid #0a3d6d;">${i18n.thTotalEvents}</th>
+              <th style="padding:6px; border:1px solid #0a3d6d;">${i18n.thCriticalErrors}</th>
+              <th style="padding:6px; border:1px solid #0a3d6d;">${i18n.thWarnAlerts}</th>
+              <th style="padding:6px; border:1px solid #0a3d6d;">${i18n.thInfoOps}</th>
             </tr>
           </thead>
           <tbody>
@@ -1462,6 +1729,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
   }
 
   function generateExecutiveReport(onlyCatalogErrors = false) {
+    state.lastReportOnlyCatalog = onlyCatalogErrors;
     const container = document.getElementById('exec-report-container') || dom.execReportContainer;
     const modal = document.getElementById('exec-report-modal') || dom.execReportModal;
     if (!container || !modal) {
@@ -1469,8 +1737,11 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       return;
     }
 
+    const i18n = getReportI18n();
+    const isEn = state.reportLanguage === 'en';
+
     if ((!state.logs || state.logs.length === 0) && !state.globalStreamMetrics) {
-      alert('⚠️ No hay registros cargados en la sesión actual. Por favor carga un archivo de log antes de generar el informe.');
+      alert(isEn ? '⚠️ No log records loaded in current session. Please load a log file before generating the report.' : '⚠️ No hay registros cargados en la sesión actual. Por favor carga un archivo de log antes de generar el informe.');
       return;
     }
 
@@ -1484,14 +1755,14 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
         platform: 'Entrust IdentityGuard OnPremise',
         version: 'Release 11.0',
         build: 'Release 11.0 (General)',
-        contact: 'Gerencia de Seguridad de la Información / TI',
+        contact: isEn ? 'Information Security & IT Management' : 'Gerencia de Seguridad de la Información / TI',
         engineer: 'Tomás Acosta'
       };
     } else {
       activeClient = getActiveClientProfile();
     }
 
-    const dateStr = new Date().toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'medium' });
+    const dateStr = new Date().toLocaleString(i18n.langCode, { dateStyle: 'full', timeStyle: 'medium' });
     const targetLogs = state.logs || [];
     const consolidated = getConsolidatedMetrics();
     const corr = correlateMultiFileEvents();
@@ -1517,7 +1788,6 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
     const healthValStr = `${calculatedHealth}%`;
     const healthColor = calculatedHealth >= 95 ? '#059669' : (calculatedHealth >= 80 ? '#d97706' : '#dc2626');
 
-    // Formateador preciso de porcentaje
     const formatPctStr = (count, total) => {
       if (!total || total === 0 || !count || count === 0) return '0%';
       const pct = (count / total) * 100;
@@ -1526,23 +1796,18 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       return pct.toFixed(1) + '%';
     };
 
-    // Porciones visuales mínimas para el gráfico
     const visualCritPct = totalCount > 0 ? Math.max(4, (criticalLogsCount / totalCount) * 100) : 0;
     const visualWarnPct = totalCount > 0 && warningLogsCount > 0 ? Math.max(3, (warningLogsCount / totalCount) * 100) : 0;
 
-    const reportTitleText = onlyCatalogErrors 
-      ? `DICTAMEN FORENSE DE ERRORES CRÍTICOS ENTRUST [520xxx / AUD / ORA / IDaaS]`
-      : `DICTAMEN PERICIAL FORENSE Y AUDITORÍA DE PLATAFORMA ENTRUST`;
-
+    const reportTitleText = onlyCatalogErrors ? i18n.titleCatalog : i18n.titleDefault;
     const reportScopeText = onlyCatalogErrors
-      ? `Filtro Exclusivo: Catálogo de Errores y Fallos Críticos (${totalCount.toLocaleString()} eventos en ${consolidated.fileCount || 1} archivos)`
-      : `Auditoría Forense Consolidada (${totalCount.toLocaleString()} eventos en ${consolidated.fileCount || 1} archivos analizados)`;
+      ? i18n.scopeCatalog.replace('{count}', totalCount.toLocaleString()).replace('{files}', consolidated.fileCount || 1)
+      : i18n.scopeConsolidated.replace('{count}', totalCount.toLocaleString()).replace('{files}', consolidated.fileCount || 1);
 
     let incidentsHtml = '';
     let topCodesHtml = '';
     let sortedIncidents = [];
 
-    // Agrupar todos los códigos detectados con su metadata técnica
     const allUniqueCodesMap = new Map();
 
     if (state.globalStreamMetrics?.topCodes) {
@@ -1554,7 +1819,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
           diag,
           level: (item.code.includes('error') || item.code.startsWith('520') || item.code.includes('ORA')) ? 'CRITICAL' : 'INFO',
           service: diag.category || 'Entrust Service',
-          sampleRaw: `[Audit Stream] Evento registrado en trazabilidad masiva para código ${item.code}`
+          sampleRaw: isEn ? `[Audit Stream] Event recorded in massive dataset for code ${item.code}` : `[Audit Stream] Evento registrado en trazabilidad masiva para código ${item.code}`
         });
       });
     }
@@ -1580,7 +1845,6 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
     });
 
     sortedIncidents = Array.from(allUniqueCodesMap.values()).sort((a, b) => b.count - a.count);
-
     const diagMapSize = sortedIncidents.length;
 
     sortedIncidents.forEach((item, idx) => {
@@ -1588,11 +1852,11 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       const { code, diag, count, sampleRaw, level, service } = item;
       const pctStr = formatPctStr(count, totalCount);
 
-      let familyBadge = '🚨 520xxx Core';
+      let familyBadge = i18n.fam520Title;
       let familyColor = '#dc2626';
-      if (/^AUD\d+/i.test(code)) { familyBadge = '📋 AUD Auditoría'; familyColor = '#d97706'; }
-      else if (/^ORA-\d+/i.test(code)) { familyBadge = '🗄️ ORA Database'; familyColor = '#7c3aed'; }
-      else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(code)) { familyBadge = '☁️ IDaaS Cloud'; familyColor = '#0284c7'; }
+      if (/^AUD\d+/i.test(code)) { familyBadge = i18n.famAudTitle; familyColor = '#d97706'; }
+      else if (/^ORA-\d+/i.test(code)) { familyBadge = i18n.famOraTitle; familyColor = '#7c3aed'; }
+      else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(code)) { familyBadge = i18n.famIdaasTitle; familyColor = '#0284c7'; }
 
       if (onlyCatalogErrors) {
         incidentsHtml += `
@@ -1602,19 +1866,19 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
                 <span style="background:${familyColor}15; color:${familyColor}; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:4px; font-family:monospace;">${familyBadge} (${count.toLocaleString()}x)</span>
                 <span style="font-family:monospace; font-size:12px; font-weight:bold; color:#0a3d6d; margin-left:8px;">#${idxNum} - [${escapeHtml(code)}] ${escapeHtml(service)}</span>
               </div>
-              <span style="font-family:monospace; font-size:11px; color:#64748b; font-weight:bold;">${count.toLocaleString()} Ocurrencias (${pctStr})</span>
+              <span style="font-family:monospace; font-size:11px; color:#64748b; font-weight:bold;">${count.toLocaleString()} ${i18n.occurrences} (${pctStr})</span>
             </div>
             <div style="background:#0f172a; color:#f87171; padding:10px 12px; border-radius:6px; font-family:Consolas, Monaco, monospace; font-size:11px; line-height:1.5; margin-bottom:10px; word-break:break-all;">
               ${escapeHtml(sampleRaw)}
             </div>
             <div style="font-size:12px; color:#1e293b; margin-bottom:6px;">
-              <strong style="color:#0a3d6d;">Diagnóstico:</strong> ${escapeHtml(diag.meaning || code)}
+              <strong style="color:#0a3d6d;">${i18n.diagnosis}</strong> ${escapeHtml(diag.meaning || code)}
             </div>
             <div style="font-size:12px; color:#b91c1c; margin-bottom:6px;">
-              <strong style="color:#991b1b;">Causa Raíz:</strong> ${escapeHtml(diag.rootCause || 'Anomalía en los parámetros de autenticación o aprovisionamiento.')}
+              <strong style="color:#991b1b;">${i18n.rootCause}</strong> ${escapeHtml(diag.rootCause || (isEn ? 'Anomaly in authentication or provisioning parameters.' : 'Anomalía en los parámetros de autenticación o aprovisionamiento.'))}
             </div>
             <div style="font-size:11px; color:#047857; background:#ecfdf5; padding:8px 10px; border-radius:4px; border:1px solid #a7f3d0; white-space:pre-line;">
-              <strong style="color:#065f46;">Remediación Inmediata:</strong><br>${escapeHtml(diag.remediation || 'Verificar configuración de repositorio y consultar manual técnico.')}
+              <strong style="color:#065f46;">${i18n.thRemediation}:</strong><br>${escapeHtml(diag.remediation || (isEn ? 'Verify repository configuration and consult technical manual.' : 'Verificar configuración de repositorio y consultar manual técnico.'))}
             </div>
           </div>`;
       } else {
@@ -1622,15 +1886,15 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
           <tr style="background:${idxNum % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
             <td style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center;">
               <span style="white-space:nowrap; background:${familyColor}15; color:${familyColor}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">${familyBadge}</span><br>
-              <span style="font-size:9.5px; color:${familyColor}; font-weight:bold;">${count.toLocaleString()} veces</span>
+              <span style="font-size:9.5px; color:${familyColor}; font-weight:bold;">${count.toLocaleString()} ${i18n.times}</span>
             </td>
             <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(service)}</td>
             <td style="padding:8px 6px; border:1px solid #cbd5e1;">
               <strong style="color:#0a3d6d; font-size:11px;">[${escapeHtml(code)}] ${escapeHtml(diag.title || code)}</strong><br>
               <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(diag.meaning || code)}</span>
             </td>
-            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(diag.rootCause || 'Fallo operacional detectado')}</td>
-            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(diag.remediation || 'Consultar manual técnico')}</td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(diag.rootCause || (isEn ? 'Operational failure detected' : 'Fallo operacional detectado'))}</td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(diag.remediation || (isEn ? 'Consult technical manual' : 'Consultar manual técnico'))}</td>
           </tr>`;
       }
 
@@ -1639,14 +1903,13 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
           <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:${familyColor}; text-align:center;">[${escapeHtml(code)}]<br><span style="font-size:9px; color:#64748b;">${familyBadge}</span></td>
           <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(diag.title || code)}</td>
           <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:${familyColor}; font-family:monospace;">${count.toLocaleString()} (${pctStr})</td>
-          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(diag.rootCause || 'Fallo operacional')}</td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(diag.rootCause || (isEn ? 'Operational incident' : 'Fallo operacional'))}</td>
         </tr>`;
     });
 
-    // Construcción de la sección de Correlación Cruzada en el Informe
     let corrSectionHtml = `
       <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:14px; border-radius:6px; margin-bottom:25px; page-break-inside:avoid;">
-        <h4 style="margin:0 0 10px 0; color:#0a3d6d; font-size:13px; font-weight:800;">🔗 Correlación Multi-Archivo y Trazabilidad Multi-Capa (${corr.totalFiles} Archivos Totales)</h4>
+        <h4 style="margin:0 0 10px 0; color:#0a3d6d; font-size:13px; font-weight:800;">${i18n.multiFileCorrelation.replace('{files}', corr.totalFiles)}</h4>
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-bottom:12px;">
     `;
 
@@ -1655,8 +1918,8 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       corrSectionHtml += `
         <div style="background:#fff; border:1px solid #e2e8f0; padding:8px 10px; border-radius:4px; font-size:11px;">
           <div style="font-weight:bold; color:#0a3d6d; margin-bottom:2px;">${layer.name}</div>
-          <div style="color:#64748b;">Archivos: <strong>${layer.files.length}</strong> | Logs: <strong style="color:#0284c7;">${layer.count.toLocaleString()}</strong></div>
-          <div style="color:${layer.errors > 0 ? '#dc2626' : '#10b981'}; font-weight:bold;">Incidentes: ${layer.errors.toLocaleString()}</div>
+          <div style="color:#64748b;">${i18n.filesLabel} <strong>${layer.files.length}</strong> | ${i18n.logsLabel} <strong style="color:#0284c7;">${layer.count.toLocaleString()}</strong></div>
+          <div style="color:${layer.errors > 0 ? '#dc2626' : '#10b981'}; font-weight:bold;">${i18n.incidentsLabel} ${layer.errors.toLocaleString()}</div>
         </div>
       `;
     });
@@ -1672,19 +1935,19 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
     corrSectionHtml += `</div></div>`;
 
     const section1Content = onlyCatalogErrors
-      ? `<div style="margin-bottom:25px;">${incidentsHtml || '<div style="padding:15px; text-align:center; color:#64748b;">No se detectaron errores de catálogo durante el análisis.</div>'}</div>`
+      ? `<div style="margin-bottom:25px;">${incidentsHtml || `<div style="padding:15px; text-align:center; color:#64748b;">${i18n.noCatalogErrors}</div>`}</div>`
       : `<table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
           <thead>
             <tr style="background:#0a3d6d; color:#ffffff; text-align:left; page-break-inside:avoid; break-inside:avoid;">
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:14%; text-align:center; color:#fff;">Familia / Nivel</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:14%; color:#fff;">Servicio / API</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:26%; color:#fff;">Evento & Significado</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:22%; color:#fff;">Causa Raíz Probable</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:24%; color:#fff;">Remediación Inmediata</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:14%; text-align:center; color:#fff;">${i18n.thFamily}</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:14%; color:#fff;">${i18n.thService}</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:26%; color:#fff;">${i18n.thEventMeaning}</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:22%; color:#fff;">${i18n.thRootCause}</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:24%; color:#fff;">${i18n.thRemediation}</th>
             </tr>
           </thead>
           <tbody>
-            ${incidentsHtml || '<tr><td colspan="5" style="padding:15px; text-align:center; color:#64748b;">No se detectaron fallos críticos durante el periodo de análisis.</td></tr>'}
+            ${incidentsHtml || `<tr><td colspan="5" style="padding:15px; text-align:center; color:#64748b;">${i18n.noCriticalFailures}</td></tr>`}
           </tbody>
         </table>`;
 
@@ -1699,31 +1962,31 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
             </div>
             <div>
               <h1 style="color:#0a3d6d; margin:0; font-size:20px; font-weight:900; letter-spacing:0.5px; line-height:1.1;">IT SERVICIOS DE VENEZUELA, S.A.</h1>
-              <div style="color:#64748b; font-size:10px; font-weight:600; margin-top:2px;">DIVISIÓN DE CIBERSEGURIDAD, IDENTIDAD DIGITAL & ARQUITECTURA FORENSE | RIF: J-30694859-0</div>
+              <div style="color:#64748b; font-size:10px; font-weight:600; margin-top:2px;">${i18n.division}</div>
               <h3 style="color:#dc2626; margin:4px 0 0 0; font-size:12.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">${reportTitleText}</h3>
             </div>
           </div>
           <div style="text-align:right; font-size:10.5px; color:#475569; line-height:1.4;">
-            <div><strong style="color:#0a3d6d;">EXPEDIENTE:</strong> EXP-FORENSIC-ENTRUST-2026-V5</div>
-            <div><strong style="color:#0f172a;">FECHA EMISIÓN:</strong> ${dateStr}</div>
-            <div><strong style="color:#0f172a;">PERITO AUDITOR:</strong> Ing. Tomás Acosta Ortiz</div>
-            <div style="margin-top:2px;"><span style="background:#fef2f2; color:#dc2626; border:1px solid #f87171; padding:2px 6px; border-radius:3px; font-weight:800; font-size:9.5px;">ESTRICTAMENTE CONFIDENCIAL / C-LEVEL</span></div>
+            <div><strong style="color:#0a3d6d;">${i18n.dossier}</strong> EXP-FORENSIC-ENTRUST-2026-V5</div>
+            <div><strong style="color:#0f172a;">${i18n.issueDate}</strong> ${dateStr}</div>
+            <div><strong style="color:#0f172a;">${i18n.leadAuditor}</strong> ${i18n.signatureName}</div>
+            <div style="margin-top:2px;"><span style="background:#fef2f2; color:#dc2626; border:1px solid #f87171; padding:2px 6px; border-radius:3px; font-weight:800; font-size:9.5px;">${i18n.confidential}</span></div>
           </div>
         </div>
 
         <!-- FICHA TÉCNICA DEL CLIENTE & ALCANCE -->
         <div style="background:#f8fafc; border:1px solid #cbd5e1; border-left:5px solid #0a3d6d; padding:14px 18px; margin-bottom:20px; border-radius:6px; display:grid; grid-template-columns: 1fr 1fr; gap:16px; font-size:12px;">
           <div>
-            <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">Cliente Destinatario:</div>
+            <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">${i18n.targetClient}</div>
             <div style="font-size:17px; font-weight:bold; color:#0a3d6d; margin-top:2px;">🏢 ${escapeHtml(activeClient.name)}</div>
-            <div style="margin-top:4px;"><strong>Destinatario:</strong> ${escapeHtml(activeClient.contact)}</div>
-            <div><strong>Perito Responsable:</strong> Ing. Tomás Acosta Ortiz — IT Servicios</div>
+            <div style="margin-top:4px;"><strong>${i18n.addressee}</strong> ${escapeHtml(activeClient.contact)}</div>
+            <div><strong>${i18n.expertInCharge}</strong> ${i18n.signatureName} — IT Servicios</div>
           </div>
           <div>
-            <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">Entorno & Servidor Entrust:</div>
+            <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">${i18n.environmentPlatform}</div>
             <div style="font-size:14px; font-weight:bold; color:#0f172a; margin-top:2px;">${platformDisplay}</div>
-            <div style="margin-top:4px;"><strong>Versión & Build:</strong> ${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</div>
-            <div><strong>Alcance del Análisis:</strong> <span style="color:#dc2626; font-weight:bold;">${reportScopeText}</span></div>
+            <div style="margin-top:4px;"><strong>${i18n.versionBuild}</strong> ${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</div>
+            <div><strong>${i18n.analysisScope}</strong> <span style="color:#dc2626; font-weight:bold;">${reportScopeText}</span></div>
           </div>
         </div>
 
@@ -1731,19 +1994,19 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
         <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:16px; border-radius:6px; margin-bottom:22px;">
           <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:14px;">
             <div style="text-align:center; background:#fff; padding:12px 8px; border-radius:6px; border:1.5px solid ${healthColor};">
-              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Índice de Salud Clúster</div>
+              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">${i18n.healthIndex}</div>
               <div style="font-size:24px; font-weight:900; color:${healthColor}; margin-top:2px;">${healthValStr}</div>
             </div>
             <div style="text-align:center; background:#fff; padding:12px 8px; border-radius:6px; border:1px solid #cbd5e1;">
-              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">Eventos Consolidados</div>
+              <div style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:bold;">${i18n.consolidatedEvents}</div>
               <div style="font-size:24px; font-weight:900; color:#0f172a; font-family:monospace; margin-top:2px;">${totalCount.toLocaleString()}</div>
             </div>
             <div style="text-align:center; background:#fff; padding:12px 8px; border-radius:6px; border:1px solid #f87171;">
-              <div style="font-size:10px; color:#dc2626; text-transform:uppercase; font-weight:bold;">Incidentes Críticos</div>
+              <div style="font-size:10px; color:#dc2626; text-transform:uppercase; font-weight:bold;">${i18n.criticalIncidents}</div>
               <div style="font-size:24px; font-weight:900; color:#dc2626; font-family:monospace; margin-top:2px;">${criticalLogsCount.toLocaleString()}</div>
             </div>
             <div style="text-align:center; background:#fff; padding:12px 8px; border-radius:6px; border:1px solid #fcd34d;">
-              <div style="font-size:10px; color:#d97706; text-transform:uppercase; font-weight:bold;">Alertas Auditoría (AUD)</div>
+              <div style="font-size:10px; color:#d97706; text-transform:uppercase; font-weight:bold;">${i18n.auditAlerts}</div>
               <div style="font-size:24px; font-weight:900; color:#d97706; font-family:monospace; margin-top:2px;">${warningLogsCount.toLocaleString()}</div>
             </div>
           </div>
@@ -1751,8 +2014,8 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
           <!-- Barra de Distribución Porcentual -->
           <div style="background:#fff; border:1px solid #e2e8f0; padding:10px 14px; border-radius:6px; margin-bottom:12px;">
             <div style="font-size:10px; font-weight:bold; color:#0a3d6d; text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between;">
-              <span>📊 Distribución por Severidad de Eventos</span>
-              <span style="color:#64748b; font-weight:normal;">Total Procesados: ${totalCount.toLocaleString()} en ${consolidated.fileCount || 1} archivos</span>
+              <span>${i18n.severityDistribution}</span>
+              <span style="color:#64748b; font-weight:normal;">${i18n.totalProcessed.replace('{count}', totalCount.toLocaleString()).replace('{files}', consolidated.fileCount || 1)}</span>
             </div>
             <div style="height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden; display:flex; margin-bottom:8px;">
               <div style="width:${visualCritPct}%; background:#dc2626;" title="CRITICAL/ERROR"></div>
@@ -1761,7 +2024,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
             </div>
             <div style="display:flex; justify-content:space-between; font-size:10px; color:#334155;">
               <div><span style="display:inline-block; width:8px; height:8px; background:#dc2626; border-radius:2px; margin-right:4px;"></span> <strong>CRITICAL/ERROR:</strong> ${criticalLogsCount.toLocaleString()} (${formatPctStr(criticalLogsCount, totalCount)})</div>
-              <div><span style="display:inline-block; width:8px; height:8px; background:#f59e0b; border-radius:2px; margin-right:4px;"></span> <strong>WARN (Auditoría):</strong> ${warningLogsCount.toLocaleString()} (${formatPctStr(warningLogsCount, totalCount)})</div>
+              <div><span style="display:inline-block; width:8px; height:8px; background:#f59e0b; border-radius:2px; margin-right:4px;"></span> <strong>WARN:</strong> ${warningLogsCount.toLocaleString()} (${formatPctStr(warningLogsCount, totalCount)})</div>
               <div><span style="display:inline-block; width:8px; height:8px; background:#0284c7; border-radius:2px; margin-right:4px;"></span> <strong>INFO:</strong> ${infoLogsCount.toLocaleString()} (${formatPctStr(infoLogsCount, totalCount)})</div>
             </div>
           </div>
@@ -1769,29 +2032,29 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
           <!-- Gráficos de Familias de Incidentes Entrust -->
           <div style="background:#fff; border:1px solid #e2e8f0; padding:12px 14px; border-radius:6px;">
             <div style="font-size:10.5px; font-weight:bold; color:#0a3d6d; text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between;">
-              <span>📈 Desglose Cuantitativo por Familias de Incidentes Entrust</span>
-              <span style="color:#64748b; font-weight:normal;">4 Familias Auditadas</span>
+              <span>${i18n.familyBreakdownTitle}</span>
+              <span style="color:#64748b; font-weight:normal;">${i18n.familyCountLabel}</span>
             </div>
             <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
               <div style="background:#fef2f2; border:1px solid #fecaca; padding:10px 8px; border-radius:4px; text-align:center;">
-                <div style="font-size:9.5px; color:#dc2626; font-weight:bold; text-transform:uppercase;">🚨 520xxx Core</div>
+                <div style="font-size:9.5px; color:#dc2626; font-weight:bold; text-transform:uppercase;">${i18n.fam520Title}</div>
                 <div style="font-size:18px; font-weight:bold; color:#dc2626; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^520/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
-                <div style="font-size:8.5px; color:#64748b;">Auth / Tokens / Sync</div>
+                <div style="font-size:8.5px; color:#64748b;">${i18n.fam520Sub}</div>
               </div>
               <div style="background:#fffbeb; border:1px solid #fde68a; padding:10px 8px; border-radius:4px; text-align:center;">
-                <div style="font-size:9.5px; color:#d97706; font-weight:bold; text-transform:uppercase;">📋 AUD Auditoría</div>
+                <div style="font-size:9.5px; color:#d97706; font-weight:bold; text-transform:uppercase;">${i18n.famAudTitle}</div>
                 <div style="font-size:18px; font-weight:bold; color:#d97706; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^AUD/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
-                <div style="font-size:8.5px; color:#64748b;">Admin & Security Audit</div>
+                <div style="font-size:8.5px; color:#64748b;">${i18n.famAudSub}</div>
               </div>
               <div style="background:#f5f3ff; border:1px solid #ddd6fe; padding:10px 8px; border-radius:4px; text-align:center;">
-                <div style="font-size:9.5px; color:#7c3aed; font-weight:bold; text-transform:uppercase;">🗄️ ORA Database</div>
+                <div style="font-size:9.5px; color:#7c3aed; font-weight:bold; text-transform:uppercase;">${i18n.famOraTitle}</div>
                 <div style="font-size:18px; font-weight:bold; color:#7c3aed; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /^ORA/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
-                <div style="font-size:8.5px; color:#64748b;">Oracle DB Connection</div>
+                <div style="font-size:8.5px; color:#64748b;">${i18n.famOraSub}</div>
               </div>
               <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:10px 8px; border-radius:4px; text-align:center;">
-                <div style="font-size:9.5px; color:#0284c7; font-weight:bold; text-transform:uppercase;">☁️ IDaaS Cloud</div>
+                <div style="font-size:9.5px; color:#0284c7; font-weight:bold; text-transform:uppercase;">${i18n.famIdaasTitle}</div>
                 <div style="font-size:18px; font-weight:bold; color:#0284c7; font-family:monospace; margin:2px 0;">${sortedIncidents.filter(i => /bulkidentityguard|assignedgrid|password|qa|migration/i.test(i.code)).reduce((acc, i) => acc + i.count, 0).toLocaleString()}</div>
-                <div style="font-size:8.5px; color:#64748b;">Bulk Provisioning</div>
+                <div style="font-size:8.5px; color:#64748b;">${i18n.famIdaasSub}</div>
               </div>
             </div>
           </div>
@@ -1802,20 +2065,20 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
 
         <!-- Sección I: Hallazgos & Diagnóstico -->
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
-          1. Hallazgos y Diagnóstico Técnico Clasificado [520xxx / AUD / ORA / IDaaS] (${diagMapSize} patrones únicos)
+          ${i18n.sec1Title.replace('{count}', diagMapSize)}
         </h3>
         ${section1Content}
 
         <!-- Tabla II: Análisis de Frecuencia de Errores -->
         <div style="margin-top:20px; page-break-inside:avoid; break-inside:avoid;">
-          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">2. Análisis Estadístico de Errores Reincidentes por Familia (520xxx / AUDxxx / ORA / IDaaS)</h3>
+          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">${i18n.sec2Title}</h3>
           <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
             <thead>
               <tr style="background:#e0f2fe; color:#0a3d6d; text-align:left; page-break-inside:avoid; break-inside:avoid;">
-                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:22%;">Código / Familia</th>
-                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:30%;">Descripción del Evento</th>
-                <th style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center; width:18%;">Reincidencias</th>
-                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:30%;">Diagnóstico & Causa Raíz</th>
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:22%;">${i18n.thCodeFamily}</th>
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:30%;">${i18n.thEventDesc}</th>
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center; width:18%;">${i18n.thReoccurrences}</th>
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:30%;">${i18n.thDiagRootCause}</th>
               </tr>
             </thead>
             <tbody>
@@ -1830,37 +2093,31 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
         <!-- Sección III: Plan Estratégico de Remediación en 3 Fases -->
         <div style="page-break-inside:avoid; break-inside:avoid; margin-top:20px;">
           <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
-            3. Plan Estratégico de Remediación Técnica en 3 Fases (Roadmap)
+            ${i18n.sec3Title}
           </h3>
           <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px;">
             <div style="background:#fef2f2; border:1px solid #f87171; border-top:4px solid #dc2626; border-radius:6px; padding:12px; font-size:11px;">
-              <div style="font-weight:900; color:#991b1b; font-size:11.5px; margin-bottom:6px;">⚡ FASE I: INMEDIATA (0 - 24H)</div>
+              <div style="font-weight:900; color:#991b1b; font-size:11.5px; margin-bottom:6px;">${i18n.phase1Title}</div>
               <div style="color:#334155; line-height:1.4;">
-                • Habilitar directivas <code>overwriteExistingGrid=true</code> y <code>updateExistingCredentials=true</code>.<br>
-                • Reinicio ordenado de servicios y saneamiento de hilos Tomcat.<br>
-                • Verificación de conectividad con keystores y certificados SSL.
+                ${i18n.phase1Body}
               </div>
             </div>
             <div style="background:#fffbeb; border:1px solid #fcd34d; border-top:4px solid #d97706; border-radius:6px; padding:12px; font-size:11px;">
-              <div style="font-weight:900; color:#92400e; font-size:11.5px; margin-bottom:6px;">🛠️ FASE II: CORTO PLAZO (1 - 7 DÍAS)</div>
+              <div style="font-weight:900; color:#92400e; font-size:11.5px; margin-bottom:6px;">${i18n.phase2Title}</div>
               <div style="color:#334155; line-height:1.4;">
-                • Sintonización de memoria JVM (<code>-Xms2048m -Xmx4096m</code>).<br>
-                • Ampliación del Connection Pool en base de datos Oracle.<br>
-                • Barrido y resincronización de repositorios LDAP/Active Directory.
+                ${i18n.phase2Body}
               </div>
             </div>
             <div style="background:#f0fdf4; border:1px solid #86efac; border-top:4px solid #16a34a; border-radius:6px; padding:12px; font-size:11px;">
-              <div style="font-weight:900; color:#166534; font-size:11.5px; margin-bottom:6px;">🛡️ FASE III: GOBERNANZA (30 DÍAS)</div>
+              <div style="font-weight:900; color:#166534; font-size:11.5px; margin-bottom:6px;">${i18n.phase3Title}</div>
               <div style="color:#334155; line-height:1.4;">
-                • Actualización de parches oficiales y mantenimiento preventivo.<br>
-                • Integración de monitoreo Syslog continuo con alertas tempranas.<br>
-                • Auditoría periódica de vencimiento de certificados X.509.
+                ${i18n.phase3Body}
               </div>
             </div>
           </div>
 
           <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:16px; border-radius:6px; font-size:12px; line-height:1.6; margin-bottom:25px;">
-            <div style="font-weight:bold; color:#0a3d6d; margin-bottom:8px;">Detalle de Recomendaciones Basadas en la Evidencia Forense:</div>
+            <div style="font-weight:bold; color:#0a3d6d; margin-bottom:8px;">${i18n.sec4Title}</div>
             <ul style="margin:0; padding-left:20px; color:#334155;">
               ${generateDynamicRecommendationsHtml(targetLogs, activeClient)}
             </ul>
@@ -1868,29 +2125,29 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
 
           <!-- Dictamen Ético, Certificación y Firma Oficial -->
           <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:14px; margin-bottom:20px; font-size:11px; color:#475569; line-height:1.5;">
-            <strong style="color:#0a3d6d;">DICTAMEN ÉTICO Y DECLARACIÓN DE CONFORMIDAD PERICIAL:</strong><br>
-            El presente documento ha sido elaborado conforme a los principios de integridad, confidencialidad, objetividad y rigor técnico profesional de <strong>IT SERVICIOS DE VENEZUELA, S.A.</strong>, alineado a las buenas prácticas internacionales para plataformas de gestión de identidad digital (ISO/IEC 27001, NIST SP 800-63B). Todas las conclusiones están fundamentadas estrictamente en la evidencia telemétrica y transaccional registrada en los registros de auditoría.
+            <strong style="color:#0a3d6d;">${i18n.ethicalTitle}</strong><br>
+            ${i18n.ethicalBody}
           </div>
 
           <!-- Firma y Cierre Oficial -->
           <div style="display:flex; justify-content:space-between; align-items:flex-end; padding-top:16px; border-top:2px solid #0a3d6d;">
             <div>
-              <div style="font-size:14px; font-weight:bold; color:#0a3d6d;">Ing. Tomás Acosta Ortiz</div>
-              <div style="font-size:11px; color:#475569;">Líder Técnico de Ciberseguridad & Infraestructura Entrust</div>
+              <div style="font-size:14px; font-weight:bold; color:#0a3d6d;">${i18n.signatureName}</div>
+              <div style="font-size:11px; color:#475569;">${i18n.signatureRole}</div>
               <div style="font-size:10.5px; color:#64748b;">IT Servicios de Venezuela, S.A. | RIF: J-30694859-0</div>
             </div>
             <div style="text-align:right;">
               <div style="font-size:10.5px; color:#475569;">
-                <strong>Suite de Diagnóstico</strong> — Entrust OnPremise & IDaaS Cloud<br>
-                Confidencial — Para uso exclusivo de <strong>${escapeHtml(activeClient.name)}</strong>.
+                <strong>${i18n.suiteLabel}</strong> — Entrust OnPremise & IDaaS Cloud<br>
+                ${i18n.confidentialUse.replace('{client}', escapeHtml(activeClient.name))}
               </div>
             </div>
           </div>
 
           <!-- Sello SHA-256 de Autenticidad -->
           <div style="margin-top:16px; padding:10px 14px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:10px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
-            <span>🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD & AUDITORÍA SHA-256:</strong> SHA256-FORENSIC-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
-            <span>Validado por IT SERVICIOS Suite Enterprise v230.0</span>
+            <span>${i18n.digitalSeal} SHA256-FORENSIC-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
+            <span>${i18n.validatedBy}</span>
           </div>
         </div>
       </div>
@@ -1900,6 +2157,8 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
   }
 
   function generateMarkdownReportString() {
+    const i18n = getReportI18n();
+    const isEn = state.reportLanguage === 'en';
     const toolbarVal = dom.filterClientSelect?.value;
     let activeClient = null;
 
@@ -1909,7 +2168,7 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
         platform: 'Entrust IdentityGuard OnPremise',
         version: 'Release 11.0',
         build: 'Release 11.0 (General)',
-        contact: 'Gerencia de Seguridad de la Información / TI',
+        contact: isEn ? 'Information Security & IT Management' : 'Gerencia de Seguridad de la Información / TI',
         engineer: 'Tomás Acosta'
       };
     } else {
@@ -1936,44 +2195,44 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
       ? parseFloat((((totalCount - criticalLogsCount) / totalCount) * 100).toFixed(2))
       : 100;
 
-    const dateStr = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    const timeStr = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    const dateStr = new Date().toLocaleDateString(i18n.langCode, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = new Date().toLocaleTimeString(i18n.langCode, { hour: '2-digit', minute: '2-digit' });
 
     let md = `# IT SERVICIOS DE VENEZUELA\n`;
-    md += `## INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES — ${isCloud ? 'ENTRUST IDAAS CLOUD & ONPREMISE' : activeClient.platform.toUpperCase()}\n\n`;
-    md += `**Cliente / Destinatario:** ${activeClient.name}\n`;
-    md += `**Dirigido a:** ${activeClient.contact}\n`;
-    md += `**Ingeniero Responsable:** ${activeClient.engineer} — Soporte IT Servicios\n`;
-    md += `**Plataforma y Versión:** ${platformLabel}\n`;
-    md += `**Archivos Auditados:** ${consolidated.fileCount || 1} Archivo(s) en la Muestra Consolidada\n`;
-    md += `**Fecha de Emisión:** ${dateStr}, ${timeStr} hrs\n`;
-    md += `**Estatus:** DOCUMENTO OFICIAL PRELIMINAR DE OBSERVACIONES — CONFIDENCIAL\n\n`;
+    md += `## ${isEn ? 'TECHNICAL INCIDENT DIAGNOSTIC REPORT' : 'INFORME DE DIAGNÓSTICO TÉCNICO DE INCIDENTES'} — ${isCloud ? 'ENTRUST IDAAS CLOUD & ONPREMISE' : activeClient.platform.toUpperCase()}\n\n`;
+    md += `**${isEn ? 'Client / Addressee:' : 'Cliente / Destinatario:'}** ${activeClient.name}\n`;
+    md += `**${isEn ? 'Directed to:' : 'Dirigido a:'}** ${activeClient.contact}\n`;
+    md += `**${isEn ? 'Lead Forensic Engineer:' : 'Ingeniero Responsable:'}** ${i18n.signatureName} — IT Servicios\n`;
+    md += `**${isEn ? 'Platform & Version:' : 'Plataforma y Versión:'}** ${platformLabel}\n`;
+    md += `**${isEn ? 'Audited Files:' : 'Archivos Auditados:'}** ${consolidated.fileCount || 1} ${isEn ? 'File(s) in Consolidated Sample' : 'Archivo(s) en la Muestra Consolidada'}\n`;
+    md += `**${isEn ? 'Issue Date:' : 'Fecha de Emisión:'}** ${dateStr}, ${timeStr} hrs\n`;
+    md += `**${isEn ? 'Status:' : 'Estatus:'}** ${isEn ? 'OFFICIAL PRELIMINARY AUDIT FINDINGS — STRICTLY CONFIDENTIAL' : 'DOCUMENTO OFICIAL PRELIMINAR DE OBSERVACIONES — CONFIDENCIAL'}\n\n`;
     md += `---\n\n`;
 
-    md += `### 1. RESUMEN EJECUTIVO DE SALUD Y MÉTRICAS DE LA MUESTRA\n\n`;
-    md += `- **Total Eventos Consolidados:** \`${totalCount.toLocaleString()}\` registros (${consolidated.fileCount || 1} archivos)\n`;
-    md += `- **Índice de Salud de Autenticación:** \`${healthIndex}%\`\n`;
-    md += `- **Incidentes Críticos [520xxx / IDaaS / ORA]:** \`${criticalLogsCount.toLocaleString()}\` (${((criticalLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
-    md += `- **Alertas de Auditoría [AUDxxx]:** \`${warningLogsCount.toLocaleString()}\` (${((warningLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
-    md += `- **Operaciones Informativas:** \`${infoLogsCount.toLocaleString()}\` (${((infoLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n\n`;
+    md += `### 1. ${isEn ? 'EXECUTIVE HEALTH & METRIC SUMMARY' : 'RESUMEN EJECUTIVO DE SALUD Y MÉTRICAS DE LA MUESTRA'}\n\n`;
+    md += `- **${isEn ? 'Total Consolidated Events:' : 'Total Eventos Consolidados:'}** \`${totalCount.toLocaleString()}\` (${consolidated.fileCount || 1} ${isEn ? 'files' : 'archivos'})\n`;
+    md += `- **${isEn ? 'Authentication Health Index:' : 'Índice de Salud de Autenticación:'}** \`${healthIndex}%\`\n`;
+    md += `- **${isEn ? 'Critical Incidents [520xxx / IDaaS / ORA]:' : 'Incidentes Críticos [520xxx / IDaaS / ORA]:'}** \`${criticalLogsCount.toLocaleString()}\` (${((criticalLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
+    md += `- **${isEn ? 'Audit Alerts [AUDxxx]:' : 'Alertas de Auditoría [AUDxxx]:'}** \`${warningLogsCount.toLocaleString()}\` (${((warningLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n`;
+    md += `- **${isEn ? 'Informational Operations:' : 'Operaciones Informativas:'}** \`${infoLogsCount.toLocaleString()}\` (${((infoLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n\n`;
 
     md += `---\n\n`;
-    md += `### 2. CORRELACIÓN CRUZADA MULTI-ARCHIVO & MULTI-SERVICIO\n\n`;
-    md += `| Capa / Servicio | Archivos Asignados | Eventos Totales | Incidentes Críticos |\n`;
+    md += `### 2. ${isEn ? 'MULTI-FILE & MULTI-SERVICE CROSS CORRELATION' : 'CORRELACIÓN CRUZADA MULTI-ARCHIVO & MULTI-SERVICIO'}\n\n`;
+    md += `| ${isEn ? 'Layer / Service' : 'Capa / Servicio'} | ${isEn ? 'Assigned Files' : 'Archivos Asignados'} | ${isEn ? 'Total Events' : 'Eventos Totales'} | ${isEn ? 'Critical Incidents' : 'Incidentes Críticos'} |\n`;
     md += `| :--- | :---: | :---: | :---: |\n`;
     Object.values(corr.layers).forEach(layer => {
       if (layer.count > 0 || layer.files.length > 0) {
         md += `| **${layer.name}** | \`${layer.files.length}\` | **${layer.count.toLocaleString()}** | ${layer.errors.toLocaleString()} |\n`;
       }
     });
-    md += `\n**Dictamen de Correlación:**\n`;
+    md += `\n**${isEn ? 'Correlation Assessment:' : 'Dictamen de Correlación:'}**\n`;
     corr.correlations.forEach(c => {
       md += `- **${c.source} ➔ ${c.target} (${c.type}):** ${c.evidence}\n`;
     });
 
     md += `\n---\n\n`;
-    md += `### 3. ANÁLISIS DE FRECUENCIA DE ERRORES E INCIDENTES POR FAMILIA\n\n`;
-    md += `| Código / Familia | Descripción del Evento | Reincidencias | Impacto Relativo |\n`;
+    md += `### 3. ${isEn ? 'ERROR & INCIDENT FREQUENCY ANALYSIS' : 'ANÁLISIS DE FRECUENCIA DE ERRORES E INCIDENTES POR FAMILIA'}\n\n`;
+    md += `| ${isEn ? 'Code / Family' : 'Código / Familia'} | ${isEn ? 'Event Description' : 'Descripción del Evento'} | ${isEn ? 'Occurrences' : 'Reincidencias'} | ${isEn ? 'Relative Impact' : 'Impacto Relativo'} |\n`;
     md += `| :--- | :--- | :---: | :---: |\n`;
 
     const allGroupedCodes = new Map();
@@ -1998,33 +2257,47 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
     });
 
     md += `\n---\n\n`;
-    md += `### 4. RECOMENDACIONES TÉCNICAS Y PLAN DE ACCIÓN RECOMENDADO\n\n`;
+    md += `### 4. ${isEn ? 'TECHNICAL RECOMMENDATIONS & ACTION PLAN' : 'RECOMENDACIONES TÉCNICAS Y PLAN DE ACCIÓN RECOMENDADO'}\n\n`;
     if (isCloud) {
-      md += `1. **Sobrescritura de Tarjetas Grid (overwriteExistingGrid):** Habilitar el flag \`overwriteExistingGrid=true\` en la definición de la tarea masiva para renovar tarjetas de usuarios preexistentes.\n`;
-      md += `2. **Actualización de Preguntas Secretas (updateExistingCredentials):** Activar \`updateExistingCredentials=true\` en el conector de importación masiva para permitir reemplazo de esquema Q&A.\n`;
-      md += `3. **Sincronización de Contraseñas y Directorio Activo:** Verificar directiva \`allowPasswordReset=true\` y políticas LDAP/AD con Banco Mercantil.\n`;
-      md += `4. **Segmentación de Lotes de Aprovisionamiento:** Fraccionar los archivos de importación en bloques de 50,000 registros para optimizar tiempo de respuesta de IDaaS API.\n\n`;
+      if (isEn) {
+        md += `1. **Grid Card Overwriting (overwriteExistingGrid):** Enable flag \`overwriteExistingGrid=true\` in bulk import configuration to overwrite cards for preexisting users.\n`;
+        md += `2. **Secret Question Schema Updates (updateExistingCredentials):** Activate \`updateExistingCredentials=true\` to allow replacing Q&A authentication schemas.\n`;
+        md += `3. **Password & LDAP Directory Synchronization:** Verify \`allowPasswordReset=true\` and synchronize policies with identity stores.\n`;
+        md += `4. **Batch Segmentation:** Divide large import batches into 50,000-record chunks to optimize IDaaS API ingestion speeds.\n\n`;
+      } else {
+        md += `1. **Sobrescritura de Tarjetas Grid (overwriteExistingGrid):** Habilitar el flag \`overwriteExistingGrid=true\` en la definición de la tarea masiva para renovar tarjetas de usuarios preexistentes.\n`;
+        md += `2. **Actualización de Preguntas Secretas (updateExistingCredentials):** Activar \`updateExistingCredentials=true\` en el conector de importación masiva para permitir reemplazo de esquema Q&A.\n`;
+        md += `3. **Sincronización de Contraseñas y Directorio Activo:** Verificar directiva \`allowPasswordReset=true\` y políticas LDAP/AD con Banco Mercantil.\n`;
+        md += `4. **Segmentación de Lotes de Aprovisionamiento:** Fraccionar los archivos de importación en bloques de 50,000 registros para optimizar tiempo de respuesta de IDaaS API.\n\n`;
+      }
     } else {
-      md += `1. **Desbloqueo y Gestión de Cuentas LDAP / Active Directory:** Verificar cuentas afectadas en la Consola de Administración de ${activeClient.platform} y en el directorio LDAP.\n`;
-      md += `2. **Reasignación y Auditoría de Tarjetas Grid / PIN:** Validar series de tarjetas Grid activas asignadas a usuarios y capacitar en el ingreso de celdas.\n`;
-      md += `3. **Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):** Incrementar el número de conexiones en \`identityguard.properties\` / \`context.xml\` y ajustar los tiempos de espera.\n`;
-      md += `4. **Revisión de Parches Oficiales para ${activeClient.version}:** Aplicar parches oficiales de Entrust para la versión ${activeClient.version} (${activeClient.build}).\n\n`;
+      if (isEn) {
+        md += `1. **LDAP / Active Directory Account Management:** Audit flagged accounts in ${activeClient.platform} Console and LDAP directory.\n`;
+        md += `2. **Grid Card / PIN Reassignment:** Verify active Grid serial sequences and train staff on cell entry procedures.\n`;
+        md += `3. **Database Connection Pool Expansion:** Increase connection limits in \`identityguard.properties\` / \`context.xml\` and tune timeouts.\n`;
+        md += `4. **Vendor Security Patch Review for ${activeClient.version}:** Apply official Entrust patches for version ${activeClient.version} (${activeClient.build}).\n\n`;
+      } else {
+        md += `1. **Desbloqueo y Gestión de Cuentas LDAP / Active Directory:** Verificar cuentas afectadas en la Consola de Administración de ${activeClient.platform} y en el directorio LDAP.\n`;
+        md += `2. **Reasignación y Auditoría de Tarjetas Grid / PIN:** Validar series de tarjetas Grid activas asignadas a usuarios y capacitar en el ingreso de celdas.\n`;
+        md += `3. **Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):** Incrementar el número de conexiones en \`identityguard.properties\` / \`context.xml\` y ajustar los tiempos de espera.\n`;
+        md += `4. **Revisión de Parches Oficiales para ${activeClient.version}:** Aplicar parches oficiales de Entrust para la versión ${activeClient.version} (${activeClient.build}).\n\n`;
+      }
     }
 
     md += `---\n\n`;
-    md += `**Departamento de Soporte IT Servicios de Venezuela**  \n`;
-    md += `*Ing. ${activeClient.engineer} — Especialista en Infraestructura Entrust*\n\n`;
-    md += `🔒 **SELLO DIGITAL DE AUTENTICIDAD Y AUDITORÍA SHA-256:** \`SHA256-190PLATINUM-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS\`  \n`;
-    md += `*Documento certificado e inspeccionado de forma autónoma por IT SERVICIOS — Entrust Diagnostic Suite v190.0 Platinum*\n`;
+    md += `**IT Servicios de Venezuela Support Department**  \n`;
+    md += `*${i18n.signatureName} — ${i18n.signatureRole}*\n\n`;
+    md += `🔒 **${isEn ? 'SHA-256 DIGITAL SEAL:' : 'SELLO DIGITAL DE AUTENTICIDAD Y AUDITORÍA SHA-256:'}** \`SHA256-190PLATINUM-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS\`  \n`;
 
     return md;
   }
 
   function copyExecutiveReportMarkdown() {
+    const isEn = state.reportLanguage === 'en';
     const md = generateMarkdownReportString();
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(md).then(() => {
-        alert('✅ ¡Informe Preliminar en formato Markdown / Texto copiado al portapapeles con éxito!');
+        alert(isEn ? '✅ Forensic Report in Markdown format copied to clipboard!' : '✅ ¡Informe Preliminar en formato Markdown / Texto copiado al portapapeles con éxito!');
       }).catch(err => {
         console.error('Error al copiar al portapapeles:', err);
         fallbackCopyText(md);
@@ -2035,25 +2308,26 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
   }
 
   function fallbackCopyText(text) {
+    const isEn = state.reportLanguage === 'en';
     const ta = document.createElement('textarea');
     ta.value = text;
     document.body.appendChild(ta);
     ta.select();
     try {
       document.execCommand('copy');
-      alert('✅ ¡Informe Preliminar en formato Markdown / Texto copiado al portapapeles con éxito!');
+      alert(isEn ? '✅ Forensic Report in Markdown format copied to clipboard!' : '✅ ¡Informe Preliminar en formato Markdown / Texto copiado al portapapeles con éxito!');
     } catch(e) {
-      alert('⚠️ Portapapeles no disponible. Utilice el botón "Descargar Archivo .MD".');
+      alert(isEn ? '⚠️ Clipboard not available. Please use the "Download .MD" button.' : '⚠️ Portapapeles no disponible. Utilice el botón "Descargar Archivo .MD".');
     }
     document.body.removeChild(ta);
   }
 
   function downloadExecutiveReportMarkdown() {
-    const mdContent = generateMarkdownReportString();
     const activeClient = getActiveClientProfile();
     const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
     const dateStamp = new Date().toISOString().slice(0, 10);
-    const blob = new Blob(['\uFEFF' + mdContent], { type: 'text/markdown;charset=utf-8' });
+    const md = generateMarkdownReportString();
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -2066,11 +2340,13 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
 
   function generateDynamicRecommendationsHtml(targetLogs, activeClient) {
     const items = [];
+    const isEn = state.reportLanguage === 'en';
     const isCloud = (activeClient?.platform || '').toLowerCase().includes('idaas') || (activeClient?.platform || '').toLowerCase().includes('cloud');
     const platformTitle = isCloud ? 'Entrust IDaaS Cloud' : `Entrust IdentityGuard OnPremise (${activeClient?.version || 'Release 12.0'})`;
-    const consoleTitle = isCloud ? 'Consola Entrust IDaaS Cloud' : 'Consola de Administración Entrust IdentityGuard OnPremise';
+    const consoleTitle = isCloud 
+      ? (isEn ? 'Entrust IDaaS Cloud Console' : 'Consola Entrust IDaaS Cloud') 
+      : (isEn ? 'Entrust IdentityGuard Administration Console' : 'Consola de Administración Entrust IdentityGuard OnPremise');
 
-    // Función auxiliar para extraer los códigos de error exactos presentes en la muestra
     function getDetectedCodes(regex) {
       const set = new Set();
       targetLogs.forEach(l => {
@@ -2097,62 +2373,108 @@ keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\ide
     const isMigration = targetLogs.some(l => /migration|bulkidentityguard|assignedgrid/i.test(l.message || '') || /migration|bulkidentityguard|assignedgrid/i.test(l.raw || '')) || (state.globalStreamMetrics?.topCodes || []).some(c => c.code.includes('bulkidentityguard'));
 
     if (isCloud || isMigration) {
-      items.push(`<li><strong>Sobrescritura de Tarjetas Grid (overwriteExistingGrid=true):</strong> En tareas de aprovisionamiento masivo de usuarios preexistentes con tarjeta Grid asignada, configure la directiva <code>overwriteExistingGrid=true</code> para evitar el rechazo <code>bulkidentityguard.add.error.assignedgrid</code>. <a href="https://docs.trustedauth.com/docs/perform-bulk-operations/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Documentación Oficial Entrust IDaaS: Bulk Operations</a></li>`);
-      items.push(`<li><strong>Actualización de Esquema de Preguntas y Respuestas (updateExistingCredentials=true):</strong> Para usuarios que ya poseen preguntas secretas enroladas, habilite <code>updateExistingCredentials=true</code> en la configuración del conector o lote para actualizar las credenciales sin colisión <code>bulkidentityguard.add.error.qa</code>. <a href="https://docs.trustedauth.com/docs/people-and-access/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Documentación Oficial Entrust IDaaS: People & Access</a></li>`);
-      items.push(`<li><strong>Sincronización de Contraseñas y Políticas LDAP (allowPasswordReset=true):</strong> Verifique las políticas de contraseñas y habilite la directiva <code>allowPasswordReset=true</code> cuando se requiera actualización masiva de contraseñas de usuarios en el tenant de IDaaS. <a href="https://docs.trustedauth.com/docs/authentication-and-security/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Documentación Oficial Entrust IDaaS: Authentication & Security</a></li>`);
-      items.push(`<li><strong>Optimización y Fraccionamiento de Lotes de Carga:</strong> Se recomienda segmentar los paquetes masivos de carga en bloques de 50.000 a 100.000 registros para optimizar el rendimiento del motor de ingesta y evitar latencias en la API de IDaaS. <a href="https://docs.trustedauth.com/developer/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Documentación Oficial Entrust IDaaS: Developer API Reference</a></li>`);
+      if (isEn) {
+        items.push(`<li><strong>Grid Card Overwrite Policy (overwriteExistingGrid=true):</strong> In bulk provisioning workflows targeting preexisting users with assigned Grid cards, configure <code>overwriteExistingGrid=true</code> to prevent <code>bulkidentityguard.add.error.assignedgrid</code> rejection. <a href="https://docs.trustedauth.com/docs/perform-bulk-operations/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Entrust IDaaS Official Docs: Bulk Operations</a></li>`);
+        items.push(`<li><strong>Question & Answer Schema Updates (updateExistingCredentials=true):</strong> For users who have enrolled secret questions, enable <code>updateExistingCredentials=true</code> in the connector configuration to avoid <code>bulkidentityguard.add.error.qa</code> collision. <a href="https://docs.trustedauth.com/docs/people-and-access/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Entrust IDaaS Official Docs: People & Access</a></li>`);
+        items.push(`<li><strong>Password Synchronization & LDAP Policies (allowPasswordReset=true):</strong> Audit password policies and enable <code>allowPasswordReset=true</code> when bulk user password renewals are requested on the IDaaS tenant. <a href="https://docs.trustedauth.com/docs/authentication-and-security/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Entrust IDaaS Official Docs: Authentication & Security</a></li>`);
+        items.push(`<li><strong>Batch Size Optimization & Ingestion Chunking:</strong> We recommend segmenting bulk ingestion files into batches of 50,000 to 100,000 records to optimize ingestion throughput and avoid IDaaS API timeouts. <a href="https://docs.trustedauth.com/developer/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Entrust IDaaS Official Docs: Developer API Reference</a></li>`);
+      } else {
+        items.push(`<li><strong>Sobrescritura de Tarjetas Grid (overwriteExistingGrid=true):</strong> En tareas de aprovisionamiento masivo de usuarios preexistentes con tarjeta Grid asignada, configure la directiva <code>overwriteExistingGrid=true</code> para evitar el rechazo <code>bulkidentityguard.add.error.assignedgrid</code>. <a href="https://docs.trustedauth.com/docs/perform-bulk-operations/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Documentación Oficial Entrust IDaaS: Bulk Operations</a></li>`);
+        items.push(`<li><strong>Actualización de Esquema de Preguntas y Respuestas (updateExistingCredentials=true):</strong> Para usuarios que ya poseen preguntas secretas enroladas, habilite <code>updateExistingCredentials=true</code> en la configuración del conector o lote para actualizar las credenciales sin colisión <code>bulkidentityguard.add.error.qa</code>. <a href="https://docs.trustedauth.com/docs/people-and-access/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Documentación Oficial Entrust IDaaS: People & Access</a></li>`);
+        items.push(`<li><strong>Sincronización de Contraseñas y Políticas LDAP (allowPasswordReset=true):</strong> Verifique las políticas de contraseñas y habilite la directiva <code>allowPasswordReset=true</code> cuando se requiera actualización masiva de contraseñas de usuarios en el tenant de IDaaS. <a href="https://docs.trustedauth.com/docs/authentication-and-security/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Documentación Oficial Entrust IDaaS: Authentication & Security</a></li>`);
+        items.push(`<li><strong>Optimización y Fraccionamiento de Lotes de Carga:</strong> Se recomienda segmentar los paquetes masivos de carga en bloques de 50.000 a 100.000 registros para optimizar el rendimiento del motor de ingesta y evitar latencias en la API de IDaaS. <a href="https://docs.trustedauth.com/developer/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold;">🔗 Documentación Oficial Entrust IDaaS: Developer API Reference</a></li>`);
+      }
     }
 
     if (authCodes.length > 0 && !isMigration) {
       const codeStr = authCodes.join(' / ');
-      items.push(`<li><strong>Desbloqueo y Gestión de Cuentas LDAP / Active Directory:</strong> Se diagnosticaron reintentos fallidos de autenticación, credenciales o cuentas suspendidas (código(s) ${codeStr}). Se recomienda verificar las cuentas afectadas en la ${consoleTitle} y en el directorio LDAP para restablecer vigencias y desbloquear cuentas. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración ${platformTitle}: Sección 4.2 - Authentication Troubleshooting)</em></li>`);
+      if (isEn) {
+        items.push(`<li><strong>LDAP / Active Directory Account Unlock & Management:</strong> Diagnosed repeated authentication, credential or suspended account retries (code(s) ${codeStr}). Inspect affected accounts in ${consoleTitle} and LDAP directory. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} Admin Manual: Section 4.2 - Authentication Troubleshooting)</em></li>`);
+      } else {
+        items.push(`<li><strong>Desbloqueo y Gestión de Cuentas LDAP / Active Directory:</strong> Se diagnosticaron reintentos fallidos de autenticación, credenciales o cuentas suspendidas (código(s) ${codeStr}). Se recomienda verificar las cuentas afectadas en la ${consoleTitle} y en el directorio LDAP para restablecer vigencias y desbloquear cuentas. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración ${platformTitle}: Sección 4.2 - Authentication Troubleshooting)</em></li>`);
+      }
     }
 
     if (notFoundCodes.length > 0 && !isMigration) {
       const codeStr = notFoundCodes.join(' / ');
-      items.push(`<li><strong>Sincronización del Repositorio de Usuarios (LDAP/AD):</strong> Se detectaron accesos fallidos por usuarios o alias no registrados (código(s) ${codeStr}). Se sugiere ejecutar un barrido de sincronización de usuarios en la ${consoleTitle}. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración ${platformTitle}: Sección 3.1 - Identity Repository Maintenance)</em></li>`);
+      if (isEn) {
+        items.push(`<li><strong>User Repository Synchronization (LDAP/AD):</strong> Unregistered user/alias attempts detected (code(s) ${codeStr}). Execute an identity synchronization sweep in ${consoleTitle}. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} Admin Manual: Section 3.1 - Identity Repository Maintenance)</em></li>`);
+      } else {
+        items.push(`<li><strong>Sincronización del Repositorio de Usuarios (LDAP/AD):</strong> Se detectaron accesos fallidos por usuarios o alias no registrados (código(s) ${codeStr}). Se sugiere ejecutar un barrido de sincronización de usuarios en la ${consoleTitle}. <em style="color:#64748b; font-size:11px;">(Ref. Manual de Administración ${platformTitle}: Sección 3.1 - Identity Repository Maintenance)</em></li>`);
+      }
     }
 
     if (gridPinCodes.length > 0 && !isMigration) {
       const codeStr = gridPinCodes.join(' / ');
-      items.push(`<li><strong>Reasignación y Auditoría de Tarjetas Grid / PIN:</strong> Se registraron incoherencias entre los desafíos y las respuestas enviadas (código(s) ${codeStr}). Se recomienda validar las series de tarjetas Grid activas asignadas a los usuarios y capacitar en el ingreso de celdas. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad ${platformTitle}: Sección 5.4 - Challenge-Response & Grid Management)</em></li>`);
+      if (isEn) {
+        items.push(`<li><strong>Grid Card / PIN Reassignment & Audit:</strong> Challenge-response discrepancies recorded (code(s) ${codeStr}). Validate active Grid serial sequences assigned to users. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} Security Guide: Section 5.4 - Challenge-Response & Grid Management)</em></li>`);
+      } else {
+        items.push(`<li><strong>Reasignación y Auditoría de Tarjetas Grid / PIN:</strong> Se registraron incoherencias entre los desafíos y las respuestas enviadas (código(s) ${codeStr}). Se recomienda validar las series de tarjetas Grid activas asignadas a los usuarios y capacitar en el ingreso de celdas. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad ${platformTitle}: Sección 5.4 - Challenge-Response & Grid Management)</em></li>`);
+      }
     }
 
     if (apiCodes.length > 0) {
       const codeStr = apiCodes.join(' / ');
-      items.push(`<li><strong>Auditoría de Canales de Integración Web / API:</strong> Se observaron rechazos en la autorización de aplicaciones cliente (código(s) ${codeStr}). Se sugiere validar la clave compartida (Client Secret) y las direcciones IP permitidas en la política del canal. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Integración ${platformTitle} API: Sección 2.3 - Client Authorization)</em></li>`);
+      if (isEn) {
+        items.push(`<li><strong>Web / API Integration Channel Audit:</strong> Client application authorization rejections observed (code(s) ${codeStr}). Validate Client Secret and allowed IP access control lists. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} API Integration Guide: Section 2.3 - Client Authorization)</em></li>`);
+      } else {
+        items.push(`<li><strong>Auditoría de Canales de Integración Web / API:</strong> Se observaron rechazos en la autorización de aplicaciones cliente (código(s) ${codeStr}). Se sugiere validar la clave compartida (Client Secret) y las direcciones IP permitidas en la política del canal. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Integración ${platformTitle} API: Sección 2.3 - Client Authorization)</em></li>`);
+      }
     }
 
     if (dbCodes.length > 0) {
       const codeStr = dbCodes.join(' / ');
-      items.push(`<li><strong>Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):</strong> Se detectó alta saturación o excepciones SQLException en las conexiones al repositorio (código(s) ${codeStr}). Se recomienda incrementar el número de conexiones en <code>identityguard.properties</code> / <code>context.xml</code> y ajustar los tiempos de espera (Timeout). <em style="color:#64748b; font-size:11px;">(Ref. Manual de Mantenimiento ${platformTitle}: Sección 7.1 - Database Connection Pooling)</em></li>`);
+      if (isEn) {
+        items.push(`<li><strong>Database Connection Pool Expansion:</strong> Repository connection saturation or SQLException exceptions detected (code(s) ${codeStr}). Increase pool size in <code>identityguard.properties</code> / <code>context.xml</code> and tune timeout limits. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} Maintenance Guide: Section 7.1 - Database Connection Pooling)</em></li>`);
+      } else {
+        items.push(`<li><strong>Ampliación del Pool de Conexiones a Base de Datos (Connection Pool):</strong> Se detectó alta saturación o excepciones SQLException en las conexiones al repositorio (código(s) ${codeStr}). Se recomienda incrementar el número de conexiones en <code>identityguard.properties</code> / <code>context.xml</code> y ajustar los tiempos de espera (Timeout). <em style="color:#64748b; font-size:11px;">(Ref. Manual de Mantenimiento ${platformTitle}: Sección 7.1 - Database Connection Pooling)</em></li>`);
+      }
     }
 
     if (pushCodes.length > 0) {
       const codeStr = pushCodes.join(' / ');
-      items.push(`<li><strong>Revisión de Notificaciones Push MFA & Soft Tokens:</strong> Se identificaron fallos en la entrega de detalles de transacciones a tokens de software (código(s) ${codeStr}). Se recomienda comprobar la conectividad del dispositivo móvil del usuario y los certificados del Servidor Push OnPremise (APNS/FCM). <em style="color:#64748b; font-size:11px;">(Ref. Guía ${platformTitle} Mobile Push Gateway: Sección 8.2 - Push Configuration)</em></li>`);
+      if (isEn) {
+        items.push(`<li><strong>MFA Push Notifications & Soft Tokens:</strong> Transaction detail delivery failures to software tokens identified (code(s) ${codeStr}). Check end-user mobile connectivity and OnPremise Push Server APNS/FCM certificates. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} Mobile Push Gateway: Section 8.2 - Push Configuration)</em></li>`);
+      } else {
+        items.push(`<li><strong>Revisión de Notificaciones Push MFA & Soft Tokens:</strong> Se identificaron fallos en la entrega de detalles de transacciones a tokens de software (código(s) ${codeStr}). Se recomienda comprobar la conectividad del dispositivo móvil del usuario y los certificados del Servidor Push OnPremise (APNS/FCM). <em style="color:#64748b; font-size:11px;">(Ref. Guía ${platformTitle} Mobile Push Gateway: Sección 8.2 - Push Configuration)</em></li>`);
+      }
     }
 
     if (samlCodes.length > 0) {
       const codeStr = samlCodes.join(' / ');
-      items.push(`<li><strong>Verificación de Certificados SAML 2.0 y Tiempo NTP:</strong> Se detectaron aserciones SAML expiradas o firmas inválidas (código(s) ${codeStr}). Se sugiere validar la fecha de vencimiento del certificado de firma X.509 en la ${consoleTitle} y verificar la sincronización del reloj de servidor mediante NTP. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Federación ${platformTitle}: Sección 6.4 - SAML SSO Lifecycle)</em></li>`);
+      if (isEn) {
+        items.push(`<li><strong>SAML 2.0 Certificates & NTP Synchronization:</strong> Expired SAML assertions or invalid signature checks detected (code(s) ${codeStr}). Inspect X.509 signing certificate expiry in ${consoleTitle} and verify NTP server clock synchronization. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} Federation Guide: Section 6.4 - SAML SSO Lifecycle)</em></li>`);
+      } else {
+        items.push(`<li><strong>Verificación de Certificados SAML 2.0 y Tiempo NTP:</strong> Se detectaron aserciones SAML expiradas o firmas inválidas (código(s) ${codeStr}). Se sugiere validar la fecha de vencimiento del certificado de firma X.509 en la ${consoleTitle} y verificar la sincronización del reloj de servidor mediante NTP. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Federación ${platformTitle}: Sección 6.4 - SAML SSO Lifecycle)</em></li>`);
+      }
     }
 
     if (hasTomcatOom) {
-      items.push(`<li><strong>Ajuste de Memoria Heap de la JVM en Tomcat Catalina:</strong> Se identificaron excepciones de agotamiento de memoria <code>OutOfMemoryError: Java heap space</code>. Se recomienda incrementar los parámetros <code>-Xms2048m -Xmx4096m</code> en <code>catalina.sh / setenv.sh</code>. <em style="color:#64748b; font-size:11px;">(Ref. Manual ${platformTitle} Tomcat Tuning: Sección 9.3 - JVM Heap Settings)</em></li>`);
+      if (isEn) {
+        items.push(`<li><strong>JVM Heap Memory Fine-Tuning in Tomcat Catalina:</strong> Memory exhaustion exceptions detected <code>OutOfMemoryError: Java heap space</code>. Increase allocation parameters <code>-Xms2048m -Xmx4096m</code> in <code>catalina.sh / setenv.sh</code>. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} Tomcat Tuning Guide: Section 9.3 - JVM Heap Settings)</em></li>`);
+      } else {
+        items.push(`<li><strong>Ajuste de Memoria Heap de la JVM en Tomcat Catalina:</strong> Se identificaron excepciones de agotamiento de memoria <code>OutOfMemoryError: Java heap space</code>. Se recomienda incrementar los parámetros <code>-Xms2048m -Xmx4096m</code> en <code>catalina.sh / setenv.sh</code>. <em style="color:#64748b; font-size:11px;">(Ref. Manual ${platformTitle} Tomcat Tuning: Sección 9.3 - JVM Heap Settings)</em></li>`);
+      }
     }
 
     if (hasTomcatSsl) {
-      items.push(`<li><strong>Importación de Certificados CA en Truststore de Java (cacerts):</strong> Se detectaron excepciones <code>SSLHandshakeException / PKIX</code>. Se recomienda importar el certificado de la Entidad Emisora mediante <code>keytool -importcert -keystore cacerts</code>. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad ${platformTitle} TLS: Sección 6.2 - Keystore Management)</em></li>`);
+      if (isEn) {
+        items.push(`<li><strong>Import CA Certificates into Java Truststore (cacerts):</strong> Identified <code>SSLHandshakeException / PKIX</code> exceptions. Import CA root certificate using <code>keytool -importcert -keystore cacerts</code>. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} TLS Security Guide: Section 6.2 - Keystore Management)</em></li>`);
+      } else {
+        items.push(`<li><strong>Importación de Certificados CA en Truststore de Java (cacerts):</strong> Se detectaron excepciones <code>SSLHandshakeException / PKIX</code>. Se recomienda importar el certificado de la Entidad Emisora mediante <code>keytool -importcert -keystore cacerts</code>. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad ${platformTitle} TLS: Sección 6.2 - Keystore Management)</em></li>`);
+      }
     }
 
-    // Recomendación general por versión
-    items.push(`<li><strong>Revisión de Parches Oficiales para ${escapeHtml(activeClient.version)}:</strong> Validar la aplicación de los parches e hitos oficializados por Entrust para la versión <strong>${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</strong> según la documentación técnica oficial de ${platformTitle}. <em style="color:#64748b; font-size:11px;">(Ref. Release Notes & Advisory Bulletins - ${platformTitle})</em></li>`);
+    if (isEn) {
+      items.push(`<li><strong>Vendor Security Patch Review for ${escapeHtml(activeClient.version)}:</strong> Validate vendor security updates and maintenance bulletins for version <strong>${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</strong> according to official ${platformTitle} documentation. <em style="color:#64748b; font-size:11px;">(Ref. Release Notes & Advisory Bulletins - ${platformTitle})</em></li>`);
+    } else {
+      items.push(`<li><strong>Revisión de Parches Oficiales para ${escapeHtml(activeClient.version)}:</strong> Validar la aplicación de los parches e hitos oficializados por Entrust para la versión <strong>${escapeHtml(activeClient.version)} (${escapeHtml(activeClient.build)})</strong> según la documentación técnica oficial de ${platformTitle}. <em style="color:#64748b; font-size:11px;">(Ref. Release Notes & Advisory Bulletins - ${platformTitle})</em></li>`);
+    }
 
     return items.join('\n');
   }
 
-  /* ==========================================================================
+    /* ==========================================================================
      3. TARJETAS DE MÉTRICAS INTERACTIVAS & MODAL DEDICADO 520XXX
      ========================================================================== */
   
@@ -6791,9 +7113,67 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
   initPptxExportModule();
   initNodeGroupingModule();
 
-    document.getElementById('btn-download-docx-exec-report')?.addEventListener('click', () => {
-      downloadExecutiveReportDocx();
-    });
+      function downloadExecutiveReportDocx() {
+    const container = document.getElementById('exec-report-container');
+    if (!container) {
+      alert('⚠️ No hay informe generado para exportar a Word.');
+      return;
+    }
+
+    const activeClient = getActiveClientProfile();
+    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
+    const dateStamp = new Date().toISOString().slice(0, 10);
+    const i18n = getReportI18n();
+    const isEn = state.reportLanguage === 'en';
+
+    const headerHtml = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head>
+        <meta charset='utf-8'>
+        <title>${i18n.wordDocTitle}</title>
+        <!--[if gte mso 9]>
+        <xml>
+          <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>100</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+          </w:WordDocument>
+        </xml>
+        <![endif]-->
+        <style>
+          @page Section1 { size: 8.5in 11.0in; margin: 0.8in 0.8in 0.8in 0.8in; mso-header-margin: 0.5in; mso-footer-margin: 0.5in; mso-paper-source: 0; }
+          div.Section1 { page: Section1; }
+          body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #0f172a; line-height: 1.3; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 15pt; }
+          th { background: #0a3d6d; color: #ffffff; font-weight: bold; border: 1pt solid #0a3d6d; padding: 6pt; font-size: 10pt; }
+          td { border: 1pt solid #cbd5e1; padding: 6pt; font-size: 9.5pt; vertical-align: top; }
+          h1, h2, h3, h4 { color: #0a3d6d; margin-top: 12pt; margin-bottom: 6pt; }
+          .kpi-box { border: 1pt solid #cbd5e1; background: #f8fafc; padding: 10pt; text-align: center; border-radius: 4pt; }
+        </style>
+      </head>
+      <body>
+        <div class="Section1">
+          ${container.innerHTML}
+        </div>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob(['\ufeff', headerHtml], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Dictamen_Forense_Entrust_${clientSanitized}_${dateStamp}.doc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('btn-download-docx-exec-report')?.addEventListener('click', () => {
+    downloadExecutiveReportDocx();
+  });
+
 
 
   
@@ -6801,12 +7181,13 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
      11. EXPORTADOR MULTITABLA A MICROSOFT EXCEL (.XLSX - XML SPREADSHEETML) (v260.0)
      ========================================================================== */
   function downloadExecutiveReportExcel() {
+    const isEn = state.reportLanguage === 'en';
     const consolidated = getConsolidatedMetrics();
     const activeClient = getActiveClientProfile();
     const clientName = activeClient ? activeClient.name : 'Entrust General';
     const clientSanitized = clientName.replace(/[^a-zA-Z0-9]/g, '_');
     const dateStamp = new Date().toISOString().slice(0, 10);
-    const dateStr = new Date().toLocaleDateString('es-VE', { year: 'numeric', month: 'long', day: 'numeric' });
+    const dateStr = new Date().toLocaleDateString(isEn ? 'en-US' : 'es-VE', { year: 'numeric', month: 'long', day: 'numeric' });
 
     const total = consolidated.totalLogs || (state.logs ? state.logs.length : 0);
     const criticals = consolidated.totalErrors || (state.logs ? state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length : 0);
