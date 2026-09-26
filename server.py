@@ -22,8 +22,8 @@ os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
 SERVER_START_TIME = time.time()
-DEFAULT_DB_PATH = os.path.join(DATA_DIR, 'mercantil_audit.db')
-ACTIVE_DB_PATH = DEFAULT_DB_PATH if os.path.exists(DEFAULT_DB_PATH) else os.path.join(DATA_DIR, 'active_audit.db')
+DEFAULT_DB_PATH = None
+ACTIVE_DB_PATH = None
 
 upload_state = {
     'status': 'idle',
@@ -35,7 +35,7 @@ upload_state = {
     'linesProcessed': 0,
     'totalErrors': 0,
     'totalWarnings': 0,
-    'dbPath': ACTIVE_DB_PATH,
+    'dbPath': None,
     'error': None
 }
 
@@ -60,7 +60,7 @@ def get_client_slug(client_name_or_id):
 def resolve_client_db(client_param=None):
     global ACTIVE_DB_PATH
     
-    # 1. Search by client parameter if provided and not generic
+    # 1. Search by client parameter if explicitly provided and not generic
     if client_param and str(client_param).lower() not in ['all', 'undefined', 'null', '', 'general', 'entorno entrust general / multi-nodo']:
         slug = get_client_slug(client_param)
         candidate_names = [
@@ -81,21 +81,10 @@ def resolve_client_db(client_param=None):
                 if slug in f.lower() and f.endswith('.db'):
                     return os.path.join(DATA_DIR, f)
 
-    # 2. Check ACTIVE_DB_PATH
+    # 2. Check ACTIVE_DB_PATH if set explicitly
     if ACTIVE_DB_PATH and os.path.exists(ACTIVE_DB_PATH):
         return ACTIVE_DB_PATH
         
-    # 3. Check DEFAULT_DB_PATH
-    if os.path.exists(DEFAULT_DB_PATH):
-        return DEFAULT_DB_PATH
-    
-    # 4. Find the largest .db file in DATA_DIR (e.g. banco_mercantil_audit.db 10.3 GB)
-    if os.path.exists(DATA_DIR):
-        db_files = [os.path.join(DATA_DIR, f) for f in os.listdir(DATA_DIR) if f.endswith('.db') and os.path.getsize(os.path.join(DATA_DIR, f)) > 0]
-        if db_files:
-            db_files.sort(key=lambda p: os.path.getsize(p), reverse=True)
-            return db_files[0]
-            
     return None
 
 def init_db(db_path):
@@ -544,6 +533,19 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 print(f"Error leyendo clients.json: {e}")
 
         default_clients = [
+            {
+                "id": "general",
+                "name": "Entorno Entrust General / Multi-Nodo",
+                "platform": "Entrust IdentityGuard / IDaaS Cloud",
+                "version": "Release 13.0 / Cloud",
+                "build": "LTS 2026",
+                "contact": "Departamento de Ciberseguridad & TI",
+                "engineer": "Tomás Acosta",
+                "nodes": [
+                    { "key": "node_01", "name": "🖥️ Servidor Primario (Core)" },
+                    { "key": "node_02", "name": "🖥️ Servidor Secundario (HA)" }
+                ]
+            },
             {
                 "id": "mercantil",
                 "name": "Banco Mercantil C.A.",

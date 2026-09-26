@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     activeFilterMode: null,
     theme: localStorage.getItem('app_theme') || 'light',
     clientProfiles: [],
-    activeClientId: 'mercantil',
+    activeClientId: 'general',
     reportLanguage: localStorage.getItem('app_report_language') || 'es'
   };
   window.appState = state;
@@ -117,9 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
   (async () => {
     try {
       await loadClientProfiles();
-      const initialClient = state.activeClientId || 'mercantil';
-      await syncClientSessionWithServer(initialClient);
-      await fetchSqlLogs(1);
+      resetSession();
     } catch(e) {
       console.warn('Error en inicialización de sesión:', e);
     }
@@ -149,6 +147,19 @@ document.addEventListener('DOMContentLoaded', () => {
      -1. GESTIÓN PERSISTENTE DE PERFILES DE CLIENTES & ENTORNOS ENTRUST
      ========================================================================== */
   const defaultClients = [
+    {
+      id: 'general',
+      name: 'Entorno Entrust General / Multi-Nodo',
+      platform: 'Entrust IdentityGuard / IDaaS Cloud',
+      version: 'Release 13.0 / Cloud',
+      build: 'LTS 2026',
+      contact: 'Departamento de Ciberseguridad & TI',
+      engineer: 'Tomás Acosta',
+      nodes: [
+        { key: 'node_01', name: '🖥️ Servidor Primario (Core)' },
+        { key: 'node_02', name: '🖥️ Servidor Secundario (HA)' }
+      ]
+    },
     {
       id: 'mercantil',
       name: 'Banco Mercantil C.A.',
@@ -4773,10 +4784,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const data = await res.json();
 
       if (!data || (!data.logs && data.status === 'empty')) {
-        if (typeof loadMercantil10GbBundle === 'function') {
-          loadMercantil10GbBundle();
-          return true;
-        }
+        state.logs = [];
+        state.filteredLogs = [];
+        state.sqlPage = 1;
+        state.sqlTotalPages = 1;
+        state.sqlTotalMatching = 0;
+        renderLogTable();
+        return true;
       }
 
       state.logs = data.logs || [];
@@ -4804,10 +4818,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }
       return true;
     } catch (e) {
-      if (typeof loadMercantil10GbBundle === 'function') {
-        loadMercantil10GbBundle();
-        return true;
-      }
+      console.warn('fetchSqlLogs error / modo estático:', e);
       return false;
     }
   }
@@ -6797,15 +6808,17 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           console.warn('API local ingest fallback:', apiErr);
         }
 
-        // Si el servidor ya tiene la base de datos o si falla la llamada directa, cargar el bundle de 16.5M
-        if (!errData || errData.alreadyIndexed || errData.status === 'ready' || errData.success) {
-          if (statusTitle) statusTitle.textContent = `✅ Base de Datos Conectada (16,504,695 eventos)`;
+        if (errData && (errData.alreadyIndexed || errData.status === 'ready' || errData.success)) {
+          if (statusTitle) statusTitle.textContent = `✅ Base de Datos Conectada (${(errData.totalLogs || 0).toLocaleString()} eventos)`;
           if (statusDetail) statusDetail.textContent = `Cliente: ${clientName} | 100% Indexado en SQLite`;
 
           try {
-            await loadMercantil10GbBundle();
+            await syncClientSessionWithServer(state.activeClientId || 'general');
+            await fetchSqlLogs(1);
+            updateMetricsAndCharts();
+            renderLoadedFilesDrawer();
           } catch (bErr) {
-            console.error('Error cargando bundle:', bErr);
+            console.error('Error sincronizando datos con servidor:', bErr);
           }
 
           setTimeout(() => {
@@ -6830,24 +6843,28 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               if (statusTitle) statusTitle.textContent = `✅ ¡Indexación 100% Completada!`;
               if (statusDetail) statusDetail.textContent = `Total: ${(s.linesProcessed || 0).toLocaleString()} eventos listos para consulta.`;
 
-              await loadMercantil10GbBundle();
+              await syncClientSessionWithServer(state.activeClientId || 'general');
+              await fetchSqlLogs(1);
+              updateMetricsAndCharts();
+              renderLoadedFilesDrawer();
 
               setTimeout(() => {
                 if (modal) modal.style.display = 'none';
               }, 1000);
             } else if (s.status === 'error') {
               clearInterval(pollInterval);
-              await loadMercantil10GbBundle();
-              if (modal) modal.style.display = 'none';
+              if (statusTitle) statusTitle.textContent = `❌ Error en indexación: ${s.error || 'Desconocido'}`;
+              setTimeout(() => {
+                if (modal) modal.style.display = 'none';
+              }, 2000);
             }
           } catch(e) {
             clearInterval(pollInterval);
-            await loadMercantil10GbBundle();
             if (modal) modal.style.display = 'none';
           }
         }, 1000);
       } catch (err) {
-        await loadMercantil10GbBundle();
+        console.error('Error iniciando ingesta:', err);
         if (modal) modal.style.display = 'none';
       }
     }

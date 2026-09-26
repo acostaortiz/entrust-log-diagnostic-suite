@@ -1,5 +1,24 @@
 [
   {
+    "id": "general",
+    "name": "Entorno Entrust General / Multi-Nodo",
+    "platform": "Entrust IdentityGuard / IDaaS Cloud",
+    "version": "Release 13.0 / Cloud",
+    "build": "LTS 2026",
+    "contact": "Departamento de Ciberseguridad & TI",
+    "engineer": "Tomás Acosta",
+    "nodes": [
+      {
+        "key": "node_01",
+        "name": "🖥️ Servidor Primario (Core)"
+      },
+      {
+        "key": "node_02",
+        "name": "🖥️ Servidor Secundario (HA)"
+      }
+    ]
+  },
+  {
     "id": "mercantil",
     "name": "Banco Mercantil C.A.",
     "platform": "Entrust IDaaS Cloud / IdentityGuard OnPremise",
