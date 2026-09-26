@@ -1291,10 +1291,28 @@ document.addEventListener('DOMContentLoaded', () => {
       meaning: 'Password submitted in the bulk file conflicts with an existing user credential.',
       rootCause: 'Missing allowPasswordReset=true directive during bulk import.',
       remediation: 'Enable allowPasswordReset=true to allow updating user passwords in the tenant.'
+    },
+
+    // AWS S3 Cloud Storage & SDK (True Infrastructure Error)
+    'AWS-S3-404-NOKEY': {
+      title: 'Cloud Storage Object Retrieval Failure (AWS S3 404 NoSuchKey)',
+      category: 'Cloud Storage & AWS SDK',
+      meaning: 'The Entrust IDaaS migration worker attempted to fetch a temporary batch chunk, encrypted payload (.dat) or manifest from AWS S3 that no longer exists or whose key expired.',
+      rootCause: 'S3 presigned URL expiration during long ingestion, temp file purged before batch completion, or key name mismatch in AWS SDK pipeline.',
+      remediation: '1. Re-upload the migration bundle (.dat) in IDaaS console ensuring uninterrupted upload.\n2. Chunk large batches into 50,000-record blocks to avoid S3 session expiration.\n3. Verify bucket permissions and connector settings.'
+    },
+    'S3-404': {
+      title: 'Cloud Storage Object Retrieval Failure (AWS S3 404 NoSuchKey)',
+      category: 'Cloud Storage & AWS SDK',
+      meaning: 'The Entrust IDaaS migration worker attempted to fetch a temporary batch chunk, encrypted payload (.dat) or manifest from AWS S3 that no longer exists or whose key expired.',
+      rootCause: 'S3 presigned URL expiration during long ingestion, temp file purged before batch completion, or key name mismatch in AWS SDK pipeline.',
+      remediation: '1. Re-upload the migration bundle (.dat) in IDaaS console ensuring uninterrupted upload.\n2. Chunk large batches into 50,000-record blocks to avoid S3 session expiration.\n3. Verify bucket permissions and connector settings.'
     }
   };
 
   const CATEGORY_TRANSLATIONS_EN = {
+    'Almacenamiento Cloud & SDK AWS': 'Cloud Storage & AWS SDK',
+    'Entrust IDaaS Cloud / Almacenamiento S3 & SDK': 'Entrust IDaaS Cloud / S3 Storage & SDK',
     'Aprovisionamiento IDaaS Cloud': 'IDaaS Cloud Provisioning',
     'Autenticación & Credenciales': 'Authentication & Credentials',
     'Tarjetas Grid & OTP': 'Grid Cards & OTP',
@@ -2207,7 +2225,36 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
       let familyColor = '#dc2626';
       if (/^AUD\d+/i.test(code)) { familyBadge = i18n.famAudTitle; familyColor = '#d97706'; }
       else if (/^ORA-\d+/i.test(code)) { familyBadge = i18n.famOraTitle; familyColor = '#7c3aed'; }
+      else if (/AWS-S3|S3-404/i.test(code)) { familyBadge = '☁️ AWS S3 Cloud'; familyColor = '#e11d48'; }
       else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(code)) { familyBadge = i18n.famIdaasTitle; familyColor = '#0284c7'; }
+
+      // Classification: True System Error vs Preexisting Data Collision vs Audit
+      let typeBadge = '';
+      if (/AWS-S3|S3-404|ORA-|5201000|OutOfMemory|SQLException|Connection pool|EOF/i.test(code) || /The specified key does not exist|snapshot too old/i.test(sampleRaw)) {
+        typeBadge = isEn 
+          ? `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">🔴 SYSTEM & INFRASTRUCTURE ERROR</span>`
+          : `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">🔴 FALLO REAL DE SISTEMA / INFRAESTRUCTURA</span>`;
+      } else if (/bulkidentityguard|assignedgrid|password|qa|migration/i.test(code) || /already has|currently has|grid already/i.test(sampleRaw)) {
+        typeBadge = isEn
+          ? `<span style="background:#fffbeb; color:#b45309; border:1px solid #fde68a; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">🟡 PREEXISTING DATA COLLISION (SKIPPED ROW)</span>`
+          : `<span style="background:#fffbeb; color:#b45309; border:1px solid #fde68a; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">🟡 CONFLICTO DE DATOS PREEXISTENTES (REGISTRO OMITIDO)</span>`;
+      } else if (/^AUD/i.test(code)) {
+        typeBadge = isEn
+          ? `<span style="background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">📋 ADMINISTRATIVE AUDIT</span>`
+          : `<span style="background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">📋 AUDITORÍA ADMINISTRATIVA</span>`;
+      }
+
+      // Documentation link
+      let docLink = '';
+      if (/bulkidentityguard|assignedgrid|AWS-S3|S3-404/i.test(code) || /migration/i.test(code)) {
+        docLink = `<div style="margin-top:4px;"><a href="https://docs.trustedauth.com/docs/perform-bulk-operations/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold; font-size:9.5px;">🔗 ${isEn ? 'Official Docs: Entrust IDaaS Bulk Operations' : 'Documentación Oficial Entrust IDaaS: Bulk Operations'}</a></div>`;
+      } else if (/password|qa/i.test(code)) {
+        docLink = `<div style="margin-top:4px;"><a href="https://docs.trustedauth.com/docs/people-and-access/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold; font-size:9.5px;">🔗 ${isEn ? 'Official Docs: Entrust IDaaS People & Access' : 'Documentación Oficial Entrust IDaaS: People & Access'}</a></div>`;
+      } else if (/520/i.test(code)) {
+        docLink = `<div style="margin-top:4px;"><a href="https://documentation.entrust.com/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold; font-size:9.5px;">🔗 ${isEn ? 'Official Manual: Entrust IdentityGuard 520xxx' : 'Manual Oficial Entrust IdentityGuard 520xxx'}</a></div>`;
+      } else if (/ORA/i.test(code)) {
+        docLink = `<div style="margin-top:4px;"><a href="https://docs.oracle.com/error-help/db/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold; font-size:9.5px;">🔗 ${isEn ? 'Oracle DB Error Guide & Retention Help' : 'Guía Oficial Oracle DB: Soporte de Errores'}</a></div>`;
+      }
 
       if (onlyCatalogErrors) {
         incidentsHtml += `
@@ -2216,6 +2263,7 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
               <div>
                 <span style="background:${familyColor}15; color:${familyColor}; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:4px; font-family:monospace;">${familyBadge} (${count.toLocaleString()}x)</span>
                 <span style="font-family:monospace; font-size:12px; font-weight:bold; color:#0a3d6d; margin-left:8px;">#${idxNum} - [${escapeHtml(code)}] ${escapeHtml(bDiag.service)}</span>
+                <div>${typeBadge}</div>
               </div>
               <span style="font-family:monospace; font-size:11px; color:#64748b; font-weight:bold;">${count.toLocaleString()} ${i18n.occurrences} (${pctStr})</span>
             </div>
@@ -2230,6 +2278,7 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
             </div>
             <div style="font-size:11px; color:#047857; background:#ecfdf5; padding:8px 10px; border-radius:4px; border:1px solid #a7f3d0; white-space:pre-line;">
               <strong style="color:#065f46;">${i18n.thRemediation}:</strong><br>${escapeHtml(bDiag.remediation)}
+              ${docLink}
             </div>
           </div>`;
       } else {
@@ -2238,6 +2287,7 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
             <td style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center;">
               <span style="white-space:nowrap; background:${familyColor}15; color:${familyColor}; padding:2px 6px; border-radius:3px; font-weight:bold; font-size:10px;">${familyBadge}</span><br>
               <span style="font-size:9.5px; color:${familyColor}; font-weight:bold;">${count.toLocaleString()} ${i18n.times}</span>
+              ${typeBadge ? `<div style="margin-top:3px;">${typeBadge}</div>` : ''}
             </td>
             <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-size:10px; color:#0f172a; word-break:break-all;">${escapeHtml(bDiag.service)}</td>
             <td style="padding:8px 6px; border:1px solid #cbd5e1;">
@@ -2245,16 +2295,25 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
               <span style="font-size:10px; color:#475569; line-height:1.3;">${escapeHtml(bDiag.meaning || code)}</span>
             </td>
             <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#b91c1c; font-weight:600; line-height:1.3;">${escapeHtml(bDiag.rootCause)}</td>
-            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">${escapeHtml(bDiag.remediation)}</td>
+            <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#047857; line-height:1.3; white-space:pre-line;">
+              ${escapeHtml(bDiag.remediation)}
+              ${docLink}
+            </td>
           </tr>`;
       }
 
       topCodesHtml += `
         <tr style="page-break-inside:avoid; break-inside:avoid; background:${idxNum % 2 === 0 ? '#ffffff' : '#f8fafc'};">
-          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:${familyColor}; text-align:center;">[${escapeHtml(code)}]<br><span style="font-size:9px; color:#64748b;">${familyBadge}</span></td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:${familyColor}; text-align:center;">
+            [${escapeHtml(code)}]<br><span style="font-size:9px; color:#64748b;">${familyBadge}</span>
+            ${typeBadge ? `<div style="margin-top:2px;">${typeBadge}</div>` : ''}
+          </td>
           <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; font-weight:600; color:#0f172a;">${escapeHtml(bDiag.title || code)}</td>
           <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; text-align:center; font-weight:bold; color:${familyColor}; font-family:monospace;">${count.toLocaleString()} (${pctStr})</td>
-          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">${escapeHtml(bDiag.rootCause)}</td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#475569;">
+            ${escapeHtml(bDiag.rootCause)}
+            ${docLink}
+          </td>
         </tr>`;
     });
 

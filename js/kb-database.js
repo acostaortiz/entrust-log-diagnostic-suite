@@ -66,7 +66,11 @@ const ENTRUST_EXACT_CATALOG = {
   // IDaaS Bulk: Aprovisionamiento Masivo en la Nube
   'bulkidentityguard.add.error.assignedgrid': { title: 'Conflicto de Tarjeta Grid Preexistente en Lote Masivo', category: 'Aprovisionamiento IDaaS Cloud', severity: 'ERROR', meaning: 'La tarea masiva intentó asignar una tarjeta Grid a un usuario que ya posee una tarjeta activa.', rootCause: 'Ejecución del lote sin la directiva overwriteExistingGrid=true.', remediation: 'Configurar el parámetro overwriteExistingGrid=true en la tarea masiva para permitir reemplazo.' },
   'bulkidentityguard.add.error.qa': { title: 'Preguntas y Respuestas Secretas (Q&A) Ya Registradas', category: 'Aprovisionamiento IDaaS Cloud', severity: 'ERROR', meaning: 'El usuario ya cuenta con preguntas de seguridad registradas en el tenant de IDaaS.', rootCause: 'Intento de importación sin la directiva updateExistingCredentials=true.', remediation: 'Habilitar updateExistingCredentials=true en la configuración del lote para actualizar el esquema Q&A.' },
-  'bulkidentityguard.add.error.password': { title: 'Colisión de Contraseña en Lote Masivo', category: 'Aprovisionamiento IDaaS Cloud', severity: 'ERROR', meaning: 'La contraseña enviada en el lote colisiona con una credencial existente.', rootCause: 'Falta de la directiva allowPasswordReset=true en la importación masiva.', remediation: 'Habilitar allowPasswordReset=true para permitir actualización de contraseñas de usuarios en el tenant.' }
+  'bulkidentityguard.add.error.password': { title: 'Colisión de Contraseña en Lote Masivo', category: 'Aprovisionamiento IDaaS Cloud', severity: 'ERROR', meaning: 'La contraseña enviada en el lote colisiona con una credencial existente.', rootCause: 'Falta de la directiva allowPasswordReset=true en la importación masiva.', remediation: 'Habilitar allowPasswordReset=true para permitir actualización de contraseñas de usuarios en el tenant.' },
+
+  // AWS S3 Cloud Storage & SDK (Error de Infraestructura / True Error)
+  'AWS-S3-404-NOKEY': { title: 'Fallo de Recuperación de Objeto en Cloud Storage (AWS S3 404 NoSuchKey)', category: 'Almacenamiento Cloud & SDK AWS', severity: 'CRITICAL', meaning: 'El worker de migración de Entrust IDaaS intentó descargar un archivo temporal, paquete .dat o manifiesto desde AWS S3 que no existe o cuya clave expiró.', rootCause: 'Expiración de la sesión/token S3, archivo temporal purgado antes de finalizar la ingesta, o desfase en la clave del objeto en AWS SDK.', remediation: '1. Reintentar la subida del paquete .dat en la consola de Entrust IDaaS asegurando que no existan microcortes.\n2. Fraccionar lotes a 50.000 registros para evitar expiración de tokens S3.\n3. Verificar conectividad y permisos del bucket en la configuración del conector Cloud.' },
+  'S3-404': { title: 'Fallo de Recuperación de Objeto en Cloud Storage (AWS S3 404 NoSuchKey)', category: 'Almacenamiento Cloud & SDK AWS', severity: 'CRITICAL', meaning: 'El worker de migración de Entrust IDaaS intentó descargar un archivo temporal, paquete .dat o manifiesto desde AWS S3 que no existe o cuya clave expiró.', rootCause: 'Expiración de la sesión/token S3, archivo temporal purgado antes de finalizar la ingesta, o desfase en la clave del objeto en AWS SDK.', remediation: '1. Reintentar la subida del paquete .dat en la consola de Entrust IDaaS asegurando que no existan microcortes.\n2. Fraccionar lotes a 50.000 registros para evitar expiración de tokens S3.\n3. Verificar conectividad y permisos del bucket en la configuración del conector Cloud.' }
 };
 
 /**
@@ -216,6 +220,21 @@ class KnowledgeBase {
         docsUrl: 'https://docs.trustedauth.com/docs/authentication-and-security/',
         sectionId: 'sec-idaas-bulk',
         sectionTitle: 'IDaaS Cloud Bulk Provisioning: Password Credential Conflict'
+      },
+      {
+        id: 'KB-AWS-S3-404',
+        title: 'AWS S3 Cloud Storage Error [404 NoSuchKey]: The specified key does not exist',
+        category: 'Entrust IDaaS Cloud / Almacenamiento S3 & SDK',
+        severity: 'CRITICAL',
+        pattern: /(The specified key does not exist|Service:\s*S3.*Status Code:\s*404|AWS-S3-404-NOKEY)/i,
+        meaning: 'Fallo de recuperación de objeto en Amazon S3. El worker de migración de Entrust IDaaS intentó descargar un paquete .dat, fragmento temporal o manifiesto que no fue encontrado en el bucket.',
+        rootCause: '1. El token/URL prefirmada de S3 expiró durante una carga masiva prolongada.\n2. El archivo temporal fue purgado por políticas de ciclo de vida de S3 antes de finalizar la ingesta.\n3. Discrepancia en la clave de ruta del archivo en el SDK de AWS.',
+        remediation: '1. Reintentar la subida del paquete en la consola de IDaaS asegurando que no existan microcortes en la conexión.\n2. Fraccionar los lotes de exportación a bloques de 50.000 registros para evitar timeouts del SDK S3.\n3. Verificar la configuración del conector y vigencia de credenciales Cloud.\n4. Consulte: https://docs.trustedauth.com/docs/perform-bulk-operations/',
+        riskLevel: 'Crítico (Fallo de Infraestructura Cloud S3 / True Error)',
+        manualVersion: 'vIDaaS_docs',
+        docsUrl: 'https://docs.trustedauth.com/docs/perform-bulk-operations/',
+        sectionId: 'sec-aws-s3-404',
+        sectionTitle: 'Fallo AWS S3 Cloud Storage: 404 NoSuchKey'
       },
       {
         id: 'KB-IDG-BULK-RBA',
@@ -1609,17 +1628,20 @@ journalctl -u wso2am -n 50 --no-pager`;
 
   extractErrorCodeFromText(text) {
     if (!text || typeof text !== 'string') return null;
-    if (/grid already assigned/i.test(text) || /assignedgrid/i.test(text)) {
+    if (/The specified key does not exist|Service:\s*S3|Status Code:\s*404/i.test(text)) {
+      return 'AWS-S3-404-NOKEY';
+    }
+    if (/grid already assigned|assignedgrid/i.test(text)) {
       return 'bulkidentityguard.add.error.assignedgrid';
     }
-    if (/currently has a password|Password will not be migrated|password/i.test(text)) {
+    if (/currently has a password|Password will not be migrated|bulkidentityguard\.add\.error\.password/i.test(text)) {
       return 'bulkidentityguard.add.error.password';
     }
-    if (/already has|qa|question/i.test(text)) {
+    if (/already has QA|QA in migration file will be ignored|bulkidentityguard\.add\.error\.qa/i.test(text)) {
       return 'bulkidentityguard.add.error.qa';
     }
-    const m = text.match(/\[(520\d{4}|AUD\d+|[A-Za-z0-9_\.-]+\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\]/i) ||
-              text.match(/\b(520\d{4}|AUD\d+|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d+)\b/i);
+    const m = text.match(/\[(520\d{4}|AUD\d+|[A-Za-z0-9_\.-]+\.error\.[A-Za-z0-9_\.-]+|ORA-\d+|AWS-S3-404-NOKEY)\]/i) ||
+              text.match(/\b(520\d{4}|AUD\d+|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d+|AWS-S3-404-NOKEY)\b/i);
     if (m) return m[1];
     return null;
   }
