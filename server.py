@@ -421,6 +421,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_ingest_local()
         elif path == '/api/clients':
             self.handle_save_clients()
+        elif path == '/api/engineers':
+            self.handle_save_engineers()
         else:
             self.send_error(404, 'Endpoint not found')
 
@@ -435,6 +437,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_api_stats(query)
         elif path == '/api/clients':
             self.handle_get_clients()
+        elif path == '/api/engineers':
+            self.handle_get_engineers()
         elif path == '/api/version':
             self.handle_get_version()
         elif path == '/api/upload-status':
@@ -577,6 +581,53 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json({'error': 'Formato inválido: se esperaba un array de clientes'}, status=400)
         except Exception as e:
             self.send_json({'error': f'Error guardando clientes: {e}'}, status=500)
+
+    def handle_get_engineers(self):
+        engineers_file = os.path.join(DATA_DIR, 'engineers.json')
+        if os.path.exists(engineers_file):
+            try:
+                with open(engineers_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                if isinstance(data, list):
+                    self.send_json({'success': True, 'engineers': data})
+                    return
+            except Exception as e:
+                print(f"Error leyendo engineers.json: {e}")
+
+        default_engineers = [
+            {
+                "id": "eng-tomas",
+                "name": "Tomás Acosta",
+                "title": "Especialista Senior en Seguridad & Identidad Entrust",
+                "email": "tacosta@itservicios.com",
+                "signature": "Ing. Tomás Acosta",
+                "organization": "IT SERVICIOS V.S.A.",
+                "initials": "TA"
+            }
+        ]
+        try:
+            with open(engineers_file, 'w', encoding='utf-8') as f:
+                json.dump(default_engineers, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
+        self.send_json({'success': True, 'engineers': default_engineers})
+
+    def handle_save_engineers(self):
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_length).decode('utf-8')
+            data = json.loads(body)
+            engineers = data.get('engineers', data) if isinstance(data, dict) else data
+
+            if isinstance(engineers, list):
+                engineers_file = os.path.join(DATA_DIR, 'engineers.json')
+                with open(engineers_file, 'w', encoding='utf-8') as f:
+                    json.dump(engineers, f, indent=2, ensure_ascii=False)
+                self.send_json({'success': True, 'savedCount': len(engineers)})
+            else:
+                self.send_json({'error': 'Formato inválido: se esperaba un array de ingenieros'}, status=400)
+        except Exception as e:
+            self.send_json({'error': f'Error guardando ingenieros: {e}'}, status=500)
 
     def handle_list_server_files(self):
         found_files = []

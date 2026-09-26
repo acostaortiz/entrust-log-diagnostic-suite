@@ -663,8 +663,339 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.add('active');
   };
 
+  /* ==========================================================================
+     -0.8 GESTIÓN PERSISTENTE DE ESPECIALISTAS & INGENIEROS DE AUDITORÍA
+     ========================================================================== */
+  const defaultEngineers = [
+    {
+      id: 'eng-tomas',
+      name: 'Tomás Acosta',
+      title: 'Especialista Senior en Seguridad & Identidad Entrust',
+      email: 'tacosta@itservicios.com',
+      signature: 'Ing. Tomás Acosta',
+      organization: 'IT SERVICIOS V.S.A.',
+      initials: 'TA'
+    }
+  ];
+
+  function persistEngineers(engineers) {
+    if (!engineers || !Array.isArray(engineers)) return;
+    try {
+      localStorage.setItem('custom_engineers_stable', JSON.stringify(engineers));
+      if (state.activeEngineerId) {
+        localStorage.setItem('active_engineer_id', state.activeEngineerId);
+      }
+    } catch(e) {
+      console.warn('LocalStorage error saving engineers:', e);
+    }
+
+    try {
+      fetch('/api/engineers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ engineers, activeEngineerId: state.activeEngineerId })
+      }).catch(() => {});
+    } catch(e) {}
+  }
+
+  async function loadEngineers() {
+    let loadedList = null;
+    const savedActiveId = localStorage.getItem('active_engineer_id');
+
+    // 1. Prioridad: Servidor Backend (/api/engineers)
+    try {
+      const res = await fetch('/api/engineers');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.engineers) && data.engineers.length > 0) {
+          loadedList = data.engineers;
+        }
+      }
+    } catch(e) {}
+
+    // 2. Si el servidor no respondió, consultar LocalStorage
+    if (!loadedList || loadedList.length === 0) {
+      try {
+        const stored = localStorage.getItem('custom_engineers_stable');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            loadedList = parsed;
+          }
+        }
+      } catch(e) {}
+    }
+
+    // 3. Fallback inicial
+    if (!loadedList || loadedList.length === 0) {
+      loadedList = [...defaultEngineers];
+    }
+
+    state.engineers = loadedList;
+
+    if (savedActiveId && state.engineers.some(eng => eng.id === savedActiveId)) {
+      state.activeEngineerId = savedActiveId;
+    } else {
+      state.activeEngineerId = state.engineers[0]?.id || 'eng-tomas';
+    }
+
+    persistEngineers(state.engineers);
+    populateEngineerSessionSelectors();
+  }
+
+  function getActiveEngineer() {
+    if (!state.engineers || state.engineers.length === 0) {
+      return defaultEngineers[0];
+    }
+    return state.engineers.find(eng => eng.id === state.activeEngineerId) || state.engineers[0] || defaultEngineers[0];
+  }
+  window.getActiveEngineerGlobal = getActiveEngineer;
+
+  function populateEngineerSessionSelectors() {
+    const headerSelect = document.getElementById('active-engineer-session-select');
+    const clientFormEngInput = document.getElementById('client-input-engineer');
+
+    const engList = (state.engineers && state.engineers.length > 0) ? state.engineers : defaultEngineers;
+    const currentEng = getActiveEngineer();
+
+    if (headerSelect) {
+      headerSelect.innerHTML = '';
+      engList.forEach(eng => {
+        const opt = document.createElement('option');
+        opt.value = eng.id;
+        opt.textContent = `${eng.name}`;
+        if (eng.id === state.activeEngineerId) {
+          opt.selected = true;
+        }
+        headerSelect.appendChild(opt);
+      });
+      headerSelect.value = state.activeEngineerId || 'eng-tomas';
+    }
+
+    if (clientFormEngInput && (!clientFormEngInput.value || clientFormEngInput.value === 'Tomás Acosta')) {
+      clientFormEngInput.value = currentEng.name || 'Tomás Acosta';
+    }
+
+    renderRegisteredEngineersList();
+  }
+
+  function renderRegisteredEngineersList() {
+    const listContainer = document.getElementById('registered-engineers-list');
+    if (!listContainer) return;
+
+    if (!state.engineers || state.engineers.length === 0) {
+      listContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:12px; text-align:center;">No hay especialistas registrados actualmente.</div>';
+      return;
+    }
+
+    let html = '';
+    state.engineers.forEach(eng => {
+      const isActive = eng.id === state.activeEngineerId;
+      html += `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:${isActive ? 'rgba(56, 189, 248, 0.15)' : 'var(--bg-secondary)'}; border:1px solid ${isActive ? 'var(--it-blue)' : 'var(--border-color)'}; padding:8px 12px; border-radius:6px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-weight:700; color:var(--text-main); font-size:0.9rem;">👤 ${escapeHtml(eng.name)}</span>
+              ${isActive ? '<span style="font-size:0.68rem; background:#0284c7; color:#fff; padding:2px 6px; border-radius:4px; font-weight:700;">ACTIVO EN SESIÓN</span>' : ''}
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+              ${escapeHtml(eng.title || 'Especialista')} | Firma: <strong style="color:var(--text-main);">${escapeHtml(eng.signature || eng.name)}</strong> ${eng.email ? `| ✉️ ${escapeHtml(eng.email)}` : ''}
+            </div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            ${!isActive ? `<button type="button" class="btn btn-primary" style="padding:3px 8px; font-size:0.75rem;" onclick="window.setActiveEngineerGlobal('${eng.id}');">Usar</button>` : ''}
+            <button type="button" class="btn" style="padding:3px 8px; font-size:0.75rem; border-color:var(--border-color);" onclick="window.editEngineerProfileGlobal('${eng.id}');" title="Editar este especialista">✏️ Editar</button>
+            <button type="button" class="btn" style="padding:3px 8px; font-size:0.75rem; color:#ef4444; border-color:rgba(239, 68, 68, 0.4);" onclick="window.deleteEngineerProfileGlobal('${eng.id}');" title="Eliminar especialista">🗑️</button>
+          </div>
+        </div>
+      `;
+    });
+    listContainer.innerHTML = html;
+  }
+  window.renderRegisteredEngineersList = renderRegisteredEngineersList;
+
+  window.setActiveEngineerGlobal = function(engineerId) {
+    state.activeEngineerId = engineerId;
+    const currentEng = getActiveEngineer();
+    populateEngineerSessionSelectors();
+    persistEngineers(state.engineers);
+    showAnalysisStatus(false, `👤 Sesión de Especialista: ${currentEng.name}`, `Firma activa: ${currentEng.signature || currentEng.name} | ${currentEng.title || 'Auditor'}`);
+  };
+
+  window.editEngineerProfileGlobal = function(engineerId) {
+    const eng = (state.engineers || []).find(e => e.id === engineerId);
+    if (!eng) return;
+
+    const idInput = document.getElementById('engineer-input-id');
+    const nameInput = document.getElementById('engineer-input-name');
+    const titleInput = document.getElementById('engineer-input-title');
+    const sigInput = document.getElementById('engineer-input-signature');
+    const emailInput = document.getElementById('engineer-input-email');
+    const orgInput = document.getElementById('engineer-input-org');
+    const titleEl = document.getElementById('engineer-form-title');
+    const btnCancel = document.getElementById('btn-cancel-edit-engineer');
+    const btnSave = document.getElementById('btn-save-engineer-profile');
+
+    if (idInput) idInput.value = eng.id;
+    if (nameInput) nameInput.value = eng.name || '';
+    if (titleInput) titleInput.value = eng.title || '';
+    if (sigInput) sigInput.value = eng.signature || eng.name || '';
+    if (emailInput) emailInput.value = eng.email || '';
+    if (orgInput) orgInput.value = eng.organization || 'IT SERVICIOS V.S.A.';
+
+    if (titleEl) titleEl.textContent = `✏️ Editando Especialista: ${eng.name}`;
+    if (btnCancel) btnCancel.style.display = 'inline-block';
+    if (btnSave) btnSave.textContent = '💾 Actualizar Especialista';
+
+    nameInput?.focus();
+  };
+
+  window.cancelEditEngineerGlobal = function() {
+    const idInput = document.getElementById('engineer-input-id');
+    const nameInput = document.getElementById('engineer-input-name');
+    const titleInput = document.getElementById('engineer-input-title');
+    const sigInput = document.getElementById('engineer-input-signature');
+    const emailInput = document.getElementById('engineer-input-email');
+    const orgInput = document.getElementById('engineer-input-org');
+    const titleEl = document.getElementById('engineer-form-title');
+    const btnCancel = document.getElementById('btn-cancel-edit-engineer');
+    const btnSave = document.getElementById('btn-save-engineer-profile');
+
+    if (idInput) idInput.value = '';
+    if (nameInput) nameInput.value = '';
+    if (titleInput) titleInput.value = '';
+    if (sigInput) sigInput.value = '';
+    if (emailInput) emailInput.value = '';
+    if (orgInput) orgInput.value = 'IT SERVICIOS V.S.A.';
+
+    if (titleEl) titleEl.textContent = '➕ Registrar Nuevo Especialista / Ingeniero';
+    if (btnCancel) btnCancel.style.display = 'none';
+    if (btnSave) btnSave.textContent = '💾 Guardar Especialista';
+  };
+
+  window.deleteEngineerProfileGlobal = function(engineerId) {
+    const engToDelete = (state.engineers || []).find(e => e.id === engineerId);
+    if (!engToDelete) return;
+
+    if (!confirm(`¿Está seguro de que desea eliminar el perfil del especialista "${engToDelete.name}"?\n\nEsta acción no se puede deshacer y se sincronizará con el servidor.`)) {
+      return;
+    }
+
+    state.engineers = state.engineers.filter(e => e.id !== engineerId);
+
+    if (state.engineers.length === 0) {
+      state.engineers = [...defaultEngineers];
+    }
+
+    if (state.activeEngineerId === engineerId) {
+      state.activeEngineerId = state.engineers[0]?.id || 'eng-tomas';
+    }
+
+    persistEngineers(state.engineers);
+    populateEngineerSessionSelectors();
+    window.cancelEditEngineerGlobal();
+    showAnalysisStatus(false, `🗑️ Especialista Eliminado: ${engToDelete.name}`, `El perfil del ingeniero ha sido removido exitosamente.`);
+  };
+
+  window.exportEngineersJSONGlobal = function() {
+    const list = state.engineers || defaultEngineers;
+    const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `entrust_ingenieros_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  window.importEngineersJSONGlobal = function(event) {
+    const file = event?.target?.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const imported = JSON.parse(e.target.result);
+        if (Array.isArray(imported) && imported.length > 0) {
+          state.engineers = imported;
+          state.activeEngineerId = imported[0].id || 'eng-tomas';
+          persistEngineers(state.engineers);
+          populateEngineerSessionSelectors();
+          alert(`✅ Se importaron exitosamente ${imported.length} perfiles de especialistas.`);
+        } else {
+          alert('❌ El archivo JSON no contiene una lista válida de ingenieros.');
+        }
+      } catch(err) {
+        alert('❌ Error al procesar el archivo JSON: ' + err.message);
+      }
+      if (event.target) event.target.value = '';
+    };
+    reader.readAsText(file);
+  };
+
+  function saveEngineerProfileGlobal() {
+    const idInput = document.getElementById('engineer-input-id');
+    const nameInput = document.getElementById('engineer-input-name');
+    const titleInput = document.getElementById('engineer-input-title');
+    const sigInput = document.getElementById('engineer-input-signature');
+    const emailInput = document.getElementById('engineer-input-email');
+    const orgInput = document.getElementById('engineer-input-org');
+
+    const editId = idInput ? idInput.value.trim() : '';
+    const name = nameInput ? nameInput.value.trim() : '';
+    const title = titleInput ? titleInput.value.trim() : 'Especialista en Seguridad Entrust';
+    const signature = sigInput ? sigInput.value.trim() : (name.startsWith('Ing.') ? name : `Ing. ${name}`);
+    const email = emailInput ? emailInput.value.trim() : '';
+    const organization = orgInput ? orgInput.value.trim() : 'IT SERVICIOS V.S.A.';
+
+    if (!name) {
+      alert('Por favor ingrese el nombre del especialista / ingeniero.');
+      nameInput?.focus();
+      return;
+    }
+
+    if (!state.engineers) state.engineers = [];
+
+    if (editId) {
+      const idx = state.engineers.findIndex(e => e.id === editId);
+      if (idx >= 0) {
+        state.engineers[idx] = {
+          ...state.engineers[idx],
+          name, title, signature, email, organization
+        };
+        showAnalysisStatus(false, `✏️ Especialista Actualizado: ${name}`, `Se actualizaron los datos y firma oficial de ${name}.`);
+      }
+      window.cancelEditEngineerGlobal();
+    } else {
+      const newId = 'eng-' + Date.now();
+      const newEng = {
+        id: newId,
+        name,
+        title,
+        signature,
+        email,
+        organization,
+        initials: name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+      };
+      state.engineers.push(newEng);
+      state.activeEngineerId = newId;
+      window.cancelEditEngineerGlobal();
+      showAnalysisStatus(false, `✅ Nuevo Especialista Registrado: ${name}`, `Se configuró a ${name} como el auditor activo en sesión.`);
+    }
+
+    persistEngineers(state.engineers);
+    populateEngineerSessionSelectors();
+
+    const modal = document.getElementById('engineer-modal');
+    if (modal) modal.classList.remove('active');
+  }
+  window.saveEngineerProfileGlobal = saveEngineerProfileGlobal;
+
   function initClientProfilesModule() {
     initAppVersionModule();
+    loadEngineers();
     loadClientProfiles().then(() => {
       if (typeof syncClientSessionWithServer === 'function') {
         syncClientSessionWithServer(state.activeClientId);
@@ -676,6 +1007,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCloseModal = document.getElementById('btn-close-client-modal');
     const btnSaveClient = document.getElementById('btn-save-client-profile');
     const modal = document.getElementById('client-modal');
+
+    const btnOpenEngModal = document.getElementById('btn-open-engineer-modal');
+    const btnCloseEngModal = document.getElementById('btn-close-engineer-modal');
+    const engModal = document.getElementById('engineer-modal');
+
+    if (btnOpenEngModal && engModal) {
+      btnOpenEngModal.addEventListener('click', () => {
+        renderRegisteredEngineersList();
+        engModal.classList.add('active');
+      });
+    }
+
+    if (btnCloseEngModal && engModal) {
+      btnCloseEngModal.addEventListener('click', () => {
+        engModal.classList.remove('active');
+      });
+    }
 
     if (headerSelect) {
       headerSelect.addEventListener('change', (e) => {
@@ -1200,7 +1548,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getReportI18n() {
     const lang = state.reportLanguage === 'en' ? 'en' : 'es';
-    return REPORT_I18N[lang];
+    const dict = REPORT_I18N[lang];
+    const activeEng = (typeof getActiveEngineer === 'function') ? getActiveEngineer() : { name: 'Tomás Acosta', signature: 'Ing. Tomás Acosta', title: 'Líder Técnico de Ciberseguridad & Infraestructura Entrust', organization: 'IT SERVICIOS DE VENEZUELA, S.A.' };
+    return {
+      ...dict,
+      signatureName: activeEng.signature || (lang === 'en' ? `Eng. ${activeEng.name}` : `Ing. ${activeEng.name}`),
+      signatureRole: activeEng.title || (lang === 'en' ? 'Lead Cybersecurity & Entrust Infrastructure Specialist' : 'Líder Técnico de Ciberseguridad & Infraestructura Entrust')
+    };
   }
 
   const ENTRUST_CATALOG_TRANSLATIONS_EN = {

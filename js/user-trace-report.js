@@ -638,10 +638,11 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
                 <div style="font-size:0.82rem; color:#334155;">Radiografía integral de comportamiento de identidades, usuarios con fallas, bloqueos y registros exitosos</div>
               </div>
               <div style="font-size:0.78rem; text-align:right; color:#475569;">
-                <div><strong>Entorno / Cliente:</strong> ${escapeHtml(clientLabel)}</div>\n                <div><strong>Ambiente de Operación:</strong> <span style="font-weight:700; color:${(window.state?.activeEnvironment === 'PROD' || !window.state?.activeEnvironment) ? '#15803d' : (window.state?.activeEnvironment === 'QA' ? '#b45309' : '#0284c7')};">${window.state?.activeEnvironment === 'PROD' ? '🟢 Producción (PROD)' : (window.state?.activeEnvironment === 'QA' ? '🟡 Pruebas / QA (STAGING)' : '🔵 Desarrollo (DEV)')}</span></div>
+                <div><strong>Entorno / Cliente:</strong> ${escapeHtml(clientLabel)}</div>
+                <div><strong>Ambiente de Operación:</strong> <span style="font-weight:700; color:${(window.state?.activeEnvironment === 'PROD' || !window.state?.activeEnvironment) ? '#15803d' : (window.state?.activeEnvironment === 'QA' ? '#b45309' : '#0284c7')};">${window.state?.activeEnvironment === 'PROD' ? '🟢 Producción (PROD)' : (window.state?.activeEnvironment === 'QA' ? '🟡 Pruebas / QA (STAGING)' : '🔵 Desarrollo (DEV)')}</span></div>
                 <div><strong>Plataforma &amp; Versión:</strong> ${escapeHtml(clientVersion)}</div>
                 <div><strong>Fecha de Emisión:</strong> ${nowFormatted}</div>
-                <div><strong>Auditor Responsable:</strong> Tomás Acosta (IT Servicios de Venezuela)</div>
+                <div><strong>Auditor Responsable:</strong> ${(typeof window.getActiveEngineerGlobal === 'function') ? escapeHtml(window.getActiveEngineerGlobal().signature || window.getActiveEngineerGlobal().name) : 'Tomás Acosta'} (${(typeof window.getActiveEngineerGlobal === 'function') ? escapeHtml(window.getActiveEngineerGlobal().organization || 'IT Servicios de Venezuela') : 'IT Servicios de Venezuela'})</div>
               </div>
             </div>
           </div>
@@ -757,9 +758,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
               <div style="font-size:0.72rem; color:#64748b;">Informe generado automáticamente bajo estándares de auditoría Entrust IdentityGuard &amp; IDaaS Cloud.</div>
             </div>
             <div style="text-align:right;">
-              <div style="font-size:0.82rem; font-weight:bold; color:#0f172a;">Tomás Acosta</div>
-              <div style="font-size:0.72rem; color:#475569;">Especialista de Seguridad e Infraestructura Entrust</div>
-              <div style="font-size:0.72rem; color:#0284c7; font-weight:bold;">IT Servicios de Venezuela, S.A.</div>
+              <div style="font-size:0.82rem; font-weight:bold; color:#0f172a;">${(typeof window.getActiveEngineerGlobal === 'function') ? escapeHtml(window.getActiveEngineerGlobal().signature || window.getActiveEngineerGlobal().name) : 'Tomás Acosta'}</div>
+              <div style="font-size:0.72rem; color:#475569;">${(typeof window.getActiveEngineerGlobal === 'function') ? escapeHtml(window.getActiveEngineerGlobal().title || 'Especialista de Seguridad e Infraestructura Entrust') : 'Especialista de Seguridad e Infraestructura Entrust'}</div>
+              <div style="font-size:0.72rem; color:#0284c7; font-weight:bold;">${(typeof window.getActiveEngineerGlobal === 'function') ? escapeHtml(window.getActiveEngineerGlobal().organization || 'IT Servicios de Venezuela, S.A.') : 'IT Servicios de Venezuela, S.A.'}</div>
             </div>
           </div>
 
