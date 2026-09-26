@@ -14,3 +14,4 @@ uploads/
 data/uploads/
 .DS_Store
 Thumbs.db
+*.db

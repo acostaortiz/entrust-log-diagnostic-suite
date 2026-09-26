@@ -146,34 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================================
      -1. GESTIÓN PERSISTENTE DE PERFILES DE CLIENTES & ENTORNOS ENTRUST
      ========================================================================== */
-  const defaultClients = [
-    {
-      id: 'general',
-      name: 'Entorno Entrust General / Multi-Nodo',
-      platform: 'Entrust IdentityGuard / IDaaS Cloud',
-      version: 'Release 13.0 / Cloud',
-      build: 'LTS 2026',
-      contact: 'Departamento de Ciberseguridad & TI',
-      engineer: 'Tomás Acosta',
-      nodes: [
-        { key: 'node_01', name: '🖥️ Servidor Primario (Core)' },
-        { key: 'node_02', name: '🖥️ Servidor Secundario (HA)' }
-      ]
-    },
-    {
-      id: 'mercantil',
-      name: 'Banco Mercantil C.A.',
-      platform: 'Entrust IDaaS Cloud / IdentityGuard OnPremise',
-      version: 'IDaaS Cloud v2026',
-      build: 'IDaaS Cloud v2026 (5.46)',
-      contact: 'Vicepresidencia de Ciberseguridad & TI',
-      engineer: 'Tomás Acosta',
-      nodes: [
-        { key: 'node_01', name: '☁️ IDaaS Cloud (Migration Pipeline)' },
-        { key: 'node_02', name: '🖥️ IdentityGuard OnPremise (BMIGPROD01)' }
-      ]
-    }
-  ];
+  const defaultClients = [];
 
   function persistClientProfiles(profiles) {
     if (!profiles || !Array.isArray(profiles)) return;
@@ -181,6 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('custom_client_profiles_stable', JSON.stringify(profiles));
       if (state.activeClientId) {
         localStorage.setItem('active_client_profile_id', state.activeClientId);
+      } else {
+        localStorage.removeItem('active_client_profile_id');
       }
     } catch(e) {
       console.warn('LocalStorage error:', e);
@@ -208,19 +183,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('/api/clients');
       if (res.ok) {
         const data = await res.json();
-        if (data && Array.isArray(data.clients) && data.clients.length > 0) {
+        if (data && Array.isArray(data.clients)) {
           loadedList = data.clients;
         }
       }
     } catch(e) {}
 
     // 2. Si el servidor no respondió, consultar LocalStorage
-    if (!loadedList || loadedList.length === 0) {
+    if (!loadedList) {
       try {
         const stored = localStorage.getItem('custom_client_profiles_stable');
         if (stored) {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) {
+          if (Array.isArray(parsed)) {
             loadedList = parsed;
           }
         }
@@ -228,11 +203,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 3. Consultar IndexedDB
-    if (!loadedList || loadedList.length === 0) {
+    if (!loadedList) {
       try {
         if (window.storageEngine && typeof window.storageEngine.loadClientProfiles === 'function') {
           const idbProfiles = await window.storageEngine.loadClientProfiles();
-          if (Array.isArray(idbProfiles) && idbProfiles.length > 0) {
+          if (Array.isArray(idbProfiles)) {
             loadedList = idbProfiles;
           }
         }
@@ -240,8 +215,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 4. Fallback inicial si no hay nada guardado
-    if (!loadedList || loadedList.length === 0) {
-      loadedList = [...defaultClients];
+    if (!loadedList || !Array.isArray(loadedList)) {
+      loadedList = [];
     }
 
     state.clientProfiles = loadedList;
@@ -249,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedActiveId && state.clientProfiles.some(c => c.id === savedActiveId)) {
       state.activeClientId = savedActiveId;
     } else {
-      state.activeClientId = state.clientProfiles[0]?.id || 'mercantil';
+      state.activeClientId = state.clientProfiles[0]?.id || '';
     }
 
     persistClientProfiles(state.clientProfiles);
@@ -263,9 +238,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const matchByToolbar = (state.clientProfiles || []).find(c => c.name.toLowerCase() === toolbarVal.toLowerCase());
       if (matchByToolbar) return matchByToolbar;
       return {
+        id: '',
         name: toolbarVal,
         platform: 'Entrust IdentityGuard OnPremise',
         version: 'Release 13.0',
+        environment: 'PROD',
         build: 'General',
         contact: 'Departamento de TI',
         engineer: 'Tomás Acosta',
@@ -276,7 +253,23 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     }
 
-    return (state.clientProfiles || []).find(c => c.id === state.activeClientId) || (state.clientProfiles && state.clientProfiles[0]) || defaultClients[0];
+    const found = (state.clientProfiles || []).find(c => c.id === state.activeClientId) || (state.clientProfiles && state.clientProfiles[0]);
+    if (found) return found;
+
+    return {
+      id: '',
+      name: 'Sin Cliente Asignado',
+      platform: 'Entrust IdentityGuard / IDaaS Cloud',
+      version: 'Release 13.0 / Cloud',
+      environment: 'PROD',
+      build: 'LTS 2026',
+      contact: 'Departamento de Ciberseguridad & TI',
+      engineer: 'Tomás Acosta',
+      nodes: [
+        { key: 'node_01', name: '🖥️ Servidor Primario (Core)' },
+        { key: 'node_02', name: '🖥️ Servidor Secundario (HA)' }
+      ]
+    };
   }
 
   function getClientAvailableNodes() {
@@ -295,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!listContainer) return;
 
     if (!state.clientProfiles || state.clientProfiles.length === 0) {
-      listContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:12px; text-align:center;">No hay clientes registrados actualmente. Use el formulario superior para registrar uno nuevo.</div>';
+      listContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:16px; text-align:center; background:var(--bg-secondary); border-radius:6px; border:1px dashed var(--border-color);">No hay clientes registrados en este momento.<br><span style="color:var(--it-blue); font-weight:600;">Complete el formulario superior para registrar su primer cliente.</span></div>';
       return;
     }
 
@@ -313,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       html += `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:${isActive ? 'rgba(56, 189, 248, 0.15)' : 'var(--bg-secondary)'}; border:1px solid ${isActive ? 'var(--it-blue)' : 'var(--border-color)'}; padding:8px 12px; border-radius:6px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:${isActive ? 'rgba(56, 189, 248, 0.15)' : 'var(--bg-secondary)'}; border:1px solid ${isActive ? 'var(--it-blue)' : 'var(--border-color)'}; padding:8px 12px; border-radius:6px; margin-bottom:6px;">
           <div>
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="font-weight:700; color:var(--text-main); font-size:0.9rem;">🏢 ${escapeHtml(c.name)}</span>
@@ -337,6 +330,12 @@ document.addEventListener('DOMContentLoaded', () => {
   window.renderRegisteredClientsList = renderRegisteredClientsList;
 
   window.selectActiveClientGlobal = function(clientId) {
+    if (!clientId) {
+      const modal = document.getElementById('client-modal');
+      if (modal) modal.classList.add('active');
+      if (typeof window.renderRegisteredClientsList === 'function') window.renderRegisteredClientsList();
+      return;
+    }
     state.activeClientId = clientId;
     const currentClient = getActiveClientProfile();
     const availNodes = getClientAvailableNodes();
@@ -372,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof syncClientSessionWithServer === 'function') {
       syncClientSessionWithServer(clientId);
     }
-    showAnalysisStatus(false, `🏢 Sesión de Cliente Cambiada: ${currentClient.name}`, `Plataforma: ${currentClient.platform} | Versión: ${currentClient.version} • ${currentClient.environment || 'PROD'}`);
+    showAnalysisStatus(false, `🏢 Sesión de Cliente: ${currentClient.name}`, `Plataforma: ${currentClient.platform} | Versión: ${currentClient.version} • ${currentClient.environment || 'PROD'}`);
   };
 
   window.editClientProfileGlobal = function(clientId) {
@@ -440,12 +439,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     state.clientProfiles = state.clientProfiles.filter(c => c.id !== clientId);
 
-    if (state.clientProfiles.length === 0) {
-      state.clientProfiles = [...defaultClients];
-    }
-
     if (state.activeClientId === clientId) {
-      state.activeClientId = state.clientProfiles[0]?.id || 'general';
+      state.activeClientId = state.clientProfiles[0]?.id || '';
     }
 
     persistClientProfiles(state.clientProfiles);
@@ -455,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   window.exportClientsJSONGlobal = function() {
-    const list = state.clientProfiles || defaultClients;
+    const list = state.clientProfiles || [];
     const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -477,7 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const imported = JSON.parse(e.target.result);
         if (Array.isArray(imported) && imported.length > 0) {
           state.clientProfiles = imported;
-          state.activeClientId = imported[0].id || 'general';
+          state.activeClientId = imported[0].id || '';
           persistClientProfiles(state.clientProfiles);
           populateClientSessionSelectors();
           alert(`✅ Se importaron exitosamente ${imported.length} perfiles de cliente.`);
@@ -496,36 +491,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerSelect = document.getElementById('active-client-session-select');
     const toolbarSelect = document.getElementById('filter-client-select');
 
-    const clientList = (state.clientProfiles && state.clientProfiles.length > 0) ? state.clientProfiles : defaultClients;
+    const clientList = (state.clientProfiles && Array.isArray(state.clientProfiles)) ? state.clientProfiles : [];
 
     if (headerSelect) {
       headerSelect.innerHTML = '';
-      clientList.forEach(c => {
-        const envKey = (c.environment || 'PROD').toUpperCase();
-        let envIcon = '🟢';
-        if (envKey.includes('QA') || envKey === 'QA') envIcon = '🟡';
-        else if (envKey.includes('DEV') || envKey === 'DEV') envIcon = '🔵';
-        else if (envKey.includes('DR') || envKey === 'DR') envIcon = '🟣';
-
+      if (clientList.length === 0) {
         const opt = document.createElement('option');
-        opt.value = c.id;
-        opt.textContent = `${envIcon} ${c.name} (${c.version} • ${c.environment || 'PROD'})`;
-        if (c.id === (state.activeClientId || 'general')) {
-          opt.selected = true;
-        }
+        opt.value = '';
+        opt.textContent = '➕ Registrar Primer Cliente...';
+        opt.selected = true;
         headerSelect.appendChild(opt);
-      });
-      headerSelect.value = state.activeClientId || 'general';
-      if (!headerSelect.value && headerSelect.options.length > 0) {
-        headerSelect.selectedIndex = 0;
-        state.activeClientId = headerSelect.value;
+        state.activeClientId = '';
+      } else {
+        clientList.forEach(c => {
+          const envKey = (c.environment || 'PROD').toUpperCase();
+          let envIcon = '🟢';
+          if (envKey.includes('QA') || envKey === 'QA') envIcon = '🟡';
+          else if (envKey.includes('DEV') || envKey === 'DEV') envIcon = '🔵';
+          else if (envKey.includes('DR') || envKey === 'DR') envIcon = '🟣';
+
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = `${envIcon} ${c.name} (${c.version} • ${c.environment || 'PROD'})`;
+          if (c.id === state.activeClientId) {
+            opt.selected = true;
+          }
+          headerSelect.appendChild(opt);
+        });
+        if (!state.activeClientId || !clientList.some(c => c.id === state.activeClientId)) {
+          state.activeClientId = clientList[0].id;
+          headerSelect.value = state.activeClientId;
+        } else {
+          headerSelect.value = state.activeClientId;
+        }
       }
     }
 
     if (toolbarSelect) {
       const currentVal = toolbarSelect.value || 'ALL';
       toolbarSelect.innerHTML = '<option value="ALL">Todos los Clientes</option>';
-      (state.clientProfiles || []).forEach(c => {
+      clientList.forEach(c => {
         const opt = document.createElement('option');
         opt.value = c.name;
         opt.textContent = c.name;
@@ -1469,7 +1474,7 @@ document.addEventListener('DOMContentLoaded', () => {
       sec4Title: 'Detalle de Recomendaciones Basadas en la Evidencia Forense:',
       ethicalTitle: 'DICTAMEN ÉTICO Y DECLARACIÓN DE CONFORMIDAD PERICIAL:',
       ethicalBody: 'El presente documento ha sido elaborado conforme a los principios de integridad, confidencialidad, objetividad y rigor técnico profesional de <strong>IT SERVICIOS DE VENEZUELA, S.A.</strong>, alineado a las buenas prácticas internacionales para plataformas de gestión de identidad digital (ISO/IEC 27001, NIST SP 800-63B). Todas las conclusiones están fundamentadas estrictamente en la evidencia telemétrica y transaccional registrada en los registros de auditoría.',
-      signatureName: 'Ing. Tomás Acosta Ortiz',
+      signatureName: 'Ing. Tomás Acosta',
       signatureRole: 'Líder Técnico de Ciberseguridad & Infraestructura Entrust',
       suiteLabel: 'Suite de Diagnóstico',
       confidentialUse: 'Confidencial — Para uso exclusivo de <strong>{client}</strong>.',
@@ -1564,7 +1569,7 @@ document.addEventListener('DOMContentLoaded', () => {
       sec4Title: 'Detailed Technical Recommendations Based on Forensic Evidence:',
       ethicalTitle: 'ETHICAL OPINION & STATEMENT OF FORENSIC COMPLIANCE:',
       ethicalBody: 'This document has been prepared strictly in accordance with the principles of integrity, confidentiality, objectivity, and technical rigor of <strong>IT SERVICIOS DE VENEZUELA, S.A.</strong>, aligned with international digital identity security standards (ISO/IEC 27001, NIST SP 800-63B). All conclusions are strictly substantiated by the telemetric and transactional audit records analyzed.',
-      signatureName: 'Eng. Tomás Acosta Ortiz',
+      signatureName: 'Eng. Tomás Acosta',
       signatureRole: 'Lead Cybersecurity & Entrust Infrastructure Specialist',
       suiteLabel: 'Diagnostic Suite',
       confidentialUse: 'Confidential — For the exclusive use of <strong>{client}</strong>.',

@@ -532,36 +532,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             except Exception as e:
                 print(f"Error leyendo clients.json: {e}")
 
-        default_clients = [
-            {
-                "id": "general",
-                "name": "Entorno Entrust General / Multi-Nodo",
-                "platform": "Entrust IdentityGuard / IDaaS Cloud",
-                "version": "Release 13.0 / Cloud",
-                "environment": "PROD",
-                "build": "LTS 2026",
-                "contact": "Departamento de Ciberseguridad & TI",
-                "engineer": "Tomás Acosta",
-                "nodes": [
-                    { "key": "node_01", "name": "🖥️ Servidor Primario (Core)" },
-                    { "key": "node_02", "name": "🖥️ Servidor Secundario (HA)" }
-                ]
-            },
-            {
-                "id": "mercantil",
-                "name": "Banco Mercantil C.A.",
-                "platform": "Entrust IDaaS Cloud / IdentityGuard OnPremise",
-                "version": "IDaaS Cloud v2026",
-                "environment": "PROD",
-                "build": "IDaaS Cloud v2026 (5.46)",
-                "contact": "Vicepresidencia de Ciberseguridad & TI",
-                "engineer": "Tomás Acosta",
-                "nodes": [
-                    { "key": "node_01", "name": "☁️ IDaaS Cloud (Migration Pipeline)" },
-                    { "key": "node_02", "name": "🖥️ IdentityGuard OnPremise (BMIGPROD01)" }
-                ]
-            }
-        ]
+        default_clients = []
         try:
             with open(clients_file, 'w', encoding='utf-8') as f:
                 json.dump(default_clients, f, indent=2, ensure_ascii=False)
