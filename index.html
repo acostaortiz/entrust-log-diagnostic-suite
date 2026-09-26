@@ -76,53 +76,53 @@
 
         <!-- Dropdown de Pestañas Secundarias & Soporte -->
         <div class="header-dropdown nav-tab-dropdown" id="dropdown-nav-more">
-          <button class="nav-btn dropdown-toggle-btn" id="btn-nav-more">
+          <button type="button" class="nav-btn dropdown-toggle-btn" id="btn-nav-more" onclick="window.toggleNavMoreDropdown(event);">
             <span>📂</span> <span id="label-nav-more">Más Vistas</span> <span style="font-size:0.65rem; margin-left:2px;">▼</span>
           </button>
-          <div class="header-dropdown-menu" style="left:0; right:auto; min-width:300px;">
-            <button class="header-dropdown-item nav-btn" data-tab="compliance">
+          <div class="header-dropdown-menu" style="left:0; right:auto; min-width:320px;">
+            <button type="button" class="header-dropdown-item nav-btn" data-tab="compliance" onclick="window.switchTabGlobal('compliance');">
               <span style="font-size:1.2rem;">⚖️</span>
               <div>
                 <div style="font-weight:700;">Auditoría Sudeban & ISO 27001</div>
                 <div style="font-size:0.7rem; color:var(--text-muted);">Checklist y conformidad regulatoria</div>
               </div>
             </button>
-            <button class="header-dropdown-item nav-btn" data-tab="diff">
+            <button type="button" class="header-dropdown-item nav-btn" data-tab="diff" onclick="window.switchTabGlobal('diff');">
               <span style="font-size:1.2rem;">🔍</span>
               <div>
                 <div style="font-weight:700;">Comparador Config (Diff)</div>
                 <div style="font-size:0.7rem; color:var(--text-muted);">Discrepancias XML/Properties entre nodos</div>
               </div>
             </button>
-            <button class="header-dropdown-item nav-btn" data-tab="kb">
+            <button type="button" class="header-dropdown-item nav-btn" data-tab="kb" onclick="window.switchTabGlobal('kb');">
               <span style="font-size:1.2rem;">🧠</span>
               <div>
                 <div style="font-weight:700;">Base de Conocimientos (KB)</div>
                 <div style="font-size:0.7rem; color:var(--text-muted);">Catálogo de códigos oficiales & remediación</div>
               </div>
             </button>
-            <button class="header-dropdown-item nav-btn" data-tab="manuals">
+            <button type="button" class="header-dropdown-item nav-btn" data-tab="manuals" onclick="window.switchTabGlobal('manuals');">
               <span style="font-size:1.2rem;">📚</span>
               <div>
                 <div style="font-weight:700;">Manuales Administrativos</div>
                 <div style="font-size:0.7rem; color:var(--text-muted);">Documentación WebHelp Entrust e IDaaS</div>
               </div>
             </button>
-            <button class="header-dropdown-item nav-btn" data-tab="nodes">
+            <button type="button" class="header-dropdown-item nav-btn" data-tab="nodes" onclick="window.switchTabGlobal('nodes');">
               <span style="font-size:1.2rem;">🏢</span>
               <div>
                 <div style="font-weight:700;">Comparativa Multi-Nodo</div>
                 <div style="font-size:0.7rem; color:var(--text-muted);">Balanceo de carga y servidores</div>
               </div>
             </button>
-            <button class="header-dropdown-item nav-btn" data-tab="traces">
+            <button type="button" class="header-dropdown-item nav-btn" data-tab="traces" onclick="window.switchTabGlobal('traces');">
               <span style="font-size:1.2rem;">⚡</span>
               <div>
                 <div style="font-weight:700;">Trazas Distribuidas</div>
                 <div style="font-size:0.7rem; color:var(--text-muted);">Cascada temporal de transacciones</div>
               </div>
             </button>
-            <button class="header-dropdown-item nav-btn" data-tab="compare">
+            <button type="button" class="header-dropdown-item nav-btn" data-tab="compare" onclick="window.switchTabGlobal('compare');">
               <span style="font-size:1.2rem;">📈</span>
               <div>
                 <div style="font-weight:700;">Comparativa Histórica</div>

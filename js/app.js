@@ -1158,6 +1158,20 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   
   // Manejo Robusto de Dropdowns del Header
+  window.toggleNavMoreDropdown = function(e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const dd = document.getElementById('dropdown-nav-more');
+    if (!dd) return;
+    const isAlreadyOpen = dd.classList.contains('open');
+    document.querySelectorAll('.header-dropdown').forEach(other => other.classList.remove('open'));
+    if (!isAlreadyOpen) {
+      dd.classList.add('open');
+    }
+  };
+
   function initHeaderDropdowns() {
     const dropdowns = document.querySelectorAll('.header-dropdown');
     dropdowns.forEach(dd => {
@@ -1179,14 +1193,16 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    document.addEventListener('click', () => {
-      dropdowns.forEach(dd => dd.classList.remove('open'));
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.header-dropdown')) {
+        document.querySelectorAll('.header-dropdown').forEach(dd => dd.classList.remove('open'));
+      }
     });
   }
 
   function initNavigation() {
     document.querySelectorAll('.nav-btn[data-tab]').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
         const targetTab = btn.getAttribute('data-tab');
         if (targetTab) {
           switchTab(targetTab);
