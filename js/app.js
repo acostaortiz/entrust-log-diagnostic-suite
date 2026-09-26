@@ -146,22 +146,9 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ==========================================================================
-     0.1 GESTIÓN Y REGISTRO DE PERFILES DE CLIENTES & ENTORNOS ENTRUST
+     -1. GESTIÓN PERSISTENTE DE PERFILES DE CLIENTES & ENTORNOS ENTRUST
      ========================================================================== */
   const defaultClients = [
-    {
-      id: 'general',
-      name: 'Entorno Entrust General / Multi-Nodo',
-      platform: 'Entrust IdentityGuard OnPremise',
-      version: 'Release 13.0',
-      build: 'General',
-      contact: 'Gerencia de Seguridad & TI',
-      engineer: 'Tomás Acosta',
-      nodes: [
-        { key: 'node_01', name: '🖥️ Servidor Primario (Core)' },
-        { key: 'node_02', name: '🖥️ Servidor Secundario (Servicios/HA)' }
-      ]
-    },
     {
       id: 'mercantil',
       name: 'Banco Mercantil C.A.',
@@ -174,68 +161,13 @@ document.addEventListener('DOMContentLoaded', () => {
         { key: 'node_01', name: '☁️ IDaaS Cloud (Migration Pipeline)' },
         { key: 'node_02', name: '🖥️ IdentityGuard OnPremise (BMIGPROD01)' }
       ]
-    },
-    {
-      id: 'banesco',
-      name: 'Banesco Banco Universal',
-      platform: 'Entrust IdentityGuard OnPremise',
-      version: 'Release 12.0',
-      build: 'Issue 5 (Build 12.4.0)',
-      contact: 'Gerencia de Tecnología & Operaciones',
-      engineer: 'Tomás Acosta',
-      nodes: [
-        { key: 'node_01', name: '🖥️ Nodo 01 (BANESCOIG01)' },
-        { key: 'node_02', name: '🖥️ Nodo 02 (BANESCOIG02)' }
-      ]
-    },
-    {
-      id: 'bancamiga',
-      name: 'Bancamiga Banco Universal',
-      platform: 'Entrust IdentityGuard OnPremise',
-      version: 'Release 13.0',
-      build: '13.0.4.1',
-      contact: 'Seguridad de la Información',
-      engineer: 'Tomás Acosta',
-      nodes: [
-        { key: 'node_01', name: '🖥️ Nodo 01 (BANCAMIGA-IG1)' },
-        { key: 'node_02', name: '🖥️ Nodo 02 (BANCAMIGA-IG2)' }
-      ]
-    },
-    {
-      id: 'idaas_cloud',
-      name: 'IDaaS Cloud Latam',
-      platform: 'Entrust IDaaS Cloud',
-      version: 'IDaaS Cloud v2026',
-      build: 'Cloud-Gateway-8921',
-      contact: 'Departamento de SSO & Push MFA',
-      engineer: 'Tomás Acosta',
-      nodes: [
-        { key: 'node_pod_east', name: '☁️ Pod US-East (SSO Gateway)' },
-        { key: 'node_pod_west', name: '☁️ Pod US-West (Push MFA)' }
-      ]
     }
   ];
 
-  function mergeClientLists(baseList, incomingList) {
-    if (!Array.isArray(incomingList)) return baseList;
-    const result = [...baseList];
-    incomingList.forEach(item => {
-      if (!item || !item.name) return;
-      const existingIdx = result.findIndex(c => (c.id && item.id && c.id === item.id) || (c.name.trim().toLowerCase() === item.name.trim().toLowerCase()));
-      if (existingIdx >= 0) {
-        result[existingIdx] = { ...result[existingIdx], ...item };
-      } else {
-        result.push(item);
-      }
-    });
-    return result;
-  }
-
-    function persistClientProfiles(profiles) {
+  function persistClientProfiles(profiles) {
     if (!profiles || !Array.isArray(profiles)) return;
     try {
       localStorage.setItem('custom_client_profiles_stable', JSON.stringify(profiles));
-      localStorage.setItem('custom_client_profiles_v8', JSON.stringify(profiles));
       if (state.activeClientId) {
         localStorage.setItem('active_client_profile_id', state.activeClientId);
       }
@@ -257,77 +189,67 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function loadClientProfiles() {
-    let merged = [...defaultClients];
-
-    // 1. Recuperar de localStorage
+    let loadedList = null;
     const savedActiveId = localStorage.getItem('active_client_profile_id');
-    const storageKeys = [
-      'custom_client_profiles_stable',
-      'custom_client_profiles_v8',
-      'custom_client_profiles_v7',
-      'custom_client_profiles_v6',
-      'custom_client_profiles_v5',
-      'custom_client_profiles_v4',
-      'custom_client_profiles_v3',
-      'custom_client_profiles_v2',
-      'custom_client_profiles_v1',
-      'custom_client_profiles'
-    ];
 
-    storageKeys.forEach(k => {
-      try {
-        const item = localStorage.getItem(k);
-        if (item) {
-          const parsed = JSON.parse(item);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            merged = mergeClientLists(merged, parsed);
-          }
-        }
-      } catch(e) {}
-    });
-
-    state.clientProfiles = merged;
-    if (savedActiveId && state.clientProfiles.some(c => c.id === savedActiveId)) {
-      state.activeClientId = savedActiveId;
-    } else {
-      state.activeClientId = savedActiveId || 'mercantil';
-    }
-    populateClientSessionSelectors();
-
-    // 2. Recuperar de IndexedDB
-    try {
-      if (window.storageEngine && typeof window.storageEngine.loadClientProfiles === 'function') {
-        const idbProfiles = await window.storageEngine.loadClientProfiles();
-        if (Array.isArray(idbProfiles) && idbProfiles.length > 0) {
-          state.clientProfiles = mergeClientLists(state.clientProfiles, idbProfiles);
-          populateClientSessionSelectors();
-        }
-      }
-    } catch(e) {}
-
-    // 3. Recuperar del Backend Servidor (/api/clients)
+    // 1. Prioridad: Servidor Backend (/api/clients)
     try {
       const res = await fetch('/api/clients');
       if (res.ok) {
         const data = await res.json();
         if (data && Array.isArray(data.clients) && data.clients.length > 0) {
-          state.clientProfiles = mergeClientLists(state.clientProfiles, data.clients);
-          if (savedActiveId && state.clientProfiles.some(c => c.id === savedActiveId)) {
-            state.activeClientId = savedActiveId;
-          }
-          populateClientSessionSelectors();
+          loadedList = data.clients;
         }
       }
     } catch(e) {}
 
+    // 2. Si el servidor no respondió, consultar LocalStorage
+    if (!loadedList || loadedList.length === 0) {
+      try {
+        const stored = localStorage.getItem('custom_client_profiles_stable');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            loadedList = parsed;
+          }
+        }
+      } catch(e) {}
+    }
+
+    // 3. Consultar IndexedDB
+    if (!loadedList || loadedList.length === 0) {
+      try {
+        if (window.storageEngine && typeof window.storageEngine.loadClientProfiles === 'function') {
+          const idbProfiles = await window.storageEngine.loadClientProfiles();
+          if (Array.isArray(idbProfiles) && idbProfiles.length > 0) {
+            loadedList = idbProfiles;
+          }
+        }
+      } catch(e) {}
+    }
+
+    // 4. Fallback inicial si no hay nada guardado
+    if (!loadedList || loadedList.length === 0) {
+      loadedList = [...defaultClients];
+    }
+
+    state.clientProfiles = loadedList;
+
+    if (savedActiveId && state.clientProfiles.some(c => c.id === savedActiveId)) {
+      state.activeClientId = savedActiveId;
+    } else {
+      state.activeClientId = state.clientProfiles[0]?.id || 'mercantil';
+    }
+
     persistClientProfiles(state.clientProfiles);
+    populateClientSessionSelectors();
   }
 
   window.getActiveClientProfileGlobal = function() { return getActiveClientProfile(); };
   function getActiveClientProfile() {
     const toolbarVal = dom?.filterClientSelect?.value || document.getElementById('filter-client-select')?.value;
     if (toolbarVal && toolbarVal !== 'ALL') {
-      const matchByToolbar = state.clientProfiles.find(c => c.name.toLowerCase() === toolbarVal.toLowerCase());
+      const matchByToolbar = (state.clientProfiles || []).find(c => c.name.toLowerCase() === toolbarVal.toLowerCase());
       if (matchByToolbar) return matchByToolbar;
       return {
         name: toolbarVal,
@@ -343,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     }
 
-    return state.clientProfiles.find(c => c.id === state.activeClientId) || state.clientProfiles[0] || defaultClients[0];
+    return (state.clientProfiles || []).find(c => c.id === state.activeClientId) || (state.clientProfiles && state.clientProfiles[0]) || defaultClients[0];
   }
 
   function getClientAvailableNodes() {
@@ -362,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!listContainer) return;
 
     if (!state.clientProfiles || state.clientProfiles.length === 0) {
-      listContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:8px;">No hay clientes registrados.</div>';
+      listContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:12px; text-align:center;">No hay clientes registrados actualmente. Use el formulario superior para registrar uno nuevo.</div>';
       return;
     }
 
@@ -372,47 +294,173 @@ document.addEventListener('DOMContentLoaded', () => {
       html += `
         <div style="display:flex; justify-content:space-between; align-items:center; background:${isActive ? 'rgba(56, 189, 248, 0.15)' : 'var(--bg-secondary)'}; border:1px solid ${isActive ? 'var(--it-blue)' : 'var(--border-color)'}; padding:8px 12px; border-radius:6px;">
           <div>
-            <span style="font-weight:700; color:var(--text-main);">🏢 ${escapeHtml(c.name)}</span>
-            <span style="font-size:0.75rem; color:var(--text-muted); margin-left:8px;">(${escapeHtml(c.platform)} - ${escapeHtml(c.version)})</span>
-            ${isActive ? '<span style="font-size:0.7rem; background:#0284c7; color:#fff; padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:600;">ACTIVO</span>' : ''}
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-weight:700; color:var(--text-main); font-size:0.9rem;">🏢 ${escapeHtml(c.name)}</span>
+              ${isActive ? '<span style="font-size:0.68rem; background:#0284c7; color:#fff; padding:2px 6px; border-radius:4px; font-weight:700;">ACTIVO</span>' : ''}
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+              ${escapeHtml(c.platform)} | Versión: <strong style="color:var(--text-main);">${escapeHtml(c.version)}</strong> ${c.build ? `(${escapeHtml(c.build)})` : ''} | Ing: ${escapeHtml(c.engineer || 'Tomás Acosta')}
+            </div>
           </div>
           <div style="display:flex; gap:6px;">
-            <button type="button" class="btn btn-primary" style="padding:2px 8px; font-size:0.75rem;" onclick="window.selectActiveClientGlobal('${c.id}');">Usar</button>
-            <button type="button" class="btn" style="padding:2px 8px; font-size:0.75rem; color:#ef4444; border-color:rgba(239, 68, 68, 0.4);" onclick="window.deleteClientProfileGlobal('${c.id}');">🗑️ Eliminar</button>
+            ${!isActive ? `<button type="button" class="btn btn-primary" style="padding:3px 8px; font-size:0.75rem;" onclick="window.selectActiveClientGlobal('${c.id}');">Usar</button>` : ''}
+            <button type="button" class="btn" style="padding:3px 8px; font-size:0.75rem; border-color:var(--border-color);" onclick="window.editClientProfileGlobal('${c.id}');" title="Editar este perfil">✏️ Editar</button>
+            <button type="button" class="btn" style="padding:3px 8px; font-size:0.75rem; color:#ef4444; border-color:rgba(239, 68, 68, 0.4);" onclick="window.deleteClientProfileGlobal('${c.id}');" title="Eliminar perfil permanentemente">🗑️</button>
           </div>
         </div>
       `;
     });
     listContainer.innerHTML = html;
   }
+  window.renderRegisteredClientsList = renderRegisteredClientsList;
 
   window.selectActiveClientGlobal = function(clientId) {
     state.activeClientId = clientId;
     const currentClient = getActiveClientProfile();
+    const availNodes = getClientAvailableNodes();
+
+    // Actualizar nodos en archivos cargados
+    if (state.loadedFiles) {
+      state.loadedFiles.forEach((f, idx) => {
+        const assigned = availNodes[idx % availNodes.length] || availNodes[0];
+        f.nodeKey = assigned.key;
+        f.nodeName = assigned.name;
+      });
+    }
+
+    // Actualizar nodos en logs en memoria
+    if (state.logs) {
+      state.logs.forEach(log => {
+        const detected = detectNodeFromLog(log);
+        log.node = detected.name;
+      });
+    }
+
+    renderLoadedFilesDrawer();
+    updateNodeComparisonUI();
+    updateMetricsAndCharts();
+    renderTraceWaterfall();
+
+    persistClientProfiles(state.clientProfiles);
     populateClientSessionSelectors();
+
     if (typeof syncClientSessionWithServer === 'function') {
       syncClientSessionWithServer(clientId);
     }
-    showAnalysisStatus(false, `🏢 Sesión de Cliente Cambiada: ${currentClient.name}`, `Plataforma: ${currentClient.platform} | Versión: ${currentClient.version} (${currentClient.build})`);
+    showAnalysisStatus(false, `🏢 Sesión de Cliente Cambiada: ${currentClient.name}`, `Plataforma: ${currentClient.platform} | Versión: ${currentClient.version} (${currentClient.build || 'General'})`);
+  };
+
+  window.editClientProfileGlobal = function(clientId) {
+    const c = (state.clientProfiles || []).find(p => p.id === clientId);
+    if (!c) return;
+
+    const idInput = document.getElementById('client-input-id');
+    const nameInput = document.getElementById('client-input-name');
+    const platformInput = document.getElementById('client-input-platform');
+    const versionInput = document.getElementById('client-input-version');
+    const buildInput = document.getElementById('client-input-build');
+    const contactInput = document.getElementById('client-input-contact');
+    const engineerInput = document.getElementById('client-input-engineer');
+    const titleEl = document.getElementById('client-form-title');
+    const btnCancel = document.getElementById('btn-cancel-edit-client');
+    const btnSave = document.getElementById('btn-save-client-profile');
+
+    if (idInput) idInput.value = c.id;
+    if (nameInput) nameInput.value = c.name || '';
+    if (platformInput && c.platform) platformInput.value = c.platform;
+    if (versionInput && c.version) versionInput.value = c.version;
+    if (buildInput) buildInput.value = c.build || '';
+    if (contactInput) contactInput.value = c.contact || '';
+    if (engineerInput) engineerInput.value = c.engineer || 'Tomás Acosta';
+
+    if (titleEl) titleEl.textContent = `✏️ Editando Perfil: ${c.name}`;
+    if (btnCancel) btnCancel.style.display = 'inline-block';
+    if (btnSave) btnSave.textContent = '💾 Actualizar Perfil';
+
+    nameInput?.focus();
+  };
+
+  window.cancelEditClientGlobal = function() {
+    const idInput = document.getElementById('client-input-id');
+    const nameInput = document.getElementById('client-input-name');
+    const buildInput = document.getElementById('client-input-build');
+    const contactInput = document.getElementById('client-input-contact');
+    const engineerInput = document.getElementById('client-input-engineer');
+    const titleEl = document.getElementById('client-form-title');
+    const btnCancel = document.getElementById('btn-cancel-edit-client');
+    const btnSave = document.getElementById('btn-save-client-profile');
+
+    if (idInput) idInput.value = '';
+    if (nameInput) nameInput.value = '';
+    if (buildInput) buildInput.value = '';
+    if (contactInput) contactInput.value = '';
+    if (engineerInput) engineerInput.value = 'Tomás Acosta';
+
+    if (titleEl) titleEl.textContent = '➕ Registrar Nuevo Cliente / Entorno';
+    if (btnCancel) btnCancel.style.display = 'none';
+    if (btnSave) btnSave.textContent = '💾 Guardar Perfil de Cliente';
   };
 
   window.deleteClientProfileGlobal = function(clientId) {
-    const clientToDelete = state.clientProfiles.find(c => c.id === clientId);
+    const clientToDelete = (state.clientProfiles || []).find(c => c.id === clientId);
     if (!clientToDelete) return;
 
-    if (!confirm(`¿Está seguro de que desea eliminar el perfil del cliente "${clientToDelete.name}"?`)) {
+    if (!confirm(`¿Está seguro de que desea eliminar permanentemente el perfil del cliente "${clientToDelete.name}"?\n\nEsta acción no se puede deshacer y se sincronizará con el servidor.`)) {
       return;
     }
 
     state.clientProfiles = state.clientProfiles.filter(c => c.id !== clientId);
 
+    if (state.clientProfiles.length === 0) {
+      state.clientProfiles = [...defaultClients];
+    }
+
     if (state.activeClientId === clientId) {
-      state.activeClientId = state.clientProfiles[0]?.id || null;
+      state.activeClientId = state.clientProfiles[0]?.id || 'mercantil';
     }
 
     persistClientProfiles(state.clientProfiles);
     populateClientSessionSelectors();
+    window.cancelEditClientGlobal();
     showAnalysisStatus(false, `🗑️ Cliente Eliminado: ${clientToDelete.name}`, `El perfil del cliente ha sido removido exitosamente.`);
+  };
+
+  window.exportClientsJSONGlobal = function() {
+    const list = state.clientProfiles || defaultClients;
+    const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `entrust_clientes_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  window.importClientsJSONGlobal = function(event) {
+    const file = event?.target?.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const imported = JSON.parse(e.target.result);
+        if (Array.isArray(imported) && imported.length > 0) {
+          state.clientProfiles = imported;
+          state.activeClientId = imported[0].id || 'mercantil';
+          persistClientProfiles(state.clientProfiles);
+          populateClientSessionSelectors();
+          alert(`✅ Se importaron exitosamente ${imported.length} perfiles de cliente.`);
+        } else {
+          alert('❌ El archivo JSON no contiene una lista válida de clientes.');
+        }
+      } catch(err) {
+        alert('❌ Error al procesar el archivo JSON: ' + err.message);
+      }
+      if (event.target) event.target.value = '';
+    };
+    reader.readAsText(file);
   };
 
   function populateClientSessionSelectors() {
@@ -455,6 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function saveClientProfileGlobal() {
+    const idInput = document.getElementById('client-input-id');
     const nameInput = document.getElementById('client-input-name');
     const platformInput = document.getElementById('client-input-platform');
     const versionInput = document.getElementById('client-input-version');
@@ -462,42 +511,160 @@ document.addEventListener('DOMContentLoaded', () => {
     const contactInput = document.getElementById('client-input-contact');
     const engineerInput = document.getElementById('client-input-engineer');
 
+    const editId = idInput ? idInput.value.trim() : '';
     const name = nameInput ? nameInput.value.trim() : '';
     const platform = platformInput ? platformInput.value : 'Entrust IdentityGuard OnPremise';
     const version = versionInput ? versionInput.value : 'Release 13.0';
-    const build = (buildInput && buildInput.value.trim()) ? buildInput.value.trim() : 'General';
+    const build = (buildInput && buildInput.value.trim()) ? buildInput.value.trim() : '';
     const contact = (contactInput && contactInput.value.trim()) ? contactInput.value.trim() : 'Departamento de TI';
     const engineer = (engineerInput && engineerInput.value.trim()) ? engineerInput.value.trim() : 'Tomás Acosta';
 
     if (!name) {
       alert('Por favor ingrese el nombre del cliente u organización.');
+      nameInput?.focus();
       return;
     }
 
-    const newId = 'client-' + Date.now();
-    const newProfile = { id: newId, name, platform, version, build, contact, engineer };
-
     if (!state.clientProfiles) state.clientProfiles = [];
-    state.clientProfiles.push(newProfile);
-    state.activeClientId = newId;
+
+    if (editId) {
+      // Modo Edición
+      const idx = state.clientProfiles.findIndex(c => c.id === editId);
+      if (idx >= 0) {
+        state.clientProfiles[idx] = {
+          ...state.clientProfiles[idx],
+          name, platform, version, build, contact, engineer
+        };
+        showAnalysisStatus(false, `✏️ Perfil Actualizado: ${name}`, `Se actualizaron los datos técnicos de ${name} (${version}).`);
+      }
+      window.cancelEditClientGlobal();
+    } else {
+      // Modo Creación
+      const newId = 'client-' + Date.now();
+      const newProfile = {
+        id: newId,
+        name,
+        platform,
+        version,
+        build: build || (platform.includes('Cloud') ? 'IDaaS Cloud v2026' : 'Release 13.0'),
+        contact,
+        engineer,
+        nodes: [
+          { key: 'node_01', name: platform.includes('Cloud') ? '☁️ IDaaS Cloud (Pipeline)' : '🖥️ Servidor Primario (Core)' },
+          { key: 'node_02', name: platform.includes('Cloud') ? '🖥️ IdentityGuard OnPremise (Sync)' : '🖥️ Servidor Secundario (HA)' }
+        ]
+      };
+      state.clientProfiles.push(newProfile);
+      state.activeClientId = newId;
+      window.cancelEditClientGlobal();
+      showAnalysisStatus(false, `✅ Nuevo Perfil Registrado: ${name}`, `Se configuró a ${name} (${version}) como el cliente activo.`);
+    }
 
     persistClientProfiles(state.clientProfiles);
     populateClientSessionSelectors();
 
     const modal = document.getElementById('client-modal');
     if (modal) modal.classList.remove('active');
-
-    if (nameInput) nameInput.value = '';
-    if (buildInput) buildInput.value = '';
-    if (contactInput) contactInput.value = '';
-
-    showAnalysisStatus(false, `✅ ¡Nuevo Perfil de Cliente Registrado!`, `Se configuró a ${name} (${version}) como el cliente activo para análisis e informes.`);
-    alert(`¡Perfil de Cliente Creado Exitosamente!\n\nCliente: ${name}\nPlataforma: ${platform}\nVersión: ${version} (${build})\n\nTodos los informes de diagnóstico generados serán dirigidos a este cliente.`);
   }
 
   window.saveClientProfileGlobal = saveClientProfileGlobal;
 
+  /* ==========================================================================
+     -0.5 INFORMACIÓN DINÁMICA DE VERSIÓN & METADATOS DEL SISTEMA
+     ========================================================================== */
+  let systemVersionData = {
+    appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust OnPremise & IDaaS Cloud',
+    version: 'v2.5.0',
+    build: 520,
+    releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
+    gitCommit: '47e2ac8',
+    gitBranch: 'main',
+    buildDate: '2026-09-26 17:15',
+    engineer: 'Tomás Acosta',
+    organization: 'IT SERVICIOS V.S.A.'
+  };
+
+  async function initAppVersionModule() {
+    try {
+      const res = await fetch('/api/version');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.version) {
+          systemVersionData = { ...systemVersionData, ...data.version };
+        }
+      }
+    } catch(e) {
+      try {
+        const res2 = await fetch('version.json');
+        if (res2.ok) {
+          const vJson = await res2.json();
+          systemVersionData = { ...systemVersionData, ...vJson };
+        }
+      } catch(e2) {}
+    }
+
+    const badge = document.getElementById('app-version-badge');
+    if (badge) {
+      badge.textContent = `${systemVersionData.version} (Build ${systemVersionData.build})`;
+      badge.title = `Versión: ${systemVersionData.version} | Build: ${systemVersionData.build} | Commit: ${systemVersionData.gitCommit || 'HEAD'} | Clic para ver detalles`;
+    }
+  }
+
+  window.openVersionModalGlobal = function() {
+    const modal = document.getElementById('system-version-modal');
+    const body = document.getElementById('system-version-modal-body');
+    if (!modal || !body) return;
+
+    const currentClient = getActiveClientProfile();
+    const totalRules = window.knowledgeBase ? Object.keys(ENTRUST_EXACT_CATALOG || {}).length : 0;
+    const totalKBRules = (window.knowledgeBase && window.knowledgeBase.rules) ? window.knowledgeBase.rules.length : 0;
+
+    body.innerHTML = `
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px;">
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); padding:12px; border-radius:8px;">
+          <div style="font-size:0.72rem; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Versión de la Suite</div>
+          <div style="font-size:1.15rem; font-weight:800; color:var(--it-blue); margin-top:2px;">${escapeHtml(systemVersionData.version)}</div>
+          <div style="font-size:0.75rem; color:#10b981; font-weight:600; margin-top:2px;">🟢 ${escapeHtml(systemVersionData.releaseChannel || 'Enterprise LTS')}</div>
+        </div>
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); padding:12px; border-radius:8px;">
+          <div style="font-size:0.72rem; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Compilación / Build & Git</div>
+          <div style="font-size:1.15rem; font-weight:800; color:var(--text-main); font-family:monospace; margin-top:2px;">Build ${escapeHtml(String(systemVersionData.build))} <span style="font-size:0.85rem; color:#64748b;">(${escapeHtml(systemVersionData.gitCommit || '47e2ac8')})</span></div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">📅 Despliegue: ${escapeHtml(systemVersionData.buildDate || '2026-09-26')}</div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-primary); border:1px solid var(--border-color); padding:12px; border-radius:8px; margin-bottom:16px;">
+        <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">Estado de los Motores y Base de Conocimiento</div>
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; font-size:0.8rem;">
+          <div style="padding:6px 8px; background:var(--bg-secondary); border-radius:6px; border:1px solid var(--border-color);">
+            <div style="font-size:0.7rem; color:var(--text-muted);">Códigos Catalogados</div>
+            <div style="font-weight:800; color:#0284c7; font-family:monospace;">${totalRules} patrones</div>
+          </div>
+          <div style="padding:6px 8px; background:var(--bg-secondary); border-radius:6px; border:1px solid var(--border-color);">
+            <div style="font-size:0.7rem; color:var(--text-muted);">Reglas Expertas KB</div>
+            <div style="font-weight:800; color:#10b981; font-family:monospace;">${totalKBRules} activas</div>
+          </div>
+          <div style="padding:6px 8px; background:var(--bg-secondary); border-radius:6px; border:1px solid var(--border-color);">
+            <div style="font-size:0.7rem; color:var(--text-muted);">Cliente Activo</div>
+            <div style="font-weight:800; color:#f59e0b; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(currentClient.name)}">${escapeHtml(currentClient.name)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:0.78rem; color:var(--text-muted); border-top:1px solid var(--border-color); padding-top:12px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span>Ingeniero Responsable: <strong style="color:var(--text-main);">${escapeHtml(systemVersionData.engineer || 'Tomás Acosta')}</strong></span><br>
+          <span>Organización: <strong style="color:var(--text-main);">${escapeHtml(systemVersionData.organization || 'IT SERVICIOS V.S.A.')}</strong></span>
+        </div>
+        <button class="btn btn-primary" style="padding:4px 12px; font-size:0.8rem;" onclick="document.getElementById('system-version-modal').classList.remove('active');">Aceptar</button>
+      </div>
+    `;
+
+    modal.classList.add('active');
+  };
+
   function initClientProfilesModule() {
+    initAppVersionModule();
     loadClientProfiles().then(() => {
       if (typeof syncClientSessionWithServer === 'function') {
         syncClientSessionWithServer(state.activeClientId);
@@ -538,6 +705,8 @@ document.addEventListener('DOMContentLoaded', () => {
         updateMetricsAndCharts();
         renderTraceWaterfall();
 
+        persistClientProfiles(state.clientProfiles);
+
         if (typeof syncClientSessionWithServer === 'function') {
           syncClientSessionWithServer(state.activeClientId);
         }
@@ -548,6 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnOpenModal && modal) {
       btnOpenModal.addEventListener('click', () => {
+        renderRegisteredClientsList();
         modal.classList.add('active');
       });
     }

@@ -21,6 +21,7 @@ UPLOADS_DIR = os.path.join(DATA_DIR, 'uploads')
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
+SERVER_START_TIME = time.time()
 DEFAULT_DB_PATH = os.path.join(DATA_DIR, 'mercantil_audit.db')
 ACTIVE_DB_PATH = DEFAULT_DB_PATH if os.path.exists(DEFAULT_DB_PATH) else os.path.join(DATA_DIR, 'active_audit.db')
 
@@ -434,6 +435,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_api_stats(query)
         elif path == '/api/clients':
             self.handle_get_clients()
+        elif path == '/api/version':
+            self.handle_get_version()
         elif path == '/api/upload-status':
             self.send_json(upload_state)
         elif path == '/api/list-server-files':
@@ -487,32 +490,56 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             'client': client_name
         })
 
+    def handle_get_version(self):
+        version_data = {
+            'appName': 'IT SERVICIOS — Suite de Diagnóstico Entrust OnPremise & IDaaS Cloud',
+            'version': 'v2.5.0',
+            'build': 520,
+            'gitCommit': '47e2ac8',
+            'gitBranch': 'main',
+            'buildDate': time.strftime('%Y-%m-%d %H:%M'),
+            'releaseChannel': 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
+            'engineer': 'Tomás Acosta',
+            'organization': 'IT SERVICIOS V.S.A.',
+            'serverUptimeSeconds': round(time.time() - SERVER_START_TIME, 1) if 'SERVER_START_TIME' in globals() else 0,
+            'pythonVersion': sys.version.split()[0],
+            'activeDb': os.path.basename(ACTIVE_DB_PATH) if ACTIVE_DB_PATH else 'Ninguna'
+        }
+        v_file = os.path.join(BASE_DIR, 'version.json')
+        if os.path.exists(v_file):
+            try:
+                with open(v_file, 'r', encoding='utf-8') as f:
+                    file_v = json.load(f)
+                    version_data.update(file_v)
+            except Exception:
+                pass
+        try:
+            import subprocess
+            rev_cnt = subprocess.check_output(['git', 'rev-list', '--count', 'HEAD'], cwd=BASE_DIR, stderr=subprocess.DEVNULL).decode('utf-8').strip()
+            rev_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=BASE_DIR, stderr=subprocess.DEVNULL).decode('utf-8').strip()
+            rev_date = subprocess.check_output(['git', 'log', '-1', '--format=%cd', '--date=format:%Y-%m-%d %H:%M'], cwd=BASE_DIR, stderr=subprocess.DEVNULL).decode('utf-8').strip()
+            if rev_cnt:
+                version_data['build'] = int(rev_cnt) + 350
+                version_data['gitCommit'] = rev_hash
+                version_data['buildDate'] = rev_date
+        except Exception:
+            pass
+
+        self.send_json({'success': True, 'version': version_data})
+
     def handle_get_clients(self):
         clients_file = os.path.join(DATA_DIR, 'clients.json')
         if os.path.exists(clients_file):
             try:
                 with open(clients_file, 'r', encoding='utf-8') as f:
                     clients_data = json.load(f)
-                if isinstance(clients_data, list) and len(clients_data) > 0:
+                if isinstance(clients_data, list):
                     self.send_json({'success': True, 'clients': clients_data})
                     return
             except Exception as e:
                 print(f"Error leyendo clients.json: {e}")
 
         default_clients = [
-            {
-                "id": "general",
-                "name": "Entorno Entrust General / Multi-Nodo",
-                "platform": "Entrust IdentityGuard OnPremise",
-                "version": "Release 13.0",
-                "build": "General",
-                "contact": "Gerencia de Seguridad & TI",
-                "engineer": "Tomás Acosta",
-                "nodes": [
-                    { "key": "node_01", "name": "🖥️ Servidor Primario (Core)" },
-                    { "key": "node_02", "name": "🖥️ Servidor Secundario (Servicios/HA)" }
-                ]
-            },
             {
                 "id": "mercantil",
                 "name": "Banco Mercantil C.A.",
@@ -525,48 +552,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     { "key": "node_01", "name": "☁️ IDaaS Cloud (Migration Pipeline)" },
                     { "key": "node_02", "name": "🖥️ IdentityGuard OnPremise (BMIGPROD01)" }
                 ]
-            },
-            {
-                "id": "banesco",
-                "name": "Banesco Banco Universal",
-                "platform": "Entrust IdentityGuard OnPremise",
-                "version": "Release 12.0",
-                "build": "Issue 5 (Build 12.4.0)",
-                "contact": "Gerencia de Tecnología & Operaciones",
-                "engineer": "Tomás Acosta",
-                "nodes": [
-                    { "key": "node_01", "name": "🖥️ Nodo 01 (BANESCOIG01)" },
-                    { "key": "node_02", "name": "🖥️ Nodo 02 (BANESCOIG02)" }
-                ]
-            },
-            {
-                "id": "bancamiga",
-                "name": "Bancamiga Banco Universal",
-                "platform": "Entrust IdentityGuard OnPremise",
-                "version": "Release 13.0",
-                "build": "13.0.4.1",
-                "contact": "Seguridad de la Información",
-                "engineer": "Tomás Acosta",
-                "nodes": [
-                    { "key": "node_01", "name": "🖥️ Nodo 01 (BANCAMIGA-IG1)" },
-                    { "key": "node_02", "name": "🖥️ Nodo 02 (BANCAMIGA-IG2)" }
-                ]
-            },
-            {
-                "id": "idaas_cloud",
-                "name": "IDaaS Cloud Latam",
-                "platform": "Entrust IDaaS Cloud",
-                "version": "IDaaS Cloud v2026",
-                "build": "Cloud-Gateway-8921",
-                "contact": "Departamento de SSO & Push MFA",
-                "engineer": "Tomás Acosta",
-                "nodes": [
-                    { "key": "node_pod_east", "name": "☁️ Pod US-East (SSO Gateway)" },
-                    { "key": "node_pod_west", "name": "☁️ Pod US-West (Push MFA)" }
-                ]
             }
         ]
-        # Guardar archivo inicial
         try:
             with open(clients_file, 'w', encoding='utf-8') as f:
                 json.dump(default_clients, f, indent=2, ensure_ascii=False)

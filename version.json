@@ -1,0 +1,21 @@
+{
+  "appName": "IT SERVICIOS — Suite de Diagnóstico Entrust OnPremise & IDaaS Cloud",
+  "version": "v2.5.0",
+  "build": 520,
+  "releaseChannel": "Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)",
+  "gitCommit": "47e2ac8",
+  "gitBranch": "main",
+  "buildDate": "2026-09-26 17:15",
+  "engineer": "Tomás Acosta",
+  "organization": "IT SERVICIOS V.S.A.",
+  "features": [
+    "Diagnóstico Automatizado de Logs OnPremise (520xxx) e IDaaS Cloud",
+    "Detección de Caídas Cloud Storage AWS S3 (404 NoSuchKey) vs Colisiones de Datos",
+    "Motor Forense de Trazas de Usuario (User Trace Waterfall & Auditoría)",
+    "Clasificación Inteligente: True Errors vs Preexisting Data Collisions",
+    "Generación de Informes Ejecutivos y Técnicos Bilingües (ES / EN)",
+    "Enlaces Dinámicos a Documentación Oficial Entrust (docs.trustedauth.com)",
+    "Base de Datos SQLite WAL de Alta Capacidad (Procesamiento 10GB+)",
+    "Gestión Dinámica y Persistente de Perfiles de Cliente"
+  ]
+}

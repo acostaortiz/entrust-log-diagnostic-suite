@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust OnPremise & IDaaS Cloud</span>
-            <span style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3);">v1.0 (Build 470)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v2.5.0 (Build 520)</span>
           </div>
         </div>
       </div>
@@ -54,14 +54,10 @@
         </div>
         <div class="active-client-badge">
           <span class="active-client-label">🏢 Cliente Activo:</span>
-          <select class="form-control" id="active-client-session-select" style="background:var(--bg-secondary); color:var(--text-main); font-weight:700; border:1px solid var(--border-color); font-size:0.8rem; height:32px; width:250px; padding:2px 8px; cursor:pointer;">
-            <option value="mercantil" selected>Banco Mercantil C.A. (IDaaS Cloud v2026)</option>
-            <option value="general">Entorno Entrust General / Multi-Nodo (Release 13.0)</option>
-            <option value="banesco">Banesco Banco Universal (Release 12.0)</option>
-            <option value="bancamiga">Bancamiga Banco Universal (Release 13.0)</option>
-            <option value="idaas_cloud">IDaaS Cloud Latam (IDaaS Cloud v2026)</option>
+          <select class="form-control" id="active-client-session-select" style="background:var(--bg-secondary); color:var(--text-main); font-weight:700; border:1px solid var(--border-color); font-size:0.8rem; height:32px; width:260px; padding:2px 8px; cursor:pointer;">
+            <option value="" disabled selected>Cargando clientes...</option>
           </select>
-          <button class="btn btn-primary" id="btn-open-create-client-modal" onclick="document.getElementById('client-modal').classList.add('active');" style="padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer;" title="Registrar o editar perfil de cliente">+ Cliente</button>
+          <button class="btn btn-primary" id="btn-open-create-client-modal" onclick="document.getElementById('client-modal').classList.add('active'); if(window.renderRegisteredClientsList) window.renderRegisteredClientsList();" style="padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer;" title="Registrar o editar perfil de cliente">+ Cliente</button>
         </div>
 
         <div class="user-badge-header">
@@ -1162,20 +1158,26 @@ db.connection.pool.max=20
     </div>
   </div>
 
-  <!-- MODAL CREACIÓN Y REGISTRO DE PERFIL DE CLIENTE -->
+  <!-- MODAL GESTIÓN Y REGISTRO DE PERFIL DE CLIENTE -->
   <div class="modal-overlay" id="client-modal">
-    <div class="modal-content" style="max-width: 720px;">
+    <div class="modal-content" style="max-width: 780px;">
       <div class="card-header">
-        <div class="card-title text-cyan">🏢 Gestión de Perfiles de Clientes & Entornos Entrust</div>
+        <div class="card-title text-cyan" style="display:flex; align-items:center; gap:8px;">
+          <span>🏢</span> <span>Gestión de Perfiles de Clientes & Entornos Entrust</span>
+        </div>
         <button class="btn" id="btn-close-client-modal" onclick="document.getElementById('client-modal').classList.remove('active');">✖ Cerrar</button>
       </div>
 
-      <p class="text-muted" style="font-size:0.85rem; margin-bottom:16px;">
-        Define o elimina los datos oficiales del cliente y la versión de su servidor Entrust para dirigir los análisis e informes técnicos.
+      <p class="text-muted" style="font-size:0.85rem; margin-bottom:14px;">
+        Administre los perfiles de sus clientes de forma persistente. Puede crear, editar, eliminar o respaldar perfiles sin que se sobreescriban en futuras actualizaciones.
       </p>
 
-      <div style="background:var(--bg-primary); border:1px solid var(--border-color); padding:16px; border-radius:8px; margin-bottom:20px;">
-        <div class="card-title" style="font-size:0.95rem; margin-bottom:12px; color:var(--it-blue);">➕ Registrar Nuevo Cliente / Entorno</div>
+      <div style="background:var(--bg-primary); border:1px solid var(--border-color); padding:16px; border-radius:8px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="card-title" id="client-form-title" style="font-size:0.95rem; color:var(--it-blue);">➕ Registrar Nuevo Cliente / Entorno</div>
+          <button type="button" class="btn" id="btn-cancel-edit-client" style="display:none; padding:2px 8px; font-size:0.75rem;" onclick="window.cancelEditClientGlobal();">✖ Cancelar Edición</button>
+        </div>
+        <input type="hidden" id="client-input-id" value="">
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
           <div>
             <label class="diag-label">Nombre del Cliente / Organización *</label>
@@ -1184,46 +1186,82 @@ db.connection.pool.max=20
           <div>
             <label class="diag-label">Plataforma Entrust *</label>
             <select class="form-control" id="client-input-platform">
-              <option value="Entrust IdentityGuard OnPremise">Entrust IdentityGuard OnPremise</option>
+              <option value="Entrust IDaaS Cloud / IdentityGuard OnPremise">Entrust IDaaS Cloud / IdentityGuard OnPremise</option>
               <option value="Entrust IDaaS Cloud">Entrust IDaaS Cloud</option>
+              <option value="Entrust IdentityGuard OnPremise">Entrust IdentityGuard OnPremise</option>
               <option value="Entrust Hybrid (OnPremise + Cloud)">Entrust Híbrido (OnPremise + Cloud)</option>
             </select>
           </div>
           <div>
             <label class="diag-label">Versión del Servidor *</label>
             <select class="form-control" id="client-input-version">
+              <option value="IDaaS Cloud v2026">IDaaS Cloud v2026</option>
               <option value="Release 13.0">Release 13.0 (Diciembre 2020)</option>
               <option value="Release 12.0">Release 12.0 (Marzo 2017)</option>
               <option value="Release 11.0">Release 11.0 (Noviembre 2015)</option>
-              <option value="IDaaS Cloud v2026">IDaaS Cloud v2026</option>
             </select>
           </div>
           <div>
             <label class="diag-label">Build / Compilación / Issue</label>
-            <input type="text" class="form-control" id="client-input-build" placeholder="Ej. 13.0.12.4 / Issue 5">
+            <input type="text" class="form-control" id="client-input-build" placeholder="Ej. IDaaS Cloud v2026 (5.46) / 13.0.4">
           </div>
           <div>
             <label class="diag-label">Departamento Destinatario</label>
-            <input type="text" class="form-control" id="client-input-contact" placeholder="Ej. Depto. de Ciberseguridad & TI">
+            <input type="text" class="form-control" id="client-input-contact" placeholder="Ej. Vicepresidencia de Ciberseguridad & TI">
           </div>
           <div>
             <label class="diag-label">Ingeniero Responsable</label>
             <input type="text" class="form-control" id="client-input-engineer" value="Tomás Acosta" placeholder="Ej. Tomás Acosta">
           </div>
         </div>
-        <div class="flex-between mt-4">
-          <span class="text-muted font-mono" style="font-size:0.75rem;">* Requeridos para el informe técnico</span>
-          <button type="button" class="btn btn-primary" id="btn-save-client-profile" onclick="window.saveClientProfileGlobal();">💾 Guardar Perfil de Cliente</button>
+        <div class="flex-between mt-4" style="align-items:center;">
+          <span class="text-muted font-mono" style="font-size:0.75rem;">* Datos oficiales reflejados en los informes ejecutivos y trazas</span>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="btn btn-primary" id="btn-save-client-profile" onclick="window.saveClientProfileGlobal();">💾 Guardar Perfil de Cliente</button>
+          </div>
         </div>
       </div>
 
       <div style="border-top:1px solid var(--border-color); padding-top:14px;">
-        <div class="card-title" style="font-size:0.95rem; margin-bottom:10px; color:var(--text-main);">📋 Clientes Registrados Actualmente (Administrar / Eliminar)</div>
-        <div id="registered-clients-list" style="max-height: 200px; overflow-y: auto; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div class="card-title" style="font-size:0.95rem; color:var(--text-main);">📋 Clientes Registrados Actualmente</div>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="btn" style="padding:3px 8px; font-size:0.75rem;" onclick="window.exportClientsJSONGlobal();" title="Descargar copia de seguridad en archivo JSON">⬇️ Exportar JSON</button>
+            <button type="button" class="btn" style="padding:3px 8px; font-size:0.75rem;" onclick="document.getElementById('import-clients-file-input').click();" title="Importar perfiles desde archivo JSON">⬆️ Importar JSON</button>
+            <input type="file" id="import-clients-file-input" style="display:none;" accept=".json" onchange="window.importClientsJSONGlobal(event);">
+          </div>
+        </div>
+        <div id="registered-clients-list" style="max-height: 220px; overflow-y: auto; display:flex; flex-direction:column; gap:8px;">
           <!-- Lista inyectada dinámicamente -->
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- MODAL DE INFORMACIÓN DE VERSIÓN Y SISTEMA -->
+  <div class="modal-overlay" id="system-version-modal">
+    <div class="modal-content" style="max-width: 680px;">
+      <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:12px; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="official-it-logo" style="transform: scale(0.85); transform-origin: left center;">
+            <div class="it-logo-box">
+              <div class="it-logo-red-accent"></div>
+              <span class="it-logo-text-it">IT</span>
+            </div>
+            <span class="it-logo-text-servicios">SERVICIOS</span>
+          </div>
+          <div>
+            <div style="font-weight:800; font-size:1.05rem; color:var(--text-main);">Información del Sistema & Versión</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Suite Forense de Diagnóstico Entrust OnPremise & IDaaS Cloud</div>
+          </div>
+        </div>
+        <button class="btn" onclick="document.getElementById('system-version-modal').classList.remove('active');">✖ Cerrar</button>
+      </div>
+
+      <div id="system-version-modal-body">
+        <!-- Renderizado dinámicamente desde js/app.js -->
+      </div>
     </div>
   </div>
 
