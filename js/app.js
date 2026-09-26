@@ -1180,18 +1180,22 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function initNavigation() {
-    dom.navBtns.forEach(btn => {
+    document.querySelectorAll('.nav-btn[data-tab]').forEach(btn => {
       btn.addEventListener('click', () => {
         const targetTab = btn.getAttribute('data-tab');
-        switchTab(targetTab);
+        if (targetTab) {
+          switchTab(targetTab);
+        }
       });
     });
   }
 
-    window.switchTabGlobal = switchTab;
+  window.switchTabGlobal = switchTab;
   function switchTab(targetTab) {
+    if (!targetTab) return;
+
     // Actualizar botones de navegación
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.nav-btn[data-tab]').forEach(b => b.classList.remove('active'));
     dom.tabPanes.forEach(p => p.classList.remove('active'));
 
     const btn = document.querySelector(`.nav-btn[data-tab="${targetTab}"]`);
