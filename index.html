@@ -44,17 +44,9 @@
       </div>
 
       <div class="header-top-right">
-        <div class="active-environment-badge" style="display:flex; align-items:center; gap:6px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:6px; padding:2px 8px; height:32px;">
-          <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">🏷️ Ambiente:</span>
-          <select class="form-control" id="active-environment-select" style="background:transparent; color:var(--text-main); font-weight:700; border:none; font-size:0.78rem; padding:0 4px; cursor:pointer;" onchange="if(window.setActiveEnvironmentGlobal) window.setActiveEnvironmentGlobal(this.value);">
-            <option value="PROD" selected>🟢 Producción (PROD)</option>
-            <option value="QA">🟡 Pruebas / QA (STAGING)</option>
-            <option value="DEV">🔵 Desarrollo (DEV)</option>
-          </select>
-        </div>
         <div class="active-client-badge">
           <span class="active-client-label">🏢 Cliente Activo:</span>
-          <select class="form-control" id="active-client-session-select" style="background:var(--bg-secondary); color:var(--text-main); font-weight:700; border:1px solid var(--border-color); font-size:0.8rem; height:32px; width:260px; padding:2px 8px; cursor:pointer;">
+          <select class="form-control" id="active-client-session-select" style="background:var(--bg-secondary); color:var(--text-main); font-weight:700; border:1px solid var(--border-color); font-size:0.8rem; height:32px; width:280px; padding:2px 8px; cursor:pointer;" onchange="window.selectActiveClientGlobal(this.value)">
             <option value="" disabled selected>Cargando clientes...</option>
           </select>
           <button class="btn btn-primary" id="btn-open-create-client-modal" onclick="document.getElementById('client-modal').classList.add('active'); if(window.renderRegisteredClientsList) window.renderRegisteredClientsList();" style="padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer;" title="Registrar o editar perfil de cliente">+ Cliente</button>
@@ -1188,6 +1180,15 @@ db.connection.pool.max=20
             <input type="text" class="form-control" id="client-input-name" placeholder="Ej. Banco Mercantil C.A.">
           </div>
           <div>
+            <label class="diag-label">Ambiente / Entorno de Operación *</label>
+            <select class="form-control" id="client-input-environment" style="background:var(--bg-secondary); color:var(--text-main); font-weight:700;">
+              <option value="PROD" selected>🟢 Producción (PROD)</option>
+              <option value="QA">🟡 Pruebas / QA / Staging (QA)</option>
+              <option value="DEV">🔵 Desarrollo / Laboratorio (DEV)</option>
+              <option value="DR">🟣 Contingencia / Disaster Recovery (DR)</option>
+            </select>
+          </div>
+          <div>
             <label class="diag-label">Plataforma Entrust *</label>
             <select class="form-control" id="client-input-platform">
               <option value="Entrust IDaaS Cloud / IdentityGuard OnPremise">Entrust IDaaS Cloud / IdentityGuard OnPremise</option>
@@ -1213,7 +1214,7 @@ db.connection.pool.max=20
             <label class="diag-label">Departamento Destinatario</label>
             <input type="text" class="form-control" id="client-input-contact" placeholder="Ej. Vicepresidencia de Ciberseguridad & TI">
           </div>
-          <div>
+          <div style="grid-column: span 2;">
             <label class="diag-label">Ingeniero Responsable</label>
             <input type="text" class="form-control" id="client-input-engineer" value="Tomás Acosta" placeholder="Ej. Tomás Acosta">
           </div>

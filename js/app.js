@@ -302,11 +302,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let html = '';
     state.clientProfiles.forEach(c => {
       const isActive = c.id === state.activeClientId;
+      const envKey = (c.environment || 'PROD').toUpperCase();
+      let envBadge = '<span style="font-size:0.68rem; background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); padding:2px 6px; border-radius:4px; font-weight:700;">🟢 PROD</span>';
+      if (envKey.includes('QA') || envKey === 'QA') {
+        envBadge = '<span style="font-size:0.68rem; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); padding:2px 6px; border-radius:4px; font-weight:700;">🟡 QA</span>';
+      } else if (envKey.includes('DEV') || envKey === 'DEV') {
+        envBadge = '<span style="font-size:0.68rem; background:rgba(56,189,248,0.15); color:#0284c7; border:1px solid rgba(56,189,248,0.3); padding:2px 6px; border-radius:4px; font-weight:700;">🔵 DEV</span>';
+      } else if (envKey.includes('DR') || envKey === 'DR') {
+        envBadge = '<span style="font-size:0.68rem; background:rgba(168,85,247,0.15); color:#a855f7; border:1px solid rgba(168,85,247,0.3); padding:2px 6px; border-radius:4px; font-weight:700;">🟣 DR</span>';
+      }
+
       html += `
         <div style="display:flex; justify-content:space-between; align-items:center; background:${isActive ? 'rgba(56, 189, 248, 0.15)' : 'var(--bg-secondary)'}; border:1px solid ${isActive ? 'var(--it-blue)' : 'var(--border-color)'}; padding:8px 12px; border-radius:6px;">
           <div>
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="font-weight:700; color:var(--text-main); font-size:0.9rem;">🏢 ${escapeHtml(c.name)}</span>
+              ${envBadge}
               ${isActive ? '<span style="font-size:0.68rem; background:#0284c7; color:#fff; padding:2px 6px; border-radius:4px; font-weight:700;">ACTIVO</span>' : ''}
             </div>
             <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
@@ -329,6 +340,9 @@ document.addEventListener('DOMContentLoaded', () => {
     state.activeClientId = clientId;
     const currentClient = getActiveClientProfile();
     const availNodes = getClientAvailableNodes();
+
+    state.activeEnvironment = currentClient.environment || 'PROD';
+    localStorage.setItem('active_environment_level', state.activeEnvironment);
 
     // Actualizar nodos en archivos cargados
     if (state.loadedFiles) {
@@ -358,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof syncClientSessionWithServer === 'function') {
       syncClientSessionWithServer(clientId);
     }
-    showAnalysisStatus(false, `🏢 Sesión de Cliente Cambiada: ${currentClient.name}`, `Plataforma: ${currentClient.platform} | Versión: ${currentClient.version} (${currentClient.build || 'General'})`);
+    showAnalysisStatus(false, `🏢 Sesión de Cliente Cambiada: ${currentClient.name}`, `Plataforma: ${currentClient.platform} | Versión: ${currentClient.version} • ${currentClient.environment || 'PROD'}`);
   };
 
   window.editClientProfileGlobal = function(clientId) {
@@ -369,6 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nameInput = document.getElementById('client-input-name');
     const platformInput = document.getElementById('client-input-platform');
     const versionInput = document.getElementById('client-input-version');
+    const envInput = document.getElementById('client-input-environment');
     const buildInput = document.getElementById('client-input-build');
     const contactInput = document.getElementById('client-input-contact');
     const engineerInput = document.getElementById('client-input-engineer');
@@ -380,6 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nameInput) nameInput.value = c.name || '';
     if (platformInput && c.platform) platformInput.value = c.platform;
     if (versionInput && c.version) versionInput.value = c.version;
+    if (envInput) envInput.value = c.environment || 'PROD';
     if (buildInput) buildInput.value = c.build || '';
     if (contactInput) contactInput.value = c.contact || '';
     if (engineerInput) engineerInput.value = c.engineer || 'Tomás Acosta';
@@ -394,6 +410,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.cancelEditClientGlobal = function() {
     const idInput = document.getElementById('client-input-id');
     const nameInput = document.getElementById('client-input-name');
+    const envInput = document.getElementById('client-input-environment');
     const buildInput = document.getElementById('client-input-build');
     const contactInput = document.getElementById('client-input-contact');
     const engineerInput = document.getElementById('client-input-engineer');
@@ -403,6 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (idInput) idInput.value = '';
     if (nameInput) nameInput.value = '';
+    if (envInput) envInput.value = 'PROD';
     if (buildInput) buildInput.value = '';
     if (contactInput) contactInput.value = '';
     if (engineerInput) engineerInput.value = 'Tomás Acosta';
@@ -427,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (state.activeClientId === clientId) {
-      state.activeClientId = state.clientProfiles[0]?.id || 'mercantil';
+      state.activeClientId = state.clientProfiles[0]?.id || 'general';
     }
 
     persistClientProfiles(state.clientProfiles);
@@ -459,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const imported = JSON.parse(e.target.result);
         if (Array.isArray(imported) && imported.length > 0) {
           state.clientProfiles = imported;
-          state.activeClientId = imported[0].id || 'mercantil';
+          state.activeClientId = imported[0].id || 'general';
           persistClientProfiles(state.clientProfiles);
           populateClientSessionSelectors();
           alert(`✅ Se importaron exitosamente ${imported.length} perfiles de cliente.`);
@@ -483,15 +501,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (headerSelect) {
       headerSelect.innerHTML = '';
       clientList.forEach(c => {
+        const envKey = (c.environment || 'PROD').toUpperCase();
+        let envIcon = '🟢';
+        if (envKey.includes('QA') || envKey === 'QA') envIcon = '🟡';
+        else if (envKey.includes('DEV') || envKey === 'DEV') envIcon = '🔵';
+        else if (envKey.includes('DR') || envKey === 'DR') envIcon = '🟣';
+
         const opt = document.createElement('option');
         opt.value = c.id;
-        opt.textContent = `${c.name} (${c.version})`;
-        if (c.id === (state.activeClientId || 'mercantil')) {
+        opt.textContent = `${envIcon} ${c.name} (${c.version} • ${c.environment || 'PROD'})`;
+        if (c.id === (state.activeClientId || 'general')) {
           opt.selected = true;
         }
         headerSelect.appendChild(opt);
       });
-      headerSelect.value = state.activeClientId || 'mercantil';
+      headerSelect.value = state.activeClientId || 'general';
       if (!headerSelect.value && headerSelect.options.length > 0) {
         headerSelect.selectedIndex = 0;
         state.activeClientId = headerSelect.value;
@@ -518,6 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nameInput = document.getElementById('client-input-name');
     const platformInput = document.getElementById('client-input-platform');
     const versionInput = document.getElementById('client-input-version');
+    const envInput = document.getElementById('client-input-environment');
     const buildInput = document.getElementById('client-input-build');
     const contactInput = document.getElementById('client-input-contact');
     const engineerInput = document.getElementById('client-input-engineer');
@@ -526,6 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const name = nameInput ? nameInput.value.trim() : '';
     const platform = platformInput ? platformInput.value : 'Entrust IdentityGuard OnPremise';
     const version = versionInput ? versionInput.value : 'Release 13.0';
+    const environment = envInput ? envInput.value : 'PROD';
     const build = (buildInput && buildInput.value.trim()) ? buildInput.value.trim() : '';
     const contact = (contactInput && contactInput.value.trim()) ? contactInput.value.trim() : 'Departamento de TI';
     const engineer = (engineerInput && engineerInput.value.trim()) ? engineerInput.value.trim() : 'Tomás Acosta';
@@ -544,9 +570,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (idx >= 0) {
         state.clientProfiles[idx] = {
           ...state.clientProfiles[idx],
-          name, platform, version, build, contact, engineer
+          name, platform, version, environment, build, contact, engineer
         };
-        showAnalysisStatus(false, `✏️ Perfil Actualizado: ${name}`, `Se actualizaron los datos técnicos de ${name} (${version}).`);
+        showAnalysisStatus(false, `✏️ Perfil Actualizado: ${name}`, `Se actualizaron los datos técnicos de ${name} (${version} • ${environment}).`);
       }
       window.cancelEditClientGlobal();
     } else {
@@ -557,6 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
         name,
         platform,
         version,
+        environment,
         build: build || (platform.includes('Cloud') ? 'IDaaS Cloud v2026' : 'Release 13.0'),
         contact,
         engineer,
@@ -568,9 +595,10 @@ document.addEventListener('DOMContentLoaded', () => {
       state.clientProfiles.push(newProfile);
       state.activeClientId = newId;
       window.cancelEditClientGlobal();
-      showAnalysisStatus(false, `✅ Nuevo Perfil Registrado: ${name}`, `Se configuró a ${name} (${version}) como el cliente activo.`);
+      showAnalysisStatus(false, `✅ Nuevo Perfil Registrado: ${name}`, `Se configuró a ${name} (${version} • ${environment}) como el cliente activo.`);
     }
 
+    state.activeEnvironment = environment;
     persistClientProfiles(state.clientProfiles);
     populateClientSessionSelectors();
 
