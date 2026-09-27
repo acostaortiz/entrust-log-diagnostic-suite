@@ -104,6 +104,7 @@ class LogParser {
   async parseLogsAsync(rawContent, onProgress, chunkSize = 5000) {
     if (!rawContent || typeof rawContent !== 'string') return [];
 
+    const startTime = performance.now();
     const lines = rawContent.split(/\r?\n/);
     const totalLines = lines.length;
     const mergedLines = [];
@@ -121,8 +122,10 @@ class LogParser {
       }
 
       if (i % (chunkSize * 2) === 0) {
+        const elapsedSec = (performance.now() - startTime) / 1000;
+        const currentSpeed = Math.round((i + 1) / (elapsedSec || 0.001));
         const pct = Math.round((i / (totalLines * 2)) * 100);
-        if (onProgress) onProgress(i, totalLines, `Pre-procesando trazas... (${pct}%)`);
+        if (onProgress) onProgress(i, totalLines, `⚡ Pre-procesando trazas... (${pct}%) • Velocidad: ${currentSpeed.toLocaleString()} líneas/s`, { pct, speed: currentSpeed, elapsed: elapsedSec });
         await new Promise(resolve => setTimeout(resolve, 0));
       }
     }
@@ -171,15 +174,22 @@ class LogParser {
       parsedEntries.push(parsed);
 
       if (i % (chunkSize * 2) === 0 || i === totalMerged - 1) {
-        const pct = Math.round(50 + (i / totalMerged) * 50);
-        if (onProgress) onProgress(i + 1, totalMerged, `Analizando e indexando eventos... (${pct}%)`);
+        const elapsedSec = (performance.now() - startTime) / 1000;
+        const processedTotal = totalLines + i;
+        const currentSpeed = Math.round(processedTotal / (elapsedSec || 0.001));
+        const pct = Math.min(100, Math.round(50 + (i / totalMerged) * 50));
+        const remainingItems = totalMerged - i;
+        const etaSec = Math.max(0, Math.round(remainingItems / (currentSpeed || 1)));
+        if (onProgress) onProgress(i + 1, totalMerged, `🚀 Indexando eventos... (${pct}%) • Velocidad: ${currentSpeed.toLocaleString()} líneas/s • ETA: ~${etaSec}s`, { pct, speed: currentSpeed, elapsed: elapsedSec, eta: etaSec });
         await new Promise(resolve => setTimeout(resolve, 0));
       }
     }
 
     this.correlateAutoHealing(parsedEntries);
 
-    if (onProgress) onProgress(totalMerged, totalMerged, '100% Finalizado');
+    const totalElapsed = ((performance.now() - startTime) / 1000).toFixed(2);
+    const avgSpeed = Math.round((totalLines + totalMerged) / (parseFloat(totalElapsed) || 1));
+    if (onProgress) onProgress(totalMerged, totalMerged, `✅ 100% Finalizado (${totalMerged.toLocaleString()} eventos indexados en ${totalElapsed}s a ${avgSpeed.toLocaleString()} l/s)`, { pct: 100, speed: avgSpeed, elapsed: totalElapsed });
     return parsedEntries;
   }
 

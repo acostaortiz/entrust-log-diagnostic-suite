@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
   try { initRemediationModule(); } catch (e) { console.error('Error al inicializar Remediación:', e); }
   try { initCertAuditorModule(); } catch (e) { console.error('Error al inicializar Certificados:', e); }
   try { initSyslogCollectorModule(); } catch (e) { console.error('Error al inicializar Syslog:', e); }
+  try { initTimeRangeSliderModule(); } catch (e) { console.error('Error al inicializar Time Range Slider:', e); }
   try { initEventListeners(); } catch (e) { console.error('Error al inicializar EventListeners:', e); }
   // Inicialización de datos de sesión: Iniciar en estado limpio listo para análisis
   (async () => {
@@ -8893,6 +8894,155 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     if (window.certAuditorEngine) {
       window.certAuditorEngine.render('cert-auditor-table-container');
     }
+  }
+
+  // 13.9 SLIDER DE RANGO TEMPORAL DINÁMICO (ROADMAP ENTRUST)
+  function initTimeRangeSliderModule() {
+    const minSlider = document.getElementById('time-slider-min');
+    const maxSlider = document.getElementById('time-slider-max');
+    const startLabel = document.getElementById('time-slider-start-label');
+    const endLabel = document.getElementById('time-slider-end-label');
+    const badge = document.getElementById('time-slider-selected-badge');
+
+    let timeBounds = { min: 0, max: 0, hasValidTimes: false };
+
+    function calculateTimeBounds() {
+      const logs = state.logs || [];
+      if (!logs.length) {
+        timeBounds = { min: 0, max: 0, hasValidTimes: false };
+        return;
+      }
+
+      let minTs = Infinity;
+      let maxTs = -Infinity;
+
+      for (let i = 0; i < logs.length; i++) {
+        const rawT = logs[i].timestamp || logs[i].time;
+        if (!rawT) continue;
+        const d = new Date(rawT).getTime();
+        if (!isNaN(d) && d > 0) {
+          if (d < minTs) minTs = d;
+          if (d > maxTs) maxTs = d;
+        }
+      }
+
+      if (minTs !== Infinity && maxTs !== -Infinity && maxTs > minTs) {
+        timeBounds = { min: minTs, max: maxTs, hasValidTimes: true };
+      } else {
+        timeBounds = { min: 0, max: 0, hasValidTimes: false };
+      }
+    }
+
+    function formatSliderTime(ts) {
+      if (!ts) return '--:--:--';
+      const d = new Date(ts);
+      if (isNaN(d.getTime())) return '--:--:--';
+      return d.toLocaleTimeString('es-ES', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' (' + (d.getMonth() + 1) + '/' + d.getDate() + ')';
+    }
+
+    function updateSliderUI() {
+      calculateTimeBounds();
+      if (!timeBounds.hasValidTimes) {
+        if (startLabel) startLabel.textContent = '--:--:--';
+        if (endLabel) endLabel.textContent = '--:--:--';
+        if (badge) badge.textContent = 'Sin Rango Detectado';
+        return;
+      }
+
+      if (startLabel) startLabel.textContent = formatSliderTime(timeBounds.min);
+      if (endLabel) endLabel.textContent = formatSliderTime(timeBounds.max);
+      if (badge) {
+        badge.textContent = `Ventana Completa (${state.logs.length.toLocaleString()} eventos)`;
+      }
+      if (minSlider) minSlider.value = 0;
+      if (maxSlider) maxSlider.value = 100;
+    }
+
+    window.updateTimeSliderBounds = updateSliderUI;
+
+    window.onTimeSliderChangeGlobal = function() {
+      if (!timeBounds.hasValidTimes) calculateTimeBounds();
+      if (!timeBounds.hasValidTimes || !minSlider || !maxSlider) return;
+
+      let vMin = parseFloat(minSlider.value);
+      let vMax = parseFloat(maxSlider.value);
+
+      if (vMin > vMax) {
+        const tmp = vMin;
+        vMin = vMax;
+        vMax = tmp;
+        minSlider.value = vMin;
+        maxSlider.value = vMax;
+      }
+
+      const totalSpan = timeBounds.max - timeBounds.min;
+      const tStart = timeBounds.min + (totalSpan * (vMin / 100));
+      const tEnd = timeBounds.min + (totalSpan * (vMax / 100));
+
+      if (startLabel) startLabel.textContent = formatSliderTime(tStart);
+      if (endLabel) endLabel.textContent = formatSliderTime(tEnd);
+
+      // Filtrar logs dentro de la ventana de tiempo
+      const filtered = (state.logs || []).filter(l => {
+        const rawT = l.timestamp || l.time;
+        if (!rawT) return true;
+        const d = new Date(rawT).getTime();
+        if (isNaN(d)) return true;
+        return d >= tStart && d <= tEnd;
+      });
+
+      state.filteredLogs = filtered;
+
+      if (badge) {
+        const pct = state.logs.length > 0 ? ((filtered.length / state.logs.length) * 100).toFixed(0) : 100;
+        badge.textContent = `${filtered.length.toLocaleString()} logs filtrados (${pct}%)`;
+      }
+
+      // Disparar refresco de vistas si existen
+      try {
+        if (typeof updateMetricsAndCharts === 'function') updateMetricsAndCharts();
+        if (typeof renderOverviewKpis === 'function') renderOverviewKpis();
+        if (typeof renderTraceWaterfall === 'function') renderTraceWaterfall();
+      } catch(e) {
+        console.warn('Error refrescando UI en cambio de slider:', e);
+      }
+    };
+
+    window.setTimeRangePresetGlobal = function(minutes) {
+      if (!timeBounds.hasValidTimes) calculateTimeBounds();
+      if (!timeBounds.hasValidTimes || !minSlider || !maxSlider) {
+        showAnalysisStatus(false, '⚠️ Sin rango temporal', 'No se han cargado logs con timestamps válidos para aplicar presets.');
+        return;
+      }
+
+      const durationMs = minutes * 60 * 1000;
+      const totalSpan = timeBounds.max - timeBounds.min;
+      
+      let tStart = timeBounds.max - durationMs;
+      if (tStart < timeBounds.min) tStart = timeBounds.min;
+
+      const vMin = Math.max(0, Math.min(100, ((tStart - timeBounds.min) / totalSpan) * 100));
+      const vMax = 100;
+
+      minSlider.value = vMin;
+      maxSlider.value = vMax;
+
+      window.onTimeSliderChangeGlobal();
+      showAnalysisStatus(false, `🕒 Ventana Ajustada: Últimos ${minutes >= 60 ? (minutes / 60) + ' hora(s)' : minutes + ' min'}`, `Filtrado activo desde ${formatSliderTime(tStart)} hasta ${formatSliderTime(timeBounds.max)}`);
+    };
+
+    window.resetTimeRangeFilterGlobal = function() {
+      if (minSlider) minSlider.value = 0;
+      if (maxSlider) maxSlider.value = 100;
+      state.filteredLogs = [...(state.logs || [])];
+      updateSliderUI();
+      try {
+        if (typeof updateMetricsAndCharts === 'function') updateMetricsAndCharts();
+        if (typeof renderOverviewKpis === 'function') renderOverviewKpis();
+        if (typeof renderTraceWaterfall === 'function') renderTraceWaterfall();
+      } catch(e) {}
+      showAnalysisStatus(false, '🔄 Ventana Temporal Restablecida', 'Mostrando el 100% de los eventos registrados en sesión.');
+    };
   }
 
 });

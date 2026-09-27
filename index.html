@@ -198,6 +198,12 @@
                 <div style="font-size:0.7rem; color:var(--text-muted);">Asistente interactivo de logs y arquitectura</div>
               </div>
             </button>
+            <button class="header-dropdown-item" id="btn-open-crypto-modal" onclick="if(window.cryptoAuditorEngine) window.cryptoAuditorEngine.openModal();">
+              <div>
+                <div style="font-weight:700;">🔐 Validador Checksum SHA-256 (.dat / .log)</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Verificación de integridad de paquetes de migración</div>
+              </div>
+            </button>
             <button class="header-dropdown-item" id="btn-open-remediation-modal">
               <div>
                 <div style="font-weight:700;">Auto-Remediación (.BAT / .SH)</div>
@@ -311,6 +317,34 @@
           <div class="metric-sub" style="font-size:0.75rem; color:var(--text-dim); display:flex; justify-content:space-between;">
             <span>Accesos y Consola Admin</span>
             <span style="color:#f59e0b; font-weight:600;">Extraer AUD ➔</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Widget: Selector Dinámico de Rango Temporal / Ventana de Incidentes -->
+      <div class="glass-card mb-4" id="time-range-slider-card" style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:10px; padding:16px; margin-bottom:20px;">
+        <div class="card-header flex-between" style="margin-bottom:10px; flex-wrap:wrap; gap:10px;">
+          <div class="card-title text-cyan" style="font-size:0.95rem; font-weight:700; display:flex; align-items:center; gap:8px;">
+            <span>⏱️</span> Filtro Dinámico de Rango Temporal (Timeline Window Slider)
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+            <button class="btn" style="padding:3px 8px; font-size:0.72rem; font-weight:600; background:var(--bg-secondary); border:1px solid var(--border-color);" onclick="if(window.setTimeRangePresetGlobal) window.setTimeRangePresetGlobal('15m')">15 min</button>
+            <button class="btn" style="padding:3px 8px; font-size:0.72rem; font-weight:600; background:var(--bg-secondary); border:1px solid var(--border-color);" onclick="if(window.setTimeRangePresetGlobal) window.setTimeRangePresetGlobal('1h')">1 hora</button>
+            <button class="btn" style="padding:3px 8px; font-size:0.72rem; font-weight:600; background:var(--bg-secondary); border:1px solid var(--border-color);" onclick="if(window.setTimeRangePresetGlobal) window.setTimeRangePresetGlobal('6h')">6 horas</button>
+            <button class="btn" style="padding:3px 8px; font-size:0.72rem; font-weight:600; background:var(--bg-secondary); border:1px solid var(--border-color);" onclick="if(window.setTimeRangePresetGlobal) window.setTimeRangePresetGlobal('24h')">24 horas</button>
+            <button class="btn btn-primary" style="padding:3px 10px; font-size:0.72rem; font-weight:700;" onclick="if(window.resetTimeRangeFilterGlobal) window.resetTimeRangeFilterGlobal()">🔄 Todo el Evento</button>
+          </div>
+        </div>
+        
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; color:var(--text-muted); flex-wrap:wrap; gap:6px;">
+            <span>Inicio de Ventana: <strong id="time-slider-start-label" style="color:var(--text-main); font-family:monospace;">--:--:--</strong></span>
+            <span id="time-slider-selected-badge" style="background:rgba(2,132,199,0.12); color:#0284c7; padding:2px 8px; border-radius:4px; font-weight:700;">Ventana Completa</span>
+            <span>Fin de Ventana: <strong id="time-slider-end-label" style="color:var(--text-main); font-family:monospace;">--:--:--</strong></span>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:center;">
+            <input type="range" id="time-slider-min" min="0" max="100" value="0" style="width:100%; cursor:pointer;" oninput="if(window.onTimeSliderChangeGlobal) window.onTimeSliderChangeGlobal()">
+            <input type="range" id="time-slider-max" min="0" max="100" value="100" style="width:100%; cursor:pointer;" oninput="if(window.onTimeSliderChangeGlobal) window.onTimeSliderChangeGlobal()">
           </div>
         </div>
       </div>
@@ -1548,6 +1582,7 @@ db.connection.pool.max=20
   <script src="js/cert-auditor.js?v=470.0"></script>
   <script src="js/syslog-collector.js?v=470.0"></script>
   <script src="js/user-trace-report.js?v=470.0"></script>
+  <script src="js/crypto-auditor.js?v=520.0"></script>
   <script src="js/app.js?v=470.0"></script>
 
 
@@ -1689,6 +1724,84 @@ db.connection.pool.max=20
       <div style="padding:10px 20px; background:var(--bg-secondary); border-top:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted);">
         <span>IT Servicios de Venezuela | Módulo de Trazabilidad y Seguridad de Usuarios</span>
         <button class="btn" id="btn-close-user-trace-modal-bottom" style="font-size:0.75rem; padding:4px 14px; cursor:pointer;">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: VALIDADOR CRIPTOGRÁFICO DE INTEGRIDAD & CHECKSUM (SHA-256) -->
+  <div class="modal-overlay" id="crypto-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(6px);">
+    <div style="background:var(--bg-card); border:1.5px solid var(--border-color); width:800px; max-width:92vw; max-height:90vh; border-radius:12px; display:flex; flex-direction:column; box-shadow:0 25px 60px rgba(0,0,0,0.6); overflow:hidden;">
+      
+      <!-- Modal Header -->
+      <div style="padding:16px 20px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-size:1.15rem; font-weight:800; color:var(--text-main); display:flex; align-items:center; gap:8px;">
+            <span>🔐</span> Validador Criptográfico de Integridad SHA-256 / SHA-1
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+            Verificación de integridad inalterable de paquetes .dat, logs y manifiestos de migración Entrust
+          </div>
+        </div>
+        <button id="btn-close-crypto-modal" style="background:none; border:none; color:var(--text-muted); font-size:1.5rem; line-height:1; cursor:pointer; padding:0 4px;">&times;</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div style="padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:16px;">
+        
+        <!-- Drag & Drop Zone -->
+        <div id="crypto-drop-zone" style="border:2px dashed var(--border-color); background:var(--bg-secondary); border-radius:8px; padding:24px; text-align:center; cursor:pointer; transition:all 0.2s ease;" onclick="document.getElementById('crypto-file-input').click();">
+          <input type="file" id="crypto-file-input" style="display:none;" accept=".dat,.log,.txt,.zip,.csv,.properties,.xml">
+          <div style="font-size:2rem; margin-bottom:8px;">📁</div>
+          <div style="font-weight:700; color:var(--text-main); font-size:0.95rem;">Haga clic o arrastre aquí el archivo (.dat, .log, .zip)</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Cálculo de Hash SHA-256 y SHA-1 en memoria local de alta velocidad</div>
+        </div>
+
+        <!-- Barra de Progreso de Hash -->
+        <div id="crypto-progress-container" style="display:none;">
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; display:flex; justify-content:space-between;">
+            <span>Calculando firma criptográfica...</span>
+            <span id="crypto-file-name" style="font-weight:bold; color:var(--text-main);">archivo</span>
+          </div>
+          <div style="height:6px; width:100%; background:var(--bg-primary); border-radius:3px; overflow:hidden;">
+            <div id="crypto-progress-bar" style="height:100%; width:0%; background:#0284c7; border-radius:3px; transition:width 0.2s;"></div>
+          </div>
+        </div>
+
+        <!-- Resultados Criptográficos -->
+        <div id="crypto-results-area" style="display:none; flex-direction:column; gap:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-primary); padding:10px 14px; border-radius:6px; border:1px solid var(--border-color);">
+            <div>
+              <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">Tamaño del Archivo:</div>
+              <div id="crypto-file-size" style="font-size:0.9rem; font-weight:800; color:var(--text-main);">0 Bytes</div>
+            </div>
+            <button class="btn btn-primary" id="btn-copy-sha256" style="font-size:0.75rem; padding:4px 10px;">📋 Copiar SHA-256</button>
+          </div>
+
+          <div>
+            <label style="font-size:0.78rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">🔒 Hash SHA-256 Oficial:</label>
+            <div id="crypto-sha256-output" style="font-family:monospace; font-size:0.8rem; background:var(--bg-secondary); border:1px solid var(--border-color); padding:8px 12px; border-radius:6px; word-break:break-all; color:#0284c7; font-weight:700;">--</div>
+          </div>
+
+          <div>
+            <label style="font-size:0.78rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">🔑 Hash SHA-1:</label>
+            <div id="crypto-sha1-output" style="font-family:monospace; font-size:0.78rem; background:var(--bg-secondary); border:1px solid var(--border-color); padding:6px 12px; border-radius:6px; word-break:break-all; color:var(--text-main);">--</div>
+          </div>
+
+          <!-- Comparador de Hash Esperado -->
+          <div style="border-top:1px solid var(--border-color); padding-top:12px;">
+            <label style="font-size:0.78rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">🔍 Comparar con Hash Esperado de Exportación OnPremise:</label>
+            <input type="text" id="crypto-expected-hash" class="form-control" placeholder="Pegue aquí el hash SHA-256 de origen para validar coincidencia..." style="font-family:monospace; font-size:0.78rem; width:100%; padding:8px;">
+            <div id="crypto-match-status" style="margin-top:8px;"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div style="padding:12px 20px; background:var(--bg-secondary); border-top:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted);">
+        <span>🔒 Validación conforme a directivas ISO/IEC 27001 &amp; SUDEBAN de Integridad Criptográfica</span>
+        <button class="btn" onclick="document.getElementById('crypto-modal').classList.remove('active');" style="font-size:0.75rem; padding:4px 14px; cursor:pointer;">Cerrar</button>
       </div>
 
     </div>

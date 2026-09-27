@@ -857,16 +857,29 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       const activeClient = this.getClientProfile();
       const filename = `Censo_Usuarios_Trazabilidad_${(activeClient.name || 'Entrust').replace(/\s+/g, '_')}_${Date.now()}.csv`;
 
-      let csv = 'Usuario,Total_Eventos,Exitos,Fallas,Porcentaje_Falla,Estado_Seguridad,IPs,Codigos_Entrust\n';
-      const sortedUsers = Array.from(this.selectedUsers).map(u => this.cachedStats[u]).filter(Boolean);
+      // Exportar todos los usuarios seleccionados o el censo completo si no hay filtro
+      const userKeys = this.selectedUsers.size > 0 ? Array.from(this.selectedUsers) : Object.keys(this.cachedStats);
+      if (userKeys.length === 0) {
+        alert('⚠️ No hay usuarios identificados en la muestra para exportar.');
+        return;
+      }
 
-      sortedUsers.forEach(u => {
+      let csv = 'Usuario,Total_Eventos,Exitos,Fallas,Porcentaje_Falla,Estado_Seguridad,Primera_Actividad,Ultima_Actividad,IPs,Nodos,Codigos_Entrust,Causa_Raiz_Forense\n';
+      
+      userKeys.forEach(key => {
+        const u = this.cachedStats[key];
+        if (!u) return;
         const errPct = u.totalEvents > 0 ? ((u.errors / u.totalEvents) * 100).toFixed(1) : '0';
         const stateStr = u.isLocked ? 'BLOQUEADO' : (u.errors > 0 ? 'CON_FALLAS' : 'EXITOSO');
-        const ipsStr = Array.from(u.ips).join('; ');
-        const codesStr = Object.entries(u.codes).map(([c, n]) => `${c}(${n})`).join('; ');
+        const ipsStr = Array.from(u.ips || []).join('; ');
+        const nodesStr = Array.from(u.nodes || []).join('; ');
+        const codesStr = Object.entries(u.codes || {}).map(([c, n]) => `${c}(${n})`).join('; ');
+        
+        let rootCauseDesc = 'Operación Nominal';
+        if (u.isLocked) rootCauseDesc = 'Superado umbral de intentos fallidos / Bloqueo preventivo';
+        else if (u.errors > 0) rootCauseDesc = 'Rechazo de credenciales o conflicto de autenticación';
 
-        csv += `"${u.username}",${u.totalEvents},${u.successes},${u.errors},${errPct}%,"${stateStr}","${ipsStr}","${codesStr}"\n`;
+        csv += `"${u.username}",${u.totalEvents},${u.successes},${u.errors},${errPct}%,"${stateStr}","${u.firstTimestamp || ''}","${u.lastTimestamp || ''}","${ipsStr}","${nodesStr}","${codesStr}","${rootCauseDesc}"\n`;
       });
 
       const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -877,6 +890,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     },
 
     copyReportText() {
