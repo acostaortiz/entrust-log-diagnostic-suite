@@ -1262,6 +1262,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     
+    if (targetTab === 'users' && window.UserTraceReport && typeof window.UserTraceReport.renderTab === 'function') {
+      window.UserTraceReport.renderTab('tab-users-main-container');
+    }
     if (targetTab === 'radar' && window.threatRadarEngine) {
       window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
     }

@@ -1,9 +1,9 @@
 {
   "appName": "IT SERVICIOS — Suite de Diagnóstico Entrust OnPremise & IDaaS Cloud",
-  "version": "v2.5.5",
-  "build": 530,
+  "version": "v2.6.0",
+  "build": 535,
   "releaseChannel": "Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)",
-  "gitCommit": "ROADMAP-530",
+  "gitCommit": "CENSO-3M-535",
   "gitBranch": "main",
   "buildDate": "2026-09-27 01:00",
   "engineer": "Tomás Acosta",

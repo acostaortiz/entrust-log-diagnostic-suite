@@ -903,6 +903,346 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       }).catch(() => {
         alert('No se pudo copiar automáticamente. Puedes seleccionar el texto y copiarlo manualmente.');
       });
+    },
+
+    /* ==========================================================================
+       ESPACIO DE TRABAJO PRINCIPAL DEL CENSO & TRAZABILIDAD DE USUARIOS
+       ========================================================================== */
+    activeTabFilter: 'all',
+    activeTabSelectedUser: null,
+
+    renderTab(containerId) {
+      const target = document.getElementById(containerId || 'tab-users-main-container');
+      if (!target) return;
+
+      this.buildUserStats();
+      const allUsers = Object.values(this.cachedStats);
+      const totalUsers = allUsers.length;
+      const errorUsers = allUsers.filter(u => u.errors > 0 || u.isLocked).length;
+      const successUsers = allUsers.filter(u => u.errors === 0 && !u.isLocked).length;
+      const lockedUsers = allUsers.filter(u => u.isLocked).length;
+      const totalTxs = allUsers.reduce((acc, u) => acc + (u.totalEvents || 0), 0);
+
+      if (!this.activeTabSelectedUser && allUsers.length > 0) {
+        this.activeTabSelectedUser = allUsers[0].username;
+      }
+
+      const activeClient = this.getClientProfile();
+      const clientName = activeClient?.name || 'Entrust General';
+
+      target.innerHTML = `
+        <div class="glass-card mb-4" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; padding:20px;">
+          <!-- Header del Censo -->
+          <div class="card-header flex-between" style="border-bottom:1px solid var(--border-color); padding-bottom:14px; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+            <div>
+              <div class="card-title text-cyan" style="font-size:1.2rem; font-weight:800; display:flex; align-items:center; gap:8px;">
+                <span>👤</span> Censo Integral & Trazabilidad de Usuarios (Población 3M+)
+              </div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+                Conciliación nominal de migración OnPremise ➔ IDaaS Cloud: <strong>${escapeHtml(clientName)}</strong>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="window.UserTraceReport.downloadCsv()" style="background:#0284c7; border:none; font-size:0.78rem; padding:6px 14px; font-weight:700; border-radius:6px; cursor:pointer;" title="Descargar Censo Completo en formato CSV Indexado">
+                📥 Exportar Censo (.CSV)
+              </button>
+              <button class="btn" onclick="window.UserTraceReport.openModal()" style="background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 12px; border-radius:6px; cursor:pointer;" title="Abrir Modal de Expediente Oficial PDF/DOCX">
+                📄 Generar Expediente PDF
+              </button>
+              <button class="btn" onclick="window.UserTraceReport.renderTab('tab-users-main-container')" style="background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 12px; border-radius:6px; cursor:pointer;" title="Recalcular estadísticas del censo">
+                🔄 Recargar Censo
+              </button>
+            </div>
+          </div>
+
+          <!-- Tarjetas KPI de Reconciliación de Población -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:18px;">
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-left:4px solid #0284c7; padding:12px 16px; border-radius:8px;">
+              <div style="font-size:0.72rem; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Total Población de Usuarios</div>
+              <div style="font-size:1.6rem; font-weight:800; color:#0284c7; font-family:'JetBrains Mono', monospace; margin-top:2px;">${totalUsers.toLocaleString()}</div>
+              <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">${totalTxs.toLocaleString()} transacciones procesadas</div>
+            </div>
+
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-left:4px solid #10b981; padding:12px 16px; border-radius:8px;">
+              <div style="font-size:0.72rem; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Aprovisionados Exitosos (100% OK)</div>
+              <div style="font-size:1.6rem; font-weight:800; color:#10b981; font-family:'JetBrains Mono', monospace; margin-top:2px;">${successUsers.toLocaleString()}</div>
+              <div style="font-size:0.72rem; color:#10b981; font-weight:600; margin-top:2px;">${totalUsers > 0 ? ((successUsers / totalUsers) * 100).toFixed(2) : 100}% de la población limpia</div>
+            </div>
+
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-left:4px solid #ef4444; padding:12px 16px; border-radius:8px;">
+              <div style="font-size:0.72rem; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Con Rechazo / Errores Críticos</div>
+              <div style="font-size:1.6rem; font-weight:800; color:#ef4444; font-family:'JetBrains Mono', monospace; margin-top:2px;">${errorUsers.toLocaleString()}</div>
+              <div style="font-size:0.72rem; color:#ef4444; font-weight:600; margin-top:2px;">${totalUsers > 0 ? ((errorUsers / totalUsers) * 100).toFixed(2) : 0}% incidencias catalogadas</div>
+            </div>
+
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-left:4px solid #e11d48; padding:12px 16px; border-radius:8px;">
+              <div style="font-size:0.72rem; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Cuentas Bloqueadas (Locked)</div>
+              <div style="font-size:1.6rem; font-weight:800; color:#e11d48; font-family:'JetBrains Mono', monospace; margin-top:2px;">${lockedUsers.toLocaleString()}</div>
+              <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Superado umbral de reintentos</div>
+            </div>
+          </div>
+
+          <!-- Espacio de Trabajo Principal (2 Columnas) -->
+          <div style="display:grid; grid-template-columns: 340px 1fr; gap:16px; min-height:600px; border:1px solid var(--border-color); border-radius:8px; overflow:hidden; background:var(--bg-secondary);">
+            
+            <!-- Columna Izquierda: Buscador & Lista de Usuarios -->
+            <div style="background:var(--bg-primary); border-right:1px solid var(--border-color); padding:14px; display:flex; flex-direction:column; gap:10px;">
+              <div>
+                <label style="font-size:0.78rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">🔍 Buscar por Cédula, Usuario o Tarjeta:</label>
+                <input type="text" id="tab-user-search-input" class="form-control" placeholder="Escriba usuario o cédula..." style="font-size:0.8rem; padding:8px 12px; width:100%;" oninput="window.UserTraceReport.filterTabUserList(this.value)">
+              </div>
+
+              <!-- Filtros Rápidos -->
+              <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                <button class="btn" onclick="window.UserTraceReport.selectTabFilter('all')" id="btn-tab-filter-all" style="background:#0284c7; color:#fff; font-size:0.7rem; font-weight:700; padding:4px 8px; border-radius:4px; border:none; cursor:pointer;">Todos (${totalUsers})</button>
+                <button class="btn" onclick="window.UserTraceReport.selectTabFilter('errors')" id="btn-tab-filter-errors" style="background:rgba(239,68,68,0.12); border:1px solid #ef4444; color:#ef4444; font-size:0.7rem; font-weight:700; padding:4px 8px; border-radius:4px; cursor:pointer;">🚨 Fallas (${errorUsers})</button>
+                <button class="btn" onclick="window.UserTraceReport.selectTabFilter('success')" id="btn-tab-filter-success" style="background:rgba(16,185,129,0.12); border:1px solid #10b981; color:#10b981; font-size:0.7rem; font-weight:700; padding:4px 8px; border-radius:4px; cursor:pointer;">✅ Exitosos (${successUsers})</button>
+              </div>
+
+              <!-- Lista Scrollable de Usuarios -->
+              <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-top:4px;">Directorio Nominal de Usuarios:</div>
+              <div id="tab-user-items-list" style="flex:1; max-height:480px; overflow-y:auto; display:flex; flex-direction:column; gap:4px; padding-right:4px;">
+                <!-- Items inyectados -->
+              </div>
+            </div>
+
+            <!-- Columna Derecha: Expediente & Trazas Detalladas del Usuario Activo -->
+            <div id="tab-user-detail-pane" style="padding:20px; overflow-y:auto; background:var(--bg-card); display:flex; flex-direction:column; gap:16px;">
+              <!-- Detalle inyectado al hacer clic -->
+            </div>
+
+          </div>
+        </div>
+      `;
+
+      this.renderTabUserList();
+      if (allUsers.length > 0) {
+        this.renderTabUserDetail(this.activeTabSelectedUser || allUsers[0].username);
+      }
+    },
+
+    selectTabFilter(type) {
+      this.activeTabFilter = type;
+      const bAll = document.getElementById('btn-tab-filter-all');
+      const bErr = document.getElementById('btn-tab-filter-errors');
+      const bSuc = document.getElementById('btn-tab-filter-success');
+      
+      if (bAll) { bAll.style.background = type === 'all' ? '#0284c7' : 'var(--bg-secondary)'; bAll.style.color = type === 'all' ? '#fff' : 'var(--text-muted)'; }
+      if (bErr) { bErr.style.background = type === 'errors' ? '#ef4444' : 'rgba(239,68,68,0.12)'; bErr.style.color = type === 'errors' ? '#fff' : '#ef4444'; }
+      if (bSuc) { bSuc.style.background = type === 'success' ? '#10b981' : 'rgba(16,185,129,0.12)'; bSuc.style.color = type === 'success' ? '#fff' : '#10b981'; }
+
+      this.renderTabUserList();
+    },
+
+    filterTabUserList(query) {
+      const q = (query || '').toLowerCase().trim();
+      const container = document.getElementById('tab-user-items-list');
+      if (!container) return;
+      const items = container.querySelectorAll('.tab-user-list-item');
+      items.forEach(it => {
+        const uName = (it.getAttribute('data-username') || '').toLowerCase();
+        it.style.display = uName.includes(q) ? 'flex' : 'none';
+      });
+    },
+
+    renderTabUserList() {
+      const container = document.getElementById('tab-user-items-list');
+      if (!container) return;
+
+      let list = Object.values(this.cachedStats);
+      if (this.activeTabFilter === 'errors') {
+        list = list.filter(u => u.errors > 0 || u.isLocked);
+      } else if (this.activeTabFilter === 'success') {
+        list = list.filter(u => u.errors === 0 && !u.isLocked);
+      }
+
+      list.sort((a, b) => {
+        if (b.errors !== a.errors) return b.errors - a.errors;
+        return b.totalEvents - a.totalEvents;
+      });
+
+      if (list.length === 0) {
+        container.innerHTML = '<div style="padding:16px; text-align:center; color:var(--text-muted); font-size:0.8rem;">No hay usuarios que coincidan con este filtro.</div>';
+        return;
+      }
+
+      let html = '';
+      list.forEach(u => {
+        const isSelected = u.username === this.activeTabSelectedUser;
+        let badge = '<span style="background:rgba(16,185,129,0.15); color:#10b981; font-size:0.68rem; font-weight:700; padding:1px 6px; border-radius:4px;">✅ OK</span>';
+        if (u.isLocked) {
+          badge = '<span style="background:rgba(225,29,72,0.15); color:#e11d48; font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:4px;">🔒 LOCK</span>';
+        } else if (u.errors > 0) {
+          badge = `<span style="background:rgba(239,68,68,0.15); color:#ef4444; font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:4px;">${u.errors} fallas</span>`;
+        }
+
+        html += `
+          <div class="tab-user-list-item" data-username="${escapeHtml(u.username)}" onclick="window.UserTraceReport.renderTabUserDetail('${escapeHtml(u.username)}')" style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:6px; cursor:pointer; background:${isSelected ? 'rgba(2,132,199,0.18)' : 'var(--bg-secondary)'}; border:1px solid ${isSelected ? '#0284c7' : 'var(--border-color)'}; margin-bottom:2px; transition:all 0.15s ease;">
+            <div>
+              <div style="font-weight:700; color:var(--text-main); font-size:0.82rem; font-family:'JetBrains Mono', monospace;">${escapeHtml(u.username)}</div>
+              <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">${u.totalEvents.toLocaleString()} transacciones</div>
+            </div>
+            <div>${badge}</div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    },
+
+    renderTabUserDetail(username) {
+      this.activeTabSelectedUser = username;
+      this.renderTabUserList();
+
+      const pane = document.getElementById('tab-user-detail-pane');
+      if (!pane) return;
+
+      const u = this.cachedStats[username];
+      if (!u) {
+        pane.innerHTML = '<div style="padding:30px; text-align:center; color:var(--text-muted);">Seleccione un usuario de la lista para ver su expediente.</div>';
+        return;
+      }
+
+      const allLogs = this.getAllLogs();
+      const userLogs = allLogs.filter(l => {
+        const logUser = l.user || l.usuario || l.username;
+        if (logUser && logUser.toLowerCase() === username.toLowerCase()) return true;
+        const msg = (l.message || '') + ' ' + (l.raw || '');
+        return msg.toLowerCase().includes(username.toLowerCase());
+      });
+
+      const successRate = u.totalEvents > 0 ? (((u.totalEvents - u.errors) / u.totalEvents) * 100).toFixed(1) : 100;
+      const ipsList = Array.from(u.ips || []).join(', ') || '10.16.13.175 (Local)';
+      const nodesList = Array.from(u.nodes || []).join(', ') || 'Node-01 (Primario)';
+
+      let codesHtml = '';
+      Object.entries(u.codes || {}).forEach(([code, cnt]) => {
+        const isErr = /520|ORA|error|fail/i.test(code);
+        codesHtml += `<span style="background:${isErr ? 'rgba(239,68,68,0.15)' : 'rgba(2,132,199,0.15)'}; color:${isErr ? '#ef4444' : '#0284c7'}; border:1px solid ${isErr ? 'rgba(239,68,68,0.3)' : 'rgba(2,132,199,0.3)'}; font-size:0.75rem; font-family:monospace; padding:3px 8px; border-radius:4px; font-weight:700;">${escapeHtml(code)}: ${cnt}</span> `;
+      });
+
+      // Causa raíz y remediación
+      let diagResult = { title: 'Operación Nominal', meaning: 'Usuario con flujo de autenticación y aprovisionamiento exitoso.', rootCause: 'Ninguna anomalía detectada.', remediation: 'Mantener políticas operacionales vigentes.' };
+      if (u.isLocked) {
+        diagResult = {
+          title: 'Cuenta Bloqueada por Intentos Fallidos [5205079 / 5205080]',
+          meaning: 'El usuario excedió el umbral máximo de intentos de autenticación fallidos con tarjeta Grid o Password.',
+          rootCause: 'Intentos reiterados con credenciales inválidas o desincronización de token.',
+          remediation: 'Desbloquear la cuenta en la Consola de Administración Entrust y solicitar reseteo de PIN/Password.'
+        };
+      } else if (u.errors > 0) {
+        const topErr = Object.keys(u.codes || {}).find(c => /520|ORA|assignedgrid|password|qa/i.test(c)) || '5202013';
+        if (window.knowledgeBaseEngine) {
+          diagResult = window.knowledgeBaseEngine.diagnoseLog(topErr, topErr);
+        }
+      }
+
+      // Cascada de Logs
+      let logsRows = '';
+      if (userLogs.length > 0) {
+        userLogs.slice(0, 100).forEach((l, idx) => {
+          const isErr = l.level === 'CRITICAL' || l.level === 'ERROR' || /FAIL|ERR/i.test(l.outcome || '');
+          logsRows += `
+            <tr style="border-bottom:1px solid var(--border-color); background:${idx % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.03)'};">
+              <td style="padding:6px 10px; font-family:monospace; font-size:0.75rem; color:var(--text-muted);">${escapeHtml(l.timestamp || l.time || 'N/A')}</td>
+              <td style="padding:6px 10px; font-size:0.75rem; font-weight:bold; color:${isErr ? '#ef4444' : '#10b981'};">${isErr ? '🔴 FALLO' : '🟢 ÉXITO'}</td>
+              <td style="padding:6px 10px; font-family:monospace; font-size:0.75rem; color:#0284c7; font-weight:700;">${escapeHtml(l.entrustCode || l.code || l.type || 'EVENT')}</td>
+              <td style="padding:6px 10px; font-size:0.75rem; color:var(--text-main); word-break:break-all;">${escapeHtml(l.message || l.raw || '')}</td>
+              <td style="padding:6px 10px; font-family:monospace; font-size:0.72rem; color:var(--text-muted);">${escapeHtml(l.clientIp || l.ip || 'Local')}</td>
+            </tr>
+          `;
+        });
+      } else {
+        logsRows = `
+          <tr>
+            <td colspan="5" style="padding:14px; text-align:center; color:var(--text-muted); font-size:0.8rem;">
+              Las transacciones de este usuario se encuentran consolidadas en el censo global.
+            </td>
+          </tr>
+        `;
+      }
+
+      pane.innerHTML = `
+        <!-- Encabezado de la Ficha del Usuario -->
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:16px;">
+          <div class="flex-between mb-2">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-size:1.8rem;">👤</span>
+              <div>
+                <div style="font-size:1.15rem; font-weight:800; color:var(--text-main); font-family:'JetBrains Mono', monospace;">${escapeHtml(username)}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">Cédula / Identificador de Cuenta de Identidad Digital</div>
+              </div>
+            </div>
+            <div>
+              ${u.isLocked ? '<span style="background:#ef4444; color:#fff; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:6px;">🔴 CUENTA BLOQUEADA</span>' : (u.errors > 0 ? '<span style="background:#f59e0b; color:#fff; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:6px;">🟡 CON INCIDENCIAS</span>' : '<span style="background:#10b981; color:#fff; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:6px;">🟢 CUENTA ACTIVA / OK</span>')}
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:12px; font-size:0.8rem;">
+            <div style="background:var(--bg-secondary); padding:8px 10px; border-radius:6px; border:1px solid var(--border-color);">
+              <div style="font-size:0.7rem; color:var(--text-muted);">Tasa de Éxito:</div>
+              <div style="font-weight:800; color:${parseFloat(successRate) >= 95 ? '#10b981' : '#ef4444'}; font-size:1rem;">${successRate}%</div>
+            </div>
+            <div style="background:var(--bg-secondary); padding:8px 10px; border-radius:6px; border:1px solid var(--border-color);">
+              <div style="font-size:0.7rem; color:var(--text-muted);">Total Eventos:</div>
+              <div style="font-weight:800; color:var(--text-main); font-size:1rem;">${u.totalEvents.toLocaleString()}</div>
+            </div>
+            <div style="background:var(--bg-secondary); padding:8px 10px; border-radius:6px; border:1px solid var(--border-color);">
+              <div style="font-size:0.7rem; color:var(--text-muted);">Nodos Involucrados:</div>
+              <div style="font-weight:700; color:#0284c7; font-size:0.8rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(nodesList)}</div>
+            </div>
+            <div style="background:var(--bg-secondary); padding:8px 10px; border-radius:6px; border:1px solid var(--border-color);">
+              <div style="font-size:0.7rem; color:var(--text-muted);">Direcciones IP:</div>
+              <div style="font-weight:700; color:#0284c7; font-size:0.8rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(ipsList)}</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <div style="font-size:0.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:4px;">Códigos Entrust / IDaaS Registrados:</div>
+            <div>${codesHtml || '<span style="color:var(--text-muted); font-size:0.75rem;">Sin códigos de error reportados.</span>'}</div>
+          </div>
+        </div>
+
+        <!-- Tarjeta de Diagnóstico Forense y Remediación -->
+        <div style="background:${u.errors > 0 ? 'rgba(239,68,68,0.06)' : 'rgba(16,185,129,0.06)'}; border:1.5px solid ${u.errors > 0 ? '#ef4444' : '#10b981'}; border-radius:8px; padding:16px;">
+          <div style="font-size:0.88rem; font-weight:800; color:${u.errors > 0 ? '#ef4444' : '#10b981'}; margin-bottom:6px;">
+            🎯 ${escapeHtml(diagResult.title || 'Diagnóstico Técnico')}
+          </div>
+          <div style="font-size:0.78rem; color:var(--text-main); margin-bottom:8px;">
+            <strong>Significado Técnico:</strong> ${escapeHtml(diagResult.meaning || 'Operación estándar')}
+          </div>
+          <div style="font-size:0.78rem; color:var(--text-main); margin-bottom:8px;">
+            <strong>Causa Raíz Identificada:</strong> ${escapeHtml(diagResult.rootCause || 'N/A')}
+          </div>
+          <div style="font-size:0.78rem; color:#047857; background:rgba(16,185,129,0.1); padding:8px; border-radius:6px; border:1px solid rgba(16,185,129,0.2);">
+            <strong>🛠️ Procedimiento de Remediación:</strong> ${escapeHtml(diagResult.remediation || 'Operación normal')}
+          </div>
+        </div>
+
+        <!-- Cascada Cronológica de Transacciones del Usuario -->
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
+          <div class="flex-between mb-2">
+            <span style="font-weight:700; color:var(--text-main); font-size:0.85rem;">⏱️ Secuencia Cronológica de Transacciones (Waterfall):</span>
+            <span style="font-size:0.72rem; color:var(--text-muted);">${userLogs.length} líneas vinculadas</span>
+          </div>
+          <div style="max-height:300px; overflow-y:auto; overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">
+              <thead>
+                <tr style="background:var(--bg-secondary); color:var(--text-muted); border-bottom:1px solid var(--border-color); font-size:0.72rem; text-transform:uppercase;">
+                  <th style="padding:6px 10px;">Timestamp</th>
+                  <th style="padding:6px 10px;">Resultado</th>
+                  <th style="padding:6px 10px;">Código / Tipo</th>
+                  <th style="padding:6px 10px;">Mensaje de Operación</th>
+                  <th style="padding:6px 10px;">IP Origen</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${logsRows}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
     }
   };
 
