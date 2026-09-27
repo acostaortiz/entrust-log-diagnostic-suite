@@ -1267,20 +1267,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (targetTab === 'analyzer' && state.isServerApi && (!state.logs || state.logs.length === 0)) {
       fetchSqlLogs(1);
     }
-    if (targetTab === 'manuals' && (!state.manualLoaded || state.manualLoaded !== state.currentManualVersion)) {
-      loadManual(state.currentManualVersion);
-      state.manualLoaded = state.currentManualVersion;
+    if (targetTab === 'compliance' && window.complianceAuditorEngine) {
+      window.complianceAuditorEngine.render('compliance-audit-container', state.logs, getActiveClientProfile());
     }
-    if (targetTab === 'traces' && state.dirtyTabs?.traces) {
+    if (targetTab === 'kb') {
+      if (typeof renderKbRulesList === 'function') renderKbRulesList();
+    }
+    if (targetTab === 'manuals') {
+      loadManual(state.currentManualVersion || 'vEntrust');
+      state.manualLoaded = state.currentManualVersion || 'vEntrust';
+    }
+    if (targetTab === 'traces') {
       setTimeout(() => {
         renderTraceWaterfall();
-        state.dirtyTabs.traces = false;
       }, 10);
     }
-    if (targetTab === 'nodes' && state.dirtyTabs?.nodes) {
+    if (targetTab === 'nodes') {
       setTimeout(() => {
         updateNodeComparisonUI();
-        state.dirtyTabs.nodes = false;
       }, 10);
     }
     if (targetTab === 'topology' && window.topologyEngine) {

@@ -267,6 +267,9 @@ body.dark-theme .user-badge-header {
   padding: 4px;
   border-radius: 10px;
   border: 1px solid var(--border-color);
+  overflow: visible !important;
+  position: relative;
+  z-index: 150;
 }
 
 body.dark-theme .nav-tabs {
@@ -1172,7 +1175,7 @@ body.dark-theme .header-dropdown-item:hover div:first-child {
   color: #38bdf8;
 }
 
-/* Nav Tabs Espaciadas y Scroll Limpio */
+/* Nav Tabs Espaciadas y Dropdown Visible */
 .nav-tabs {
   display: flex;
   gap: 6px;
@@ -1180,15 +1183,11 @@ body.dark-theme .header-dropdown-item:hover div:first-child {
   padding: 5px 8px;
   border-radius: 10px;
   border: 1px solid var(--border-color);
-  overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  overflow: visible !important;
   flex: 1;
   max-width: fit-content;
-}
-
-.nav-tabs::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  position: relative;
+  z-index: 150;
 }
 
 body.dark-theme .nav-tabs {
