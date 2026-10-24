@@ -380,20 +380,45 @@ def index_file_in_background(file_path, client_name='Entrust Client'):
         print(f"Error indexando archivo: {e}")
 
 class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
+    # Hardening: Hide Python & SimpleHTTP version banner from scanners (Banner Grabbing prevention)
+    server_version = 'ITServicios-EntrustSuite/2.6'
+    sys_version = ''
+
+    BLOCKED_EXTENSIONS = ('.php', '.php3', '.php4', '.php5', '.phtml', '.phar', '.asp', '.aspx', '.jsp', '.jspx', '.cgi', '.pl', '.sh', '.env', '.git', '.htaccess', '.htpasswd', '.ini', '.bak', '.sql')
+    BLOCKED_PATHS = ('/.git', '/.env', '/wp-admin', '/wp-login', '/wp-content', '/phpmyadmin', '/cgi-bin', '/vendor/phpunit', '/etc/passwd', '/proc/self')
+    ALLOWED_UPLOAD_EXTS = ('.log', '.txt', '.csv', '.tsv', '.json', '.xml', '.properties', '.dat', '.zip', '.gz', '.tgz', '.bz2', '.tar', '.html', '.htm', '.db', '.1', '.2', '.3', '.4', '.5')
+
+    def is_malicious_request(self, raw_path):
+        unquoted = urllib.parse.unquote(raw_path or '').lower()
+        if '..' in unquoted or '\x00' in unquoted or '%00' in raw_path.lower():
+            return True
+        # Block PHP CGI argument injection (CVE-2024-4577 / CVE-2012-1823) and scanner probes
+        if any(p in unquoted for p in self.BLOCKED_PATHS):
+            return True
+        path_only = unquoted.split('?')[0]
+        if path_only.endswith(self.BLOCKED_EXTENSIONS):
+            return True
+        return False
+
     def end_headers(self):
         self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
         self.send_header('Pragma', 'no-cache')
         self.send_header('Expires', '0')
         self.send_header('Access-Control-Allow-Origin', '*')
-        # HTTP Security Headers (Hardening & OWASP Compliance)
+        # HTTP Security Headers (Hardening & OWASP / ISO 27001 / SUDEBAN Compliance)
         self.send_header('X-Content-Type-Options', 'nosniff')
         self.send_header('X-Frame-Options', 'SAMEORIGIN')
         self.send_header('X-XSS-Protection', '1; mode=block')
         self.send_header('Referrer-Policy', 'strict-origin-when-cross-origin')
         self.send_header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+        self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
+        self.send_header('X-Permitted-Cross-Domain-Policies', 'none')
         super().end_headers()
 
     def do_OPTIONS(self):
+        if self.is_malicious_request(self.path):
+            self.send_error(403, 'Forbidden by IT SERVICIOS Security Policy')
+            return
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
@@ -401,6 +426,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
+        if self.is_malicious_request(self.path):
+            self.send_error(403, 'Forbidden: Blocked executable or probe request')
+            return
+
         parsed_url = urllib.parse.urlparse(self.path)
         path = parsed_url.path
 
@@ -416,6 +445,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404, 'Endpoint not found')
 
     def do_GET(self):
+        if self.is_malicious_request(self.path):
+            self.send_error(403, 'Forbidden: Blocked executable or probe request')
+            return
+
         parsed_url = urllib.parse.urlparse(self.path)
         path = parsed_url.path
         query = urllib.parse.parse_qs(parsed_url.query)
@@ -449,10 +482,20 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json({'error': 'Parámetro db requerido'}, status=400)
             return
 
-        full_path = target_db if os.path.isabs(target_db) else os.path.join(DATA_DIR, os.path.basename(target_db))
-        if not os.path.exists(full_path):
-            self.send_json({'error': f'Archivo {full_path} no encontrado'}, status=404)
+        # Path traversal protection: restrict DB activation strictly to DATA_DIR or BASE_DIR
+        safe_db_name = os.path.basename(target_db)
+        if not safe_db_name.endswith('.db'):
+            self.send_json({'error': 'Solo se permiten archivos de base de datos (.db) válidos'}, status=403)
             return
+
+        full_path = os.path.abspath(os.path.join(DATA_DIR, safe_db_name))
+        if not os.path.exists(full_path):
+            alt_path = os.path.abspath(os.path.join(BASE_DIR, safe_db_name))
+            if os.path.exists(alt_path):
+                full_path = alt_path
+            else:
+                self.send_json({'error': f'Archivo {safe_db_name} no encontrado'}, status=404)
+                return
 
         ACTIVE_DB_PATH = full_path
         upload_state['dbPath'] = full_path
@@ -667,7 +710,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             file_name = urllib.parse.unquote(self.headers.get('X-File-Name', 'uploaded_log.csv'))
             client_name = urllib.parse.unquote(self.headers.get('X-Client-Name', 'Entrust Client'))
 
-            safe_file_name = re.sub(r'[^a-zA-Z0-9_\.-]', '_', file_name)
+            safe_file_name = re.sub(r'[^a-zA-Z0-9_\.-]', '_', os.path.basename(file_name))
+            if safe_file_name.lower().endswith(self.BLOCKED_EXTENSIONS):
+                self.send_json({'error': 'Extensión de archivo bloqueada por directiva de seguridad (PHP/Scripts no permitidos)'}, status=403)
+                return
             temp_path = os.path.join(UPLOADS_DIR, safe_file_name)
 
             mode = 'wb' if chunk_index == 0 else 'ab'
@@ -705,14 +751,25 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             if not file_path:
                 self.send_json({'error': 'Ruta de archivo no especificada'}, status=400)
                 return
-                
-            if not os.path.exists(file_path):
-                candidate = os.path.join(DATA_DIR, os.path.basename(file_path))
-                if os.path.exists(candidate):
-                    file_path = candidate
-                else:
-                    self.send_json({'error': f'El archivo no existe en el servidor: {file_path}'}, status=404)
-                    return
+
+            # Security Hardening: Prevent arbitrary Path Traversal and block executable extensions
+            safe_basename = os.path.basename(file_path)
+            if safe_basename.lower().endswith(self.BLOCKED_EXTENSIONS):
+                self.send_json({'error': 'Archivo bloqueado por directiva de seguridad'}, status=403)
+                return
+
+            resolved_path = None
+            for allowed_dir in (DATA_DIR, UPLOADS_DIR, BASE_DIR):
+                cand = os.path.abspath(os.path.join(allowed_dir, safe_basename))
+                if os.path.isfile(cand):
+                    resolved_path = cand
+                    break
+
+            if not resolved_path:
+                self.send_json({'error': f'El archivo no existe en las carpetas autorizadas del servidor: {safe_basename}'}, status=404)
+                return
+
+            file_path = resolved_path
             
             client_slug = get_client_slug(client_name)
             target_db = os.path.join(DATA_DIR, f"{client_slug}_audit.db")

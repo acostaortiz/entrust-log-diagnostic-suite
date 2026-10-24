@@ -30,12 +30,12 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-printf "${WHITE}${BOLD}Iniciando Plan de Hardening en 5 Fases...${NC}\n\n"
+printf "${WHITE}${BOLD}Iniciando Plan de Hardening en 6 Fases...${NC}\n\n"
 
 # ------------------------------------------------------------------------------
 # FASE 1: ACTUALIZACIÓN Y PARCHES AUTOMÁTICOS DE SEGURIDAD
 # ------------------------------------------------------------------------------
-printf "${CYAN}${BOLD}[FASE 1/5] Configurando Actualizaciones Automáticas y Paquetes de Seguridad...${NC}\n"
+printf "${CYAN}${BOLD}[FASE 1/6] Configurando Actualizaciones Automáticas y Paquetes de Seguridad...${NC}\n"
 export DEBIAN_FRONTEND=noninteractive
 
 printf "  ⏳ Actualizando repositorios APT... "
@@ -58,7 +58,7 @@ printf "${GREEN}  ✅ Actualizaciones y parches automáticos de seguridad habili
 # ------------------------------------------------------------------------------
 # FASE 2: HARDENING DE ACCESO REMOTO SSH
 # ------------------------------------------------------------------------------
-printf "\n${CYAN}${BOLD}[FASE 2/5] Aplicando Hardening a la Configuración SSH...${NC}\n"
+printf "\n${CYAN}${BOLD}[FASE 2/6] Aplicando Hardening a la Configuración SSH...${NC}\n"
 
 if [ -f /etc/ssh/sshd_config ]; then
   sed -i '/^#*PermitRootLogin/d' /etc/ssh/sshd_config
@@ -86,7 +86,7 @@ printf "${GREEN}  ✅ Acceso SSH asegurado: Root directo deshabilitado, MaxAuthT
 # ------------------------------------------------------------------------------
 # FASE 3: PROTECCIÓN CONTRA ATAQUES DE FUERZA BRUTA (FAIL2BAN)
 # ------------------------------------------------------------------------------
-printf "\n${CYAN}${BOLD}[FASE 3/5] Configurando y Activando Fail2ban...${NC}\n"
+printf "\n${CYAN}${BOLD}[FASE 3/6] Configurando y Activando Fail2ban...${NC}\n"
 
 cat << 'EOF' > /etc/fail2ban/jail.local
 [DEFAULT]
@@ -114,7 +114,7 @@ fi
 # ------------------------------------------------------------------------------
 # FASE 4: CONFIGURACIÓN DE FIREWALL PERIMETRAL (UFW)
 # ------------------------------------------------------------------------------
-printf "\n${CYAN}${BOLD}[FASE 4/5] Configurando Reglas de Firewall UFW...${NC}\n"
+printf "\n${CYAN}${BOLD}[FASE 4/6] Configurando Reglas de Firewall UFW...${NC}\n"
 ufw default deny incoming >/dev/null 2>&1 || true
 ufw default allow outgoing >/dev/null 2>&1 || true
 
@@ -131,7 +131,7 @@ printf "${GREEN}  ✅ Firewall UFW activo (inbound bloqueado, puertos 22, 8085, 
 # ------------------------------------------------------------------------------
 # FASE 5: PERMISOS DE ARCHIVOS Y REPOSITORIO
 # ------------------------------------------------------------------------------
-printf "\n${CYAN}${BOLD}[FASE 5/5] Asegurando Permisos en Archivos y Claves...${NC}\n"
+printf "\n${CYAN}${BOLD}[FASE 5/6] Asegurando Permisos en Archivos y Claves...${NC}\n"
 
 SUITE_DIR="/var/www/entrust-log-diagnostic-suite"
 if [ -d "$SUITE_DIR" ]; then
@@ -148,6 +148,35 @@ if [ -d "/opt/entrust/identityguard" ]; then
 else
   printf "${GREEN}  ✅ Modo nodo seguro verificado (sin claves expuestas).${NC}\n"
 fi
+
+# ------------------------------------------------------------------------------
+# FASE 6: HARDENING DE PHP Y SERVIDOR WEB (CVE-2024-4577 / RCE PREVENTION)
+# ------------------------------------------------------------------------------
+printf "\n${CYAN}${BOLD}[FASE 6/6] Blindando Entorno PHP / Apache (si existe en el servidor)...${NC}\n"
+
+# Asegurar directivas críticas en cualquier php.ini instalado
+for php_ini in $(find /etc/php -name "php.ini" 2>/dev/null); do
+  sed -i 's/^\s*expose_php\s*=.*/expose_php = Off/g' "$php_ini" 2>/dev/null || true
+  sed -i 's/^\s*allow_url_include\s*=.*/allow_url_include = Off/g' "$php_ini" 2>/dev/null || true
+  sed -i 's/^\s*display_errors\s*=.*/display_errors = Off/g' "$php_ini" 2>/dev/null || true
+  sed -i 's/^\s*cgi.force_redirect\s*=.*/cgi.force_redirect = 1/g' "$php_ini" 2>/dev/null || true
+  if ! grep -q "^disable_functions" "$php_ini" 2>/dev/null; then
+    echo "disable_functions = exec,passthru,shell_exec,system,proc_open,popen,show_source,phpinfo" >> "$php_ini"
+  fi
+done
+
+# Ocultar versión de Apache si está presente
+if [ -d /etc/apache2/conf-available ]; then
+  cat << 'EOF' > /etc/apache2/conf-available/security-it-servicios.conf
+ServerTokens Prod
+ServerSignature Off
+TraceEnable Off
+EOF
+  a2enconf security-it-servicios >/dev/null 2>&1 || true
+  systemctl reload apache2 >/dev/null 2>&1 || true
+fi
+
+printf "${GREEN}  ✅ Mitigación contra vulnerabilidades PHP (expose_php=Off, RCE functions disabled, CGI redirect=1) completada.${NC}\n"
 
 cat << 'EOF' > /etc/security/limits.d/99-it-entrust.conf
 * soft nofile 65535
