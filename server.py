@@ -384,9 +384,14 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
     server_version = 'ITServicios-EntrustSuite/2.6'
     sys_version = ''
 
-    BLOCKED_EXTENSIONS = ('.php', '.php3', '.php4', '.php5', '.phtml', '.phar', '.asp', '.aspx', '.jsp', '.jspx', '.cgi', '.pl', '.sh', '.env', '.git', '.htaccess', '.htpasswd', '.ini', '.bak', '.sql')
-    BLOCKED_PATHS = ('/.git', '/.env', '/wp-admin', '/wp-login', '/wp-content', '/phpmyadmin', '/cgi-bin', '/vendor/phpunit', '/etc/passwd', '/proc/self')
+    BLOCKED_EXTENSIONS = ('.php', '.php3', '.php4', '.php5', '.phtml', '.phar', '.asp', '.aspx', '.jsp', '.jspx', '.cgi', '.pl', '.sh', '.py', '.pyc', '.db', '.sqlite', '.sqlite3', '.env', '.git', '.htaccess', '.htpasswd', '.ini', '.bak', '.sql')
+    BLOCKED_PATHS = ('/.git', '/.env', '/data/', '/scripts/', '/server.py', '/sync.sh', '/wp-admin', '/wp-login', '/wp-content', '/phpmyadmin', '/cgi-bin', '/vendor/phpunit', '/etc/passwd', '/proc/self')
     ALLOWED_UPLOAD_EXTS = ('.log', '.txt', '.csv', '.tsv', '.json', '.xml', '.properties', '.dat', '.zip', '.gz', '.tgz', '.bz2', '.tar', '.html', '.htm', '.db', '.1', '.2', '.3', '.4', '.5')
+
+    def list_directory(self, path):
+        # Security Hardening: Disable directory listing completely (CWE-548)
+        self.send_error(403, 'Directory listing is forbidden by IT SERVICIOS Security Policy')
+        return None
 
     def is_malicious_request(self, raw_path):
         unquoted = urllib.parse.unquote(raw_path or '').lower()
@@ -703,6 +708,9 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
     def handle_upload_chunk(self):
         try:
             content_length = int(self.headers.get('Content-Length', 0))
+            if content_length > 25 * 1024 * 1024:
+                self.send_json({'error': 'Chunk excede el límite máximo permitido de 25 MB'}, status=413)
+                return
             chunk_data = self.rfile.read(content_length)
             
             chunk_index = int(self.headers.get('X-Chunk-Index', 0))
