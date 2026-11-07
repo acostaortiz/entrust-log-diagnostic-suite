@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v2.7.4 (Build 549)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v2.7.5 (Build 550)</span>
           </div>
         </div>
       </div>
@@ -1050,6 +1050,14 @@ db.connection.pool.max=20
             <button class="btn" id="btn-report-lang-en" style="background:transparent; color:var(--text-muted); font-size:0.75rem; padding:4px 9px; font-weight:800; border-radius:4px; border:none; cursor:pointer;" title="Generate Report in English">🇺🇸 EN</button>
           </div>
 
+          <!-- SELECTOR DE VISTA DEL INFORME -->
+          <div style="display:flex; background:var(--bg-primary); border:1.5px solid var(--border-color); border-radius:6px; padding:2px; gap:2px; align-items:center;" title="Elegir qué secciones mostrar, imprimir y exportar">
+            <button class="btn" id="btn-rpt-view-exec" onclick="window.setReportViewMode('exec')" style="background:transparent; font-size:0.75rem; padding:4px 9px; font-weight:800; border:none; border-radius:4px; cursor:pointer;">🎯 Ejecutivo</button>
+            <button class="btn" id="btn-rpt-view-users" onclick="window.setReportViewMode('users')" style="background:transparent; font-size:0.75rem; padding:4px 9px; font-weight:800; border:none; border-radius:4px; cursor:pointer;">👥 Usuarios</button>
+            <button class="btn" id="btn-rpt-view-db" onclick="window.setReportViewMode('db')" style="background:transparent; font-size:0.75rem; padding:4px 9px; font-weight:800; border:none; border-radius:4px; cursor:pointer;">🗄️ Base de Datos</button>
+            <button class="btn" id="btn-rpt-view-full" onclick="window.setReportViewMode('full')" style="background:#0284c7; color:#fff; font-size:0.75rem; padding:4px 9px; font-weight:800; border:none; border-radius:4px; cursor:pointer;">📚 Completo</button>
+          </div>
+
           <!-- GRUPO 1: DESCARGAS PDF EJECUTIVAS -->
           <div style="display:flex; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; padding:2px; gap:2px;">
             <button class="btn btn-primary" id="btn-download-pdf-exec-report" style="background:#0a3d6d; border:none; color:#fff; font-size:0.78rem; padding:6px 12px; font-weight:600; border-radius:4px;" title="Descargar Informe Técnico Completo en PDF">
@@ -1574,24 +1582,24 @@ db.connection.pool.max=20
 
   <!-- Scripts JavaScript -->
   <script src="js/pptxgen.bundle.js"></script>
-  <script src="js/topology-engine.js?v=549.0"></script>
-  <script src="js/kb-database.js?v=549.0"></script>
-  <script src="js/manuals-engine.js?v=549.0"></script>
-  <script src="js/bancomercantil_data.js?v=549.0"></script>
-  <script src="js/log-parser.js?v=549.0"></script>
-  <script src="js/storage-engine.js?v=549.0"></script>
-    <script src="js/threat-radar.js?v=549.0"></script>
-  <script src="js/remediation-engine.js?v=549.0"></script>
-  <script src="js/copilot-engine.js?v=549.0"></script>
-  <script src="js/compliance-auditor.js?v=549.0"></script>
-  <script src="js/config-diff-engine.js?v=549.0"></script>
-  <script src="js/siem-exporter.js?v=549.0"></script>
+  <script src="js/topology-engine.js?v=550.0"></script>
+  <script src="js/kb-database.js?v=550.0"></script>
+  <script src="js/manuals-engine.js?v=550.0"></script>
+  <script src="js/bancomercantil_data.js?v=550.0"></script>
+  <script src="js/log-parser.js?v=550.0"></script>
+  <script src="js/storage-engine.js?v=550.0"></script>
+    <script src="js/threat-radar.js?v=550.0"></script>
+  <script src="js/remediation-engine.js?v=550.0"></script>
+  <script src="js/copilot-engine.js?v=550.0"></script>
+  <script src="js/compliance-auditor.js?v=550.0"></script>
+  <script src="js/config-diff-engine.js?v=550.0"></script>
+  <script src="js/siem-exporter.js?v=550.0"></script>
 
-  <script src="js/cert-auditor.js?v=549.0"></script>
-  <script src="js/syslog-collector.js?v=549.0"></script>
-  <script src="js/user-trace-report.js?v=549.0"></script>
-  <script src="js/crypto-auditor.js?v=549.0"></script>
-  <script src="js/app.js?v=549.0"></script>
+  <script src="js/cert-auditor.js?v=550.0"></script>
+  <script src="js/syslog-collector.js?v=550.0"></script>
+  <script src="js/user-trace-report.js?v=550.0"></script>
+  <script src="js/crypto-auditor.js?v=550.0"></script>
+  <script src="js/app.js?v=550.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

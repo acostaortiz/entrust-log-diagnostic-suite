@@ -756,10 +756,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.7.4',
-    build: 549,
+    version: 'v2.7.5',
+    build: 550,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'EXEC-VERDICT-549',
+    gitCommit: 'REPORT-VIEWS-550',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -3246,6 +3246,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     if (dbIncidentsReal > 0) { verdictLevel = 'ALTO'; verdictColor = '#dc2626'; verdictBg = '#fef2f2'; verdictIcon = '🚨'; }
     else if (lockedUsersCount > 0 || count520Total > 0) { verdictLevel = 'MEDIO'; verdictColor = '#d97706'; verdictBg = '#fffbeb'; verdictIcon = '⚠️'; }
     const topThreeHtml = sortedIncidents.slice(0, 3).map((it, i) => `<div style="display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px dashed #cbd5e1; font-size:11px;"><span><strong>${i + 1}.</strong> <code>${escapeHtml(it.code)}</code></span><strong style="font-family:monospace;">${it.count.toLocaleString()} (${formatPctStr(it.count, totalCount)})</strong></div>`).join('') || `<div style="font-size:11px; color:#64748b;">Sin códigos de error en la muestra.</div>`;
+    const priorityUsersHtml = sortedForensicUsers.filter(u => u.errors > 0 || u.isLocked).slice(0, 8).map(u => `<span style="display:inline-block; margin:2px 3px 0 0; padding:2px 7px; border-radius:10px; font-family:monospace; font-size:10px; font-weight:800; background:${u.isLocked ? '#ffe4e6' : '#fef3c7'}; color:${u.isLocked ? '#be123c' : '#92400e'}; border:1px solid ${u.isLocked ? '#fda4af' : '#fcd34d'};">${u.isLocked ? '🔒' : '⚠️'} ${escapeHtml(u.username)} (${u.errors})</span>`).join('') || '<span style="font-size:10.5px; color:#15803d; font-weight:700;">Ninguna: todos los usuarios sin fallas.</span>';
     const executiveVerdictHtml = `
       <div style="background:${verdictBg}; border:1.5px solid ${verdictColor}; border-left:8px solid ${verdictColor}; border-radius:8px; padding:16px 18px; margin-bottom:22px; page-break-inside:avoid; break-inside:avoid;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
@@ -3258,6 +3259,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
             <div>• Errores <code>520xxxx</code>: <strong>${count520Total.toLocaleString()}</strong> • Auditoría <code>AUDxxx</code>: <strong>${countAudTotal.toLocaleString()}</strong> • Oracle <code>ORA</code>: <strong>${countOraTotal.toLocaleString()}</strong>.</div>
             <div>• Base de datos: <strong>${dbIncidentsReal === 0 ? 'SALUDABLE (0 errores ORA/JDBC)' : dbIncidentsReal + ' incidentes de persistencia'}</strong>.</div>
             <div>• Índice de salud de la muestra: <strong>${healthValStr}</strong>.</div>
+            <div style="margin-top:8px;"><span style="font-size:10px; font-weight:800; color:#0a3d6d; text-transform:uppercase;">Cuentas a atender primero:</span><br>${priorityUsersHtml}</div>
           </div>
           <div>
             <div style="font-size:10px; font-weight:800; color:#0a3d6d; text-transform:uppercase; margin-bottom:4px;">Top 3 códigos por frecuencia</div>
@@ -3311,7 +3313,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         </table>`;
 
     container.innerHTML = `
-      <div id="exec-report-document" style="width:100%; box-sizing:border-box; background:#fff; color:#0f172a; padding:24px; font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif; border-radius:8px;">
+      <div id="exec-report-document" data-view="${state.reportView || 'full'}" style="width:100%; box-sizing:border-box; background:#fff; color:#0f172a; padding:24px; font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif; border-radius:8px;">
         
         <!-- ENCABEZADO CORPORATIVO OFICIAL -->
         <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3.5px solid #0a3d6d; padding-bottom:16px; margin-bottom:20px;">
@@ -3423,16 +3425,18 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         ${executiveVerdictHtml}
 
         <!-- Sección de Correlación Cruzada -->
-        ${corrSectionHtml}
+        <div id="rpt-sec-corr" class="rpt-s-tec">${corrSectionHtml}</div>
 
         <!-- Sección I: Hallazgos & Diagnóstico -->
+        <div id="rpt-sec-hallazgos" class="rpt-s-tec">
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
           ${i18n.sec1Title.replace('{count}', diagMapSize)}
         </h3>
         ${section1Content}
+        </div>
 
         <!-- Tabla II: Análisis de Frecuencia de Errores y Usuarios Afectados -->
-        <div style="margin-top:20px; page-break-inside:avoid; break-inside:avoid;">
+        <div id="rpt-sec-frecuencia" class="rpt-s-tec" style="margin-top:20px; page-break-inside:avoid; break-inside:avoid;">
           <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">${i18n.sec2Title}</h3>
           <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
             <thead>
@@ -3450,13 +3454,13 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         </div>
 
         <!-- Sección III: Censo Nominal de Usuarios y Patrones de Solicitud (Solicitud 1 ➔ Solicitud N) -->
-        ${userCensusSectionHtml}
+        <div id="rpt-sec-usuarios" class="rpt-s-usr">${userCensusSectionHtml}</div>
 
         <!-- Sección IV: Diagnóstico Verificable de Salud de Base de Datos & Post-Mortem TrustedCare -->
-        ${dbAndPostMortemSectionHtml}
+        <div id="rpt-sec-db" class="rpt-s-db">${dbAndPostMortemSectionHtml}</div>
 
         <!-- Mapa de Calor Temporal -->
-        ${generateTimelineHeatmapHtml(targetLogs)}
+        <div id="rpt-sec-heatmap" class="rpt-s-tec">${generateTimelineHeatmapHtml(targetLogs)}</div>
 
         <!-- Sección V: Plan Estratégico de Remediación en 3 Fases (100% Basado en Evidencia) -->
         <div style="page-break-inside:avoid; break-inside:avoid; margin-top:20px;">
@@ -3522,7 +3526,22 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     `;
 
     modal.classList.add('active');
+    if (typeof window.setReportViewMode === 'function') window.setReportViewMode(state.reportView || 'full');
   }
+
+  // Vistas del informe: exec (ejecutivo), users (usuarios), db (base de datos), full (completo)
+  window.setReportViewMode = function(mode) {
+    state.reportView = mode;
+    const doc = document.getElementById('exec-report-document');
+    if (doc) doc.setAttribute('data-view', mode);
+    ['exec', 'users', 'db', 'full'].forEach(m => {
+      const b = document.getElementById('btn-rpt-view-' + m);
+      if (b) {
+        b.style.background = (m === mode) ? '#0284c7' : 'transparent';
+        b.style.color = (m === mode) ? '#ffffff' : 'var(--text-main)';
+      }
+    });
+  };
 
   function generateMarkdownReportString() {
     const i18n = getReportI18n();
@@ -9084,7 +9103,14 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       </head>
       <body>
         <div class="Section1">
-          ${container.innerHTML}
+          ${(function() {
+            const c = container.cloneNode(true);
+            const d = c.querySelector('#exec-report-document');
+            const v = d ? d.getAttribute('data-view') : 'full';
+            const hide = { exec: ['.rpt-s-tec', '.rpt-s-usr', '.rpt-s-db'], users: ['.rpt-s-tec', '.rpt-s-db'], db: ['.rpt-s-tec', '.rpt-s-usr'], full: [] }[v] || [];
+            hide.forEach(sel => c.querySelectorAll(sel).forEach(n => n.remove()));
+            return c.innerHTML;
+          })()}
         </div>
       </body>
       </html>

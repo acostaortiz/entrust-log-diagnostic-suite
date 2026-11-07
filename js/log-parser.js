@@ -197,7 +197,7 @@ class LogParser {
     if (window.Worker) {
       return new Promise((resolve) => {
         try {
-          const worker = new Worker('js/log-parser-worker.js?v=549.0');
+          const worker = new Worker('js/log-parser-worker.js?v=550.0');
           worker.postMessage({ rawContent, clientId });
 
           worker.onmessage = (e) => {
