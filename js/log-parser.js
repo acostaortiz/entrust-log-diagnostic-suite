@@ -947,33 +947,76 @@ class LogParser {
     if (!line || typeof line !== 'string') return null;
 
     // 1. Usuarios específicos en corchetes de auditoría OnPremise: [AUDxxxx] [default/idgadmin] o [Master1]
+    const isValidUser = (cand) => {
+      if (!cand || typeof cand !== 'string') return false;
+      const clean = cand.trim().replace(/^['"\[\]().,;:!?]+|['"\[\]().,;:!?]+$/g, '');
+      if (clean.length < 2 || clean.length > 75) return false;
+      const low = clean.toLowerCase();
+      const stopWords = new Set([
+        'unknown', 'system', 'null', 'none', 'undefined', 'n/a', 'na', 'local', 'database',
+        'default', 'true', 'false', 'error', 'errors', 'fail', 'failed', 'failure', 'success',
+        'successful', 'info', 'warn', 'warning', 'debug', 'critical', 'fatal', 'decode',
+        'encode', 'decoding', 'encoding', 'password', 'passwords', 'passcode', 'pin', 'puk',
+        'otp', 'token', 'tokens', 'grid', 'grids', 'card', 'cards', 'qa', 'challenge',
+        'challenges', 'response', 'responses', 'request', 'requests', 'authentication',
+        'authenticator', 'authenticators', 'authenticated', 'authenticate', 'authenticating',
+        'authorization', 'authorized', 'authorize', 'verification', 'verify', 'verified',
+        'not', 'no', 'non', 'is', 'was', 'are', 'were', 'be', 'been', 'being', 'has', 'have',
+        'had', 'does', 'do', 'did', 'will', 'would', 'can', 'could', 'should', 'shall', 'may',
+        'might', 'must', 'cannot', 'cant', 'without', 'within', 'specified', 'unspecified',
+        'locked', 'unlocked', 'lock', 'unlock', 'disabled', 'enabled', 'disable', 'enable',
+        'expired', 'expire', 'invalid', 'valid', 'found', 'missing', 'exists', 'exist',
+        'existing', 'already', 'currently', 'assigned', 'unassigned', 'assign', 'created',
+        'create', 'updated', 'update', 'deleted', 'delete', 'removed', 'remove', 'modified',
+        'modify', 'migrated', 'migrate', 'migration', 'session', 'sessions', 'account',
+        'accounts', 'profile', 'profiles', 'group', 'groups', 'role', 'roles', 'policy',
+        'policies', 'service', 'services', 'id', 'ids', 'userid', 'username', 'name', 'names',
+        'alias', 'aliases', 'credential', 'credentials', 'certificate', 'certificates',
+        'cert', 'certs', 'device', 'devices', 'mobile', 'smart', 'soft', 'hard', 'attempt',
+        'attempts', 'sequence', 'state', 'status', 'attribute', 'attributes', 'property',
+        'properties', 'repository', 'store', 'directory', 'ldap', 'ad', 'jdbc', 'sql',
+        'oracle', 'db', 'table', 'column', 'row', 'blob', 'clob', 'transaction',
+        'transactions', 'operation', 'operations', 'action', 'actions', 'event', 'events',
+        'audit', 'log', 'logs', 'message', 'messages', 'exception', 'exceptions', 'stack',
+        'trace', 'thread', 'pool', 'connection', 'connections', 'timeout', 'timed', 'out',
+        'for', 'with', 'from', 'to', 'in', 'on', 'at', 'by', 'of', 'or', 'and', 'the', 'a',
+        'an', 'this', 'that', 'these', 'those', 'it', 'its', 'their', 'his', 'her', 'our',
+        'your', 'my', 'who', 'whom', 'which', 'what', 'where', 'when', 'why', 'how', 'all',
+        'any', 'some', 'each', 'every', 'other', 'another', 'such', 'only', 'own', 'same',
+        'so', 'than', 'too', 'very', 'just', 'now', 'then', 'here', 'there', 'calling', 'main',
+        'type', 'user', 'users', 'admin_console', 'user_3238', 'user_8912', 'user_1042'
+      ]);
+      if (stopWords.has(low)) return false;
+      if (/^[-.=/\\:;,]/.test(clean)) return false;
+      if (/^(com\.|org\.|java\.|javax\.|net\.|sun\.|entrust\.|ora-|aud\d|bulkidentityguard|http)/i.test(low)) return false;
+      if (/^520\d{4}$/.test(clean) || /^\d{4}-\d{2}-\d{2}/.test(clean)) return false;
+      if (/(exception|repository|transactionqueue|blobaccess|authenticator|manager|handler|controller|factory|provider)/i.test(low)) return false;
+      return /[A-Za-z0-9]/.test(clean);
+    };
+
     const bracketUserMatch = line.match(/\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([A-Za-z0-9_\-\.\/@]+)\]/i) ||
                              line.match(/\[([A-Za-z0-9_\-\.\/@]+)\]\s+Administrator logged in/i) ||
                              line.match(/\[([A-Za-z0-9_\-\.\/@]+)\]\s+(?:Login to supersh|User [A-Za-z0-9_\-\.\/@]+ created)/i);
-    if (bracketUserMatch) return bracketUserMatch[1];
+    if (bracketUserMatch && isValidUser(bracketUserMatch[1])) return bracketUserMatch[1].trim();
 
     // 2. Usuarios en acciones: "User default/admtmp created", "User Itservicios-group/token failed"
-    const userActionMatch = line.match(/\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:created|failed|logged|assigned|updated|deleted)/i);
-    if (userActionMatch) return userActionMatch[1];
+    const userActionMatch = line.match(/\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|deleted|authenticated|locked|disabled|migrated)/i);
+    if (userActionMatch && isValidUser(userActionMatch[1])) return userActionMatch[1].trim();
 
     // 3. Usuarios de búsqueda / alias: "user name or alias admtemp", "alias 'admtmp'"
     const aliasMatch = line.match(/\b(?:user\s+name\s+or\s+alias|alias)\s+['"]?([A-Za-z0-9_\-\.\/@]+)['"]?/i);
-    if (aliasMatch) return aliasMatch[1];
+    if (aliasMatch && isValidUser(aliasMatch[1])) return aliasMatch[1].trim();
 
     // 4. Priorizar usuarios explícitos de Banco del Caribe / Mercantil / Banesco / Grupos
     const bcMatch = line.match(/\b(BCClientes[A-Za-z0-9_\-\.\/@]+|BCMercantil[A-Za-z0-9_\-\.\/@]+|BC[A-Za-z0-9_\-\.\/@]+|Itservicios-group\/[A-Za-z0-9_\-\.\/@]+)\b/i);
-    if (bcMatch) return bcMatch[1];
+    if (bcMatch && isValidUser(bcMatch[1])) return bcMatch[1].trim();
 
     const emailMatch = line.match(/\b([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\b/i);
-    if (emailMatch) return emailMatch[1];
+    if (emailMatch && isValidUser(emailMatch[1])) return emailMatch[1].trim();
 
     const match = line.match(/(?:for\s+user|user:?|subjectName:?|user\s*=|username\s*=)\s+(['"]?)([A-Za-z0-9_\-\.\/@]+)\1/i);
-    if (match) {
-      const candidate = match[2].trim();
-      const blacklist = ['calling', 'info', 'debug', 'warn', 'warning', 'error', 'critical', 'fatal', 'trace', 'main', 'false', 'true', 'null', 'undefined', 'n/a', 'none', 'type'];
-      if (!blacklist.includes(candidate.toLowerCase()) && !candidate.startsWith('net.sf.') && !candidate.startsWith('org.apache.') && !candidate.startsWith('java.')) {
-        return candidate;
-      }
+    if (match && isValidUser(match[2])) {
+      return match[2].trim();
     }
 
     return null;

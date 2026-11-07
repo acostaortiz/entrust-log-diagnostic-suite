@@ -1434,6 +1434,8 @@ class KnowledgeBase {
         remediation: audControl,
         riskLevel: audSeverity === 'WARN' ? 'Medio (Alerta de Auditoría)' : 'Nominal (Auditoría de Seguridad)',
         manualVersion: activeVersionLabel,
+        docsUrl: 'https://docs.trustedauth.com',
+        trustedCareUrl: 'https://trustedcare.entrust.com',
         sectionId: `sec-${audCode.toLowerCase()}`,
         sectionTitle: `Código [${audCode}]: Evento de Auditoría Entrust`
       };
@@ -1478,6 +1480,8 @@ class KnowledgeBase {
         remediation: remediationText,
         riskLevel: 'Alto (Error de Sistema IdentityGuard)',
         manualVersion: activeVersionLabel,
+        docsUrl: 'https://docs.trustedauth.com',
+        trustedCareUrl: 'https://trustedcare.entrust.com',
         sectionId: `sec-${code}`,
         sectionTitle: `Código [${code}]: Error Entrust IdentityGuard`
       };
@@ -1499,6 +1503,8 @@ class KnowledgeBase {
         remediation: '1. Comprobar disponibilidad de almacenamiento en el tablespace de Entrust.\n2. Verificar conectividad TCP con el puerto 1521 del servidor Oracle.\n3. Reiniciar el pool de conexiones en el servidor de aplicaciones.',
         riskLevel: 'Crítico (Persistencia DB)',
         manualVersion: activeVersionLabel,
+        docsUrl: 'https://trustedcare.entrust.com',
+        trustedCareUrl: 'https://trustedcare.entrust.com',
         sectionId: `sec-${oraCode.toLowerCase()}`,
         sectionTitle: `Excepción Oracle [${oraCode}]`
       };
@@ -1517,6 +1523,8 @@ class KnowledgeBase {
       remediation: 'Operación normal sin fallos críticos reportados.',
       riskLevel: 'Nominal',
       manualVersion: activeVersionLabel,
+      docsUrl: 'https://docs.trustedauth.com',
+      trustedCareUrl: 'https://trustedcare.entrust.com',
       sectionId: 'sec-general',
       sectionTitle: 'Manual de Operación Entrust'
     };

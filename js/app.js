@@ -3539,9 +3539,16 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
         }
       });
 
+      if (state.sqliteStats && Array.isArray(state.sqliteStats.eventTypes)) {
+        state.sqliteStats.eventTypes.forEach(et => {
+          if (/^AUD\d+/i.test(et.code) && !codesMap.has(et.code.toUpperCase())) {
+            codesMap.set(et.code.toUpperCase(), { code: et.code.toUpperCase(), count: et.count, sample: `[${et.code}] Evento de auditoría consolidado en SQLite`, service: 'Audit Engine SQLite' });
+          }
+        });
+      }
+
       if (codesMap.size === 0) {
-        codesMap.set('AUD001', { code: 'AUD001', count: 120, sample: '[AUD001] Administrator console login success from 10.16.13.175', service: 'Consola de Administración' });
-        codesMap.set('AUD004', { code: 'AUD004', count: 45, sample: '[AUD004] User authentication policy modified by security administrator', service: 'Gestión de Políticas' });
+        codesMap.set('SIN-EVENTOS-AUD', { code: 'SIN-EVENTOS-AUD', count: 0, sample: 'No se detectaron códigos AUDxxx en los archivos cargados actualmente.', service: 'Motor de Auditoría' });
       }
 
     } else if (category === '520') {
@@ -3564,10 +3571,16 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
         }
       });
 
+      if (state.sqliteStats && Array.isArray(state.sqliteStats.topCodes)) {
+        state.sqliteStats.topCodes.forEach(tc => {
+          if (/^520\d{4}$/.test(tc.code) && !codesMap.has(tc.code)) {
+            codesMap.set(tc.code, { code: tc.code, count: tc.count, sample: `[${tc.code}] Código de error consolidado en motor SQLite`, service: 'IdentityGuard Core SQLite' });
+          }
+        });
+      }
+
       if (codesMap.size === 0) {
-        codesMap.set('5202013', { code: '5202013', count: 3214547, sample: '[5202013] Invalid user ID specified during authentication sequence', service: 'Motor de Autenticación' });
-        codesMap.set('5205079', { code: '5205079', count: 8520, sample: '[5205079] User password is locked due to repeated failed attempts', service: 'Políticas de Seguridad' });
-        codesMap.set('5201006', { code: '5201006', count: 4210, sample: '[5201006] Token synchronization failure during OTP verification', service: 'Servicio de Tokens OTP' });
+        codesMap.set('SIN-ERRORES-520', { code: 'SIN-ERRORES-520', count: 0, sample: 'No se detectaron códigos de error 520xxx en los archivos cargados actualmente.', service: 'Motor de Autenticación' });
       }
 
     } else if (category === 'idaas') {
@@ -3590,10 +3603,16 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
         }
       });
 
+      if (state.sqliteStats && Array.isArray(state.sqliteStats.topCodes)) {
+        state.sqliteStats.topCodes.forEach(tc => {
+          if (/bulkidentityguard|assignedgrid|password|qa|migration|idaas/i.test(tc.code) && !codesMap.has(tc.code)) {
+            codesMap.set(tc.code, { code: tc.code, count: tc.count, sample: `[${tc.code}] Incidente de migración consolidado en SQLite`, service: 'IDaaS Bulk Provisioning' });
+          }
+        });
+      }
+
       if (codesMap.size === 0) {
-        codesMap.set('bulkidentityguard.add.error.assignedgrid', { code: 'bulkidentityguard.add.error.assignedgrid', count: 18420, sample: 'Error asignando tarjeta Grid a usuario en pipeline IDaaS', service: 'IDaaS Bulk Provisioning' });
-        codesMap.set('bulkidentityguard.add.error.qa', { code: 'bulkidentityguard.add.error.qa', count: 14210, sample: 'Respuestas de desafío QA no cumplen política IDaaS', service: 'IDaaS Challenge QA' });
-        codesMap.set('bulkidentityguard.add.error.password', { code: 'bulkidentityguard.add.error.password', count: 12850, sample: 'Complejidad de contraseña rechazada en sincronización', service: 'IDaaS Credential Sync' });
+        codesMap.set('SIN-EVENTOS-IDAAS', { code: 'SIN-EVENTOS-IDAAS', count: 0, sample: 'No se detectaron eventos de migración o aprovisionamiento IDaaS en la carga actual.', service: 'IDaaS Bulk Provisioning' });
       }
 
     } else if (category === 'traffic') {
@@ -3612,10 +3631,16 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
         codesMap.get(srv).count++;
       });
 
+      if (state.sqliteStats && Array.isArray(state.sqliteStats.eventTypes)) {
+        state.sqliteStats.eventTypes.forEach(et => {
+          if (!codesMap.has(et.code)) {
+            codesMap.set(et.code, { code: et.code, count: et.count, sample: `Operación consolidada en base de datos SQLite (${et.code})`, service: et.code });
+          }
+        });
+      }
+
       if (codesMap.size === 0) {
-        codesMap.set('IdentityGuard.AuthenticateUser', { code: 'IdentityGuard.AuthenticateUser', count: 12450000, sample: 'Validación de credenciales OTP / Password', service: 'Authentication' });
-        codesMap.set('IdentityGuard.AddTokens', { code: 'IdentityGuard.AddTokens', count: 2850000, sample: 'Aprovisionamiento de credenciales digitales', service: 'Token Management' });
-        codesMap.set('IdentityGuard.AdminService', { code: 'IdentityGuard.AdminService', count: 1204696, sample: 'Operaciones administrativas de gestión', service: 'Admin Gateway' });
+        codesMap.set('SIN-TRAFICO-API', { code: 'SIN-TRAFICO-API', count: 0, sample: 'No hay transacciones cargadas en memoria ni base de datos activa.', service: 'Gateway API' });
       }
 
     } else if (category === 'health') {

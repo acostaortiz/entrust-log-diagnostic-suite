@@ -111,6 +111,99 @@ def init_db(db_path):
     conn.commit()
     conn.close()
 
+INVALID_USER_STOPWORDS = {
+    'unknown', 'system', 'null', 'none', 'undefined', 'n/a', 'na', 'local', 'database',
+    'default', 'true', 'false', 'error', 'errors', 'fail', 'failed', 'failure', 'success',
+    'successful', 'info', 'warn', 'warning', 'debug', 'critical', 'fatal', 'decode',
+    'encode', 'decoding', 'encoding', 'password', 'passwords', 'passcode', 'pin', 'puk',
+    'otp', 'token', 'tokens', 'grid', 'grids', 'card', 'cards', 'qa', 'challenge',
+    'challenges', 'response', 'responses', 'request', 'requests', 'authentication',
+    'authenticator', 'authenticators', 'authenticated', 'authenticate', 'authenticating',
+    'authorization', 'authorized', 'authorize', 'verification', 'verify', 'verified',
+    'not', 'no', 'non', 'is', 'was', 'are', 'were', 'be', 'been', 'being', 'has', 'have',
+    'had', 'does', 'do', 'did', 'will', 'would', 'can', 'could', 'should', 'shall', 'may',
+    'might', 'must', 'cannot', 'cant', 'without', 'within', 'specified', 'unspecified',
+    'locked', 'unlocked', 'lock', 'unlock', 'disabled', 'enabled', 'disable', 'enable',
+    'expired', 'expire', 'invalid', 'valid', 'found', 'missing', 'exists', 'exist',
+    'existing', 'already', 'currently', 'assigned', 'unassigned', 'assign', 'created',
+    'create', 'updated', 'update', 'deleted', 'delete', 'removed', 'remove', 'modified',
+    'modify', 'migrated', 'migrate', 'migration', 'session', 'sessions', 'account',
+    'accounts', 'profile', 'profiles', 'group', 'groups', 'role', 'roles', 'policy',
+    'policies', 'service', 'services', 'id', 'ids', 'userid', 'username', 'name', 'names',
+    'alias', 'aliases', 'credential', 'credentials', 'certificate', 'certificates',
+    'cert', 'certs', 'device', 'devices', 'mobile', 'smart', 'soft', 'hard', 'attempt',
+    'attempts', 'sequence', 'state', 'status', 'attribute', 'attributes', 'property',
+    'properties', 'repository', 'store', 'directory', 'ldap', 'ad', 'jdbc', 'sql',
+    'oracle', 'db', 'table', 'column', 'row', 'blob', 'clob', 'transaction',
+    'transactions', 'operation', 'operations', 'action', 'actions', 'event', 'events',
+    'audit', 'log', 'logs', 'message', 'messages', 'exception', 'exceptions', 'stack',
+    'trace', 'thread', 'pool', 'connection', 'connections', 'timeout', 'timed', 'out',
+    'for', 'with', 'from', 'to', 'in', 'on', 'at', 'by', 'of', 'or', 'and', 'the', 'a',
+    'an', 'this', 'that', 'these', 'those', 'it', 'its', 'their', 'his', 'her', 'our',
+    'your', 'my', 'who', 'whom', 'which', 'what', 'where', 'when', 'why', 'how', 'all',
+    'any', 'some', 'each', 'every', 'other', 'another', 'such', 'only', 'own', 'same',
+    'so', 'than', 'too', 'very', 'just', 'now', 'then', 'here', 'there', 'into', 'over',
+    'after', 'before', 'between', 'under', 'again', 'further', 'once', 'during', 'about',
+    'against', 'through', 'above', 'below', 'up', 'down', 'off', 'more', 'most', 'few',
+    'both', 'either', 'neither', 'while', 'because', 'until', 'unless', 'since', 'though',
+    'although', 'whether', 'if', 'else', 'when', 'where', 'admin_console', 'user_3238',
+    'user_8912', 'user_1042', 'user', 'users', 'client', 'server', 'node', 'host', 'ip',
+    'port', 'url', 'uri', 'http', 'https', 'api', 'soap', 'rest', 'xml', 'json', 'csv',
+    'data', 'value', 'values', 'key', 'keys', 'type', 'types', 'code', 'codes', 'result',
+    'results', 'reason', 'details', 'detail', 'description', 'summary', 'count', 'total',
+    'number', 'level', 'category', 'source', 'target', 'subject', 'object', 'context'
+}
+
+def is_valid_user_candidate(cand):
+    if not cand or not isinstance(cand, str):
+        return False
+    c = cand.strip().strip('\'"[](){}<>,.;:!?')
+    if len(c) < 2 or len(c) > 75:
+        return False
+    c_low = c.lower()
+    if c_low in INVALID_USER_STOPWORDS:
+        return False
+    if c[0] in '-.=/\\:;,':
+        return False
+    if any(c_low.startswith(p) for p in ('com.', 'org.', 'java.', 'javax.', 'net.', 'sun.', 'entrust.', 'ora-', 'aud', 'bulkidentityguard', 'http:', 'https:')):
+        return False
+    if re.match(r'^520\d{4}$', c) or re.match(r'^\d{4}-\d{2}-\d{2}', c) or re.match(r'^(?:\d{1,3}\.){3}\d{1,3}$', c):
+        return False
+    if any(k in c_low for k in ('exception', 'repository', 'transactionqueue', 'blobaccess', 'authenticator', 'manager', 'handler', 'service', 'controller', 'factory', 'provider')):
+        return False
+    if not re.search(r'[A-Za-z0-9]', c):
+        return False
+    return True
+
+def extract_valid_user(line, msg=''):
+    text = msg if msg else line
+    m_aud = re.search(r'\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([^\]]+)\]', line)
+    if m_aud:
+        cand = m_aud.group(1).strip()
+        if is_valid_user_candidate(cand):
+            return cand
+
+    patterns = [
+        r'(?:user\s+name\s+or\s+alias|user\s+name|username|userid|user_id|subjectName|subject)\s*(?:=|:|\bis\b)?\s*[\'"]([A-Za-z0-9_\-\.\/@]+)[\'"]',
+        r'\b(?:for\s+user|user)\s+[\'"]([A-Za-z0-9_\-\.\/@]+)[\'"]',
+        r'(?:user\s+name\s+or\s+alias|username|userid|user_id|subjectName)\s*(?:=|:)\s*([A-Za-z0-9_\-\.\/@]+)',
+        r'\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|authenticated|locked|disabled|deleted|modified|migrated)',
+        r'\b(?:for\s+user|user\s+name\s+or\s+alias)\s+([A-Za-z0-9_\-\.\/@]+)',
+        r'\buser\s+([A-Za-z0-9_\-\.\/@]+)'
+    ]
+    for pat in patterns:
+        for m in re.finditer(pat, text, re.I):
+            cand = m.group(1).strip().rstrip('.,;:!?)')
+            if is_valid_user_candidate(cand):
+                return cand
+        if text is not line:
+            for m in re.finditer(pat, line, re.I):
+                cand = m.group(1).strip().rstrip('.,;:!?)')
+                if is_valid_user_candidate(cand):
+                    return cand
+
+    return 'system'
+
 def parse_line_for_db(line, line_num):
     if not line:
         return None
@@ -123,10 +216,7 @@ def parse_line_for_db(line, line_num):
         if time_match:
             event_time = time_match.group(0)
         
-        user = 'system'
-        u_match = re.search(r'user\s+([0-9A-Za-z_\.\-]+)', line, re.I)
-        if u_match:
-            user = u_match.group(1)
+        user = extract_valid_user(line)
             
         if 'grid already assigned' in line.lower() or 'assignedgrid' in line.lower():
             event_type = 'bulkidentityguard.add.error.assignedgrid'
@@ -139,17 +229,22 @@ def parse_line_for_db(line, line_num):
             
         return (line_num, event_time, user, event_type, outcome, line[:300], 'idaas.entrust.com', line[:500])
 
-    # 1.5. Check IDaaS Cloud CSV format
-    if (',' in line or '\t' in line) and not line.startswith('['):
+    # 1.5. Check IDaaS Cloud CSV / TSV format (strictly validated to avoid matching stack traces or SQL lines)
+    if (',' in line or '\t' in line) and not line.startswith('[') and not line.startswith('\t') and not line.startswith('Caused by:'):
         parts = line.split('\t') if '\t' in line else [p.strip().strip('"') for p in line.split(',')]
         if len(parts) >= 8 and parts[0].lower() != 'id':
-            event_time = parts[1].replace('T', ' ').replace('Z', '')[:19] if len(parts) > 1 else ''
-            user = parts[4] if len(parts) > 4 else 'unknown'
-            event_type = parts[7] if len(parts) > 7 else 'IDaaS.Audit'
-            outcome = parts[8].upper() if len(parts) > 8 else 'SUCCESS'
-            msg = parts[9] if len(parts) > 9 else event_type
-            ip = parts[12] if len(parts) > 12 else ''
-            return (line_num, event_time, user, event_type, outcome, msg, ip, line[:500])
+            col1_is_date = bool(re.match(r'^\d{4}[-/]\d{2}[-/]\d{2}', parts[1].strip())) if len(parts) > 1 else False
+            col8_upper = parts[8].strip().upper() if len(parts) > 8 else ''
+            col8_is_outcome = col8_upper in ('SUCCESS', 'FAIL', 'FAILURE', 'ERROR', 'WARNING', 'INFO')
+            if col1_is_date or col8_is_outcome:
+                event_time = parts[1].replace('T', ' ').replace('Z', '')[:19] if len(parts) > 1 else ''
+                raw_user = parts[4].strip() if len(parts) > 4 else ''
+                user = raw_user if is_valid_user_candidate(raw_user) else 'system'
+                event_type = parts[7].strip() if len(parts) > 7 and parts[7].strip() else 'IDaaS.Audit'
+                outcome = 'FAIL' if col8_upper in ('FAIL', 'FAILURE', 'ERROR') else ('SUCCESS' if col8_upper else 'SUCCESS')
+                msg = parts[9].strip() if len(parts) > 9 else event_type
+                ip = parts[12].strip() if len(parts) > 12 else ''
+                return (line_num, event_time, user, event_type, outcome, msg, ip, line[:500])
 
     # 2. Check Entrust Bracket format: [timestamp] [thread] [LEVEL] [Category] [520xxx/AUD] Message
     bracket_match = re.match(r'^\[([^\]]+)\]\s*\[([^\]]*)\]\s*\[([A-Za-z]+)\s*\]\s*\[([^\]]*)\]\s*(.*)$', line)
@@ -160,8 +255,8 @@ def parse_line_for_db(line, line_num):
         msg = bracket_match.group(5)
         outcome = 'FAIL' if any(k in level for k in ['ERR', 'CRIT', 'FATAL']) else ('DEBUG' if level == 'DEBUG' else 'SUCCESS')
         
-        c520 = re.search(r'520\d{4}', msg)
-        aud = re.search(r'AUD\d{3,4}', msg)
+        c520 = re.search(r'520\d{4}', msg) or re.search(r'520\d{4}', line)
+        aud = re.search(r'AUD\d{3,4}', msg) or re.search(r'AUD\d{3,4}', line)
         ora = re.search(r'ORA-\d{5}', msg) or re.search(r'ORA-\d{5}', line)
         
         if c520:
@@ -175,22 +270,7 @@ def parse_line_for_db(line, line_num):
         else:
             event_type = 'ENTRUST_LOG'
         
-        # User extraction with bracket, action and alias support
-        bracket_u = re.search(r'\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([A-Za-z0-9_\-\.\/@]+)\]', line)
-        user_action = re.search(r'\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:created|failed|logged|assigned|updated)', line, re.I)
-        alias_u = re.search(r'\b(?:user\s+name\s+or\s+alias|alias)\s+[\'"]?([A-Za-z0-9_\-\.\/@]+)', line, re.I)
-        user_match = re.search(r'(?:user|for user|subjectName)\s+[\'"]?([A-Za-z0-9_\-\.\/@]+(?:\/[A-Za-z0-9_\-\.\/@]+)?)', msg, re.I)
-        
-        if bracket_u:
-            user = bracket_u.group(1)
-        elif user_action:
-            user = user_action.group(1)
-        elif alias_u:
-            user = alias_u.group(1)
-        elif user_match:
-            user = user_match.group(1)
-        else:
-            user = 'system'
+        user = extract_valid_user(line, msg)
         
         ip_match = re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', msg)
         ip = ip_match.group(0) if ip_match else 'local'
@@ -208,7 +288,8 @@ def parse_line_for_db(line, line_num):
     level = 'FAIL' if any(k in line.lower() for k in ['error', 'fail', 'crit', 'fatal', 'exception']) else 'SUCCESS'
     time_match = re.search(r'\d{4}[-/.]\d{2}[-/.]\d{2}[\sT]\d{2}:\d{2}:\d{2}', line)
     event_time = time_match.group(0) if time_match else time.strftime('%Y-%m-%d %H:%M:%S')
-    return (line_num, event_time, 'unknown', 'SYSTEM_LOG', level, line[:200], 'local', line[:500])
+    user = extract_valid_user(line)
+    return (line_num, event_time, user, 'SYSTEM_LOG', level, line[:200], 'local', line[:500])
 
 def stream_lines_from_archive_or_file(file_path):
     """
@@ -476,6 +557,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_activate_db(query)
         elif path == '/api/export-errors':
             self.handle_export_errors(query)
+        elif path == '/api/forensic-matrix':
+            self.handle_forensic_matrix(query)
+        elif path == '/api/user-pattern-detail':
+            self.handle_user_pattern_detail(query)
         else:
             super().do_GET()
 
@@ -755,6 +840,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             
             file_path = payload.get('filePath', '').strip()
             client_name = payload.get('clientName', 'Banco Mercantil C.A.').strip()
+            force_reindex = bool(payload.get('forceReindex', False))
             
             if not file_path:
                 self.send_json({'error': 'Ruta de archivo no especificada'}, status=400)
@@ -782,8 +868,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             client_slug = get_client_slug(client_name)
             target_db = os.path.join(DATA_DIR, f"{client_slug}_audit.db")
             
-            # If DB already exists and has records, activate immediately
-            if os.path.exists(target_db) and os.path.getsize(target_db) > 1024 * 1024:
+            # If DB already exists and has records (and forceReindex is not requested), activate immediately
+            if not force_reindex and os.path.exists(target_db) and os.path.getsize(target_db) > 1024 * 1024:
                 try:
                     conn = sqlite3.connect(target_db)
                     cur = conn.cursor()
@@ -871,6 +957,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     stats_cached = json.loads(row[0])
                     stats_cached['activeDb'] = os.path.basename(db)
                     stats_cached['client'] = client_param or os.path.basename(db).replace('_audit.db', '')
+                    if 'topUsers' in stats_cached and isinstance(stats_cached['topUsers'], list):
+                        stats_cached['topUsers'] = [u for u in stats_cached['topUsers'] if is_valid_user_candidate(u.get('user', ''))]
                     conn.close()
                     self.send_json(stats_cached)
                     return
@@ -909,9 +997,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             ''')
             top_codes = [{'code': r[0], 'count': r[1]} for r in cur.fetchall()]
 
-            # 3. Usuarios más activos / afectados
-            cur.execute('SELECT subject_name, COUNT(1) FROM logs WHERE subject_name != "unknown" AND subject_name != "" GROUP BY subject_name ORDER BY COUNT(1) DESC LIMIT 20')
-            top_users = [{'user': r[0], 'count': r[1]} for r in cur.fetchall()]
+            # 3. Usuarios más activos / afectados (filtrando falsos positivos / palabras reservadas)
+            cur.execute('SELECT subject_name, COUNT(1) FROM logs WHERE subject_name != "unknown" AND subject_name != "system" AND subject_name != "" GROUP BY subject_name ORDER BY COUNT(1) DESC LIMIT 80')
+            raw_top_users = cur.fetchall()
+            top_users = [{'user': r[0], 'count': r[1]} for r in raw_top_users if is_valid_user_candidate(r[0])][:20]
 
             # 4. IPs de origen
             cur.execute('SELECT source_ip, COUNT(1) FROM logs WHERE source_ip != "" AND source_ip != "local" GROUP BY source_ip ORDER BY COUNT(1) DESC LIMIT 20')
@@ -1071,6 +1160,562 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(''.join(lines).encode('utf-8'))
 
         conn.close()
+
+    def handle_user_pattern_detail(self, query):
+        client_param = query.get('client', [None])[0]
+        target_user = query.get('user', [''])[0].strip()
+        db = resolve_client_db(client_param)
+        if not db or not os.path.exists(db) or not target_user:
+            self.send_json({'status': 'empty', 'user': target_user, 'events': []}, status=200)
+            return
+
+        try:
+            conn = sqlite3.connect(db)
+            cur = conn.cursor()
+            cur.execute('''
+                SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw
+                FROM logs
+                WHERE subject_name = ?
+                ORDER BY line_num ASC
+                LIMIT 1000
+            ''', (target_user,))
+            rows = cur.fetchall()
+            conn.close()
+
+            events = []
+            for idx, r in enumerate(rows):
+                is_err = 'FAIL' in (r[4] or '').upper() or 'ERR' in (r[4] or '').upper()
+                events.append({
+                    'step': idx + 1,
+                    'lineNum': r[0],
+                    'timestamp': r[1] or 'Sin Timestamp',
+                    'user': r[2],
+                    'code': r[3] or 'SYSTEM_LOG',
+                    'outcome': 'FAIL' if is_err else 'SUCCESS',
+                    'level': 'ERROR' if is_err else 'INFO',
+                    'message': r[5] or '',
+                    'ip': r[6] or 'local',
+                    'raw': r[7] or ''
+                })
+
+            self.send_json({
+                'status': 'ready',
+                'user': target_user,
+                'totalReturned': len(events),
+                'events': events
+            })
+        except Exception as e:
+            self.send_json({'error': str(e), 'user': target_user, 'events': []}, status=500)
+
+    def handle_forensic_matrix(self, query):
+        client_param = query.get('client', [None])[0]
+        refresh = query.get('refresh', ['0'])[0] == '1'
+        db = resolve_client_db(client_param)
+
+        if not db or not os.path.exists(db):
+            self.send_json({
+                'status': 'empty',
+                'totalLogs': 0,
+                'totalErrors': 0,
+                'uniqueValidUsers': 0,
+                'filteredNoiseUsers': 0,
+                'usersList': [],
+                'patternClusters': [],
+                'codeMatrix': [],
+                'dbHealth': None,
+                'postMortem': None
+            }, status=200)
+            return
+
+        try:
+            conn = sqlite3.connect(db)
+            cur = conn.cursor()
+
+            cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
+            if not refresh:
+                cur.execute("SELECT value FROM server_stats WHERE key='forensic_matrix_v2'")
+                cached_row = cur.fetchone()
+                if cached_row and cached_row[0]:
+                    cached_payload = json.loads(cached_row[0])
+                    cached_payload['activeDb'] = os.path.basename(db)
+                    cached_payload['dbSizeMb'] = round(os.path.getsize(db) / (1024 * 1024), 2)
+                    conn.close()
+                    self.send_json(cached_payload)
+                    return
+
+            cur.execute('SELECT COUNT(1) FROM logs')
+            total_logs = cur.fetchone()[0] or 0
+
+            cur.execute("SELECT COUNT(1) FROM logs WHERE event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%'")
+            total_errors = cur.fetchone()[0] or 0
+
+            # 1. Aggregated (subject_name, event_type, event_outcome) across the DB
+            cur.execute('''
+                SELECT subject_name, event_type, event_outcome, COUNT(1) as cnt,
+                       MIN(event_time) as first_t, MAX(event_time) as last_t, MAX(source_ip) as sample_ip
+                FROM logs
+                GROUP BY subject_name, event_type, event_outcome
+            ''')
+            agg_rows = cur.fetchall()
+
+            import collections
+            users_map = {}
+            code_map = {}
+            filtered_noise_users = set()
+            filtered_noise_events = 0
+
+            for subj, etype, outcome, cnt, first_t, last_t, sample_ip in agg_rows:
+                code = (etype or 'SYSTEM_LOG').strip()
+                out_str = (outcome or 'SUCCESS').upper()
+                is_err = ('FAIL' in out_str) or ('ERR' in out_str)
+
+                if code not in code_map:
+                    kind = 'SYSTEM_EVENT'
+                    if re.match(r'^520\d{4}$', code):
+                        kind = 'ERROR_520'
+                    elif re.match(r'^AUD\d{3,4}$', code) or 'AUDIT' in code.upper():
+                        kind = 'AUDIT_AUD'
+                    elif code.startswith('ORA-') or 'SQL' in code.upper() or 'JDBC' in code.upper():
+                        kind = 'DATABASE_ORA'
+                    elif 'bulkidentityguard' in code.lower() or 'migration' in code.lower() or 'idaas' in code.lower():
+                        kind = 'IDAAS_MIGRATION'
+                    code_map[code] = {
+                        'code': code,
+                        'kind': kind,
+                        'totalInteractions': 0,
+                        'failCount': 0,
+                        'successCount': 0,
+                        'systemOnlyCount': 0,
+                        'usersDict': {}
+                    }
+
+                c_entry = code_map[code]
+                c_entry['totalInteractions'] += cnt
+                if is_err:
+                    c_entry['failCount'] += cnt
+                else:
+                    c_entry['successCount'] += cnt
+
+                subj_str = (subj or '').strip()
+                if is_valid_user_candidate(subj_str):
+                    if subj_str not in users_map:
+                        users_map[subj_str] = {
+                            'user': subj_str,
+                            'total': 0,
+                            'errors': 0,
+                            'success': 0,
+                            'firstSeen': first_t or '',
+                            'lastSeen': last_t or '',
+                            'ips': set(),
+                            'codes': {}
+                        }
+                    u_entry = users_map[subj_str]
+                    u_entry['total'] += cnt
+                    if is_err:
+                        u_entry['errors'] += cnt
+                    else:
+                        u_entry['success'] += cnt
+                    if first_t and (not u_entry['firstSeen'] or first_t < u_entry['firstSeen']):
+                        u_entry['firstSeen'] = first_t
+                    if last_t and (not u_entry['lastSeen'] or last_t > u_entry['lastSeen']):
+                        u_entry['lastSeen'] = last_t
+                    if sample_ip and sample_ip not in ('local', ''):
+                        u_entry['ips'].add(sample_ip)
+
+                    if code not in u_entry['codes']:
+                        u_entry['codes'][code] = {'total': 0, 'errors': 0, 'success': 0}
+                    u_entry['codes'][code]['total'] += cnt
+                    if is_err:
+                        u_entry['codes'][code]['errors'] += cnt
+                    else:
+                        u_entry['codes'][code]['success'] += cnt
+
+                    if subj_str not in c_entry['usersDict']:
+                        c_entry['usersDict'][subj_str] = {'user': subj_str, 'count': 0, 'errors': 0, 'success': 0, 'lastSeen': last_t or ''}
+                    c_entry['usersDict'][subj_str]['count'] += cnt
+                    if is_err:
+                        c_entry['usersDict'][subj_str]['errors'] += cnt
+                    else:
+                        c_entry['usersDict'][subj_str]['success'] += cnt
+                    if last_t and last_t > c_entry['usersDict'][subj_str]['lastSeen']:
+                        c_entry['usersDict'][subj_str]['lastSeen'] = last_t
+                else:
+                    c_entry['systemOnlyCount'] += cnt
+                    if subj_str and subj_str.lower() not in ('system', 'unknown', ''):
+                        filtered_noise_users.add(subj_str)
+                        filtered_noise_events += cnt
+
+            # 2. Sort top 600 valid users (prioritizing users with errors or high interaction volume)
+            sorted_users = sorted(
+                users_map.values(),
+                key=lambda u: (1 if u['errors'] > 0 else 0, u['errors'], u['total']),
+                reverse=True
+            )
+            top_users_subset = sorted_users[:600]
+            top_usernames = [u['user'] for u in top_users_subset]
+
+            # 3. Reconstruct exact chronological request sequences (Patrón de Solicitudes por Usuario)
+            user_sequences = collections.defaultdict(list)
+            if top_usernames:
+                chunk_sz = 200
+                for i in range(0, len(top_usernames), chunk_sz):
+                    batch_names = top_usernames[i:i + chunk_sz]
+                    placeholders = ','.join(['?'] * len(batch_names))
+                    cur.execute(f'''
+                        SELECT subject_name, event_type, event_outcome, event_time, source_ip, line_num, SUBSTR(message, 1, 140)
+                        FROM logs
+                        WHERE subject_name IN ({placeholders})
+                        ORDER BY line_num ASC
+                    ''', batch_names)
+                    for r_subj, r_type, r_out, r_time, r_ip, r_line, r_msg in cur.fetchall():
+                        seq_list = user_sequences[r_subj]
+                        if len(seq_list) < 40:
+                            is_e = 'FAIL' in (r_out or '').upper() or 'ERR' in (r_out or '').upper()
+                            seq_list.append({
+                                'step': len(seq_list) + 1,
+                                'code': r_type or 'SYSTEM_LOG',
+                                'outcome': 'FAIL' if is_e else 'SUCCESS',
+                                'timestamp': r_time or '',
+                                'ip': r_ip or 'local',
+                                'lineNum': r_line,
+                                'msg': r_msg or ''
+                            })
+
+            # 4. Classify each user's behavioral pattern and build Pattern Clusters
+            pattern_clusters_map = {}
+            users_list_out = []
+
+            for u in top_users_subset:
+                uname = u['user']
+                seq = user_sequences.get(uname, [])
+                if not seq:
+                    for c_k, c_v in sorted(u['codes'].items(), key=lambda x: x[1]['total'], reverse=True):
+                        seq.append({
+                            'step': len(seq) + 1,
+                            'code': c_k,
+                            'outcome': 'FAIL' if c_v['errors'] > 0 else 'SUCCESS',
+                            'timestamp': u['lastSeen'],
+                            'ip': next(iter(u['ips']), 'local'),
+                            'lineNum': 0,
+                            'msg': c_k
+                        })
+
+                rle_steps = []
+                norm_steps = []
+                for s in seq:
+                    c_label = s['code']
+                    o_label = s['outcome']
+                    if rle_steps and rle_steps[-1]['code'] == c_label and rle_steps[-1]['outcome'] == o_label:
+                        rle_steps[-1]['repeat'] += 1
+                    else:
+                        rle_steps.append({'code': c_label, 'outcome': o_label, 'repeat': 1})
+                        if len(norm_steps) < 6:
+                            norm_steps.append(f"{c_label} ({'FALLO' if o_label == 'FAIL' else 'ÉXITO'})")
+
+                compressed_parts = []
+                for st in rle_steps[:8]:
+                    rep_str = f" x{st['repeat']}" if st['repeat'] > 1 else ""
+                    state_str = "FALLO" if st['outcome'] == 'FAIL' else "ÉXITO"
+                    compressed_parts.append(f"{st['code']} ({state_str}{rep_str})")
+                compressed_pattern = ' ➔ '.join(compressed_parts)
+                if len(rle_steps) > 8:
+                    compressed_pattern += f" ➔ ... (+{len(rle_steps) - 8} etapas)"
+
+                normalized_sig = ' ➔ '.join(norm_steps) if norm_steps else 'OPERACIÓN_UNICA'
+
+                codes_keys_lower = ' '.join(u['codes'].keys()).lower()
+                if any(k in codes_keys_lower for k in ('ora-', 'sql_exception', 'jdbccardrepository', 'transactionqueue', 'blobaccess')):
+                    pattern_category = '🗄️ Fallo Inducido por Base de Datos (ORA / JDBC)'
+                    pattern_root_cause = 'Las solicitudes del usuario fueron abortadas por una excepción de persistencia o bloqueo en la base de datos (ej. ORA-01555 / SQLException), no por error humano de credenciales.'
+                elif 'bulkidentityguard' in codes_keys_lower or 'migration' in codes_keys_lower:
+                    pattern_category = '☁️ Colisión de Migración IDaaS (Grid / Password / QA)'
+                    pattern_root_cause = 'El usuario ya posee un autenticador activo (Grid Card, Password o Q&A) en el destino o la política del grupo restringe la sobreescritura durante la migración masiva.'
+                elif u['errors'] > 0 and u['success'] > 0:
+                    last_outcome = seq[-1]['outcome'] if seq else 'FAIL'
+                    if last_outcome == 'SUCCESS':
+                        pattern_category = '🔁 Auto-Recuperación (Fallo ➔ Éxito)'
+                        pattern_root_cause = 'El usuario experimentó fricción inicial de autenticación (OTP/Password vencido o mal digitado) pero logró autenticarse exitosamente en un intento posterior.'
+                    else:
+                        pattern_category = '📉 Degradación de Sesión (Éxito ➔ Fallo)'
+                        pattern_root_cause = 'El usuario operaba normalmente y comenzó a presentar rechazos consecutivos (posible bloqueo de cuenta 5201053, desincronización de Token o expiración de credencial).'
+                elif u['errors'] >= 3 and u['success'] == 0:
+                    pattern_category = '🚨 Ráfaga de Bloqueo / Fuerza Bruta Persistente'
+                    pattern_root_cause = 'Múltiples intentos fallidos consecutivos sin ningún éxito registrado. Alto riesgo de bloqueo de cuenta (Lockout 5201053) o script automatizado con credenciales obsoletas.'
+                elif u['errors'] > 0 and u['success'] == 0:
+                    pattern_category = '⚠️ Fricción de Autenticación sin Recuperación'
+                    pattern_root_cause = 'El usuario intentó autenticarse o enrolarse sin éxito y abandonó el flujo sin completar una transacción válida.'
+                elif any(k.startswith('aud') for k in u['codes'].keys()):
+                    pattern_category = '🛡️ Secuencia de Auditoría / Gestión Nominal'
+                    pattern_root_cause = 'Trazas de auditoría administrativa o verificaciones nominales completadas sin errores.'
+                else:
+                    pattern_category = '✅ Operación Nominal Limpia (100% Éxito)'
+                    pattern_root_cause = 'Todas las solicitudes registradas para este usuario finalizaron con estado SUCCESS.'
+
+                cluster_key = f"{pattern_category}||{normalized_sig}"
+                if cluster_key not in pattern_clusters_map:
+                    pattern_clusters_map[cluster_key] = {
+                        'signature': normalized_sig,
+                        'category': pattern_category,
+                        'rootCause': pattern_root_cause,
+                        'userCount': 0,
+                        'totalEvents': 0,
+                        'errorEvents': 0,
+                        'sampleUsers': []
+                    }
+                cl = pattern_clusters_map[cluster_key]
+                cl['userCount'] += 1
+                cl['totalEvents'] += u['total']
+                cl['errorEvents'] += u['errors']
+                if len(cl['sampleUsers']) < 30:
+                    cl['sampleUsers'].append({
+                        'user': uname,
+                        'total': u['total'],
+                        'errors': u['errors'],
+                        'success': u['success']
+                    })
+
+                users_list_out.append({
+                    'user': uname,
+                    'total': u['total'],
+                    'errors': u['errors'],
+                    'success': u['success'],
+                    'firstSeen': u['firstSeen'],
+                    'lastSeen': u['lastSeen'],
+                    'ips': list(u['ips'])[:5],
+                    'codes': u['codes'],
+                    'patternCategory': pattern_category,
+                    'compressedPattern': compressed_pattern,
+                    'normalizedSignature': normalized_sig,
+                    'rootCause': pattern_root_cause,
+                    'sequence': seq[:25]
+                })
+
+            pattern_clusters = sorted(
+                pattern_clusters_map.values(),
+                key=lambda c: (1 if c['errorEvents'] > 0 else 0, c['userCount'], c['totalEvents']),
+                reverse=True
+            )
+
+            # 5. Finalize Code & Audit Pattern Matrix (Code <-> Users & Interactions)
+            code_matrix = []
+            for c_key, c_val in code_map.items():
+                sorted_c_users = sorted(
+                    c_val['usersDict'].values(),
+                    key=lambda x: (x['count'], x['errors']),
+                    reverse=True
+                )
+                code_matrix.append({
+                    'code': c_val['code'],
+                    'kind': c_val['kind'],
+                    'totalInteractions': c_val['totalInteractions'],
+                    'failCount': c_val['failCount'],
+                    'successCount': c_val['successCount'],
+                    'systemOnlyCount': c_val['systemOnlyCount'],
+                    'uniqueUsersCount': len(sorted_c_users),
+                    'users': sorted_c_users[:150]
+                })
+            code_matrix.sort(key=lambda x: (1 if x['failCount'] > 0 else 0, x['totalInteractions']), reverse=True)
+
+            # 6. Database Health & Oracle/JDBC/SQLite Diagnostic
+            cur.execute('''
+                SELECT
+                    SUM(CASE WHEN event_type = 'ORA-01555' OR message LIKE '%ORA-01555%' OR message LIKE '%snapshot too old%' THEN 1 ELSE 0 END) as ora_01555,
+                    SUM(CASE WHEN event_type = 'ORA-00001' OR message LIKE '%ORA-00001%' OR message LIKE '%unique constraint%' THEN 1 ELSE 0 END) as ora_00001,
+                    SUM(CASE WHEN event_type IN ('ORA-01000', 'ORA-02391') OR message LIKE '%ORA-01000%' OR message LIKE '%open cursors%' THEN 1 ELSE 0 END) as ora_01000,
+                    SUM(CASE WHEN event_type IN ('ORA-03113', 'ORA-03114', 'ORA-12170', 'ORA-12514', 'ORA-12541') OR message LIKE '%ORA-03113%' OR message LIKE '%ORA-12170%' THEN 1 ELSE 0 END) as ora_net,
+                    SUM(CASE WHEN event_type IN ('ORA-00060', 'ORA-00054') OR message LIKE '%ORA-00060%' OR message LIKE '%deadlock%' THEN 1 ELSE 0 END) as ora_lock,
+                    SUM(CASE WHEN message LIKE '%JdbcCardRepository%' OR message LIKE '%BlobAccess%' THEN 1 ELSE 0 END) as jdbc_blob,
+                    SUM(CASE WHEN event_type = 'SQL_EXCEPTION' OR message LIKE '%SQLException%' OR message LIKE '%HikariPool%' OR message LIKE '%Connection timed out%' THEN 1 ELSE 0 END) as sql_exc,
+                    SUM(CASE WHEN message LIKE '%TransactionQueue%' THEN 1 ELSE 0 END) as tx_queue
+                FROM logs
+                WHERE event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%'
+            ''')
+            db_row = cur.fetchone() or (0, 0, 0, 0, 0, 0, 0, 0)
+            ora_01555, ora_00001, ora_01000, ora_net, ora_lock, jdbc_blob, sql_exc, tx_queue = [int(x or 0) for x in db_row]
+            total_db_incidents = ora_01555 + ora_00001 + ora_01000 + ora_net + ora_lock + jdbc_blob + sql_exc + tx_queue
+
+            cur.execute('''
+                SELECT line_num, event_time, subject_name, event_type, SUBSTR(message, 1, 220)
+                FROM logs
+                WHERE (event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%')
+                  AND (event_type LIKE 'ORA-%' OR event_type = 'SQL_EXCEPTION' OR message LIKE '%ORA-%' OR message LIKE '%SQLException%' OR message LIKE '%JdbcCardRepository%' OR message LIKE '%TransactionQueue%')
+                ORDER BY line_num ASC
+                LIMIT 15
+            ''')
+            db_samples = [
+                {'lineNum': r[0], 'timestamp': r[1], 'user': r[2], 'code': r[3], 'message': r[4]}
+                for r in cur.fetchall()
+            ]
+
+            cur.execute('PRAGMA journal_mode;')
+            wal_mode = (cur.fetchone() or ['unknown'])[0]
+
+            db_health = {
+                'status': 'CRITICAL' if (ora_01555 + ora_00001 + ora_01000 + ora_net + ora_lock + jdbc_blob + sql_exc) > 0 else ('WARNING' if tx_queue > 0 else 'HEALTHY'),
+                'totalDbIncidents': total_db_incidents,
+                'indicators': [
+                    {
+                        'code': 'ORA-01555 (Snapshot Too Old)',
+                        'count': ora_01555,
+                        'severity': 'CRÍTICO' if ora_01555 > 0 else 'OK',
+                        'diagnosis': 'Agotamiento de UNDO Tablespace en Oracle durante lecturas largas de BLOB/Grid o backups concurrentes.' if ora_01555 > 0 else 'Sin errores de consistencia de lectura (UNDO saludable).',
+                        'remediation': 'Incrementar UNDO_RETENTION (>= 3600s), ampliar UNDO Tablespace y evitar expurgos masivos en horario pico.'
+                    },
+                    {
+                        'code': 'JdbcCardRepository / BlobAccess',
+                        'count': jdbc_blob,
+                        'severity': 'CRÍTICO' if jdbc_blob > 0 else 'OK',
+                        'diagnosis': 'Fallo al deserializar o leer tarjetas Grid (BLOB) desde la base de datos de IdentityGuard.' if jdbc_blob > 0 else 'Lectura de objetos BLOB / Grid Cards sin anomalías.',
+                        'remediation': 'Verificar integridad de columnas BLOB en tabla de tarjetas y descartar truncamiento de red JDBC.'
+                    },
+                    {
+                        'code': 'SQLException / Pool JDBC',
+                        'count': sql_exc,
+                        'severity': 'ALTO' if sql_exc > 0 else 'OK',
+                        'diagnosis': 'Excepciones SQL generales o agotamiento del pool de conexiones JDBC hacia el motor relacional.' if sql_exc > 0 else 'Pool de conexiones JDBC operando dentro de parámetros nominales.',
+                        'remediation': 'Revisar maxPoolSize, connectionTimeout y latencia de red entre nodos Entrust y el servidor de BD.'
+                    },
+                    {
+                        'code': 'ORA-00001 (Unique Constraint)',
+                        'count': ora_00001,
+                        'severity': 'MEDIO' if ora_00001 > 0 else 'OK',
+                        'diagnosis': 'Intento de inserción duplicada de llave primaria/única (colisión de usuario, alias o serie de token).' if ora_00001 > 0 else 'Sin violaciones de unicidad detectadas.',
+                        'remediation': 'Validar pre-existencia del registro o activar manejo idempotente antes de re-ejecutar lotes.'
+                    },
+                    {
+                        'code': 'ORA-01000 / ORA-02391 (Cursores / Sesiones)',
+                        'count': ora_01000,
+                        'severity': 'ALTO' if ora_01000 > 0 else 'OK',
+                        'diagnosis': 'Límite de cursores abiertos (OPEN_CURSORS) o sesiones concurrentes excedido en Oracle.' if ora_01000 > 0 else 'Consumo de cursores y sesiones dentro del límite.',
+                        'remediation': 'Ajustar parámetro OPEN_CURSORS en Oracle y verificar cierre de PreparedStatements.'
+                    },
+                    {
+                        'code': 'ORA-03113 / ORA-12170 (Corte de Red TNS)',
+                        'count': ora_net,
+                        'severity': 'CRÍTICO' if ora_net > 0 else 'OK',
+                        'diagnosis': 'Desconexión abrupta del canal TCP/TNS con Oracle (Firewall timeout o caída de instancia).' if ora_net > 0 else 'Enlace de red hacia la base de datos estable.',
+                        'remediation': 'Habilitar SQLNET.EXPIRE_TIME (Dead Connection Detection) y validación testOnBorrow en el pool.'
+                    },
+                    {
+                        'code': 'ORA-00060 / ORA-00054 (Deadlock / Lock)',
+                        'count': ora_lock,
+                        'severity': 'ALTO' if ora_lock > 0 else 'OK',
+                        'diagnosis': 'Bloqueo mutuo (Deadlock) o contención de filas por transacciones concurrentes sobre el mismo usuario.' if ora_lock > 0 else 'Sin bloqueos transaccionales (Deadlocks) en base de datos.',
+                        'remediation': 'Serializar actualizaciones por usuario en procesos batch y reducir el tiempo de transacción abierta.'
+                    },
+                    {
+                        'code': 'TransactionQueue.API (Cola Asíncrona)',
+                        'count': tx_queue,
+                        'severity': 'ADVERTENCIA' if tx_queue > 0 else 'OK',
+                        'diagnosis': 'Encolamiento o retraso en el vaciado asíncrono de auditoría hacia la base de datos.' if tx_queue > 0 else 'Cola de transacciones de auditoría sin retrasos.',
+                        'remediation': 'Revisar IOPS de almacenamiento en tablas de auditoría e índices asociados.'
+                    }
+                ],
+                'sqliteEngine': {
+                    'dbFile': os.path.basename(db),
+                    'dbPath': db,
+                    'sizeMb': round(os.path.getsize(db) / (1024 * 1024), 2),
+                    'totalRowsIndexed': total_logs,
+                    'totalErrorsIndexed': total_errors,
+                    'journalMode': wal_mode,
+                    'uniqueValidUsers': len(users_map),
+                    'filteredNoiseTokens': len(filtered_noise_users),
+                    'filteredNoiseEvents': filtered_noise_events,
+                    'sampleNoiseTokens': sorted(list(filtered_noise_users))[:20]
+                },
+                'evidenceSamples': db_samples
+            }
+
+            # 7. Automated Post-Mortem Forensic Summary
+            cur.execute('''
+                SELECT MIN(event_time), MAX(event_time)
+                FROM logs
+                WHERE event_time IS NOT NULL AND event_time != ''
+            ''')
+            t_bounds = cur.fetchone() or ('N/A', 'N/A')
+
+            cur.execute('''
+                SELECT SUBSTR(event_time, 1, 13) as hr, COUNT(1) as err_cnt
+                FROM logs
+                WHERE (event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%')
+                  AND event_time IS NOT NULL AND event_time != ''
+                GROUP BY hr
+                ORDER BY err_cnt DESC
+                LIMIT 5
+            ''')
+            peak_hours = [{'hour': r[0], 'errors': r[1]} for r in cur.fetchall()]
+
+            migration_errors = sum(c['failCount'] for c in code_matrix if c['kind'] == 'IDAAS_MIGRATION')
+            auth_520_errors = sum(c['failCount'] for c in code_matrix if c['kind'] == 'ERROR_520')
+
+            if total_db_incidents > max(migration_errors, auth_520_errors) and total_db_incidents > 0:
+                primary_vector = 'INFRAESTRUCTURA / BASE DE DATOS (Oracle / JDBC)'
+                executive_verdict = f'Se confirmó que la causa primaria de degradación proviene de la capa de Base de Datos ({total_db_incidents:,} incidentes de persistencia/ORA detectados). Los fallos de usuarios asociados son síntoma secundario de interrupción de lectura/escritura en BD.'
+            elif migration_errors > 0 and migration_errors >= auth_520_errors:
+                primary_vector = 'COLISIÓN DE MIGRACIÓN / APROVISIONAMIENTO (IDaaS / BulkIG)'
+                executive_verdict = f'No se detecta corrupción en la base de datos local ({total_db_incidents:,} errores ORA críticos). El {round((migration_errors / max(1, total_errors)) * 100, 1)}% de los errores ({migration_errors:,} eventos) responde a colisiones de objetos preexistentes durante la migración (Grid Cards asignadas, Passwords o Q&A).'
+            elif auth_520_errors > 0:
+                primary_vector = 'FRICCIÓN DE AUTENTICACIÓN Y BLOQUEO DE CUENTAS (Códigos 520xxx)'
+                executive_verdict = f'La base de datos opera estable ({total_db_incidents:,} errores de BD). Los rechazos se concentran en validaciones de credenciales y bloqueos preventivos de seguridad ({auth_520_errors:,} eventos 520xxx sobre {len(users_map):,} usuarios únicos).'
+            else:
+                primary_vector = 'OPERACIÓN NOMINAL / EVENTOS ADMINISTRATIVOS'
+                executive_verdict = f'Operación general estable sobre {total_logs:,} registros analizados y {len(users_map):,} usuarios nominales identificados.'
+
+            post_mortem = {
+                'startTime': t_bounds[0] or 'N/A',
+                'endTime': t_bounds[1] or 'N/A',
+                'peakHours': peak_hours,
+                'primaryVector': primary_vector,
+                'executiveVerdict': executive_verdict,
+                'breakdown': {
+                    'databaseIncidents': total_db_incidents,
+                    'migrationCollisions': migration_errors,
+                    'authentication520Errors': auth_520_errors,
+                    'otherSystemErrors': max(0, total_errors - (total_db_incidents + migration_errors + auth_520_errors))
+                },
+                'officialPortals': [
+                    {
+                        'name': 'Entrust TrustedCare Portal (Knowledge Base & Support Cases)',
+                        'url': 'https://trustedcare.entrust.com',
+                        'description': 'Portal oficial de soporte técnico Entrust, boletines de seguridad, parches de IdentityGuard / IDaaS y resolución de códigos ORA / 520xxx.'
+                    },
+                    {
+                        'name': 'Entrust Identity as a Service (IDaaS) & IdentityGuard Documentation',
+                        'url': 'https://docs.trustedauth.com',
+                        'description': 'Documentación técnica oficial de APIs, Bulk Migration Tool, códigos de auditoría AUD y matrices de autenticación.'
+                    }
+                ]
+            }
+
+            result_payload = {
+                'status': 'ready',
+                'activeDb': os.path.basename(db),
+                'dbSizeMb': round(os.path.getsize(db) / (1024 * 1024), 2),
+                'totalLogs': total_logs,
+                'totalErrors': total_errors,
+                'totalSuccess': max(0, total_logs - total_errors),
+                'uniqueValidUsers': len(users_map),
+                'usersWithErrors': sum(1 for u in users_map.values() if u['errors'] > 0),
+                'usersClean': sum(1 for u in users_map.values() if u['errors'] == 0),
+                'filteredNoiseUsers': len(filtered_noise_users),
+                'filteredNoiseEvents': filtered_noise_events,
+                'usersList': users_list_out,
+                'patternClusters': pattern_clusters,
+                'codeMatrix': code_matrix,
+                'dbHealth': db_health,
+                'postMortem': post_mortem
+            }
+
+            try:
+                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('forensic_matrix_v2', json.dumps(result_payload, ensure_ascii=False)))
+                conn.commit()
+            except Exception:
+                pass
+
+            conn.close()
+            self.send_json(result_payload)
+        except Exception as e:
+            self.send_json({'error': str(e), 'status': 'error'}, status=500)
 
     def send_json(self, data, status=200):
         body = json.dumps(data, ensure_ascii=False).encode('utf-8')
