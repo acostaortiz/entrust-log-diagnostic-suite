@@ -197,7 +197,7 @@ class LogParser {
     if (window.Worker) {
       return new Promise((resolve) => {
         try {
-          const worker = new Worker('js/log-parser-worker.js');
+          const worker = new Worker('js/log-parser-worker.js?v=546.0');
           worker.postMessage({ rawContent, clientId });
 
           worker.onmessage = (e) => {
@@ -994,14 +994,18 @@ class LogParser {
       return /[A-Za-z0-9]/.test(clean);
     };
 
+    // 1. Priorizar usuario objetivo explícito ("for user X", "User X failed/created/...") antes del actor API en corchetes
+    const forUserMatch = line.match(/\bfor\s+user\s+(['"]?)([A-Za-z0-9_\-\.\/@]+)\1/i);
+    if (forUserMatch && isValidUser(forUserMatch[2])) return forUserMatch[2].trim();
+
+    const userActionMatch = line.match(/\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|deleted|authenticated|locked|disabled|migrated)/i);
+    if (userActionMatch && isValidUser(userActionMatch[1])) return userActionMatch[1].trim();
+
+    // 2. Actor o usuario en corchetes de auditoría: [AUD6001] [bancomercantil/0004861051]
     const bracketUserMatch = line.match(/\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([A-Za-z0-9_\-\.\/@]+)\]/i) ||
                              line.match(/\[([A-Za-z0-9_\-\.\/@]+)\]\s+Administrator logged in/i) ||
                              line.match(/\[([A-Za-z0-9_\-\.\/@]+)\]\s+(?:Login to supersh|User [A-Za-z0-9_\-\.\/@]+ created)/i);
     if (bracketUserMatch && isValidUser(bracketUserMatch[1])) return bracketUserMatch[1].trim();
-
-    // 2. Usuarios en acciones: "User default/admtmp created", "User Itservicios-group/token failed"
-    const userActionMatch = line.match(/\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|deleted|authenticated|locked|disabled|migrated)/i);
-    if (userActionMatch && isValidUser(userActionMatch[1])) return userActionMatch[1].trim();
 
     // 3. Usuarios de búsqueda / alias: "user name or alias admtemp", "alias 'admtmp'"
     const aliasMatch = line.match(/\b(?:user\s+name\s+or\s+alias|alias)\s+['"]?([A-Za-z0-9_\-\.\/@]+)['"]?/i);

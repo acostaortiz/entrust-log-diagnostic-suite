@@ -57,11 +57,27 @@ def get_client_slug(client_name_or_id):
         return 'idaas_cloud'
     return slug or 'general'
 
+def save_active_session(db_path, client_name='General'):
+    global ACTIVE_DB_PATH
+    if db_path and os.path.exists(db_path):
+        ACTIVE_DB_PATH = db_path
+        try:
+            sess_file = os.path.join(DATA_DIR, 'active_session.json')
+            with open(sess_file, 'w', encoding='utf-8') as f:
+                json.dump({'activeDbPath': db_path, 'clientName': client_name, 'updatedAt': time.time()}, f)
+        except Exception:
+            pass
+
 def resolve_client_db(client_param=None):
     global ACTIVE_DB_PATH
     
+    generic_names = {
+        'all', 'undefined', 'null', '', 'general', 'sin cliente asignado',
+        'registrar primer cliente...', 'registrar primer cliente',
+        'entorno entrust general / multi-nodo', 'entrust general'
+    }
     # 1. Search by client parameter if explicitly provided and not generic
-    if client_param and str(client_param).lower() not in ['all', 'undefined', 'null', '', 'general', 'entorno entrust general / multi-nodo']:
+    if client_param and str(client_param).strip().lower() not in generic_names:
         slug = get_client_slug(client_param)
         candidate_names = [
             f"{slug}_audit.db",
@@ -84,6 +100,31 @@ def resolve_client_db(client_param=None):
     # 2. Check ACTIVE_DB_PATH if set explicitly
     if ACTIVE_DB_PATH and os.path.exists(ACTIVE_DB_PATH):
         return ACTIVE_DB_PATH
+
+    # 3. Check persisted active_session.json (survives server restarts)
+    sess_file = os.path.join(DATA_DIR, 'active_session.json')
+    if os.path.exists(sess_file):
+        try:
+            with open(sess_file, 'r', encoding='utf-8') as f:
+                sess = json.load(f)
+                saved_db = sess.get('activeDbPath')
+                if saved_db and os.path.exists(saved_db):
+                    ACTIVE_DB_PATH = saved_db
+                    return saved_db
+        except Exception:
+            pass
+
+    # 4. Fallback to most recently modified .db in DATA_DIR
+    if os.path.exists(DATA_DIR):
+        db_files = [
+            os.path.join(DATA_DIR, f)
+            for f in os.listdir(DATA_DIR)
+            if f.endswith('.db') and os.path.isfile(os.path.join(DATA_DIR, f))
+        ]
+        if db_files:
+            newest_db = max(db_files, key=lambda p: os.path.getmtime(p))
+            ACTIVE_DB_PATH = newest_db
+            return newest_db
         
     return None
 
@@ -177,21 +218,37 @@ def is_valid_user_candidate(cand):
 
 def extract_valid_user(line, msg=''):
     text = msg if msg else line
+    # 1. Prioritize explicit target user ("for user X", "User X failed/created/...", "username=X") over API actor bracket
+    priority_patterns = [
+        r'\bfor\s+user\s+[\'"]?([A-Za-z0-9_\-\.\/@]+)[\'"]?',
+        r'(?:user\s+name\s+or\s+alias|user\s+name|username|userid|user_id|subjectName|subject|User)\s*(?:=|:)\s*[\'"]?([A-Za-z0-9_\-\.\/@]+)[\'"]?',
+        r'(?:user\s+name\s+or\s+alias|user\s+name|username|userid|user_id|subjectName|subject)\s*(?:=|:|\bis\b)?\s*[\'"]([A-Za-z0-9_\-\.\/@]+)[\'"]',
+        r'\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|authenticated|locked|disabled|deleted|modified|migrated)'
+    ]
+    for pat in priority_patterns:
+        for m in re.finditer(pat, text, re.I):
+            cand = m.group(1).strip().rstrip('.,;:!?)')
+            if is_valid_user_candidate(cand):
+                return cand
+        if text is not line:
+            for m in re.finditer(pat, line, re.I):
+                cand = m.group(1).strip().rstrip('.,;:!?)')
+                if is_valid_user_candidate(cand):
+                    return cand
+
+    # 2. Check [AUDxxx] [username] or [IG.AUDIT] [username]
     m_aud = re.search(r'\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([^\]]+)\]', line)
     if m_aud:
         cand = m_aud.group(1).strip()
         if is_valid_user_candidate(cand):
             return cand
 
-    patterns = [
-        r'(?:user\s+name\s+or\s+alias|user\s+name|username|userid|user_id|subjectName|subject)\s*(?:=|:|\bis\b)?\s*[\'"]([A-Za-z0-9_\-\.\/@]+)[\'"]',
+    # 3. Fallback general user mention
+    fallback_patterns = [
         r'\b(?:for\s+user|user)\s+[\'"]([A-Za-z0-9_\-\.\/@]+)[\'"]',
-        r'(?:user\s+name\s+or\s+alias|username|userid|user_id|subjectName)\s*(?:=|:)\s*([A-Za-z0-9_\-\.\/@]+)',
-        r'\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|authenticated|locked|disabled|deleted|modified|migrated)',
-        r'\b(?:for\s+user|user\s+name\s+or\s+alias)\s+([A-Za-z0-9_\-\.\/@]+)',
         r'\buser\s+([A-Za-z0-9_\-\.\/@]+)'
     ]
-    for pat in patterns:
+    for pat in fallback_patterns:
         for m in re.finditer(pat, text, re.I):
             cand = m.group(1).strip().rstrip('.,;:!?)')
             if is_valid_user_candidate(cand):
@@ -449,6 +506,7 @@ def index_file_in_background(file_path, client_name='Entrust Client'):
         conn.close()
         
         ACTIVE_DB_PATH = target_db
+        save_active_session(target_db, client_name)
         upload_state['dbPath'] = target_db
         upload_state['status'] = 'ready'
         upload_state['progress'] = 100
@@ -588,6 +646,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
         ACTIVE_DB_PATH = full_path
+        save_active_session(full_path, client_name)
         upload_state['dbPath'] = full_path
         upload_state['clientName'] = client_name
         upload_state['clientSlug'] = get_client_slug(client_name)
@@ -881,6 +940,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     
                     if records > 0:
                         ACTIVE_DB_PATH = target_db
+                        save_active_session(target_db, client_name)
                         upload_state['dbPath'] = target_db
                         upload_state['clientName'] = client_name
                         upload_state['clientSlug'] = client_slug
@@ -1135,18 +1195,33 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404, 'No hay base de datos indexada para este cliente')
             return
 
-        self.send_response(200)
-        self.send_header('Content-Type', 'text/csv; charset=utf-8')
-        self.send_header('Content-Disposition', 'attachment; filename="Errores_AuditEvents_Export.csv"')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
-
-        header = 'lineNum,eventTime,user,eventType,outcome,message,ip,raw\n'
-        self.wfile.write(header.encode('utf-8'))
-
         conn = sqlite3.connect(db)
         cur = conn.cursor()
-        cur.execute('SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw FROM logs WHERE event_outcome LIKE ?', ('%FAIL%',))
+        err_where = '''
+            WHERE event_outcome LIKE '%FAIL%'
+               OR event_outcome LIKE '%ERR%'
+               OR event_type LIKE '520%'
+               OR event_type IN ('AUD6001', 'AUD6002', 'AUD2309')
+               OR event_type LIKE 'ORA-%'
+               OR message LIKE '%failed%'
+               OR message LIKE '%locked%'
+               OR message LIKE '%error%'
+        '''
+        cur.execute(f'SELECT COUNT(1) FROM logs {err_where}')
+        err_count = cur.fetchone()[0] or 0
+
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/csv; charset=utf-8')
+        self.send_header('Content-Disposition', 'attachment; filename="Errores_y_Alertas_AuditEvents_Export.csv"')
+        self.end_headers()
+
+        header = '\ufefflineNum,eventTime,user,eventType,outcome,message,ip,raw\n'
+        self.wfile.write(header.encode('utf-8'))
+
+        if err_count > 0:
+            cur.execute(f'SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw FROM logs {err_where} ORDER BY line_num ASC')
+        else:
+            cur.execute('SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw FROM logs ORDER BY line_num ASC LIMIT 10000')
 
         while True:
             batch = cur.fetchmany(5000)

@@ -161,8 +161,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
     },
 
     getAllLogs() {
-      if (window.state && Array.isArray(window.state.logs) && window.state.logs.length > 0) {
-        return window.state.logs;
+      const st = window.appState || window.state;
+      if (st && Array.isArray(st.logs) && st.logs.length > 0) {
+        return st.logs;
       }
       return [];
     },
@@ -174,8 +175,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       if (window.getActiveClientProfile && typeof window.getActiveClientProfile === 'function') {
         return window.getActiveClientProfile();
       }
-      if (window.state && window.state.clientProfiles) {
-        return window.state.clientProfiles.find(c => c.id === window.state.activeClientId) || window.state.clientProfiles[0];
+      const st = window.appState || window.state;
+      if (st && st.clientProfiles) {
+        return st.clientProfiles.find(c => c.id === st.activeClientId) || st.clientProfiles[0];
       }
       return {
         name: 'Entorno Entrust General / Multi-Nodo',
@@ -185,8 +187,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       };
     },
 
-        updateLanguageButtons() {
-      const isEn = window.state && window.state.reportLanguage === 'en';
+    updateLanguageButtons() {
+      const st = window.appState || window.state;
+      const isEn = st && st.reportLanguage === 'en';
       const btnEs = document.getElementById('btn-trace-lang-es');
       const btnEn = document.getElementById('btn-trace-lang-en');
       if (btnEs && btnEn) {
@@ -204,9 +207,14 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       }
     },
 
-    openModal(initialUsers) {
+    async openModal(initialUsers) {
       const modal = document.getElementById('modal-user-trace-report');
       if (!modal) return;
+      modal.style.display = 'flex';
+
+      if (!this.forensicMatrixData && this.getAllLogs().length === 0) {
+        await this.fetchForensicMatrix(false);
+      }
 
       this.buildUserStats();
 
@@ -217,8 +225,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         } else if (Array.isArray(initialUsers) || initialUsers instanceof Set) {
           initialUsers.forEach(u => this.selectedUsers.add(u));
         }
-      } else if (this.selectedUsers.size === 0) {
-        // Por defecto, seleccionar TODOS los usuarios para ver el panorama general
+      } else {
+        // Seleccionar automáticamente todos los usuarios detectados para que el informe nunca abra vacío
+        this.selectedUsers.clear();
         Object.keys(this.cachedStats).forEach(u => this.selectedUsers.add(u));
       }
 
@@ -226,8 +235,6 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       this.updateLanguageButtons();
       this.renderUserChecklist();
       this.generateReport();
-
-      modal.style.display = 'flex';
     },
 
     closeModal() {
@@ -351,27 +358,35 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
     buildUserStats() {
       const logs = this.getAllLogs();
       const stats = {};
+      const st = window.appState || window.state;
 
-      logs.forEach((log, idx) => {
+      for (let idx = 0; idx < logs.length; idx++) {
+        const log = logs[idx];
         let user = log.user || log.usuario || log.username;
-        const msg = (log.message || '') + ' ' + (log.raw || '');
+        const msg = log.raw || log.message || '';
+
+        // Si el log contiene explícitamente "for user <cliente>", priorizar al cliente final sobre cuentas actoras (ej. bmapiuser8)
+        if (msg && (msg.includes('for user ') || msg.includes('for user\t') || msg.includes('User '))) {
+          const explicitTarget = msg.match(/\bfor\s+user\s+['"]?([A-Za-z0-9_\-\.\/@]+)['"]?/i) ||
+                                 msg.match(/\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|deleted|authenticated|locked|disabled|migrated)/i);
+          if (explicitTarget && this.isValidUserCandidate(explicitTarget[1])) {
+            user = explicitTarget[1];
+          }
+        }
 
         if (!this.isValidUserCandidate(user) && msg) {
-          const audBracket = msg.match(/\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([^\]]+)\]/i);
-          const actionMatch = msg.match(/\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|deleted|authenticated|locked|disabled|migrated)/i);
-          const kvMatch = msg.match(/(?:for\s+user|user\s+name\s+or\s+alias|username|userId|user_id|subjectName)[\s:=]+['"]?([a-zA-Z0-9_\.\@\/\-]+)['"]?/i);
-          if (audBracket && this.isValidUserCandidate(audBracket[1])) {
-            user = audBracket[1];
-          } else if (actionMatch && this.isValidUserCandidate(actionMatch[1])) {
-            user = actionMatch[1];
-          } else if (kvMatch && this.isValidUserCandidate(kvMatch[1])) {
+          const kvMatch = msg.match(/(?:for\s+user|User:|user\s+name\s+or\s+alias|username|userId|user_id|subjectName)[\s:=]+['"]?([a-zA-Z0-9_\.\@\/\-]+)['"]?/i);
+          const audBracket = msg.includes('[') ? msg.match(/\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([^\]]+)\]/i) : null;
+          if (kvMatch && this.isValidUserCandidate(kvMatch[1])) {
             user = kvMatch[1];
+          } else if (audBracket && this.isValidUserCandidate(audBracket[1])) {
+            user = audBracket[1];
           } else {
             user = null;
           }
         }
 
-        if (!this.isValidUserCandidate(user)) return;
+        if (!this.isValidUserCandidate(user)) continue;
         user = String(user).trim().replace(/^['"\[\]().,;:!?]+|['"\[\]().,;:!?]+$/g, '');
 
         if (!stats[user]) {
@@ -388,6 +403,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             codes: {},
             codesDetail: {},
             sequence: [],
+            sampleLogs: [],
             lastTimestamp: log.timestamp || '',
             firstTimestamp: log.timestamp || ''
           };
@@ -399,11 +415,12 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         const code = String(log.code || log.entrustCode || log.type || 'SYS-EVENT');
 
         const isFail = lvl === 'CRITICAL' || lvl === 'FATAL' || lvl === 'ERROR' || (log.outcome && /FAIL|ERR/i.test(log.outcome)) ||
-                       /520\d{4}/.test(code) || /ORA-/.test(code) || /error/i.test(code) || /fail|error|denied|invalid/i.test(msg);
+                       /520\d{4}/.test(code) || /AUD6001|AUD6002/i.test(code) || /ORA-/.test(code) || /error/i.test(code) ||
+                       /failed authentication|locked out|fail|error|denied|invalid/i.test(msg);
 
         if (isFail) {
           uStat.errors++;
-          if (lvl === 'CRITICAL' || /5201000|5202013|ORA-/.test(code)) {
+          if (lvl === 'CRITICAL' || /5201000|5202013|AUD6002|ORA-/.test(code)) {
             uStat.criticals++;
           }
         } else if (lvl === 'WARN' || lvl === 'WARNING' || /AUD002|AUD2309/.test(code)) {
@@ -412,12 +429,12 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           uStat.successes++;
         }
 
-        if (/5205079|5205080|5201053|5203016|5202002|AUD007|locked|bloquead/i.test(code) || /locked|bloquead/i.test(msg)) {
+        if (/5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002|locked|bloquead/i.test(code) || /locked|bloquead/i.test(msg)) {
           uStat.isLocked = true;
         }
 
         if (log.ip || log.clientIp) uStat.ips.add(log.ip || log.clientIp);
-        if (log.server || log.node) uStat.nodes.add(log.server || log.node);
+        if (log.server || log.node || log.sourceFile) uStat.nodes.add(log.server || log.node || log.sourceFile);
 
         uStat.codes[code] = (uStat.codes[code] || 0) + 1;
         if (!uStat.codesDetail[code]) {
@@ -439,11 +456,15 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           });
         }
 
+        if (uStat.sampleLogs.length < 15) {
+          uStat.sampleLogs.push(log);
+        }
+
         if (log.timestamp) {
           uStat.lastTimestamp = log.timestamp;
           if (!uStat.firstTimestamp) uStat.firstTimestamp = log.timestamp;
         }
-      });
+      }
 
       // Integrar usuarios del motor SQLite si fueron cargados por /api/forensic-matrix
       if (this.forensicMatrixData && Array.isArray(this.forensicMatrixData.usersList)) {
@@ -453,8 +474,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           Object.entries(su.codes || {}).forEach(([k, v]) => {
             codesSimple[k] = typeof v === 'object' ? (v.total || 0) : v;
           });
-          const isLocked = Object.keys(codesSimple).some(c => /5205079|5205080|5201053|5203016|5202002|AUD007/i.test(c)) ||
+          const isLocked = Object.keys(codesSimple).some(c => /5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002/i.test(c)) ||
                            /Bloqueo|Fuerza Bruta/i.test(su.patternCategory || '');
+          const existingSamples = stats[su.user]?.sampleLogs || [];
           stats[su.user] = {
             username: su.user,
             totalEvents: su.total || 0,
@@ -468,6 +490,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             codes: codesSimple,
             codesDetail: su.codes || {},
             sequence: su.sequence || [],
+            sampleLogs: existingSamples,
             compressedPattern: su.compressedPattern || '',
             normalizedSignature: su.normalizedSignature || '',
             patternCategory: su.patternCategory || '',
@@ -475,6 +498,64 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             firstTimestamp: su.firstSeen || '',
             lastTimestamp: su.lastSeen || ''
           };
+        });
+      }
+
+      // Integrar también usuarios agregados en globalStreamMetrics (Web Worker para archivos de 10-50 MB)
+      if (st && st.globalStreamMetrics && Array.isArray(st.globalStreamMetrics.topUsers)) {
+        st.globalStreamMetrics.topUsers.forEach(tu => {
+          const uName = tu && tu.user ? String(tu.user).trim() : '';
+          if (!this.isValidUserCandidate(uName)) return;
+          const tuCodes = (tu.codes && Object.keys(tu.codes).length > 0) ? tu.codes : { 'STREAM-AGG': tu.count || 1 };
+          const tuCodesDetail = {};
+          Object.entries(tuCodes).forEach(([cKey, cVal]) => {
+            const isCError = /^520\d{4}|AUD6001|AUD6002|ORA-|error/i.test(cKey);
+            tuCodesDetail[cKey] = { total: cVal, errors: isCError ? cVal : 0, success: isCError ? 0 : cVal };
+          });
+          const isTuLocked = Object.keys(tuCodes).some(c => /5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002/i.test(c));
+          if (!stats[uName]) {
+            stats[uName] = {
+              username: uName,
+              totalEvents: tu.count || 1,
+              errors: tu.errors || 0,
+              criticals: tu.errors || 0,
+              warnings: 0,
+              successes: Math.max(0, (tu.count || 1) - (tu.errors || 0)),
+              isLocked: isTuLocked,
+              ips: new Set(),
+              nodes: new Set(['⚡ Stream Worker']),
+              codes: tuCodes,
+              codesDetail: tuCodesDetail,
+              sequence: Object.entries(tuCodes).map(([cKey, cVal], sIdx) => ({
+                step: sIdx + 1,
+                code: cKey,
+                outcome: (/^520\d{4}|AUD6001|AUD6002|ORA-|error/i.test(cKey) ? 'FAIL' : 'SUCCESS'),
+                timestamp: tu.lastSeen || '',
+                ip: 'local',
+                lineNum: 1,
+                msg: `${cVal} eventos con código ${cKey}`
+              })),
+              sampleLogs: [],
+              firstTimestamp: tu.firstSeen || '',
+              lastTimestamp: tu.lastSeen || ''
+            };
+          } else {
+            if ((tu.count || 0) > stats[uName].totalEvents) {
+              stats[uName].totalEvents = tu.count;
+            }
+            if ((tu.errors || 0) > stats[uName].errors) {
+              stats[uName].errors = tu.errors;
+            }
+            stats[uName].successes = Math.max(0, stats[uName].totalEvents - stats[uName].errors);
+            if (isTuLocked) stats[uName].isLocked = true;
+            if (tu.codes) {
+              Object.entries(tu.codes).forEach(([cKey, cVal]) => {
+                if (!stats[uName].codes[cKey] || cVal > stats[uName].codes[cKey]) {
+                  stats[uName].codes[cKey] = cVal;
+                }
+              });
+            }
+          }
         });
       }
 
@@ -521,7 +602,8 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       }
 
       let html = '';
-      userList.forEach(u => {
+      const displayChecklist = userList.slice(0, 400);
+      displayChecklist.forEach(u => {
         const isChecked = this.selectedUsers.has(u.username);
         let errorBadge = '';
         if (u.isLocked) {
@@ -545,6 +627,10 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           </label>
         `;
       });
+
+      if (userList.length > 400) {
+        html += `<div style="padding:8px; font-size:0.72rem; color:var(--text-muted); text-align:center;">Mostrando top 400 de ${userList.length.toLocaleString()} usuarios en lista rápida (usa el buscador o exporta CSV para el 100%).</div>`;
+      }
 
       container.innerHTML = html;
     },
@@ -633,29 +719,46 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         return;
       }
 
-      const isEn = window.state && window.state.reportLanguage === 'en';
+      const st = window.appState || window.state;
+      const isEn = st && st.reportLanguage === 'en';
       const activeClient = this.getClientProfile();
       const clientLabel = activeClient ? (activeClient.name || 'Entrust General') : 'Entrust General';
       const clientVersion = activeClient ? `${activeClient.platform || 'IdentityGuard'} ${activeClient.version || 'Release 12.0'}` : 'Entrust IdentityGuard';
       const nowFormatted = new Date().toLocaleString(isEn ? 'en-US' : 'es-VE', { dateStyle: 'long', timeStyle: 'medium' });
 
-      const logs = this.getAllLogs();
       const targetUsers = Array.from(this.selectedUsers);
 
-      // Filtrar y aislar eventos de los usuarios seleccionados
-      const userLogs = logs.filter(log => {
-        let user = log.user || log.usuario || log.username;
-        const msg = (log.message || '') + ' ' + (log.raw || '');
-        if (!user && msg) {
-          const match = msg.match(/(?:user|usuario|username|userId|user_id|identity)[\s:=]+([a-zA-Z0-9_\.\@\-]+)/i) ||
-                        msg.match(/\[User:\s*([a-zA-Z0-9_\.\@\-]+)\]/i) ||
-                        msg.match(/User\s+([a-zA-Z0-9_\.\@\-]+)/i);
-          if (match) user = match[1];
-          else if (/Administrator console login|admin.*login/i.test(msg)) user = 'admin_console';
-          else if (/supersh/i.test(msg)) user = 'master_admin';
+      // Recolectar muestra rápida de eventos de los usuarios seleccionados desde cachedStats (O(1), sin bloquear con 500k logs)
+      const userLogs = [];
+      for (let i = 0; i < targetUsers.length && userLogs.length < 120; i++) {
+        const uStat = this.cachedStats[targetUsers[i]];
+        if (!uStat) continue;
+        if (Array.isArray(uStat.sampleLogs) && uStat.sampleLogs.length > 0) {
+          for (let j = 0; j < uStat.sampleLogs.length && userLogs.length < 120; j++) {
+            const sl = uStat.sampleLogs[j];
+            userLogs.push({
+              timestamp: sl.timestamp || '-',
+              user: uStat.username,
+              code: sl.code || sl.entrustCode || sl.type || 'SYS-EVENT',
+              level: sl.level || 'INFO',
+              message: sl.message || sl.raw || '',
+              ip: sl.clientIp || sl.ip || 'local'
+            });
+          }
+        } else if (Array.isArray(uStat.sequence)) {
+          for (let j = 0; j < uStat.sequence.length && userLogs.length < 120; j++) {
+            const sq = uStat.sequence[j];
+            userLogs.push({
+              timestamp: sq.timestamp || '-',
+              user: uStat.username,
+              code: sq.code || 'SYS-EVENT',
+              level: sq.outcome === 'FAIL' ? 'ERROR' : 'INFO',
+              message: sq.msg || `Solicitud #${sq.step} (${sq.outcome})`,
+              ip: sq.ip || 'local'
+            });
+          }
         }
-        return user && this.selectedUsers.has(String(user).trim());
-      });
+      }
 
       // Métricas de los usuarios seleccionados
       let totalTx = 0;
@@ -690,12 +793,13 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       const successRate = totalTx > 0 ? ((totalSuccess / totalTx) * 100).toFixed(1) : '100';
       const userSuccessRate = targetUsers.length > 0 ? ((selectedSuccessUsersCount / targetUsers.length) * 100).toFixed(1) : '100';
 
-      // 1. Filas del Censo de Usuarios
+      // 1. Filas del Censo de Usuarios (top 300 en vista imprimible para máxima fluidez PDF/DOCX; 100% en CSV)
       let userRowsHtml = '';
       const sortedUsers = targetUsers.map(u => this.cachedStats[u] || { username: u, totalEvents: 0, errors: 0, successes: 0, isLocked: false, codes: {}, ips: new Set(), lastTimestamp: '-' })
-                                     .sort((a, b) => b.errors - a.errors || b.totalEvents - a.totalEvents);
+                                     .sort((a, b) => (b.isLocked ? 1 : 0) - (a.isLocked ? 1 : 0) || b.errors - a.errors || b.totalEvents - a.totalEvents);
 
-      sortedUsers.forEach((u, idx) => {
+      const printableUsers = sortedUsers.slice(0, 300);
+      printableUsers.forEach((u, idx) => {
         const errPct = u.totalEvents > 0 ? ((u.errors / u.totalEvents) * 100).toFixed(1) : '0';
         let statusBadge = '';
         if (u.isLocked) {
@@ -1557,12 +1661,16 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           const isErr = item.failCount > 0 || item.kind === 'ERROR_520' || item.kind === 'DATABASE_ORA' || item.kind === 'IDAAS_MIGRATION';
           const badgeColor = item.kind === 'ERROR_520' ? '#ef4444' : (item.kind === 'AUDIT_AUD' ? '#0284c7' : (item.kind === 'DATABASE_ORA' ? '#e11d48' : (item.kind === 'IDAAS_MIGRATION' ? '#f59e0b' : '#64748b')));
 
-          const userPills = (item.users || []).slice(0, 60).map(u => `
+          const allCodeUsers = item.users || [];
+          const topCodeUsers = allCodeUsers.slice(0, 60);
+          const restCodeUsers = allCodeUsers.slice(60);
+          const renderUserPill = (u) => `
             <button onclick="window.UserTraceReport.switchSubView('users', '${escapeHtml(u.user)}')" style="background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-main); padding:4px 9px; border-radius:6px; font-size:0.73rem; font-family:'JetBrains Mono', monospace; cursor:pointer; display:inline-flex; align-items:center; gap:5px;" title="Ver patrón de solicitudes de ${escapeHtml(u.user)}">
               <strong>${escapeHtml(u.user)}</strong>
               <span style="background:${u.errors > 0 ? 'rgba(239,68,68,0.16)' : 'rgba(16,185,129,0.16)'}; color:${u.errors > 0 ? '#ef4444' : '#10b981'}; padding:1px 5px; border-radius:4px; font-weight:800;">${u.count} int.</span>
             </button>
-          `).join(' ');
+          `;
+          const userPills = topCodeUsers.map(renderUserPill).join(' ');
 
           cardsHtml += `
             <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-left:4px solid ${badgeColor}; border-radius:8px; padding:16px; margin-bottom:12px;">
@@ -1579,21 +1687,40 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
                 </div>
               </div>
 
-              <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                <span><strong>Significado Oficial:</strong> ${escapeHtml(diag.meaning || 'Evento operacional registrado en plataforma Entrust.')}</span>
-                <span style="display:flex; gap:10px;">
-                  <a href="https://trustedcare.entrust.com" target="_blank" rel="noopener noreferrer" style="color:#0284c7; font-weight:700; text-decoration:none; font-size:0.74rem;">🔗 Consultar en TrustedCare ↗</a>
-                  <a href="https://docs.trustedauth.com" target="_blank" rel="noopener noreferrer" style="color:#0ea5e9; font-weight:700; text-decoration:none; font-size:0.74rem;">📘 Manual Oficial ↗</a>
-                </span>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px; margin-bottom:10px; font-size:0.76rem; background:var(--bg-secondary); padding:10px 12px; border-radius:6px; border:1px solid var(--border-color);">
+                <div>
+                  <strong style="color:#0284c7;">📖 Significado Técnico Oficial:</strong><br>
+                  <span style="color:var(--text-main); line-height:1.4;">${escapeHtml(diag.meaning || 'Evento operacional registrado en plataforma Entrust.')}</span>
+                </div>
+                <div>
+                  <strong style="color:#d97706;">🔍 Causa Raíz / Contexto:</strong><br>
+                  <span style="color:var(--text-main); line-height:1.4;">${escapeHtml(diag.rootCause || 'Operación estándar del motor de identidad.')}</span>
+                </div>
+                <div>
+                  <strong style="color:#059669;">🛠️ Recomendación / Control:</strong><br>
+                  <span style="color:var(--text-main); line-height:1.4; white-space:pre-line;">${escapeHtml(diag.remediation || diag.governanceControl || 'Monitorear volumen transaccional.')}</span>
+                  <div style="margin-top:4px; display:flex; gap:10px;">
+                    <a href="https://trustedcare.entrust.com" target="_blank" rel="noopener noreferrer" style="color:#0284c7; font-weight:700; text-decoration:none; font-size:0.72rem;">🔗 TrustedCare KB ↗</a>
+                    <a href="https://docs.trustedauth.com" target="_blank" rel="noopener noreferrer" style="color:#0ea5e9; font-weight:700; text-decoration:none; font-size:0.72rem;">📘 Docs Oficiales ↗</a>
+                  </div>
+                </div>
               </div>
 
               <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:6px; padding:10px;">
                 <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">
-                  Usuarios Detectados con el Código [${escapeHtml(item.code)}] y Cantidad de Interacciones por Usuario:
+                  👥 Usuarios Detectados con el Código [${escapeHtml(item.code)}] y Cantidad de Interacciones por Usuario (${item.uniqueUsersCount.toLocaleString()} usuarios):
                 </div>
                 <div style="display:flex; flex-wrap:wrap; gap:6px; max-height:170px; overflow-y:auto;">
                   ${userPills || `<span style="font-size:0.75rem; color:var(--text-muted);">Evento de capa de sistema / daemon (${item.systemOnlyCount.toLocaleString()} ejecuciones internas sin usuario nominal).</span>`}
                 </div>
+                ${restCodeUsers.length > 0 ? `
+                  <details style="margin-top:8px;">
+                    <summary style="cursor:pointer; font-size:0.73rem; font-weight:700; color:#0284c7;">➕ Ver los otros ${restCodeUsers.length.toLocaleString()} usuarios detectados en [${escapeHtml(item.code)}]...</summary>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; max-height:220px; overflow-y:auto;">
+                      ${restCodeUsers.map(renderUserPill).join(' ')}
+                    </div>
+                  </details>
+                ` : ''}
               </div>
             </div>
           `;

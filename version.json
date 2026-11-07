@@ -1,11 +1,11 @@
 {
   "appName": "IT SERVICIOS — Suite de Diagnóstico Entrust OnPremise & IDaaS Cloud",
-  "version": "v2.7.0",
-  "build": 545,
+  "version": "v2.7.1",
+  "build": 546,
   "releaseChannel": "Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)",
-  "gitCommit": "FORENSIC-PATTERNS-545",
+  "gitCommit": "FORENSIC-AUDIT-546",
   "gitBranch": "main",
-  "buildDate": "2026-11-06 21:30",
+  "buildDate": "2026-11-06 22:30",
   "engineer": "Tomás Acosta",
   "organization": "IT SERVICIOS V.S.A.",
   "features": [

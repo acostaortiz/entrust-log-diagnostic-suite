@@ -1395,31 +1395,114 @@ class KnowledgeBase {
       }
     }
 
-    // 4. Diagnóstico Heurístico Entrust OnPremise AUDxxxx
-    const audMatch = searchText.match(/\[(AUD\d+)\]\s*(.*)/i);
-    if (audMatch) {
-      const audCode = targetCode || audMatch[1].toUpperCase();
-      const audDetail = audMatch[2] ? audMatch[2].trim() : 'Evento de auditoría registrado en el subsistema de trazabilidad.';
+    // 4. Diagnóstico Oficial Entrust OnPremise AUDxxxx (Soporta con o sin corchetes y llamadas por código directo)
+    const audBracketMatch = searchText.match(/\[(AUD\d+)\]\s*(.*)/i);
+    const isDirectAud = cleanCode && /^AUD\d+/i.test(cleanCode);
+    if (audBracketMatch || isDirectAud) {
+      const audCode = (isDirectAud ? cleanCode : audBracketMatch[1]).toUpperCase();
+      const audDetail = audBracketMatch && audBracketMatch[2] ? audBracketMatch[2].trim() : searchText;
       
-      let audTitle = `Entrust Audit: Evento [${audCode}]`;
-      let audMeaning = `Se registró el evento de auditoría [${audCode}] en el módulo IG.AUDIT: ${audDetail}`;
-      let audContext = 'Operación registrada por el subsistema de auditoría de seguridad y control de accesos.';
-      let audControl = '1. Verificar que el evento corresponda a una actividad autorizada en el sistema.\n2. Validar correspondencia con la bitácora de administración o RFC.';
+      let audTitle = `Evento de Auditoría Entrust [${audCode}]`;
+      let audMeaning = `Registro oficial de auditoría [${audCode}] emitido por el subsistema IG.AUDIT de Entrust IdentityGuard.`;
+      let audContext = 'Operación registrada por el motor de trazabilidad y control de accesos del clúster.';
+      let audControl = '1. Verificar que los usuarios y canales listados correspondan a operaciones autorizadas.\n2. Correlacionar con la matriz de usuarios e interacciones para detectar anomalías de volumen.';
       let audSeverity = 'INFO';
 
-      if (/login.*success|auth.*success/i.test(audDetail)) {
-        audTitle = `Inicio de Sesión Exitoso [${audCode}]`;
-        audContext = 'Acceso autenticado y autorizado de operador / administrador.';
-        audControl = 'Verificar que la IP de origen se encuentre dentro de la red administrativa.';
-      } else if (/fail|error|denied|invalid/i.test(audDetail)) {
-        audTitle = `Alerta de Seguridad / Intento Fallido [${audCode}]`;
-        audContext = 'Intento de acceso o validación de credenciales no satisfactorio.';
-        audControl = 'Auditar origen y frecuencia para descartar posibles ataques de fuerza bruta.';
+      const OFFICIAL_AUD_CATALOG = {
+        'AUD6000': {
+          title: 'Autenticación de Usuario Exitosa [AUD6000]',
+          meaning: 'El motor de autenticación Entrust IdentityGuard validó satisfactoriamente las credenciales del usuario (Password / OTP / Token / Grid).',
+          context: 'Transacción de autenticación completada con resultado SUCCESS.',
+          control: '1. Monitoreo nominal de línea base transaccional.\n2. Utilizar para confirmar auto-recuperación de usuarios tras intentos fallidos previos (AUD6001).',
+          severity: 'INFO'
+        },
+        'AUD6001': {
+          title: 'Intento Fallido de Autenticación de Usuario [AUD6001]',
+          meaning: 'El subsistema IG.AUDIT registró un rechazo de autenticación (contraseña, OTP, Token o desafío Grid inválido) sobre las cuentas de usuario afectadas.',
+          context: 'Credencial incorrecta o expirada ingresada por el usuario final, desincronización de token, o reintentos automatizados desde una aplicación cliente.',
+          control: '1. Revisar en la Matriz de Códigos los usuarios con mayor número de interacciones en AUD6001.\n2. Si un usuario acumula múltiples AUD6001 seguidos de AUD6002, su cuenta quedó bloqueada por política.\n3. Auditar las IPs de origen para descartar ataques de fuerza bruta o Password Spraying.',
+          severity: 'WARN'
+        },
+        'AUD6002': {
+          title: 'Cuenta de Usuario Bloqueada Automáticamente (Lockout) [AUD6002]',
+          meaning: 'El usuario superó el umbral máximo permitido de intentos fallidos consecutivos y su autenticador (PASSWORD / OTP / GRID) fue bloqueado automáticamente por seguridad.',
+          context: 'Activación de la directiva de protección contra fuerza bruta (Lockout Policy) en Entrust IdentityGuard tras rechazos repetidos (AUD6001).',
+          control: '1. Identificar todos los usuarios afectados en el desglose inferior.\n2. Validar la legitimidad del titular antes de ejecutar el desbloqueo en IdentityGuard Admin.\n3. Verificar si el bloqueo fue provocado por credenciales cacheadas en un dispositivo móvil o script.',
+          severity: 'ERROR'
+        },
+        'AUD3000': {
+          title: 'Creación / Emisión de Credencial OTP [AUD3000]',
+          meaning: 'Se generó o asignó un nuevo código de autenticación de un solo uso (One-Time Password) para el usuario.',
+          context: 'Aprovisionamiento o despacho de OTP vía API de integración.',
+          control: 'Verificar correspondencia con solicitudes legítimas de segundo factor (2FA).',
+          severity: 'INFO'
+        },
+        'AUD3004': {
+          title: 'Consumo / Depuración de Contraseña OTP por Canal API [AUD3004]',
+          meaning: 'Un código temporal de un solo uso (One-Time Password con índice específico) fue eliminado o consumido para el cliente final a través de una cuenta integradora API.',
+          context: 'En la traza "[AUD3004] [actor_api] One time password with index N deleted for user <cliente>", el primer identificador en corchetes es la Cuenta de Servicio API ejecutora (ej. bmapiuser8) y "for user <cliente>" es el usuario bancario final.',
+          control: '1. Distinguir entre la cuenta de servicio integradora (Actor API) y los clientes finales afectados.\n2. Confirmar que el consumo de OTP corresponda al flujo normal post-autenticación o limpieza de códigos expirados.',
+          severity: 'INFO'
+        },
+        'AUD1210': {
+          title: 'Inicio de Sesión Administrativo en Consola [AUD1210]',
+          meaning: 'Un operador o administrador inició sesión exitosamente en la consola administrativa de Entrust IdentityGuard.',
+          context: 'Acceso administrativo privilegiado.',
+          control: 'Verificar que el operador y la IP de origen estén autorizados dentro del segmento de gestión.',
+          severity: 'INFO'
+        },
+        'AUD1221': {
+          title: 'Cierre de Sesión Administrativo [AUD1221]',
+          meaning: 'Finalización formal de sesión de un operador en la consola administrativa.',
+          context: 'Cierre de sesión estándar.',
+          control: 'Control de trazabilidad de sesiones privilegiadas.',
+          severity: 'INFO'
+        },
+        'AUD2309': {
+          title: 'Fallo en Entrega de Notificación / Despacho OTP Externo [AUD2309]',
+          meaning: 'El motor de despacho de Entrust no pudo entregar el código OTP o notificación al gateway externo (SMS / Correo / Push).',
+          context: 'Timeout o rechazo en el conector SMTP / SMPP / HTTP del proveedor de mensajería.',
+          control: '1. Verificar conectividad de red y certificados TLS hacia el Gateway SMS/Email.\n2. Revisar cola de despacho en IdentityGuard.',
+          severity: 'WARN'
+        }
+      };
+
+      if (OFFICIAL_AUD_CATALOG[audCode]) {
+        const entry = OFFICIAL_AUD_CATALOG[audCode];
+        audTitle = entry.title;
+        audMeaning = entry.meaning;
+        audContext = entry.context;
+        audControl = entry.control;
+        audSeverity = entry.severity;
+      } else if (/failed authentication/i.test(audDetail)) {
+        audTitle = `Intento Fallido de Autenticación de Usuario [${audCode}]`;
+        audMeaning = `El subsistema IG.AUDIT registró un rechazo de autenticación sobre las cuentas de usuario listadas.`;
+        audContext = 'Credencial inválida ingresada por el usuario o intento de acceso fallido.';
+        audControl = '1. Revisar los usuarios con mayor reincidencia en este código.\n2. Auditar IPs de origen.';
         audSeverity = 'WARN';
-      } else if (/policy|directiva|rule/i.test(audDetail)) {
-        audTitle = `Modificación de Política de Seguridad [${audCode}]`;
-        audContext = 'Ajuste de parámetros o directivas de autenticación.';
-        audControl = 'Validar que el cambio esté respaldado por un requerimiento de cambio (RFC) formal aprobado.';
+      } else if (/locked out of/i.test(audDetail)) {
+        audTitle = `Cuenta Bloqueada Automáticamente por Intentos Fallidos [${audCode}]`;
+        audMeaning = `El usuario superó el umbral de intentos fallidos y su método de autenticación quedó bloqueado.`;
+        audContext = 'Activación de política de bloqueo (Lockout) en Entrust IdentityGuard.';
+        audControl = '1. Verificar identidad del usuario antes de desbloquear.\n2. Correlacionar con eventos previos AUD6001.';
+        audSeverity = 'ERROR';
+      } else if (/One time password.*deleted/i.test(audDetail)) {
+        audTitle = `Consumo / Eliminación de Contraseña OTP [${audCode}]`;
+        audMeaning = `Un código OTP fue depurado o consumido para el usuario objetivo mediante cuenta integradora API.`;
+        audContext = 'Operación de limpieza o consumo de OTP ejecutada por el canal API sobre usuarios finales.';
+        audControl = 'Validar que la cuenta API ejecutora sea legítima.';
+        audSeverity = 'INFO';
+      } else if (/login.*success|auth.*success/i.test(audDetail)) {
+        audTitle = `Autenticación / Inicio de Sesión Exitoso [${audCode}]`;
+        audMeaning = `Validación exitosa de credenciales registrada por el motor de auditoría Entrust.`;
+        audContext = 'Acceso autenticado y autorizado.';
+        audControl = 'Monitoreo nominal de línea base.';
+      } else if (/fail|error|denied|invalid/i.test(audDetail)) {
+        audTitle = `Alerta de Auditoría / Rechazo de Seguridad [${audCode}]`;
+        audMeaning = `El módulo IG.AUDIT registró una operación rechazada o condición de alerta bajo el código [${audCode}].`;
+        audContext = 'Intento de acceso o validación de política no satisfactorio.';
+        audControl = 'Auditar usuarios e IPs involucradas en la Matriz de Códigos.';
+        audSeverity = 'WARN';
       }
 
       return {
@@ -1432,7 +1515,7 @@ class KnowledgeBase {
         rootCause: audContext,
         governanceControl: audControl,
         remediation: audControl,
-        riskLevel: audSeverity === 'WARN' ? 'Medio (Alerta de Auditoría)' : 'Nominal (Auditoría de Seguridad)',
+        riskLevel: audSeverity === 'ERROR' ? 'Alto (Bloqueo de Cuenta)' : (audSeverity === 'WARN' ? 'Medio (Alerta de Seguridad)' : 'Nominal (Auditoría)'),
         manualVersion: activeVersionLabel,
         docsUrl: 'https://docs.trustedauth.com',
         trustedCareUrl: 'https://trustedcare.entrust.com',
@@ -1441,40 +1524,46 @@ class KnowledgeBase {
       };
     }
 
-    // 5. Diagnóstico Heurístico Entrust OnPremise 520xxx
-    const regexToUse = targetCode ? new RegExp('\\[(' + targetCode + ')\\]\\s*(.*)', 'i') : /\\[(520\d{4})\\]\\s*(.*)/;
-    const entrustMatch = searchText.match(regexToUse) || searchText.match(/\\[(520\d{4})\\]\\s*(.*)/);
+    // 5. Diagnóstico Heurístico Entrust OnPremise 520xxx (Soporta con o sin corchetes y llamadas directas)
+    const regexToUse = targetCode ? new RegExp('\\[(' + targetCode + ')\\]\\s*(.*)', 'i') : /\[(520\d{4})\]\s*(.*)/;
+    const entrustMatch = searchText.match(regexToUse) || searchText.match(/\[(520\d{4})\]\s*(.*)/) || (cleanCode && /^520\d{4}$/.test(cleanCode) ? [cleanCode, cleanCode, searchText] : null);
     if (entrustMatch) {
-      const code = targetCode || entrustMatch[1];
-      const detail = entrustMatch[2] ? entrustMatch[2].trim() : 'Error en la transacción de autenticación o validación de políticas.';
+      const code = (targetCode || entrustMatch[1]).trim();
+      const detail = entrustMatch[2] ? entrustMatch[2].trim() : '';
 
-      let causeText = 'Fallo reportado por el servidor de autenticación/administración de Entrust IdentityGuard.';
-      let remediationText = '1. Revise el estado de la cuenta del usuario y sus credenciales activas en la consola de Entrust.\n2. Compruebe si el usuario o token alcanzó el límite de reintentos fallidos y desbloquee la cuenta.\n3. Valide la conectividad y sincronización entre el servidor web y la base de datos de repositorios.';
+      let meaningText = `Código de excepción técnica [${code}] emitido por el motor de autenticación o administración de Entrust IdentityGuard.`;
+      let causeText = 'Fallo reportado por el servidor de autenticación/administración de Entrust IdentityGuard al validar credenciales o estado de la cuenta.';
+      let remediationText = '1. Revise en la Matriz de Códigos los usuarios específicos afectados por [' + code + '].\n2. Compruebe el estado del autenticador del usuario (Token, Grid, Password) en la consola de Entrust.\n3. Consulte el boletín técnico del código en https://trustedcare.entrust.com.';
 
       if (/PIN/i.test(detail)) {
-        causeText = 'El PIN de seguridad proporcionado por el usuario no coincide con el PIN registrado en el servidor Entrust.';
-        remediationText = '1. Solicite al usuario ingresar nuevamente su PIN de seguridad o restablecerlo en la consola.\n2. Verifique si la cuenta del usuario fue bloqueada por intentos fallidos de PIN.';
+        meaningText = `Rechazo de validación de PIN de seguridad [${code}] en Entrust IdentityGuard.`;
+        causeText = 'El PIN proporcionado por el usuario no coincide con el registrado o se encuentra bloqueado.';
+        remediationText = '1. Solicite al usuario ingresar nuevamente su PIN o restablecerlo en la consola.\n2. Verifique si el autenticador quedó bloqueado por intentos fallidos.';
       } else if (/Card|Grid/i.test(detail)) {
-        causeText = 'La tarjeta Grid Card o valor de desafío ingresado por el usuario no corresponde al número de serie asignado.';
-        remediationText = '1. Verifique en la consola de administración el número de serie de la tarjeta Grid activa asignada al usuario.\n2. Si la tarjeta fue extraviada o reemplazada, asigne un nuevo paquete de tarjetas Grid.';
+        meaningText = `Error de validación o asignación de tarjeta Grid [${code}] en Entrust IdentityGuard.`;
+        causeText = 'La coordenada de tarjeta Grid ingresada es incorrecta o existe un conflicto con la tarjeta asignada.';
+        remediationText = '1. Verifique en la consola el serial de la tarjeta Grid activa del usuario.\n2. Reasigne o desbloquee la tarjeta Grid según corresponda.';
       } else if (/Challenge|response/i.test(detail)) {
-        causeText = 'La respuesta de desafío ingresada no coincide con el reto numérico (challenge) emitido por el servidor.';
-        remediationText = '1. Solicite al usuario generar una nueva respuesta al desafío (Challenge-Response).\n2. Verifique la sincronización de tiempo (NTP) del servidor y del cliente.';
+        meaningText = `Fallo en validación de Desafío-Respuesta (Challenge-Response / OTP) [${code}].`;
+        causeText = 'La respuesta OTP/Challenge ingresada expiró, fue reutilizada o presenta deriva de tiempo.';
+        remediationText = '1. Emitir un nuevo desafío (Challenge) para el usuario.\n2. Verificar la sincronización horaria NTP de los nodos del clúster.';
       } else if (/password|user ID|login/i.test(detail)) {
-        causeText = 'Credenciales de acceso inválidas o usuario inactivo en el directorio LDAP/Active Directory.';
-        remediationText = '1. Verifique que el nombre de usuario exista y esté activo en Active Directory.\n2. Restablezca la contraseña o desbloquee al usuario en la consola de administración.';
+        meaningText = `Fallo de autenticación de contraseña o identificador de usuario [${code}].`;
+        causeText = 'Credenciales inválidas, contraseña expirada o usuario inactivo en el repositorio/directorio.';
+        remediationText = '1. Verificar estado de la cuenta del usuario en IdentityGuard y LDAP/AD.\n2. Desbloquear o restablecer la credencial si aplica.';
       } else if (/server failure|5201000/i.test(detail) || code === '5201000') {
-        causeText = 'Excepción o fallo interno del motor de servidor de Entrust IdentityGuard durante el procesamiento de la transacción.';
-        remediationText = '1. Reinicie el servicio de administración de Entrust (`identityguard-admin`).\n2. Verifique la conectividad con la base de datos principal y los archivos de clave maestra (`.enc`).';
+        meaningText = `Fallo interno crítico del motor de servidor Entrust IdentityGuard [${code}].`;
+        causeText = 'Excepción interna del servidor al procesar la transacción o fallo de comunicación con la capa de persistencia JDBC.';
+        remediationText = '1. Revisar la pestaña de Salud de Base de Datos (Oracle / JDBC) para descartar errores ORA-01555 o agotamiento de pool.\n2. Validar el estado del servicio de aplicación Entrust.';
       }
 
       return {
         matched: true,
         ruleId: `KB-ENTRUST-${code}`,
-        title: `Entrust IdentityGuard Error [${code}]`,
+        title: `Excepción Entrust IdentityGuard [${code}]`,
         category: 'Errores IdentityGuard Core (520xxx)',
         severity: 'ERROR',
-        meaning: `Se registró el código de error [${code}]: ${detail}`,
+        meaning: meaningText,
         rootCause: causeText,
         governanceControl: remediationText,
         remediation: remediationText,
@@ -1488,19 +1577,19 @@ class KnowledgeBase {
     }
 
     // 6. Diagnóstico Heurístico para Códigos ORA
-    const oraMatch = searchText.match(/ORA-\d{5}/i);
+    const oraMatch = searchText.match(/ORA-\d{5}/i) || (cleanCode && /^ORA-\d{5}$/i.test(cleanCode) ? [cleanCode] : null);
     if (oraMatch) {
-      const oraCode = targetCode || oraMatch[0].toUpperCase();
+      const oraCode = (targetCode || oraMatch[0]).toUpperCase();
       return {
         matched: true,
         ruleId: `KB-ORA-${oraCode}`,
         title: `Excepción Oracle Database [${oraCode}]`,
         category: 'Persistencia & Base de Datos (ORA)',
         severity: 'CRITICAL',
-        meaning: `Error transaccional generado por el motor de base de datos Oracle durante la operación de Entrust.`,
-        rootCause: 'Saturación en tablespace, timeout de red o inconsistencia en sesión JDBC de Tomcat.',
-        governanceControl: 'Comprobar espacio en disco, estado del listener Oracle y pool JDBC en Tomcat.',
-        remediation: '1. Comprobar disponibilidad de almacenamiento en el tablespace de Entrust.\n2. Verificar conectividad TCP con el puerto 1521 del servidor Oracle.\n3. Reiniciar el pool de conexiones en el servidor de aplicaciones.',
+        meaning: `Error crítico reportado por el motor de base de datos relacional Oracle [${oraCode}] durante una operación de lectura/escritura de Entrust.`,
+        rootCause: 'Saturación en UNDO tablespace (ORA-01555), restricción única (ORA-00001), corte de red TNS o agotamiento del pool JDBC.',
+        governanceControl: 'Ejecutar diagnóstico DBA sobre el tablespace, listener Oracle y pool JDBC del servidor Entrust.',
+        remediation: '1. Revisar la pestaña "Salud de Base de Datos" para ver la causa específica del código ' + oraCode + '.\n2. Verificar UNDO_RETENTION, cursores abiertos y conectividad hacia el puerto 1521.\n3. Consultar nota técnica oficial en https://trustedcare.entrust.com.',
         riskLevel: 'Crítico (Persistencia DB)',
         manualVersion: activeVersionLabel,
         docsUrl: 'https://trustedcare.entrust.com',
@@ -1510,17 +1599,40 @@ class KnowledgeBase {
       };
     }
 
-    // 7. Diagnóstico Heurístico Genérico
+    // 7. Diagnóstico para Trazas de Acceso SSH / PAM / Sistema Operativo / Syslog
+    if (/target:.*:ssh|sshd|pam_unix|origen:\s*\d+\.\d+\.\d+\.\d+/i.test(searchText) || /ssh|syslog/i.test(cleanCode)) {
+      return {
+        matched: true,
+        ruleId: 'KB-SYS-SSH-AUDIT',
+        title: 'Traza de Acceso Administrativo SSH / Bastión de Servidor Entrust',
+        category: 'Seguridad de Infraestructura & Accesos OS (SSH / Syslog)',
+        severity: 'INFO',
+        meaning: 'Registro de sesión o comando administrativo sobre el sistema operativo del servidor Entrust (canal SSH / consola de gestión) con identificación de usuario, IP de origen y nodo destino.',
+        rootCause: 'Operación de administración o monitoreo ejecutada sobre el host del clúster.',
+        governanceControl: '1. Verificar que la IP de origen pertenezca a una estación de salto (Jump Host / PAM) autorizada.\n2. Auditar el uso de cuentas compartidas (ej. "entrust" o "root") y exigir trazabilidad nominal individual.',
+        remediation: '1. Confirmar que las sesiones hacia el puerto 22 (SSH) provengan exclusivamente del segmento de administración.\n2. Correlacionar la marca de tiempo de las sesiones SSH con las ventanas de mantenimiento aprobadas.',
+        riskLevel: 'Bajo / Control de Acceso de Infraestructura',
+        manualVersion: activeVersionLabel,
+        docsUrl: 'https://trustedcare.entrust.com',
+        trustedCareUrl: 'https://trustedcare.entrust.com',
+        sectionId: 'sec-ssh-audit',
+        sectionTitle: 'Control de Accesos Administrativos SSH / OS'
+      };
+    }
+
+    // 8. Diagnóstico Heurístico Genérico Limpio (sin inyectar la línea cruda de un único usuario como definición general)
     return {
       matched: false,
       ruleId: 'KB-GENERIC',
-      title: cleanCode ? `Evento / Operación [${cleanCode}]` : 'Evento Transaccional Entrust',
-      category: 'Operaciones de Servicio & APIs',
+      title: cleanCode ? `Operación de Sistema / Servicio [${cleanCode}]` : 'Evento Transaccional de Plataforma Entrust',
+      category: 'Operaciones de Servicio & Plataforma',
       severity: 'INFO',
-      meaning: searchText || 'Evento registrado en el flujo de ejecución del clúster.',
-      rootCause: 'Invocación estándar de API o servicio de autenticación.',
-      governanceControl: 'Monitorear la tasa de éxito y tiempos de respuesta.',
-      remediation: 'Operación normal sin fallos críticos reportados.',
+      meaning: cleanCode
+        ? `Operación transaccional o evento de servicio clasificado bajo [${cleanCode}] en la plataforma Entrust.`
+        : 'Evento operativo nominal registrado en el flujo de ejecución del servidor Entrust.',
+      rootCause: 'Ejecución estándar de servicio, verificación de sesión o traza operativa del sistema.',
+      governanceControl: 'Monitorear volumen por nodo y verificar ausencia de códigos de excepción asociados.',
+      remediation: 'Operación nominal del sistema. No requiere acción correctiva salvo correlación con alertas previas.',
       riskLevel: 'Nominal',
       manualVersion: activeVersionLabel,
       docsUrl: 'https://docs.trustedauth.com',

@@ -69,13 +69,14 @@ async function processGiantFileStream(file, clientId) {
 
   // Agregadores Globales para el Panorama Completo (100% de los 9.7 GB)
   const userCounter = {};
+  const userDetails = {};
   const ipCounter = {};
   const codeCounter = {};
   const timeBuckets = {};
 
-  // Buffer de visualización interactiva en UI (máximo 15.000 registros para evitar OOM)
+  // Buffer de visualización interactiva en UI (máximo 35.000 registros para evitar OOM)
   const displayLogs = [];
-  const MAX_DISPLAY_LOGS = 15000;
+  const MAX_DISPLAY_LOGS = 35000;
   let displayErrorCount = 0;
 
   let lastProgressReportTime = 0;
@@ -113,9 +114,23 @@ async function processGiantFileStream(file, clientId) {
         const codeKey = parsed.entrustCode || parsed.service || 'UNKNOWN';
         codeCounter[codeKey] = (codeCounter[codeKey] || 0) + 1;
 
-        // 2. Agregación de Usuarios
+        // 2. Agregación de Usuarios Nominales con detalles forenses
         if (parsed.user && parsed.user !== 'unknown' && parsed.user !== 'N/A') {
-          userCounter[parsed.user] = (userCounter[parsed.user] || 0) + 1;
+          const u = parsed.user;
+          userCounter[u] = (userCounter[u] || 0) + 1;
+          if (!userDetails[u] && Object.keys(userDetails).length < 5000) {
+            userDetails[u] = { count: 0, errors: 0, codes: {}, firstSeen: parsed.timestamp || '', lastSeen: parsed.timestamp || '' };
+          }
+          if (userDetails[u]) {
+            userDetails[u].count++;
+            if (isError || isWarn || parsed.entrustCode === 'AUD6001' || parsed.entrustCode === 'AUD6002') {
+              userDetails[u].errors++;
+            }
+            if (parsed.entrustCode) {
+              userDetails[u].codes[parsed.entrustCode] = (userDetails[u].codes[parsed.entrustCode] || 0) + 1;
+            }
+            if (parsed.timestamp) userDetails[u].lastSeen = parsed.timestamp;
+          }
         }
 
         // 3. Agregación de IPs
@@ -135,11 +150,12 @@ async function processGiantFileStream(file, clientId) {
           if (isWarn) timeBuckets[dateBucket].warn++;
         }
 
-        // 5. Muestreo Seguro con tope estricto de memoria
-        if (isError && displayErrorCount < 5000) {
+        // 5. Muestreo Seguro con tope estricto de memoria (prioriza Errores, Alertas y Eventos AUD/ Usuarios)
+        const isPriority = isError || isWarn || (parsed.entrustCode && /^AUD/i.test(parsed.entrustCode)) || (parsed.user && parsed.user !== 'N/A');
+        if (isPriority && displayErrorCount < 25000) {
           displayErrorCount++;
           displayLogs.push(parsed);
-        } else if (!isError && displayLogs.length < MAX_DISPLAY_LOGS && (lineCount % 1000 === 0 || displayLogs.length < 1000)) {
+        } else if (displayLogs.length < MAX_DISPLAY_LOGS && (lineCount % 100 === 0 || displayLogs.length < 5000)) {
           displayLogs.push(parsed);
         }
       }
@@ -176,20 +192,27 @@ async function processGiantFileStream(file, clientId) {
     }
   }
 
-  // Ordenar y recortar Top 50 Usuarios y Top 50 IPs
+  // Ordenar y recortar Top Usuarios (hasta 2500) y Top IPs
   const topUsers = Object.entries(userCounter)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 50)
-    .map(([user, count]) => ({ user, count }));
+    .slice(0, 2500)
+    .map(([user, count]) => ({
+      user,
+      count,
+      errors: userDetails[user]?.errors || 0,
+      codes: userDetails[user]?.codes || {},
+      firstSeen: userDetails[user]?.firstSeen || '',
+      lastSeen: userDetails[user]?.lastSeen || ''
+    }));
 
   const topIps = Object.entries(ipCounter)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 50)
+    .slice(0, 200)
     .map(([ip, count]) => ({ ip, count }));
 
   const topCodes = Object.entries(codeCounter)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 20)
+    .slice(0, 150)
     .map(([code, count]) => ({ code, count }));
 
   self.postMessage({
@@ -247,6 +270,9 @@ function parseSingleLineFast(line, lineNum) {
         const audIdx = line.indexOf('AUD');
         if (audIdx !== -1 && /AUD\d{3,4}/i.test(line.substring(audIdx, audIdx + 7))) {
           entrustCode = line.substring(audIdx, audIdx + 7).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+          if (entrustCode === 'AUD6001' || entrustCode === 'AUD6002' || entrustCode === 'AUD2309') {
+            if (level === 'INFO') level = 'WARN';
+          }
         }
       }
 
@@ -477,11 +503,14 @@ function extractUser(line) {
     return /[A-Za-z0-9]/.test(clean);
   };
 
-  const bracketUserMatch = line.match(/\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([A-Za-z0-9_\-\.\/@]+)\]/i);
-  if (bracketUserMatch && isValidUser(bracketUserMatch[1])) return bracketUserMatch[1].trim();
+  const forUserMatch = line.match(/\bfor\s+user\s+(['"]?)([A-Za-z0-9_\-\.\/@]+)\1/i);
+  if (forUserMatch && isValidUser(forUserMatch[2])) return forUserMatch[2].trim();
 
   const userActionMatch = line.match(/\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|deleted|authenticated|locked|disabled|migrated)/i);
   if (userActionMatch && isValidUser(userActionMatch[1])) return userActionMatch[1].trim();
+
+  const bracketUserMatch = line.match(/\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([A-Za-z0-9_\-\.\/@]+)\]/i);
+  if (bracketUserMatch && isValidUser(bracketUserMatch[1])) return bracketUserMatch[1].trim();
 
   const bcMatch = line.match(/\b(BCClientes[A-Za-z0-9_\-\.\/@]+|BCMercantil[A-Za-z0-9_\-\.\/@]+|BC[A-Za-z0-9_\-\.\/@]+)\b/i);
   if (bcMatch && isValidUser(bcMatch[1])) return bcMatch[1].trim();

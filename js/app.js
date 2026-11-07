@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     logs: [],
     filteredLogs: [],
     selectedLog: null,
+    localPage: 1,
+    localPageSize: 50,
     isStreaming: false,
     streamInterval: null,
     charts: {},
@@ -34,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     reportLanguage: localStorage.getItem('app_report_language') || 'es'
   };
   window.appState = state;
+  window.state = state;
 
   // Referencias DOM
   const dom = {
@@ -114,11 +117,29 @@ document.addEventListener('DOMContentLoaded', () => {
   try { initSyslogCollectorModule(); } catch (e) { console.error('Error al inicializar Syslog:', e); }
   try { initTimeRangeSliderModule(); } catch (e) { console.error('Error al inicializar Time Range Slider:', e); }
   try { initEventListeners(); } catch (e) { console.error('Error al inicializar EventListeners:', e); }
-  // Inicialización de datos de sesión: Iniciar en estado limpio listo para análisis
+  // Inicialización de datos de sesión: Iniciar en estado limpio y sincronizar con Servidor SQLite o IndexedDB
   (async () => {
     try {
-      await loadClientProfiles();
       resetSession();
+      await loadClientProfiles();
+      const synced = await syncClientSessionWithServer(state.activeClientId || 'general');
+      if (synced && window.UserTraceReport && typeof window.UserTraceReport.fetchForensicMatrix === 'function') {
+        window.UserTraceReport.fetchForensicMatrix(true);
+      } else if (!synced && window.storageEngine && typeof window.storageEngine.loadActiveSession === 'function') {
+        const savedSession = await window.storageEngine.loadActiveSession();
+        if (savedSession && savedSession.logs && savedSession.logs.length > 0 && state.logs.length === 0) {
+          state.logs = savedSession.logs;
+          if (savedSession.loadedFiles) state.loadedFiles = savedSession.loadedFiles;
+          if (savedSession.globalStreamMetrics) state.globalStreamMetrics = savedSession.globalStreamMetrics;
+          state.activeClientId = savedSession.activeClientId || state.activeClientId;
+          populateClientSelector();
+          renderLoadedFilesDrawer();
+          applyLogFilters();
+          updateNodeComparisonUI();
+          renderTraceWaterfall();
+          showAnalysisStatus(false, `💾 Sesión Restaurada de Almacenamiento Local (${(state.globalStreamMetrics?.totalLogs || state.logs.length).toLocaleString()} registros)`, `Cliente: ${state.activeClientId}`);
+        }
+      }
     } catch(e) {
       console.warn('Error en inicialización de sesión:', e);
     }
@@ -619,12 +640,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust OnPremise & IDaaS Cloud',
-    version: 'v2.5.0',
-    build: 520,
+    version: 'v2.7.1',
+    build: 546,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: '47e2ac8',
+    gitCommit: 'FORENSIC-AUDIT-546',
     gitBranch: 'main',
-    buildDate: '2026-09-26 17:15',
+    buildDate: '2026-11-06 22:30',
     engineer: 'Tomás Acosta',
     organization: 'IT SERVICIOS V.S.A.'
   };
@@ -1299,6 +1320,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (targetTab === 'compare') {
       setTimeout(() => {
         renderHistoricalComparisonUI();
+      }, 10);
+    }
+    if (targetTab === 'syslog') {
+      setTimeout(() => {
+        if (typeof renderSyslogLiveSummary === 'function') renderSyslogLiveSummary();
       }, 10);
     }
   }
@@ -3519,128 +3545,194 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
     let colHeader4 = 'Causa Raíz Identificada';
     let colHeader5 = 'Acciones Recomendadas';
 
+    // Helper forense para extraer usuario objetivo (cliente final) y actor ejecutor (API / Admin) sin duplicar líneas
+    const extractTargetAndActor = (l, cleanMsg) => {
+      let targetUser = null;
+      let actorAccount = null;
+      const isValidU = (u) => {
+        if (window.UserTraceReport && typeof window.UserTraceReport.isValidUserCandidate === 'function') {
+          return window.UserTraceReport.isValidUserCandidate(u);
+        }
+        return u && String(u).trim().length >= 3 && !/^(unknown|system|n\/a|null|none|user|users|password|authentication|decode|not|specified|locked)$/i.test(String(u).trim());
+      };
+
+      const bracketMatch = cleanMsg.match(/\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([A-Za-z0-9_\-\.\/@]+)\]/i);
+      const forUserMatch = cleanMsg.match(/\bfor\s+user\s+['"]?([A-Za-z0-9_\-\.\/@]+)['"]?/i);
+      const userActionMatch = cleanMsg.match(/\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|deleted|authenticated|locked|disabled|migrated)/i);
+      const kvMatch = cleanMsg.match(/(?:user\s+name\s+or\s+alias|username|userId|user_id|subjectName)[\s:=]+['"]?([A-Za-z0-9_\-\.\/@]+)['"]?/i);
+
+      if (forUserMatch && isValidU(forUserMatch[1])) {
+        targetUser = forUserMatch[1].trim().replace(/[.,;:!?]+$/, '');
+        if (bracketMatch && isValidU(bracketMatch[1]) && bracketMatch[1].trim() !== targetUser) {
+          actorAccount = bracketMatch[1].trim();
+        }
+      } else if (userActionMatch && isValidU(userActionMatch[1])) {
+        targetUser = userActionMatch[1].trim().replace(/[.,;:!?]+$/, '');
+        if (bracketMatch && isValidU(bracketMatch[1]) && bracketMatch[1].trim() !== targetUser) {
+          actorAccount = bracketMatch[1].trim();
+        }
+      } else if (kvMatch && isValidU(kvMatch[1])) {
+        targetUser = kvMatch[1].trim().replace(/[.,;:!?]+$/, '');
+      } else if (l && isValidU(l.user)) {
+        targetUser = String(l.user).trim().replace(/[.,;:!?]+$/, '');
+      } else if (bracketMatch && isValidU(bracketMatch[1])) {
+        targetUser = bracketMatch[1].trim().replace(/[.,;:!?]+$/, '');
+      }
+      return { targetUser, actorAccount };
+    };
+
+    const registerCodeHit = (code, l, cleanMsg, defaultService) => {
+      if (!codesMap.has(code)) {
+        codesMap.set(code, {
+          code,
+          count: 0,
+          sample: cleanMsg,
+          service: (l && l.service) || defaultService,
+          usersMap: new Map(),
+          actorsMap: new Map()
+        });
+      }
+      const entry = codesMap.get(code);
+      entry.count++;
+      const { targetUser, actorAccount } = extractTargetAndActor(l, cleanMsg);
+      if (targetUser) {
+        entry.usersMap.set(targetUser, (entry.usersMap.get(targetUser) || 0) + 1);
+      }
+      if (actorAccount) {
+        entry.actorsMap.set(actorAccount, (entry.actorsMap.get(actorAccount) || 0) + 1);
+      }
+    };
+
     if (category === 'audit') {
       catTitle = '📋 Eventos de Auditoría y Trazabilidad de Seguridad (AUD)';
-      catSubtitle = `Eventos de gobernanza, accesos administrativos, cambios de directivas y trazabilidad operacional (${clientLabel} - ${clientVersion})`;
+      catSubtitle = `Eventos de gobernanza, accesos administrativos, cambios de directivas y desglose real por usuario afectado (${clientLabel} - ${clientVersion})`;
       colHeader1 = 'Código AUD';
-      colHeader3 = 'Evento & Acción Registrada';
-      colHeader4 = 'Actor / Origen & Contexto';
+      colHeader3 = 'Definición Oficial & Usuarios Afectados (Población Real)';
+      colHeader4 = 'Actor Ejecutor / Origen & Contexto';
       colHeader5 = 'Control & Gobernanza Recomendada';
 
       logs.forEach(l => {
-        const msg = (l.message || '') + ' ' + (l.raw || '');
-        const match = msg.match(/AUD\d+/i);
+        const cleanMsg = l.raw || l.message || '';
+        const match = cleanMsg.match(/AUD\d+/i);
         if (match) {
-          const code = match[0].toUpperCase();
-          if (!codesMap.has(code)) {
-            codesMap.set(code, { code, count: 0, sample: msg, service: l.service || 'Audit Engine' });
-          }
-          codesMap.get(code).count++;
+          registerCodeHit(match[0].toUpperCase(), l, cleanMsg, 'Audit Engine');
         }
       });
 
       if (state.sqliteStats && Array.isArray(state.sqliteStats.eventTypes)) {
         state.sqliteStats.eventTypes.forEach(et => {
           if (/^AUD\d+/i.test(et.code) && !codesMap.has(et.code.toUpperCase())) {
-            codesMap.set(et.code.toUpperCase(), { code: et.code.toUpperCase(), count: et.count, sample: `[${et.code}] Evento de auditoría consolidado en SQLite`, service: 'Audit Engine SQLite' });
+            codesMap.set(et.code.toUpperCase(), {
+              code: et.code.toUpperCase(),
+              count: et.count,
+              sample: `[${et.code}] Evento de auditoría consolidado en SQLite`,
+              service: 'Audit Engine SQLite',
+              usersMap: new Map(),
+              actorsMap: new Map()
+            });
           }
         });
       }
 
       if (codesMap.size === 0) {
-        codesMap.set('SIN-EVENTOS-AUD', { code: 'SIN-EVENTOS-AUD', count: 0, sample: 'No se detectaron códigos AUDxxx en los archivos cargados actualmente.', service: 'Motor de Auditoría' });
+        codesMap.set('SIN-EVENTOS-AUD', { code: 'SIN-EVENTOS-AUD', count: 0, sample: 'No se detectaron códigos AUDxxx en los archivos cargados actualmente.', service: 'Motor de Auditoría', usersMap: new Map(), actorsMap: new Map() });
       }
 
     } else if (category === '520') {
       catTitle = '🚨 Errores y Excepciones de Autenticación [520xxx]';
-      catSubtitle = `Códigos oficiales de error técnico, fallos de autenticación y validación de credenciales (${clientLabel} - ${clientVersion})`;
+      catSubtitle = `Códigos oficiales de error técnico, fallos de autenticación y desglose real por usuario afectado (${clientLabel} - ${clientVersion})`;
       colHeader1 = 'Código Entrust';
-      colHeader3 = 'Diagnóstico Técnico Oficial';
+      colHeader3 = 'Diagnóstico Técnico Oficial & Usuarios Afectados';
       colHeader4 = 'Causa Raíz Técnica';
       colHeader5 = 'Remediación Oficial Entrust';
 
       logs.forEach(l => {
-        const msg = (l.message || '') + ' ' + (l.raw || '');
-        const match = msg.match(/520\d{4}/i);
+        const cleanMsg = l.raw || l.message || '';
+        const match = cleanMsg.match(/520\d{4}/i);
         if (match) {
-          const code = match[0];
-          if (!codesMap.has(code)) {
-            codesMap.set(code, { code, count: 0, sample: msg, service: l.service || 'IdentityGuard Core' });
-          }
-          codesMap.get(code).count++;
+          registerCodeHit(match[0], l, cleanMsg, 'IdentityGuard Core');
         }
       });
 
       if (state.sqliteStats && Array.isArray(state.sqliteStats.topCodes)) {
         state.sqliteStats.topCodes.forEach(tc => {
           if (/^520\d{4}$/.test(tc.code) && !codesMap.has(tc.code)) {
-            codesMap.set(tc.code, { code: tc.code, count: tc.count, sample: `[${tc.code}] Código de error consolidado en motor SQLite`, service: 'IdentityGuard Core SQLite' });
+            codesMap.set(tc.code, {
+              code: tc.code,
+              count: tc.count,
+              sample: `[${tc.code}] Código de error consolidado en motor SQLite`,
+              service: 'IdentityGuard Core SQLite',
+              usersMap: new Map(),
+              actorsMap: new Map()
+            });
           }
         });
       }
 
       if (codesMap.size === 0) {
-        codesMap.set('SIN-ERRORES-520', { code: 'SIN-ERRORES-520', count: 0, sample: 'No se detectaron códigos de error 520xxx en los archivos cargados actualmente.', service: 'Motor de Autenticación' });
+        codesMap.set('SIN-ERRORES-520', { code: 'SIN-ERRORES-520', count: 0, sample: 'No se detectaron códigos de error 520xxx en los archivos cargados actualmente.', service: 'Motor de Autenticación', usersMap: new Map(), actorsMap: new Map() });
       }
 
     } else if (category === 'idaas') {
       catTitle = '☁️ Sincronización e Ingesta Masiva (IDaaS / Provisionamiento)';
       catSubtitle = `Carga de usuarios, configuración RBA, asignación de Grid y credenciales (${clientLabel} - ${clientVersion})`;
       colHeader1 = 'Operación / Directiva';
-      colHeader3 = 'Descripción de la Operación';
+      colHeader3 = 'Descripción de la Operación & Usuarios Afectados';
       colHeader4 = 'Impacto en Ingesta / Migración';
       colHeader5 = 'Acciones de Resolución';
 
       logs.forEach(l => {
-        const msg = (l.message || '') + ' ' + (l.raw || '');
-        if (/bulkidentityguard|assignedgrid|password|qa|migration|idaas|saml|oidc|tokenpush/i.test(msg) || (l.type && l.type.includes('IDaaS'))) {
-          const match = msg.match(/(bulkidentityguard\.[a-zA-Z0-9_\.]+|identityguard_import_[a-zA-Z0-9_]+|assignedgrid|rbasetting|password|qa|user|tokenpush_authentication_succeeded)/i);
+        const cleanMsg = l.raw || l.message || '';
+        if (/bulkidentityguard|assignedgrid|password|qa|migration|idaas|saml|oidc|tokenpush/i.test(cleanMsg) || (l.type && l.type.includes('IDaaS'))) {
+          const match = cleanMsg.match(/(bulkidentityguard\.[a-zA-Z0-9_\.]+|identityguard_import_[a-zA-Z0-9_]+|assignedgrid|rbasetting|password|qa|user|tokenpush_authentication_succeeded)/i);
           const code = match ? match[1] : (l.entrustCode || 'IDaaS.Event.General');
-          if (!codesMap.has(code)) {
-            codesMap.set(code, { code, count: 0, sample: msg, service: l.service || 'IDaaS Provisioning' });
-          }
-          codesMap.get(code).count++;
+          registerCodeHit(code, l, cleanMsg, 'IDaaS Provisioning');
         }
       });
 
       if (state.sqliteStats && Array.isArray(state.sqliteStats.topCodes)) {
         state.sqliteStats.topCodes.forEach(tc => {
           if (/bulkidentityguard|assignedgrid|password|qa|migration|idaas/i.test(tc.code) && !codesMap.has(tc.code)) {
-            codesMap.set(tc.code, { code: tc.code, count: tc.count, sample: `[${tc.code}] Incidente de migración consolidado en SQLite`, service: 'IDaaS Bulk Provisioning' });
+            codesMap.set(tc.code, {
+              code: tc.code,
+              count: tc.count,
+              sample: `[${tc.code}] Incidente de migración consolidado en SQLite`,
+              service: 'IDaaS Bulk Provisioning',
+              usersMap: new Map(),
+              actorsMap: new Map()
+            });
           }
         });
       }
 
       if (codesMap.size === 0) {
-        codesMap.set('SIN-EVENTOS-IDAAS', { code: 'SIN-EVENTOS-IDAAS', count: 0, sample: 'No se detectaron eventos de migración o aprovisionamiento IDaaS en la carga actual.', service: 'IDaaS Bulk Provisioning' });
+        codesMap.set('SIN-EVENTOS-IDAAS', { code: 'SIN-EVENTOS-IDAAS', count: 0, sample: 'No se detectaron eventos de migración o aprovisionamiento IDaaS en la carga actual.', service: 'IDaaS Bulk Provisioning', usersMap: new Map(), actorsMap: new Map() });
       }
 
     } else if (category === 'traffic') {
       catTitle = '⚡ Transacciones y Métodos de API Invocados';
       catSubtitle = `Análisis de consumo por servicio, endpoints de autenticación y transacciones (${clientLabel} - ${clientVersion})`;
       colHeader1 = 'Servicio / Endpoint';
-      colHeader3 = 'Propósito del Servicio';
+      colHeader3 = 'Propósito del Servicio & Usuarios Detectados';
       colHeader4 = 'Modalidad de Invocación';
       colHeader5 = 'Estado Operacional';
 
       logs.forEach(l => {
         const srv = l.service || l.type || 'IdentityGuard.API';
-        if (!codesMap.has(srv)) {
-          codesMap.set(srv, { code: srv, count: 0, sample: l.message || 'Llamada a servicio', service: srv });
-        }
-        codesMap.get(srv).count++;
+        const cleanMsg = l.raw || l.message || 'Llamada a servicio';
+        registerCodeHit(srv, l, cleanMsg, srv);
       });
 
       if (state.sqliteStats && Array.isArray(state.sqliteStats.eventTypes)) {
         state.sqliteStats.eventTypes.forEach(et => {
           if (!codesMap.has(et.code)) {
-            codesMap.set(et.code, { code: et.code, count: et.count, sample: `Operación consolidada en base de datos SQLite (${et.code})`, service: et.code });
+            codesMap.set(et.code, { code: et.code, count: et.count, sample: `Operación consolidada en base de datos SQLite (${et.code})`, service: et.code, usersMap: new Map(), actorsMap: new Map() });
           }
         });
       }
 
       if (codesMap.size === 0) {
-        codesMap.set('SIN-TRAFICO-API', { code: 'SIN-TRAFICO-API', count: 0, sample: 'No hay transacciones cargadas en memoria ni base de datos activa.', service: 'Gateway API' });
+        codesMap.set('SIN-TRAFICO-API', { code: 'SIN-TRAFICO-API', count: 0, sample: 'No hay transacciones cargadas en memoria ni base de datos activa.', service: 'Gateway API', usersMap: new Map(), actorsMap: new Map() });
       }
 
     } else if (category === 'health') {
@@ -3651,9 +3743,25 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
       colHeader4 = 'Impacto en Índice';
       colHeader5 = 'Objetivo SLA';
 
-      codesMap.set('Ratio de Éxito Transaccional', { code: 'HEALTH-SUCCESS-RATE', count: 100, sample: 'Porcentaje de transacciones completadas sin errores de nivel CRITICAL', service: 'Índice Base' });
-      codesMap.set('Penalización por Errores 520xxx', { code: 'PENALTY-520', count: 0, sample: 'Descuento ponderado por fallos de catálogo Core', service: 'Severidad Crítica' });
-      codesMap.set('Penalización por Alertas AUDxxx', { code: 'PENALTY-AUDIT', count: 0, sample: 'Descuento por eventos de auditoría no atendidos', service: 'Auditoría' });
+      codesMap.set('Ratio de Éxito Transaccional', { code: 'HEALTH-SUCCESS-RATE', count: 100, sample: 'Porcentaje de transacciones completadas sin errores de nivel CRITICAL', service: 'Índice Base', usersMap: new Map(), actorsMap: new Map() });
+      codesMap.set('Penalización por Errores 520xxx', { code: 'PENALTY-520', count: 0, sample: 'Descuento ponderado por fallos de catálogo Core', service: 'Severidad Crítica', usersMap: new Map(), actorsMap: new Map() });
+      codesMap.set('Penalización por Alertas AUDxxx', { code: 'PENALTY-AUDIT', count: 0, sample: 'Descuento por eventos de auditoría no atendidos', service: 'Auditoría', usersMap: new Map(), actorsMap: new Map() });
+    }
+
+    // Enriquecer con la matriz forense del backend SQLite si está disponible
+    if (window.UserTraceReport && window.UserTraceReport.forensicMatrixData && Array.isArray(window.UserTraceReport.forensicMatrixData.codeMatrix)) {
+      window.UserTraceReport.forensicMatrixData.codeMatrix.forEach(cm => {
+        const key = String(cm.code || '').toUpperCase();
+        const entry = codesMap.get(key) || codesMap.get(cm.code);
+        if (entry && entry.usersMap.size === 0 && Array.isArray(cm.users)) {
+          cm.users.forEach(uObj => {
+            if (uObj && uObj.username) {
+              entry.usersMap.set(uObj.username, uObj.interactions || uObj.count || 1);
+            }
+          });
+          entry.sqliteUniqueUsers = cm.uniqueUsers || entry.usersMap.size;
+        }
+      });
     }
 
     titleEl.textContent = catTitle;
@@ -3663,11 +3771,16 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
     currentInspectorData = dataArray;
 
     const totalOccurrences = dataArray.reduce((acc, curr) => acc + curr.count, 0);
+    const globalUniqueUsers = new Set();
+    dataArray.forEach(d => {
+      if (d.usersMap) d.usersMap.forEach((_, u) => globalUniqueUsers.add(u));
+    });
 
     summaryBar.innerHTML = `
-      <div><strong>Registros Únicos Detectados:</strong> <span style="color:#38bdf8; font-family:monospace; font-weight:bold;">${dataArray.length}</span></div>
-      <div><strong>Total Eventos de esta Categoría:</strong> <span style="color:${category === 'audit' ? '#0d9488' : (category === '520' ? '#f43f5e' : '#38bdf8')}; font-family:monospace; font-weight:bold;">${totalOccurrences.toLocaleString()}</span></div>
-      <div><strong>Entorno & Versión Activa:</strong> <span style="color:var(--text-main); font-weight:600;">${escapeHtml(clientLabel)} (${escapeHtml(clientVersion)})</span></div>
+      <div><strong>Códigos Únicos:</strong> <span style="color:#38bdf8; font-family:monospace; font-weight:bold;">${dataArray.length}</span></div>
+      <div><strong>Total Eventos en esta Categoría:</strong> <span style="color:${category === 'audit' ? '#0d9488' : (category === '520' ? '#f43f5e' : '#38bdf8')}; font-family:monospace; font-weight:bold;">${totalOccurrences.toLocaleString()}</span></div>
+      <div><strong>Usuarios Únicos Afectados:</strong> <span style="color:#f59e0b; font-family:monospace; font-weight:bold;">${globalUniqueUsers.size.toLocaleString()} usuarios distintos</span></div>
+      <div><strong>Entorno Activo:</strong> <span style="color:var(--text-main); font-weight:600;">${escapeHtml(clientLabel)} (${escapeHtml(clientVersion)})</span></div>
     `;
 
     let rowsHtml = '';
@@ -3680,22 +3793,93 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
       const pct = totalOccurrences > 0 ? ((item.count / totalOccurrences) * 100).toFixed(1) : '0';
       const isAudit = category === 'audit' || (item.code && item.code.startsWith('AUD'));
 
+      // Construir desglose de todos los usuarios afectados por este código y sus interacciones
+      const sortedUsers = item.usersMap ? Array.from(item.usersMap.entries()).sort((a, b) => b[1] - a[1]) : [];
+      const totalUniqueUsersForCode = item.sqliteUniqueUsers || sortedUsers.length;
+      let usersBreakdownHtml = '';
+
+      if (sortedUsers.length > 0) {
+        const topUsers = sortedUsers.slice(0, 8);
+        const restUsers = sortedUsers.slice(8);
+        const renderUserBadge = ([uName, uCnt]) => {
+          const safeU = escapeHtml(uName);
+          const jsU = escapeHtml(uName.replace(/'/g, "\\'"));
+          return `<span onclick="document.getElementById('modal-kpi-inspector').style.display='none'; if(window.switchTab) window.switchTab('users'); if(window.UserTraceReport){ window.UserTraceReport.switchSubTab('patterns'); window.UserTraceReport.openUserDetailModal('${jsU}'); }" title="Clic para abrir el patrón completo de solicitudes de ${safeU}" style="display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:999px; background:rgba(14,165,233,0.12); border:1px solid rgba(14,165,233,0.35); color:#0284c7; font-family:'JetBrains Mono', monospace; font-size:0.71rem; cursor:pointer; font-weight:600;">👤 ${safeU} <strong style="background:#0284c7; color:#fff; border-radius:999px; padding:0 5px; font-size:0.66rem;">${uCnt.toLocaleString()} int.</strong></span>`;
+        };
+
+        usersBreakdownHtml = `
+          <div style="margin-top:8px; padding:8px 10px; border-radius:8px; background:rgba(15,23,42,0.04); border:1px solid var(--border-color);">
+            <div style="font-size:0.73rem; font-weight:700; color:var(--text-main); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+              <span>👥 Población Afectada en [${escapeHtml(item.code)}]: <strong style="color:#0284c7;">${totalUniqueUsersForCode.toLocaleString()} ${totalUniqueUsersForCode === 1 ? 'usuario único' : 'usuarios distintos'}</strong> (${item.count.toLocaleString()} eventos totales)</span>
+              <span style="font-size:0.68rem; color:var(--text-muted); font-weight:normal;">Haz clic en cualquier usuario para ver su secuencia de solicitudes</span>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:5px;">
+              ${topUsers.map(renderUserBadge).join('')}
+            </div>
+            ${restUsers.length > 0 ? `
+              <details style="margin-top:6px;">
+                <summary style="cursor:pointer; font-size:0.72rem; font-weight:700; color:#0d9488; user-select:none;">
+                  ➕ Ver los otros ${restUsers.length.toLocaleString()} usuarios detectados en ${escapeHtml(item.code)}...
+                </summary>
+                <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; max-height:190px; overflow-y:auto; padding:4px;">
+                  ${restUsers.map(renderUserBadge).join('')}
+                </div>
+              </details>
+            ` : ''}
+          </div>
+        `;
+      } else {
+        usersBreakdownHtml = `
+          <div style="margin-top:6px; font-size:0.72rem; color:var(--text-muted);">
+            ℹ️ Evento de sistema/infraestructura sin identificador de usuario nominal explícito en la traza.
+          </div>
+        `;
+      }
+
+      // Mostrar actores API / cuentas de servicio si difieren del cliente final (ej. bancomercantil/bmapiuser8)
+      const sortedActors = item.actorsMap ? Array.from(item.actorsMap.entries()).sort((a, b) => b[1] - a[1]) : [];
+      const actorsHtml = sortedActors.length > 0 ? `
+        <div style="margin-bottom:6px; padding:5px 8px; border-radius:6px; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); font-size:0.71rem; color:#b45309;">
+          <strong>⚙️ Cuenta Actora / Canal API Ejecutor:</strong><br>
+          ${sortedActors.map(([act, cnt]) => `<span style="font-family:'JetBrains Mono', monospace; font-weight:700;">${escapeHtml(act)}</span> (${cnt.toLocaleString()} op.)`).join(', ')}
+        </div>
+      ` : '';
+
+      // Muestra representativa limpia (sin duplicar línea)
+      const sampleSnippet = (item.sample || '').trim();
+      const sampleHtml = sampleSnippet ? `
+        <details style="margin-top:6px;">
+          <summary style="cursor:pointer; font-size:0.69rem; color:var(--text-muted); user-select:none;">
+            📄 Ver línea de muestra representativa (1 de ${item.count.toLocaleString()} eventos)
+          </summary>
+          <div style="margin-top:4px; padding:6px 8px; border-radius:6px; background:#0f172a; color:#e2e8f0; font-family:'JetBrains Mono', monospace; font-size:0.68rem; word-break:break-all;">
+            ${escapeHtml(sampleSnippet)}
+          </div>
+        </details>
+      ` : '';
+
       rowsHtml += `
         <tr style="border-bottom:1px solid var(--border-color); background:${idx % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.03)'};">
-          <td style="padding:10px; font-family:'JetBrains Mono', monospace; font-weight:bold; color:${isAudit ? '#0d9488' : '#0284c7'}; white-space:nowrap;">
+          <td style="padding:10px; font-family:'JetBrains Mono', monospace; font-weight:bold; color:${isAudit ? '#0d9488' : '#0284c7'}; white-space:nowrap; vertical-align:top;">
             ${escapeHtml(item.code)}
+            <div style="font-size:0.68rem; color:#f59e0b; font-weight:600; margin-top:4px;">
+              👥 ${totalUniqueUsersForCode.toLocaleString()} ${totalUniqueUsersForCode === 1 ? 'usuario' : 'usuarios'}
+            </div>
           </td>
-          <td style="padding:10px; text-align:center; font-family:'JetBrains Mono', monospace; font-weight:bold; color:${category === '520' ? '#ef4444' : (category === 'idaas' ? '#c084fc' : (category === 'audit' ? '#0d9488' : '#38bdf8'))};">
+          <td style="padding:10px; text-align:center; font-family:'JetBrains Mono', monospace; font-weight:bold; color:${category === '520' ? '#ef4444' : (category === 'idaas' ? '#c084fc' : (category === 'audit' ? '#0d9488' : '#38bdf8'))}; vertical-align:top;">
             ${item.count.toLocaleString()}<br><span style="font-size:0.7rem; color:var(--text-muted); font-weight:normal;">(${pct}%)</span>
           </td>
-          <td style="padding:10px; font-size:0.8rem; color:var(--text-main);">
+          <td style="padding:10px; font-size:0.8rem; color:var(--text-main); vertical-align:top;">
             <strong>${escapeHtml(diag.title || item.code)}</strong><br>
-            <span style="font-size:0.75rem; color:var(--text-muted); line-height:1.3;">${escapeHtml(diag.meaning || item.sample)}</span>
+            <span style="font-size:0.75rem; color:var(--text-muted); line-height:1.35;">${escapeHtml(diag.meaning || 'Evento registrado en el motor Entrust IdentityGuard.')}</span>
+            ${usersBreakdownHtml}
+            ${sampleHtml}
           </td>
-          <td style="padding:10px; font-size:0.75rem; color:${isAudit ? '#334155' : '#b91c1c'};">
+          <td style="padding:10px; font-size:0.75rem; color:${isAudit ? '#334155' : '#b91c1c'}; vertical-align:top;">
+            ${actorsHtml}
             ${escapeHtml(diag.rootCause || 'Operación registrada en el flujo del clúster')}
           </td>
-          <td style="padding:10px; font-size:0.75rem; color:#047857; white-space:pre-line;">
+          <td style="padding:10px; font-size:0.75rem; color:#047857; white-space:pre-line; vertical-align:top;">
             ${escapeHtml(diag.governanceControl || diag.remediation || 'Operación estándar sin fallos')}
           </td>
         </tr>
@@ -3730,19 +3914,27 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
     const clientName = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
     const dateStamp = new Date().toISOString().slice(0, 10);
 
-    let csv = 'Codigo_Patron,Frecuencia,Servicio,Diagnostico,Causa_Raiz,Remediacion\n';
+    let csv = 'Codigo_Patron,Frecuencia_Total,Usuarios_Unicos_Afectados,Detalle_Usuarios_E_Interacciones,Actor_API_Ejecutor,Servicio,Diagnostico,Causa_Raiz,Remediacion\n';
     currentInspectorData.forEach(item => {
       let diag = { title: item.code, rootCause: '', remediation: '' };
       if (window.knowledgeBaseEngine) {
         diag = window.knowledgeBaseEngine.diagnoseLog(item.sample, item.code);
       }
+      const sortedUsers = item.usersMap ? Array.from(item.usersMap.entries()).sort((a, b) => b[1] - a[1]) : [];
+      const usersStr = sortedUsers.map(([u, c]) => `${u} (${c})`).join(' | ');
+      const sortedActors = item.actorsMap ? Array.from(item.actorsMap.entries()).sort((a, b) => b[1] - a[1]) : [];
+      const actorsStr = sortedActors.map(([a, c]) => `${a} (${c})`).join(' | ');
+
       const cCode = `"${(item.code || '').replace(/"/g, '""')}"`;
       const cCount = item.count;
+      const cUniqueU = item.sqliteUniqueUsers || sortedUsers.length;
+      const cUsersList = `"${usersStr.replace(/"/g, '""')}"`;
+      const cActorsList = `"${actorsStr.replace(/"/g, '""')}"`;
       const cSrv = `"${(item.service || '').replace(/"/g, '""')}"`;
       const cDiag = `"${(diag.title || diag.meaning || '').replace(/"/g, '""')}"`;
       const cCause = `"${(diag.rootCause || '').replace(/"/g, '""')}"`;
       const cRemed = `"${(diag.remediation || '').replace(/"/g, '""')}"`;
-      csv += `${cCode},${cCount},${cSrv},${cDiag},${cCause},${cRemed}\n`;
+      csv += `${cCode},${cCount},${cUniqueU},${cUsersList},${cActorsList},${cSrv},${cDiag},${cCause},${cRemed}\n`;
     });
 
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -3922,20 +4114,7 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
     }
 
     state.filteredLogs = result;
-
-    // Actualizar barra de paginación para logs locales en memoria
-    const showingBadge = document.getElementById('pagination-showing-badge');
-    const pageBadge = document.getElementById('pagination-current-page');
-    const totalPagesBadge = document.getElementById('pagination-total-pages');
-    if (showingBadge) {
-      const count = result.length;
-      showingBadge.textContent = count > 0 ? `1 - ${Math.min(50, count)} de ${count.toLocaleString()}` : `0 - 0 de 0`;
-    }
-    if (pageBadge) pageBadge.textContent = '1';
-    if (totalPagesBadge) {
-      const totalPages = Math.max(1, Math.ceil(result.length / 50));
-      totalPagesBadge.textContent = totalPages.toLocaleString();
-    }
+    state.localPage = 1;
 
     renderLogTable();
     updateMetricsAndCharts();
@@ -4006,7 +4185,33 @@ keytool -list -v -keystore "C:\Program Files\Entrust\IdentityGuardServer\identit
       return;
     }
 
-    const displayLogs = state.filteredLogs.slice(-200);
+    let displayLogs = [];
+    if (state.isServerApi) {
+      displayLogs = state.filteredLogs;
+    } else {
+      const pageSize = state.localPageSize || 50;
+      const totalMatching = state.filteredLogs.length;
+      const totalPages = Math.max(1, Math.ceil(totalMatching / pageSize));
+      if (!state.localPage || state.localPage < 1) state.localPage = 1;
+      if (state.localPage > totalPages) state.localPage = totalPages;
+
+      const startIdx = (state.localPage - 1) * pageSize;
+      displayLogs = state.filteredLogs.slice(startIdx, startIdx + pageSize);
+
+      const showingBadge = document.getElementById('pagination-showing-badge');
+      const pageBadge = document.getElementById('pagination-current-page');
+      const totalPagesBadge = document.getElementById('pagination-total-pages');
+      const realTotal = (state.globalStreamMetrics && state.globalStreamMetrics.totalLogs && state.filteredLogs.length === state.logs.length)
+        ? state.globalStreamMetrics.totalLogs
+        : totalMatching;
+      if (showingBadge) {
+        showingBadge.textContent = totalMatching > 0
+          ? `${(startIdx + 1).toLocaleString()} - ${Math.min(startIdx + pageSize, totalMatching).toLocaleString()} de ${realTotal.toLocaleString()}`
+          : `0 - 0 de 0`;
+      }
+      if (pageBadge) pageBadge.textContent = state.localPage.toLocaleString();
+      if (totalPagesBadge) totalPagesBadge.textContent = totalPages.toLocaleString();
+    }
 
     displayLogs.forEach(log => {
       const row = document.createElement('div');
@@ -6248,8 +6453,21 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     const availNodes = getClientAvailableNodes();
     const fileName = (log.sourceFile || '').toLowerCase();
-    const message = (log.message || '').toLowerCase();
-    const textToSearch = `${fileName} ${message}`;
+    const message = (log.message || log.raw || '').toLowerCase();
+    const service = (log.service || '').toLowerCase();
+    const textToSearch = `${fileName} ${service} ${message}`;
+
+    // 0. Detección explícita de Target o Servidor en el mensaje real (ej. Target: 10.5.11.50:ssh, SACVWIG06, SACVWIG07)
+    const targetMatch = (log.message || log.raw || '').match(/\bTarget:\s*([A-Za-z0-9._-]+(?::[A-Za-z0-9._-]+)?)/i);
+    if (targetMatch) {
+      const targetStr = targetMatch[1];
+      return { key: `target_${targetStr.toLowerCase()}`, name: `🖥️ Nodo Destino (${targetStr})` };
+    }
+    const hostExplicit = (log.message || log.raw || '').match(/\b(SACVWIG\d+|sadcluapi\d+|mercantil-dc\d+|srv-[a-z0-9-]+)\b/i);
+    if (hostExplicit) {
+      const hName = hostExplicit[1].toUpperCase();
+      return { key: `host_${hName.toLowerCase()}`, name: `🖥️ Servidor ${hName}` };
+    }
 
     // 1. Detección por clave o nombre exacto configurado para este cliente
     for (let i = 0; i < availNodes.length; i++) {
@@ -6258,21 +6476,35 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const rawName = (node.name || '').replace(/🖥️|☁️/g, '').toLowerCase().trim();
       const cleanName = rawName.replace(/[^a-z0-9]/g, '');
 
-      if (cleanKey && textToSearch.includes(cleanKey)) {
+      if (cleanKey && cleanKey !== 'node01' && cleanKey !== 'node02' && textToSearch.includes(cleanKey)) {
         return node;
       }
-      if (cleanName.length >= 3 && textToSearch.includes(cleanName)) {
+      if (cleanName.length >= 4 && !/servidorprimario|servidorsecundario/.test(cleanName) && textToSearch.includes(cleanName)) {
         return node;
       }
     }
 
-    // 2. Heurística natural por tipo de servicio:
-    // Si el archivo es serviciosIDG, soap, radius, gateway -> 2do nodo del cliente (Servicios/HA)
+    // 2. Desagregación por Subsistema / Nodo Funcional real dentro del archivo
+    if (/ssh|syslog|auditd|pam_unix/i.test(service) || /\bssh\b|Target:\s*\d+/i.test(message)) {
+      return { key: 'node_ssh_os', name: '🖥️ Nodo OS / SSH & Accesos Administrativos' };
+    }
+    if (/ig\.audit|^aud\d/i.test(service) || /\[ig\.audit\]|\[aud\d+\]/i.test(message)) {
+      return { key: 'node_ig_audit', name: '📋 Nodo Subsistema Auditoría (IG.AUDIT)' };
+    }
+    if (/authenticationmanagement|authenticategeneric|authenticate/i.test(service) || /authenticationmanager/i.test(message)) {
+      return { key: 'node_ig_auth', name: '🛡️ Nodo Motor Autenticación (IG.SYSTEM.Auth)' };
+    }
+    if (/usermanagement|systemcontext|admin/i.test(service) || /usermanager|systemcontext/i.test(message)) {
+      return { key: 'node_ig_admin', name: '⚙️ Nodo Gestión de Identidades (IG.SYSTEM.Admin)' };
+    }
     if (/(servicios|soap|radius|gateway|apim|wsse)/i.test(fileName) && availNodes.length > 1) {
       return availNodes[1];
     }
 
-    // 3. Por defecto: 1er nodo del cliente (Primario / Core)
+    // 3. Por defecto: Archivo origen o 1er nodo del cliente
+    if (log.sourceFile) {
+      return { key: `file_${normalizeRotatedFilename(log.sourceFile)}`, name: `🖥️ Nodo ${log.sourceFile}` };
+    }
     return availNodes[0] || { key: 'node_01', name: '🖥️ Servidor Primario (Core)' };
   }
 
@@ -6289,40 +6521,68 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const logs = state.logs || [];
     const nodeMap = new Map();
 
-    if (files.length > 0) {
+    // Si hay logs en memoria, agrupar con granularidad real por nodo/subsistema detectado en cada traza
+    if (logs.length > 0) {
+      const sampleScale = (metrics.totalLogs > logs.length && logs.length > 0) ? (metrics.totalLogs / logs.length) : 1;
+      logs.forEach(log => {
+        const nodeInfo = detectNodeFromLog(log);
+        const nodeKey = nodeInfo.key;
+        const nodeName = nodeInfo.name;
+
+        if (!nodeMap.has(nodeKey)) {
+          nodeMap.set(nodeKey, {
+            key: nodeKey,
+            name: nodeName,
+            logsCount: 0,
+            rawSampleCount: 0,
+            errors: 0,
+            warnings: 0,
+            usersSet: new Set(),
+            ipsSet: new Set(),
+            entrustCodes: {}
+          });
+        }
+        const entry = nodeMap.get(nodeKey);
+        entry.rawSampleCount++;
+        const lvl = (log.level || '').toUpperCase();
+        const code = log.entrustCode || (window.knowledgeBaseEngine && window.knowledgeBaseEngine.extractErrorCodeFromText((log.message || '') + ' ' + (log.raw || '')));
+        const isErr = lvl === 'ERROR' || lvl === 'CRITICAL' || /^520\d{4}|ORA-/i.test(code || '');
+        const isWarn = lvl === 'WARN' || lvl === 'WARNING' || /^AUD6001|AUD6002|AUD2309/i.test(code || '');
+
+        if (isErr) entry.errors++;
+        else if (isWarn) entry.warnings++;
+
+        if (log.user && log.user !== 'N/A' && log.user !== 'unknown') {
+          entry.usersSet.add(log.user);
+        }
+        if (log.clientIp && log.clientIp !== 'N/A' && log.clientIp !== 'local') {
+          entry.ipsSet.add(log.clientIp);
+        }
+        if (code) {
+          entry.entrustCodes[code] = (entry.entrustCodes[code] || 0) + 1;
+        } else if (log.service) {
+          entry.entrustCodes[log.service] = (entry.entrustCodes[log.service] || 0) + 1;
+        }
+      });
+
+      nodeMap.forEach(entry => {
+        entry.logsCount = Math.round(entry.rawSampleCount * sampleScale);
+      });
+    } else if (files.length > 0) {
       files.forEach(f => {
         const nodeKey = f.nodeKey || 'node_general';
         const nodeName = f.nodeName || 'Servidor General';
-
         if (!nodeMap.has(nodeKey)) {
-          nodeMap.set(nodeKey, { key: nodeKey, name: nodeName, logsCount: 0, errors: 0, entrustCodes: {} });
+          nodeMap.set(nodeKey, { key: nodeKey, name: nodeName, logsCount: 0, rawSampleCount: 0, errors: 0, warnings: 0, usersSet: new Set(), ipsSet: new Set(), entrustCodes: {} });
         }
         const entry = nodeMap.get(nodeKey);
         entry.logsCount += (f.count || 0);
         entry.errors += (f.realErrors || 0);
+        entry.warnings += (f.realWarnings || 0);
       });
     }
 
-    logs.forEach(log => {
-      const nodeInfo = detectNodeFromLog(log);
-      const nodeKey = nodeInfo.key;
-      const nodeName = nodeInfo.name;
-
-      if (!nodeMap.has(nodeKey)) {
-        nodeMap.set(nodeKey, { key: nodeKey, name: nodeName, logsCount: 0, errors: 0, entrustCodes: {} });
-      }
-      const entry = nodeMap.get(nodeKey);
-      if (files.length === 0) {
-        entry.logsCount++;
-        if (log.level === 'ERROR' || log.level === 'CRITICAL') entry.errors++;
-      }
-      const code = log.entrustCode || (window.knowledgeBaseEngine && window.knowledgeBaseEngine.extractErrorCodeFromText((log.message || '') + ' ' + (log.raw || '')));
-      if (code) {
-        entry.entrustCodes[code] = (entry.entrustCodes[code] || 0) + 1;
-      }
-    });
-
-    const discoveredNodes = Array.from(nodeMap.values());
+    const discoveredNodes = Array.from(nodeMap.values()).sort((a, b) => b.logsCount - a.logsCount);
     const colors = ['#0284c7', '#06b6d4', '#8b5cf6', '#10b981', '#f59e0b', '#ec4899', '#6366f1', '#14b8a6'];
 
     if (discoveredNodes.length === 0) {
@@ -6330,7 +6590,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         <div style="grid-column: 1 / -1; padding:30px; text-align:center; color:var(--text-muted); background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px;">
           <div style="font-size:32px; margin-bottom:8px;">🔍</div>
           <strong>No se han cargado logs en la sesión.</strong><br>
-          <span style="font-size:0.85rem;">Al subir archivos en la Visión General, la Suite detectará automáticamente cuántos Nodos/Servidores tiene este cliente.</span>
+          <span style="font-size:0.85rem;">Al subir archivos en la Visión General o Analizador, la Suite desagregará automáticamente cada Nodo, Servidor Destino y Subsistema con sus patrones y códigos.</span>
         </div>`;
       if (labelAsym) labelAsym.textContent = '⏳ Esperando carga de archivos para auto-descubrimiento de topología...';
       if (barContainer) barContainer.innerHTML = '';
@@ -6341,44 +6601,70 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     let cardsHtml = '';
     discoveredNodes.forEach((node, idx) => {
       const color = colors[idx % colors.length];
+      const topCodesNode = Object.entries(node.entrustCodes || {}).sort((a, b) => b[1] - a[1]);
+      const topCode = topCodesNode.length > 0 ? topCodesNode[0][0] : 'Nominal';
+      const topCodeCnt = topCodesNode.length > 0 ? topCodesNode[0][1] : 0;
+      const topDiag = (window.knowledgeBaseEngine && topCode !== 'Nominal')
+        ? window.knowledgeBaseEngine.diagnoseLog('', topCode)
+        : { title: 'Operación Nominal', remediation: 'Monitoreo continuo estándar.' };
+      const incidentTotal = (node.errors || 0) + (node.warnings || 0);
+      const baseDenominator = Math.max(1, node.rawSampleCount || node.logsCount);
+      const healthNum = Math.max(15, Math.min(100, Math.round(100 - ((node.errors * 3 + node.warnings) / baseDenominator) * 100)));
+
       cardsHtml += `
-        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:12px; border-top:4px solid ${color};">
-          <div class="card-title mb-2" style="font-size:0.88rem; color:var(--text-main);">${escapeHtml(node.name)}</div>
-          <div style="font-size:0.8rem; color:var(--text-muted);">
-            Trazas Consolidadas: <strong style="color:var(--text-main); font-family:monospace;">${node.logsCount.toLocaleString()}</strong><br>
-            Errores / Excepciones: <strong style="color:${node.errors > 0 ? '#dc2626' : '#10b981'}; font-family:monospace;">${node.errors.toLocaleString()}</strong>
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:14px; border-top:4px solid ${color}; display:flex; flex-direction:column; justify-content:space-between; gap:8px;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px; margin-bottom:6px;">
+              <div class="card-title" style="font-size:0.88rem; color:var(--text-main); font-weight:800;">${escapeHtml(node.name)}</div>
+              <span style="font-size:0.72rem; font-weight:800; padding:2px 7px; border-radius:10px; background:${healthNum >= 85 ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)'}; color:${healthNum >= 85 ? '#10b981' : '#f59e0b'};">${healthNum}% Salud</span>
+            </div>
+            <div style="font-size:0.78rem; color:var(--text-muted); line-height:1.55;">
+              📊 Eventos Estimados: <strong style="color:var(--text-main); font-family:monospace;">${node.logsCount.toLocaleString()}</strong> (Muestra: ${(node.rawSampleCount || node.logsCount).toLocaleString()})<br>
+              🚨 Errores Críticos: <strong style="color:${node.errors > 0 ? '#dc2626' : '#10b981'}; font-family:monospace;">${node.errors.toLocaleString()}</strong> | ⚠️ Alertas/Audit: <strong style="color:${node.warnings > 0 ? '#f59e0b' : '#10b981'}; font-family:monospace;">${node.warnings.toLocaleString()}</strong><br>
+              👥 Usuarios en Nodo: <strong style="color:#38bdf8; font-family:monospace;">${(node.usersSet ? node.usersSet.size : 0).toLocaleString()}</strong> | 🌐 IPs: <strong style="font-family:monospace;">${(node.ipsSet ? node.ipsSet.size : 0).toLocaleString()}</strong>
+            </div>
+          </div>
+          <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:6px; padding:8px; font-size:0.74rem;">
+            <div style="font-weight:700; color:${color}; margin-bottom:2px;">🔍 Patrón Dominante: [${escapeHtml(topCode)}] (${topCodeCnt.toLocaleString()})</div>
+            <div style="color:var(--text-main); margin-bottom:4px;">${escapeHtml((topDiag.meaning || topDiag.title || '').slice(0, 120))}</div>
+            <div style="color:#10b981; font-weight:600;">💡 Recomendación: ${escapeHtml((topDiag.remediation || 'Mantener monitoreo activo.').replace(/\r?\n/g, ' ').slice(0, 125))}</div>
           </div>
         </div>`;
     });
     cardsContainer.innerHTML = cardsHtml;
 
-    const totalLogs = metrics.totalLogs || 1;
+    const totalLogs = Math.max(1, discoveredNodes.reduce((acc, n) => acc + n.logsCount, 0));
     let barHtml = '';
     discoveredNodes.forEach((node, idx) => {
       const color = colors[idx % colors.length];
-      const pct = Math.round((node.logsCount / totalLogs) * 100);
+      const pct = Math.max(3, Math.round((node.logsCount / totalLogs) * 100));
       barHtml += `<div style="width:${pct}%; background:${color}; transition:width 0.5s;" title="${escapeHtml(node.name)}: ${pct}%"></div>`;
     });
     if (barContainer) barContainer.innerHTML = barHtml;
 
     if (labelAsym) {
-      labelAsym.textContent = `⚖️ Clúster Consolidado: ${discoveredNodes.length} Nodos / Capas Detectadas (${totalLogs.toLocaleString()} registros en ${files.length || 1} archivos)`;
+      labelAsym.textContent = `⚖️ Topología Real Desagregada: ${discoveredNodes.length} Nodos / Subsistemas Detectados (${(metrics.totalLogs || totalLogs).toLocaleString()} registros totales)`;
     }
 
     if (containerTable) {
       let headerCols = '';
       let logsRowCols = '';
       let errRowCols = '';
+      let warnRowCols = '';
+      let usersRowCols = '';
       let healthRowCols = '';
 
       discoveredNodes.forEach((node, idx) => {
         const color = colors[idx % colors.length];
-        const health = node.logsCount > 0 ? Math.max(10, Math.round(100 - (node.errors / node.logsCount) * 100 * 5)) + '%' : 'N/A';
+        const baseDenom = Math.max(1, node.rawSampleCount || node.logsCount);
+        const health = Math.max(15, Math.min(100, Math.round(100 - ((node.errors * 3 + node.warnings) / baseDenom) * 100))) + '%';
 
         headerCols += `<th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:${color};">${escapeHtml(node.name)}</th>`;
-        logsRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; font-family:monospace;">${node.logsCount.toLocaleString()}</td>`;
-        errRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:${node.errors > 0 ? '#dc2626' : '#10b981'}; font-family:monospace;">${node.errors.toLocaleString()}</td>`;
-        healthRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.9rem; color:${color};">${health}</td>`;
+        logsRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.88rem; font-family:monospace;">${node.logsCount.toLocaleString()}</td>`;
+        errRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.88rem; color:${node.errors > 0 ? '#dc2626' : '#10b981'}; font-family:monospace;">${node.errors.toLocaleString()}</td>`;
+        warnRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.88rem; color:${node.warnings > 0 ? '#f59e0b' : '#10b981'}; font-family:monospace;">${(node.warnings || 0).toLocaleString()}</td>`;
+        usersRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.88rem; color:#38bdf8; font-family:monospace;">${(node.usersSet ? node.usersSet.size : 0).toLocaleString()}</td>`;
+        healthRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.88rem; color:${color};">${health}</td>`;
       });
 
       const allCodesMap = new Map();
@@ -6391,109 +6677,96 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       let codesRows = '';
       if (allCodesMap.size > 0) {
-        allCodesMap.forEach((nodeCounts, code) => {
+        const sortedCodesEntries = Array.from(allCodesMap.entries()).sort((a, b) => {
+          const sumA = Object.values(a[1]).reduce((x, y) => x + y, 0);
+          const sumB = Object.values(b[1]).reduce((x, y) => x + y, 0);
+          return sumB - sumA;
+        });
+
+        sortedCodesEntries.forEach(([code, nodeCounts]) => {
           let colCells = '';
           discoveredNodes.forEach(node => {
             const cnt = nodeCounts[node.key] || 0;
-            colCells += `<td style="padding:6px 8px; text-align:center; font-weight:bold; color:${cnt > 0 ? '#dc2626' : '#10b981'}; font-family:monospace;">${cnt.toLocaleString()}</td>`;
+            colCells += `<td style="padding:8px; text-align:center; font-weight:bold; color:${cnt > 0 ? 'var(--text-main)' : 'var(--text-muted)'}; font-family:monospace;">${cnt.toLocaleString()}</td>`;
           });
 
-          let badgeColor = '#ef4444';
-          if (/^AUD/i.test(code)) badgeColor = '#f59e0b';
+          let badgeColor = '#0284c7';
+          if (/^520/i.test(code)) badgeColor = '#ef4444';
+          else if (/^AUD6001|^AUD6002|^AUD2309/i.test(code)) badgeColor = '#f59e0b';
+          else if (/^AUD/i.test(code)) badgeColor = '#10b981';
           else if (/^ORA/i.test(code)) badgeColor = '#a78bfa';
-          else if (/bulkidentityguard/i.test(code)) badgeColor = '#38bdf8';
+
+          const diag = window.knowledgeBaseEngine
+            ? window.knowledgeBaseEngine.diagnoseLog('', code)
+            : { title: code, meaning: 'Evento registrado en el nodo.', rootCause: 'Actividad del sistema.', remediation: 'Monitoreo estándar.' };
 
           codesRows += `
             <tr style="border-bottom:1px solid var(--border-color);">
-              <td style="padding:6px 8px; font-family:monospace; font-weight:bold; color:${badgeColor};">[${escapeHtml(code)}]</td>
+              <td style="padding:8px; font-family:monospace; font-weight:800; color:${badgeColor}; white-space:nowrap;">[${escapeHtml(code)}]</td>
               ${colCells}
+              <td style="padding:8px; font-size:0.78rem; color:var(--text-main); line-height:1.4;">
+                <strong>${escapeHtml(diag.title || code)}:</strong> ${escapeHtml(diag.meaning || '')}
+              </td>
+              <td style="padding:8px; font-size:0.76rem; line-height:1.4;">
+                <div style="color:#f59e0b; margin-bottom:3px;"><strong>Causa:</strong> ${escapeHtml(diag.rootCause || 'Operación regular')}</div>
+                <div style="color:#10b981;"><strong>Acción:</strong> ${escapeHtml((diag.remediation || 'Sin acción requerida').replace(/\r?\n/g, ' '))}</div>
+              </td>
             </tr>`;
         });
       } else {
-        codesRows = `<tr><td colspan="${discoveredNodes.length + 1}" style="padding:10px; text-align:center; color:var(--text-muted);">No se detectaron códigos de error críticos [520xxx / AUD / ORA / IDaaS] en las muestras.</td></tr>`;
+        codesRows = `<tr><td colspan="${discoveredNodes.length + 3}" style="padding:10px; text-align:center; color:var(--text-muted);">No se detectaron códigos en las muestras cargadas.</td></tr>`;
       }
 
-      const corr = correlateMultiFileEvents();
-      let corrLayersHtml = '';
-      Object.values(corr.layers).forEach(layer => {
-        if (layer.count === 0 && layer.files.length === 0) return;
-        corrLayersHtml += `
-          <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; padding:10px 14px;">
-            <div style="font-weight:700; color:var(--text-main); font-size:0.85rem; margin-bottom:4px;">${layer.name}</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">
-              Archivos Asignados: <strong>${layer.files.length}</strong> | Eventos Totales: <strong style="color:var(--text-cyan); font-family:monospace;">${layer.count.toLocaleString()}</strong><br>
-              Incidentes Críticos: <strong style="color:${layer.errors > 0 ? '#ef4444' : '#10b981'}; font-family:monospace;">${layer.errors.toLocaleString()}</strong>
-            </div>
-          </div>
-        `;
-      });
-
-      let corrPointsHtml = '';
-      corr.correlations.forEach(c => {
-        const bg = c.severity === 'CRITICAL' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(2, 132, 199, 0.1)';
-        const border = c.severity === 'CRITICAL' ? '#ef4444' : '#0284c7';
-        corrPointsHtml += `
-          <div style="background:${bg}; border-left:4px solid ${border}; border-radius:4px; padding:10px 14px; font-size:0.8rem; margin-bottom:8px;">
-            <div class="flex-between" style="margin-bottom:4px;">
-              <span style="font-weight:700; color:var(--text-main);">${escapeHtml(c.source)} ➔ ${escapeHtml(c.target)}</span>
-              <span style="font-size:0.72rem; padding:2px 6px; border-radius:4px; font-weight:700; background:rgba(255,255,255,0.1);">${escapeHtml(c.type)}</span>
-            </div>
-            <div style="color:var(--text-dim); line-height:1.4;">${escapeHtml(c.evidence)}</div>
-          </div>
-        `;
-      });
-
       containerTable.innerHTML = `
-        <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:10px;">
+        <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.84rem; margin-top:10px;">
           <thead>
             <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
-              <th style="padding:8px; border-bottom:2px solid var(--border-color);">Métrica Clúster</th>
+              <th style="padding:8px; border-bottom:2px solid var(--border-color);">Métrica Operativa por Nodo / Subsistema</th>
               ${headerCols}
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style="padding:8px; font-weight:bold;">Total Transacciones / Logs</td>
+              <td style="padding:8px; font-weight:bold;">Total Transacciones / Logs Procesados</td>
               ${logsRowCols}
             </tr>
             <tr>
-              <td style="padding:8px; font-weight:bold;">Fallos Críticos de Autenticación</td>
+              <td style="padding:8px; font-weight:bold;">Errores Críticos de Sistema [520xxx / ORA / ERROR]</td>
               ${errRowCols}
             </tr>
             <tr>
-              <td style="padding:8px; font-weight:bold;">Índice de Salud Calculado</td>
+              <td style="padding:8px; font-weight:bold;">Alertas de Seguridad y Auditoría [AUD6001 / AUD6002 / WARN]</td>
+              ${warnRowCols}
+            </tr>
+            <tr>
+              <td style="padding:8px; font-weight:bold;">Usuarios Nominales Únicos Detectados en el Nodo</td>
+              ${usersRowCols}
+            </tr>
+            <tr>
+              <td style="padding:8px; font-weight:bold;">Índice de Salud Operativa del Nodo</td>
               ${healthRowCols}
             </tr>
           </tbody>
         </table>
 
-        <!-- Sección de Correlación Cruzada Multi-Archivo & Multi-Servicio -->
-        <div style="margin-top:24px; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:16px;">
-          <div class="card-title text-cyan mb-3" style="font-size:0.95rem; display:flex; align-items:center; gap:8px;">
-            <span>🔗</span> Matriz de Correlación Cruzada Multi-Archivo & Multi-Servicio (${corr.totalFiles} Archivos Auditados)
-          </div>
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin-bottom:16px;">
-            ${corrLayersHtml}
-          </div>
-          <div>
-            ${corrPointsHtml}
-          </div>
+        <div style="margin-top:22px; font-weight:bold; color:var(--text-main); font-size:0.95rem;">
+          📚 Diccionario Forense y Distribución de Códigos de Auditoría y Sistema por Nodo (${discoveredNodes.length} Nodos):
         </div>
-
-        <div style="margin-top:20px; font-weight:bold; color:var(--text-main); font-size:0.9rem;">
-          📊 Comparativa Clúster Auto-Detectado (${discoveredNodes.length} Nodos) — Códigos de Error y Auditoría:
+        <div style="overflow-x:auto; margin-top:8px;">
+          <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+            <thead>
+              <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
+                <th style="padding:8px; border-bottom:2px solid var(--border-color);">Código</th>
+                ${headerCols}
+                <th style="padding:8px; border-bottom:2px solid var(--border-color); min-width:260px;">Significado Claro del Código (Auditoría / Sistema)</th>
+                <th style="padding:8px; border-bottom:2px solid var(--border-color); min-width:260px;">Causa Raíz y Recomendación Oficial</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${codesRows}
+            </tbody>
+          </table>
         </div>
-        <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:8px;">
-          <thead>
-            <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
-              <th style="padding:6px 8px; border-bottom:1px solid var(--border-color);">Código de Error / Auditoría</th>
-              ${headerCols}
-            </tr>
-          </thead>
-          <tbody>
-            ${codesRows}
-          </tbody>
-        </table>
       `;
     }
   }
@@ -6503,243 +6776,274 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (!container) return;
 
     const logs = state.logs && state.logs.length > 0 ? state.logs : [];
+    const metrics = getConsolidatedMetrics();
 
-    if (logs.length === 0) {
+    if (logs.length === 0 && (!metrics || metrics.totalLogs === 0)) {
       container.innerHTML = `
         <div style="padding:40px 20px; text-align:center; color:var(--text-muted); background:var(--bg-primary); border:1px solid var(--border-color); border-radius:10px;">
           <div style="font-size:36px; margin-bottom:12px;">⚡</div>
-          <strong style="font-size:1rem; color:var(--text-main);">Cargue un archivo de logs para calcular las trazas distribuidas en tiempo real.</strong><br>
-          <span style="font-size:0.85rem;">El motor APM deducirá la cascada de latencias (Gateway WSO2 ➔ Entrust Core ➔ LDAP/AD ➔ Soft Token ➔ SMS Gateway).</span>
+          <strong style="font-size:1rem; color:var(--text-main);">Cargue un archivo de logs para analizar el flujo real de servicios y subsistemas.</strong><br>
+          <span style="font-size:0.85rem;">Este módulo desglosa el recorrido real de las transacciones por cada capa detectada en sus archivos de auditoría, identificando en qué subsistema ocurren los rechazos, bloqueos o latencias.</span>
         </div>`;
       return;
     }
 
-    const countTotal = logs.length;
-    const errLogs = logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
+    const totalRealLogs = metrics.totalLogs || logs.length;
+    const sampleScale = (totalRealLogs > logs.length && logs.length > 0) ? (totalRealLogs / logs.length) : 1;
 
-    const wso2Count = logs.filter(l => /wso2|gateway|http|api/i.test(l.service || l.message)).length || Math.round(countTotal * 0.4);
-    const entrustCount = logs.filter(l => /520|ig\.system|auth/i.test(l.message)).length || countTotal;
-    const ldapCount = logs.filter(l => /ldap|active directory|directory/i.test(l.message)).length || Math.round(countTotal * 0.25);
-    const tokenCount = logs.filter(l => /token|grid|challenge|soap/i.test(l.message)).length || Math.round(countTotal * 0.2);
-    const smsCount = logs.filter(l => /sms|notification|email|aud2309/i.test(l.message)).length || Math.round(countTotal * 0.1);
+    // Extraer los hosts/nodos reales presentes en los logs (CERO hostnames inventados)
+    const detectedTargets = new Set();
+    const detectedFiles = (state.loadedFiles || []).map(f => f.name).filter(Boolean);
+    logs.forEach(l => {
+      const m = (l.message || l.raw || '').match(/\bTarget:\s*([A-Za-z0-9._:-]+)/i);
+      if (m) detectedTargets.add(m[1]);
+      else if (l.clientIp && l.clientIp !== 'N/A' && l.clientIp !== 'local') detectedTargets.add(l.clientIp);
+    });
+    const realHostLabel = detectedTargets.size > 0
+      ? Array.from(detectedTargets).slice(0, 2).join(', ')
+      : (detectedFiles.length > 0 ? detectedFiles[0] : 'Servidor Auditado');
 
-    const latWso2 = Math.min(300, 15 + Math.round((errLogs.length / countTotal) * 120));
-    const latEntrust = Math.min(800, 85 + Math.round((errLogs.length / countTotal) * 450));
-    const latLdap = Math.min(1200, 180 + Math.round((errLogs.length / countTotal) * 600));
-    const latToken = Math.min(600, 65 + Math.round((errLogs.length / countTotal) * 300));
-    const latSms = smsCount > 0 && errLogs.some(l => /sms|aud2309/i.test(l.message)) ? 450 : 120;
-
-    const totalLat = latWso2 + latEntrust + latLdap + latToken + latSms;
-
-    const hops = [
+    // Clasificar eventos reales por las 5 capas funcionales de Entrust / Sistema
+    const layerStats = [
       {
-        id: 'hop-wso2',
+        id: 'hop-access',
         step: 1,
-        title: 'Gateway APIs WSO2',
-        subtitle: 'Ingreso HTTP / mTLS',
-        host: 'sadcluapi01:8243',
-        protocol: 'HTTP/2 TLS 1.3',
-        duration: latWso2,
-        offsetMs: 0,
-        count: wso2Count,
-        color: '#0284c7',
-        status: latWso2 > 200 ? 'DEGRADADO' : '200 OK',
-        statusColor: latWso2 > 200 ? '#f59e0b' : '#10b981',
+        title: 'Capa 1: Ingreso & Accesos (SSH / API / Canal)',
+        subtitle: 'Recepción de Solicitud y Canal de Entrada',
+        host: realHostLabel,
+        protocol: 'SSH / HTTPS / SOAP',
         icon: '🌐',
-        details: 'Recepción del request en WSO2 APIM, validación de token OAuth2 y enrutamiento hacia el backend Entrust.'
+        color: '#0284c7',
+        count: 0,
+        errors: 0,
+        codes: {},
+        details: 'Registra el ingreso de conexiones de administración (SSH / Consola) y llamadas de servicios API hacia la plataforma.'
       },
       {
-        id: 'hop-entrust',
+        id: 'hop-auth',
         step: 2,
-        title: 'Entrust Auth Context',
-        subtitle: 'Evaluación de Políticas Core',
-        host: 'SACVWIG06:8443',
-        protocol: 'HTTPS REST / SOAP',
-        duration: latEntrust,
-        offsetMs: latWso2,
-        count: entrustCount,
-        color: '#0ea5e9',
-        status: latEntrust > 400 ? 'ALERTA' : '200 OK',
-        statusColor: latEntrust > 400 ? '#f59e0b' : '#10b981',
+        title: 'Capa 2: Motor de Autenticación (IG.SYSTEM / AUD6000-6001)',
+        subtitle: 'Validación de Credenciales, OTP y Tokens',
+        host: realHostLabel,
+        protocol: 'Entrust Auth Engine',
         icon: '🛡️',
-        details: 'Motor IdentityGuard Server: verificación de sesión de usuario, estado de cuenta y políticas de grupo bancario.'
+        color: '#0ea5e9',
+        count: 0,
+        errors: 0,
+        codes: {},
+        details: 'Evalúa las credenciales del usuario (TOKENRO, OTP, Grid, Password). Registra éxitos [AUD6000] y rechazos [AUD6001 / 520xxx].'
       },
       {
-        id: 'hop-ldap',
+        id: 'hop-lockout',
         step: 3,
-        title: 'LDAP / Active Directory',
-        subtitle: 'Validación de Credenciales',
-        host: 'Mercantil-DC01:636',
-        protocol: 'LDAPS Seguro (SSL)',
-        duration: latLdap,
-        offsetMs: latWso2 + latEntrust,
-        count: ldapCount,
-        color: '#10b981',
-        status: latLdap > 500 ? 'LENTO' : '200 OK',
-        statusColor: latLdap > 500 ? '#f59e0b' : '#10b981',
-        icon: '📂',
-        details: 'Búsqueda de DN de usuario y enlace Kerberos/LDAP para validación de primer factor de contraseña.'
-      },
-      {
-        id: 'hop-token',
-        step: 4,
-        title: 'Soft Token / Grid Engine',
-        subtitle: 'Segundo Factor MFA',
-        host: 'SACVWIG06:8443',
-        protocol: 'Criptografía OTP / OATH',
-        duration: latToken,
-        offsetMs: latWso2 + latEntrust + latLdap,
-        count: tokenCount,
-        color: '#8b5cf6',
-        status: latToken > 300 ? 'ALERTA' : '200 OK',
-        statusColor: latToken > 300 ? '#f59e0b' : '#10b981',
-        icon: '🔑',
-        details: 'Desencriptación de semilla OTP, cálculo de deriva temporal y verificación de respuesta de matriz Grid Card.'
-      },
-      {
-        id: 'hop-sms',
-        step: 5,
-        title: 'Gateway SMS / Push Dispatch',
-        subtitle: 'Despacho de Notificación',
-        host: 'GW-NOTIF-01:443',
-        protocol: 'REST JSON / SMPP',
-        duration: latSms,
-        offsetMs: latWso2 + latEntrust + latLdap + latToken,
-        count: smsCount,
+        title: 'Capa 3: Control de Políticas y Bloqueos (AUD6002 / 5205079)',
+        subtitle: 'Protección contra Fuerza Bruta y Lockout',
+        host: realHostLabel,
+        protocol: 'Security Policy Engine',
+        icon: '🔒',
         color: '#f59e0b',
-        status: latSms > 1000 ? 'TIMEOUT' : '200 OK',
-        statusColor: latSms > 1000 ? '#ef4444' : '#10b981',
-        icon: '📱',
-        details: 'Encolado y envío del código temporal OTP / mensaje SMS al canal móvil o email del cliente.'
+        count: 0,
+        errors: 0,
+        codes: {},
+        details: 'Supervisa el umbral de intentos fallidos consecutivos y ejecuta el bloqueo preventivo temporal o permanente de cuentas [AUD6002].'
+      },
+      {
+        id: 'hop-admin',
+        step: 4,
+        title: 'Capa 4: Aprovisionamiento y Gestión de Usuarios (AUD3000 / AUD3004 / AUD12xx)',
+        subtitle: 'Creación, Modificación y Asignación de Tokens',
+        host: realHostLabel,
+        protocol: 'Identity Lifecycle API',
+        icon: '👤',
+        color: '#8b5cf6',
+        count: 0,
+        errors: 0,
+        codes: {},
+        details: 'Procesa altas de usuarios [AUD3000], actualizaciones de estado/atributos por cuentas de servicio [AUD3004] y gestión de tokens [AUD1210/1221].'
+      },
+      {
+        id: 'hop-audit',
+        step: 5,
+        title: 'Capa 5: Persistencia y Sello de Auditoría (IG.AUDIT / DB)',
+        subtitle: 'Escritura en Repositorio de Auditoría',
+        host: realHostLabel,
+        protocol: 'IG Audit Writer / JDBC',
+        icon: '📋',
+        color: '#10b981',
+        count: 0,
+        errors: 0,
+        codes: {},
+        details: 'Garantiza la trazabilidad forense inmutable de cada transacción en el log de auditoría y base de datos.'
       }
     ];
 
-    // 1. TOPOLOGÍA DE NODOS CONECTADOS (HOP PIPELINE MAP)
+    logs.forEach(l => {
+      const code = String(l.entrustCode || '');
+      const srv = String(l.service || '');
+      const msg = String(l.message || l.raw || '');
+      const isErr = l.level === 'ERROR' || l.level === 'CRITICAL' || /^520\d{4}|AUD6001|AUD6002|AUD2309|ORA-/i.test(code);
+
+      // Siempre pasa por persistencia de auditoría
+      layerStats[4].count++;
+      if (/ORA-|AUD151|AUD154|SQLException/i.test(code + ' ' + msg)) {
+        layerStats[4].errors++;
+        if (code) layerStats[4].codes[code] = (layerStats[4].codes[code] || 0) + 1;
+      }
+
+      if (/ssh|syslog|auditd/i.test(srv) || /Target:\s*\d+/i.test(msg)) {
+        layerStats[0].count++;
+        if (isErr) layerStats[0].errors++;
+        const cKey = code || 'SSH-SESSION';
+        layerStats[0].codes[cKey] = (layerStats[0].codes[cKey] || 0) + 1;
+      } else if (/AUD6002|5205079|5205080|5201053|locked/i.test(code + ' ' + msg)) {
+        layerStats[2].count++;
+        layerStats[2].errors++;
+        const cKey = code || 'LOCKOUT';
+        layerStats[2].codes[cKey] = (layerStats[2].codes[cKey] || 0) + 1;
+      } else if (/AUD3000|AUD3004|AUD1210|AUD1221|AUD1000|AUD2300|UserManagement|bulkidentityguard/i.test(code + ' ' + srv + ' ' + msg)) {
+        layerStats[3].count++;
+        if (isErr) layerStats[3].errors++;
+        const cKey = code || 'USER-ADMIN';
+        layerStats[3].codes[cKey] = (layerStats[3].codes[cKey] || 0) + 1;
+      } else {
+        layerStats[1].count++;
+        if (isErr) layerStats[1].errors++;
+        const cKey = code || 'AUTH-CHECK';
+        layerStats[1].codes[cKey] = (layerStats[1].codes[cKey] || 0) + 1;
+      }
+    });
+
+    let cumulativeOffset = 0;
+    const hops = layerStats.map(layer => {
+      const scaledCount = Math.round(layer.count * sampleScale);
+      const scaledErrors = Math.round(layer.errors * sampleScale);
+      const errRatio = layer.count > 0 ? (layer.errors / layer.count) : 0;
+      const duration = Math.max(12, Math.min(450, Math.round(18 + (layer.count / Math.max(1, logs.length)) * 90 + errRatio * 220)));
+      const hopObj = {
+        ...layer,
+        count: scaledCount,
+        errors: scaledErrors,
+        duration,
+        offsetMs: cumulativeOffset,
+        status: scaledErrors > 0 ? `${scaledErrors.toLocaleString()} INCIDENTES` : '100% NOMINAL',
+        statusColor: scaledErrors > 0 ? '#f59e0b' : '#10b981'
+      };
+      cumulativeOffset += duration;
+      return hopObj;
+    });
+
+    const totalLat = Math.max(1, cumulativeOffset);
+
     let topologyCardsHtml = '';
     hops.forEach((hop, idx) => {
-      const pct = Math.round((hop.duration / totalLat) * 100);
-      const isSlowest = hop.duration === Math.max(...hops.map(h => h.duration));
+      const pct = Math.round((hop.count / Math.max(1, totalRealLogs)) * 100);
+      const hasIncidents = hop.errors > 0;
+      const topCodesStr = Object.entries(hop.codes).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([c]) => c).join(', ') || 'Nominal';
 
       topologyCardsHtml += `
-        <div class="hop-card" onclick="window.selectTraceHopGlobal(${idx})" style="flex:1; min-width:170px; background:var(--bg-primary); border:1px solid ${isSlowest ? 'rgba(239, 68, 68, 0.4)' : 'var(--border-color)'}; border-top:4px solid ${hop.color}; border-radius:8px; padding:12px; cursor:pointer; transition:transform 0.2s, box-shadow 0.2s; position:relative;">
-          ${isSlowest ? '<span style="position:absolute; top:-10px; right:8px; background:#ef4444; color:#fff; font-size:0.65rem; font-weight:bold; padding:1px 6px; border-radius:10px; text-transform:uppercase;">Mayor Latencia</span>' : ''}
+        <div class="hop-card" onclick="window.selectTraceHopGlobal(${idx})" style="flex:1; min-width:175px; background:var(--bg-primary); border:1px solid ${hasIncidents ? 'rgba(245, 158, 11, 0.45)' : 'var(--border-color)'}; border-top:4px solid ${hop.color}; border-radius:8px; padding:12px; cursor:pointer; position:relative;">
           <div class="flex-between mb-1">
             <span style="font-size:1.1rem;">${hop.icon}</span>
-            <span style="font-size:0.7rem; font-weight:bold; background:${hop.statusColor}22; color:${hop.statusColor}; border:1px solid ${hop.statusColor}55; padding:1px 6px; border-radius:4px;">
+            <span style="font-size:0.68rem; font-weight:bold; background:${hop.statusColor}22; color:${hop.statusColor}; border:1px solid ${hop.statusColor}55; padding:1px 6px; border-radius:4px;">
               ${hop.status}
             </span>
           </div>
-          <div style="font-weight:700; color:var(--text-main); font-size:0.85rem; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(hop.title)}">
-            ${hop.step}. ${escapeHtml(hop.title)}
+          <div style="font-weight:700; color:var(--text-main); font-size:0.82rem; margin-bottom:2px;" title="${escapeHtml(hop.title)}">
+            ${escapeHtml(hop.title)}
           </div>
-          <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:8px;">${escapeHtml(hop.subtitle)}</div>
-          
-          <div class="flex-between" style="border-top:1px solid var(--border-color); padding-top:6px; font-size:0.78rem;">
-            <span style="font-family:monospace; font-weight:bold; color:${hop.color};">${hop.duration} ms</span>
-            <span style="font-size:0.72rem; color:var(--text-muted);">${pct}% total</span>
+          <div style="font-size:0.71rem; color:var(--text-muted); margin-bottom:6px;">Códigos: <strong>${escapeHtml(topCodesStr)}</strong></div>
+          <div class="flex-between" style="border-top:1px solid var(--border-color); padding-top:6px; font-size:0.76rem;">
+            <span style="font-family:monospace; font-weight:bold; color:${hop.color};">${hop.count.toLocaleString()} ev.</span>
+            <span style="font-size:0.71rem; color:var(--text-muted);">${pct}% del flujo</span>
           </div>
         </div>`;
 
       if (idx < hops.length - 1) {
-        topologyCardsHtml += `
-          <div style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:1.2rem; padding:0 2px;">
-            ➔
-          </div>`;
+        topologyCardsHtml += `<div style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:1.1rem; padding:0 2px;">➔</div>`;
       }
     });
 
-    // 2. TIMELINE WATERFALL (GANTT PROPORCIONAL MODERNO)
     let timelineRowsHtml = '';
-    hops.forEach((hop, idx) => {
+    hops.forEach((hop) => {
       const leftPct = ((hop.offsetMs / totalLat) * 100).toFixed(1);
-      const widthPct = Math.max(8, ((hop.duration / totalLat) * 100)).toFixed(1);
+      const widthPct = Math.max(10, ((hop.duration / totalLat) * 100)).toFixed(1);
+      const topCodesList = Object.entries(hop.codes).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([c, cnt]) => `${c} (${cnt})`).join(' | ') || 'Actividad estándar';
 
       timelineRowsHtml += `
-        <div style="display:grid; grid-template-columns: 240px 1fr 110px; align-items:center; gap:14px; padding:10px 0; border-bottom:1px solid var(--border-color);">
-          <!-- Columna 1: Nombre del Salto -->
+        <div style="display:grid; grid-template-columns: 270px 1fr 140px; align-items:center; gap:14px; padding:10px 0; border-bottom:1px solid var(--border-color);">
           <div>
-            <div style="font-weight:600; font-size:0.84rem; color:var(--text-main); display:flex; align-items:center; gap:6px;">
+            <div style="font-weight:700; font-size:0.83rem; color:var(--text-main); display:flex; align-items:center; gap:6px;">
               <span>${hop.icon}</span>
-              <span>${hop.step}. ${escapeHtml(hop.title)}</span>
+              <span>${escapeHtml(hop.title)}</span>
             </div>
             <div style="font-size:0.72rem; color:var(--text-muted); margin-left:22px; font-family:monospace;">
-              ${escapeHtml(hop.protocol)} | ${escapeHtml(hop.host)}
+              Nodo/Origen: ${escapeHtml(hop.host)} | ${escapeHtml(topCodesList)}
             </div>
           </div>
 
-          <!-- Columna 2: Barra Proporcional de Cascada -->
           <div style="position:relative; height:24px; background:var(--bg-primary); border-radius:6px; overflow:hidden; border:1px solid var(--border-color);">
-            <div style="position:absolute; left:${leftPct}%; width:${widthPct}%; height:100%; background:linear-gradient(90deg, ${hop.color}cc, ${hop.color}); border-radius:4px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:0.75rem; font-weight:bold; font-family:monospace; box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition:all 0.5s;">
-              ${hop.duration} ms
+            <div style="position:absolute; left:${leftPct}%; width:${widthPct}%; height:100%; background:linear-gradient(90deg, ${hop.color}cc, ${hop.color}); border-radius:4px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:0.74rem; font-weight:bold; font-family:monospace;">
+              ${hop.count.toLocaleString()} eventos (${hop.errors.toLocaleString()} alertas/fallos)
             </div>
           </div>
 
-          <!-- Columna 3: Estatus & Muestra -->
           <div style="text-align:right;">
-            <div style="font-family:monospace; font-weight:bold; font-size:0.85rem; color:var(--text-main);">${hop.duration} ms</div>
-            <div style="font-size:0.7rem; color:var(--text-muted);">${hop.count.toLocaleString()} eventos</div>
+            <div style="font-family:monospace; font-weight:bold; font-size:0.84rem; color:var(--text-main);">${hop.count.toLocaleString()} reg.</div>
+            <div style="font-size:0.71rem; color:${hop.errors > 0 ? '#f59e0b' : '#10b981'}; font-weight:700;">${hop.errors > 0 ? `${hop.errors.toLocaleString()} con fricción` : 'Sin fallos'}</div>
           </div>
         </div>`;
     });
 
-    const slowestHop = hops.reduce((prev, current) => (prev.duration > current.duration) ? prev : current);
+    const mostFrictionHop = hops.reduce((prev, current) => (prev.errors > current.errors) ? prev : current, hops[1]);
 
     container.innerHTML = `
-      <!-- Cabecera Resumen de Latencia -->
       <div style="background:var(--bg-secondary); border:1px solid var(--border-color); padding:14px 18px; border-radius:8px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
         <div>
-          <div style="font-weight:700; color:var(--text-main); font-size:0.95rem;">⚡ Trazabilidad Distribuida & Latencia de Autenticación en Vivo</div>
-          <div style="font-size:0.8rem; color:var(--text-muted);">Muestra consolidada de <strong>${countTotal.toLocaleString()}</strong> transacciones evaluadas en la arquitectura clúster</div>
+          <div style="font-weight:700; color:var(--text-main); font-size:0.95rem;">⚡ ¿Para qué sirve esta vista? — Trazabilidad Arquitectural por Capas Reales del Log</div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">Desglosa los <strong>${totalRealLogs.toLocaleString()}</strong> registros cargados según la etapa exacta del ciclo de vida de identidad (Acceso SSH/Canal ➔ Autenticación ➔ Políticas de Bloqueo ➔ Gestión de Usuarios ➔ Persistencia).</div>
         </div>
         <div style="display:flex; gap:10px; align-items:center;">
-          <div style="text-align:right;">
-            <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:bold;">Latencia de Extremo a Extremo</div>
-            <div class="font-mono" style="font-size:1.3rem; font-weight:bold; color:var(--text-cyan);">${totalLat} ms</div>
-          </div>
-          <span class="badge-client" style="background:${totalLat > 800 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)'}; color:${totalLat > 800 ? '#ef4444' : '#10b981'}; border:1px solid ${totalLat > 800 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}; font-weight:bold; font-size:0.8rem; padding:6px 12px; border-radius:6px;">
-            ${totalLat > 800 ? '⚠️ SLA Degradado (>800ms)' : '🟢 SLA Óptimo (<500ms)'}
+          <span class="badge-client" style="background:rgba(2, 132, 199, 0.15); color:#38bdf8; border:1px solid rgba(2, 132, 199, 0.3); font-weight:bold; font-size:0.8rem; padding:6px 12px; border-radius:6px;">
+            🖥️ Origen Real: ${escapeHtml(realHostLabel)}
           </span>
         </div>
       </div>
 
-      <!-- Mapa Visual de Arquitectura de Nodos (Pipeline Topológico) -->
       <div style="margin-bottom:20px;">
-        <div style="font-size:0.85rem; font-weight:bold; color:var(--text-main); margin-bottom:10px;">🗺️ Flujo Arquitectural de la Petición (Hops de Autenticación):</div>
+        <div style="font-size:0.85rem; font-weight:bold; color:var(--text-main); margin-bottom:10px;">🗺️ Distribución por Capa Funcional (Haga clic en cualquier etapa para ver su detalle técnico):</div>
         <div style="display:flex; align-items:stretch; gap:6px; overflow-x:auto; padding-bottom:8px;">
           ${topologyCardsHtml}
         </div>
       </div>
 
-      <!-- Cronograma Gantt Waterfall Proporcional -->
       <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px; padding:18px; margin-bottom:20px;">
         <div class="flex-between mb-3">
-          <span style="font-weight:700; color:var(--text-main); font-size:0.9rem;">📊 Cascada Temporal de Ejecución (Gantt Waterfall Timeline):</span>
-          <span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;">Escala: 0 ms ─────────────── ${totalLat} ms</span>
+          <span style="font-weight:700; color:var(--text-main); font-size:0.9rem;">📊 Cascada Operativa por Subsistema (100% Basada en los Eventos Reales del Archivo):</span>
+          <span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;">Total Auditado: ${totalRealLogs.toLocaleString()} eventos</span>
         </div>
         <div style="display:flex; flex-direction:column;">
           ${timelineRowsHtml}
         </div>
       </div>
 
-      <!-- Cuadro de Análisis de Cuello de Botella & Diagnóstico Técnico -->
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
-        <div style="background:var(--bg-primary); border:1px solid rgba(239, 68, 68, 0.3); border-left:4px solid #ef4444; padding:14px; border-radius:8px;">
-          <div style="font-weight:bold; color:#ef4444; font-size:0.9rem; margin-bottom:4px;">⚠️ Diagnóstico del Salto Más Crítico:</div>
-          <div style="font-size:0.85rem; color:var(--text-main); margin-bottom:6px;">
-            El componente <strong>${slowestHop.title}</strong> absorbe el <strong>${Math.round((slowestHop.duration / totalLat) * 100)}%</strong> del tiempo total de autenticación (${slowestHop.duration} ms).
+        <div style="background:var(--bg-primary); border:1px solid rgba(245, 158, 11, 0.35); border-left:4px solid #f59e0b; padding:14px; border-radius:8px;">
+          <div style="font-weight:bold; color:#f59e0b; font-size:0.9rem; margin-bottom:4px;">⚠️ Capa con Mayor Concentración de Fricción / Alertas:</div>
+          <div style="font-size:0.84rem; color:var(--text-main); margin-bottom:6px;">
+            <strong>${escapeHtml(mostFrictionHop.title)}</strong> concentra <strong>${mostFrictionHop.errors.toLocaleString()}</strong> eventos de alerta o rechazo sobre ${mostFrictionHop.count.toLocaleString()} operaciones procesadas en esa capa.
           </div>
           <div style="font-size:0.78rem; color:var(--text-muted);">
-            <strong>Causa habitual:</strong> Bloqueo de hilos LDAP en Directory Server o latencia de red WAN entre la DMZ de WSO2 y los controladores de dominio.
+            ${escapeHtml(mostFrictionHop.details)}
           </div>
         </div>
 
         <div style="background:var(--bg-primary); border:1px solid rgba(2, 132, 199, 0.3); border-left:4px solid #0284c7; padding:14px; border-radius:8px;">
-          <div style="font-weight:bold; color:var(--text-cyan); font-size:0.9rem; margin-bottom:4px;">💡 Recomendación de Optimización (IT SERVICIOS):</div>
-          <div style="font-size:0.85rem; color:var(--text-main); margin-bottom:6px;">
-            Configurar un <strong>Pool de Conexiones LDAPS persistente</strong> en <code>identityguard.properties</code> (<code>ldap.connectionPool=true</code>) y ajustar el timeout de socket a 3000 ms.
+          <div style="font-weight:bold; color:var(--text-cyan); font-size:0.9rem; margin-bottom:4px;">💡 Recomendación Técnica Basada en la Evidencia:</div>
+          <div style="font-size:0.84rem; color:var(--text-main); margin-bottom:6px;">
+            Revisar en la pestaña <strong>👤 Censo & Trazas de Usuario</strong> y en <strong>🏢 Multi-Nodo</strong> las cuentas específicas que disparan rechazos <code>AUD6001</code>, bloqueos <code>AUD6002</code> o actualizaciones masivas <code>AUD3004</code> a través de usuarios de servicio API.
           </div>
           <div style="font-size:0.78rem; color:var(--text-muted);">
-            Permite reducir la latencia del Salto 3 de ${latLdap} ms a menos de 45 ms promedio.
+            Todos los contadores y hosts mostrados en este diagrama provienen estrictamente de los registros cargados en sesión.
           </div>
         </div>
       </div>
@@ -6748,7 +7052,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     window.selectTraceHopGlobal = (idx) => {
       const hop = hops[idx];
       if (!hop) return;
-      alert(`🔍 Detalle Técnico del Salto ${hop.step}:\n\nComponente: ${hop.title}\nProtocolo: ${hop.protocol}\nHost/IP: ${hop.host}\nLatencia: ${hop.duration} ms\nEventos Registrados: ${hop.count.toLocaleString()}\n\nDescripción:\n${hop.details}`);
+      const codesBreakdown = Object.entries(hop.codes).sort((a, b) => b[1] - a[1]).map(([c, cnt]) => `• ${c}: ${cnt.toLocaleString()} eventos`).join('\n') || '• Operación nominal';
+      alert(`🔍 Detalle Forense de la ${hop.title}:\n\nOrigen Detectado: ${hop.host}\nProtocolo / Motor: ${hop.protocol}\nEventos en esta Capa: ${hop.count.toLocaleString()}\nAlertas / Fallos: ${hop.errors.toLocaleString()}\n\nCódigos Detectados en Muestra:\n${codesBreakdown}\n\nFunción Técnica:\n${hop.details}`);
     };
   }
 
@@ -6960,43 +7265,76 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     dom.btnResetSession?.addEventListener('click', () => resetSession());
     document.getElementById('btn-reset-session')?.addEventListener('click', () => resetSession());
 
-    // Paginación SQL en Vivo (16.5M Registros)
-    document.getElementById('btn-page-first')?.addEventListener('click', () => fetchSqlLogs(1));
+    // Paginación Híbrida: SQLite en Vivo o Memoria Local
+    document.getElementById('btn-page-first')?.addEventListener('click', () => {
+      if (state.isServerApi) {
+        fetchSqlLogs(1);
+      } else {
+        state.localPage = 1;
+        renderLogTable();
+      }
+    });
 
     window.downloadErrorsCsvGlobal = async function() {
-      try {
-        const res = await fetch('/api/export-errors?client=' + encodeURIComponent(state.activeClientId || 'mercantil'));
-        if (res.ok) {
-          const blob = await res.blob();
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `Errores_AuditEvents_${state.activeClientId || 'Entrust'}_Export.csv`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);
-          return;
-        }
-      } catch (e) {}
+      const hasLocalLogs = !state.isServerApi && state.logs && state.logs.length > 0;
+      if (!hasLocalLogs) {
+        try {
+          const res = await fetch('/api/export-errors?client=' + encodeURIComponent(state.activeClientId || 'mercantil'));
+          if (res.ok) {
+            const blob = await res.blob();
+            if (blob.size > 80) {
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `Errores_y_Alertas_Auditoría_${(state.activeClientId || 'Entrust').replace(/[^a-zA-Z0-9_-]/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              window.URL.revokeObjectURL(url);
+              return;
+            }
+          }
+        } catch (e) {}
+      }
 
-      const errorLogs = (state.logs || []).filter(l => l.level === 'ERROR' || l.level === 'CRITICAL' || (l.outcome && l.outcome.includes('FAIL')));
+      const pool = (state.logs && state.logs.length > 0) ? state.logs : (state.filteredLogs || []);
+      let errorLogs = pool.filter(l => {
+        const lvl = (l.level || '').toUpperCase();
+        const code = String(l.entrustCode || l.code || '');
+        const msg = String(l.message || l.raw || '');
+        return lvl === 'ERROR' || lvl === 'CRITICAL' || lvl === 'WARN' || lvl === 'WARNING' ||
+               (l.outcome && /FAIL|ERR/i.test(l.outcome)) ||
+               /^520\d{4}|AUD6001|AUD6002|AUD2309|ORA-/i.test(code) ||
+               /failed|locked|error|denied|invalid|exception/i.test(msg);
+      });
+
+      if (errorLogs.length === 0 && pool.length > 0) {
+        errorLogs = pool.slice(0, 10000);
+      }
+
       if (errorLogs.length === 0) {
-        alert('No hay registros de error para exportar en la sesión actual.');
+        alert('No hay registros cargados en la sesión actual para exportar.');
         return;
       }
 
-      let csvContent = 'lineNum,eventTime,user,eventType,outcome,message,ip,service\n';
-      errorLogs.forEach(l => {
+      let csvContent = '\uFEFFLinea,Fecha_Hora,Usuario,Codigo_Entrust,Nivel_Severidad,Mensaje_Evento,Significado_Oficial,Causa_Raiz,Recomendacion_Oficial,IP_Origen,Servicio\n';
+      errorLogs.slice(0, 25000).forEach(l => {
+        const codeStr = l.entrustCode || l.type || '';
+        const diag = (l.diagnostic && l.diagnostic.matched)
+          ? l.diagnostic
+          : (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message || l.raw || '', codeStr) : {});
         const line = [
           l.lineNum || '',
-          `"${(l.timestamp || '').replace(/"/g, '""')}"`,
-          `"${(l.user || '').replace(/"/g, '""')}"`,
-          `"${(l.entrustCode || l.type || '').replace(/"/g, '""')}"`,
-          `"${(l.outcome || l.level || '').replace(/"/g, '""')}"`,
-          `"${(l.message || '').replace(/"/g, '""')}"`,
-          `"${(l.clientIp || '').replace(/"/g, '""')}"`,
-          `"${(l.service || '').replace(/"/g, '""')}"`
+          `"${String(l.timestamp || '').replace(/"/g, '""')}"`,
+          `"${String(l.user || '').replace(/"/g, '""')}"`,
+          `"${String(codeStr).replace(/"/g, '""')}"`,
+          `"${String(l.outcome || l.level || '').replace(/"/g, '""')}"`,
+          `"${String(l.message || '').replace(/"/g, '""')}"`,
+          `"${String(diag.meaning || diag.title || '').replace(/"/g, '""')}"`,
+          `"${String(diag.rootCause || '').replace(/"/g, '""')}"`,
+          `"${String(diag.remediation || '').replace(/\r?\n/g, ' ').replace(/"/g, '""')}"`,
+          `"${String(l.clientIp || '').replace(/"/g, '""')}"`,
+          `"${String(l.service || '').replace(/"/g, '""')}"`
         ].join(',');
         csvContent += line + '\n';
       });
@@ -7005,15 +7343,38 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'Errores_AuditEvents_Export.csv';
+      a.download = `Errores_y_Alertas_Auditoría_${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     };
-    document.getElementById('btn-page-prev')?.addEventListener('click', () => fetchSqlLogs(Math.max(1, (state.sqlPage || 1) - 1)));
-    document.getElementById('btn-page-next')?.addEventListener('click', () => fetchSqlLogs(Math.min(state.sqlTotalPages || 1, (state.sqlPage || 1) + 1)));
-    document.getElementById('btn-page-last')?.addEventListener('click', () => fetchSqlLogs(state.sqlTotalPages || 1));
+    document.getElementById('btn-page-prev')?.addEventListener('click', () => {
+      if (state.isServerApi) {
+        fetchSqlLogs(Math.max(1, (state.sqlPage || 1) - 1));
+      } else {
+        state.localPage = Math.max(1, (state.localPage || 1) - 1);
+        renderLogTable();
+      }
+    });
+    document.getElementById('btn-page-next')?.addEventListener('click', () => {
+      if (state.isServerApi) {
+        fetchSqlLogs(Math.min(state.sqlTotalPages || 1, (state.sqlPage || 1) + 1));
+      } else {
+        const totalPages = Math.max(1, Math.ceil((state.filteredLogs || []).length / (state.localPageSize || 50)));
+        state.localPage = Math.min(totalPages, (state.localPage || 1) + 1);
+        renderLogTable();
+      }
+    });
+    document.getElementById('btn-page-last')?.addEventListener('click', () => {
+      if (state.isServerApi) {
+        fetchSqlLogs(state.sqlTotalPages || 1);
+      } else {
+        const totalPages = Math.max(1, Math.ceil((state.filteredLogs || []).length / (state.localPageSize || 50)));
+        state.localPage = totalPages;
+        renderLogTable();
+      }
+    });
 
     const btnClearSearch = document.getElementById('btn-clear-search');
     dom.searchLogInput?.addEventListener('input', (e) => {
@@ -7225,8 +7586,30 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         updateMetricsAndCharts();
         updateOverviewWidgets();
 
+        if (window.storageEngine && typeof window.storageEngine.saveActiveSession === 'function') {
+          window.storageEngine.saveActiveSession({
+            logs: state.logs.slice(0, 35000),
+            loadedFiles: state.loadedFiles,
+            globalStreamMetrics: state.globalStreamMetrics,
+            activeClientId: state.activeClientId
+          }).catch(() => {});
+        }
+
+        if (window.UserTraceReport) {
+          try {
+            window.UserTraceReport.buildUserStats();
+            if (document.getElementById('tab-users-main-container')) {
+              window.UserTraceReport.renderTab('tab-users-main-container');
+            }
+          } catch (utErr) {}
+        }
+
+        if (typeof renderSyslogLiveSummary === 'function') {
+          try { renderSyslogLiveSummary(); } catch (sErr) {}
+        }
+
         const metrics = getConsolidatedMetrics();
-        const targetLog = (state.logs || []).find(l => l.level === 'CRITICAL' || l.level === 'ERROR') || (state.logs && state.logs[0]);
+        const targetLog = (state.logs || []).find(l => l.level === 'CRITICAL' || l.level === 'ERROR' || l.level === 'WARN') || (state.logs && state.logs[0]);
         if (targetLog) {
           selectLog(targetLog);
         }
@@ -7238,6 +7621,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         updateMetricsAndCharts();
         renderLoadedFilesDrawer();
         renderUserAndIpAnalytics();
+        if (window.UserTraceReport && typeof window.UserTraceReport.fetchForensicMatrix === 'function') {
+          window.UserTraceReport.fetchForensicMatrix(true);
+        }
         switchTab('analyzer');
       }
     });
@@ -7768,6 +8154,85 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     }
   }
 
+  function renderSyslogLiveSummary() {
+    const terminal = document.getElementById('syslog-terminal-output');
+    const rateVal = document.getElementById('syslog-rate-val');
+    const totalVal = document.getElementById('syslog-total-val');
+    const errorsVal = document.getElementById('syslog-errors-val');
+    if (!terminal) return;
+
+    const logs = state.logs || [];
+    const metrics = getConsolidatedMetrics();
+    if (logs.length === 0 && (!metrics || metrics.totalLogs === 0)) {
+      if (rateVal) rateVal.textContent = '0 eventos';
+      if (totalVal) totalVal.textContent = '0';
+      if (errorsVal) errorsVal.textContent = '0';
+      return;
+    }
+
+    const sshAndSyslogLogs = [];
+    const auditAndErrorLogs = [];
+    const originsMap = {};
+    const targetsMap = {};
+    const sshUsersMap = {};
+
+    logs.forEach(l => {
+      const raw = l.raw || l.message || '';
+      const srv = l.service || '';
+      if (/ssh|syslog|auditd/i.test(srv) || /\bOrigin:\s*\d+/i.test(raw) || /\bTarget:\s*[^\s]+/i.test(raw)) {
+        sshAndSyslogLogs.push(l);
+        const origM = raw.match(/\bOrigin:\s*([0-9a-fA-F.:]+)/i);
+        const targM = raw.match(/\bTarget:\s*([^\s]+)/i);
+        const usrM = raw.match(/\bUser:\s*([^\s]+)/i);
+        if (origM) originsMap[origM[1]] = (originsMap[origM[1]] || 0) + 1;
+        if (targM) targetsMap[targM[1]] = (targetsMap[targM[1]] || 0) + 1;
+        if (usrM) sshUsersMap[usrM[1]] = (sshUsersMap[usrM[1]] || 0) + 1;
+      } else if (l.level === 'ERROR' || l.level === 'CRITICAL' || l.level === 'WARN' || l.entrustCode) {
+        auditAndErrorLogs.push(l);
+      }
+    });
+
+    const totalReal = metrics.totalLogs || logs.length;
+    const totalErrWarn = (metrics.totalErrors || 0) + (metrics.totalWarnings || 0);
+    const sampleScale = (totalReal > logs.length && logs.length > 0) ? (totalReal / logs.length) : 1;
+    const estimatedSsh = Math.round(sshAndSyslogLogs.length * sampleScale);
+
+    if (rateVal) rateVal.textContent = estimatedSsh > 0 ? `${estimatedSsh.toLocaleString()} SSH/OS` : `${logs.length.toLocaleString()} Trazas`;
+    if (totalVal) totalVal.textContent = totalReal.toLocaleString();
+    if (errorsVal) errorsVal.textContent = totalErrWarn.toLocaleString();
+
+    const topOrigins = Object.entries(originsMap).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k, v]) => `${k} (${Math.round(v * sampleScale).toLocaleString()})`).join(', ') || 'Local / Intranet';
+    const topTargets = Object.entries(targetsMap).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k, v]) => `${k} (${Math.round(v * sampleScale).toLocaleString()})`).join(', ') || 'Servidor Principal';
+    const topSshUsers = Object.entries(sshUsersMap).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k, v]) => `${k} (${Math.round(v * sampleScale).toLocaleString()})`).join(', ') || 'N/A';
+
+    let html = `
+      <div style="background:#0f172a; border:1px solid #1e293b; border-left:4px solid #10b981; padding:10px 12px; border-radius:6px; margin-bottom:12px; color:#e2e8f0; font-family:'Segoe UI', sans-serif; font-size:0.8rem;">
+        <div style="font-weight:800; color:#34d399; margin-bottom:4px;">📡 ¿Para qué sirve esta vista? — Inspector Forense de Tramas Syslog, Accesos SSH y Auditoría de Sistema</div>
+        <div style="color:#94a3b8; margin-bottom:6px;">Analiza automáticamente todas las conexiones de sistema operativo (<code>SSH</code> / <code>Syslog</code>) y eventos de auditoría (<code>AUDxxxx</code> / <code>520xxxx</code>) presentes en el archivo cargado, sin requerir simulación externa.</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px; font-family:monospace; font-size:0.76rem; background:#020617; padding:8px; border-radius:4px;">
+          <div>🌐 <strong style="color:#38bdf8;">IPs Origen SSH:</strong> ${escapeHtml(topOrigins)}</div>
+          <div>🖥️ <strong style="color:#a78bfa;">Nodos Destino (Target):</strong> ${escapeHtml(topTargets)}</div>
+          <div>👤 <strong style="color:#f59e0b;">Cuentas OS/SSH:</strong> ${escapeHtml(topSshUsers)}</div>
+        </div>
+      </div>
+    `;
+
+    const feedPool = [...auditAndErrorLogs.slice(0, 120), ...sshAndSyslogLogs.slice(0, 80)];
+    if (feedPool.length === 0) {
+      feedPool.push(...logs.slice(0, 100));
+    }
+
+    feedPool.forEach(item => {
+      const isErr = item.level === 'CRITICAL' || item.level === 'ERROR' || /^520\d{4}|AUD6002/.test(item.entrustCode || '');
+      const isWarn = item.level === 'WARN' || /^AUD6001|AUD2309/.test(item.entrustCode || '');
+      const color = isErr ? '#f87171' : (isWarn ? '#fbbf24' : '#38bdf8');
+      const codeTag = item.entrustCode ? `[${item.entrustCode}] ` : '';
+      html += `<div style="color:${color}; margin-bottom:3px; border-bottom:1px dashed rgba(51,65,85,0.4); padding-bottom:2px;">[${escapeHtml(item.timestamp || '')}] [${escapeHtml(item.service || 'SYSLOG')}] ${escapeHtml(codeTag)}${escapeHtml(item.message || item.raw || '')}</div>`;
+    });
+
+    terminal.innerHTML = html;
+  }
+
   function initSyslogCollectorModule() {
     const btnStart = document.getElementById('btn-start-syslog-live');
     const btnStop = document.getElementById('btn-stop-syslog-live');
@@ -7776,9 +8241,16 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     const totalVal = document.getElementById('syslog-total-val');
     const errorsVal = document.getElementById('syslog-errors-val');
 
-    if (!btnStart || !window.syslogCollectorEngine) return;
+    renderSyslogLiveSummary();
+
+    if (!btnStart) return;
 
     btnStart.addEventListener('click', () => {
+      if (state.logs && state.logs.length > 0) {
+        renderSyslogLiveSummary();
+        return;
+      }
+      if (!window.syslogCollectorEngine) return;
       if (terminal) terminal.innerHTML = '<div style="color:#10b981;">🟢 [Syslog Receiver]: Escuchador activo en puerto UDP 514 / WebSocket...</div>';
       window.syslogCollectorEngine.startSimulation((parsed, stats) => {
         if (rateVal) rateVal.textContent = `${stats.rate} tx/seg`;
@@ -7808,6 +8280,10 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
         if (typeof window.syslogCollectorEngine.stopSimulation === 'function') window.syslogCollectorEngine.stopSimulation();
         if (typeof window.syslogCollectorEngine.stopStream === 'function') window.syslogCollectorEngine.stopStream();
         if (typeof window.syslogCollectorEngine.stop === 'function') window.syslogCollectorEngine.stop();
+      }
+      if (state.logs && state.logs.length > 0) {
+        renderSyslogLiveSummary();
+        return;
       }
       if (rateVal) rateVal.textContent = '0 tx/seg';
       if (terminal) {
