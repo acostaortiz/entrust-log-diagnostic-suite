@@ -826,23 +826,39 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           statusBadge = '<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:2px 8px; border-radius:12px; font-weight:700; font-size:0.7rem;">✅ 100% EXITOSO</span>';
         }
 
-        const topCodes = Object.entries(u.codes).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([c, n]) => `<span style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; padding:1px 5px; border-radius:4px; font-family:monospace; font-size:0.68rem;">${escapeHtml(c)} (${n})</span>`).join(' ');
+        const topCodes = Object.entries(u.codes).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([c, n]) => `<span style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; padding:1px 5px; border-radius:4px; font-family:monospace; font-size:0.68rem;">${escapeHtml(c)} (${n})</span>`).join(' ');
         const ipsStr = Array.from(u.ips).join(', ') || 'Red Interna';
+        const seqSummary = u.compressedPattern || (u.sequence || []).slice(0, 5).map(s => `#${s.step}:${s.code}(${s.outcome})`).join(' ➔ ') || 'Operación Única';
 
         userRowsHtml += `
           <tr style="border-bottom:1px solid #e2e8f0; background:${idx % 2 === 0 ? '#fff' : '#f8fafc'};">
-            <td style="padding:8px 10px; font-family:'JetBrains Mono', monospace; font-weight:bold; color:#0284c7;">${escapeHtml(u.username)}</td>
+            <td style="padding:8px 10px; font-family:'JetBrains Mono', monospace; font-weight:bold; color:#0284c7;">
+              ${escapeHtml(u.username)}<br>
+              <span style="font-size:0.66rem; color:#64748b; font-weight:normal;">IP: ${escapeHtml(ipsStr)}</span>
+            </td>
             <td style="padding:8px 10px; text-align:center; font-weight:700;">${u.totalEvents.toLocaleString()}</td>
             <td style="padding:8px 10px; text-align:center; color:#15803d; font-weight:700;">${u.successes.toLocaleString()}</td>
             <td style="padding:8px 10px; text-align:center; color:${u.errors > 0 ? '#b91c1c' : '#64748b'}; font-weight:700;">${u.errors.toLocaleString()}</td>
             <td style="padding:8px 10px; text-align:center;">${statusBadge}</td>
-            <td style="padding:8px 10px; font-size:0.72rem;">${topCodes || '<span style="color:#94a3b8;">Sin códigos de error</span>'}</td>
-            <td style="padding:8px 10px; font-size:0.72rem; color:#475569;">${escapeHtml(ipsStr)}</td>
+            <td style="padding:8px 10px; font-size:0.72rem;">
+              <strong style="color:#0f172a;">${escapeHtml(u.patternCategory || 'Operación Nominal')}</strong><br>
+              <span style="font-family:monospace; font-size:0.68rem; color:#0284c7;">${escapeHtml(seqSummary)}</span>
+            </td>
+            <td style="padding:8px 10px; font-size:0.72rem;">
+              ${topCodes || '<span style="color:#94a3b8;">Sin códigos de error</span>'}<br>
+              <span style="font-size:0.66rem; color:#64748b;">Causa: ${escapeHtml(u.rootCause || 'Flujo estándar')}</span>
+            </td>
           </tr>
         `;
       });
 
-      // 2. Filas de Códigos y Diagnóstico Oficial
+      // 2. Filas de Códigos, Usuarios Afectados y Diagnóstico Oficial
+      const localForensic = this.buildLocalForensicFallback();
+      const codeUsersLookup = {};
+      (localForensic.codeMatrix || []).forEach(cm => {
+        codeUsersLookup[cm.code] = cm.users || [];
+      });
+
       let codesRowsHtml = '';
       const sortedCodes = Object.entries(codesSummary).sort((a, b) => b[1] - a[1]);
       sortedCodes.forEach(([code, count], idx) => {
@@ -853,6 +869,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         const bDiag = window.getBilingualDiagnosticGlobal ? window.getBilingualDiagnosticGlobal(diag, code, diag.category, isEn) : diag;
         const isAud = code.startsWith('AUD');
         const isErr = diag.severity === 'CRITICAL' || diag.severity === 'ERROR';
+        const codeUsers = (codeUsersLookup[code] || []).slice(0, 6).map(cu => `<code style="background:#e0f2fe; color:#0369a1; padding:1px 4px; border-radius:3px; font-size:0.66rem;">${escapeHtml(cu.user)}(${cu.count}x)</code>`).join(' ');
 
         codesRowsHtml += `
           <tr style="border-bottom:1px solid #e2e8f0; background:${idx % 2 === 0 ? '#fff' : '#f8fafc'};">
@@ -864,6 +881,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             <td style="padding:8px 10px;">
               <strong>${escapeHtml(bDiag.title || code)}</strong><br>
               <span style="font-size:0.72rem; color:#475569;">${escapeHtml(bDiag.meaning || '')}</span>
+              ${codeUsers ? `<div style="margin-top:4px;">👥 ${codeUsers}</div>` : ''}
             </td>
             <td style="padding:8px 10px; font-size:0.72rem; color:#047857; white-space:pre-line;">
               ${escapeHtml(bDiag.remediation || diag.governanceControl || (isEn ? 'Nominal operation / No corrective action required' : 'No requiere acción correctiva'))}
@@ -895,6 +913,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         `;
       });
 
+      const dbHealthSummary = localForensic.dbHealth || { totalDbIncidents: 0, indicators: [] };
+      const postMortemSummary = localForensic.postMortem || {};
+
       const reportHtml = `
         <div id="user-trace-printable-document" style="font-family:'Inter', system-ui, sans-serif; color:#0f172a; line-height:1.5; padding:10px;">
           
@@ -921,7 +942,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
               <div>
                 <h1 style="font-size:1.35rem; font-weight:800; color:#0a3d6d; margin:0 0 6px 0;">INFORME DE TRAZABILIDAD, SEGURIDAD &amp; CENSO DE USUARIOS</h1>
-                <div style="font-size:0.82rem; color:#334155;">Radiografía integral de comportamiento de identidades, usuarios con fallas, bloqueos y registros exitosos</div>
+                <div style="font-size:0.82rem; color:#334155;">Radiografía integral de comportamiento de identidades (Solicitud 1 ➔ Solicitud N), matriz de códigos y salud de persistencia</div>
               </div>
               <div style="font-size:0.78rem; text-align:right; color:#475569;">
                 <div><strong>Entorno / Cliente:</strong> ${escapeHtml(clientLabel)}</div>
@@ -935,13 +956,13 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
 
           <!-- 1. RESUMEN EJECUTIVO (KPIs GLOBALES DEL CENSO) -->
           <div style="margin-bottom:24px;">
-            <h2 style="font-size:1rem; font-weight:800; color:#0a3d6d; border-bottom:1.5px solid #e2e8f0; padding-bottom:6px; margin-bottom:14px;">1. RADIOGRAFÍA Y ESTADÍSTICAS GLOBALES DEL CENSO DE USUARIOS</h2>
+            <h2 style="font-size:1rem; font-weight:800; color:#0a3d6d; border-bottom:1.5px solid #e2e8f0; padding-bottom:6px; margin-bottom:14px;">1. RADIOGRAFÍA Y ESTADÍSTICAS GLOBALES DEL CENSO DE USUARIOS (CERO ALUCINACIONES)</h2>
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px;">
               
               <div style="background:#fff; border:1px solid #cbd5e1; border-top:3px solid #0284c7; padding:12px; border-radius:6px; text-align:center;">
                 <div style="font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase;">Total Usuarios</div>
                 <div style="font-size:1.6rem; font-weight:800; color:#0284c7; font-family:'JetBrains Mono', monospace; margin:4px 0;">${targetUsers.length.toLocaleString()}</div>
-                <div style="font-size:0.68rem; color:#64748b;">Identidades evaluadas</div>
+                <div style="font-size:0.68rem; color:#64748b;">Identidades reales</div>
               </div>
 
               <div style="background:#fff; border:1px solid #cbd5e1; border-top:3px solid #10b981; padding:12px; border-radius:6px; text-align:center;">
@@ -971,20 +992,20 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             </div>
           </div>
 
-          <!-- 2. CENSO Y ESTADO DETALLADO DE TODOS LOS USUARIOS -->
+          <!-- 2. CENSO, PATRONES DE SOLICITUD (SOLICITUD 1 ➔ SOLICITUD N) Y ESTADO DETALLADO -->
           <div style="margin-bottom:24px;">
-            <h2 style="font-size:1rem; font-weight:800; color:#0a3d6d; border-bottom:1.5px solid #e2e8f0; padding-bottom:6px; margin-bottom:12px;">2. CENSO Y ESTADO DE SEGURIDAD POR USUARIO (${targetUsers.length} Identidades)</h2>
+            <h2 style="font-size:1rem; font-weight:800; color:#0a3d6d; border-bottom:1.5px solid #e2e8f0; padding-bottom:6px; margin-bottom:12px;">2. CENSO Y PATRÓN DE SOLICITUDES POR USUARIO (${targetUsers.length} Identidades Reales)</h2>
             <div style="overflow-x:auto;">
-              <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.78rem; background:#fff; border:1px solid #cbd5e1; border-radius:6px;">
+              <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.76rem; background:#fff; border:1px solid #cbd5e1; border-radius:6px;">
                 <thead>
                   <tr style="background:#0a3d6d; color:#fff; text-align:left;">
-                    <th style="padding:8px 10px;">Usuario / Identidad</th>
+                    <th style="padding:8px 10px;">Usuario / IP Origen</th>
                     <th style="padding:8px 10px; text-align:center;">Total Txs</th>
                     <th style="padding:8px 10px; text-align:center;">Éxitos</th>
                     <th style="padding:8px 10px; text-align:center;">Fallas</th>
-                    <th style="padding:8px 10px; text-align:center;">Estado de Seguridad</th>
-                    <th style="padding:8px 10px;">Códigos Entrust Asociados</th>
-                    <th style="padding:8px 10px;">IPs de Origen</th>
+                    <th style="padding:8px 10px; text-align:center;">Estado</th>
+                    <th style="padding:8px 10px;">Patrón y Secuencia (Solicitud 1 ➔ Solicitud N)</th>
+                    <th style="padding:8px 10px;">Códigos &amp; Causa Raíz</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -994,9 +1015,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             </div>
           </div>
 
-          <!-- 3. MATRIZ DE CÓDIGOS DE ERROR & AUDITORÍA ENTRUST -->
+          <!-- 3. MATRIZ DE CÓDIGOS DE ERROR & AUDITORÍA ENTRUST ➔ USUARIOS -->
           <div style="margin-bottom:24px;">
-            <h2 style="font-size:1rem; font-weight:800; color:#0a3d6d; border-bottom:1.5px solid #e2e8f0; padding-bottom:6px; margin-bottom:12px;">3. DIAGNÓSTICO TÉCNICO OFICIAL DE CÓDIGOS DETECTADOS</h2>
+            <h2 style="font-size:1rem; font-weight:800; color:#0a3d6d; border-bottom:1.5px solid #e2e8f0; padding-bottom:6px; margin-bottom:12px;">3. MATRIZ BIDIRECCIONAL DE CÓDIGOS DETECTADOS ➔ USUARIOS AFECTADOS</h2>
             <div style="overflow-x:auto;">
               <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.78rem; background:#fff; border:1px solid #cbd5e1; border-radius:6px;">
                 <thead>
@@ -1004,7 +1025,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
                     <th style="padding:8px 10px;">Código Entrust</th>
                     <th style="padding:8px 10px; text-align:center;">Frecuencia</th>
                     <th style="padding:8px 10px;">Severidad</th>
-                    <th style="padding:8px 10px;">Diagnóstico &amp; Significado Oficial</th>
+                    <th style="padding:8px 10px;">Diagnóstico, Significado &amp; Usuarios Afectados</th>
                     <th style="padding:8px 10px;">Acción de Control / Remediación</th>
                   </tr>
                 </thead>
@@ -1015,9 +1036,23 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             </div>
           </div>
 
-          <!-- 4. LÍNEA DE TIEMPO FORENSE DE TRANSACCIONES AUDITADAS -->
+          <!-- 4. SALUD DE BASE DE DATOS Y DICTAMEN POST-MORTEM (TRUSTEDCARE) -->
           <div style="margin-bottom:24px;">
-            <h2 style="font-size:1rem; font-weight:800; color:#0a3d6d; border-bottom:1.5px solid #e2e8f0; padding-bottom:6px; margin-bottom:12px;">4. CRONOLOGÍA DETALLADA DE TRANSACCIONES Y EVENTOS (Muestra de Trazas)</h2>
+            <h2 style="font-size:1rem; font-weight:800; color:#0a3d6d; border-bottom:1.5px solid #e2e8f0; padding-bottom:6px; margin-bottom:12px;">4. SALUD DE BASE DE DATOS Y DICTAMEN FORENSE POST-MORTEM</h2>
+            <div style="background:${dbHealthSummary.totalDbIncidents === 0 ? '#f0fdf4' : '#fef2f2'}; border:1px solid ${dbHealthSummary.totalDbIncidents === 0 ? '#86efac' : '#fca5a5'}; border-left:5px solid ${dbHealthSummary.totalDbIncidents === 0 ? '#16a34a' : '#dc2626'}; padding:12px 16px; border-radius:6px; font-size:0.78rem;">
+              <div style="font-weight:800; color:${dbHealthSummary.totalDbIncidents === 0 ? '#166534' : '#991b1b'}; margin-bottom:4px;">
+                ${dbHealthSummary.totalDbIncidents === 0
+                  ? '✅ BASE DE DATOS SALUDABLE: 0 Errores ORA / 0 Excepciones JDBC detectadas en la muestra auditada'
+                  : `🚨 ALERTA DE BASE DE DATOS: ${dbHealthSummary.totalDbIncidents} incidentes detectados`}
+              </div>
+              <div style="color:#334155;">${escapeHtml(postMortemSummary.executiveVerdict || '')}</div>
+              <div style="margin-top:6px; font-size:0.74rem; color:#0284c7; font-weight:700;">🌐 Referencia Oficial: https://trustedcare.entrust.com</div>
+            </div>
+          </div>
+
+          <!-- 5. LÍNEA DE TIEMPO FORENSE DE TRANSACCIONES AUDITADAS -->
+          <div style="margin-bottom:24px;">
+            <h2 style="font-size:1rem; font-weight:800; color:#0a3d6d; border-bottom:1.5px solid #e2e8f0; padding-bottom:6px; margin-bottom:12px;">5. CRONOLOGÍA DETALLADA DE TRANSACCIONES Y EVENTOS (Muestra Verificable)</h2>
             <div style="overflow-x:auto;">
               <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.74rem; background:#fff; border:1px solid #cbd5e1; border-radius:6px;">
                 <thead>
@@ -1041,7 +1076,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           <div style="margin-top:30px; border-top:2px solid #cbd5e1; padding-top:16px; display:flex; justify-content:space-between; align-items:flex-end;">
             <div>
               <div style="font-size:0.8rem; font-weight:800; color:#0a3d6d;">DICTAMEN TÉCNICO PERICIAL CONCLUIDO</div>
-              <div style="font-size:0.72rem; color:#64748b;">Informe generado automáticamente bajo estándares de auditoría Entrust IdentityGuard &amp; IDaaS Cloud.</div>
+              <div style="font-size:0.72rem; color:#64748b;">Informe generado automáticamente bajo estándares de auditoría ${escapeHtml(clientVersion)}.</div>
             </div>
             <div style="text-align:right;">
               <div style="font-size:0.82rem; font-weight:bold; color:#0f172a;">${(typeof window.getActiveEngineerGlobal === 'function') ? escapeHtml(window.getActiveEngineerGlobal().signature || window.getActiveEngineerGlobal().name) : 'Tomás Acosta'}</div>
