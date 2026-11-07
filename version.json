@@ -1,0 +1,24 @@
+{
+  "appName": "IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise",
+  "version": "v2.7.2",
+  "build": 547,
+  "releaseChannel": "Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)",
+  "gitCommit": "ONPREM-CLEAN-547",
+  "gitBranch": "main",
+  "buildDate": "2026-11-06 23:45",
+  "engineer": "Tomás Acosta",
+  "organization": "IT SERVICIOS V.S.A.",
+  "features": [
+    "Motor de Patrones de Comportamiento por Usuario (Secuencia Solicitud 1 ➔ Solicitud N & Clústeres de Flujo)",
+    "Matriz Bidireccional de Códigos (520xxx / ORA / IDaaS) y Patrones de Auditoría (AUDxxx) ➔ Usuarios e Interacciones",
+    "Diagnóstico Dedicado de Salud de Base de Datos (Oracle ORA-01555 / JDBC Pool / BLOB Grid Cards / SQLite Engine)",
+    "Análisis Forense Post-Mortem Automatizado con Integración Oficial Entrust TrustedCare (https://trustedcare.entrust.com)",
+    "Filtro Anti-Alucinación de Usuarios (Eliminación de falsos positivos y palabras reservadas en inglés/Java/SQL)",
+    "Diagnóstico Automatizado de Logs OnPremise (520xxx) e IDaaS Cloud",
+    "Telemetría Streaming de Ingesta en Vivo (Velocidad líneas/seg & ETA en tiempo real)",
+    "Slider Interactivo de Rango Temporal Dinámico para Filtrado Instantáneo",
+    "Validador Criptográfico de Integridad SHA-256 / SHA-1 para Manifiestos y Paquetes .dat",
+    "Exportación Masiva Streaming del Censo Forense de Usuarios (.CSV Indexado)",
+    "Base de Datos SQLite WAL de Alta Capacidad (Procesamiento 10GB+)"
+  ]
+}
