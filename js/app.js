@@ -756,10 +756,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.7.3',
-    build: 548,
+    version: 'v2.7.4',
+    build: 549,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'FORENSIC-ZERO-HALLUCINATION-548',
+    gitCommit: 'EXEC-VERDICT-549',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
