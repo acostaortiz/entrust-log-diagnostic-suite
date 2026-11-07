@@ -3239,6 +3239,33 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     const dynamicPhase3Html = `• Verificar boletines y parches aplicables a <strong>${escapeHtml(activeClient.platform)} (${escapeHtml(activeClient.version)})</strong> en <a href="https://trustedcare.entrust.com" target="_blank" style="color:#166534; text-decoration:underline; font-weight:bold;">trustedcare.entrust.com</a>.<br>• Mantener auditoría continua de secuencias por usuario (Solicitud 1 ➔ Solicitud N) y cumplimiento normativo SUDEBAN / ISO 27001.`;
 
+    // Veredicto Ejecutivo: 100% derivado de contadores reales (sin texto de plantilla)
+    const lockedUsersCount = sortedForensicUsers.filter(u => u.isLocked).length;
+    const dbIncidentsReal = (dbHealthObj.totalDbIncidents || 0) + countOraTotal;
+    let verdictLevel = 'NOMINAL', verdictColor = '#16a34a', verdictBg = '#f0fdf4', verdictIcon = '✅';
+    if (dbIncidentsReal > 0) { verdictLevel = 'ALTO'; verdictColor = '#dc2626'; verdictBg = '#fef2f2'; verdictIcon = '🚨'; }
+    else if (lockedUsersCount > 0 || count520Total > 0) { verdictLevel = 'MEDIO'; verdictColor = '#d97706'; verdictBg = '#fffbeb'; verdictIcon = '⚠️'; }
+    const topThreeHtml = sortedIncidents.slice(0, 3).map((it, i) => `<div style="display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px dashed #cbd5e1; font-size:11px;"><span><strong>${i + 1}.</strong> <code>${escapeHtml(it.code)}</code></span><strong style="font-family:monospace;">${it.count.toLocaleString()} (${formatPctStr(it.count, totalCount)})</strong></div>`).join('') || `<div style="font-size:11px; color:#64748b;">Sin códigos de error en la muestra.</div>`;
+    const executiveVerdictHtml = `
+      <div style="background:${verdictBg}; border:1.5px solid ${verdictColor}; border-left:8px solid ${verdictColor}; border-radius:8px; padding:16px 18px; margin-bottom:22px; page-break-inside:avoid; break-inside:avoid;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+          <div style="font-size:15px; font-weight:900; color:${verdictColor};">${verdictIcon} VEREDICTO EJECUTIVO — NIVEL DE RIESGO ${verdictLevel}</div>
+          <div style="font-size:10px; color:#475569; font-family:monospace;">Basado en ${totalCount.toLocaleString()} eventos • ${totalValidUsersCount} usuarios nominales</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:16px;">
+          <div style="font-size:11.5px; color:#1e293b; line-height:1.55;">
+            <div>• <strong>${usersWithErrorsCount}</strong> de <strong>${totalValidUsersCount}</strong> usuarios presentan fallas; <strong>${lockedUsersCount}</strong> con bloqueo de cuenta.</div>
+            <div>• Errores <code>520xxxx</code>: <strong>${count520Total.toLocaleString()}</strong> • Auditoría <code>AUDxxx</code>: <strong>${countAudTotal.toLocaleString()}</strong> • Oracle <code>ORA</code>: <strong>${countOraTotal.toLocaleString()}</strong>.</div>
+            <div>• Base de datos: <strong>${dbIncidentsReal === 0 ? 'SALUDABLE (0 errores ORA/JDBC)' : dbIncidentsReal + ' incidentes de persistencia'}</strong>.</div>
+            <div>• Índice de salud de la muestra: <strong>${healthValStr}</strong>.</div>
+          </div>
+          <div>
+            <div style="font-size:10px; font-weight:800; color:#0a3d6d; text-transform:uppercase; margin-bottom:4px;">Top 3 códigos por frecuencia</div>
+            ${topThreeHtml}
+          </div>
+        </div>
+      </div>`;
+
     let corrSectionHtml = `
       <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:14px; border-radius:6px; margin-bottom:25px; page-break-inside:avoid;">
         <h4 style="margin:0 0 10px 0; color:#0a3d6d; font-size:13px; font-weight:800;">${i18n.multiFileCorrelation.replace('{files}', corr.totalFiles)}</h4>
@@ -3391,6 +3418,9 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
             </div>
           </div>
         </div>
+
+        <!-- Veredicto Ejecutivo (datos reales) -->
+        ${executiveVerdictHtml}
 
         <!-- Sección de Correlación Cruzada -->
         ${corrSectionHtml}
