@@ -80,6 +80,15 @@ sync_portal() {
         git reset --hard "origin/$branch"
 
         if [ $? -eq 0 ]; then
+            # Limpiar residuos de tests en tenants_custom.json si itservicios quedó marcado is_deleted
+            rm -f "$DIR_PORTAL/storage/app/private/tenants_custom.json" "$DIR_PORTAL/storage/app/tenants_custom.json" 2>/dev/null || true
+            if [ -f "$DIR_PORTAL/.env" ] && ! grep -q "ENTRUST_ITSERVICIOS_DEV_SECRET" "$DIR_PORTAL/.env"; then
+                cat << 'EOF' >> "$DIR_PORTAL/.env"
+
+ENTRUST_ITSERVICIOS_QA_SECRET=OuDMHGkvBU4J29mQZpSeXyyIgMACNhb-rF1JjHMWVYA
+ENTRUST_ITSERVICIOS_DEV_SECRET=rW0p_o_8cpeIKdZ3MqO-P7v_cvX9ClHnfRICawPAoqY
+EOF
+            fi
             php artisan optimize:clear >/dev/null 2>&1 || true
             sudo chown -R www-data:www-data "$DIR_PORTAL" >/dev/null 2>&1 || true
             sudo chmod -R 775 storage bootstrap/cache >/dev/null 2>&1 || true
@@ -109,10 +118,16 @@ sync_diagnostic() {
         git reset --hard "origin/$branch"
 
         if [ $? -eq 0 ]; then
-            sudo chmod -R 777 "$DIR_DIAGNOSTIC" >/dev/null 2>&1 || true
+            sudo chmod -R 775 "$DIR_DIAGNOSTIC" >/dev/null 2>&1 || true
+
+            # Reiniciar server.py en el puerto 8085 automáticamente tras sincronizar
+            sudo kill -9 $(sudo lsof -t -i:8085 2>/dev/null) 2>/dev/null || true
+            sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
+            sleep 1
+            nohup python3 "$DIR_DIAGNOSTIC/server.py" > /tmp/server_8085.log 2>&1 &
 
             local commit_msg=$(git log -1 --pretty=format:"%h - %s (%cr)")
-            printf "${GREEN}${BOLD}? entrust-log-diagnostic-suite actualizado con Ã©xito.${NC}\n"
+            printf "${GREEN}${BOLD}? entrust-log-diagnostic-suite actualizado y servicio 8085 reiniciado con éxito.${NC}\n"
             printf "${WHITE}   Commit Desplegado: %s${NC}\n" "$commit_msg"
             log_event "SUCCESS: Suite de Diagnostico actualizada -> $commit_msg"
         fi

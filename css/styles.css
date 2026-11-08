@@ -1344,6 +1344,40 @@ h1, h2, h3, h4 { letter-spacing: -0.01em; }
 *::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.4); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
 *::-webkit-scrollbar-thumb:hover { background: rgba(2,132,199,0.6); background-clip: content-box; }
 
+/* ==========================================================================
+   UI POLISH v2.7.6: FUENTES DE LOGS, ARCHIVOS ROTADOS & TARJETAS ORDENADAS
+   ========================================================================== */
+.source-card {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.source-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(10, 61, 109, 0.12) !important;
+}
+
+.source-legend-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 0.74rem;
+  color: var(--text-main);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.source-legend-pill:hover {
+  border-color: var(--it-blue-light);
+  background: rgba(2, 132, 199, 0.08);
+}
+.source-legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 /* Header: mas limpio, con sombra suave y barra de acento */
 .app-header { border-bottom: 1px solid var(--border-color); box-shadow: 0 1px 0 var(--it-blue), 0 6px 20px rgba(10,61,109,0.08); backdrop-filter: blur(10px); }
 .header-top-row { padding-bottom: 2px; }

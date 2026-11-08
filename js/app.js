@@ -756,8 +756,8 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.7.5',
-    build: 550,
+    version: 'v2.7.6',
+    build: 551,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
     gitCommit: 'REPORT-VIEWS-550',
     gitBranch: 'main',
@@ -6240,7 +6240,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }
     }
 
-    // 2. Widget Balanceo de Nodos & Servicios Multi-Archivo
+    // 2. Widget Distribución por Fuentes de Logs & Archivos Rotados (Auditoría vs Sistema)
     const balanceContainer = document.getElementById('cluster-balance-overview-container');
     if (balanceContainer) {
       const nodeMap = new Map();
@@ -6248,8 +6248,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       if (files.length > 0) {
         files.forEach(f => {
-          const k = f.nodeKey || 'general';
-          const name = f.nodeName || 'Servidor General';
+          const detected = detectNodeFromLog({ sourceFile: f.name });
+          const k = f.nodeKey || detected.key;
+          const name = f.nodeName || detected.name;
           if (!nodeMap.has(k)) {
             nodeMap.set(k, { name, count: 0, errors: 0 });
           }
@@ -6274,7 +6275,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const colors = ['#0284c7', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4'];
 
       if (nodes.length === 0) {
-        balanceContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:15px;">⏳ Esperando carga de archivos para mostrar balanceo.</div>';
+        balanceContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:15px;">⏳ Esperando carga de archivos para clasificar flujos y rotaciones.</div>';
       } else {
         let html = '<div style="display:flex; flex-direction:column; gap:8px; max-height:190px; overflow-y:auto; padding-right:4px;">';
         nodes.forEach((n, idx) => {
@@ -6284,7 +6285,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             <div style="font-size:0.78rem;">
               <div class="flex-between" style="margin-bottom:3px;">
                 <span style="font-weight:bold; color:var(--text-main); font-size:0.78rem;">${escapeHtml(n.name)}</span>
-                <span style="color:${color}; font-weight:bold; font-family:monospace; font-size:0.75rem;">${n.count.toLocaleString()} logs (${pct}%)</span>
+                <span style="color:${color}; font-weight:bold; font-family:monospace; font-size:0.75rem;">${n.count.toLocaleString()} eventos (${pct}%)</span>
               </div>
               <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;">
                 <div style="width:${pct}%; height:100%; background:${color}; border-radius:3px; transition:width 0.8s;"></div>
@@ -6872,24 +6873,25 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
 
     const availNodes = getClientAvailableNodes();
-    const fileName = (log.sourceFile || '').toLowerCase();
+    const fileName = (log.sourceFile || '').trim();
+    const fileLower = fileName.toLowerCase();
     const message = (log.message || log.raw || '').toLowerCase();
     const service = (log.service || '').toLowerCase();
-    const textToSearch = `${fileName} ${service} ${message}`;
+    const textToSearch = `${fileLower} ${service} ${message}`;
 
-    // 0. Detección explícita de Target o Servidor en el mensaje real (ej. Target: 10.5.11.50:ssh, SACVWIG06, SACVWIG07)
-    const targetMatch = (log.message || log.raw || '').match(/\bTarget:\s*([A-Za-z0-9._-]+(?::[A-Za-z0-9._-]+)?)/i);
-    if (targetMatch) {
-      const targetStr = targetMatch[1];
-      return { key: `target_${targetStr.toLowerCase()}`, name: `🖥️ Nodo Destino (${targetStr})` };
-    }
+    // 0. Detección explícita de Target o Servidor Físico en el mensaje real (ej. Target: 10.5.11.50:ssh, SACVWIG06, SACVWIG07)
     const hostExplicit = (log.message || log.raw || '').match(/\b(SACVWIG\d+|sadcluapi\d+|mercantil-dc\d+|srv-[a-z0-9-]+)\b/i);
     if (hostExplicit) {
       const hName = hostExplicit[1].toUpperCase();
-      return { key: `host_${hName.toLowerCase()}`, name: `🖥️ Servidor ${hName}` };
+      return { key: `host_${hName.toLowerCase()}`, name: `🖥️ Servidor: ${hName}`, category: 'Servidor Físico' };
+    }
+    const targetMatch = (log.message || log.raw || '').match(/\bTarget:\s*([A-Za-z0-9._-]+(?::[A-Za-z0-9._-]+)?)/i);
+    if (targetMatch) {
+      const targetStr = targetMatch[1];
+      return { key: `target_${targetStr.toLowerCase()}`, name: `🖥️ Servidor Destino (${targetStr})`, category: 'Servidor Destino' };
     }
 
-    // 1. Detección por clave o nombre exacto configurado para este cliente
+    // 1. Detección por clave o nombre configurado para este cliente (ej. si el usuario configuró servidores físicos)
     for (let i = 0; i < availNodes.length; i++) {
       const node = availNodes[i];
       const cleanKey = (node.key || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -6897,40 +6899,80 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const cleanName = rawName.replace(/[^a-z0-9]/g, '');
 
       if (cleanKey && cleanKey !== 'node01' && cleanKey !== 'node02' && textToSearch.includes(cleanKey)) {
-        return node;
+        return { key: node.key, name: `🖥️ Servidor: ${node.name}`, category: 'Servidor Clúster' };
       }
       if (cleanName.length >= 4 && !/servidorprimario|servidorsecundario/.test(cleanName) && textToSearch.includes(cleanName)) {
-        return node;
+        return { key: node.key, name: `🖥️ Servidor: ${node.name}`, category: 'Servidor Clúster' };
       }
     }
 
-    // 2. Desagregación por Subsistema / Nodo Funcional real dentro del archivo
-    if (/ssh|syslog|auditd|pam_unix/i.test(service) || /\bssh\b|Target:\s*\d+/i.test(message)) {
-      return { key: 'node_ssh_os', name: '🖥️ Nodo OS / SSH & Accesos Administrativos' };
-    }
-    if (/ig\.audit|^aud\d/i.test(service) || /\[ig\.audit\]|\[aud\d+\]/i.test(message)) {
-      return { key: 'node_ig_audit', name: '📋 Nodo Subsistema Auditoría (IG.AUDIT)' };
-    }
-    if (/authenticationmanagement|authenticategeneric|authenticate/i.test(service) || /authenticationmanager/i.test(message)) {
-      return { key: 'node_ig_auth', name: '🛡️ Nodo Motor Autenticación (IG.SYSTEM.Auth)' };
-    }
-    if (/usermanagement|systemcontext|admin/i.test(service) || /usermanager|systemcontext/i.test(message)) {
-      return { key: 'node_ig_admin', name: '⚙️ Nodo Gestión de Identidades (IG.SYSTEM.Admin)' };
-    }
-    if (/(servicios|soap|radius|gateway|apim|wsse)/i.test(fileName) && availNodes.length > 1) {
-      return availNodes[1];
+    // 2. Si hay múltiples archivos cargados en la sesión, agrupar por archivo/flujo para correlacionar archivos rotados:
+    const distinctFiles = state.loadedFiles && state.loadedFiles.length > 1
+      ? state.loadedFiles.map(f => f.name)
+      : [...new Set((state.logs || []).map(l => l.sourceFile).filter(Boolean))];
+
+    if (distinctFiles.length > 1 && fileName) {
+      const isRotated = /\.\d+$/i.test(fileName) || /\.\d{4}-\d{2}-\d{2}/.test(fileName);
+      const isAudit = /audit/i.test(fileName);
+      const isSystem = /system/i.test(fileName);
+
+      if (isAudit) {
+        return {
+          key: `file_${fileName.toLowerCase().replace(/[^a-z0-9_.-]/g, '_')}`,
+          name: `📋 Auditoría: ${fileName}`,
+          category: 'Logs de Auditoría (IG.AUDIT)'
+        };
+      } else if (isRotated) {
+        return {
+          key: `file_${fileName.toLowerCase().replace(/[^a-z0-9_.-]/g, '_')}`,
+          name: `📄 Archivo Rotado: ${fileName}`,
+          category: isSystem ? 'Rotación Sistema (IG.SYSTEM)' : 'Archivo Rotado'
+        };
+      } else if (isSystem) {
+        return {
+          key: `file_${fileName.toLowerCase().replace(/[^a-z0-9_.-]/g, '_')}`,
+          name: `⚙️ Sistema Activo: ${fileName}`,
+          category: 'Logs de Sistema (IG.SYSTEM)'
+        };
+      } else {
+        return {
+          key: `file_${fileName.toLowerCase().replace(/[^a-z0-9_.-]/g, '_')}`,
+          name: `📑 Fuente: ${fileName}`,
+          category: 'Fuente de Logs'
+        };
+      }
     }
 
-    // 3. Por defecto: Archivo origen o 1er nodo del cliente
-    if (log.sourceFile) {
-      return { key: `file_${normalizeRotatedFilename(log.sourceFile)}`, name: `🖥️ Nodo ${log.sourceFile}` };
+    // 3. Si es un único archivo cargado (o logs combinados sin sourceFile distinguible), desglosar por subsistema real:
+    if (/ssh|syslog|auditd|pam_unix/i.test(service) || /\bssh\b|Target:\s*\d+/i.test(message)) {
+      return { key: 'source_ssh_os', name: '🔐 Sistema Operativo: SSH & Accesos', category: 'Acceso OS' };
     }
-    return availNodes[0] || { key: 'node_01', name: '🖥️ Servidor Primario (Core)' };
+    if (/ig\.audit|^aud\d/i.test(service) || /\[ig\.audit\]|\[aud\d+\]/i.test(message) || fileLower.includes('audit')) {
+      return { key: 'source_ig_audit', name: '📋 Logs de Auditoría: IG.AUDIT', category: 'Auditoría' };
+    }
+    if (/authenticationmanagement|authenticategeneric|authenticate/i.test(service) || /authenticationmanager/i.test(message)) {
+      return { key: 'source_ig_auth', name: '🛡️ Logs de Sistema: Motor Autenticación (Auth)', category: 'Sistema (Auth)' };
+    }
+    if (/usermanagement|systemcontext|admin/i.test(service) || /usermanager|systemcontext/i.test(message)) {
+      return { key: 'source_ig_admin', name: '⚙️ Logs de Sistema: Gestión Identidades (Admin)', category: 'Sistema (Admin)' };
+    }
+
+    if (fileName) {
+      const isRotated = /\.\d+$/i.test(fileName) || /\.\d{4}-\d{2}-\d{2}/.test(fileName);
+      return {
+        key: `file_${fileName.toLowerCase().replace(/[^a-z0-9_.-]/g, '_')}`,
+        name: isRotated ? `📄 Archivo Rotado: ${fileName}` : `📑 Fuente: ${fileName}`,
+        category: isRotated ? 'Rotación Histórica' : 'Fuente de Logs'
+      };
+    }
+
+    return { key: 'source_general', name: '📑 Flujo de Logs (General)', category: 'General' };
   }
 
   function updateNodeComparisonUI() {
     const cardsContainer = document.getElementById('dynamic-node-cards-container');
     const barContainer = document.getElementById('dynamic-node-asymmetry-bar');
+    const legendContainer = document.getElementById('dynamic-node-legend-container');
     const labelAsym = document.getElementById('node-asymmetry-label');
     const containerTable = document.getElementById('node-comparison-table-container');
 
@@ -6941,18 +6983,20 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const logs = state.logs || [];
     const nodeMap = new Map();
 
-    // Si hay logs en memoria, agrupar con granularidad real por nodo/subsistema detectado en cada traza
+    // Si hay logs en memoria, agrupar con granularidad real por fuente/rotación detectada
     if (logs.length > 0) {
       const sampleScale = (metrics.totalLogs > logs.length && logs.length > 0) ? (metrics.totalLogs / logs.length) : 1;
       logs.forEach(log => {
         const nodeInfo = detectNodeFromLog(log);
         const nodeKey = nodeInfo.key;
         const nodeName = nodeInfo.name;
+        const nodeCategory = nodeInfo.category || 'Fuente de Logs';
 
         if (!nodeMap.has(nodeKey)) {
           nodeMap.set(nodeKey, {
             key: nodeKey,
             name: nodeName,
+            category: nodeCategory,
             logsCount: 0,
             rawSampleCount: 0,
             errors: 0,
@@ -6990,10 +7034,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       });
     } else if (files.length > 0) {
       files.forEach(f => {
-        const nodeKey = f.nodeKey || 'node_general';
-        const nodeName = f.nodeName || 'Servidor General';
+        const detected = detectNodeFromLog({ sourceFile: f.name });
+        const nodeKey = f.nodeKey || detected.key;
+        const nodeName = f.nodeName || detected.name;
+        const cat = detected.category || 'Fuente de Logs';
         if (!nodeMap.has(nodeKey)) {
-          nodeMap.set(nodeKey, { key: nodeKey, name: nodeName, logsCount: 0, rawSampleCount: 0, errors: 0, warnings: 0, usersSet: new Set(), ipsSet: new Set(), entrustCodes: {} });
+          nodeMap.set(nodeKey, { key: nodeKey, name: nodeName, category: cat, logsCount: 0, rawSampleCount: 0, errors: 0, warnings: 0, usersSet: new Set(), ipsSet: new Set(), entrustCodes: {} });
         }
         const entry = nodeMap.get(nodeKey);
         entry.logsCount += (f.count || 0);
@@ -7007,12 +7053,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     if (discoveredNodes.length === 0) {
       cardsContainer.innerHTML = `
-        <div style="grid-column: 1 / -1; padding:30px; text-align:center; color:var(--text-muted); background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px;">
-          <div style="font-size:32px; margin-bottom:8px;">🔍</div>
-          <strong>No se han cargado logs en la sesión.</strong><br>
-          <span style="font-size:0.85rem;">Al subir archivos en la Visión General o Analizador, la Suite desagregará automáticamente cada Nodo, Servidor Destino y Subsistema con sus patrones y códigos.</span>
+        <div style="grid-column: 1 / -1; padding:35px 20px; text-align:center; color:var(--text-muted); background:var(--bg-primary); border:1px solid var(--border-color); border-radius:10px;">
+          <div style="font-size:36px; margin-bottom:10px;">📑</div>
+          <strong style="color:var(--text-main); font-size:1.02rem;">No se han cargado archivos de logs en la sesión activa.</strong><br>
+          <span style="font-size:0.85rem; color:var(--text-muted);">Al cargar archivos (.log, rotados .log.1, .log.9, etc.), la Suite desagregará automáticamente los flujos de Auditoría (IG.AUDIT) frente a los de Sistema (IG.SYSTEM) y sus rotaciones históricas.</span>
         </div>`;
-      if (labelAsym) labelAsym.textContent = '⏳ Esperando carga de archivos para auto-descubrimiento de topología...';
+      if (labelAsym) labelAsym.textContent = '⏳ Esperando carga de archivos para clasificar flujos y rotaciones...';
       if (barContainer) barContainer.innerHTML = '';
       if (containerTable) containerTable.innerHTML = '';
       return;
@@ -7026,28 +7072,66 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const topCodeCnt = topCodesNode.length > 0 ? topCodesNode[0][1] : 0;
       const topDiag = (window.knowledgeBaseEngine && topCode !== 'Nominal')
         ? window.knowledgeBaseEngine.diagnoseLog('', topCode)
-        : { title: 'Operación Nominal', remediation: 'Monitoreo continuo estándar.' };
-      const incidentTotal = (node.errors || 0) + (node.warnings || 0);
+        : { title: 'Operación Nominal', meaning: 'Eventos nominales procesados con éxito por la plataforma.', remediation: 'Monitoreo preventivo continuo.' };
       const baseDenominator = Math.max(1, node.rawSampleCount || node.logsCount);
       const healthNum = Math.max(15, Math.min(100, Math.round(100 - ((node.errors * 3 + node.warnings) / baseDenominator) * 100)));
+      const topPct = baseDenominator > 0 ? Math.round((topCodeCnt / baseDenominator) * 100) : 0;
 
       cardsHtml += `
-        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:14px; border-top:4px solid ${color}; display:flex; flex-direction:column; justify-content:space-between; gap:8px;">
+        <div class="source-card" style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:12px; padding:18px; border-top:4px solid ${color}; display:flex; flex-direction:column; justify-content:space-between; gap:12px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
           <div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px; margin-bottom:6px;">
-              <div class="card-title" style="font-size:0.88rem; color:var(--text-main); font-weight:800;">${escapeHtml(node.name)}</div>
-              <span style="font-size:0.72rem; font-weight:800; padding:2px 7px; border-radius:10px; background:${healthNum >= 85 ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)'}; color:${healthNum >= 85 ? '#10b981' : '#f59e0b'};">${healthNum}% Salud</span>
+            <!-- Header: Categoría + Salud Pill -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
+              <span style="font-size:0.68rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; padding:3px 9px; border-radius:6px; background:rgba(2,132,199,0.1); color:${color}; border:1px solid rgba(2,132,199,0.25);">
+                ${escapeHtml(node.category || 'Fuente de Log')}
+              </span>
+              <span style="font-size:0.75rem; font-weight:800; padding:3px 10px; border-radius:12px; background:${healthNum >= 85 ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)'}; color:${healthNum >= 85 ? '#10b981' : '#f59e0b'}; border:1px solid ${healthNum >= 85 ? 'rgba(16,185,129,0.3)' : 'rgba(245,158,11,0.3)'};">
+                ${healthNum >= 85 ? '🛡️' : '⚠️'} ${healthNum}% Salud
+              </span>
             </div>
-            <div style="font-size:0.78rem; color:var(--text-muted); line-height:1.55;">
-              📊 Eventos Estimados: <strong style="color:var(--text-main); font-family:monospace;">${node.logsCount.toLocaleString()}</strong> (Muestra: ${(node.rawSampleCount || node.logsCount).toLocaleString()})<br>
-              🚨 Errores Críticos: <strong style="color:${node.errors > 0 ? '#dc2626' : '#10b981'}; font-family:monospace;">${node.errors.toLocaleString()}</strong> | ⚠️ Alertas/Audit: <strong style="color:${node.warnings > 0 ? '#f59e0b' : '#10b981'}; font-family:monospace;">${node.warnings.toLocaleString()}</strong><br>
-              👥 Usuarios en Nodo: <strong style="color:#38bdf8; font-family:monospace;">${(node.usersSet ? node.usersSet.size : 0).toLocaleString()}</strong> | 🌐 IPs: <strong style="font-family:monospace;">${(node.ipsSet ? node.ipsSet.size : 0).toLocaleString()}</strong>
+
+            <!-- Título de la Fuente -->
+            <div style="font-size:0.95rem; color:var(--text-main); font-weight:800; line-height:1.35; margin-bottom:12px; word-break:break-word;">
+              ${escapeHtml(node.name)}
+            </div>
+
+            <!-- Mini-Grid 2x2 de KPIs Ordenados -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+              <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px; padding:8px 10px;">
+                <div style="font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">📊 Eventos Est.</div>
+                <div style="font-size:1.12rem; font-weight:800; font-family:monospace; color:var(--text-main);">${node.logsCount.toLocaleString()}</div>
+                <div style="font-size:0.65rem; color:var(--text-dim);">Muestra: ${(node.rawSampleCount || node.logsCount).toLocaleString()}</div>
+              </div>
+              <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px; padding:8px 10px;">
+                <div style="font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">🚨 Errores 520xxx</div>
+                <div style="font-size:1.12rem; font-weight:800; font-family:monospace; color:${node.errors > 0 ? '#ef4444' : '#10b981'};">${node.errors.toLocaleString()}</div>
+                <div style="font-size:0.65rem; color:${node.errors > 0 ? '#ef4444' : '#10b981'}; font-weight:600;">${node.errors > 0 ? 'Fallo Crítico' : '0 Críticos'}</div>
+              </div>
+              <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px; padding:8px 10px;">
+                <div style="font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">⚠️ Alertas / Audit</div>
+                <div style="font-size:1.12rem; font-weight:800; font-family:monospace; color:${node.warnings > 0 ? '#f59e0b' : '#10b981'};">${node.warnings.toLocaleString()}</div>
+                <div style="font-size:0.65rem; color:var(--text-dim);">Advertencias</div>
+              </div>
+              <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px; padding:8px 10px;">
+                <div style="font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">👥 Usuarios / IPs</div>
+                <div style="font-size:1.12rem; font-weight:800; font-family:monospace; color:#38bdf8;">${(node.usersSet ? node.usersSet.size : 0).toLocaleString()}</div>
+                <div style="font-size:0.65rem; color:var(--text-dim);">${(node.ipsSet ? node.ipsSet.size : 0).toLocaleString()} IPs origen</div>
+              </div>
             </div>
           </div>
-          <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:6px; padding:8px; font-size:0.74rem;">
-            <div style="font-weight:700; color:${color}; margin-bottom:2px;">🔍 Patrón Dominante: [${escapeHtml(topCode)}] (${topCodeCnt.toLocaleString()})</div>
-            <div style="color:var(--text-main); margin-bottom:4px;">${escapeHtml((topDiag.meaning || topDiag.title || '').slice(0, 120))}</div>
-            <div style="color:#10b981; font-weight:600;">💡 Recomendación: ${escapeHtml((topDiag.remediation || 'Mantener monitoreo activo.').replace(/\r?\n/g, ' ').slice(0, 125))}</div>
+
+          <!-- Patrón Forense Dominante & Recomendación -->
+          <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px; padding:10px; font-size:0.75rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-weight:800; color:${color}; font-family:monospace; font-size:0.8rem;">🔍 [${escapeHtml(topCode)}]</span>
+              <span style="font-size:0.7rem; font-weight:700; color:var(--text-muted);">${topCodeCnt.toLocaleString()} (${topPct}%)</span>
+            </div>
+            <div style="color:var(--text-main); font-weight:600; line-height:1.35; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+              ${escapeHtml(topDiag.meaning || topDiag.title || 'Actividad normal registrada')}
+            </div>
+            <div style="color:#10b981; font-weight:600; font-size:0.72rem; line-height:1.3; border-top:1px dashed var(--border-color); padding-top:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+              💡 ${escapeHtml((topDiag.remediation || 'Monitoreo preventivo continuo').replace(/\r?\n/g, ' '))}
+            </div>
           </div>
         </div>`;
     });
@@ -7055,15 +7139,24 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     const totalLogs = Math.max(1, discoveredNodes.reduce((acc, n) => acc + n.logsCount, 0));
     let barHtml = '';
+    let legendHtml = '';
     discoveredNodes.forEach((node, idx) => {
       const color = colors[idx % colors.length];
-      const pct = Math.max(3, Math.round((node.logsCount / totalLogs) * 100));
+      const pct = Math.max(2, Math.round((node.logsCount / totalLogs) * 100));
       barHtml += `<div style="width:${pct}%; background:${color}; transition:width 0.5s;" title="${escapeHtml(node.name)}: ${pct}%"></div>`;
+      legendHtml += `
+        <div class="source-legend-pill">
+          <span class="source-legend-dot" style="background:${color};"></span>
+          <span style="font-weight:700; color:var(--text-main);">${escapeHtml(node.name)}:</span>
+          <span style="font-family:monospace; color:${color}; font-weight:700;">${node.logsCount.toLocaleString()}</span>
+          <span style="color:var(--text-dim); font-size:0.7rem;">(${pct}%)</span>
+        </div>`;
     });
     if (barContainer) barContainer.innerHTML = barHtml;
+    if (legendContainer) legendContainer.innerHTML = legendHtml;
 
     if (labelAsym) {
-      labelAsym.textContent = `⚖️ Topología Real Desagregada: ${discoveredNodes.length} Nodos / Subsistemas Detectados (${(metrics.totalLogs || totalLogs).toLocaleString()} registros totales)`;
+      labelAsym.textContent = `📊 Desglose de Fuentes y Archivos: ${discoveredNodes.length} Flujos / Rotaciones Detectadas (${(metrics.totalLogs || totalLogs).toLocaleString()} registros consolidados)`;
     }
 
     if (containerTable) {
@@ -7079,12 +7172,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         const baseDenom = Math.max(1, node.rawSampleCount || node.logsCount);
         const health = Math.max(15, Math.min(100, Math.round(100 - ((node.errors * 3 + node.warnings) / baseDenom) * 100))) + '%';
 
-        headerCols += `<th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center; color:${color};">${escapeHtml(node.name)}</th>`;
-        logsRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.88rem; font-family:monospace;">${node.logsCount.toLocaleString()}</td>`;
-        errRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.88rem; color:${node.errors > 0 ? '#dc2626' : '#10b981'}; font-family:monospace;">${node.errors.toLocaleString()}</td>`;
-        warnRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.88rem; color:${node.warnings > 0 ? '#f59e0b' : '#10b981'}; font-family:monospace;">${(node.warnings || 0).toLocaleString()}</td>`;
-        usersRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.88rem; color:#38bdf8; font-family:monospace;">${(node.usersSet ? node.usersSet.size : 0).toLocaleString()}</td>`;
-        healthRowCols += `<td style="padding:8px; text-align:center; font-weight:bold; font-size:0.88rem; color:${color};">${health}</td>`;
+        headerCols += `<th style="padding:10px; border-bottom:2px solid var(--border-color); text-align:center; color:${color}; font-size:0.8rem; font-weight:800;">${escapeHtml(node.name)}</th>`;
+        logsRowCols += `<td style="padding:9px; text-align:center; font-weight:800; font-size:0.88rem; font-family:monospace;">${node.logsCount.toLocaleString()}</td>`;
+        errRowCols += `<td style="padding:9px; text-align:center; font-weight:800; font-size:0.88rem; color:${node.errors > 0 ? '#ef4444' : '#10b981'}; font-family:monospace;">${node.errors.toLocaleString()}</td>`;
+        warnRowCols += `<td style="padding:9px; text-align:center; font-weight:800; font-size:0.88rem; color:${node.warnings > 0 ? '#f59e0b' : '#10b981'}; font-family:monospace;">${(node.warnings || 0).toLocaleString()}</td>`;
+        usersRowCols += `<td style="padding:9px; text-align:center; font-weight:800; font-size:0.88rem; color:#38bdf8; font-family:monospace;">${(node.usersSet ? node.usersSet.size : 0).toLocaleString()}</td>`;
+        healthRowCols += `<td style="padding:9px; text-align:center; font-weight:800; font-size:0.88rem; color:${color};">${health}</td>`;
       });
 
       const allCodesMap = new Map();
@@ -7118,68 +7211,68 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
           const diag = window.knowledgeBaseEngine
             ? window.knowledgeBaseEngine.diagnoseLog('', code)
-            : { title: code, meaning: 'Evento registrado en el nodo.', rootCause: 'Actividad del sistema.', remediation: 'Monitoreo estándar.' };
+            : { title: code, meaning: 'Evento registrado en el flujo.', rootCause: 'Actividad del sistema.', remediation: 'Monitoreo estándar.' };
 
           codesRows += `
             <tr style="border-bottom:1px solid var(--border-color);">
-              <td style="padding:8px; font-family:monospace; font-weight:800; color:${badgeColor}; white-space:nowrap;">[${escapeHtml(code)}]</td>
+              <td style="padding:9px; font-family:monospace; font-weight:800; color:${badgeColor}; white-space:nowrap;">[${escapeHtml(code)}]</td>
               ${colCells}
-              <td style="padding:8px; font-size:0.78rem; color:var(--text-main); line-height:1.4;">
-                <strong>${escapeHtml(diag.title || code)}:</strong> ${escapeHtml(diag.meaning || '')}
+              <td style="padding:9px; font-size:0.78rem; color:var(--text-main); line-height:1.4;">
+                <strong style="color:var(--text-main);">${escapeHtml(diag.title || code)}:</strong> ${escapeHtml(diag.meaning || '')}
               </td>
-              <td style="padding:8px; font-size:0.76rem; line-height:1.4;">
+              <td style="padding:9px; font-size:0.76rem; line-height:1.4;">
                 <div style="color:#f59e0b; margin-bottom:3px;"><strong>Causa:</strong> ${escapeHtml(diag.rootCause || 'Operación regular')}</div>
                 <div style="color:#10b981;"><strong>Acción:</strong> ${escapeHtml((diag.remediation || 'Sin acción requerida').replace(/\r?\n/g, ' '))}</div>
               </td>
             </tr>`;
         });
       } else {
-        codesRows = `<tr><td colspan="${discoveredNodes.length + 3}" style="padding:10px; text-align:center; color:var(--text-muted);">No se detectaron códigos en las muestras cargadas.</td></tr>`;
+        codesRows = `<tr><td colspan="${discoveredNodes.length + 3}" style="padding:15px; text-align:center; color:var(--text-muted);">No se detectaron códigos en las muestras cargadas.</td></tr>`;
       }
 
       containerTable.innerHTML = `
         <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.84rem; margin-top:10px;">
           <thead>
             <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
-              <th style="padding:8px; border-bottom:2px solid var(--border-color);">Métrica Operativa por Nodo / Subsistema</th>
+              <th style="padding:10px; border-bottom:2px solid var(--border-color); font-weight:800;">Métrica Operativa por Fuente de Log / Archivo Rotado</th>
               ${headerCols}
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style="padding:8px; font-weight:bold;">Total Transacciones / Logs Procesados</td>
+              <td style="padding:9px; font-weight:bold;">Total Eventos / Transacciones Procesadas</td>
               ${logsRowCols}
             </tr>
             <tr>
-              <td style="padding:8px; font-weight:bold;">Errores Críticos de Sistema [520xxx / ORA / ERROR]</td>
+              <td style="padding:9px; font-weight:bold;">Errores Críticos de Sistema [520xxx / ORA / ERROR]</td>
               ${errRowCols}
             </tr>
             <tr>
-              <td style="padding:8px; font-weight:bold;">Alertas de Seguridad y Auditoría [AUD6001 / AUD6002 / WARN]</td>
+              <td style="padding:9px; font-weight:bold;">Alertas de Seguridad y Auditoría [AUD6001 / AUD6002 / WARN]</td>
               ${warnRowCols}
             </tr>
             <tr>
-              <td style="padding:8px; font-weight:bold;">Usuarios Nominales Únicos Detectados en el Nodo</td>
+              <td style="padding:9px; font-weight:bold;">Usuarios Nominales Únicos Detectados en la Fuente</td>
               ${usersRowCols}
             </tr>
             <tr>
-              <td style="padding:8px; font-weight:bold;">Índice de Salud Operativa del Nodo</td>
+              <td style="padding:9px; font-weight:bold;">Índice de Salud Operativa del Componente</td>
               ${healthRowCols}
             </tr>
           </tbody>
         </table>
 
-        <div style="margin-top:22px; font-weight:bold; color:var(--text-main); font-size:0.95rem;">
-          📚 Diccionario Forense y Distribución de Códigos de Auditoría y Sistema por Nodo (${discoveredNodes.length} Nodos):
+        <div style="margin-top:24px; font-weight:800; color:var(--text-main); font-size:0.95rem;">
+          📚 Diccionario Forense y Distribución de Códigos por Fuente y Archivo Rotado (${discoveredNodes.length} Fuentes):
         </div>
-        <div style="overflow-x:auto; margin-top:8px;">
+        <div style="overflow-x:auto; margin-top:10px;">
           <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.82rem;">
             <thead>
               <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
-                <th style="padding:8px; border-bottom:2px solid var(--border-color);">Código</th>
+                <th style="padding:10px; border-bottom:2px solid var(--border-color); font-weight:800;">Código</th>
                 ${headerCols}
-                <th style="padding:8px; border-bottom:2px solid var(--border-color); min-width:260px;">Significado Claro del Código (Auditoría / Sistema)</th>
-                <th style="padding:8px; border-bottom:2px solid var(--border-color); min-width:260px;">Causa Raíz y Recomendación Oficial</th>
+                <th style="padding:10px; border-bottom:2px solid var(--border-color); min-width:260px; font-weight:800;">Significado Claro del Código (Auditoría / Sistema)</th>
+                <th style="padding:10px; border-bottom:2px solid var(--border-color); min-width:260px; font-weight:800;">Causa Raíz y Recomendación Oficial</th>
               </tr>
             </thead>
             <tbody>
@@ -8762,15 +8855,13 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
               📄 ${escapeHtml(fn)}
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
-              <label style="font-size:0.75rem; color:var(--text-muted);">Asignar a:</label>
-              <select class="form-control node-assign-select" data-filename="${escapeHtml(fn)}" style="width:280px; font-size:0.8rem; padding:4px 8px;">
-                <option value="node_06" ${currentAssignment === 'node_06' ? 'selected' : ''}>🖥️ Nodo 06 (SACVWIG06 - Primario)</option>
-                <option value="node_07" ${currentAssignment === 'node_07' ? 'selected' : ''}>🖥️ Nodo 07 (SACVWIG07 - Secundario)</option>
-                <option value="node_01" ${currentAssignment === 'node_01' ? 'selected' : ''}>🖥️ Nodo 01 (SACVWIG01)</option>
-                <option value="node_02" ${currentAssignment === 'node_02' ? 'selected' : ''}>🖥️ Nodo 02 (SACVWIG02)</option>
-                <option value="node_03" ${currentAssignment === 'node_03' ? 'selected' : ''}>🖥️ Nodo 03 (SACVWIG03)</option>
-                <option value="node_04" ${currentAssignment === 'node_04' ? 'selected' : ''}>🖥️ Nodo 04 (SACVWIG04)</option>
-                <option value="node_05" ${currentAssignment === 'node_05' ? 'selected' : ''}>🖥️ Nodo 05 (SACVWIG05)</option>
+              <label style="font-size:0.75rem; color:var(--text-muted);">Clasificar como:</label>
+              <select class="form-control node-assign-select" data-filename="${escapeHtml(fn)}" style="width:310px; font-size:0.8rem; padding:4px 8px;">
+                <option value="source_ig_audit" ${currentAssignment === 'source_ig_audit' || /audit/i.test(fn) ? 'selected' : ''}>📋 Logs de Auditoría (IG.AUDIT)</option>
+                <option value="source_ig_system" ${currentAssignment === 'source_ig_system' || (!/\.\d+$/i.test(fn) && /system/i.test(fn)) ? 'selected' : ''}>⚙️ Logs de Sistema Activo (IG.SYSTEM)</option>
+                <option value="file_${fn.toLowerCase().replace(/[^a-z0-9_.-]/g, '_')}" ${currentAssignment.startsWith('file_') ? 'selected' : ''}>📄 Archivo Rotado: ${escapeHtml(fn)}</option>
+                <option value="node_06" ${currentAssignment === 'node_06' ? 'selected' : ''}>🖥️ Servidor Primario (SACVWIG06)</option>
+                <option value="node_07" ${currentAssignment === 'node_07' ? 'selected' : ''}>🖥️ Servidor Secundario (SACVWIG07)</option>
                 <option value="node_wso2" ${currentAssignment === 'node_wso2' ? 'selected' : ''}>🖥️ Gateway WSO2 APIM</option>
               </select>
             </div>
@@ -8788,10 +8879,16 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       const selects = listContainer.querySelectorAll('.node-assign-select');
       selects.forEach((sel, idx) => {
         const fn = sel.getAttribute('data-filename') || '';
-        if (fn.includes('07') || idx >= 12) {
+        if (/audit/i.test(fn)) {
+          sel.value = 'source_ig_audit';
+        } else if (/07/i.test(fn)) {
           sel.value = 'node_07';
-        } else {
+        } else if (/06/i.test(fn)) {
           sel.value = 'node_06';
+        } else if (/\.\d+$/i.test(fn)) {
+          sel.value = `file_${fn.toLowerCase().replace(/[^a-z0-9_.-]/g, '_')}`;
+        } else {
+          sel.value = 'source_ig_system';
         }
       });
     });
@@ -8816,7 +8913,7 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       modal.classList.remove('active');
       updateNodeComparisonUI();
       renderTraceWaterfall();
-      showAnalysisStatus(false, '✅ Nodos Asignados y Agrupados', `Topología Clúster reconfigurada`);
+      showAnalysisStatus(false, '✅ Archivos y Fuentes Clasificados', `Desglose forense actualizado`);
     });
   }
 

@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v2.7.5 (Build 550)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v2.7.6 (Build 551)</span>
           </div>
         </div>
       </div>
@@ -110,10 +110,10 @@
               </div>
             </button>
             <button type="button" class="header-dropdown-item nav-btn" data-tab="nodes" onclick="window.switchTabGlobal('nodes');">
-              <span style="font-size:1.2rem;">🏢</span>
+              <span style="font-size:1.2rem;">📑</span>
               <div>
-                <div style="font-weight:700;">Comparativa Multi-Nodo</div>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Balanceo de carga y servidores</div>
+                <div style="font-weight:700;">Fuentes &amp; Rotaciones</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Auditoría (IG.AUDIT) vs Sistema (Rotaciones)</div>
               </div>
             </button>
             <button type="button" class="header-dropdown-item nav-btn" data-tab="traces" onclick="window.switchTabGlobal('traces');">
@@ -389,13 +389,13 @@
           </div>
         </div>
 
-        <!-- Widget Balanceo de Nodos -->
+        <!-- Widget Distribución por Fuentes de Logs & Archivos Rotados -->
         <div class="glass-card" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; padding:18px;">
           <div class="card-header flex-between" style="margin-bottom:12px;">
             <div class="card-title text-cyan" style="font-size:0.92rem; font-weight:700; display:flex; align-items:center; gap:8px;">
-              <span>🏢</span> Distribución de Carga por Servidor / Nodo
+              <span>📑</span> Distribución por Fuentes de Logs &amp; Archivos Rotados
             </div>
-            <span style="font-size:0.72rem; color:var(--text-muted);">Arquitectura Clúster</span>
+            <span style="font-size:0.72rem; color:var(--text-muted);">Auditoría vs Sistema</span>
           </div>
           <div id="cluster-balance-overview-container" style="min-height:120px; display:flex; flex-direction:column; gap:10px; justify-content:center;">
             <!-- Inyectado dinámicamente -->
@@ -638,37 +638,39 @@
       </div>
     </div>
 
-    <!-- 4. PESTAÑA: COMPARATIVA MULTI-NODO (PRIMARIO VS SECUNDARIO) -->
+    <!-- 4. PESTAÑA: DESGLOSE POR FUENTES & ARCHIVOS ROTADOS (AUDITORÍA VS SISTEMA) -->
     <div class="tab-pane" id="tab-nodes">
       <div class="glass-card mb-4">
         <div class="card-header flex-between" style="flex-wrap:wrap; gap:10px;">
           <div>
-            <div class="card-title text-cyan">🏢 Módulo de Comparativa Multi-Nodo (Servidores Primario, Secundario & Rotaciones)</div>
-            <div class="card-subtitle">Agrupación inteligente de archivos rotados (.log.1, .log.2) por Servidor/Nodo</div>
+            <div class="card-title text-cyan" style="font-size:1.15rem; font-weight:700;">📑 Desglose Forense por Fuentes de Logs y Archivos Rotados</div>
+            <div class="card-subtitle">Separación analítica de eventos de Auditoría (IG.AUDIT), eventos de Sistema (IG.SYSTEM) y rotaciones históricas (.log, .log.1, .log.9)</div>
           </div>
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-primary" id="btn-open-node-grouping" style="background:#0284c7; border-color:#0284c7;">🎛️ Asignar / Agrupar Archivos a Nodos</button>
-            <button class="btn btn-primary" id="btn-refresh-node-comparison">🔄 Recalcular Comparativa</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" id="btn-open-node-grouping" style="font-size:0.8rem; font-weight:600;">🎛️ Clasificar Archivos y Fuentes</button>
+            <button class="btn btn-primary" id="btn-refresh-node-comparison" style="font-size:0.8rem; font-weight:600;">🔄 Recalcular Métricas</button>
           </div>
         </div>
-        <p class="text-muted" style="font-size:0.85rem; margin-bottom:16px;">
-          Permite evaluar la simetría de carga, distribución de errores HTTP/520xxx y salud consolidada entre los Nodos del Clúster (ej. <strong>Nodo 06</strong> con sus 12 rotaciones vs <strong>Nodo 07</strong> con sus 5 rotaciones).
+        <p class="text-muted" style="font-size:0.85rem; margin-bottom:18px; line-height:1.5;">
+          Permite correlacionar de forma independiente los eventos del <strong>Subsistema de Auditoría (IG.AUDIT)</strong> frente a los <strong>Logs de Sistema (IG.SYSTEM)</strong> y sus archivos históricos rotados (ej. <code>identityguard_system.log.9</code>). Facilita verificar si las incidencias corresponden a rechazos de credenciales de usuario o anomalías internas del motor.
         </p>
 
-        <!-- Contenedor Dinámico de Tarjetas de Nodos Detectados -->
-        <div id="dynamic-node-cards-container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-bottom:20px;">
-          <!-- Inyectado dinámicamente según los nodos descubiertos en los logs -->
-        </div>
-
-        <!-- Barra Dinámica de Asimetría de Carga del Clúster -->
-        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:16px; margin-bottom:20px;">
+        <!-- Barra Dinámica de Distribución de Eventos por Fuente y Archivo -->
+        <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:10px; padding:16px; margin-bottom:22px;">
           <div class="flex-between mb-2">
-            <span class="diag-label">⚖️ Distribución de Carga del Clúster (Detección Automática de Nodos):</span>
-            <span class="font-mono text-cyan" id="node-asymmetry-label" style="font-weight:700;">Balanceando Clúster...</span>
+            <span class="diag-label" style="font-weight:700;">📊 Distribución de Eventos por Fuente y Archivo Rotado:</span>
+            <span class="font-mono text-cyan" id="node-asymmetry-label" style="font-weight:700; font-size:0.85rem;">Analizando fuentes y rotaciones...</span>
           </div>
-          <div id="dynamic-node-asymmetry-bar" style="height:12px; background:#1e293b; border-radius:6px; overflow:hidden; display:flex;">
+          <div id="dynamic-node-asymmetry-bar" style="height:14px; background:#1e293b; border-radius:7px; overflow:hidden; display:flex; box-shadow:inset 0 1px 3px rgba(0,0,0,0.3);">
             <!-- Inyectado dinámicamente por JS -->
           </div>
+          <!-- Leyenda interactiva debajo de la barra -->
+          <div id="dynamic-node-legend-container" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;"></div>
+        </div>
+
+        <!-- Contenedor Dinámico de Tarjetas de Fuentes Detectadas -->
+        <div id="dynamic-node-cards-container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap:16px; margin-bottom:24px;">
+          <!-- Inyectado dinámicamente según las fuentes descubiertas en los logs -->
         </div>
 
         <!-- Tabla Comparativa -->
@@ -1001,22 +1003,22 @@ db.connection.pool.max=20
     </div>
   </div>
 
-  <!-- MODAL: ASIGNACIÓN Y AGRUPACIÓN MANUAL DE ARCHIVOS A NODOS -->
+  <!-- MODAL: CLASIFICACIÓN Y AGRUPACIÓN DE ARCHIVOS POR FLUJO O SERVIDOR -->
   <div class="modal-overlay" id="node-grouping-modal">
     <div class="modal-content" style="max-width: 850px;">
       <div class="card-header flex-between">
-        <div class="card-title text-cyan" style="font-size:1.1rem;">🎛️ Asignación & Agrupación de Archivos por Nodo/Servidor</div>
+        <div class="card-title text-cyan" style="font-size:1.1rem;">🎛️ Clasificación &amp; Agrupación de Archivos por Flujo o Servidor</div>
         <button class="btn" onclick="document.getElementById('node-grouping-modal').classList.remove('active');">✖ Cerrar</button>
       </div>
 
       <p class="text-muted" style="font-size:0.85rem; margin-bottom:14px;">
-        Si cargaste múltiples archivos rotados (ej. 12 archivos de <code>identityguard_system.log.*</code> de un nodo y 5 archivos de otro nodo), aquí puedes consolidar y asignar cada archivo a su Nodo real correspondiente (ej. <strong>Nodo 06</strong> vs <strong>Nodo 07</strong>).
+        Asigna cada archivo cargado a su flujo correspondiente (<strong>Auditoría IG.AUDIT</strong>, <strong>Sistema IG.SYSTEM</strong> con sus rotaciones históricas, o <strong>Servidores Físicos</strong> específicos) para consolidar las métricas de salud y volumen de eventos.
       </p>
 
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
         <div style="font-size:0.85rem; font-weight:bold; color:var(--text-main);">Archivos Cargados en Sesión:</div>
         <div style="display:flex; gap:6px;">
-          <button class="btn btn-secondary" id="btn-quick-group-06-07" style="font-size:0.75rem; background:#0a3d6d; color:#fff;">⚡ Auto-Agrupar Nodo 06 & 07</button>
+          <button class="btn btn-secondary" id="btn-quick-group-06-07" style="font-size:0.75rem; background:#0a3d6d; color:#fff;">⚡ Auto-Clasificar Auditoría vs Sistema</button>
           <button class="btn btn-secondary" id="btn-reset-node-grouping" style="font-size:0.75rem;">🔄 Restablecer</button>
         </div>
       </div>
@@ -1026,8 +1028,8 @@ db.connection.pool.max=20
       </div>
 
       <div class="flex-between">
-        <span style="font-size:0.75rem; color:var(--text-muted);">Los cambios se aplicarán inmediatamente a la Comparativa Multi-Nodo y Gráficos de Carga.</span>
-        <button class="btn btn-primary" id="btn-apply-node-grouping" style="background:#059669; border-color:#059669;">✅ Aplicar Agrupación de Nodos</button>
+        <span style="font-size:0.75rem; color:var(--text-muted);">Los cambios se aplicarán inmediatamente al Desglose de Fuentes y Gráficos de Distribución.</span>
+        <button class="btn btn-primary" id="btn-apply-node-grouping" style="background:#059669; border-color:#059669;">✅ Aplicar Clasificación</button>
       </div>
     </div>
   </div>
