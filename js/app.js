@@ -756,10 +756,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.7.6',
-    build: 551,
+    version: 'v2.7.7',
+    build: 552,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'REPORT-VIEWS-550',
+    gitCommit: 'ROTATION-FORENSIC-552',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -2267,7 +2267,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       };
 
-      await window.html2pdf().set(opt).from(sourceElement).toPdf().get('pdf').then(function(pdf) {
+      const pdfTask = window.html2pdf().set(opt).from(sourceElement).toPdf().get('pdf').then(function(pdf) {
         const totalPages = pdf.internal.getNumberOfPages();
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
@@ -2293,6 +2293,12 @@ document.addEventListener('DOMContentLoaded', () => {
           pdf.text(`Página ${i} de ${totalPages}`, pageWidth - 28, pageHeight - 5);
         }
       }).save();
+
+      // Timeout de 7 segundos para evitar que la UI quede congelada
+      await Promise.race([
+        pdfTask,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout de generación PDF cliente')), 7000))
+      ]);
 
       return;
     }
@@ -2431,9 +2437,11 @@ document.addEventListener('DOMContentLoaded', () => {
     pageWrapper.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif";
     pageWrapper.style.boxSizing = 'border-box';
     pageWrapper.style.position = 'fixed';
+    pageWrapper.style.left = '-9999px';
     pageWrapper.style.top = '0';
-    pageWrapper.style.left = '0';
-    pageWrapper.style.zIndex = '999999';
+    pageWrapper.style.zIndex = '-1';
+    pageWrapper.style.opacity = '0';
+    pageWrapper.style.pointerEvents = 'none';
 
     pageWrapper.innerHTML = `
       <!-- ENCABEZADO CORPORATIVO DE ALTA DIRECCIÓN -->
@@ -3143,7 +3151,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const userCensusSectionHtml = `
       <div style="margin-top:20px; margin-bottom:25px; page-break-inside:avoid; break-inside:avoid;">
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:10px; font-size:15px;">
-          3. Censo Forense de Usuarios &amp; Secuencia de Solicitudes (Solicitud 1 ➔ Solicitud N) — [${totalValidUsersCount} Usuarios Reales Validados | 0 Falsos Positivos]
+          5. Censo Forense de Usuarios &amp; Secuencia de Solicitudes (Solicitud 1 ➔ Solicitud N) — [${totalValidUsersCount} Usuarios Reales Validados | 0 Falsos Positivos]
         </h3>
         <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:12px;">
           <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:8px 12px; border-radius:6px; font-size:11px;">
@@ -3191,7 +3199,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const dbAndPostMortemSectionHtml = `
       <div style="margin-top:20px; margin-bottom:25px; page-break-inside:avoid; break-inside:avoid;">
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:10px; font-size:15px;">
-          4. Diagnóstico Verificable de Salud de Base de Datos &amp; Dictamen Post-Mortem (Entrust TrustedCare)
+          6. Diagnóstico Verificable de Salud de Base de Datos &amp; Dictamen Post-Mortem (Entrust TrustedCare)
         </h3>
         <div style="background:${dbHealthObj.totalDbIncidents === 0 ? '#f0fdf4' : '#fef2f2'}; border:1px solid ${dbHealthObj.totalDbIncidents === 0 ? '#86efac' : '#fca5a5'}; border-left:5px solid ${dbHealthObj.totalDbIncidents === 0 ? '#16a34a' : '#dc2626'}; padding:10px 14px; border-radius:6px; margin-bottom:12px; font-size:11px;">
           <strong style="color:${dbHealthObj.totalDbIncidents === 0 ? '#166534' : '#991b1b'};">
@@ -3312,6 +3320,216 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           </tbody>
         </table>`;
 
+    // Construir Sección 2: Inventario Forense & Desglose por Fuentes y Archivos Rotados (19 Archivos)
+    const auditedFiles = (state.loadedFiles && state.loadedFiles.length > 0)
+      ? state.loadedFiles
+      : [{
+          name: (state.logs && state.logs[0]?.sourceFile) || 'identityguard_system.log',
+          count: totalCount,
+          realErrors: criticalLogsCount,
+          realWarnings: warningLogsCount,
+          size: 0,
+          nodeName: '🛡️ IdentityGuard Core'
+        }];
+
+    let filesTableRowsHtml = '';
+    let filesWithErrorsCount = 0;
+    let samFilesCount = 0;
+    let coreFilesCount = 0;
+    let auditFilesCount = 0;
+    let otherFilesCount = 0;
+
+    auditedFiles.forEach((file, fIdx) => {
+      const fName = file.name || `Archivo #${fIdx + 1}`;
+      const fLower = fName.toLowerCase();
+      let fLayer = '🖥️ Sistema / Base de Datos';
+      let fBadgeBg = '#f1f5f9';
+      let fBadgeColor = '#475569';
+
+      if (fLower.includes('sam_system') || fLower.includes('sam_audit') || fLower.includes('sam.')) {
+        fLayer = '🌐 SAM Gateway';
+        fBadgeBg = '#e0f2fe';
+        fBadgeColor = '#0369a1';
+        samFilesCount++;
+      } else if (fLower.includes('identityguard_system') || fLower.includes('ig_system') || fLower.includes('system.log')) {
+        fLayer = '🛡️ IdentityGuard Core (IG.SYSTEM)';
+        fBadgeBg = '#fee2e2';
+        fBadgeColor = '#991b1b';
+        coreFilesCount++;
+      } else if (fLower.includes('identityguard_audit') || fLower.includes('ig_audit') || fLower.includes('audit.log')) {
+        fLayer = '📋 IdentityGuard Audit (IG.AUDIT)';
+        fBadgeBg = '#fef3c7';
+        fBadgeColor = '#92400e';
+        auditFilesCount++;
+      } else {
+        otherFilesCount++;
+      }
+
+      const fLines = Number(file.count || file.linesProcessed || 0);
+      let fErrors = Number(file.realErrors || file.errors || 0);
+      if (fErrors === 0 && (fLower.includes('identityguard_system') || fLower.includes('ig_system')) && count520Total > 0 && auditedFiles.length <= 25) {
+        const coreFiles = auditedFiles.filter(af => /system/i.test(af.name));
+        if (coreFiles.length === 1 || fName === coreFiles[0].name) {
+          fErrors = count520Total;
+        }
+      }
+
+      if (fErrors > 0) filesWithErrorsCount++;
+
+      const fSizeStr = file.size ? `${(file.size / (1024 * 1024)).toFixed(2)} MB` : '-';
+      const pctOfTotal = totalCount > 0 ? ((fLines / totalCount) * 100).toFixed(1) + '%' : '-';
+
+      let statusBadge = '';
+      if (fErrors > 0) {
+        statusBadge = `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 8px; border-radius:12px; font-weight:800; font-size:10px;">🚨 ${fErrors.toLocaleString()} Fallos Críticos</span>`;
+      } else if (fLower.includes('audit')) {
+        statusBadge = `<span style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">📋 Trazabilidad Audit</span>`;
+      } else {
+        statusBadge = `<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">✅ Nominal (0 Fallas)</span>`;
+      }
+
+      filesTableRowsHtml += `
+        <tr style="background:${fIdx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+          <td style="padding:7px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:11px; font-weight:bold; color:#0f172a; word-break:break-all;">
+            📄 ${escapeHtml(fName)}
+          </td>
+          <td style="padding:7px 8px; border:1px solid #cbd5e1; font-size:10.5px;">
+            <span style="background:${fBadgeBg}; color:${fBadgeColor}; padding:2px 6px; border-radius:4px; font-weight:700; font-size:10px; display:inline-block;">${fLayer}</span>
+          </td>
+          <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:right; font-family:monospace; font-weight:700; font-size:11px; color:#0f172a;">
+            ${fLines.toLocaleString()}
+          </td>
+          <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:center; font-size:10px; color:#64748b; font-family:monospace;">
+            ${pctOfTotal}
+          </td>
+          <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:center; font-family:monospace; font-size:10.5px; color:#475569;">
+            ${fSizeStr}
+          </td>
+          <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:center;">
+            ${statusBadge}
+          </td>
+        </tr>
+      `;
+    });
+
+    const filesInventorySectionHtml = `
+      <div style="margin-top:20px; margin-bottom:25px; page-break-inside:avoid; break-inside:avoid;">
+        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:10px; font-size:15px;">
+          2. Inventario Forense &amp; Desglose por Fuentes y Archivos Rotados [${auditedFiles.length} Archivos Auditados | ${totalCount.toLocaleString()} Eventos]
+        </h3>
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:12px;">
+          <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:10px 12px; border-radius:6px; font-size:11px;">
+            <div style="color:#0369a1; font-size:10px; font-weight:800; text-transform:uppercase;">Total Archivos Auditados</div>
+            <div style="font-family:monospace; font-weight:900; font-size:18px; color:#0a3d6d; margin-top:2px;">${auditedFiles.length} Archivos</div>
+            <div style="font-size:9.5px; color:#64748b; margin-top:2px;">Rotación secuencial de logs</div>
+          </div>
+          <div style="background:#fef2f2; border:1px solid #fecaca; padding:10px 12px; border-radius:6px; font-size:11px;">
+            <div style="color:#b91c1c; font-size:10px; font-weight:800; text-transform:uppercase;">Archivos Core con Incidentes</div>
+            <div style="font-family:monospace; font-weight:900; font-size:18px; color:#dc2626; margin-top:2px;">${filesWithErrorsCount} Archivo(s)</div>
+            <div style="font-size:9.5px; color:#64748b; margin-top:2px;">Concentran los errores 520xxx</div>
+          </div>
+          <div style="background:#fef3c7; border:1px solid #fde68a; padding:10px 12px; border-radius:6px; font-size:11px;">
+            <div style="color:#92400e; font-size:10px; font-weight:800; text-transform:uppercase;">Trazabilidad de Auditoría (AUD)</div>
+            <div style="font-family:monospace; font-weight:900; font-size:18px; color:#d97706; margin-top:2px;">${auditFilesCount} Archivo(s)</div>
+            <div style="font-size:9.5px; color:#64748b; margin-top:2px;">Trazas legales sin pérdida</div>
+          </div>
+          <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:10px 12px; border-radius:6px; font-size:11px;">
+            <div style="color:#15803d; font-size:10px; font-weight:800; text-transform:uppercase;">Archivos Gateway &amp; SAM</div>
+            <div style="font-family:monospace; font-weight:900; font-size:18px; color:#16a34a; margin-top:2px;">${samFilesCount} Archivo(s)</div>
+            <div style="font-size:9.5px; color:#64748b; margin-top:2px;">Puntos de entrada transaccional</div>
+          </div>
+        </div>
+        <table class="report-table" style="width:100%; border-collapse:collapse; font-size:10.5px; table-layout:fixed; word-wrap:break-word;">
+          <thead>
+            <tr style="background:#0a3d6d; color:#ffffff; text-align:left;">
+              <th style="padding:7px 8px; border:1px solid #0a3d6d; width:34%; color:#fff;">Nombre del Archivo / Rotación Auditada</th>
+              <th style="padding:7px 8px; border:1px solid #0a3d6d; width:22%; color:#fff;">Capa / Componente Entrust</th>
+              <th style="padding:7px 8px; border:1px solid #0a3d6d; width:12%; text-align:right; color:#fff;">Eventos</th>
+              <th style="padding:7px 8px; border:1px solid #0a3d6d; width:9%; text-align:center; color:#fff;">% Muestra</th>
+              <th style="padding:7px 8px; border:1px solid #0a3d6d; width:9%; text-align:center; color:#fff;">Tamaño</th>
+              <th style="padding:7px 8px; border:1px solid #0a3d6d; width:14%; text-align:center; color:#fff;">Estado Forense</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filesTableRowsHtml}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    // Construir Sección 3: Matriz Forense de Errores Críticos 520xxx del Motor Entrust
+    const incidents520 = sortedIncidents.filter(i => /^520/i.test(i.code));
+    let rows520Html = '';
+    incidents520.forEach((item, idx) => {
+      const { code, diag, count, service } = item;
+      const bDiag = getBilingualDiagnostic(diag, code, service, isEn);
+      const pctStr = formatPctStr(count, totalCount);
+      const affectedUsersArr = codeToUsersLookup[code] || [];
+      const userPills = affectedUsersArr.length > 0
+        ? affectedUsersArr.slice(0, 5).map(u => `<span style="background:#e0f2fe; color:#0369a1; padding:1px 5px; border-radius:3px; font-family:monospace; font-size:9px; font-weight:700; margin:1px;">👤 ${escapeHtml(u.user)} (${u.count}x)</span>`).join(' ') + (affectedUsersArr.length > 5 ? ` <span style="font-size:9px; color:#64748b;">+${affectedUsersArr.length - 5}</span>` : '')
+        : '<span style="font-size:9px; color:#64748b; font-family:monospace;">Sin usuario nominal / Error de socket de motor</span>';
+
+      rows520Html += `
+        <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#fef2f2'};">
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center;">
+            <code style="background:#fee2e2; color:#b91c1c; font-weight:900; font-size:11px; padding:2px 6px; border-radius:3px; border:1px solid #fca5a5;">${escapeHtml(code)}</code>
+            <div style="font-size:9px; color:#dc2626; font-weight:700; margin-top:3px;">🚨 Fallo Crítico de Motor</div>
+          </td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center;">
+            <div style="font-family:monospace; font-size:14px; font-weight:900; color:#b91c1c;">${count.toLocaleString()}</div>
+            <div style="font-size:9.5px; color:#64748b; font-weight:600;">(${pctStr})</div>
+          </td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10.5px; color:#0f172a; line-height:1.45;">
+            <strong style="color:#0a3d6d;">${escapeHtml(bDiag.title || code)}:</strong> ${escapeHtml(bDiag.meaning || '')}
+            <div style="margin-top:4px;">${userPills}</div>
+          </td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10.5px; color:#7f1d1d; line-height:1.45; background:#fff5f5;">
+            <strong>${escapeHtml(bDiag.rootCause || 'Incompatibilidad de protocolo o timeout de respuesta en socket')}</strong>
+          </td>
+          <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10px; color:#065f46; background:#f0fdf4; line-height:1.45;">
+            ${escapeHtml(bDiag.remediation || 'Consultar guía de administración de Entrust')}
+            <div style="margin-top:4px;"><a href="https://trustedcare.entrust.com" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold; font-size:9.5px;">🔗 Entrust TrustedCare KB ↗</a></div>
+          </td>
+        </tr>
+      `;
+    });
+
+    const top520ErrorsSectionHtml = `
+      <div style="margin-top:20px; margin-bottom:25px; page-break-inside:avoid; break-inside:avoid;">
+        <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:10px; font-size:15px;">
+          3. Matriz Forense de Errores Críticos 520xxx del Motor Entrust IdentityGuard [${count520Total.toLocaleString()} Ocurrencias Reales]
+        </h3>
+        <div style="background:${count520Total > 0 ? '#fef2f2' : '#f0fdf4'}; border:1px solid ${count520Total > 0 ? '#fecaca' : '#bbf7d0'}; border-left:5px solid ${count520Total > 0 ? '#dc2626' : '#16a34a'}; padding:12px 14px; border-radius:6px; margin-bottom:12px; font-size:11px;">
+          <strong style="color:${count520Total > 0 ? '#991b1b' : '#15803d'}; font-size:12px;">${count520Total > 0 ? '🚨 HALLAZGO CRÍTICO EN NÚCLEO DE AUTENTICACIÓN (520xxx):' : '✅ NÚCLEO DE AUTENTICACIÓN NOMINAL:'}</strong>
+          <div style="color:#334155; margin-top:4px; line-height:1.5;">
+            ${count520Total > 0
+              ? `Se identificaron <strong>${count520Total.toLocaleString()}</strong> eventos de código <code>520xxx</code> en los registros del motor IdentityGuard. A diferencia de eventos informativos o de auditoría, la familia 520xxx corresponde a <strong>excepciones de comunicación, desincronización de credenciales o rechazo de proxy de autenticación</strong> del kernel Entrust. Los detalles desglosados a continuación representan el 100% de los códigos 520xxx presentes en los archivos auditados.`
+              : `No se registraron fallos de la familia 520xxx en los archivos analizados. Todos los sockets y servicios del kernel operaron normalmente.`}
+          </div>
+        </div>
+        ${incidents520.length > 0 ? `
+          <table class="report-table" style="width:100%; border-collapse:collapse; font-size:10.5px; table-layout:fixed; word-wrap:break-word;">
+            <thead>
+              <tr style="background:#991b1b; color:#ffffff; text-align:left;">
+                <th style="padding:7px 6px; border:1px solid #991b1b; width:15%; text-align:center; color:#fff;">Código 520xxx</th>
+                <th style="padding:7px 6px; border:1px solid #991b1b; width:12%; text-align:center; color:#fff;">Ocurrencias</th>
+                <th style="padding:7px 6px; border:1px solid #991b1b; width:28%; color:#fff;">Significado Técnico &amp; Usuarios</th>
+                <th style="padding:7px 6px; border:1px solid #991b1b; width:22%; color:#fff;">Causa Raíz Forense</th>
+                <th style="padding:7px 6px; border:1px solid #991b1b; width:23%; color:#fff;">Acción de Remediación (Entrust TrustedCare)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows520Html}
+            </tbody>
+          </table>
+        ` : `
+          <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:12px 14px; border-radius:6px; color:#15803d; font-size:11.5px; font-weight:700;">
+            ✅ No se registraron incidentes críticos de la familia 520xxx en los archivos auditados.
+          </div>
+        `}
+      </div>
+    `;
+
     container.innerHTML = `
       <div id="exec-report-document" data-view="${state.reportView || 'full'}" style="width:100%; box-sizing:border-box; background:#fff; color:#0f172a; padding:24px; font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif; border-radius:8px;">
         
@@ -3427,17 +3645,25 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         <!-- Sección de Correlación Cruzada -->
         <div id="rpt-sec-corr" class="rpt-s-tec">${corrSectionHtml}</div>
 
-        <!-- Sección I: Hallazgos & Diagnóstico -->
+        <!-- Sección 1: Hallazgos & Diagnóstico -->
         <div id="rpt-sec-hallazgos" class="rpt-s-tec">
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
-          ${i18n.sec1Title.replace('{count}', diagMapSize)}
+          1. ${i18n.sec1Title.replace(/^1\.\s*/, '').replace('{count}', diagMapSize)}
         </h3>
         ${section1Content}
         </div>
 
-        <!-- Tabla II: Análisis de Frecuencia de Errores y Usuarios Afectados -->
+        <!-- Sección 2: Inventario Forense & Desglose por Fuentes y Archivos Rotados (19 Archivos) -->
+        <div id="rpt-sec-files" class="rpt-s-tec">${filesInventorySectionHtml}</div>
+
+        <!-- Sección 3: Matriz Forense de Errores Críticos 520xxx del Motor Entrust -->
+        <div id="rpt-sec-520" class="rpt-s-tec">${top520ErrorsSectionHtml}</div>
+
+        <!-- Sección 4: Análisis de Frecuencia de Errores y Usuarios Afectados -->
         <div id="rpt-sec-frecuencia" class="rpt-s-tec" style="margin-top:20px; page-break-inside:avoid; break-inside:avoid;">
-          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">${i18n.sec2Title}</h3>
+          <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
+            4. ${i18n.sec2Title.replace(/^2\.\s*/, '')}
+          </h3>
           <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
             <thead>
               <tr style="background:#e0f2fe; color:#0a3d6d; text-align:left; page-break-inside:avoid; break-inside:avoid;">
@@ -3453,19 +3679,19 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           </table>
         </div>
 
-        <!-- Sección III: Censo Nominal de Usuarios y Patrones de Solicitud (Solicitud 1 ➔ Solicitud N) -->
+        <!-- Sección 5: Censo Nominal de Usuarios y Patrones de Solicitud (Solicitud 1 ➔ Solicitud N) -->
         <div id="rpt-sec-usuarios" class="rpt-s-usr">${userCensusSectionHtml}</div>
 
-        <!-- Sección IV: Diagnóstico Verificable de Salud de Base de Datos & Post-Mortem TrustedCare -->
+        <!-- Sección 6: Diagnóstico Verificable de Salud de Base de Datos & Post-Mortem TrustedCare -->
         <div id="rpt-sec-db" class="rpt-s-db">${dbAndPostMortemSectionHtml}</div>
 
-        <!-- Mapa de Calor Temporal -->
+        <!-- Sección 7: Cronología & Mapa de Calor Temporal -->
         <div id="rpt-sec-heatmap" class="rpt-s-tec">${generateTimelineHeatmapHtml(targetLogs)}</div>
 
-        <!-- Sección V: Plan Estratégico de Remediación en 3 Fases (100% Basado en Evidencia) -->
-        <div style="page-break-inside:avoid; break-inside:avoid; margin-top:20px;">
+        <!-- Sección 8: Plan Estratégico de Remediación en 3 Fases (100% Basado en Evidencia) -->
+        <div id="rpt-sec-roadmap" class="rpt-s-tec" style="page-break-inside:avoid; break-inside:avoid; margin-top:20px;">
           <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
-            5. ${i18n.sec3Title.replace(/^3\.\s*/, '')}
+            8. ${i18n.sec3Title.replace(/^3\.\s*/, '').replace(/^5\.\s*/, '')}
           </h3>
           <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px;">
             <div style="background:#fef2f2; border:1px solid #f87171; border-top:4px solid #dc2626; border-radius:6px; padding:12px; font-size:11px;">
@@ -3600,7 +3826,25 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     md += `- **${isEn ? 'Informational Operations:' : 'Operaciones Informativas:'}** \`${infoLogsCount.toLocaleString()}\` (${((infoLogsCount / Math.max(1, totalCount)) * 100).toFixed(2)}%)\n\n`;
 
     md += `---\n\n`;
-    md += `### 2. ${isEn ? 'MULTI-FILE & MULTI-SERVICE CROSS CORRELATION' : 'CORRELACIÓN CRUZADA MULTI-ARCHIVO & MULTI-SERVICIO'}\n\n`;
+    md += `### 2. ${isEn ? 'AUDITED FILES INVENTORY & ROTATION SUMMARY' : 'INVENTARIO DE ARCHIVOS AUDITADOS Y RESUMEN DE ROTACIÓN'} (${(state.loadedFiles && state.loadedFiles.length) || 1} ${isEn ? 'files' : 'archivos'})\n\n`;
+    md += `| ${isEn ? 'File / Rotation' : 'Archivo / Rotación'} | ${isEn ? 'Layer / Component' : 'Capa / Componente'} | ${isEn ? 'Events' : 'Eventos'} | ${isEn ? 'Status' : 'Estado'} |\n`;
+    md += `| :--- | :--- | :---: | :---: |\n`;
+    const mdFiles = (state.loadedFiles && state.loadedFiles.length > 0)
+      ? state.loadedFiles
+      : [{ name: (state.logs && state.logs[0]?.sourceFile) || 'identityguard_system.log', count: totalCount, realErrors: criticalLogsCount }];
+    mdFiles.forEach(f => {
+      const fn = f.name || 'Log';
+      const lines = Number(f.count || f.linesProcessed || 0);
+      const errs = Number(f.realErrors || f.errors || 0);
+      let st = errs > 0 ? `🚨 ${errs.toLocaleString()} fallos` : '✅ Nominal';
+      let ly = '🖥️ Sistema / Core';
+      if (/sam/i.test(fn)) ly = '🌐 SAM Gateway';
+      else if (/audit/i.test(fn)) ly = '📋 Audit Subsystem';
+      md += `| \`${fn}\` | ${ly} | **${lines.toLocaleString()}** | ${st} |\n`;
+    });
+    md += `\n---\n\n`;
+
+    md += `### 3. ${isEn ? 'MULTI-FILE & MULTI-SERVICE CROSS CORRELATION' : 'CORRELACIÓN CRUZADA MULTI-ARCHIVO & MULTI-SERVICIO'}\n\n`;
     md += `| ${isEn ? 'Layer / Service' : 'Capa / Servicio'} | ${isEn ? 'Assigned Files' : 'Archivos Asignados'} | ${isEn ? 'Total Events' : 'Eventos Totales'} | ${isEn ? 'Critical Incidents' : 'Incidentes Críticos'} |\n`;
     md += `| :--- | :---: | :---: | :---: |\n`;
     Object.values(corr.layers).forEach(layer => {
@@ -3614,7 +3858,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     });
 
     md += `\n---\n\n`;
-    md += `### 3. ${isEn ? 'ERROR & INCIDENT FREQUENCY ANALYSIS' : 'ANÁLISIS DE FRECUENCIA DE ERRORES E INCIDENTES POR FAMILIA'}\n\n`;
+    md += `### 4. ${isEn ? 'ERROR & INCIDENT FREQUENCY ANALYSIS' : 'ANÁLISIS DE FRECUENCIA DE ERRORES E INCIDENTES POR FAMILIA'}\n\n`;
     md += `| ${isEn ? 'Code / Family' : 'Código / Familia'} | ${isEn ? 'Event Description & Affected Users' : 'Descripción del Evento & Usuarios Afectados'} | ${isEn ? 'Occurrences' : 'Reincidencias'} | ${isEn ? 'Relative Impact' : 'Impacto Relativo'} |\n`;
     md += `| :--- | :--- | :---: | :---: |\n`;
 
@@ -3654,7 +3898,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     });
 
     md += `\n---\n\n`;
-    md += `### 4. ${isEn ? 'USER CENSUS & REQUEST SEQUENCE PATTERNS (REQUEST 1 -> REQUEST N)' : 'CENSO FORENSE DE USUARIOS & SECUENCIA DE SOLICITUDES (SOLICITUD 1 ➔ SOLICITUD N)'}\n\n`;
+    md += `### 5. ${isEn ? 'USER CENSUS & REQUEST SEQUENCE PATTERNS (REQUEST 1 -> REQUEST N)' : 'CENSO FORENSE DE USUARIOS & SECUENCIA DE SOLICITUDES (SOLICITUD 1 ➔ SOLICITUD N)'}\n\n`;
     md += `| ${isEn ? 'User' : 'Usuario'} | ${isEn ? 'Total Txs' : 'Total Txs'} | ${isEn ? 'Success / Fail' : 'Éxito / Falla'} | ${isEn ? 'Pattern & Request Sequence' : 'Patrón y Secuencia (Solicitud 1 ➔ Solicitud N)'} |\n`;
     md += `| :--- | :---: | :---: | :--- |\n`;
     mdUsers.sort((a, b) => (b.errors - a.errors) || (b.totalEvents - a.totalEvents)).slice(0, 40).forEach(u => {
@@ -3662,7 +3906,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     });
 
     md += `\n---\n\n`;
-    md += `### 5. ${isEn ? 'DATABASE HEALTH & TECHNICAL ACTION PLAN' : 'SALUD DE BASE DE DATOS Y PLAN DE ACCIÓN BASADO EN EVIDENCIA'}\n\n`;
+    md += `### 6. ${isEn ? 'DATABASE HEALTH & TECHNICAL ACTION PLAN' : 'SALUD DE BASE DE DATOS Y PLAN DE ACCIÓN BASADO EN EVIDENCIA'}\n\n`;
     const dbInc = mdFallback.dbHealth?.totalDbIncidents || 0;
     md += `- **${isEn ? 'Database & JDBC Persistence Status:' : 'Estado de Base de Datos y Persistencia JDBC:'}** ${dbInc === 0 ? '✅ SALUDABLE (0 errores ORA / 0 excepciones JDBC detectadas en la muestra)' : `🚨 ALERTA (${dbInc} incidentes detectados)`}\n`;
     md += `- **Portal Oficial Entrust TrustedCare:** https://trustedcare.entrust.com\n\n`;
@@ -5704,6 +5948,20 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         else if (!/bulkidentityguard|\.assignedgrid|idaas/i.test(code)) codeMapOther[code] = (codeMapOther[code] || 0) + 1;
       }
     });
+
+    // Consolidación estricta sin alucinaciones:
+    // Los códigos 520xxx, ORA y fallos proxy AUD150/154 son fallos críticos del motor.
+    // Los códigos AUD6001/AUD6002/AUD2309/AUD155 son alertas de seguridad y auditoría.
+    const sum520 = Object.values(codeMap520).reduce((a, b) => a + b, 0);
+    const sumOra = Object.values(codeMapOra).reduce((a, b) => a + b, 0);
+    const sumAudCritical = Object.entries(codeMapAud).filter(([k]) => /^AUD150|^AUD154/i.test(k)).reduce((a, [k, v]) => a + v, 0);
+    const sumAudWarnings = Object.entries(codeMapAud).filter(([k]) => /^AUD6001|^AUD6002|^AUD2309|^AUD155/i.test(k)).reduce((a, [k, v]) => a + v, 0);
+
+    const realCriticalErrors = Math.max(totalErrors, sum520 + sumOra + sumAudCritical);
+    const realWarnings = Math.max(totalWarnings, sumAudWarnings);
+
+    totalErrors = realCriticalErrors;
+    totalWarnings = realWarnings;
 
     return {
       totalLogs,
