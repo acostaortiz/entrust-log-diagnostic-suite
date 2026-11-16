@@ -756,10 +756,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.9.0',
-    build: 555,
+    version: 'v2.9.1',
+    build: 556,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'FULL-SOC-REDESIGN-KB-VIEWER-555',
+    gitCommit: 'LAZY-MANUALS-NO-FREEZE-556',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -1361,6 +1361,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (targetTab === 'overview') {
       try { updateMetricsAndCharts(); } catch(e) {}
+    } else if (targetTab === 'manuals' && dom.manualIframe && !dom.manualIframe.getAttribute('src')) {
+      try { loadManual(state.currentManualVersion || 'v13_0_webhelp'); } catch(e) {}
     }
 
     // Manejo de estado para el dropdown 'Más Vistas'
@@ -5164,10 +5166,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }
     });
 
-    // Cargar por defecto la WebHelp Oficial de Entrust v13.0
+    // Lazy-load: no cargar el frameset WebHelp v13.0 en segundo plano al abrir la página (evita bloqueo en Firefox/Chrome)
     state.currentManualVersion = 'v13_0_webhelp';
     if (dom.manualVersionSelect) dom.manualVersionSelect.value = 'v13_0_webhelp';
-    loadManual('v13_0_webhelp');
   }
 
   function populateManualVersionSelect() {
