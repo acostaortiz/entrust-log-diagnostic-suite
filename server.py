@@ -538,7 +538,10 @@ def parse_line_for_db(line, line_num):
         c520 = re.search(r'520\d{4}', msg) or re.search(r'520\d{4}', line)
         aud = re.search(r'AUD\d{3,4}', msg) or re.search(r'AUD\d{3,4}', line)
         ora = re.search(r'ORA-\d{5}', msg) or re.search(r'ORA-\d{5}', line)
-        
+
+        if c520 or ora or (aud and aud.group(0).upper() in ('AUD150', 'AUD154', 'AUD6001', 'AUD6002')):
+            outcome = 'FAIL'
+
         if c520:
             event_type = c520.group(0)
         elif aud:
