@@ -3,6 +3,7 @@ import json
 import os
 import re
 import socket
+import socketserver
 import sqlite3
 import sys
 import threading
@@ -13,6 +14,7 @@ import zipfile
 import tarfile
 import bz2
 import io
+from html.parser import HTMLParser
 
 PORT = 8085
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -75,7 +77,7 @@ MANUALS_INDEX = []
 MANUALS_INDEX_BUILT = False
 MANUALS_INDEX_BUILDING = False
 MANUALS_INDEX_LOCK = threading.Lock()
-MANUALS_CACHE_PATH = os.path.join(DATA_DIR, 'manuals_index_cache.json')
+MANUALS_CACHE_PATH = os.path.join(BASE_DIR, 'manuals', 'manuals_index_cache.json.gz')
 
 MANUALS_STOP_WORDS = {
     'de', 'la', 'el', 'los', 'las', 'un', 'una', 'unos', 'unas', 'en', 'y', 'o',
@@ -98,21 +100,55 @@ def _detect_manual_version(rel_path):
         return 'IDaaS Cloud'
     return 'KB Errores'
 
+class _FastTextExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.in_skip = 0
+        self.in_title = False
+        self.in_heading = False
+        self.title_parts = []
+        self.heading_parts = []
+        self.text_parts = []
+
+    def handle_starttag(self, tag, attrs):
+        t = tag.lower()
+        if t in ('script', 'style'):
+            self.in_skip += 1
+        elif t == 'title':
+            self.in_title = True
+        elif t in ('h1', 'h2') and not self.heading_parts:
+            self.in_heading = True
+
+    def handle_endtag(self, tag):
+        t = tag.lower()
+        if t in ('script', 'style') and self.in_skip > 0:
+            self.in_skip -= 1
+        elif t == 'title':
+            self.in_title = False
+        elif t in ('h1', 'h2'):
+            self.in_heading = False
+
+    def handle_data(self, data):
+        if self.in_skip > 0:
+            return
+        if self.in_title:
+            self.title_parts.append(data)
+        elif self.in_heading:
+            self.heading_parts.append(data)
+        self.text_parts.append(data)
+
 def _clean_html_text(raw_html):
-    import html as html_lib
-    title = ''
-    m_title = re.search(r'<title[^>]*>(.*?)</title>', raw_html, re.IGNORECASE | re.DOTALL)
-    if m_title:
-        title = html_lib.unescape(re.sub(r'<[^>]+>', ' ', m_title.group(1))).strip()
+    parser = _FastTextExtractor()
+    try:
+        parser.feed(raw_html)
+        parser.close()
+    except Exception:
+        pass
+    title = ' '.join(parser.title_parts).strip()
     if not title or title.lower() in ('untitled', 'document'):
-        m_h = re.search(r'<h[12][^>]*>(.*?)</h[12]>', raw_html, re.IGNORECASE | re.DOTALL)
-        if m_h:
-            title = html_lib.unescape(re.sub(r'<[^>]+>', ' ', m_h.group(1))).strip()
-    cleaned = re.sub(r'<(script|style)[^>]*>.*?</\1>', ' ', raw_html, flags=re.IGNORECASE | re.DOTALL)
-    cleaned = re.sub(r'<!--.*?-->', ' ', cleaned, flags=re.DOTALL)
-    cleaned = re.sub(r'<[^>]+>', ' ', cleaned)
-    cleaned = html_lib.unescape(cleaned)
-    cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+        title = ' '.join(parser.heading_parts).strip()
+    title = re.sub(r'\s+', ' ', title).strip()
+    cleaned = re.sub(r'\s+', ' ', ' '.join(parser.text_parts)).strip()
     return title[:180], cleaned
 
 def build_manuals_index():
@@ -124,7 +160,7 @@ def build_manuals_index():
     try:
         if os.path.exists(MANUALS_CACHE_PATH):
             try:
-                with open(MANUALS_CACHE_PATH, 'r', encoding='utf-8') as f:
+                with gzip.open(MANUALS_CACHE_PATH, 'rt', encoding='utf-8') as f:
                     cached = json.load(f)
                 if isinstance(cached, list) and len(cached) > 0:
                     for item in cached:
@@ -147,6 +183,7 @@ def build_manuals_index():
         skip_names = {'toc.htm', 'index.htm', 'index_csh.htm', 'reference.htm', 'whskin_'}
         skip_dirs = {'whdata', 'whgdata', 'whxdata', 'template'}
         entries = []
+        processed_files = 0
         for root, dirs, files in os.walk(manuals_dir):
             dirs[:] = [d for d in dirs if d.lower() not in skip_dirs]
             for fname in files:
@@ -160,13 +197,13 @@ def build_manuals_index():
                 full_path = os.path.join(root, fname)
                 try:
                     with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
-                        raw = f.read()
+                        raw = f.read(200000)
                     if len(raw) < 120:
                         continue
                     title, text = _clean_html_text(raw)
                     if len(text) < 60:
                         continue
-                    text_trimmed = text[:12000]
+                    text_trimmed = text[:10000]
                     rel_path = os.path.relpath(full_path, BASE_DIR).replace('\\', '/')
                     entries.append({
                         'path': rel_path,
@@ -176,11 +213,14 @@ def build_manuals_index():
                         'text': text_trimmed,
                         'text_lower': text_trimmed.lower()
                     })
+                    processed_files += 1
+                    if processed_files % 25 == 0:
+                        time.sleep(0.002)
                 except Exception:
                     continue
         try:
             cache_payload = [{'path': e['path'], 'version': e['version'], 'title': e['title'], 'text': e['text']} for e in entries]
-            with open(MANUALS_CACHE_PATH, 'w', encoding='utf-8') as f:
+            with gzip.open(MANUALS_CACHE_PATH, 'wt', encoding='utf-8') as f:
                 json.dump(cache_payload, f)
         except Exception:
             pass
@@ -2010,7 +2050,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-class ReusableHTTPServer(http.server.HTTPServer):
+class ReusableHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 
