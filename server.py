@@ -352,7 +352,7 @@ def resolve_client_db(client_param=None):
     return None
 
 def init_db(db_path):
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=30.0)
     cur = conn.cursor()
     cur.execute('PRAGMA journal_mode = WAL;')
     cur.execute('PRAGMA synchronous = OFF;')
@@ -638,7 +638,7 @@ def index_file_in_background(file_path, client_name='Entrust Client'):
         file_size = os.path.getsize(file_path)
         upload_state['fileSize'] = file_size
         
-        conn = sqlite3.connect(target_db)
+        conn = sqlite3.connect(target_db, timeout=30.0)
         cur = conn.cursor()
         cur.execute('PRAGMA synchronous = OFF;')
         cur.execute('PRAGMA journal_mode = WAL;')
@@ -908,7 +908,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         records = 0
         errors = 0
         try:
-            conn = sqlite3.connect(full_path)
+            conn = sqlite3.connect(full_path, timeout=30.0)
             cur = conn.cursor()
             cur.execute('SELECT COUNT(1) FROM logs')
             records = cur.fetchone()[0]
@@ -1066,7 +1066,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                         records = 0
                         errors = 0
                         try:
-                            conn = sqlite3.connect(full_p)
+                            conn = sqlite3.connect(full_p, timeout=30.0)
                             cur = conn.cursor()
                             cur.execute('SELECT COUNT(1) FROM logs')
                             records = cur.fetchone()[0]
@@ -1182,7 +1182,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             # If DB already exists and has records (and forceReindex is not requested), activate immediately
             if not force_reindex and os.path.exists(target_db) and os.path.getsize(target_db) > 1024 * 1024:
                 try:
-                    conn = sqlite3.connect(target_db)
+                    conn = sqlite3.connect(target_db, timeout=30.0)
                     cur = conn.cursor()
                     cur.execute('SELECT COUNT(1) FROM logs')
                     records = cur.fetchone()[0]
@@ -1257,7 +1257,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         try:
-            conn = sqlite3.connect(db)
+            conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
             
             # Fast Check: cached stats in server_stats table (< 0.5 ms)
@@ -1394,7 +1394,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             where_clause = ('WHERE ' + ' AND '.join(conditions)) if conditions else ''
 
-            conn = sqlite3.connect(db)
+            conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
 
             cur.execute(f'SELECT COUNT(1) FROM logs {where_clause}', params)
@@ -1447,7 +1447,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404, 'No hay base de datos indexada para este cliente')
             return
 
-        conn = sqlite3.connect(db)
+        conn = sqlite3.connect(db, timeout=30.0)
         cur = conn.cursor()
         err_where = '''
             WHERE event_outcome LIKE '%FAIL%'
@@ -1497,7 +1497,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         try:
-            conn = sqlite3.connect(db)
+            conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
             cur.execute('''
                 SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw
@@ -1555,7 +1555,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         try:
-            conn = sqlite3.connect(db)
+            conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
 
             cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')

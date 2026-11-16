@@ -756,10 +756,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.9.2',
-    build: 557,
+    version: 'v2.9.3',
+    build: 558,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'SERVER-PARSER-520-ACCURACY-557',
+    gitCommit: 'PERF-DEBOUNCE-MEMO-SQLITE-TIMEOUT-558',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -4723,7 +4723,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     let result = [...state.logs];
 
     if (state.activeFilterMode === '520_ONLY') {
-      result = result.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR');
+      result = result.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || /520\d{4}/.test(String(l.entrustCode || l.message || '')));
     } else if (state.activeFilterMode === 'AUDIT_ONLY') {
       result = result.filter(l => l.level === 'WARN' || l.level === 'INFO' || /AUD/i.test(l.message));
     }
@@ -8149,13 +8149,17 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     });
 
     const btnClearSearch = document.getElementById('btn-clear-search');
+    let searchDebounceTimer = null;
     dom.searchLogInput?.addEventListener('input', (e) => {
       if (btnClearSearch) btnClearSearch.style.display = e.target.value.length > 0 ? 'block' : 'none';
-      if (state.isServerApi) {
-        fetchSqlLogs(1);
-      } else {
-        applyLogFilters();
-      }
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        if (state.isServerApi) {
+          fetchSqlLogs(1);
+        } else {
+          applyLogFilters();
+        }
+      }, 180);
     });
     btnClearSearch?.addEventListener('click', () => {
       if (dom.searchLogInput) dom.searchLogInput.value = '';

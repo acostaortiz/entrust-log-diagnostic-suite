@@ -355,8 +355,12 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       uStat.rootCause = rootCause;
     },
 
-    buildUserStats() {
+    buildUserStats(forceRebuild = false) {
       const logs = this.getAllLogs();
+      const sig = `${logs.length}|${logs[0]?.timestamp || ''}|${logs[logs.length - 1]?.timestamp || ''}`;
+      if (!forceRebuild && this._lastStatsSig === sig && this.cachedStats && Object.keys(this.cachedStats).length > 0) {
+        return this.cachedStats;
+      }
       const stats = {};
       const st = window.appState || window.state;
 
@@ -582,6 +586,8 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       });
 
       this.cachedStats = stats;
+      this._lastStatsSig = sig;
+      return this.cachedStats;
     },
 
     updateSidebarCounters() {
