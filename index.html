@@ -17,7 +17,7 @@
   <script src="js/html2pdf.bundle.min.js"></script>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/styles.css?v=547.0">
+  <link rel="stylesheet" href="css/styles.css?v=553.0">
 </head>
 <body>
 
@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v2.7.7 (Build 552)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v2.8.0 (Build 553)</span>
           </div>
         </div>
       </div>
@@ -1542,57 +1542,65 @@ db.connection.pool.max=20
 
   
   <!-- Floating Copilot Button -->
-  <button id="btn-floating-copilot" class="btn-toggle-copilot-drawer" style="position:fixed; bottom:24px; right:24px; z-index:9990; background:linear-gradient(135deg, #0a3d6d, #0284c7); border:2px solid #38bdf8; color:#fff; font-weight:800; font-size:0.85rem; padding:10px 18px; border-radius:30px; box-shadow:0 8px 24px rgba(2, 132, 199, 0.4); display:flex; align-items:center; gap:8px; cursor:pointer; transition:all 0.2s ease;">
-    <span style="font-size:1.2rem;">🤖</span>
-    <span>Entrust Copilot</span>
+  <button id="btn-floating-copilot" class="btn-toggle-copilot-drawer copilot-fab" title="Abrir Asistente Forense Entrust Copilot (KB + Manuales)">
+    <span class="copilot-fab-icon">🤖</span>
+    <span>Entrust Copilot IA</span>
+    <span class="copilot-fab-badge">KB</span>
   </button>
 
-  <!-- Copilot Drawer Modal -->
-  <div id="copilot-drawer" style="display:none; position:fixed; bottom:80px; right:24px; width:420px; max-width:92vw; height:520px; background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,0.5); z-index:9995; flex-direction:column; overflow:hidden; backdrop-filter:blur(16px);">
-    <div style="background:linear-gradient(135deg, #0a3d6d, #0f172a); border-bottom:2px solid #0284c7; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; color:#fff;">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <span style="font-size:1.4rem;">🤖</span>
+  <!-- Copilot Drawer Modal (Rediseño Enterprise SOC v3.0) -->
+  <div id="copilot-drawer" class="copilot-drawer" style="display:none;">
+    <div class="copilot-header">
+      <div class="copilot-header-left">
+        <div class="copilot-avatar">🤖</div>
         <div>
-          <div style="font-weight:800; font-size:0.95rem; color:#38bdf8;">Entrust Forensics Copilot</div>
-          <div style="font-size:0.7rem; color:#94a3b8;">Asistente Pericial en Tiempo Real</div>
+          <div class="copilot-title">Entrust Forensics Copilot</div>
+          <div class="copilot-subtitle" id="copilot-kb-status">📚 Conectado a Base de Conocimiento &amp; Manuales</div>
         </div>
       </div>
-      <button id="btn-close-copilot" style="background:none; border:none; color:#94a3b8; font-size:1.3rem; cursor:pointer;">&times;</button>
+      <div class="copilot-header-actions">
+        <button id="btn-clear-copilot" class="copilot-icon-btn" title="Limpiar conversación">🗑️</button>
+        <button id="btn-expand-copilot" class="copilot-icon-btn" title="Expandir / Compactar panel">⤢</button>
+        <button id="btn-close-copilot" class="copilot-icon-btn" title="Cerrar">&times;</button>
+      </div>
     </div>
 
     <!-- Quick Query Pills -->
-    <div style="padding:8px 12px; background:var(--bg-secondary); border-bottom:1px solid var(--border-color); display:flex; gap:6px; overflow-x:auto; scrollbar-width:none;">
-      <button class="copilot-pill" data-query="resumen operativo" style="white-space:nowrap; background:rgba(2,132,199,0.12); border:1px solid #0284c7; color:#0284c7; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:12px; cursor:pointer;">📊 Resumen</button>
-      <button class="copilot-pill" data-query="cuentas atacadas" style="white-space:nowrap; background:rgba(244,63,94,0.12); border:1px solid #f43f5e; color:#f43f5e; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:12px; cursor:pointer;">🎯 Cuentas</button>
-      <button class="copilot-pill" data-query="top errores" style="white-space:nowrap; background:rgba(239,68,68,0.12); border:1px solid #ef4444; color:#ef4444; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:12px; cursor:pointer;">🚨 Errores</button>
-      <button class="copilot-pill" data-query="distribucion horaria" style="white-space:nowrap; background:rgba(16,185,129,0.12); border:1px solid #10b981; color:#10b981; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:12px; cursor:pointer;">📈 Ráfagas</button>
+    <div class="copilot-pills-bar">
+      <button class="copilot-pill" data-query="resumen operativo">📊 Resumen</button>
+      <button class="copilot-pill copilot-pill-info" data-query="archivos rotados">📑 Archivos</button>
+      <button class="copilot-pill copilot-pill-danger" data-query="top errores">🚨 Top Errores</button>
+      <button class="copilot-pill copilot-pill-warn" data-query="usuarios afectados">👤 Usuarios</button>
+      <button class="copilot-pill copilot-pill-ok" data-query="plan de remediacion">🛠️ Soluciones</button>
+      <button class="copilot-pill" data-query="base de datos oracle">🗄️ BD Oracle</button>
     </div>
 
     <!-- Chat Messages Scroll Area -->
-    <div id="copilot-messages-container" style="flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; font-size:0.82rem; line-height:1.4;">
-      <div style="background:rgba(2,132,199,0.1); border:1px solid rgba(2,132,199,0.25); padding:10px; border-radius:8px; color:var(--text-main);">
-        👋 ¡Hola, Tomás! Soy tu <strong>Asistente Forense Entrust</strong>. Pregúntame sobre la muestra de transacciones cargada, incidentes críticos, cuentas bajo ataque o cumplimiento regulatorio Sudeban.
+    <div id="copilot-messages-container" class="copilot-messages">
+      <div class="copilot-msg-bot">
+        👋 ¡Hola! Soy tu <strong>Asistente Forense Entrust</strong> conectado en vivo a tus logs cargados, a la <strong>Base de Conocimiento</strong> y a los <strong>Manuales Oficiales (IG 11/12/13 &amp; IDaaS)</strong>.<br><br>
+        Puedes preguntarme por cualquier código (ej: <code class="copilot-code">520002</code>, <code class="copilot-code">AUD6001</code>, <code class="copilot-code">ORA-01555</code>), archivos rotados o procedimientos de solución.
       </div>
     </div>
 
     <!-- Chat Input Form -->
-    <div style="padding:10px; background:var(--bg-secondary); border-top:1px solid var(--border-color); display:flex; gap:6px;">
-      <input type="text" id="copilot-input-query" class="form-control" placeholder="Escribe tu consulta pericial..." style="flex:1; font-size:0.8rem; padding:6px 10px;">
-      <button id="btn-send-copilot" class="btn btn-primary" style="padding:6px 14px; font-size:0.8rem; font-weight:bold;">Enviar</button>
+    <div class="copilot-input-bar">
+      <input type="text" id="copilot-input-query" class="form-control copilot-input" placeholder="Pregunta por un código (520002), síntoma, archivo o manual...">
+      <button id="btn-send-copilot" class="btn btn-primary copilot-send-btn">Consultar</button>
     </div>
   </div>
 
   <!-- Scripts JavaScript -->
   <script src="js/pptxgen.bundle.js"></script>
   <script src="js/topology-engine.js?v=550.0"></script>
-  <script src="js/kb-database.js?v=550.0"></script>
+  <script src="js/kb-database.js?v=553.0"></script>
   <script src="js/manuals-engine.js?v=550.0"></script>
   <script src="js/bancomercantil_data.js?v=550.0"></script>
   <script src="js/log-parser.js?v=550.0"></script>
   <script src="js/storage-engine.js?v=550.0"></script>
     <script src="js/threat-radar.js?v=550.0"></script>
   <script src="js/remediation-engine.js?v=550.0"></script>
-  <script src="js/copilot-engine.js?v=550.0"></script>
+  <script src="js/copilot-engine.js?v=553.0"></script>
   <script src="js/compliance-auditor.js?v=550.0"></script>
   <script src="js/config-diff-engine.js?v=550.0"></script>
   <script src="js/siem-exporter.js?v=550.0"></script>
@@ -1601,7 +1609,7 @@ db.connection.pool.max=20
   <script src="js/syslog-collector.js?v=550.0"></script>
   <script src="js/user-trace-report.js?v=550.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
-  <script src="js/app.js?v=550.0"></script>
+  <script src="js/app.js?v=553.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

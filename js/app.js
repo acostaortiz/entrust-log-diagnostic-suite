@@ -756,10 +756,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.7.7',
-    build: 552,
+    version: 'v2.8.0',
+    build: 553,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'ROTATION-FORENSIC-552',
+    gitCommit: 'COPILOT-KB-MANUALS-553',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -9937,17 +9937,55 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
      13. MÓDULOS ENTERPRISE TIER-1 (COPILOT, THREAT RADAR, COMPLIANCE, CONFIG DIFF, SIEM, SLA, REMEDIATION)
      ========================================================================== */
 
-  // 13.1 ENTRUST FORENSICS COPILOT
+  // 13.1 ENTRUST FORENSICS COPILOT (v3.0 — KB + Manuales WebHelp + Datos Reales)
+  function renderCopilotMarkdown(rawText) {
+    let html = escapeHtml(rawText || '');
+    // Horizontal rules
+    html = html.replace(/^---$/gm, '<hr class="copilot-hr">');
+    // Headings ###
+    html = html.replace(/^###\s+(.+)$/gm, '<div class="copilot-h3">$1</div>');
+    // Inline code `...`
+    html = html.replace(/`([^`]+)`/g, '<code class="copilot-code">$1</code>');
+    // Bold **...**
+    html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    // Italic _..._
+    html = html.replace(/(^|\s)_([^_]+)_/g, '$1<em>$2</em>');
+    // Line breaks
+    html = html.replace(/\n/g, '<br>');
+    return html;
+  }
+
   function initCopilotModule() {
     const triggers = document.querySelectorAll('.btn-toggle-copilot-drawer, #btn-toggle-copilot-drawer, #btn-floating-copilot, #btn-menu-copilot');
     const drawer = document.getElementById('copilot-drawer');
     const btnClose = document.getElementById('btn-close-copilot');
+    const btnExpand = document.getElementById('btn-expand-copilot');
+    const btnClear = document.getElementById('btn-clear-copilot');
     const input = document.getElementById('copilot-input-query');
     const btnSend = document.getElementById('btn-send-copilot');
     const msgContainer = document.getElementById('copilot-messages-container');
     const pills = document.querySelectorAll('.copilot-pill');
+    const kbStatusEl = document.getElementById('copilot-kb-status');
 
     if (!drawer) return;
+
+    const refreshKbStatus = async () => {
+      if (!kbStatusEl || window.location.protocol === 'file:') return;
+      try {
+        const res = await fetch('/api/manuals-status');
+        if (!res.ok) return;
+        const data = await res.json();
+        const kbCount = (window.knowledgeBaseEngine && window.knowledgeBaseEngine.getAllRules)
+          ? window.knowledgeBaseEngine.getAllRules().length
+          : 0;
+        if (data.ready) {
+          kbStatusEl.textContent = `📚 ${kbCount} reglas KB • ${data.indexedPages.toLocaleString()} págs. de manuales indexadas`;
+        } else if (data.building) {
+          kbStatusEl.textContent = `⏳ Indexando manuales oficiales...`;
+          setTimeout(refreshKbStatus, 2500);
+        }
+      } catch (e) {}
+    };
 
     window.toggleCopilot = (forceState) => {
       if (typeof forceState === 'boolean') {
@@ -9955,8 +9993,9 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       } else {
         drawer.style.display = (drawer.style.display === 'none' || !drawer.style.display) ? 'flex' : 'none';
       }
-      if (drawer.style.display === 'flex' && input) {
-        setTimeout(() => input.focus(), 100);
+      if (drawer.style.display === 'flex') {
+        refreshKbStatus();
+        if (input) setTimeout(() => input.focus(), 100);
       }
     };
     window.openCopilot = () => window.toggleCopilot(true);
@@ -9972,28 +10011,87 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       window.toggleCopilot(false);
     });
 
-    const submitQuery = (qText) => {
+    btnExpand?.addEventListener('click', () => {
+      drawer.classList.toggle('copilot-expanded');
+      btnExpand.textContent = drawer.classList.contains('copilot-expanded') ? '⤡' : '⤢';
+    });
+
+    btnClear?.addEventListener('click', () => {
+      if (!msgContainer) return;
+      msgContainer.innerHTML = `
+        <div class="copilot-msg-bot">
+          👋 <strong>Sesión reiniciada.</strong> Consulta cualquier código (ej: <code>520002</code>, <code>AUD6001</code>, <code>ORA-01555</code>), archivo rotado o procedimiento del manual oficial.
+        </div>`;
+    });
+
+    const submitQuery = async (qText) => {
       const text = (qText || input?.value || '').trim();
       if (!text || !window.copilotEngine || !msgContainer) return;
 
       // Append User message
       const userBubble = document.createElement('div');
-      userBubble.style.cssText = 'background:#0284c7; color:#fff; padding:8px 12px; border-radius:10px 10px 2px 10px; align-self:flex-end; max-width:85%; font-weight:600;';
+      userBubble.className = 'copilot-msg-user';
       userBubble.textContent = text;
       msgContainer.appendChild(userBubble);
 
       if (input) input.value = '';
 
-      // Ask Copilot Engine
-      const res = window.copilotEngine.ask(text, state);
+      // Typing indicator
+      const loadingBubble = document.createElement('div');
+      loadingBubble.className = 'copilot-msg-bot copilot-msg-loading';
+      loadingBubble.innerHTML = '⏳ Consultando Base de Conocimiento, manuales oficiales y métricas reales...';
+      msgContainer.appendChild(loadingBubble);
+      msgContainer.scrollTop = msgContainer.scrollHeight;
 
-      // Append Copilot response
-      const botBubble = document.createElement('div');
-      botBubble.style.cssText = 'background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); padding:10px 12px; border-radius:10px 10px 10px 2px; align-self:flex-start; max-width:92%; white-space:pre-line;';
-      botBubble.innerHTML = res.answer
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\n/g, '<br>');
-      msgContainer.appendChild(botBubble);
+      try {
+        const res = typeof window.copilotEngine.askAsync === 'function'
+          ? await window.copilotEngine.askAsync(text, state)
+          : window.copilotEngine.ask(text, state);
+
+        loadingBubble.remove();
+
+        const botBubble = document.createElement('div');
+        botBubble.className = 'copilot-msg-bot';
+        botBubble.innerHTML = renderCopilotMarkdown(res.answer);
+
+        // Render clickable manual links if available
+        if (Array.isArray(res.manualResults) && res.manualResults.length > 0) {
+          const refsWrap = document.createElement('div');
+          refsWrap.className = 'copilot-manual-links';
+          res.manualResults.slice(0, 3).forEach(r => {
+            const a = document.createElement('a');
+            a.href = r.path;
+            a.target = '_blank';
+            a.className = 'copilot-manual-chip';
+            a.innerHTML = `📖 <span>[${escapeHtml(r.version)}]</span> ${escapeHtml(r.title)}`;
+            refsWrap.appendChild(a);
+          });
+          botBubble.appendChild(refsWrap);
+        }
+
+        // Render follow-up quick chips
+        if (Array.isArray(res.suggestedQueries) && res.suggestedQueries.length > 0) {
+          const sugWrap = document.createElement('div');
+          sugWrap.className = 'copilot-suggestions';
+          res.suggestedQueries.forEach(sq => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'copilot-suggestion-btn';
+            b.textContent = `↪ ${sq}`;
+            b.addEventListener('click', () => submitQuery(sq));
+            sugWrap.appendChild(b);
+          });
+          botBubble.appendChild(sugWrap);
+        }
+
+        msgContainer.appendChild(botBubble);
+      } catch (err) {
+        loadingBubble.remove();
+        const errBubble = document.createElement('div');
+        errBubble.className = 'copilot-msg-bot';
+        errBubble.textContent = '⚠️ Error al procesar la consulta: ' + (err.message || err);
+        msgContainer.appendChild(errBubble);
+      }
 
       msgContainer.scrollTop = msgContainer.scrollHeight;
     };

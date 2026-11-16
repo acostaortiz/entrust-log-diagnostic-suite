@@ -68,6 +68,217 @@ def save_active_session(db_path, client_name='General'):
         except Exception:
             pass
 
+# ==========================================================================
+# INDEXADOR FULL-TEXT DE MANUALES OFICIALES ENTRUST (WEBHELP & KB HTML)
+# ==========================================================================
+MANUALS_INDEX = []
+MANUALS_INDEX_BUILT = False
+MANUALS_INDEX_BUILDING = False
+MANUALS_INDEX_LOCK = threading.Lock()
+MANUALS_CACHE_PATH = os.path.join(DATA_DIR, 'manuals_index_cache.json')
+
+MANUALS_STOP_WORDS = {
+    'de', 'la', 'el', 'los', 'las', 'un', 'una', 'unos', 'unas', 'en', 'y', 'o',
+    'a', 'por', 'para', 'con', 'sin', 'sobre', 'que', 'como', 'cual', 'cuales',
+    'donde', 'cuando', 'es', 'son', 'esta', 'estan', 'hay', 'ser', 'tener',
+    'hacer', 'hago', 'puedo', 'debo', 'error', 'errores', 'log', 'logs',
+    'the', 'and', 'or', 'for', 'with', 'how', 'what', 'why', 'when', 'where',
+    'this', 'that', 'from', 'into', 'your', 'entrust', 'identityguard'
+}
+
+def _detect_manual_version(rel_path):
+    p = rel_path.lower()
+    if 'ig_130' in p or '130' in p:
+        return 'IG 13.0'
+    if 'ig_120' in p or '120' in p:
+        return 'IG 12.0'
+    if 'ig_110' in p or '110' in p:
+        return 'IG 11.0'
+    if 'idaas' in p:
+        return 'IDaaS Cloud'
+    return 'KB Errores'
+
+def _clean_html_text(raw_html):
+    import html as html_lib
+    title = ''
+    m_title = re.search(r'<title[^>]*>(.*?)</title>', raw_html, re.IGNORECASE | re.DOTALL)
+    if m_title:
+        title = html_lib.unescape(re.sub(r'<[^>]+>', ' ', m_title.group(1))).strip()
+    if not title or title.lower() in ('untitled', 'document'):
+        m_h = re.search(r'<h[12][^>]*>(.*?)</h[12]>', raw_html, re.IGNORECASE | re.DOTALL)
+        if m_h:
+            title = html_lib.unescape(re.sub(r'<[^>]+>', ' ', m_h.group(1))).strip()
+    cleaned = re.sub(r'<(script|style)[^>]*>.*?</\1>', ' ', raw_html, flags=re.IGNORECASE | re.DOTALL)
+    cleaned = re.sub(r'<!--.*?-->', ' ', cleaned, flags=re.DOTALL)
+    cleaned = re.sub(r'<[^>]+>', ' ', cleaned)
+    cleaned = html_lib.unescape(cleaned)
+    cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+    return title[:180], cleaned
+
+def build_manuals_index():
+    global MANUALS_INDEX, MANUALS_INDEX_BUILT, MANUALS_INDEX_BUILDING
+    with MANUALS_INDEX_LOCK:
+        if MANUALS_INDEX_BUILT:
+            return len(MANUALS_INDEX)
+        MANUALS_INDEX_BUILDING = True
+    try:
+        if os.path.exists(MANUALS_CACHE_PATH):
+            try:
+                with open(MANUALS_CACHE_PATH, 'r', encoding='utf-8') as f:
+                    cached = json.load(f)
+                if isinstance(cached, list) and len(cached) > 0:
+                    for item in cached:
+                        item['title_lower'] = (item.get('title') or '').lower()
+                        item['text_lower'] = (item.get('text') or '').lower()
+                    with MANUALS_INDEX_LOCK:
+                        MANUALS_INDEX = cached
+                        MANUALS_INDEX_BUILT = True
+                        MANUALS_INDEX_BUILDING = False
+                    return len(MANUALS_INDEX)
+            except Exception:
+                pass
+
+        manuals_dir = os.path.join(BASE_DIR, 'manuals')
+        if not os.path.isdir(manuals_dir):
+            with MANUALS_INDEX_LOCK:
+                MANUALS_INDEX_BUILT = True
+                MANUALS_INDEX_BUILDING = False
+            return 0
+        skip_names = {'toc.htm', 'index.htm', 'index_csh.htm', 'reference.htm', 'whskin_'}
+        skip_dirs = {'whdata', 'whgdata', 'whxdata', 'template'}
+        entries = []
+        for root, dirs, files in os.walk(manuals_dir):
+            dirs[:] = [d for d in dirs if d.lower() not in skip_dirs]
+            for fname in files:
+                fl = fname.lower()
+                if not (fl.endswith('.htm') or fl.endswith('.html')):
+                    continue
+                if any(fl.startswith(s) or fl == s for s in skip_names):
+                    continue
+                if fl.startswith('wh'):
+                    continue
+                full_path = os.path.join(root, fname)
+                try:
+                    with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        raw = f.read()
+                    if len(raw) < 120:
+                        continue
+                    title, text = _clean_html_text(raw)
+                    if len(text) < 60:
+                        continue
+                    text_trimmed = text[:12000]
+                    rel_path = os.path.relpath(full_path, BASE_DIR).replace('\\', '/')
+                    entries.append({
+                        'path': rel_path,
+                        'version': _detect_manual_version(rel_path),
+                        'title': title or fname,
+                        'title_lower': (title or fname).lower(),
+                        'text': text_trimmed,
+                        'text_lower': text_trimmed.lower()
+                    })
+                except Exception:
+                    continue
+        try:
+            cache_payload = [{'path': e['path'], 'version': e['version'], 'title': e['title'], 'text': e['text']} for e in entries]
+            with open(MANUALS_CACHE_PATH, 'w', encoding='utf-8') as f:
+                json.dump(cache_payload, f)
+        except Exception:
+            pass
+        with MANUALS_INDEX_LOCK:
+            MANUALS_INDEX = entries
+            MANUALS_INDEX_BUILT = True
+            MANUALS_INDEX_BUILDING = False
+        return len(MANUALS_INDEX)
+    except Exception:
+        with MANUALS_INDEX_LOCK:
+            MANUALS_INDEX_BUILDING = False
+        return 0
+
+def search_manuals(query_str, version_filter=None, limit=6):
+    if not MANUALS_INDEX_BUILT:
+        if not MANUALS_INDEX_BUILDING:
+            threading.Thread(target=build_manuals_index, daemon=True).start()
+        return []
+    q_raw = (query_str or '').strip()
+    if not q_raw:
+        return []
+    q_lower = q_raw.lower()
+    codes = re.findall(r'(?:520\d{4}|aud\d+|ora-\d+|s3-404)', q_lower)
+    raw_tokens = re.findall(r'[a-z0-9_.\-]{3,}', q_lower)
+    tokens = [t for t in raw_tokens if t not in MANUALS_STOP_WORDS]
+    if not tokens and codes:
+        tokens = codes
+    if not tokens:
+        tokens = raw_tokens[:4]
+
+    scored = []
+    for doc in MANUALS_INDEX:
+        if version_filter and version_filter.lower() not in doc['version'].lower():
+            continue
+        score = 0
+        t_low = doc['title_lower']
+        b_low = doc['text_lower']
+        best_pos = -1
+
+        for c in codes:
+            if c in t_low:
+                score += 140
+            c_idx = b_low.find(c)
+            if c_idx != -1:
+                score += 75
+                if best_pos == -1:
+                    best_pos = c_idx
+
+        if len(q_lower) >= 5 and q_lower in t_low:
+            score += 90
+        elif len(q_lower) >= 5:
+            p_idx = b_low.find(q_lower)
+            if p_idx != -1:
+                score += 40
+                if best_pos == -1:
+                    best_pos = p_idx
+
+        matched_tokens = 0
+        for tok in tokens:
+            hit = False
+            if tok in t_low:
+                score += 28
+                hit = True
+            idx = b_low.find(tok)
+            if idx != -1:
+                cnt = min(5, b_low.count(tok))
+                score += 8 + (cnt * 2)
+                hit = True
+                if best_pos == -1:
+                    best_pos = idx
+            if hit:
+                matched_tokens += 1
+
+        if score == 0:
+            continue
+        if len(tokens) > 1 and matched_tokens >= len(tokens):
+            score += 30
+        if doc['version'] in ('IG 13.0', 'KB Errores', 'IDaaS Cloud'):
+            score += 5
+
+        if best_pos == -1:
+            snippet = doc['text'][:240]
+        else:
+            start = max(0, best_pos - 80)
+            end = min(len(doc['text']), best_pos + 200)
+            snippet = ('...' if start > 0 else '') + doc['text'][start:end].strip() + ('...' if end < len(doc['text']) else '')
+
+        scored.append({
+            'title': doc['title'],
+            'version': doc['version'],
+            'path': doc['path'],
+            'score': score,
+            'snippet': snippet
+        })
+
+    scored.sort(key=lambda x: x['score'], reverse=True)
+    return scored[:limit]
+
 def clear_active_session():
     global ACTIVE_DB_PATH
     ACTIVE_DB_PATH = None
@@ -597,8 +808,28 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_forensic_matrix(query)
         elif path == '/api/user-pattern-detail':
             self.handle_user_pattern_detail(query)
+        elif path == '/api/manuals-search':
+            self.handle_manuals_search(query)
+        elif path == '/api/manuals-status':
+            if not MANUALS_INDEX_BUILT and not MANUALS_INDEX_BUILDING:
+                threading.Thread(target=build_manuals_index, daemon=True).start()
+            self.send_json({'ready': MANUALS_INDEX_BUILT, 'building': MANUALS_INDEX_BUILDING, 'indexedPages': len(MANUALS_INDEX)})
         else:
             super().do_GET()
+
+    def handle_manuals_search(self, query):
+        q = query.get('q', [''])[0]
+        version = query.get('version', [None])[0]
+        try:
+            limit = min(15, max(1, int(query.get('limit', ['6'])[0])))
+        except Exception:
+            limit = 6
+        results = search_manuals(q, version_filter=version, limit=limit)
+        self.send_json({
+            'query': q,
+            'totalIndexedPages': len(MANUALS_INDEX),
+            'results': results
+        })
 
     def handle_activate_db(self, query):
         global ACTIVE_DB_PATH
@@ -1814,6 +2045,7 @@ if __name__ == '__main__':
     for attempt in range(5):
         try:
             server = ReusableHTTPServer(('0.0.0.0', PORT), DiagnosticRequestHandler)
+            threading.Thread(target=build_manuals_index, daemon=True).start()
             print(f'✅ Servidor API & Dashboard ACTIVO en http://0.0.0.0:{PORT}')
             server.serve_forever()
             break

@@ -19,8 +19,15 @@ if (typeof escapeHtml === 'undefined') {
 // CATÁLOGO OFICIAL Y EXACTO DE CÓDIGOS DE ERROR Y EVENTOS ENTRUST & AUDITORÍA
 // ==========================================================================
 const ENTRUST_EXACT_CATALOG = {
+  // 5200xxx: Motor Core, Proxy de Repositorio & Protocolo
+  '5200001': { title: 'Error General de Protocolo o Comunicación Core', category: 'Motor Entrust Core', severity: 'CRITICAL', meaning: 'El servicio principal de IdentityGuard rechazó una operación por fallo de protocolo o parámetro corrupto.', rootCause: 'Petición malformada desde el gateway/cliente o timeout interno en el socket de autenticación.', remediation: 'Revisar los logs de ig_system alrededor del timestamp del evento y validar la conectividad con el servidor de aplicaciones.' },
+  '5200002': { title: 'Fallo de Conexión o Respuesta del Proxy de Repositorio / Servicio', category: 'Motor Entrust Core', severity: 'CRITICAL', meaning: 'El motor de autenticación no pudo completar la consulta contra el proxy de repositorio (BD / LDAP) o el servicio remoto.', rootCause: 'Corte temporal hacia el repositorio LDAP/Oracle, pool de conexiones saturado o timeout de socket.', remediation: '1. Verificar estado de conectividad hacia Oracle DB y Active Directory/LDAP.\n2. Revisar tamaño de pool JDBC en identityguard.properties.\n3. Confirmar latencia de red entre nodos y repositorio.' },
+  '5200004': { title: 'Excepción de Tiempo de Espera Agotado (Operation Timeout)', category: 'Motor Entrust Core', severity: 'ERROR', meaning: 'La operación excedió el tiempo máximo de espera configurado en el servidor Entrust.', rootCause: 'Sobrecarga en base de datos, consulta LDAP lenta o bloqueo de hilo en Tomcat.', remediation: 'Inspeccionar tiempos de respuesta de BD/LDAP y validar consumo de CPU/memoria JVM.' },
+
   // 5201xxx: Tarjetas Grid, OTP y Desafíos de Autenticación
   '5201000': { title: 'Fallo Interno del Servidor (Server Failure)', category: 'Motor Entrust Core', severity: 'CRITICAL', meaning: 'Fallo crítico no controlado en el motor de autenticación Entrust.', rootCause: 'Pérdida de conectividad con la base de datos o corrupción de llaves maestras .enc', remediation: 'Reiniciar el servicio de administración y validar la conectividad con la base de datos.' },
+  '5201001': { title: 'Desafío de Autenticación Inválido o Expirado', category: 'Motor de Desafíos', severity: 'ERROR', meaning: 'El token de sesión del desafío (Challenge) caducó o no corresponde a la sesión activa.', rootCause: 'El usuario tardó demasiado en responder el reto Grid/OTP o reenvió un formulario expirado.', remediation: 'Solicitar al usuario reiniciar el flujo de autenticación y verificar el TTL de desafíos en la política.' },
+  '5201002': { title: 'Tipo de Autenticador No Soportado o No Disponible', category: 'Motor de Desafíos', severity: 'ERROR', meaning: 'El usuario intentó validar un factor que no está activo o provisionado en su perfil.', rootCause: 'Política de grupo mal asignada o autenticador revocado.', remediation: 'Verificar los autenticadores asignados al usuario en la consola de administración de IdentityGuard.' },
   '5201006': { title: 'Número de Respuestas No Coincide con Desafíos (Response Count Mismatch)', category: 'Tarjetas Grid & OTP', severity: 'ERROR', meaning: 'El número de respuestas enviadas por el usuario no coincide con el número de celdas solicitadas en el desafío Grid.', rootCause: 'El usuario omitió el ingreso de una coordenada de la tarjeta Grid o la aplicación envió parámetros incompletos.', remediation: 'Verificar que la aplicación cliente envíe exactamente el número de respuestas solicitadas y solicitar al usuario reintentar.' },
   '5201007': { title: 'La Respuesta No Coincide con el Desafío (Response Mismatch)', category: 'Tarjetas Grid & OTP', severity: 'ERROR', meaning: 'La coordenada Grid o valor OTP ingresado por el usuario es incorrecto.', rootCause: 'Ingreso erróneo de la celda de la tarjeta Grid o token de software desincronizado.', remediation: 'Verificar que el usuario esté utilizando la tarjeta Grid activa correspondiente a su número de serie.' },
   '5201008': { title: 'La Tarjeta Grid No Coincide con el Desafío (Card Mismatch)', category: 'Tarjetas Grid', severity: 'ERROR', meaning: 'El número de serie de la tarjeta Grid utilizada no coincide con el desafío emitido por el servidor.', rootCause: 'El usuario tiene asignada una tarjeta Grid anterior que fue reemplazada o reasignada.', remediation: 'Verificar en la consola de administración el número de serie de la tarjeta activa asignada al usuario.' },
@@ -53,6 +60,13 @@ const ENTRUST_EXACT_CATALOG = {
   'AUD154': { title: 'Pool de Conexiones al Repositorio Agotado', category: 'Servicios & Alta Disponibilidad', severity: 'WARN', meaning: 'No se pudo obtener una conexión al repositorio desde el pool por agotamiento (Manual oficial IG 13.0, AUD154).', rootCause: 'Carga concurrente superior al tamaño máximo del pool o consultas lentas que retienen conexiones.', remediation: 'Revisar el tamaño máximo del pool y consultas colgadas; ampliar solo si la evidencia lo respalda.' },
   'AUD155': { title: 'Pool de Conexiones al Repositorio al 80% de Uso', category: 'Servicios & Alta Disponibilidad', severity: 'WARN', meaning: 'El pool de conexiones al repositorio alcanzó el 80% de su capacidad (Manual oficial IG 13.0, AUD155).', rootCause: 'Aumento sostenido de autenticaciones concurrentes.', remediation: 'Monitorear el uso del pool y evaluar su ampliación antes de llegar al 100%.' },
   'AUD2309': { title: 'Fallo en la Entrega de Notificación Push MFA', category: 'Pasarela Móvil MFA', severity: 'WARN', meaning: 'El servidor de notificaciones no pudo entregar el mensaje de autenticación Push al teléfono del usuario.', rootCause: 'Dispositivo móvil sin conexión a Internet, token revocado o certificado APNs/FCM desactualizado.', remediation: 'Verificar la conectividad del dispositivo y comprobar la vigencia de los certificados push en el servidor.' },
+  'AUD3000': { title: 'Autenticación de Usuario Exitosa (Authentication Succeeded)', category: 'Auditoría de Autenticación', severity: 'INFO', meaning: 'El usuario completó satisfactoriamente el desafío de autenticación asignado.', rootCause: 'Validación legítima de credenciales y segundo factor.', remediation: 'Registro de auditoría nominal; no requiere acción.' },
+  'AUD3004': { title: 'Creación o Emisión de Desafío de Autenticación', category: 'Auditoría de Autenticación', severity: 'INFO', meaning: 'El motor IdentityGuard generó un reto (Grid, OTP, Push o Q&A) para la sesión del usuario.', rootCause: 'Flujo normal de inicio de sesión multifactor.', remediation: 'Registro de auditoría nominal.' },
+  'AUD6000': { title: 'Autenticación Fallida / Rechazo de Credencial o Factor', category: 'Auditoría de Seguridad', severity: 'WARN', meaning: 'El intento de autenticación del usuario fue rechazado por coordenada, OTP o contraseña incorrecta.', rootCause: 'Error humano al ingresar el factor o intento no autorizado.', remediation: 'Monitorear reincidencia por usuario/IP; si supera el umbral, validar posible bloqueo o fuerza bruta.' },
+  'AUD6001': { title: 'Cuenta de Usuario Bloqueada por Umbral de Fallos (User Locked Out)', category: 'Auditoría de Seguridad', severity: 'CRITICAL', meaning: 'La cuenta alcanzó el máximo de intentos fallidos permitidos y fue bloqueada automáticamente por la política de seguridad.', rootCause: 'Múltiples intentos fallidos consecutivos (olvido de factor, desincronización de token o ataque de fuerza bruta).', remediation: '1. Verificar origen (IP / canal) de los intentos fallidos.\n2. Contactar al usuario o validar ticket de soporte.\n3. Desbloquear cuenta desde Entrust Admin Console o supersh.' },
+  'AUD6002': { title: 'Intento de Acceso sobre Cuenta Ya Bloqueada o Deshabilitada', category: 'Auditoría de Seguridad', severity: 'WARN', meaning: 'Se recibió una solicitud de autenticación para una cuenta que ya se encontraba bloqueada o inactiva.', rootCause: 'Usuario reintentando tras bloqueo previo o script/bot insistiendo sobre cuenta bloqueada.', remediation: 'Confirmar si el bloqueo es legítimo antes de rehabilitar y revisar si hay IPs agresoras.' },
+  'AUD1210': { title: 'Modificación de Perfil o Credencial de Usuario en Consola', category: 'Auditoría Administrativa', severity: 'INFO', meaning: 'Un operador o proceso administrativo modificó atributos o autenticadores de un usuario.', rootCause: 'Operación administrativa de soporte o aprovisionamiento.', remediation: 'Verificar que corresponda a una solicitud autorizada.' },
+  'AUD1221': { title: 'Asignación o Activación de Tarjeta Grid / Autenticador', category: 'Auditoría Administrativa', severity: 'INFO', meaning: 'Se asignó o activó un nuevo autenticador (Grid/Token) al perfil del usuario.', rootCause: 'Proceso de enrolamiento o reposición de factor MFA.', remediation: 'Registro de auditoría nominal.' },
   'AUD8500': { title: 'Inicio de Exportación Masiva para Migración a IDaaS Cloud', category: 'Herramienta de Migración IDaaS', severity: 'INFO', meaning: 'Se inició el proceso de extracción y cifrado de credenciales para migración a la nube.', rootCause: 'Ejecución de la herramienta IG_Migration_Tool.', remediation: 'Monitorear la finalización exitosa de las 3 fases de exportación.' },
   'AUD8502': { title: 'Exportación Masiva a IDaaS Cloud Completada con Éxito', category: 'Herramienta de Migración IDaaS', severity: 'INFO', meaning: 'La exportación de tarjetas y usuarios finalizó al 100% generando el paquete .dat cifrado.', rootCause: 'Extracción completa de credenciales desde la base de datos OnPremise.', remediation: 'Proceder a la importación en la consola de Entrust IDaaS Cloud.' },
   'AUD8503': { title: 'Generación y Despliegue de Contraseña de Cifrado (.dat)', category: 'Herramienta de Migración IDaaS', severity: 'INFO', meaning: 'La clave de cifrado del paquete de migración fue generada y mostrada en pantalla al usuario Master.', rootCause: 'Protocolo de seguridad criptográfica de custodia de identidades.', remediation: 'Custodiar la clave para su ingreso en la consola Cloud de IDaaS.' },
@@ -1939,6 +1953,91 @@ journalctl -u wso2am -n 50 --no-pager`;
       regulatoryStatement: `Conforme a las mejores prácticas de Ciberseguridad Bancaria y directrices de auditoría Sudeban/ISO 27001, se certifica la trazabilidad inalterable de los eventos registrados bajo el hash SHA-256 de autenticidad emitido por IT SERVICIOS.`,
       remediationPlan: remediationPlan
     };
+  }
+
+  searchKnowledgeBase(query, limit = 6) {
+    const q = String(query || '').trim();
+    if (!q) return [];
+    const qLower = q.toLowerCase();
+    const stopWords = new Set(['de', 'la', 'el', 'los', 'las', 'un', 'una', 'en', 'y', 'o', 'por', 'para', 'con', 'que', 'como', 'cual', 'es', 'son', 'the', 'and', 'for', 'how', 'what', 'error', 'errores', 'falla', 'fallo', 'solucion', 'resuelvo', 'resolver', 'significa']);
+    const codes = qLower.match(/(?:520\d{4}|aud\d+|ora-\d+|s3-404|ssh-\w+)/gi) || [];
+    const tokens = (qLower.match(/[a-z0-9_.\-áéíóúñ]{3,}/gi) || []).filter(t => !stopWords.has(t));
+    const results = [];
+    const seenKeys = new Set();
+
+    // 1. Buscar primero en ENTRUST_EXACT_CATALOG
+    Object.entries(ENTRUST_EXACT_CATALOG).forEach(([code, entry]) => {
+      let score = 0;
+      const cLower = code.toLowerCase();
+      const hay = `${cLower} ${entry.title} ${entry.category} ${entry.meaning} ${entry.rootCause} ${entry.remediation}`.toLowerCase();
+      if (codes.some(c => c.toLowerCase() === cLower) || qLower.includes(cLower)) {
+        score += 150;
+      }
+      tokens.forEach(tok => {
+        if (cLower.includes(tok)) score += 60;
+        if ((entry.title || '').toLowerCase().includes(tok)) score += 30;
+        if (hay.includes(tok)) score += 12;
+      });
+      if (score > 0) {
+        seenKeys.add(cLower);
+        results.push({
+          source: 'ENTRUST_EXACT_CATALOG',
+          code,
+          title: entry.title,
+          category: entry.category,
+          severity: entry.severity || 'ERROR',
+          meaning: entry.meaning,
+          rootCause: entry.rootCause,
+          remediation: entry.remediation,
+          manualVersion: 'IG 13.0 / KB Oficial',
+          sectionTitle: `${code} — ${entry.title}`,
+          score
+        });
+      }
+    });
+
+    // 2. Buscar en this.rules (reglas detalladas + personalizadas)
+    (this.rules || []).forEach(rule => {
+      let score = 0;
+      const rId = String(rule.id || '').toLowerCase();
+      const titleLow = String(rule.title || '').toLowerCase();
+      const hay = `${rId} ${titleLow} ${rule.category || ''} ${rule.meaning || ''} ${rule.rootCause || ''} ${rule.remediation || ''}`.toLowerCase();
+
+      if (rule.pattern && rule.pattern instanceof RegExp && rule.pattern.test(q)) {
+        score += 130;
+      }
+      codes.forEach(c => {
+        if (hay.includes(c.toLowerCase())) score += 110;
+      });
+      tokens.forEach(tok => {
+        if (titleLow.includes(tok)) score += 28;
+        if (hay.includes(tok)) score += 10;
+      });
+
+      if (score > 0) {
+        const extractedCode = codes.find(c => hay.includes(c.toLowerCase())) || rule.id;
+        if (seenKeys.has(String(extractedCode).toLowerCase()) && score < 130) {
+          score -= 10;
+        }
+        results.push({
+          source: 'KB_RULES',
+          code: String(extractedCode).toUpperCase(),
+          title: rule.title,
+          category: rule.category,
+          severity: rule.severity || 'ERROR',
+          meaning: rule.meaning,
+          rootCause: rule.rootCause,
+          remediation: rule.remediation,
+          riskLevel: rule.riskLevel || '',
+          manualVersion: rule.manualVersion || 'vEntrust',
+          sectionTitle: rule.sectionTitle || rule.title,
+          score
+        });
+      }
+    });
+
+    results.sort((a, b) => b.score - a.score);
+    return results.slice(0, limit);
   }
 
   getAllRules() {
