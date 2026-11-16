@@ -756,10 +756,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.8.1',
-    build: 554,
+    version: 'v2.9.0',
+    build: 555,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'THREADED-SERVER-FAST-INDEX-554',
+    gitCommit: 'FULL-SOC-REDESIGN-KB-VIEWER-555',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -10000,6 +10000,29 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     };
     window.openCopilot = () => window.toggleCopilot(true);
 
+    window.openManualPathInViewer = (relPath, title, version) => {
+      if (!relPath) return;
+      if (typeof window.switchTabGlobal === 'function') {
+        window.switchTabGlobal('manuals');
+      } else {
+        const manualsTabBtn = document.querySelector('.nav-btn[data-tab="manuals"]');
+        if (manualsTabBtn) manualsTabBtn.click();
+      }
+      const iframe = document.getElementById('manual-iframe');
+      if (iframe) {
+        iframe.src = relPath;
+      }
+      const banner = document.getElementById('manual-active-banner');
+      const bannerText = document.getElementById('manual-active-banner-text');
+      const bannerExt = document.getElementById('manual-active-banner-ext');
+      if (banner && bannerText) {
+        bannerText.innerHTML = `📖 <strong>[${escapeHtml(version || 'Manual')}]</strong> ${escapeHtml(title || relPath)}`;
+        if (bannerExt) bannerExt.href = relPath;
+        banner.style.display = 'flex';
+      }
+      window.toggleCopilot(false);
+    };
+
     triggers.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -10061,9 +10084,12 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
           res.manualResults.slice(0, 3).forEach(r => {
             const a = document.createElement('a');
             a.href = r.path;
-            a.target = '_blank';
             a.className = 'copilot-manual-chip';
             a.innerHTML = `📖 <span>[${escapeHtml(r.version)}]</span> ${escapeHtml(r.title)}`;
+            a.addEventListener('click', (e) => {
+              e.preventDefault();
+              window.openManualPathInViewer(r.path, r.title, r.version);
+            });
             refsWrap.appendChild(a);
           });
           botBubble.appendChild(refsWrap);

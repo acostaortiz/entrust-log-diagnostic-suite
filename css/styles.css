@@ -1745,3 +1745,99 @@ body.dark-theme .copilot-pill-ok { color: #4ade80; }
 .glass-card {
   border-radius: 14px;
 }
+
+
+/* ==========================================================================
+   REDISEÑO VISUAL COMPLETO DEL DASHBOARD — ENTERPRISE SOC v2.9
+   ========================================================================== */
+.app-header {
+  backdrop-filter: blur(14px);
+  border-bottom: 2px solid rgba(2, 132, 199, 0.35);
+  box-shadow: 0 6px 24px rgba(2, 6, 23, 0.08);
+}
+body.dark-theme .app-header {
+  background: rgba(15, 23, 42, 0.92);
+  border-bottom-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+.nav-btn {
+  border-radius: 10px 10px 0 0;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+.nav-btn:hover {
+  background: rgba(2, 132, 199, 0.08);
+}
+.nav-btn.active {
+  background: rgba(2, 132, 199, 0.12);
+  color: var(--accent-cyan);
+}
+
+/* Tarjetas KPI de Visión General */
+.metric-card {
+  border: 1px solid var(--border-color);
+  border-top: 3px solid var(--accent-cyan);
+  box-shadow: var(--shadow-sm);
+}
+.metric-card.critical-card { border-top-color: var(--sev-critical); }
+.metric-card.warn-card { border-top-color: var(--sev-warn); }
+.metric-card.success-card { border-top-color: #16a34a; }
+.metric-value {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Paneles, Tarjetas y Tablas */
+.glass-card {
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+}
+.card-header {
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+.card-title {
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.glass-card table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+.glass-card table thead th {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 800;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--border-color);
+}
+.glass-card table tbody td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+/* Visor de Manuales Integrado */
+.manual-frame-container {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.manual-iframe {
+  background: #ffffff;
+}
+
+/* Scrollbars Discretas Enterprise */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.35); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(2, 132, 199, 0.55); }
