@@ -38,11 +38,13 @@ if (typeof escapeHtml === 'undefined') {
         version: 'Release 13.0'
       };
 
-      let totalLogs = gsm ? (gsm.totalLogs || 0) : 0;
-      let totalErrors = gsm ? (gsm.totalErrors || 0) : 0;
-      let totalWarnings = gsm ? (gsm.totalWarnings || 0) : 0;
+      const cm = (typeof window.getConsolidatedMetricsGlobal === 'function') ? window.getConsolidatedMetricsGlobal() : null;
 
-      if (!gsm && files.length > 0) {
+      let totalLogs = cm ? cm.totalLogs : (gsm ? (gsm.totalLogs || 0) : 0);
+      let totalErrors = cm ? cm.totalErrors : (gsm ? (gsm.totalErrors || 0) : 0);
+      let totalWarnings = cm ? cm.totalWarnings : (gsm ? (gsm.totalWarnings || 0) : 0);
+
+      if (!cm && !gsm && files.length > 0) {
         files.forEach(f => {
           totalLogs += Number(f.count || f.linesProcessed || 0);
           totalErrors += Number(f.realErrors || f.errors || 0);
@@ -51,9 +53,16 @@ if (typeof escapeHtml === 'undefined') {
       }
       if (totalLogs === 0) totalLogs = logs.length;
 
-      // Consolidar mapa real de códigos (incluyendo 520xxx en líneas [INFO])
+      // Consolidar mapa real de códigos desde getConsolidatedMetricsGlobal() o globalStreamMetrics
       const codeCounts = new Map();
-      if (gsm && Array.isArray(gsm.topCodes)) {
+      if (cm) {
+        [cm.codeMap520, cm.codeMapAud, cm.codeMapOra, cm.codeMapIdaas, cm.codeMapOther].forEach(mapObj => {
+          if (!mapObj) return;
+          Object.entries(mapObj).forEach(([k, v]) => {
+            if (k) codeCounts.set(String(k), (codeCounts.get(String(k)) || 0) + Number(v || 0));
+          });
+        });
+      } else if (gsm && Array.isArray(gsm.topCodes)) {
         gsm.topCodes.forEach(tc => {
           if (tc && tc.code) codeCounts.set(String(tc.code), Number(tc.count || 0));
         });
@@ -110,7 +119,8 @@ if (typeof escapeHtml === 'undefined') {
         sumAudAll,
         userStats,
         dbHealth: dbFallback.dbHealth || { status: 'HEALTHY', totalDbIncidents: 0, indicators: [] },
-        codeMatrix: dbFallback.codeMatrix || []
+        codeMatrix: dbFallback.codeMatrix || [],
+        clientConfig: appState.activeClientConfig || null
       };
     }
 
@@ -174,9 +184,53 @@ if (typeof escapeHtml === 'undefined') {
 
       let answer = '';
       let suggestedQueries = [];
+      let action = null;
 
+      // 0. Generación de Informes Directa desde Entrust Forensics AI
+      if (/generar\s+informe|emitir\s+informe|crear\s+informe|abrir\s+informe|exportar\s+errores/i.test(q)) {
+        if (ctx.totalLogs === 0) {
+          answer = `⚠️ No hay registros cargados todavía para **${ctx.client.name}**. Carga primero tus archivos de logs en el **Analizador** para generar el dictamen.`;
+        } else if (q.includes('csv') || q.includes('exportar errores')) {
+          action = { type: 'export_errors_csv' };
+          answer = `📥 **Exportando CSV de Errores y Alertas para ${ctx.client.name}**\n\n• Eventos consolidados: \`${ctx.totalLogs.toLocaleString()}\`\n• Fallos críticos: \`${ctx.totalErrors.toLocaleString()}\` • Alertas AUD: \`${ctx.totalWarnings.toLocaleString()}\`\n\nDescarga iniciada automáticamente.`;
+        } else if (q.includes('usuario') || q.includes('censo')) {
+          action = { type: 'exec_report', view: 'users', onlyCatalog: false };
+          answer = `👤 **Generando Informe de Censo y Trazas de Usuario para ${ctx.client.name}**\n\n• Usuarios nominales validados: \`${ctx.userStats.length}\`\n• Eventos totales: \`${ctx.totalLogs.toLocaleString()}\`\n\nSe ha abierto el informe enfocado en usuarios.`;
+        } else if (q.includes('base de datos') || q.includes('oracle') || q.includes('bd')) {
+          action = { type: 'exec_report', view: 'db', onlyCatalog: false };
+          answer = `🗄️ **Generando Informe de Salud de Base de Datos para ${ctx.client.name}**\n\n• Incidentes ORA/JDBC detectados: \`${ctx.dbHealth.totalDbIncidents || 0}\`\n• Estado: **${ctx.dbHealth.totalDbIncidents === 0 ? 'SALUDABLE' : 'REQUIERE ATENCIÓN'}**\n\nSe ha abierto la vista de Base de Datos del dictamen.`;
+        } else if (q.includes('520') || q.includes('catalogo') || q.includes('solo errores')) {
+          action = { type: 'exec_report', view: 'full', onlyCatalog: true };
+          answer = `🚨 **Generando Dictamen Exclusivo de Errores Críticos (520xxx / AUD / ORA) para ${ctx.client.name}**\n\n• Fallos críticos: \`${ctx.totalErrors.toLocaleString()}\` (\`${ctx.sum520.toLocaleString()}\` de familia \`520xxx\`).\n\nSe ha abierto el dictamen filtrado.`;
+        } else {
+          action = { type: 'exec_report', view: 'full', onlyCatalog: false };
+          answer = `📄 **Generando Informe Ejecutivo Forense Completo para ${ctx.client.name}**\n\n• **Muestra:** \`${ctx.totalLogs.toLocaleString()}\` eventos en \`${ctx.files.length || 1}\` archivo(s) rotado(s).\n• **Salud:** **${ctx.healthPct}%** | **Errores Críticos:** \`${ctx.totalErrors.toLocaleString()}\`\n\nEl dictamen de 8 secciones ya está abierto en pantalla listo para PDF/Impresión.`;
+        }
+        suggestedQueries = ['resumen operativo', 'top errores', 'plan de remediacion'];
+      }
+      // 0.5 Consulta sobre Configuración Real del Cliente (identityguard.properties / server.xml / web.xml / entrusttoken.conf)
+      else if (q.includes('config') || q.includes('properties') || q.includes('server.xml') || q.includes('web.xml') || q.includes('entrusttoken') || q.includes('jdbc') || q.includes('maxthreads') || q.includes('keystore')) {
+        const cfg = ctx.clientConfig;
+        if (cfg && cfg.files && cfg.files.length > 0) {
+          const jdbc = cfg.jdbc || {};
+          const tok = cfg.token || {};
+          const web = cfg.web || {};
+          const conns = (cfg.tomcatConnectors || []).map(c => `  • **${c.service || 'Connector'}** puerto \`${c.port}\` — \`maxThreads=${c.maxThreads || '-'}\`, \`acceptCount=${c.acceptCount || '-'}\`, \`clientAuth=${c.clientAuth || 'false'}\`${c.keystoreFile ? `, keystore: \`${c.keystoreFile}\`` : ''}`).join('\n') || '  • Sin conectores Tomcat registrados.';
+          answer = `⚙️ **Configuración Real de Plataforma — ${ctx.client.name}** *(extraída de \`${cfg.files.join(', ')}\`)*:\n\n` +
+                   `• **Base de Datos JDBC:** \`${jdbc.type || 'N/A'}\` | Usuario: \`${jdbc.user || 'N/A'}\` | Schema: \`${jdbc.schema || 'N/A'}\`\n` +
+                   `• **JDBC URL:** \`${jdbc.url || 'N/A'}\`\n` +
+                   `• **Admin URL:** \`${(cfg.urls && cfg.urls.webadmin) || 'N/A'}\`\n` +
+                   `• **Auth HTTPS URL:** \`${(cfg.urls && cfg.urls.authHttps) || 'N/A'}\`\n` +
+                   `• **Tokens (` + '`entrusttoken.conf`' + `):** \`resetEventWindow=${tok.resetEventWindow || '-'}\`, \`maxTimeSteps=${tok.maxTimeSteps || '-'}\`\n` +
+                   `• **Session Timeout (` + '`web.xml`' + `):** \`${web.sessionTimeout || 'N/A'} min\`\n\n` +
+                   `**Conectores Tomcat (` + '`server.xml`' + `):**\n${conns}`;
+        } else {
+          answer = `⚙️ No hay archivos de configuración cargados aún para **${ctx.client.name}**.\n\nPara consultar su arquitectura real sin inventar datos, abre **+ Cliente** en la barra superior y sube sus archivos \`identityguard.properties\`, \`server.xml\`, \`web.xml\` o \`entrusttoken.conf\`.`;
+        }
+        suggestedQueries = ['resumen operativo', 'base de datos oracle', 'generar informe ejecutivo'];
+      }
       // 1. Consulta específica de código de error (ej: "520002", "AUD6001", "ORA-01555")
-      if (mentionedCodes.length > 0) {
+      else if (mentionedCodes.length > 0) {
         if (kbMatches.length > 0) {
           answer = `🔎 **Diagnóstico Pericial de Base de Conocimiento para \`${mentionedCodes.join(', ').toUpperCase()}\`**:\n\n` +
                    this._formatKbMatches(kbMatches, ctx) +
@@ -321,6 +375,7 @@ if (typeof escapeHtml === 'undefined') {
         kbMatches,
         manualResults,
         suggestedQueries,
+        action,
         timestamp: new Date().toLocaleTimeString()
       };
       this.chatHistory.push(interaction);

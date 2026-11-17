@@ -751,7 +751,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
     BLOCKED_EXTENSIONS = ('.php', '.php3', '.php4', '.php5', '.phtml', '.phar', '.asp', '.aspx', '.jsp', '.jspx', '.cgi', '.pl', '.sh', '.py', '.pyc', '.db', '.sqlite', '.sqlite3', '.env', '.git', '.htaccess', '.htpasswd', '.ini', '.bak', '.sql')
     BLOCKED_PATHS = ('/.git', '/.env', '/data/', '/scripts/', '/server.py', '/sync.sh', '/wp-admin', '/wp-login', '/wp-content', '/phpmyadmin', '/cgi-bin', '/vendor/phpunit', '/etc/passwd', '/proc/self')
-    ALLOWED_UPLOAD_EXTS = ('.log', '.txt', '.csv', '.tsv', '.json', '.xml', '.properties', '.dat', '.zip', '.gz', '.tgz', '.bz2', '.tar', '.html', '.htm', '.db', '.1', '.2', '.3', '.4', '.5')
+    ALLOWED_UPLOAD_EXTS = ('.log', '.txt', '.csv', '.tsv', '.json', '.xml', '.properties', '.conf', '.pem', '.crt', '.cer', '.dat', '.zip', '.gz', '.tgz', '.bz2', '.tar', '.html', '.htm', '.db', '.1', '.2', '.3', '.4', '.5')
 
     def list_directory(self, path):
         # Security Hardening: Disable directory listing completely (CWE-548)
@@ -811,6 +811,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_save_clients()
         elif path == '/api/engineers':
             self.handle_save_engineers()
+        elif path == '/api/client-config':
+            self.handle_save_client_config()
         elif path == '/api/clear-session':
             clear_active_session()
             self.send_json({'success': True, 'activeDb': None})
@@ -853,12 +855,54 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_user_pattern_detail(query)
         elif path == '/api/manuals-search':
             self.handle_manuals_search(query)
+        elif path == '/api/client-config':
+            self.handle_get_client_config(query)
         elif path == '/api/manuals-status':
             if not MANUALS_INDEX_BUILT and not MANUALS_INDEX_BUILDING:
                 threading.Thread(target=build_manuals_index, daemon=True).start()
             self.send_json({'ready': MANUALS_INDEX_BUILT, 'building': MANUALS_INDEX_BUILDING, 'indexedPages': len(MANUALS_INDEX)})
         else:
             super().do_GET()
+
+    def handle_get_client_config(self, query):
+        cfg_file = os.path.join(DATA_DIR, 'client_configs.json')
+        client_id = (query.get('clientId', [''])[0] or '').strip()
+        configs = {}
+        if os.path.exists(cfg_file):
+            try:
+                with open(cfg_file, 'r', encoding='utf-8') as f:
+                    configs = json.load(f) or {}
+            except Exception:
+                configs = {}
+        if client_id:
+            self.send_json({'clientId': client_id, 'config': configs.get(client_id, None)})
+        else:
+            self.send_json({'configs': configs})
+
+    def handle_save_client_config(self):
+        try:
+            length = int(self.headers.get('Content-Length', 0))
+            raw = self.rfile.read(length) if length > 0 else b'{}'
+            payload = json.loads(raw.decode('utf-8'))
+            client_id = str(payload.get('clientId') or '').strip()
+            config_data = payload.get('config')
+            if not client_id or not isinstance(config_data, dict):
+                self.send_json({'error': 'clientId y config requeridos'}, status=400)
+                return
+            cfg_file = os.path.join(DATA_DIR, 'client_configs.json')
+            configs = {}
+            if os.path.exists(cfg_file):
+                try:
+                    with open(cfg_file, 'r', encoding='utf-8') as f:
+                        configs = json.load(f) or {}
+                except Exception:
+                    configs = {}
+            configs[client_id] = config_data
+            with open(cfg_file, 'w', encoding='utf-8') as f:
+                json.dump(configs, f, ensure_ascii=False, indent=2)
+            self.send_json({'success': True, 'clientId': client_id, 'config': config_data})
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
 
     def handle_manuals_search(self, query):
         q = query.get('q', [''])[0]

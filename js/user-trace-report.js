@@ -1513,6 +1513,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
               <button class="btn btn-primary" onclick="window.UserTraceReport.downloadCsv()" style="background:#0284c7; border:none; font-size:0.78rem; padding:6px 14px; font-weight:700; border-radius:6px; cursor:pointer;" title="Descargar Censo Nominal + Patrones en CSV">
                 📥 Exportar Censo & Patrones (.CSV)
               </button>
+              <button class="btn" onclick="if(window.generateExecutiveReportGlobal){ window.setReportViewMode && window.setReportViewMode('users'); window.generateExecutiveReportGlobal(false); }" style="background:#0a3d6d; border:none; color:#ffffff; font-size:0.78rem; padding:6px 12px; font-weight:700; border-radius:6px; cursor:pointer;" title="Abrir Informe Ejecutivo filtrado por Censo de Usuarios">
+                📊 Informe Ejecutivo Censo
+              </button>
               <button class="btn" onclick="window.UserTraceReport.openModal()" style="background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 12px; border-radius:6px; cursor:pointer;" title="Abrir Modal de Expediente Oficial PDF/DOCX">
                 📄 Expediente PDF/DOCX
               </button>

@@ -213,6 +213,9 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       resetSession(false);
       await loadClientProfiles();
+      if (typeof window.loadActiveClientConfigGlobal === 'function') {
+        await window.loadActiveClientConfigGlobal(state.activeClientId);
+      }
       let restoredLocal = false;
       if (window.storageEngine && typeof window.storageEngine.loadActiveSession === 'function') {
         const savedSession = await window.storageEngine.loadActiveSession();
@@ -519,7 +522,229 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof syncClientSessionWithServer === 'function') {
       syncClientSessionWithServer(clientId);
     }
+    if (typeof window.loadActiveClientConfigGlobal === 'function') {
+      window.loadActiveClientConfigGlobal(clientId);
+    }
     showAnalysisStatus(false, `🏢 Sesión de Cliente: ${currentClient.name}`, `Plataforma: ${currentClient.platform} | Versión: ${currentClient.version} • ${currentClient.environment || 'PROD'}`);
+  };
+
+  async function parseEntrustConfigFiles(fileList) {
+    const result = {
+      updatedAt: new Date().toISOString(),
+      files: [],
+      identityguard: null,
+      serverXml: null,
+      webXml: null,
+      entrusttoken: null,
+      uploadedCerts: []
+    };
+
+    const files = Array.from(fileList || []);
+    for (const file of files) {
+      const name = (file.name || '').toLowerCase();
+      const text = await file.text();
+      result.files.push(file.name);
+
+      if (name.endsWith('.properties')) {
+        const props = {};
+        text.split(/\r?\n/).forEach(line => {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('!')) return;
+          const eqIdx = trimmed.indexOf('=');
+          if (eqIdx === -1) return;
+          const key = trimmed.slice(0, eqIdx).trim();
+          let val = trimmed.slice(eqIdx + 1).trim();
+          if (/password|passwd|secret|passphrase|pin/i.test(key)) {
+            val = '***REDACTED***';
+          }
+          props[key] = val;
+        });
+        result.identityguard = {
+          fileName: file.name,
+          jdbcUrl: props['identityguard.jdbc.url'] || props['jdbc.url'] || '',
+          jdbcUser: props['identityguard.jdbc.user'] || props['jdbc.user'] || '',
+          jdbcSchema: props['identityguard.jdbc.schema'] || props['jdbc.schema'] || '',
+          jdbcType: props['identityguard.jdbc.type'] || props['jdbc.type'] || '',
+          adminServiceUrl: props['adminservice.url'] || '',
+          webAdminUrl: props['webadmin.url'] || '',
+          authServiceUrl: props['authservice.url'] || '',
+          authServiceHttpsUrl: props['authservice.https.url'] || '',
+          authServiceClientHttpsUrl: props['authservice.client.https.url'] || '',
+          masterKeyFile: props['MasterKeyFile'] || props['masterKeyFile'] || '',
+          keyProtectionFile: props['KeyProtectionFile'] || props['keyProtectionFile'] || '',
+          totalKeys: Object.keys(props).length,
+          raw: props
+        };
+      } else if (name === 'server.xml' || (name.endsWith('.xml') && text.includes('<Connector'))) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/xml');
+        const serverEl = doc.querySelector('Server');
+        const services = Array.from(doc.querySelectorAll('Service')).map(svc => {
+          const connectors = Array.from(svc.querySelectorAll('Connector')).map(c => ({
+            port: c.getAttribute('port') || '',
+            protocol: c.getAttribute('protocol') || '',
+            scheme: c.getAttribute('scheme') || '',
+            secure: c.getAttribute('secure') || '',
+            SSLEnabled: c.getAttribute('SSLEnabled') || '',
+            maxThreads: c.getAttribute('maxThreads') || '',
+            minSpareThreads: c.getAttribute('minSpareThreads') || '',
+            acceptCount: c.getAttribute('acceptCount') || '',
+            connectionTimeout: c.getAttribute('connectionTimeout') || '',
+            clientAuth: c.getAttribute('clientAuth') || '',
+            sslEnabledProtocols: c.getAttribute('sslEnabledProtocols') || c.getAttribute('sslProtocol') || '',
+            keystoreFile: c.getAttribute('keystoreFile') || '',
+            keyAlias: c.getAttribute('keyAlias') || ''
+          }));
+          return {
+            name: svc.getAttribute('name') || 'Catalina',
+            connectors
+          };
+        });
+        result.serverXml = {
+          fileName: file.name,
+          shutdownPort: serverEl?.getAttribute('port') || '',
+          services
+        };
+      } else if (name === 'web.xml' || (name.endsWith('.xml') && text.includes('<web-app'))) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/xml');
+        const sessionTimeout = doc.querySelector('session-config > session-timeout')?.textContent?.trim() || '';
+        const displayName = doc.querySelector('display-name')?.textContent?.trim() || '';
+        const servlets = Array.from(doc.querySelectorAll('servlet > servlet-name')).map(el => el.textContent.trim()).filter(Boolean);
+        const filters = Array.from(doc.querySelectorAll('filter > filter-name')).map(el => el.textContent.trim()).filter(Boolean);
+        result.webXml = {
+          fileName: file.name,
+          displayName,
+          sessionTimeout,
+          servletCount: servlets.length,
+          filterCount: filters.length,
+          servlets: servlets.slice(0, 20),
+          filters: filters.slice(0, 20)
+        };
+      } else if (name.endsWith('.conf')) {
+        const conf = {};
+        text.split(/\r?\n/).forEach(line => {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith(';')) return;
+          const eqIdx = trimmed.indexOf('=');
+          if (eqIdx === -1) return;
+          const key = trimmed.slice(0, eqIdx).trim();
+          let val = trimmed.slice(eqIdx + 1).trim();
+          if (/password|passwd|secret/i.test(key)) val = '***REDACTED***';
+          conf[key] = val;
+        });
+        result.entrusttoken = {
+          fileName: file.name,
+          resetEventWindow: conf['resetEventWindow'] || '',
+          maxTimeSteps: conf['maxTimeSteps'] || '',
+          raw: conf
+        };
+      } else if (name.endsWith('.pem') || name.endsWith('.crt') || name.endsWith('.cer')) {
+        result.uploadedCerts.push({
+          fileName: file.name,
+          sizeBytes: file.size || text.length,
+          hasPemBlock: text.includes('BEGIN CERTIFICATE'),
+          uploadedAt: new Date().toISOString()
+        });
+      }
+    }
+    return result;
+  }
+
+  function renderClientConfigPreview(cfg) {
+    const preview = document.getElementById('client-config-preview');
+    if (!preview) return;
+    if (!cfg || (!cfg.identityguard && !cfg.serverXml && !cfg.webXml && !cfg.entrusttoken && !(cfg.uploadedCerts && cfg.uploadedCerts.length))) {
+      preview.innerHTML = '<div style="font-size:0.76rem; color:var(--text-muted); padding:6px 0;">Sin archivos de configuración cargados para este cliente.</div>';
+      return;
+    }
+
+    const parts = [];
+    if (cfg.identityguard) {
+      parts.push(`<div style="margin-bottom:4px;"><strong>⚙️ ${escapeHtml(cfg.identityguard.fileName || 'identityguard.properties')}:</strong> JDBC <code>${escapeHtml(cfg.identityguard.jdbcUrl || 'N/A')}</code> | Usuario BD: <code>${escapeHtml(cfg.identityguard.jdbcUser || 'N/A')}</code> | Schema: <code>${escapeHtml(cfg.identityguard.jdbcSchema || 'N/A')}</code></div>`);
+    }
+    if (cfg.serverXml && Array.isArray(cfg.serverXml.services)) {
+      const conns = cfg.serverXml.services.flatMap(s => (s.connectors || []).map(c => `${s.name}:${c.port} (${c.maxThreads || '?'} threads${c.keystoreFile ? ', TLS' : ''})`));
+      parts.push(`<div style="margin-bottom:4px;"><strong>🌐 ${escapeHtml(cfg.serverXml.fileName || 'server.xml')}:</strong> ${escapeHtml(conns.join(' • ') || 'Sin conectores')}</div>`);
+    }
+    if (cfg.webXml) {
+      parts.push(`<div style="margin-bottom:4px;"><strong>🧩 ${escapeHtml(cfg.webXml.fileName || 'web.xml')}:</strong> Session Timeout: <code>${escapeHtml(cfg.webXml.sessionTimeout || 'Default')} min</code> • Servlets: ${cfg.webXml.servletCount || 0} • Filtros: ${cfg.webXml.filterCount || 0}</div>`);
+    }
+    if (cfg.entrusttoken) {
+      parts.push(`<div style="margin-bottom:4px;"><strong>🔑 ${escapeHtml(cfg.entrusttoken.fileName || 'entrusttoken.conf')}:</strong> resetEventWindow=<code>${escapeHtml(cfg.entrusttoken.resetEventWindow || 'N/A')}</code> • maxTimeSteps=<code>${escapeHtml(cfg.entrusttoken.maxTimeSteps || 'N/A')}</code></div>`);
+    }
+    if (cfg.uploadedCerts && cfg.uploadedCerts.length) {
+      parts.push(`<div><strong>📜 Certificados:</strong> ${cfg.uploadedCerts.map(c => `<code>${escapeHtml(c.fileName)}</code>`).join(', ')}</div>`);
+    }
+    preview.innerHTML = `<div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:10px; font-size:0.78rem; color:var(--text-main);">${parts.join('')}</div>`;
+  }
+
+  window.handleClientConfigUploadGlobal = async function(event) {
+    const files = event?.target?.files;
+    if (!files || files.length === 0) return;
+
+    const clientId = document.getElementById('client-edit-id')?.value || state.activeClientId || 'default';
+    const parsed = await parseEntrustConfigFiles(files);
+    const existing = state.activeClientConfig || {};
+
+    const merged = {
+      clientId,
+      updatedAt: parsed.updatedAt,
+      files: Array.from(new Set([...(existing.files || []), ...parsed.files])),
+      identityguard: parsed.identityguard || existing.identityguard || null,
+      serverXml: parsed.serverXml || existing.serverXml || null,
+      webXml: parsed.webXml || existing.webXml || null,
+      entrusttoken: parsed.entrusttoken || existing.entrusttoken || null,
+      uploadedCerts: [...(existing.uploadedCerts || []), ...parsed.uploadedCerts]
+    };
+
+    state.activeClientConfig = merged;
+    try {
+      localStorage.setItem('entrust_client_config_' + clientId, JSON.stringify(merged));
+    } catch (e) {}
+
+    try {
+      await fetch('/api/client-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, config: merged })
+      });
+    } catch (e) {
+      console.warn('No se pudo persistir config en servidor:', e);
+    }
+
+    renderClientConfigPreview(merged);
+    if (window.certAuditorEngine && typeof window.certAuditorEngine.render === 'function') {
+      window.certAuditorEngine.render('certificates-table-container', state.logs, state.activeClientConfig);
+    }
+    if (event?.target) event.target.value = '';
+  };
+
+  window.loadActiveClientConfigGlobal = async function(clientId) {
+    const cid = clientId || state.activeClientId || 'default';
+    let loaded = null;
+    try {
+      const resp = await fetch(`/api/client-config?clientId=${encodeURIComponent(cid)}`);
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && data.config && Object.keys(data.config).length > 0) {
+          loaded = data.config;
+        }
+      }
+    } catch (e) {}
+
+    if (!loaded) {
+      try {
+        const raw = localStorage.getItem('entrust_client_config_' + cid);
+        if (raw) loaded = JSON.parse(raw);
+      } catch (e) {}
+    }
+
+    state.activeClientConfig = loaded || null;
+    renderClientConfigPreview(state.activeClientConfig);
+    if (window.certAuditorEngine && typeof window.certAuditorEngine.render === 'function') {
+      window.certAuditorEngine.render('certificates-table-container', state.logs, state.activeClientConfig);
+    }
   };
 
   window.editClientProfileGlobal = function(clientId) {
@@ -766,10 +991,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.10.0',
-    build: 567,
+    version: 'v3.0.0',
+    build: 568,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'COMPACT-INDEXEDDB-PURGE-LEGACY-567',
+    gitCommit: 'ENTRUST-FORENSICS-AI-CLIENT-CONFIG-300',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -5998,6 +6223,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     };
     return _consolidatedMetricsCache;
   }
+  window.getConsolidatedMetricsGlobal = getConsolidatedMetrics;
+  window.generateExecutiveReportGlobal = generateExecutiveReport;
 
   function correlateMultiFileEvents() {
     const files = state.loadedFiles || [];
@@ -6496,20 +6723,24 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           ? `<span style="font-size:0.72rem; font-weight:700; background:rgba(2,132,199,0.15); color:#38bdf8; border:1px solid rgba(2,132,199,0.3); padding:2px 6px; border-radius:4px;">☁️ IDaaS: ${listIdaas.length} tipos</span>`
           : `<span style="font-size:0.72rem; font-weight:700; background:rgba(2,132,199,0.15); color:#38bdf8; border:1px solid rgba(2,132,199,0.3); padding:2px 6px; border-radius:4px;">🖥️ Sistema/SSH: ${listOther.length} tipos</span>`;
         let html = `
-          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;">
-            <span style="font-size:0.72rem; font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:2px 6px; border-radius:4px;">🛡️ Autenticación: ${list520.length} tipos</span>
-            <span style="font-size:0.72rem; font-weight:700; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); padding:2px 6px; border-radius:4px;">📋 AUD: ${listAud.length} tipos</span>
-            <span style="font-size:0.72rem; font-weight:700; background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); padding:2px 6px; border-radius:4px;">🗄️ ORA: ${listOra.length} tipos</span>
-            ${fourthPill}
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <span style="font-size:0.72rem; font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:2px 6px; border-radius:4px;">🛡️ 520xxx: ${list520.length} tipos</span>
+              <span style="font-size:0.72rem; font-weight:700; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); padding:2px 6px; border-radius:4px;">📋 AUD: ${listAud.length} tipos</span>
+              <span style="font-size:0.72rem; font-weight:700; background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); padding:2px 6px; border-radius:4px;">🗄️ ORA: ${listOra.length} tipos</span>
+              ${fourthPill}
+            </div>
+            <span style="font-size:0.7rem; font-weight:700; color:var(--text-dim); font-family:monospace;">Total: ${allSorted.length} códigos únicos</span>
           </div>
-          <div style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto; padding-right:4px;">
+          <div style="display:flex; flex-direction:column; gap:7px; max-height:250px; overflow-y:auto; padding-right:4px;">
         `;
 
-        allSorted.slice(0, 8).forEach(([code, cnt]) => {
+        allSorted.forEach(([code, cnt]) => {
           const pct = Math.min(100, Math.max(4, Math.round((cnt / maxCnt) * 100)));
           let color = '#ef4444';
           let badge = '520xxx';
-          if (/^AUD\d+/i.test(code)) { color = '#f59e0b'; badge = 'AUD'; }
+          if (/^520\d{4}/i.test(code)) { color = '#ef4444'; badge = '520xxx'; }
+          else if (/^AUD\d+/i.test(code)) { color = '#f59e0b'; badge = 'AUD'; }
           else if (/^ORA-\d+/i.test(code)) { color = '#a78bfa'; badge = 'ORA'; }
           else if (/^SSH|OS/i.test(code)) { color = '#38bdf8'; badge = 'SSH/OS'; }
           else if (/bulkidentityguard|\.assignedgrid|idaas/i.test(code)) { color = '#38bdf8'; badge = 'IDaaS'; }
@@ -8336,7 +8567,33 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             realTotalErrors = streamResult.totalErrors || 0;
             realTotalWarnings = streamResult.totalWarnings || 0;
             if (streamResult.globalMetrics) {
-              state.globalStreamMetrics = streamResult.globalMetrics;
+              if (!state.globalStreamMetrics) {
+                state.globalStreamMetrics = streamResult.globalMetrics;
+              } else {
+                // Fusión acumulativa real entre servidores/archivos sin sobrescribir métricas previas
+                const prev = state.globalStreamMetrics;
+                const inc = streamResult.globalMetrics;
+                prev.totalLogs = (prev.totalLogs || 0) + (inc.totalLogs || 0);
+                prev.totalErrors = (prev.totalErrors || 0) + (inc.totalErrors || 0);
+                prev.totalWarnings = (prev.totalWarnings || 0) + (inc.totalWarnings || 0);
+                const codeMap = new Map();
+                [...(prev.topCodes || []), ...(inc.topCodes || [])].forEach(c => {
+                  if (c && c.code) codeMap.set(c.code, (codeMap.get(c.code) || 0) + Number(c.count || 0));
+                });
+                prev.topCodes = Array.from(codeMap.entries()).map(([code, count]) => ({ code, count })).sort((a, b) => b.count - a.count);
+                const userMap = new Map();
+                [...(prev.topUsers || []), ...(inc.topUsers || [])].forEach(u => {
+                  if (!u || !u.user) return;
+                  if (!userMap.has(u.user)) userMap.set(u.user, { ...u, codes: { ...(u.codes || {}) } });
+                  else {
+                    const ex = userMap.get(u.user);
+                    ex.count = (ex.count || 0) + (u.count || 0);
+                    ex.errors = (ex.errors || 0) + (u.errors || 0);
+                    Object.entries(u.codes || {}).forEach(([k, v]) => { ex.codes[k] = (ex.codes[k] || 0) + v; });
+                  }
+                });
+                prev.topUsers = Array.from(userMap.values()).sort((a, b) => b.count - a.count).slice(0, 200);
+              }
             }
           } else {
             const content = await file.text();
@@ -8344,6 +8601,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               showAnalysisStatus(true, `⚙️ [Archivo ${fIdx + 1}/${files.length}] ${file.name}`, `${msg}`);
             }, 2500);
             realTotalLines = rawEntries.length;
+            realTotalErrors = rawEntries.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || /520\d{4}|ORA-\d{5}|AUD150|AUD154/i.test(String(l.entrustCode || l.message || ''))).length;
+            realTotalWarnings = rawEntries.filter(l => l.level === 'WARN' || /AUD6001|AUD6002|AUD2309|AUD155/i.test(String(l.entrustCode || l.message || ''))).length;
           }
 
           const nodeInfo = detectNodeFromLog({ sourceFile: file.name, message: file.name });
@@ -8385,6 +8644,20 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       if (newLogs.length > 0) {
         state.logs = state.logs.concat(newLogs);
+        // Protección RAM para cargas acumulativas masivas (20 + 30 archivos): conservar todos los errores + muestra estratificada
+        if (state.logs.length > 40000) {
+          const priorityErrs = [];
+          const nominalSample = [];
+          for (let i = 0; i < state.logs.length; i++) {
+            const lg = state.logs[i];
+            if (lg.level === 'CRITICAL' || lg.level === 'ERROR' || /520\d{4}|ORA-\d{5}|AUD6001|AUD6002|AUD150|AUD154/i.test(String(lg.entrustCode || ''))) {
+              if (priorityErrs.length < 25000) priorityErrs.push(lg);
+            } else if (nominalSample.length < 15000) {
+              nominalSample.push(lg);
+            }
+          }
+          state.logs = priorityErrs.concat(nominalSample);
+        }
         reindexLogs();
 
         renderLoadedFilesDrawer();
@@ -8695,64 +8968,9 @@ ${escapeHtml(opinion.crossFileSummary)}
 
   // PILAR 3: AUDITORÍA DE CERTIFICADOS KEYSTORE SSL/TLS
   function initCertificatesModule() {
-    const container = document.getElementById('certificates-table-container');
-    const terminal = document.getElementById('cert-cli-terminal');
-    if (!container || !window.certAuditorEngine) return;
-
-    const renderCerts = () => {
-      const certs = window.certAuditorEngine.certificates;
-      let rowsHtml = '';
-
-      certs.forEach((cert, idx) => {
-        const days = window.certAuditorEngine.getDaysRemaining(cert.validTo);
-        const traffic = window.certAuditorEngine.getTrafficLight(days);
-
-        rowsHtml += `
-          <tr style="border-bottom:1px solid var(--border-color);">
-            <td style="padding:10px 8px;">
-              <div style="font-weight:bold; color:var(--text-main); font-size:0.85rem;">🔒 ${escapeHtml(cert.alias)}</div>
-              <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(cert.purpose)}</div>
-            </td>
-            <td style="padding:10px 8px; font-size:0.8rem; color:var(--text-muted);">${escapeHtml(cert.subject)}</td>
-            <td style="padding:10px 8px; text-align:center; font-size:0.8rem; font-family:monospace;">
-              ${cert.validTo}<br>
-              <span style="color:${traffic.color}; font-weight:bold;">${days > 0 ? `${days} días` : 'Expiró'}</span>
-            </td>
-            <td style="padding:10px 8px; text-align:center;">
-              <span style="background:${traffic.color}22; color:${traffic.color}; border:1px solid ${traffic.color}55; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">
-                ${traffic.badge}
-              </span>
-            </td>
-            <td style="padding:10px 8px; text-align:center;">
-              <button class="btn btn-primary" style="padding:3px 8px; font-size:0.75rem;" onclick="window.showCertCliGlobal(${idx})">📋 Ver CLI</button>
-            </td>
-          </tr>`;
-      });
-
-      container.innerHTML = `
-        <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem;">
-          <thead>
-            <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
-              <th style="padding:8px; border-bottom:2px solid var(--border-color);">Alias & Propósito</th>
-              <th style="padding:8px; border-bottom:2px solid var(--border-color);">Sujeto (CN / Organización)</th>
-              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center;">Vencimiento</th>
-              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center;">Estado Semáforo</th>
-              <th style="padding:8px; border-bottom:2px solid var(--border-color); text-align:center;">Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rowsHtml}
-          </tbody>
-        </table>`;
-    };
-
-    window.showCertCliGlobal = (idx) => {
-      const cert = window.certAuditorEngine.certificates[idx];
-      if (!cert || !terminal) return;
-      terminal.textContent = window.certAuditorEngine.generateRenewalCommand(cert);
-    };
-
-    renderCerts();
+    if (window.certAuditorEngine && typeof window.certAuditorEngine.render === 'function') {
+      window.certAuditorEngine.render('certificates-table-container', state.logs, state.activeClientConfig);
+    }
   }
 
   // PILAR 4: EXPORTADOR DE PRESENTACIONES NATIVAS POWERPOINT (.PPTX)
@@ -10157,6 +10375,18 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
         }
 
         msgContainer.appendChild(botBubble);
+
+        // Ejecutar acción solicitada por Entrust Forensics AI (generar informes o exportar CSV)
+        if (res.action && res.action.type) {
+          setTimeout(() => {
+            if (res.action.type === 'exec_report') {
+              if (typeof window.setReportViewMode === 'function') window.setReportViewMode(res.action.view || 'full');
+              generateExecutiveReport(!!res.action.onlyCatalog);
+            } else if (res.action.type === 'export_errors_csv') {
+              document.getElementById('btn-export-errors-csv')?.click();
+            }
+          }, 120);
+        }
       } catch (err) {
         loadingBubble.remove();
         const errBubble = document.createElement('div');
@@ -10363,8 +10593,8 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
 
   // 13.8 AUDITOR DE CERTIFICADOS
   function initCertAuditorModule() {
-    if (window.certAuditorEngine) {
-      window.certAuditorEngine.render('cert-auditor-table-container');
+    if (window.certAuditorEngine && typeof window.certAuditorEngine.render === 'function') {
+      window.certAuditorEngine.render('certificates-table-container', state.logs, state.activeClientConfig);
     }
   }
 
