@@ -759,10 +759,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.9.7',
-    build: 562,
+    version: 'v2.9.8',
+    build: 563,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'ANALYTICS-2COL-BAR-DEFER-INIT-562',
+    gitCommit: 'FIX-HOISTING-METRICS-CACHE-563',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -5889,8 +5889,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     showAnalysisStatus(false, `✅ Muestra Analizada & Acumulada Exitosamente (${state.logs.length} registros totales)`, `Cliente: ${clientName}`);
   }
 
-  let _consolidatedMetricsCache = null;
-  let _consolidatedMetricsSig = '';
+  var _consolidatedMetricsCache = null;
+  var _consolidatedMetricsSig = '';
   function getConsolidatedMetrics() {
     const files = state.loadedFiles || [];
     const logsLen = (state.logs || []).length;
