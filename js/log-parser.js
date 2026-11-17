@@ -101,8 +101,9 @@ class LogParser {
    * @param {number} chunkSize 
    * @returns {Promise<Array<Object>>}
    */
-  async parseLogsAsync(rawContent, onProgress, chunkSize = 5000) {
+  async parseLogsAsync(rawContent, onProgress, chunkSize = 2500) {
     if (!rawContent || typeof rawContent !== 'string') return [];
+    chunkSize = Math.min(chunkSize || 2500, 2500);
 
     const startTime = performance.now();
     const lines = rawContent.split(/\r?\n/);

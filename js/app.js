@@ -766,10 +766,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.9.10',
-    build: 565,
+    version: 'v2.9.11',
+    build: 566,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'FAST-RESTORE-13X-USER-STATS-565',
+    gitCommit: 'CHUNK-2500-NONBLOCKING-PARSER-566',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -8342,7 +8342,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             const content = await file.text();
             rawEntries = await window.logParserEngine.parseLogsAsync(content, (current, total, msg) => {
               showAnalysisStatus(true, `⚙️ [Archivo ${fIdx + 1}/${files.length}] ${file.name}`, `${msg}`);
-            }, 25000);
+            }, 2500);
             realTotalLines = rawEntries.length;
           }
 
