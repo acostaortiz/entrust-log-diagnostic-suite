@@ -102,21 +102,24 @@ document.addEventListener('DOMContentLoaded', () => {
   try { initCharts(); } catch (e) { console.error('Error al inicializar Gráficos:', e); }
   try { initPresets(); } catch (e) { console.error('Error al inicializar Escenarios:', e); }
   try { initManualsModule(); } catch (e) { console.error('Error al inicializar Manuales:', e); }
-  try { initKbModule(); } catch (e) { console.error('Error al inicializar KB:', e); }
   try { initMetricCardsInteractivity(); } catch (e) { console.error('Error al inicializar Tarjetas:', e); }
   try { initExecReportModule(); } catch (e) { console.error('Error al inicializar Informe:', e); }
-  try { initNodeComparisonModule(); } catch (e) { console.error('Error al inicializar Comparativa Multi-Nodo:', e); }
+  try { initNodeComparisonModule(); } catch (e) { console.error('Error al inicializar Comparativa Fuentes:', e); }
   try { initServerIngestModule(); } catch (e) { console.error('Error al inicializar Ingesta Servidor:', e); }
   try { initCopilotModule(); } catch (e) { console.error('Error al inicializar Copilot:', e); }
-  try { initThreatRadarModule(); } catch (e) { console.error('Error al inicializar Threat Radar:', e); }
-  try { initComplianceModule(); } catch (e) { console.error('Error al inicializar Compliance:', e); }
-  try { initConfigDiffModule(); } catch (e) { console.error('Error al inicializar Config Diff:', e); }
-  try { initSiemExporterModule(); } catch (e) { console.error('Error al inicializar SIEM Exporter:', e); }
-  try { initRemediationModule(); } catch (e) { console.error('Error al inicializar Remediación:', e); }
-  try { initCertAuditorModule(); } catch (e) { console.error('Error al inicializar Certificados:', e); }
-  try { initSyslogCollectorModule(); } catch (e) { console.error('Error al inicializar Syslog:', e); }
   try { initTimeRangeSliderModule(); } catch (e) { console.error('Error al inicializar Time Range Slider:', e); }
   try { initEventListeners(); } catch (e) { console.error('Error al inicializar EventListeners:', e); }
+  // Diferir inicialización de pestañas secundarias para arranque instantáneo en Firefox/Chrome
+  setTimeout(() => {
+    try { initKbModule(); } catch (e) { console.error('Error al inicializar KB:', e); }
+    try { initThreatRadarModule(); } catch (e) { console.error('Error al inicializar Threat Radar:', e); }
+    try { initComplianceModule(); } catch (e) { console.error('Error al inicializar Compliance:', e); }
+    try { initConfigDiffModule(); } catch (e) { console.error('Error al inicializar Config Diff:', e); }
+    try { initSiemExporterModule(); } catch (e) { console.error('Error al inicializar SIEM Exporter:', e); }
+    try { initRemediationModule(); } catch (e) { console.error('Error al inicializar Remediación:', e); }
+    try { initCertAuditorModule(); } catch (e) { console.error('Error al inicializar Certificados:', e); }
+    try { initSyslogCollectorModule(); } catch (e) { console.error('Error al inicializar Syslog:', e); }
+  }, 60);
   // Helper para determinar si la muestra cargada pertenece realmente a IDaaS Cloud (.csv / AuditEvents)
   function isActualCloudSample() {
     const files = state.loadedFiles || [];
@@ -756,10 +759,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.9.6',
-    build: 561,
+    version: 'v2.9.7',
+    build: 562,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'REMOVE-10MB-SYNC-BUNDLE-561',
+    gitCommit: 'ANALYTICS-2COL-BAR-DEFER-INIT-562',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -6247,30 +6250,28 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       if (severityCanvas) {
         const ctxSev = severityCanvas.getContext('2d');
         state.charts.severity = new Chart(ctxSev, {
-          type: 'doughnut',
+          type: 'bar',
           data: {
-            labels: ['INFO (Nominal)', 'CRITICAL / ERROR [520xxx]', 'WARN (Auditoría)', 'DEBUG'],
+            labels: ['INFO (Nominal)', 'ERROR / 520xxx', 'WARN (Auditoría)', 'DEBUG'],
             datasets: [{
-              data: [1, 0, 0, 0],
+              label: 'Eventos',
+              data: [0, 0, 0, 0],
               backgroundColor: [
-                '#0284c7',
-                '#ef4444',
-                '#f59e0b',
-                '#8b5cf6'
+                'rgba(2, 132, 199, 0.85)',
+                'rgba(239, 68, 68, 0.9)',
+                'rgba(245, 158, 11, 0.9)',
+                'rgba(139, 92, 246, 0.85)'
               ],
-              borderWidth: 2,
-              borderColor: '#0f172a'
+              borderRadius: 6,
+              barPercentage: 0.65
             }]
           },
           options: {
+            indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '65%',
             plugins: {
-              legend: {
-                position: 'bottom',
-                labels: { color: '#94a3b8', font: { family: 'Segoe UI', weight: '600', size: 10 }, boxWidth: 12 }
-              },
+              legend: { display: false },
               tooltip: {
                 backgroundColor: '#0f172a',
                 titleColor: '#38bdf8',
@@ -6278,10 +6279,28 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
                   label: function(context) {
                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
                     const val = context.raw || 0;
-                    const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
-                    return ` ${context.label}: ${val.toLocaleString()} (${pct}%)`;
+                    const pct = total > 0 ? ((val / total) * 100).toFixed(2) : 0;
+                    return ` ${val.toLocaleString()} eventos (${pct}%)`;
                   }
                 }
+              }
+            },
+            scales: {
+              x: {
+                grid: { color: 'rgba(148, 163, 184, 0.12)' },
+                ticks: {
+                  color: '#64748b',
+                  font: { size: 10 },
+                  callback: function(v) {
+                    if (v >= 1000000) return (v / 1000000).toFixed(1) + 'M';
+                    if (v >= 1000) return (v / 1000).toFixed(0) + 'K';
+                    return v;
+                  }
+                }
+              },
+              y: {
+                grid: { display: false },
+                ticks: { color: '#64748b', font: { family: 'Inter, Segoe UI, sans-serif', weight: '700', size: 11 } }
               }
             }
           }
@@ -6442,13 +6461,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
   function updateSeverityChart() {
     if (!state.charts.severity) return;
-
-    const criticalCount = state.logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
-    const warnCount = state.logs.filter(l => l.level === 'WARN' || l.level === 'WARNING').length;
-    const infoCount = state.logs.filter(l => l.level === 'INFO').length;
-    const debugCount = state.logs.filter(l => l.level === 'DEBUG').length;
-
-    state.charts.severity.data.datasets[0].data = [infoCount, criticalCount, warnCount, debugCount];
+    const m = getConsolidatedMetrics();
+    const debugCount = (state.logs || []).filter(l => l.level === 'DEBUG').length;
+    state.charts.severity.data.datasets[0].data = [m.totalInfo, m.totalErrors, m.totalWarnings, debugCount];
     state.charts.severity.update();
   }
 

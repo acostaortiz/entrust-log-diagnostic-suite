@@ -1462,7 +1462,7 @@ body.dark-theme .nav-btn.active::after { background: #f43f5e; }
 
 /* Pantallas medianas y pequenas */
 @media (max-width: 1280px) { .main-content { padding: 20px 16px 32px; } .metric-value { font-size: 1.8rem; } }
-@media (max-width: 900px) { .header-bottom-row { flex-wrap: wrap; } .nav-tabs { max-width: 100%; overflow-x: auto !important; } }
+@media (max-width: 900px) { .header-bottom-row { flex-wrap: wrap; } .nav-tabs { max-width: 100%; overflow-x: auto !important; } .charts-grid-2col { grid-template-columns: 1fr !important; } }
 
 /* Respetar preferencia de movimiento reducido */
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
