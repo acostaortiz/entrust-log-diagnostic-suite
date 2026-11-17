@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.1.0 (Build 569)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.2.0 (Build 570)</span>
           </div>
         </div>
       </div>
@@ -617,50 +617,84 @@
       </div>
     </div>
 
-    <!-- 5. PESTAÑA: MANUALES ADMINISTRATIVOS HTML POR VERSIÓN -->
+    <!-- 5. PESTAÑA: CENTRO DE CONOCIMIENTO, MANUALES & RUNBOOKS -->
     <div class="tab-pane" id="tab-manuals">
       <div class="glass-card">
-        <div class="card-header" style="flex-wrap:wrap; gap:12px;">
-          <div class="card-title">📚 Visor de Manuales Administrativos & Release Notes (HTML)</div>
-          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <select class="form-control" id="manual-version-select" style="width:420px;">
+        <div class="card-header" style="flex-wrap:wrap; gap:12px; border-bottom:1px solid var(--border-color); padding-bottom:14px;">
+          <div>
+            <div class="card-title" style="font-size:1.15rem;">📚 Centro de Conocimiento, Manuales &amp; Runbooks</div>
+            <div class="card-subtitle">Manuales oficiales WebHelp, Notas Técnicas etiquetadas del equipo y carga directa de documentación indexada por <strong>Entrust Forensics AI</strong></div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary kb-subtab-btn" id="btn-ksub-docs" onclick="window.switchKnowledgeSubTab('docs');">📖 Manuales Oficiales</button>
+            <button type="button" class="btn kb-subtab-btn" id="btn-ksub-notes" style="background:var(--bg-secondary); border:1px solid var(--border-color);" onclick="window.switchKnowledgeSubTab('notes');">📌 Notas Técnicas &amp; Runbooks</button>
+            <button type="button" class="btn kb-subtab-btn" id="btn-ksub-upload" style="background:var(--bg-secondary); border:1px solid var(--border-color);" onclick="window.switchKnowledgeSubTab('upload');">📤 Subir Documento al Servidor</button>
+          </div>
+        </div>
+
+        <!-- SUBVISTA 1: MANUALES OFICIALES -->
+        <div id="knowledge-subtab-docs">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin:12px 0;">
+            <select class="form-control" id="manual-version-select" style="flex:1; min-width:300px; max-width:580px;">
               <!-- Opciones inyectadas por JS -->
             </select>
-            <button class="btn btn-primary" id="btn-open-add-manual">📥 Incorporar Nuevo Manual HTML</button>
+            <button class="btn btn-primary" id="btn-open-add-manual">📥 Incorporar Manual Rápido</button>
+          </div>
+
+          <!-- Barra de Accesos Rápidos -->
+          <div style="display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; background:var(--bg-primary); padding:8px 10px; border-radius:8px; border:1px solid var(--border-color); align-items:center;">
+            <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted); margin-right:4px;">Acceso Rápido:</span>
+            <button class="btn btn-secondary relnote-quick-btn" data-ver="vIDaaS_docs" style="font-size:0.76rem; padding:4px 10px; background:linear-gradient(135deg, #0284c7, #0369a1); color:#fff; border-color:#38bdf8; font-weight:700;">IDaaS Cloud Docs</button>
+            <button class="btn btn-secondary relnote-quick-btn" data-ver="vIDaaS" style="font-size:0.76rem; padding:4px 10px;">IDaaS Troubleshooting</button>
+            <button class="btn btn-secondary relnote-quick-btn" data-ver="v13_0_webhelp" style="font-size:0.76rem; padding:4px 10px;">WebHelp v13.0</button>
+            <button class="btn btn-secondary relnote-quick-btn" data-ver="v12_0_webhelp" style="font-size:0.76rem; padding:4px 10px;">WebHelp v12.0</button>
+            <button class="btn btn-secondary relnote-quick-btn" data-ver="v11_0_webhelp" style="font-size:0.76rem; padding:4px 10px;">WebHelp v11.0</button>
+            <button class="btn btn-secondary relnote-quick-btn" data-ver="v13_0_relnotes" style="font-size:0.76rem; padding:4px 10px;">Release Notes v13</button>
+            <button class="btn btn-secondary relnote-quick-btn" data-ver="v12_0_relnotes" style="font-size:0.76rem; padding:4px 10px;">Release Notes v12</button>
+            <button class="btn btn-secondary relnote-quick-btn" data-ver="v11_0_relnotes" style="font-size:0.76rem; padding:4px 10px;">Release Notes v11</button>
+          </div>
+
+          <div id="manual-active-banner" style="display:none; margin-bottom:10px; padding:8px 14px; border-radius:8px; background:rgba(2,132,199,0.1); border:1px solid rgba(2,132,199,0.35); color:var(--text-main); font-size:0.82rem; align-items:center; justify-content:space-between; gap:10px;">
+            <span id="manual-active-banner-text">📖 Manual cargado</span>
+            <a id="manual-active-banner-ext" href="#" target="_blank" style="color:var(--accent-cyan); font-weight:700; text-decoration:none; font-size:0.78rem;">Abrir en nueva pestaña ↗</a>
+          </div>
+
+          <div class="manual-layout">
+            <div class="manual-sidebar">
+              <input type="text" class="form-control" id="manual-search-input" placeholder="🔍 Buscar código 520xxx, IDaaS o tópico...">
+              <div class="diag-label">Tabla de Contenidos</div>
+              <ul class="toc-list" id="manual-toc-list"></ul>
+            </div>
+            <div class="manual-frame-container">
+              <iframe id="manual-iframe" class="manual-iframe" title="Manual Administrativo"></iframe>
+            </div>
           </div>
         </div>
 
-        <!-- Barra de Accesos Rápidos a Release Notes y Manuales -->
-        <div style="display:flex; gap:8px; margin-bottom:15px; flex-wrap:wrap; background:var(--bg-primary); padding:10px; border-radius:6px; border:1px solid var(--border-color); align-items:center;">
-          <span style="font-size:0.85rem; font-weight:600; color:var(--text-muted); align-self:center;">Acceso Rápido:</span>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="vIDaaS_docs" style="font-size:0.8rem; padding:4px 10px; background:linear-gradient(135deg, #0284c7, #0369a1); color:#fff; border-color:#38bdf8; font-weight:700;">🌐 Entrust IDaaS Cloud Docs (trustedauth.com)</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="vIDaaS" style="font-size:0.8rem; padding:4px 10px;">☁️ IDaaS Troubleshooting</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="v13_0_webhelp" style="font-size:0.8rem; padding:4px 10px;">📖 WebHelp v13.0</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="v12_0_webhelp" style="font-size:0.8rem; padding:4px 10px;">📖 WebHelp v12.0</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="v11_0_webhelp" style="font-size:0.8rem; padding:4px 10px;">📖 WebHelp v11.0</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="v13_0_relnotes" style="font-size:0.8rem; padding:4px 10px;">📋 Release Notes v13.0</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="v12_0_relnotes" style="font-size:0.8rem; padding:4px 10px;">📋 Release Notes v12.0</button>
-          <button class="btn btn-secondary relnote-quick-btn" data-ver="v11_0_relnotes" style="font-size:0.8rem; padding:4px 10px;">📋 Release Notes v11.0</button>
+        <!-- SUBVISTA 2: NOTAS TÉCNICAS & RUNBOOKS DEL EQUIPO -->
+        <div id="knowledge-subtab-notes" style="display:none; margin-top:16px;">
+          <div id="manuals-notes-portal"></div>
         </div>
 
-        <div id="manual-active-banner" style="display:none; margin-bottom:10px; padding:8px 14px; border-radius:8px; background:rgba(2,132,199,0.1); border:1px solid rgba(2,132,199,0.35); color:var(--text-main); font-size:0.82rem; align-items:center; justify-content:space-between; gap:10px;">
-          <span id="manual-active-banner-text">📖 Manual cargado</span>
-          <a id="manual-active-banner-ext" href="#" target="_blank" style="color:var(--accent-cyan); font-weight:700; text-decoration:none; font-size:0.78rem;">Abrir en nueva pestaña ↗</a>
-        </div>
-
-        <div class="manual-layout">
-          <!-- Sidebar: Búsqueda y Tabla de Contenidos -->
-          <div class="manual-sidebar">
-            <input type="text" class="form-control" id="manual-search-input" placeholder="🔍 Buscar código 520xxx o IDaaS...">
-            <div class="diag-label">Tabla de Contenidos</div>
-            <ul class="toc-list" id="manual-toc-list">
-              <!-- TOC inyectada por JS -->
-            </ul>
-          </div>
-
-          <!-- Contenedor del Iframe con el HTML del Manual -->
-          <div class="manual-frame-container">
-            <iframe id="manual-iframe" class="manual-iframe" title="Manual Administrativo"></iframe>
+        <!-- SUBVISTA 3: SUBIR DOCUMENTACIÓN REAL AL SERVIDOR -->
+        <div id="knowledge-subtab-upload" style="display:none; margin-top:16px;">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:18px; align-items:start;">
+            <div class="card" style="padding:18px;">
+              <h3 style="margin:0 0 8px 0; font-size:1rem;">📤 Subir Manual o Documento Técnico al Servidor</h3>
+              <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">
+                Los archivos cargados (<code>.html</code>, <code>.htm</code>, <code>.md</code>, <code>.txt</code>) se guardan en <code>manuals/custom/</code> y se indexan automáticamente en tiempo real para que <strong>Entrust Forensics AI</strong> los cite en sus diagnósticos.
+              </p>
+              <input type="file" id="server-manual-upload-input" class="form-control" accept=".html,.htm,.md,.txt" multiple style="margin-bottom:12px;">
+              <button type="button" class="btn btn-primary" style="width:100%; font-weight:700;" onclick="window.uploadManualFileToServerGlobal();">🚀 Subir e Indexar en Entrust Forensics AI</button>
+              <div id="server-manual-upload-status" style="margin-top:10px; font-size:0.8rem;"></div>
+            </div>
+            <div class="card" style="padding:18px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="margin:0; font-size:1rem;">🗂️ Documentos Personalizados en Servidor</h3>
+                <button type="button" class="btn" style="padding:4px 10px; font-size:0.76rem; border:1px solid var(--border-color);" onclick="window.refreshCustomServerManualsGlobal();">🔄 Actualizar</button>
+              </div>
+              <div id="server-custom-manuals-list" style="font-size:0.82rem; color:var(--text-muted);">Cargando lista...</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1667,8 +1701,8 @@ db.connection.pool.max=20
   <script src="js/storage-engine.js?v=567.0"></script>
     <script src="js/threat-radar.js?v=550.0"></script>
   <script src="js/remediation-engine.js?v=550.0"></script>
-  <script src="js/notes-engine.js?v=569.0"></script>
-  <script src="js/copilot-engine.js?v=569.0"></script>
+  <script src="js/notes-engine.js?v=570.0"></script>
+  <script src="js/copilot-engine.js?v=570.0"></script>
   <script src="js/compliance-auditor.js?v=550.0"></script>
   <script src="js/config-diff-engine.js?v=550.0"></script>
   <script src="js/siem-exporter.js?v=550.0"></script>
@@ -1677,7 +1711,7 @@ db.connection.pool.max=20
   <script src="js/syslog-collector.js?v=550.0"></script>
   <script src="js/user-trace-report.js?v=568.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
-  <script src="js/app.js?v=569.0"></script>
+  <script src="js/app.js?v=570.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

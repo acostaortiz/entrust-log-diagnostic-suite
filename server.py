@@ -188,7 +188,9 @@ def build_manuals_index():
             dirs[:] = [d for d in dirs if d.lower() not in skip_dirs]
             for fname in files:
                 fl = fname.lower()
-                if not (fl.endswith('.htm') or fl.endswith('.html')):
+                is_html = fl.endswith('.htm') or fl.endswith('.html')
+                is_text = fl.endswith('.md') or fl.endswith('.txt')
+                if not (is_html or is_text):
                     continue
                 if any(fl.startswith(s) or fl == s for s in skip_names):
                     continue
@@ -198,10 +200,14 @@ def build_manuals_index():
                 try:
                     with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
                         raw = f.read(200000)
-                    if len(raw) < 120:
+                    if len(raw) < 40:
                         continue
-                    title, text = _clean_html_text(raw)
-                    if len(text) < 60:
+                    if is_html:
+                        title, text = _clean_html_text(raw)
+                    else:
+                        title = fname
+                        text = re.sub(r'\s+', ' ', raw).strip()
+                    if len(text) < 30:
                         continue
                     text_trimmed = text[:10000]
                     rel_path = os.path.relpath(full_path, BASE_DIR).replace('\\', '/')
@@ -817,6 +823,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_save_note()
         elif path == '/api/notes/delete':
             self.handle_delete_note()
+        elif path == '/api/upload-manual':
+            self.handle_upload_manual()
         elif path == '/api/clear-session':
             clear_active_session()
             self.send_json({'success': True, 'activeDb': None})
@@ -863,6 +871,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_get_client_config(query)
         elif path == '/api/notes':
             self.handle_get_notes(query)
+        elif path == '/api/custom-manuals':
+            self.handle_list_custom_manuals()
         elif path == '/api/manuals-status':
             if not MANUALS_INDEX_BUILT and not MANUALS_INDEX_BUILDING:
                 threading.Thread(target=build_manuals_index, daemon=True).start()
@@ -909,6 +919,47 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json({'success': True, 'clientId': client_id, 'config': config_data})
         except Exception as e:
             self.send_json({'error': str(e)}, status=500)
+
+    def handle_upload_manual(self):
+        global MANUALS_INDEX_BUILT
+        try:
+            length = int(self.headers.get('Content-Length', 0))
+            raw = self.rfile.read(length) if length > 0 else b'{}'
+            payload = json.loads(raw.decode('utf-8'))
+            filename = os.path.basename(str(payload.get('filename') or '').strip())
+            content = str(payload.get('content') or '')
+            if not filename or not content:
+                self.send_json({'error': 'filename y content requeridos'}, status=400)
+                return
+            ext = os.path.splitext(filename)[1].lower()
+            if ext not in ('.html', '.htm', '.md', '.txt'):
+                self.send_json({'error': 'Formato permitido: .html, .htm, .md, .txt'}, status=400)
+                return
+            safe_name = re.sub(r'[^a-zA-Z0-9._-]', '_', filename)
+            custom_dir = os.path.join(BASE_DIR, 'manuals', 'custom')
+            os.makedirs(custom_dir, exist_ok=True)
+            target_path = os.path.join(custom_dir, safe_name)
+            with open(target_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            MANUALS_INDEX_BUILT = False
+            threading.Thread(target=build_manuals_index, daemon=True).start()
+            self.send_json({'success': True, 'path': f'manuals/custom/{safe_name}', 'filename': safe_name})
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
+
+    def handle_list_custom_manuals(self):
+        custom_dir = os.path.join(BASE_DIR, 'manuals', 'custom')
+        items = []
+        if os.path.isdir(custom_dir):
+            for fname in sorted(os.listdir(custom_dir)):
+                fpath = os.path.join(custom_dir, fname)
+                if os.path.isfile(fpath):
+                    items.append({
+                        'filename': fname,
+                        'path': f'manuals/custom/{fname}',
+                        'size': os.path.getsize(fpath)
+                    })
+        self.send_json({'manuals': items})
 
     def _load_notes_file(self):
         notes_file = os.path.join(DATA_DIR, 'technical_notes.json')
@@ -988,6 +1039,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         except Exception as e:
             self.send_json({'error': str(e)}, status=500)
 
+
     def handle_delete_note(self):
         try:
             length = int(self.headers.get('Content-Length', 0))
@@ -1002,6 +1054,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json({'success': True, 'notes': notes})
         except Exception as e:
             self.send_json({'error': str(e)}, status=500)
+
 
     def handle_manuals_search(self, query):
         q = query.get('q', [''])[0]
@@ -1285,6 +1338,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         except Exception as e:
             self.send_json({'error': str(e)}, status=500)
 
+
     def handle_ingest_local(self):
         global ACTIVE_DB_PATH
         try:
@@ -1380,6 +1434,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             })
         except Exception as e:
             self.send_json({'error': str(e)}, status=500)
+
 
     def handle_api_stats(self, query):
         client_param = query.get('client', [None])[0]

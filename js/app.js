@@ -997,10 +997,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.1.0',
-    build: 569,
+    version: 'v3.2.0',
+    build: 570,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'TECHNICAL-NOTES-PORTAL-FORENSICS-AI-310',
+    gitCommit: 'KNOWLEDGE-HUB-NOTES-UPLOAD-320',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -10380,6 +10380,18 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
             b.addEventListener('click', () => submitQuery(sq));
             sugWrap.appendChild(b);
           });
+          const saveBtn = document.createElement('button');
+          saveBtn.type = 'button';
+          saveBtn.className = 'copilot-suggestion-btn';
+          saveBtn.style.background = 'rgba(6, 182, 212, 0.14)';
+          saveBtn.style.borderColor = 'rgba(6, 182, 212, 0.4)';
+          saveBtn.textContent = '📌 Guardar como Nota Técnica';
+          saveBtn.addEventListener('click', () => {
+            if (typeof window.saveAiReplyAsNoteGlobal === 'function') {
+              window.saveAiReplyAsNoteGlobal(text, res.answer);
+            }
+          });
+          sugWrap.appendChild(saveBtn);
           botBubble.appendChild(sugWrap);
         }
 
@@ -10408,6 +10420,105 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     };
 
     btnSend?.addEventListener('click', () => submitQuery());
+
+    window.switchKnowledgeSubTab = function(sub) {
+      ['docs', 'notes', 'upload'].forEach(key => {
+        const panel = document.getElementById('knowledge-subtab-' + key);
+        const btn = document.getElementById('btn-ksub-' + key);
+        if (panel) panel.style.display = (key === sub) ? 'block' : 'none';
+        if (btn) {
+          if (key === sub) {
+            btn.classList.add('btn-primary');
+            btn.style.background = '';
+            btn.style.border = '';
+          } else {
+            btn.classList.remove('btn-primary');
+            btn.style.background = 'var(--bg-secondary)';
+            btn.style.border = '1px solid var(--border-color)';
+          }
+        }
+      });
+      if (sub === 'notes' && window.notesEngine) {
+        window.notesEngine.renderPortal('manuals-notes-portal');
+      } else if (sub === 'upload' && typeof window.refreshCustomServerManualsGlobal === 'function') {
+        window.refreshCustomServerManualsGlobal();
+      }
+    };
+
+    window.refreshCustomServerManualsGlobal = async function() {
+      const container = document.getElementById('server-custom-manuals-list');
+      if (!container) return;
+      try {
+        const resp = await fetch('/api/custom-manuals');
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        const items = data.manuals || [];
+        if (!items.length) {
+          container.innerHTML = '<div style="padding:14px; border:1px dashed var(--border-color); border-radius:8px; text-align:center;">Sin documentos personalizados subidos aún en <code>manuals/custom/</code>.</div>';
+          return;
+        }
+        container.innerHTML = items.map(m => `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-bottom:1px solid var(--border-color); gap:8px;">
+            <div>
+              <strong>📄 ${escapeHtml(m.filename)}</strong>
+              <span style="font-size:0.74rem; color:var(--text-muted); margin-left:6px;">(${Math.max(1, Math.round((m.size || 0) / 1024))} KB)</span>
+            </div>
+            <button type="button" class="btn btn-primary" style="padding:3px 10px; font-size:0.74rem;" onclick="window.switchKnowledgeSubTab('docs'); window.openManualInViewer('${escapeHtml(m.path)}', 'Custom', '${escapeHtml(m.filename)}');">Abrir</button>
+          </div>`).join('');
+      } catch (e) {
+        container.innerHTML = '<span style="color:#ef4444;">No se pudo consultar /api/custom-manuals.</span>';
+      }
+    };
+
+    window.uploadManualFileToServerGlobal = async function() {
+      const inputEl = document.getElementById('server-manual-upload-input');
+      const statusEl = document.getElementById('server-manual-upload-status');
+      const files = inputEl?.files;
+      if (!files || !files.length) {
+        if (statusEl) statusEl.innerHTML = '<span style="color:#d97706;">Selecciona al menos un archivo (.html, .htm, .md, .txt).</span>';
+        return;
+      }
+      if (statusEl) statusEl.innerHTML = '<span style="color:#0284c7;">⏳ Subiendo e indexando documentos...</span>';
+      let okCount = 0;
+      for (const file of Array.from(files)) {
+        try {
+          const content = await file.text();
+          const resp = await fetch('/api/upload-manual', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename: file.name, content })
+          });
+          if (resp.ok) okCount++;
+        } catch (e) {}
+      }
+      if (inputEl) inputEl.value = '';
+      if (statusEl) {
+        statusEl.innerHTML = okCount > 0
+          ? `<span style="color:#10b981; font-weight:700;">✅ ${okCount} documento(s) guardado(s) e indexado(s) para Entrust Forensics AI.</span>`
+          : '<span style="color:#ef4444;">❌ Error al subir los documentos al servidor.</span>';
+      }
+      window.refreshCustomServerManualsGlobal();
+    };
+
+    window.saveAiReplyAsNoteGlobal = function(queryText, answerText) {
+      if (typeof window.switchTabGlobal === 'function') window.switchTabGlobal('manuals');
+      if (typeof window.switchKnowledgeSubTab === 'function') window.switchKnowledgeSubTab('notes');
+      if (window.notesEngine) {
+        window.notesEngine.cancelEdit();
+        window.notesEngine.renderPortal('manuals-notes-portal');
+      }
+      setTimeout(() => {
+        const titleEl = document.getElementById('note-form-title');
+        const tagsEl = document.getElementById('note-form-tags');
+        const contentEl = document.getElementById('note-form-content');
+        const codes = (String(queryText || '') + ' ' + String(answerText || '')).match(/(520\d{3,4}|AUD\d{3,4}|ORA-\d{4,5})/gi) || [];
+        const uniqueTags = Array.from(new Set(codes.map(c => c.toUpperCase())));
+        if (titleEl) titleEl.value = `Procedimiento: ${String(queryText || 'Diagnóstico IA').slice(0, 80)}`;
+        if (tagsEl && uniqueTags.length) tagsEl.value = uniqueTags.join(', ');
+        if (contentEl) contentEl.value = String(answerText || '').trim();
+        titleEl?.focus();
+      }, 60);
+    };
     input?.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') submitQuery();
     });
