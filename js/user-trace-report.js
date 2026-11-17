@@ -363,6 +363,15 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       }
       const stats = {};
       const st = window.appState || window.state;
+      const validUserCache = new Map();
+      const isValidCached = (cand) => {
+        if (!cand) return false;
+        const key = String(cand);
+        if (validUserCache.has(key)) return validUserCache.get(key);
+        const ok = this.isValidUserCandidate(key);
+        validUserCache.set(key, ok);
+        return ok;
+      };
 
       for (let idx = 0; idx < logs.length; idx++) {
         const log = logs[idx];
@@ -373,24 +382,24 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         if (msg && (msg.includes('for user ') || msg.includes('for user\t') || msg.includes('User '))) {
           const explicitTarget = msg.match(/\bfor\s+user\s+['"]?([A-Za-z0-9_\-\.\/@]+)['"]?/i) ||
                                  msg.match(/\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|deleted|authenticated|locked|disabled|migrated)/i);
-          if (explicitTarget && this.isValidUserCandidate(explicitTarget[1])) {
+          if (explicitTarget && isValidCached(explicitTarget[1])) {
             user = explicitTarget[1];
           }
         }
 
-        if (!this.isValidUserCandidate(user) && msg) {
+        if (!isValidCached(user) && msg) {
           const kvMatch = msg.match(/(?:for\s+user|User:|user\s+name\s+or\s+alias|username|userId|user_id|subjectName)[\s:=]+['"]?([a-zA-Z0-9_\.\@\/\-]+)['"]?/i);
           const audBracket = msg.includes('[') ? msg.match(/\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([^\]]+)\]/i) : null;
-          if (kvMatch && this.isValidUserCandidate(kvMatch[1])) {
+          if (kvMatch && isValidCached(kvMatch[1])) {
             user = kvMatch[1];
-          } else if (audBracket && this.isValidUserCandidate(audBracket[1])) {
+          } else if (audBracket && isValidCached(audBracket[1])) {
             user = audBracket[1];
           } else {
             user = null;
           }
         }
 
-        if (!this.isValidUserCandidate(user)) continue;
+        if (!isValidCached(user)) continue;
         user = String(user).trim().replace(/^['"\[\]().,;:!?]+|['"\[\]().,;:!?]+$/g, '');
 
         if (!stats[user]) {

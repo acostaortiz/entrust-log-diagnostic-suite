@@ -168,9 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
               remappedErrors++;
             }
           }
-          if (window.knowledgeBaseEngine) {
-            l.diagnostic = window.knowledgeBaseEngine.diagnoseLog(l.message || raw, l.entrustCode);
-          }
+          // Omitir diagnoseLog masivo en arranque para no bloquear el hilo principal (se calcula bajo demanda)
         }
       });
     }
@@ -228,16 +226,25 @@ document.addEventListener('DOMContentLoaded', () => {
           restoredLocal = true;
           populateClientSelector();
           renderLoadedFilesDrawer();
-          applyLogFilters();
-          updateMetricsAndCharts();
-          updateOverviewWidgets();
-          updateNodeComparisonUI();
-          renderTraceWaterfall();
-          if (window.UserTraceReport) {
-            window.UserTraceReport.forensicMatrixData = null;
-            window.UserTraceReport.buildUserStats();
-          }
+          applyLogFilters(); // ya invoca renderLogTable, updateMetricsAndCharts y renderUserAndIpAnalytics
           showAnalysisStatus(false, `💾 Sesión OnPremise Restaurada (${(state.globalStreamMetrics?.totalLogs || state.logs.length).toLocaleString()} registros)`, `Archivo: ${(state.loadedFiles && state.loadedFiles[0]?.name) || 'Local'}`);
+
+          // Diferir widgets secundarios y censo de usuarios para no saturar el hilo de Firefox/Chrome
+          setTimeout(() => {
+            try { updateOverviewWidgets(); } catch (e) {}
+          }, 50);
+          setTimeout(() => {
+            try { updateNodeComparisonUI(); } catch (e) {}
+            try { renderTraceWaterfall(); } catch (e) {}
+          }, 120);
+          setTimeout(() => {
+            if (window.UserTraceReport) {
+              try {
+                window.UserTraceReport.forensicMatrixData = null;
+                window.UserTraceReport.buildUserStats();
+              } catch (e) {}
+            }
+          }, 200);
         }
       }
       if (!restoredLocal) {
@@ -759,10 +766,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.9.9',
-    build: 564,
+    version: 'v2.9.10',
+    build: 565,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'INSTANT-CHART-UPDATE-564',
+    gitCommit: 'FAST-RESTORE-13X-USER-STATS-565',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
