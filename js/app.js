@@ -1009,10 +1009,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.3.0',
-    build: 571,
+    version: 'v3.3.1',
+    build: 572,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'MULTI-SERVER-BATCH-COMPARISON-330',
+    gitCommit: 'MULTI-SERVER-DRAWER-FIX-331',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -6987,7 +6987,17 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     const files = state.loadedFiles || [];
     const client = getActiveClientProfile();
-    const availNodes = getClientAvailableNodes();
+    const baseAvailNodes = getClientAvailableNodes();
+    const effectiveNodesMap = new Map();
+    baseAvailNodes.forEach(n => effectiveNodesMap.set(n.key, n));
+    files.forEach(f => {
+      const k = f.nodeKey || ('srv_' + String(f.serverTag || 'default').toLowerCase().replace(/[^a-z0-9]+/g, '_'));
+      const nm = f.nodeName || (f.serverTag ? (f.serverTag.startsWith('🖥️') ? f.serverTag : '🖥️ ' + f.serverTag) : '🖥️ Servidor 1');
+      if (!effectiveNodesMap.has(k)) {
+        effectiveNodesMap.set(k, { key: k, name: nm });
+      }
+    });
+    const availNodes = Array.from(effectiveNodesMap.values());
 
     if (badgeCount) badgeCount.textContent = `${files.length} archivo(s)`;
 
@@ -6997,11 +7007,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       return;
     }
 
-    // Contar distribución por Nodos
+    // Contar distribución por Nodos / Servidores
     const nodeCountMap = {};
     let totalLogsInFiles = 0;
     files.forEach(f => {
-      nodeCountMap[f.nodeName] = (nodeCountMap[f.nodeName] || 0) + 1;
+      const label = f.serverTag ? (f.serverTag.startsWith('🖥️') ? f.serverTag : '🖥️ ' + f.serverTag) : (f.nodeName || '🖥️ Servidor 1');
+      nodeCountMap[label] = (nodeCountMap[label] || 0) + 1;
       totalLogsInFiles += (f.count || 0);
     });
 
@@ -8724,14 +8735,15 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           }
 
           const activeServerTag = (document.getElementById('upload-server-tag')?.value || '').trim() || 'Servidor 1 (Primario)';
-          const nodeInfo = detectNodeFromLog({ sourceFile: file.name, message: file.name });
+          const serverNodeKey = 'srv_' + activeServerTag.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+          const serverNodeName = activeServerTag.startsWith('🖥️') ? activeServerTag : ('🖥️ ' + activeServerTag);
 
           const parsedEntries = rawEntries.map((log, idx) => ({
             ...log,
             lineNum: state.logs.length + newLogs.length + idx + 1,
             client: clientName,
             sourceFile: file.name,
-            node: nodeInfo.name,
+            node: serverNodeName,
             serverTag: activeServerTag
           }));
 
@@ -8744,8 +8756,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             sampleCount: parsedEntries.length,
             realErrors: realTotalErrors,
             realWarnings: realTotalWarnings,
-            nodeKey: nodeInfo.key,
-            nodeName: nodeInfo.name,
+            nodeKey: serverNodeKey,
+            nodeName: serverNodeName,
             serverTag: activeServerTag,
             client: clientName
           };
