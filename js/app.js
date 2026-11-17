@@ -756,10 +756,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.9.5',
-    build: 560,
+    version: 'v2.9.6',
+    build: 561,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'NONBLOCKING-PIPELINE-MEMO-METRICS-560',
+    gitCommit: 'REMOVE-10MB-SYNC-BUNDLE-561',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',

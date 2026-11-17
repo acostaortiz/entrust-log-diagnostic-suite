@@ -10,11 +10,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
-  <!-- Core Libraries (Local Offline Bundles) -->
+  <!-- Core Libraries (Local Offline Bundles — deferred for instant page load) -->
   <script src="js/chart.min.js"></script>
-  <script src="js/html2canvas.min.js"></script>
-  <script src="js/jspdf.umd.min.js"></script>
-  <script src="js/html2pdf.bundle.min.js"></script>
+  <script src="js/html2canvas.min.js" defer></script>
+  <script src="js/jspdf.umd.min.js" defer></script>
+  <script src="js/html2pdf.bundle.min.js" defer></script>
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/styles.css?v=556.0">
@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v2.9.5 (Build 560)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v2.9.6 (Build 561)</span>
           </div>
         </div>
       </div>
@@ -1596,11 +1596,10 @@ db.connection.pool.max=20
   </div>
 
   <!-- Scripts JavaScript -->
-  <script src="js/pptxgen.bundle.js"></script>
+  <script src="js/pptxgen.bundle.js" defer></script>
   <script src="js/topology-engine.js?v=550.0"></script>
   <script src="js/kb-database.js?v=555.0"></script>
   <script src="js/manuals-engine.js?v=550.0"></script>
-  <script src="js/bancomercantil_data.js?v=550.0"></script>
   <script src="js/log-parser.js?v=550.0"></script>
   <script src="js/storage-engine.js?v=550.0"></script>
     <script src="js/threat-radar.js?v=550.0"></script>
