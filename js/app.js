@@ -756,10 +756,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.9.4',
-    build: 559,
+    version: 'v2.9.5',
+    build: 560,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'WATERFALL-VISUAL-POLISH-559',
+    gitCommit: 'NONBLOCKING-PIPELINE-MEMO-METRICS-560',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -5886,8 +5886,16 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     showAnalysisStatus(false, `✅ Muestra Analizada & Acumulada Exitosamente (${state.logs.length} registros totales)`, `Cliente: ${clientName}`);
   }
 
+  let _consolidatedMetricsCache = null;
+  let _consolidatedMetricsSig = '';
   function getConsolidatedMetrics() {
     const files = state.loadedFiles || [];
+    const logsLen = (state.logs || []).length;
+    const gsmTotal = state.globalStreamMetrics ? (state.globalStreamMetrics.totalLogs || 0) : 0;
+    const sig = `${files.length}|${logsLen}|${gsmTotal}|${state.isServerApi ? 1 : 0}|${files[0]?.name || ''}|${files[files.length - 1]?.name || ''}`;
+    if (_consolidatedMetricsCache && _consolidatedMetricsSig === sig) {
+      return _consolidatedMetricsCache;
+    }
     const hasFiles = files.length > 0;
     
     let totalLogs = 0;
@@ -5964,7 +5972,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     totalErrors = realCriticalErrors;
     totalWarnings = realWarnings;
 
-    return {
+    _consolidatedMetricsSig = sig;
+    _consolidatedMetricsCache = {
       totalLogs,
       totalErrors,
       totalWarnings,
@@ -5977,6 +5986,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       codeMapIdaas,
       codeMapOther
     };
+    return _consolidatedMetricsCache;
   }
 
   function correlateMultiFileEvents() {
@@ -8356,9 +8366,6 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         reindexLogs();
 
         renderLoadedFilesDrawer();
-        updateNodeComparisonUI();
-        renderTraceWaterfall();
-
         clearFilterMode();
         if (dom.filterLevelSelect) dom.filterLevelSelect.value = 'ALL';
         if (dom.filterTypeSelect) dom.filterTypeSelect.value = 'ALL';
@@ -8366,31 +8373,39 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         if (dom.searchLogInput) dom.searchLogInput.value = '';
 
         populateClientSelector();
-        applyLogFilters();
-        updateMetricsAndCharts();
+        applyLogFilters(); // ya invoca renderLogTable, updateMetricsAndCharts y renderUserAndIpAnalytics
         updateOverviewWidgets();
 
-        if (window.storageEngine && typeof window.storageEngine.saveActiveSession === 'function') {
-          window.storageEngine.saveActiveSession({
-            logs: state.logs.slice(0, 35000),
-            loadedFiles: state.loadedFiles,
-            globalStreamMetrics: state.globalStreamMetrics,
-            activeClientId: state.activeClientId
-          }).catch(() => {});
-        }
+        // Diferir renderizados de pestañas secundarias y persistencia IndexedDB para no congelar el navegador
+        setTimeout(() => {
+          try { updateNodeComparisonUI(); } catch (e) {}
+          try { renderTraceWaterfall(); } catch (e) {}
+        }, 40);
 
-        if (window.UserTraceReport) {
-          try {
-            window.UserTraceReport.buildUserStats();
-            if (document.getElementById('tab-users-main-container')) {
-              window.UserTraceReport.renderTab('tab-users-main-container');
-            }
-          } catch (utErr) {}
-        }
+        setTimeout(() => {
+          if (window.UserTraceReport) {
+            try {
+              window.UserTraceReport.buildUserStats();
+              if (document.getElementById('tab-users-main-container')) {
+                window.UserTraceReport.renderTab('tab-users-main-container');
+              }
+            } catch (utErr) {}
+          }
+          if (typeof renderSyslogLiveSummary === 'function') {
+            try { renderSyslogLiveSummary(); } catch (sErr) {}
+          }
+        }, 90);
 
-        if (typeof renderSyslogLiveSummary === 'function') {
-          try { renderSyslogLiveSummary(); } catch (sErr) {}
-        }
+        setTimeout(() => {
+          if (window.storageEngine && typeof window.storageEngine.saveActiveSession === 'function') {
+            window.storageEngine.saveActiveSession({
+              logs: state.logs.slice(0, 35000),
+              loadedFiles: state.loadedFiles,
+              globalStreamMetrics: state.globalStreamMetrics,
+              activeClientId: state.activeClientId
+            }).catch(() => {});
+          }
+        }, 160);
 
         const metrics = getConsolidatedMetrics();
         const targetLog = (state.logs || []).find(l => l.level === 'CRITICAL' || l.level === 'ERROR' || l.level === 'WARN') || (state.logs && state.logs[0]);
