@@ -759,10 +759,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.9.8',
-    build: 563,
+    version: 'v2.9.9',
+    build: 564,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'FIX-HOISTING-METRICS-CACHE-563',
+    gitCommit: 'INSTANT-CHART-UPDATE-564',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -6425,7 +6425,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           timeLabel = parts[1] ? parts[1].substring(0, 5) : (parts[0] ? parts[0].substring(5) : `T-${b + 1}`);
         }
 
-        const errorsInSlice = slice.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL'))).length;
+        const errorsInSlice = slice.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL')) || /520\d{4}/.test(String(l.entrustCode || l.message || ''))).length;
         labels.push(timeLabel);
         totalData.push(slice.length);
         errorData.push(errorsInSlice);
@@ -6442,7 +6442,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     state.charts.trend.data.labels = labels;
     state.charts.trend.data.datasets[0].data = totalData;
     state.charts.trend.data.datasets[1].data = errorData;
-    state.charts.trend.update();
+    state.charts.trend.update('none');
 
     const rangeBadge = document.getElementById('trend-time-range-badge');
     if (rangeBadge) {
@@ -6464,7 +6464,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const m = getConsolidatedMetrics();
     const debugCount = (state.logs || []).filter(l => l.level === 'DEBUG').length;
     state.charts.severity.data.datasets[0].data = [m.totalInfo, m.totalErrors, m.totalWarnings, debugCount];
-    state.charts.severity.update();
+    state.charts.severity.update('none');
   }
 
   function updateOverviewWidgets() {
