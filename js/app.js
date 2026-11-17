@@ -756,10 +756,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.9.3',
-    build: 558,
+    version: 'v2.9.4',
+    build: 559,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'PERF-DEBOUNCE-MEMO-SQLITE-TIMEOUT-558',
+    gitCommit: 'WATERFALL-VISUAL-POLISH-559',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -7736,32 +7736,36 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     });
 
     let timelineRowsHtml = '';
-    hops.forEach((hop) => {
+    hops.forEach((hop, idx) => {
       const leftPct = ((hop.offsetMs / totalLat) * 100).toFixed(1);
-      const widthPct = Math.max(10, ((hop.duration / totalLat) * 100)).toFixed(1);
-      const topCodesList = Object.entries(hop.codes).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([c, cnt]) => `${c} (${cnt})`).join(' | ') || 'Actividad estándar';
+      const widthPct = Math.max(8, ((hop.duration / totalLat) * 100)).toFixed(1);
+      const sharePct = totalRealLogs > 0 ? ((hop.count / totalRealLogs) * 100).toFixed(1) : '0.0';
+      const topCodesList = Object.entries(hop.codes).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([c, cnt]) => `${c} (${cnt.toLocaleString()})`).join(' · ') || 'Actividad estándar';
 
       timelineRowsHtml += `
-        <div style="display:grid; grid-template-columns: 270px 1fr 140px; align-items:center; gap:14px; padding:10px 0; border-bottom:1px solid var(--border-color);">
-          <div>
-            <div style="font-weight:700; font-size:0.83rem; color:var(--text-main); display:flex; align-items:center; gap:6px;">
-              <span>${hop.icon}</span>
+        <div onclick="window.selectTraceHopGlobal && window.selectTraceHopGlobal(${idx})" title="Clic para inspeccionar detalle forense de ${escapeHtml(hop.title)}" style="display:grid; grid-template-columns: minmax(250px, 310px) 1fr 165px; align-items:center; gap:16px; padding:12px 10px; border-bottom:1px solid var(--border-color); cursor:pointer; border-radius:8px; transition:background 0.15s ease;" onmouseover="this.style.background='var(--bg-card-hover)'" onmouseout="this.style.background='transparent'">
+          <div style="min-width:0;">
+            <div style="font-weight:700; font-size:0.84rem; color:var(--text-main); display:flex; align-items:center; gap:7px; line-height:1.25;">
+              <span style="flex-shrink:0;">${hop.icon}</span>
               <span>${escapeHtml(hop.title)}</span>
             </div>
-            <div style="font-size:0.72rem; color:var(--text-muted); margin-left:22px; font-family:monospace;">
-              Nodo/Origen: ${escapeHtml(hop.host)} | ${escapeHtml(topCodesList)}
+            <div style="font-size:0.72rem; color:var(--text-muted); margin-left:24px; margin-top:3px; font-family:'JetBrains Mono', monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              Origen: ${escapeHtml(hop.host)} · ${escapeHtml(topCodesList)}
             </div>
           </div>
 
-          <div style="position:relative; height:24px; background:var(--bg-primary); border-radius:6px; overflow:hidden; border:1px solid var(--border-color);">
-            <div style="position:absolute; left:${leftPct}%; width:${widthPct}%; height:100%; background:linear-gradient(90deg, ${hop.color}cc, ${hop.color}); border-radius:4px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:0.74rem; font-weight:bold; font-family:monospace;">
-              ${hop.count.toLocaleString()} eventos (${hop.errors.toLocaleString()} alertas/fallos)
+          <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+            <div style="position:relative; flex:1; height:14px; background:var(--bg-primary); border-radius:999px; overflow:hidden; border:1px solid var(--border-color);">
+              <div style="position:absolute; left:${leftPct}%; width:${widthPct}%; height:100%; background:linear-gradient(90deg, ${hop.color}cc, ${hop.color}); border-radius:999px; transition:width 0.35s ease;"></div>
             </div>
+            <span style="font-family:'JetBrains Mono', monospace; font-size:0.72rem; font-weight:700; color:var(--text-muted); width:46px; text-align:right; flex-shrink:0;">${sharePct}%</span>
           </div>
 
-          <div style="text-align:right;">
-            <div style="font-family:monospace; font-weight:bold; font-size:0.84rem; color:var(--text-main);">${hop.count.toLocaleString()} reg.</div>
-            <div style="font-size:0.71rem; color:${hop.errors > 0 ? '#f59e0b' : '#10b981'}; font-weight:700;">${hop.errors > 0 ? `${hop.errors.toLocaleString()} con fricción` : 'Sin fallos'}</div>
+          <div style="text-align:right; white-space:nowrap;">
+            <div style="font-family:'JetBrains Mono', monospace; font-weight:800; font-size:0.85rem; color:var(--text-main);">${hop.count.toLocaleString()} reg.</div>
+            <div style="font-size:0.72rem; font-weight:700; margin-top:2px; color:${hop.errors > 0 ? '#d97706' : '#10b981'};">
+              ${hop.errors > 0 ? `⚠️ ${hop.errors.toLocaleString()} con fricción` : '✅ Sin fallos'}
+            </div>
           </div>
         </div>`;
     });
@@ -7798,7 +7802,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:56px;">
         <div style="background:var(--bg-primary); border:1px solid rgba(245, 158, 11, 0.35); border-left:4px solid #f59e0b; padding:14px; border-radius:8px;">
           <div style="font-weight:bold; color:#f59e0b; font-size:0.9rem; margin-bottom:4px;">⚠️ Capa con Mayor Concentración de Fricción / Alertas:</div>
           <div style="font-size:0.84rem; color:var(--text-main); margin-bottom:6px;">
@@ -7812,7 +7816,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         <div style="background:var(--bg-primary); border:1px solid rgba(2, 132, 199, 0.3); border-left:4px solid #0284c7; padding:14px; border-radius:8px;">
           <div style="font-weight:bold; color:var(--text-cyan); font-size:0.9rem; margin-bottom:4px;">💡 Recomendación Técnica Basada en la Evidencia:</div>
           <div style="font-size:0.84rem; color:var(--text-main); margin-bottom:6px;">
-            Revisar en la pestaña <strong>👤 Censo & Trazas de Usuario</strong> y en <strong>🏢 Multi-Nodo</strong> las cuentas específicas que disparan rechazos <code>AUD6001</code>, bloqueos <code>AUD6002</code> o actualizaciones masivas <code>AUD3004</code> a través de usuarios de servicio API.
+            Revisar en la pestaña <strong>👤 Censo & Trazas de Usuario</strong> y en <strong>📑 Fuentes & Rotaciones</strong> las cuentas específicas que disparan rechazos <code>AUD6001</code>, bloqueos <code>AUD6002</code> o actualizaciones masivas <code>AUD3004</code> a través de usuarios de servicio API.
           </div>
           <div style="font-size:0.78rem; color:var(--text-muted);">
             Todos los contadores y hosts mostrados en este diagrama provienen estrictamente de los registros cargados en sesión.

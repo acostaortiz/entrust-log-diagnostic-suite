@@ -1,11 +1,11 @@
 {
   "appName": "IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise",
-  "version": "v2.9.3",
-  "build": 558,
+  "version": "v2.9.4",
+  "build": 559,
   "releaseChannel": "Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)",
-  "gitCommit": "PERF-DEBOUNCE-MEMO-SQLITE-TIMEOUT-558",
+  "gitCommit": "WATERFALL-VISUAL-POLISH-559",
   "gitBranch": "main",
-  "buildDate": "2026-11-16 17:05",
+  "buildDate": "2026-11-16 20:47",
   "engineer": "Tomás Acosta",
   "organization": "IT SERVICIOS V.S.A.",
   "features": [
