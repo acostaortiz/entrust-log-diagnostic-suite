@@ -813,6 +813,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_save_engineers()
         elif path == '/api/client-config':
             self.handle_save_client_config()
+        elif path == '/api/notes':
+            self.handle_save_note()
+        elif path == '/api/notes/delete':
+            self.handle_delete_note()
         elif path == '/api/clear-session':
             clear_active_session()
             self.send_json({'success': True, 'activeDb': None})
@@ -857,6 +861,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_manuals_search(query)
         elif path == '/api/client-config':
             self.handle_get_client_config(query)
+        elif path == '/api/notes':
+            self.handle_get_notes(query)
         elif path == '/api/manuals-status':
             if not MANUALS_INDEX_BUILT and not MANUALS_INDEX_BUILDING:
                 threading.Thread(target=build_manuals_index, daemon=True).start()
@@ -901,6 +907,99 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             with open(cfg_file, 'w', encoding='utf-8') as f:
                 json.dump(configs, f, ensure_ascii=False, indent=2)
             self.send_json({'success': True, 'clientId': client_id, 'config': config_data})
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
+
+    def _load_notes_file(self):
+        notes_file = os.path.join(DATA_DIR, 'technical_notes.json')
+        if not os.path.exists(notes_file):
+            return []
+        try:
+            with open(notes_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                return data if isinstance(data, list) else []
+        except Exception:
+            return []
+
+    def _save_notes_file(self, notes):
+        notes_file = os.path.join(DATA_DIR, 'technical_notes.json')
+        os.makedirs(DATA_DIR, exist_ok=True)
+        with open(notes_file, 'w', encoding='utf-8') as f:
+            json.dump(notes, f, ensure_ascii=False, indent=2)
+
+    def handle_get_notes(self, query):
+        notes = self._load_notes_file()
+        q = (query.get('q', [''])[0] or '').strip().lower()
+        tag = (query.get('tag', [''])[0] or '').strip().lower()
+        client_id = (query.get('clientId', [''])[0] or '').strip()
+
+        if client_id:
+            notes = [n for n in notes if n.get('clientId') in ('', 'global', None, client_id)]
+        if tag:
+            notes = [n for n in notes if any(tag in str(t).lower() for t in (n.get('tags') or []))]
+        if q:
+            notes = [
+                n for n in notes
+                if q in str(n.get('title', '')).lower()
+                or q in str(n.get('content', '')).lower()
+                or any(q in str(t).lower() for t in (n.get('tags') or []))
+            ]
+        self.send_json({'notes': notes})
+
+    def handle_save_note(self):
+        try:
+            length = int(self.headers.get('Content-Length', 0))
+            raw = self.rfile.read(length) if length > 0 else b'{}'
+            payload = json.loads(raw.decode('utf-8'))
+            note = payload.get('note') if isinstance(payload.get('note'), dict) else payload
+            if not isinstance(note, dict) or not str(note.get('title') or '').strip():
+                self.send_json({'error': 'Título de la nota requerido'}, status=400)
+                return
+
+            notes = self._load_notes_file()
+            now_iso = datetime.datetime.utcnow().isoformat() + 'Z'
+            note_id = str(note.get('id') or '').strip() or f"nt_{int(time.time() * 1000)}"
+            tags = note.get('tags') or []
+            if isinstance(tags, str):
+                tags = [t.strip() for t in tags.split(',') if t.strip()]
+
+            clean_note = {
+                'id': note_id,
+                'title': str(note.get('title', '')).strip(),
+                'category': str(note.get('category', 'Nota Técnica')).strip() or 'Nota Técnica',
+                'tags': [str(t).strip() for t in tags if str(t).strip()],
+                'platform': str(note.get('platform', 'Todas')).strip() or 'Todas',
+                'clientId': str(note.get('clientId', 'global')).strip() or 'global',
+                'clientName': str(note.get('clientName', 'Global (Todos los Clientes)')).strip(),
+                'content': str(note.get('content', '')).strip(),
+                'author': str(note.get('author', 'Especialista')).strip() or 'Especialista',
+                'createdAt': str(note.get('createdAt') or now_iso),
+                'updatedAt': now_iso,
+            }
+
+            idx = next((i for i, item in enumerate(notes) if item.get('id') == note_id), -1)
+            if idx >= 0:
+                notes[idx] = clean_note
+            else:
+                notes.insert(0, clean_note)
+
+            self._save_notes_file(notes)
+            self.send_json({'success': True, 'note': clean_note, 'notes': notes})
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
+
+    def handle_delete_note(self):
+        try:
+            length = int(self.headers.get('Content-Length', 0))
+            raw = self.rfile.read(length) if length > 0 else b'{}'
+            payload = json.loads(raw.decode('utf-8'))
+            note_id = str(payload.get('id') or '').strip()
+            if not note_id:
+                self.send_json({'error': 'id requerido'}, status=400)
+                return
+            notes = [n for n in self._load_notes_file() if n.get('id') != note_id]
+            self._save_notes_file(notes)
+            self.send_json({'success': True, 'notes': notes})
         except Exception as e:
             self.send_json({'error': str(e)}, status=500)
 

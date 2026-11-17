@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.0.0 (Build 568)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.1.0 (Build 569)</span>
           </div>
         </div>
       </div>
@@ -93,6 +93,13 @@
               <div>
                 <div style="font-weight:700;">Comparador Config (Diff)</div>
                 <div style="font-size:0.7rem; color:var(--text-muted);">Discrepancias XML/Properties entre servidores</div>
+              </div>
+            </button>
+            <button type="button" class="header-dropdown-item nav-btn" data-tab="notes" onclick="window.switchTabGlobal('notes');">
+              <span style="width:8px; height:8px; border-radius:50%; background:#06b6d4; flex-shrink:0;"></span>
+              <div>
+                <div style="font-weight:700;">Notas Técnicas &amp; Runbooks</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Portal de procedimientos etiquetados para la IA</div>
               </div>
             </button>
             <button type="button" class="header-dropdown-item nav-btn" data-tab="kb" onclick="window.switchTabGlobal('kb');">
@@ -922,6 +929,22 @@ db.connection.pool.max=20
       </div>
     </div>
 
+    <!-- 14. PESTAÑA: PORTAL DE NOTAS TÉCNICAS & RUNBOOKS -->
+    <div class="tab-pane" id="tab-notes">
+      <div class="glass-card mb-4">
+        <div class="card-header flex-between" style="flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+          <div>
+            <div class="card-title" style="color:var(--accent-cyan); font-size:1.15rem;">📚 Portal de Notas Técnicas &amp; Procedimientos (Runbooks)</div>
+            <div class="card-subtitle">Alimenta desde la web la base de conocimiento interna con etiquetas de error/plataforma para que <strong>Entrust Forensics AI</strong> recomiende tus soluciones aprobadas</div>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="if(window.notesEngine){ window.notesEngine.cancelEdit(); }">➕ Nueva Nota</button>
+        </div>
+        <div id="notes-portal-container">
+          <!-- Renderizado dinámicamente por NotesEngine -->
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- MODAL: TICKET OFICIAL ZOHO DESK (PILAR 5) -->
@@ -1166,8 +1189,13 @@ db.connection.pool.max=20
       </div>
 
       <div class="mt-4">
-        <div class="diag-label">Código HTML Completo del Manual:</div>
-        <textarea class="form-control font-mono" id="custom-manual-html" rows="10" placeholder="<html><body><h1>1.1 Código [5202013]...</body></html>"></textarea>
+        <div class="diag-label">Subir Archivo de Manual (.html, .htm, .md, .txt) o Pegar Contenido:</div>
+        <input type="file" id="custom-manual-file" class="form-control" accept=".html,.htm,.txt,.md" onchange="if(this.files && this.files[0]){ const f=this.files[0]; const t=document.getElementById('custom-manual-title'); if(t && !t.value) t.value=f.name.replace(/\.[^.]+$/, ''); f.text().then(txt=>{ const h=document.getElementById('custom-manual-html'); if(h) h.value=txt; }); }">
+      </div>
+
+      <div class="mt-4">
+        <div class="diag-label">Contenido HTML / Texto del Manual:</div>
+        <textarea class="form-control font-mono" id="custom-manual-html" rows="8" placeholder="<html><body><h1>1.1 Código [5202013]...</body></html>"></textarea>
       </div>
 
       <div class="flex-between mt-4">
@@ -1612,6 +1640,7 @@ db.connection.pool.max=20
       <button class="copilot-pill copilot-pill-warn" data-query="usuarios afectados">👤 Usuarios</button>
       <button class="copilot-pill copilot-pill-ok" data-query="generar informe ejecutivo">📄 Generar Informe</button>
       <button class="copilot-pill" data-query="configuracion cliente">⚙️ Config Real</button>
+      <button class="copilot-pill copilot-pill-info" data-query="nota tecnica">📌 Notas Técnicas</button>
     </div>
 
     <!-- Chat Messages Scroll Area -->
@@ -1638,7 +1667,8 @@ db.connection.pool.max=20
   <script src="js/storage-engine.js?v=567.0"></script>
     <script src="js/threat-radar.js?v=550.0"></script>
   <script src="js/remediation-engine.js?v=550.0"></script>
-  <script src="js/copilot-engine.js?v=568.0"></script>
+  <script src="js/notes-engine.js?v=569.0"></script>
+  <script src="js/copilot-engine.js?v=569.0"></script>
   <script src="js/compliance-auditor.js?v=550.0"></script>
   <script src="js/config-diff-engine.js?v=550.0"></script>
   <script src="js/siem-exporter.js?v=550.0"></script>
@@ -1647,7 +1677,7 @@ db.connection.pool.max=20
   <script src="js/syslog-collector.js?v=550.0"></script>
   <script src="js/user-trace-report.js?v=568.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
-  <script src="js/app.js?v=568.0"></script>
+  <script src="js/app.js?v=569.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

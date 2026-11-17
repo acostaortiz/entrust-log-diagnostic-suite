@@ -212,15 +212,18 @@ if (typeof escapeHtml === 'undefined') {
       else if (q.includes('config') || q.includes('properties') || q.includes('server.xml') || q.includes('web.xml') || q.includes('entrusttoken') || q.includes('jdbc') || q.includes('maxthreads') || q.includes('keystore')) {
         const cfg = ctx.clientConfig;
         if (cfg && cfg.files && cfg.files.length > 0) {
-          const jdbc = cfg.jdbc || {};
-          const tok = cfg.token || {};
-          const web = cfg.web || {};
-          const conns = (cfg.tomcatConnectors || []).map(c => `  • **${c.service || 'Connector'}** puerto \`${c.port}\` — \`maxThreads=${c.maxThreads || '-'}\`, \`acceptCount=${c.acceptCount || '-'}\`, \`clientAuth=${c.clientAuth || 'false'}\`${c.keystoreFile ? `, keystore: \`${c.keystoreFile}\`` : ''}`).join('\n') || '  • Sin conectores Tomcat registrados.';
+          const jdbc = cfg.identityguard || cfg.jdbc || {};
+          const tok = cfg.entrusttoken || cfg.token || {};
+          const web = cfg.webXml || cfg.web || {};
+          const serverConns = (cfg.serverXml && Array.isArray(cfg.serverXml.services))
+            ? cfg.serverXml.services.flatMap(s => (s.connectors || []).map(c => ({ service: s.name, ...c })))
+            : (cfg.tomcatConnectors || []);
+          const conns = serverConns.map(c => `  • **${c.service || 'Connector'}** puerto \`${c.port}\` — \`maxThreads=${c.maxThreads || '-'}\`, \`acceptCount=${c.acceptCount || '-'}\`, \`clientAuth=${c.clientAuth || 'false'}\`${c.keystoreFile ? `, keystore: \`${c.keystoreFile}\`` : ''}`).join('\n') || '  • Sin conectores Tomcat registrados.';
           answer = `⚙️ **Configuración Real de Plataforma — ${ctx.client.name}** *(extraída de \`${cfg.files.join(', ')}\`)*:\n\n` +
-                   `• **Base de Datos JDBC:** \`${jdbc.type || 'N/A'}\` | Usuario: \`${jdbc.user || 'N/A'}\` | Schema: \`${jdbc.schema || 'N/A'}\`\n` +
-                   `• **JDBC URL:** \`${jdbc.url || 'N/A'}\`\n` +
-                   `• **Admin URL:** \`${(cfg.urls && cfg.urls.webadmin) || 'N/A'}\`\n` +
-                   `• **Auth HTTPS URL:** \`${(cfg.urls && cfg.urls.authHttps) || 'N/A'}\`\n` +
+                   `• **Base de Datos JDBC:** \`${jdbc.jdbcType || jdbc.type || 'N/A'}\` | Usuario: \`${jdbc.jdbcUser || jdbc.user || 'N/A'}\` | Schema: \`${jdbc.jdbcSchema || jdbc.schema || 'N/A'}\`\n` +
+                   `• **JDBC URL:** \`${jdbc.jdbcUrl || jdbc.url || 'N/A'}\`\n` +
+                   `• **Admin URL:** \`${jdbc.webAdminUrl || (cfg.urls && cfg.urls.webadmin) || 'N/A'}\`\n` +
+                   `• **Auth HTTPS URL:** \`${jdbc.authServiceHttpsUrl || (cfg.urls && cfg.urls.authHttps) || 'N/A'}\`\n` +
                    `• **Tokens (` + '`entrusttoken.conf`' + `):** \`resetEventWindow=${tok.resetEventWindow || '-'}\`, \`maxTimeSteps=${tok.maxTimeSteps || '-'}\`\n` +
                    `• **Session Timeout (` + '`web.xml`' + `):** \`${web.sessionTimeout || 'N/A'} min\`\n\n` +
                    `**Conectores Tomcat (` + '`server.xml`' + `):**\n${conns}`;
@@ -229,17 +232,33 @@ if (typeof escapeHtml === 'undefined') {
         }
         suggestedQueries = ['resumen operativo', 'base de datos oracle', 'generar informe ejecutivo'];
       }
+      // 0.7 Consulta directa de Notas Técnicas / Procedimientos / Runbooks del equipo
+      else if (q.includes('nota') || q.includes('runbook') || q.includes('procedimiento')) {
+        const noteMatches = window.notesEngine ? window.notesEngine.searchNotes(qRaw, ctx.client?.id) : [];
+        if (noteMatches.length > 0) {
+          answer = `📌 **Notas Técnicas & Procedimientos Internos (${noteMatches.length})**:\n\n` +
+                   this._formatInternalNotes(noteMatches.slice(0, 4)) +
+                   (manualResults.length > 0 ? this._formatManualCitations(manualResults) : '');
+        } else {
+          answer = `📌 No hay Notas Técnicas o Runbooks registrados que coincidan con *"${qRaw}"*.\n\nPuedes crear nuevos procedimientos con etiquetas desde la pestaña **📚 Notas Técnicas** (en *Más Vistas*) para que **Entrust Forensics AI** los utilice en futuros análisis.`;
+        }
+        suggestedQueries = ['resumen operativo', 'top errores', 'generar informe ejecutivo'];
+      }
       // 1. Consulta específica de código de error (ej: "520002", "AUD6001", "ORA-01555")
       else if (mentionedCodes.length > 0) {
+        const noteMatches = window.notesEngine ? window.notesEngine.searchNotes(qRaw, ctx.client?.id) : [];
+        const notesBlock = noteMatches.length > 0 ? ('\n\n' + this._formatInternalNotes(noteMatches.slice(0, 3))) : '';
         if (kbMatches.length > 0) {
           answer = `🔎 **Diagnóstico Pericial de Base de Conocimiento para \`${mentionedCodes.join(', ').toUpperCase()}\`**:\n\n` +
                    this._formatKbMatches(kbMatches, ctx) +
+                   notesBlock +
                    this._formatManualCitations(manualResults);
-        } else if (manualResults.length > 0) {
-          answer = `📚 **Resultados en Manuales Oficiales para \`${mentionedCodes.join(', ').toUpperCase()}\`**:` +
+        } else if (noteMatches.length > 0 || manualResults.length > 0) {
+          answer = `📚 **Resultados para \`${mentionedCodes.join(', ').toUpperCase()}\`**:\n\n` +
+                   (noteMatches.length > 0 ? this._formatInternalNotes(noteMatches.slice(0, 3)) : '') +
                    this._formatManualCitations(manualResults);
         } else {
-          answer = `⚠️ No encontré el código \`${mentionedCodes.join(', ').toUpperCase()}\` en el catálogo actual ni en los manuales indexados. Verifica el número exacto o pega la línea completa del log para analizarla.`;
+          answer = `⚠️ No encontré el código \`${mentionedCodes.join(', ').toUpperCase()}\` en el catálogo actual, Notas Técnicas ni manuales indexados. Verifica el número exacto o pega la línea completa del log para analizarla.`;
         }
         suggestedQueries = ['top errores', 'plan de remediacion', 'resumen operativo'];
       }
@@ -352,21 +371,23 @@ if (typeof escapeHtml === 'undefined') {
         }
         suggestedQueries = ['resumen operativo', 'plan de remediacion'];
       }
-      // 9. Búsqueda abierta en Base de Conocimiento + Manuales Oficiales
+      // 9. Búsqueda abierta en Notas Técnicas + Base de Conocimiento + Manuales Oficiales
       else {
-        if (kbMatches.length > 0 || manualResults.length > 0) {
-          answer = `🧠 **Consulta en Base de Conocimiento & Manuales Oficiales**:\n\n` +
+        const noteMatches = window.notesEngine ? window.notesEngine.searchNotes(qRaw, ctx.client?.id) : [];
+        if (noteMatches.length > 0 || kbMatches.length > 0 || manualResults.length > 0) {
+          answer = `🧠 **Consulta en Notas Técnicas, Base de Conocimiento & Manuales Oficiales**:\n\n` +
+                   (noteMatches.length > 0 ? this._formatInternalNotes(noteMatches.slice(0, 3)) + '\n\n' : '') +
                    (kbMatches.length > 0 ? this._formatKbMatches(kbMatches, ctx) : '') +
                    this._formatManualCitations(manualResults);
         } else {
-          answer = `🤖 **Entrust Forensics Copilot**:\n\n` +
+          answer = `🤖 **Entrust Forensics AI**:\n\n` +
                    `Tengo cargados **${ctx.totalLogs.toLocaleString()}** eventos en **${ctx.files.length || 1}** archivo(s) para **${ctx.client.name}** (${ctx.totalErrors.toLocaleString()} fallos críticos).\n\n` +
-                   `No encontré coincidencias exactas en KB/Manuales para *"${qRaw}"*. Prueba consultando:\n` +
+                   `No encontré coincidencias exactas en Notas Técnicas, KB o Manuales para *"${qRaw}"*. Prueba consultando:\n` +
                    `• Un código específico: *"520002"*, *"AUD6001"*, *"ORA-01555"*\n` +
-                   `• Tópicos de manual: *"configurar LDAP"*, *"supersh"*, *"pool JDBC"*, *"migracion IDaaS"*\n` +
+                   `• Tus procedimientos internos: *"nota tecnica"*, *"runbook"*\n` +
                    `• Diagnóstico en vivo: *"resumen operativo"*, *"archivos rotados"*, *"plan de remediacion"*`;
         }
-        suggestedQueries = ['resumen operativo', 'top errores', 'archivos rotados'];
+        suggestedQueries = ['resumen operativo', 'top errores', 'nota tecnica'];
       }
 
       const interaction = {
@@ -380,6 +401,18 @@ if (typeof escapeHtml === 'undefined') {
       };
       this.chatHistory.push(interaction);
       return interaction;
+    }
+
+    _formatInternalNotes(notes) {
+      if (!notes || !notes.length) return '';
+      return notes.map(n => {
+        const tags = (n.tags || []).map(t => `\`#${t}\``).join(' ');
+        const excerpt = (n.content || '').length > 420 ? (n.content.slice(0, 420) + '...') : (n.content || '');
+        return `📌 **[${n.category || 'Nota Técnica'}] ${n.title}**\n` +
+               `${tags ? `• **Etiquetas:** ${tags}\n` : ''}` +
+               `• **Autor:** ${n.author || 'Especialista'} | **Alcance:** ${n.clientName || 'Global'}\n` +
+               `• **Procedimiento / Análisis:**\n${excerpt}`;
+      }).join('\n\n');
     }
 
     // Compatibilidad síncrona

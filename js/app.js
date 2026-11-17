@@ -216,6 +216,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (typeof window.loadActiveClientConfigGlobal === 'function') {
         await window.loadActiveClientConfigGlobal(state.activeClientId);
       }
+      if (window.notesEngine && typeof window.notesEngine.loadNotes === 'function') {
+        window.notesEngine.loadNotes().then(() => window.notesEngine.renderPortal('notes-portal-container')).catch(() => {});
+      }
       let restoredLocal = false;
       if (window.storageEngine && typeof window.storageEngine.loadActiveSession === 'function') {
         const savedSession = await window.storageEngine.loadActiveSession();
@@ -524,6 +527,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (typeof window.loadActiveClientConfigGlobal === 'function') {
       window.loadActiveClientConfigGlobal(clientId);
+    }
+    if (window.notesEngine && typeof window.notesEngine.renderPortal === 'function') {
+      window.notesEngine.renderPortal('notes-portal-container');
     }
     showAnalysisStatus(false, `🏢 Sesión de Cliente: ${currentClient.name}`, `Plataforma: ${currentClient.platform} | Versión: ${currentClient.version} • ${currentClient.environment || 'PROD'}`);
   };
@@ -991,10 +997,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.0.0',
-    build: 568,
+    version: 'v3.1.0',
+    build: 569,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'ENTRUST-FORENSICS-AI-CLIENT-CONFIG-300',
+    gitCommit: 'TECHNICAL-NOTES-PORTAL-FORENSICS-AI-310',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -1598,6 +1604,8 @@ document.addEventListener('DOMContentLoaded', () => {
       try { updateMetricsAndCharts(); } catch(e) {}
     } else if (targetTab === 'manuals' && dom.manualIframe && !dom.manualIframe.getAttribute('src')) {
       try { loadManual(state.currentManualVersion || 'v13_0_webhelp'); } catch(e) {}
+    } else if (targetTab === 'notes' && window.notesEngine) {
+      try { window.notesEngine.renderPortal('notes-portal-container'); } catch(e) {}
     }
 
     // Manejo de estado para el dropdown 'Más Vistas'
@@ -1608,6 +1616,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const subTabLabels = {
       'compliance': '⚖️ Sudeban / ISO',
       'diff': '🔍 Config Diff',
+      'notes': '📚 Notas Técnicas',
       'kb': '🧠 Base KB',
       'manuals': '📚 Manuales',
       'nodes': '🏢 Multi-Nodo',
