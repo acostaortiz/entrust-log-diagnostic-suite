@@ -22,7 +22,7 @@ if (typeof escapeHtml === 'undefined') {
 class StorageEngine {
   constructor() {
     this.dbName = 'ITServicios_Entrust_Diagnostic_DB';
-    this.dbVersion = 1;
+    this.dbVersion = 2;
     this.db = null;
     this.initPromise = this.init();
   }
@@ -40,6 +40,9 @@ class StorageEngine {
         const db = e.target.result;
         if (!db.objectStoreNames.contains('active_session')) {
           db.createObjectStore('active_session', { keyPath: 'id' });
+        } else if (e.oldVersion < 2) {
+          // Purgar caché legacy sobredimensionada (>35k objetos con diagnostic) que congelaba Firefox/Chrome
+          try { e.target.transaction.objectStore('active_session').clear(); } catch (err) {}
         }
         if (!db.objectStoreNames.contains('saved_cases')) {
           const caseStore = db.createObjectStore('saved_cases', { keyPath: 'caseId' });
@@ -65,10 +68,30 @@ class StorageEngine {
     if (!this.db) return false;
 
     const isObjPayload = logsOrPayload && !Array.isArray(logsOrPayload) && typeof logsOrPayload === 'object';
+    const rawLogs = isObjPayload
+      ? (Array.isArray(logsOrPayload.logs) ? logsOrPayload.logs : [])
+      : (Array.isArray(logsOrPayload) ? logsOrPayload : []);
+    // Compactar logs guardados en IndexedDB (máx 5,000 muestras ligeras sin objetos diagnostic pesados)
+    const compactLogs = rawLogs.slice(0, 5000).map(l => ({
+      lineNum: l.lineNum,
+      timestamp: l.timestamp,
+      level: l.level,
+      service: l.service,
+      type: l.type,
+      entrustCode: l.entrustCode,
+      user: l.user,
+      clientIp: l.clientIp,
+      client: l.client,
+      sourceFile: l.sourceFile,
+      node: l.node,
+      outcome: l.outcome,
+      message: l.message ? String(l.message).slice(0, 260) : '',
+      raw: l.raw ? String(l.raw).slice(0, 300) : ''
+    }));
     const record = isObjPayload
       ? {
           id: 'current_session',
-          logs: Array.isArray(logsOrPayload.logs) ? logsOrPayload.logs : [],
+          logs: compactLogs,
           loadedFiles: Array.isArray(logsOrPayload.loadedFiles) ? logsOrPayload.loadedFiles : [],
           globalStreamMetrics: logsOrPayload.globalStreamMetrics || null,
           activeClientId: logsOrPayload.activeClientId || activeClientId || 'general',
@@ -77,7 +100,7 @@ class StorageEngine {
         }
       : {
           id: 'current_session',
-          logs: Array.isArray(logsOrPayload) ? logsOrPayload : [],
+          logs: compactLogs,
           loadedFiles: [],
           globalStreamMetrics: null,
           activeClientId: activeClientId || 'general',

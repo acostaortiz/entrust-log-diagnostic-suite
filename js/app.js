@@ -766,10 +766,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v2.9.11',
-    build: 566,
+    version: 'v2.10.0',
+    build: 567,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'CHUNK-2500-NONBLOCKING-PARSER-566',
+    gitCommit: 'COMPACT-INDEXEDDB-PURGE-LEGACY-567',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -8421,7 +8421,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         setTimeout(() => {
           if (window.storageEngine && typeof window.storageEngine.saveActiveSession === 'function') {
             window.storageEngine.saveActiveSession({
-              logs: state.logs.slice(0, 35000),
+              logs: state.logs.slice(0, 5000),
               loadedFiles: state.loadedFiles,
               globalStreamMetrics: state.globalStreamMetrics,
               activeClientId: state.activeClientId
