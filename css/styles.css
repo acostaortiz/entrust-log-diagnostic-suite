@@ -1578,9 +1578,8 @@ body.dark-theme .nav-btn.active::after { background: #f43f5e; }
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
 .copilot-pills-bar::-webkit-scrollbar { display: none; }
 .copilot-pill {

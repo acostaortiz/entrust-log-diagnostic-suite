@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.2.0 (Build 570)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.3.0 (Build 571)</span>
           </div>
         </div>
       </div>
@@ -443,6 +443,17 @@
             <div class="card-subtitle">Carga masiva, soporte de archivos rotados (.log, .1, .2) y análisis acumulativo por Nodos</div>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <!-- Selector de Servidor / Nodo para el lote a cargar -->
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted);">🖥️ Servidor:</span>
+              <input type="text" id="upload-server-tag" class="form-control" list="upload-server-presets" value="Servidor 1 (Primario)" placeholder="Ej. Nodo 1 - 10.5.11.50" style="width:195px; font-size:0.78rem; padding:5px 10px;">
+              <datalist id="upload-server-presets">
+                <option value="Servidor 1 (Primario)"></option>
+                <option value="Servidor 2 (Secundario)"></option>
+                <option value="Servidor 3 (Contingencia)"></option>
+              </datalist>
+            </div>
+
             <!-- Selector de Modo Acumulativo (Desactivado por defecto para auto-limpieza) -->
             <label style="display:flex; align-items:center; gap:6px; background:var(--bg-primary); border:1px solid var(--border-color); padding:6px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; color:var(--text-main); font-weight:600;" title="Si se activa, los nuevos archivos cargados se sumarán al análisis actual">
               <input type="checkbox" id="chk-accumulate-mode" style="cursor:pointer; accent-color:#0284c7;">
@@ -489,7 +500,13 @@
             <button id="btn-clear-search" style="position:absolute; right:10px; background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.9rem; display:none;" title="Limpiar búsqueda">✖</button>
           </div>
 
-          <div style="width: 200px;">
+          <div style="width: 190px;">
+            <select class="form-control" id="filter-server-select" onchange="if(window.applyLogFiltersGlobal) window.applyLogFiltersGlobal();">
+              <option value="ALL">🖥️ Todos los Servidores</option>
+            </select>
+          </div>
+
+          <div style="width: 185px;">
             <select class="form-control" id="filter-client-select">
               <option value="ALL">🏢 Todos los Clientes</option>
             </select>
@@ -716,6 +733,9 @@
         <p class="text-muted" style="font-size:0.85rem; margin-bottom:18px; line-height:1.5;">
           Permite correlacionar de forma independiente los eventos del <strong>Subsistema de Auditoría (IG.AUDIT)</strong> frente a los <strong>Logs de Sistema (IG.SYSTEM)</strong> y sus archivos históricos rotados (ej. <code>identityguard_system.log.9</code>). Facilita verificar si las incidencias corresponden a rechazos de credenciales de usuario o anomalías internas del motor.
         </p>
+
+        <!-- Comparativa Multi-Servidor (Servidor 1 vs Servidor 2 vs N) -->
+        <div id="multi-server-comparison-container" style="margin-bottom:22px;"></div>
 
         <!-- Barra Dinámica de Distribución de Eventos por Fuente y Archivo -->
         <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:10px; padding:16px; margin-bottom:22px;">
@@ -1711,7 +1731,7 @@ db.connection.pool.max=20
   <script src="js/syslog-collector.js?v=550.0"></script>
   <script src="js/user-trace-report.js?v=568.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
-  <script src="js/app.js?v=570.0"></script>
+  <script src="js/app.js?v=571.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

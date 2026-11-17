@@ -231,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
           sanitizeOnPremiseSessionData();
           restoredLocal = true;
           populateClientSelector();
+          if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
           renderLoadedFilesDrawer();
           applyLogFilters(); // ya invoca renderLogTable, updateMetricsAndCharts y renderUserAndIpAnalytics
           showAnalysisStatus(false, `💾 Sesión OnPremise Restaurada (${(state.globalStreamMetrics?.totalLogs || state.logs.length).toLocaleString()} registros)`, `Archivo: ${(state.loadedFiles && state.loadedFiles[0]?.name) || 'Local'}`);
@@ -667,17 +668,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const parts = [];
     if (cfg.identityguard) {
-      parts.push(`<div style="margin-bottom:4px;"><strong>⚙️ ${escapeHtml(cfg.identityguard.fileName || 'identityguard.properties')}:</strong> JDBC <code>${escapeHtml(cfg.identityguard.jdbcUrl || 'N/A')}</code> | Usuario BD: <code>${escapeHtml(cfg.identityguard.jdbcUser || 'N/A')}</code> | Schema: <code>${escapeHtml(cfg.identityguard.jdbcSchema || 'N/A')}</code></div>`);
+      parts.push(`
+        <div style="margin-bottom:8px;">
+          <strong>⚙️ ${escapeHtml(cfg.identityguard.fileName || 'identityguard.properties')} (Core &amp; Base de Datos):</strong>
+          <ul style="margin:4px 0 0 18px; padding:0; font-size:0.75rem; line-height:1.45;">
+            <li><code>jdbc.type</code> = <code>${escapeHtml(cfg.identityguard.jdbcType || 'N/A')}</code> — Motor relacional del repositorio de identidades.</li>
+            <li><code>jdbc.url</code> = <code>${escapeHtml(cfg.identityguard.jdbcUrl || 'N/A')}</code> — Endpoint/SID de conexión; saturación o caída aquí genera errores <code>520xxx / ORA-</code>.</li>
+            <li><code>jdbc.user / schema</code> = <code>${escapeHtml(cfg.identityguard.jdbcUser || 'N/A')}</code> / <code>${escapeHtml(cfg.identityguard.jdbcSchema || 'N/A')}</code> — Usuario y esquema propietario de tablas IG.</li>
+            <li><code>webadmin.url</code> = <code>${escapeHtml(cfg.identityguard.webAdminUrl || 'N/A')}</code> — URL de la consola administrativa.</li>
+          </ul>
+        </div>`);
     }
     if (cfg.serverXml && Array.isArray(cfg.serverXml.services)) {
-      const conns = cfg.serverXml.services.flatMap(s => (s.connectors || []).map(c => `${s.name}:${c.port} (${c.maxThreads || '?'} threads${c.keystoreFile ? ', TLS' : ''})`));
-      parts.push(`<div style="margin-bottom:4px;"><strong>🌐 ${escapeHtml(cfg.serverXml.fileName || 'server.xml')}:</strong> ${escapeHtml(conns.join(' • ') || 'Sin conectores')}</div>`);
+      const connRows = cfg.serverXml.services.flatMap(s => (s.connectors || []).map(c =>
+        `<li><strong>${escapeHtml(s.name)}</strong> puerto <code>${escapeHtml(c.port)}</code>: <code>maxThreads=${escapeHtml(c.maxThreads || '-')}</code> (peticiones simultáneas), <code>acceptCount=${escapeHtml(c.acceptCount || '-')}</code> (cola TCP), <code>connectionTimeout=${escapeHtml(c.connectionTimeout || '-')}ms</code>, <code>clientAuth=${escapeHtml(c.clientAuth || 'false')}</code> (${String(c.clientAuth).toLowerCase() === 'true' ? 'exige mTLS' : 'TLS unidireccional'})${c.keystoreFile ? `, keystore=<code>${escapeHtml(c.keystoreFile)}</code>` : ''}</li>`
+      )).join('');
+      parts.push(`<div style="margin-bottom:8px;"><strong>🌐 ${escapeHtml(cfg.serverXml.fileName || 'server.xml')} (Conectores &amp; Concurrencia Tomcat):</strong><ul style="margin:4px 0 0 18px; padding:0; font-size:0.75rem; line-height:1.45;">${connRows || '<li>Sin conectores</li>'}</ul></div>`);
     }
     if (cfg.webXml) {
-      parts.push(`<div style="margin-bottom:4px;"><strong>🧩 ${escapeHtml(cfg.webXml.fileName || 'web.xml')}:</strong> Session Timeout: <code>${escapeHtml(cfg.webXml.sessionTimeout || 'Default')} min</code> • Servlets: ${cfg.webXml.servletCount || 0} • Filtros: ${cfg.webXml.filterCount || 0}</div>`);
+      parts.push(`<div style="margin-bottom:8px;"><strong>🧩 ${escapeHtml(cfg.webXml.fileName || 'web.xml')}:</strong> <code>session-timeout=${escapeHtml(cfg.webXml.sessionTimeout || 'Default')} min</code> (expiración por inactividad) • Servlets: ${cfg.webXml.servletCount || 0} • Filtros: ${cfg.webXml.filterCount || 0}</div>`);
     }
     if (cfg.entrusttoken) {
-      parts.push(`<div style="margin-bottom:4px;"><strong>🔑 ${escapeHtml(cfg.entrusttoken.fileName || 'entrusttoken.conf')}:</strong> resetEventWindow=<code>${escapeHtml(cfg.entrusttoken.resetEventWindow || 'N/A')}</code> • maxTimeSteps=<code>${escapeHtml(cfg.entrusttoken.maxTimeSteps || 'N/A')}</code></div>`);
+      parts.push(`<div style="margin-bottom:8px;"><strong>🔑 ${escapeHtml(cfg.entrusttoken.fileName || 'entrusttoken.conf')} (Tokens OTP):</strong> <code>resetEventWindow=${escapeHtml(cfg.entrusttoken.resetEventWindow || 'N/A')}</code> (ventana resincronización HOTP) • <code>maxTimeSteps=${escapeHtml(cfg.entrusttoken.maxTimeSteps || 'N/A')}</code> (desfase máximo TOTP)</div>`);
     }
     if (cfg.uploadedCerts && cfg.uploadedCerts.length) {
       parts.push(`<div><strong>📜 Certificados:</strong> ${cfg.uploadedCerts.map(c => `<code>${escapeHtml(c.fileName)}</code>`).join(', ')}</div>`);
@@ -997,10 +1009,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.2.0',
-    build: 570,
+    version: 'v3.3.0',
+    build: 571,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'KNOWLEDGE-HUB-NOTES-UPLOAD-320',
+    gitCommit: 'MULTI-SERVER-BATCH-COMPARISON-330',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -4959,6 +4971,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
   /* ==========================================================================
      4. ANALIZADOR DE LOGS Y MUESTRA
      ========================================================================== */
+  window.applyLogFiltersGlobal = applyLogFilters;
   function applyLogFilters() {
     if (state.isServerApi) {
       fetchSqlLogs(1);
@@ -4970,6 +4983,11 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       result = result.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || /520\d{4}/.test(String(l.entrustCode || l.message || '')));
     } else if (state.activeFilterMode === 'AUDIT_ONLY') {
       result = result.filter(l => l.level === 'WARN' || l.level === 'INFO' || /AUD/i.test(l.message));
+    }
+
+    const serverVal = document.getElementById('filter-server-select')?.value;
+    if (serverVal && serverVal !== 'ALL') {
+      result = result.filter(l => (l.serverTag || 'Servidor 1 (Primario)') === serverVal);
     }
 
     const clientVal = dom.filterClientSelect?.value;
@@ -7500,7 +7518,98 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     return { key: 'source_general', name: '📑 Flujo de Logs (General)', category: 'General' };
   }
 
+  function populateServerFilterSelector() {
+    const sel = document.getElementById('filter-server-select');
+    const dl = document.getElementById('upload-server-presets');
+    const servers = Array.from(new Set((state.loadedFiles || []).map(f => f.serverTag || 'Servidor 1 (Primario)')));
+    if (sel) {
+      const prev = sel.value || 'ALL';
+      sel.innerHTML = '<option value="ALL">🖥️ Todos los Servidores</option>' +
+        servers.map(s => `<option value="${escapeHtml(s)}">🖥️ ${escapeHtml(s)}</option>`).join('');
+      if (servers.includes(prev)) sel.value = prev;
+    }
+    if (dl) {
+      const defaults = ['Servidor 1 (Primario)', 'Servidor 2 (Secundario)', 'Servidor 3 (Contingencia)'];
+      const merged = Array.from(new Set([...defaults, ...servers]));
+      dl.innerHTML = merged.map(s => `<option value="${escapeHtml(s)}"></option>`).join('');
+    }
+  }
+
+  window.filterAnalyzerByServerGlobal = function(serverTag) {
+    const sel = document.getElementById('filter-server-select');
+    if (sel) sel.value = serverTag || 'ALL';
+    if (typeof window.switchTabGlobal === 'function') window.switchTabGlobal('analyzer');
+    applyLogFilters();
+  };
+
+  function renderMultiServerComparison() {
+    const container = document.getElementById('multi-server-comparison-container');
+    if (!container) return;
+    const files = state.loadedFiles || [];
+    if (!files.length) {
+      container.innerHTML = `
+        <div style="background:var(--bg-primary); border:1px dashed var(--border-color); border-radius:10px; padding:16px; text-align:center; font-size:0.84rem; color:var(--text-muted);">
+          🖥️ <strong>Comparativa Multi-Servidor:</strong> Carga lotes de archivos indicando el servidor en el Analizador (ej. <em>Servidor 1</em> + <em>Servidor 2</em> en Modo Acumulativo) para comparar salud, tasa de errores y códigos por servidor.
+        </div>`;
+      return;
+    }
+
+    const byServer = {};
+    files.forEach(f => {
+      const srv = f.serverTag || 'Servidor 1 (Primario)';
+      if (!byServer[srv]) {
+        byServer[srv] = { server: srv, files: 0, count: 0, errors: 0, warnings: 0, codes: {} };
+      }
+      byServer[srv].files += 1;
+      byServer[srv].count += Number(f.count || 0);
+      byServer[srv].errors += Number(f.realErrors || 0);
+      byServer[srv].warnings += Number(f.realWarnings || 0);
+    });
+
+    (state.logs || []).forEach(l => {
+      const srv = l.serverTag || 'Servidor 1 (Primario)';
+      if (!byServer[srv]) return;
+      const code = l.entrustCode;
+      if (code) byServer[srv].codes[code] = (byServer[srv].codes[code] || 0) + 1;
+    });
+
+    const servers = Object.values(byServer);
+    const cardsHtml = servers.map(s => {
+      const errRate = s.count > 0 ? ((s.errors / s.count) * 100).toFixed(2) : '0.00';
+      const health = Math.max(0, Math.min(100, Math.round(100 - parseFloat(errRate)))).toFixed(0);
+      const topCodes = Object.entries(s.codes).sort((a, b) => b[1] - a[1]).slice(0, 4)
+        .map(([c, n]) => `<code>${escapeHtml(c)}</code> (${n})`).join(', ') || 'Sin códigos críticos en muestra';
+      const healthColor = Number(health) >= 95 ? '#10b981' : (Number(health) >= 85 ? '#f59e0b' : '#ef4444');
+      return `
+        <div style="background:var(--bg-card); border:1px solid var(--border-color); border-top:4px solid ${healthColor}; border-radius:10px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;">
+            <strong style="font-size:0.95rem; color:var(--text-main);">🖥️ ${escapeHtml(s.server)}</strong>
+            <span style="font-size:0.74rem; font-weight:800; color:${healthColor}; background:${healthColor}18; padding:2px 8px; border-radius:999px;">Salud ${health}%</span>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; font-size:0.78rem; margin-bottom:10px;">
+            <div style="background:var(--bg-secondary); padding:6px 8px; border-radius:6px;"><div style="color:var(--text-muted);">Archivos</div><strong>${s.files}</strong></div>
+            <div style="background:var(--bg-secondary); padding:6px 8px; border-radius:6px;"><div style="color:var(--text-muted);">Eventos</div><strong>${s.count.toLocaleString()}</strong></div>
+            <div style="background:var(--bg-secondary); padding:6px 8px; border-radius:6px;"><div style="color:var(--text-muted);">Errores</div><strong style="color:#ef4444;">${s.errors.toLocaleString()} (${errRate}%)</strong></div>
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;"><strong>Top Códigos:</strong> ${topCodes}</div>
+          <button type="button" class="btn btn-primary" style="width:100%; padding:5px 10px; font-size:0.76rem;" onclick="window.filterAnalyzerByServerGlobal('${escapeHtml(s.server)}')">🔍 Ver Logs de este Servidor</button>
+        </div>`;
+    }).join('');
+
+    container.innerHTML = `
+      <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:10px; padding:14px 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+          <span style="font-weight:800; font-size:0.92rem; color:var(--text-main);">🖥️ Comparativa Multi-Servidor (${servers.length} servidor${servers.length === 1 ? '' : 'es'} en sesión)</span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">Conteo exacto acumulado por lote cargado</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">
+          ${cardsHtml}
+        </div>
+      </div>`;
+  }
+
   function updateNodeComparisonUI() {
+    try { renderMultiServerComparison(); } catch (e) {}
     const cardsContainer = document.getElementById('dynamic-node-cards-container');
     const barContainer = document.getElementById('dynamic-node-asymmetry-bar');
     const legendContainer = document.getElementById('dynamic-node-legend-container');
@@ -8614,6 +8723,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             realTotalWarnings = rawEntries.filter(l => l.level === 'WARN' || /AUD6001|AUD6002|AUD2309|AUD155/i.test(String(l.entrustCode || l.message || ''))).length;
           }
 
+          const activeServerTag = (document.getElementById('upload-server-tag')?.value || '').trim() || 'Servidor 1 (Primario)';
           const nodeInfo = detectNodeFromLog({ sourceFile: file.name, message: file.name });
 
           const parsedEntries = rawEntries.map((log, idx) => ({
@@ -8621,11 +8731,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             lineNum: state.logs.length + newLogs.length + idx + 1,
             client: clientName,
             sourceFile: file.name,
-            node: nodeInfo.name
+            node: nodeInfo.name,
+            serverTag: activeServerTag
           }));
 
           // Registrar archivo en el drawer con su total real de transacciones
-          const existingFileIdx = state.loadedFiles.findIndex(f => f.name === file.name);
+          const existingFileIdx = state.loadedFiles.findIndex(f => f.name === file.name && (f.serverTag || 'Servidor 1 (Primario)') === activeServerTag);
           const fileMeta = {
             name: file.name,
             size: file.size,
@@ -8635,6 +8746,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             realWarnings: realTotalWarnings,
             nodeKey: nodeInfo.key,
             nodeName: nodeInfo.name,
+            serverTag: activeServerTag,
             client: clientName
           };
 
@@ -8711,6 +8823,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           }
         }, 160);
 
+        if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
+        if (typeof updateNodeComparisonUI === 'function') updateNodeComparisonUI();
         const metrics = getConsolidatedMetrics();
         const targetLog = (state.logs || []).find(l => l.level === 'CRITICAL' || l.level === 'ERROR' || l.level === 'WARN') || (state.logs && state.logs[0]);
         if (targetLog) {
