@@ -1014,10 +1014,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.3.3',
-    build: 574,
+    version: 'v3.4.0',
+    build: 575,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'SELECTIVE-SERVER-ASSIGNMENT-333',
+    gitCommit: 'FULL-STREAM-METRICS-2M-CENSUS-340',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -8661,6 +8661,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           let realTotalLines = 0;
           let realTotalErrors = 0;
           let realTotalWarnings = 0;
+          let realTotalAuditsCount = 0;
 
           if (file.size > 50 * 1024 * 1024) {
             // ARCHIVOS MASIVOS (> 50 MB / 10 GB+): Subida y procesamiento streaming en el Servidor (0% uso de RAM en Chrome)
@@ -8759,8 +8760,79 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               showAnalysisStatus(true, `⚙️ [Archivo ${fIdx + 1}/${files.length}] ${file.name}`, `${msg}`);
             }, 2500);
             realTotalLines = rawEntries.length;
-            realTotalErrors = rawEntries.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || /520\d{4}|ORA-\d{5}|AUD150|AUD154/i.test(String(l.entrustCode || l.message || ''))).length;
-            realTotalWarnings = rawEntries.filter(l => l.level === 'WARN' || /AUD6001|AUD6002|AUD2309|AUD155/i.test(String(l.entrustCode || l.message || ''))).length;
+            realTotalErrors = 0;
+            realTotalWarnings = 0;
+
+            // Acumulación global exacta sobre TODAS las líneas del archivo antes de compactar RAM
+            if (!state.globalStreamMetrics) {
+              state.globalStreamMetrics = {
+                totalLogs: 0,
+                totalErrors: 0,
+                totalWarnings: 0,
+                topUsers: [],
+                topIps: [],
+                topCodes: [],
+                eventTypes: [],
+                timelineBuckets: [],
+                detectedPlatform: 'Entrust IdentityGuard OnPremise'
+              };
+            }
+            const gsm = state.globalStreamMetrics;
+            gsm.totalLogs = (gsm.totalLogs || 0) + realTotalLines;
+
+            const codeMap = new Map((gsm.topCodes || []).map(c => [c.code, c.count]));
+            const userMap = new Map((gsm.topUsers || []).map(u => [u.user, u]));
+            const ipMap = new Map((gsm.topIps || []).map(ip => [ip.ip || ip[0], ip.count || ip[1] || 0]));
+
+            for (let i = 0; i < rawEntries.length; i++) {
+              const l = rawEntries[i];
+              const codeStr = String(l.entrustCode || '');
+              const msgStr = String(l.message || '');
+              const svcStr = String(l.service || '');
+              const lvl = String(l.level || '').toUpperCase();
+
+              const isErr = lvl === 'CRITICAL' || lvl === 'ERROR' || /520\d{3,4}|ORA-\d{4,5}|AUD150|AUD154|AUD6001|AUD6002/i.test(codeStr || msgStr);
+              const isAud = lvl === 'WARN' || lvl === 'WARNING' || /\bAUD\d{2,5}\b|IG\.AUDIT/i.test(codeStr + ' ' + svcStr + ' ' + msgStr);
+
+              if (isErr) realTotalErrors++;
+              if (isAud) realTotalAuditsCount++;
+
+              const detectedCode = codeStr || ((msgStr.match(/\b(520\d{3,4}|AUD\d{2,5}|ORA-\d{4,5})\b/i) || [])[1] || '');
+              if (detectedCode) {
+                const uc = detectedCode.toUpperCase();
+                codeMap.set(uc, (codeMap.get(uc) || 0) + 1);
+              }
+
+              const usr = (l.user && l.user !== 'N/A' && l.user !== 'unknown') ? String(l.user).trim() : '';
+              if (usr && usr.length >= 2 && usr.length <= 75) {
+                let uObj = userMap.get(usr);
+                if (!uObj) {
+                  uObj = { user: usr, count: 0, errors: 0, warnings: 0, ips: [], codes: {} };
+                  userMap.set(usr, uObj);
+                }
+                uObj.count++;
+                if (isErr) uObj.errors++;
+                if (isAud) uObj.warnings++;
+                if (detectedCode) {
+                  const uc = detectedCode.toUpperCase();
+                  uObj.codes[uc] = (uObj.codes[uc] || 0) + 1;
+                }
+                if (l.clientIp && l.clientIp !== 'N/A' && l.clientIp !== 'local' && uObj.ips.length < 10 && !uObj.ips.includes(l.clientIp)) {
+                  uObj.ips.push(l.clientIp);
+                }
+              }
+
+              if (l.clientIp && l.clientIp !== 'N/A' && l.clientIp !== 'local') {
+                ipMap.set(l.clientIp, (ipMap.get(l.clientIp) || 0) + 1);
+              }
+            }
+
+            realTotalWarnings = realTotalAuditsCount;
+            gsm.totalErrors = (gsm.totalErrors || 0) + realTotalErrors;
+            gsm.totalWarnings = (gsm.totalWarnings || 0) + realTotalWarnings;
+            gsm.topCodes = Array.from(codeMap.entries()).map(([code, count]) => ({ code, count })).sort((a, b) => b.count - a.count);
+            gsm.topUsers = Array.from(userMap.values()).sort((a, b) => (b.errors * 10 + b.count) - (a.errors * 10 + a.count)).slice(0, 2500);
+            gsm.topIps = Array.from(ipMap.entries()).map(([ip, count]) => ({ ip, count })).sort((a, b) => b.count - a.count).slice(0, 200);
           }
 
           const activeServerTag = (document.getElementById('upload-server-tag')?.value || '').trim() || 'Servidor 1 (Primario)';
@@ -8806,19 +8878,32 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       if (newLogs.length > 0) {
         state.logs = state.logs.concat(newLogs);
-        // Protección RAM para cargas acumulativas masivas (20 + 30 archivos): conservar todos los errores + muestra estratificada
+        // Protección RAM estratificada uniforme entre TODOS los archivos/servidores (no solo el primero)
         if (state.logs.length > 40000) {
-          const priorityErrs = [];
-          const nominalSample = [];
+          const allErrs = [];
+          const allNonErrs = [];
           for (let i = 0; i < state.logs.length; i++) {
             const lg = state.logs[i];
-            if (lg.level === 'CRITICAL' || lg.level === 'ERROR' || /520\d{4}|ORA-\d{5}|AUD6001|AUD6002|AUD150|AUD154/i.test(String(lg.entrustCode || ''))) {
-              if (priorityErrs.length < 25000) priorityErrs.push(lg);
-            } else if (nominalSample.length < 15000) {
-              nominalSample.push(lg);
+            if (lg.level === 'CRITICAL' || lg.level === 'ERROR' || /520\d{3,4}|ORA-\d{4,5}|AUD6001|AUD6002|AUD150|AUD154/i.test(String(lg.entrustCode || ''))) {
+              allErrs.push(lg);
+            } else {
+              allNonErrs.push(lg);
             }
           }
-          state.logs = priorityErrs.concat(nominalSample);
+          let keptErrs = allErrs;
+          if (allErrs.length > 25000) {
+            const errStep = Math.max(1, Math.floor(allErrs.length / 25000));
+            keptErrs = [];
+            for (let i = 0; i < allErrs.length && keptErrs.length < 25000; i += errStep) keptErrs.push(allErrs[i]);
+          }
+          const nomBudget = Math.max(10000, 40000 - keptErrs.length);
+          let keptNom = allNonErrs;
+          if (allNonErrs.length > nomBudget) {
+            const nomStep = Math.max(1, Math.floor(allNonErrs.length / nomBudget));
+            keptNom = [];
+            for (let i = 0; i < allNonErrs.length && keptNom.length < nomBudget; i += nomStep) keptNom.push(allNonErrs[i]);
+          }
+          state.logs = keptErrs.concat(keptNom);
         }
         reindexLogs();
 
