@@ -1014,10 +1014,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.5.1',
-    build: 577,
+    version: 'v3.6.0',
+    build: 578,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'MULTIPAGE-PDF-EXPORT-FIX-351',
+    gitCommit: 'GLOBAL-VOLUMETRY-EXEC-REPORT-360',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -3826,7 +3826,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
             <div><strong style="color:#0a3d6d;">${i18n.dossier}</strong> EXP-FORENSIC-ENTRUST-2026-V5</div>
             <div><strong style="color:#0f172a;">${i18n.issueDate}</strong> ${dateStr}</div>
             <div><strong style="color:#0f172a;">${i18n.leadAuditor}</strong> ${i18n.signatureName}</div>
-            <div style="margin-top:2px;"><span style="background:#fef2f2; color:#dc2626; border:1px solid #f87171; padding:2px 6px; border-radius:3px; font-weight:800; font-size:9.5px;">${i18n.confidential}</span></div>
+            <div style="margin-top:4px;"><span style="display:inline-block; white-space:nowrap; background:#fef2f2; color:#dc2626; border:1px solid #f87171; padding:2px 8px; border-radius:3px; font-weight:800; font-size:9.5px;">${i18n.confidential}</span></div>
           </div>
         </div>
 
@@ -3880,8 +3880,17 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
             </div>
             <div style="display:flex; justify-content:space-between; font-size:10px; color:#334155;">
               <div><span style="display:inline-block; width:8px; height:8px; background:#dc2626; border-radius:2px; margin-right:4px;"></span> <strong>CRITICAL/ERROR:</strong> ${criticalLogsCount.toLocaleString()} (${formatPctStr(criticalLogsCount, totalCount)})</div>
-              <div><span style="display:inline-block; width:8px; height:8px; background:#f59e0b; border-radius:2px; margin-right:4px;"></span> <strong>WARN:</strong> ${warningLogsCount.toLocaleString()} (${formatPctStr(warningLogsCount, totalCount)})</div>
+              <div><span style="display:inline-block; width:8px; height:8px; background:#f59e0b; border-radius:2px; margin-right:4px;"></span> <strong>WARN/AUD:</strong> ${warningLogsCount.toLocaleString()} (${formatPctStr(warningLogsCount, totalCount)})</div>
               <div><span style="display:inline-block; width:8px; height:8px; background:#0284c7; border-radius:2px; margin-right:4px;"></span> <strong>INFO:</strong> ${infoLogsCount.toLocaleString()} (${formatPctStr(infoLogsCount, totalCount)})</div>
+            </div>
+            <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #cbd5e1; display:flex; flex-wrap:wrap; gap:12px; font-size:9.5px; color:#475569; font-family:monospace;">
+              <span>📐 <strong>Volumetría:</strong></span>
+              <span>Archivos: <strong>${consolidated.fileCount || 1}</strong></span>
+              <span>Servidores: <strong>${new Set((state.loadedFiles || []).map(f => f.serverTag || f.nodeName || 'Principal')).size || 1}</strong></span>
+              <span>Códigos Únicos: <strong>${(state.globalStreamMetrics?.totalUniqueCodes || Object.keys(consolidated.allCodesMap || {}).length || 0).toLocaleString()}</strong></span>
+              <span>Usuarios Auditados: <strong>${(state.globalStreamMetrics?.totalUniqueUsers || 0).toLocaleString()}</strong></span>
+              <span>IPs Únicas: <strong>${(state.globalStreamMetrics?.totalUniqueIps || 0).toLocaleString()}</strong></span>
+              <span>Muestra Trazas RAM: <strong>${targetLogs.length.toLocaleString()}</strong></span>
             </div>
           </div>
 
@@ -3997,6 +4006,63 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
               ${generateDynamicRecommendationsHtml(targetLogs, activeClient)}
             </ul>
           </div>
+
+          ${(() => {
+            const bySrv = {};
+            (state.loadedFiles || []).forEach(f => {
+              const s = f.serverTag || f.nodeName || 'Servidor Principal';
+              if (!bySrv[s]) bySrv[s] = { server: s, files: 0, count: 0, errors: 0, warnings: 0 };
+              bySrv[s].files++;
+              bySrv[s].count += Number(f.count || 0);
+              bySrv[s].errors += Number(f.realErrors || 0);
+              bySrv[s].warnings += Number(f.realWarnings || 0);
+            });
+            const srvList = Object.values(bySrv);
+            if (!srvList.length) return '';
+            const srvRows = srvList.map(s => {
+              const pct = s.count > 0 ? ((s.errors / s.count) * 100).toFixed(2) : '0.00';
+              const hlth = Math.max(0, Math.min(100, 100 - parseFloat(pct))).toFixed(2);
+              return `<tr><td style="padding:6px 8px; border:1px solid #cbd5e1; font-weight:bold;">🖥️ ${escapeHtml(s.server)}</td><td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center;">${s.files}</td><td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:right; font-family:monospace;">${s.count.toLocaleString()}</td><td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:right; color:#dc2626; font-weight:bold;">${s.errors.toLocaleString()} (${pct}%)</td><td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:right; color:#d97706;">${s.warnings.toLocaleString()}</td><td style="padding:6px 8px; border:1px solid #cbd5e1; text-align:center; font-weight:bold; color:#059669;">${hlth}%</td></tr>`;
+            }).join('');
+            return `
+              <div style="margin-bottom:20px; page-break-inside:avoid;">
+                <h3 style="color:#0a3d6d; border-left:4px solid #0284c7; padding-left:10px; margin-bottom:10px; font-size:14px;">9. Comparativa Volumétrica Multi-Servidor (${srvList.length} Nodo${srvList.length === 1 ? '' : 's'})</h3>
+                <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                  <thead><tr style="background:#f1f5f9;"><th style="padding:6px 8px; border:1px solid #cbd5e1; text-align:left;">Servidor / Nodo</th><th style="padding:6px 8px; border:1px solid #cbd5e1;">Archivos</th><th style="padding:6px 8px; border:1px solid #cbd5e1; text-align:right;">Eventos</th><th style="padding:6px 8px; border:1px solid #cbd5e1; text-align:right;">Errores Críticos</th><th style="padding:6px 8px; border:1px solid #cbd5e1; text-align:right;">Eventos AUD</th><th style="padding:6px 8px; border:1px solid #cbd5e1;">Salud</th></tr></thead>
+                  <tbody>${srvRows}</tbody>
+                </table>
+              </div>`;
+          })()}
+
+          ${(() => {
+            const cfg = state.activeClientConfig;
+            if (!cfg || (!cfg.identityguard && !cfg.serverXml && !cfg.webXml && !cfg.entrusttoken)) return '';
+            const ig = cfg.identityguard || {};
+            const tok = cfg.entrusttoken || {};
+            const web = cfg.webXml || {};
+            const conns = (cfg.serverXml?.services || []).flatMap(s => (s.connectors || []).map(c => `${s.name}:${c.port} (maxThreads=${c.maxThreads || '-'}, acceptCount=${c.acceptCount || '-'}, clientAuth=${c.clientAuth || 'false'})`)).join(' | ');
+            return `
+              <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:14px; margin-bottom:20px; font-size:11px; page-break-inside:avoid;">
+                <h3 style="color:#0a3d6d; margin:0 0 8px 0; font-size:13.5px;">10. Línea Base de Configuración Real (${escapeHtml((cfg.files || []).join(', '))})</h3>
+                <div><strong>JDBC:</strong> <code>${escapeHtml(ig.jdbcType || 'N/A')}</code> | <code>${escapeHtml(ig.jdbcUrl || 'N/A')}</code> (Schema: <code>${escapeHtml(ig.jdbcSchema || 'N/A')}</code>)</div>
+                ${conns ? `<div style="margin-top:4px;"><strong>Conectores Tomcat (server.xml):</strong> <code>${escapeHtml(conns)}</code></div>` : ''}
+                <div style="margin-top:4px;"><strong>Tokens (entrusttoken.conf):</strong> <code>resetEventWindow=${escapeHtml(tok.resetEventWindow || '-')}</code>, <code>maxTimeSteps=${escapeHtml(tok.maxTimeSteps || '-')}</code> | <strong>Session Timeout (web.xml):</strong> <code>${escapeHtml(web.sessionTimeout || 'Default')} min</code></div>
+              </div>`;
+          })()}
+
+          ${(() => {
+            const notes = window.notesEngine?.notes || [];
+            if (!notes.length) return '';
+            const topKeys = Object.keys(consolidated.allCodesMap || {}).map(k => k.toLowerCase());
+            const matched = notes.filter(n => n.clientId === 'global' || n.clientId === activeClient?.id)
+              .filter(n => (n.tags || []).some(t => topKeys.some(k => k.includes(String(t).toLowerCase())))).slice(0, 5);
+            if (!matched.length) return '';
+            return `
+              <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:6px; padding:14px; margin-bottom:20px; font-size:11px; page-break-inside:avoid;">
+                <h3 style="color:#0369a1; margin:0 0 8px 0; font-size:13.5px;">11. Notas Técnicas &amp; Runbooks Internos Aplicables</h3>
+                ${matched.map(n => `<div style="margin-bottom:6px;"><strong>📌 [${escapeHtml(n.category)}] ${escapeHtml(n.title)}</strong> (${escapeHtml((n.tags || []).join(', '))}): ${escapeHtml((n.content || '').slice(0, 260))}</div>`).join('')}
+              </div>`;
+          })()}
 
           <!-- Dictamen Ético, Certificación y Firma Oficial -->
           <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:14px; margin-bottom:20px; font-size:11px; color:#475569; line-height:1.5;">
@@ -6355,6 +6421,31 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const criticalsCount = metrics.totalErrors;
     const warningsCount = metrics.totalWarnings;
     const fileCount = metrics.fileCount;
+
+    // Actualizar barra de Volumetría Global del Portal
+    const volBarEl = document.getElementById('global-volumetry-metrics');
+    if (volBarEl) {
+      if (total === 0) {
+        volBarEl.innerHTML = '<span>Esperando carga de logs...</span>';
+      } else {
+        const gsm = state.globalStreamMetrics || {};
+        const srvCount = new Set((state.loadedFiles || []).map(f => f.serverTag || f.nodeName || 'Principal')).size || (fileCount > 0 ? 1 : 0);
+        const uUsers = gsm.totalUniqueUsers || (window.UserTraceReport?.cachedStats ? Object.keys(window.UserTraceReport.cachedStats).length : (gsm.topUsers || []).length) || 0;
+        const uIps = gsm.totalUniqueIps || (gsm.topIps || []).length || 0;
+        const uCodes = gsm.totalUniqueCodes || Object.keys(metrics.allCodesMap || {}).length || 0;
+        const ramTraces = (state.logs || []).length;
+        volBarEl.innerHTML = `
+          <span>📁 Archivos: <strong>${fileCount}</strong></span>
+          <span>🖥️ Servidores: <strong>${srvCount}</strong></span>
+          <span>📊 Registros: <strong>${total.toLocaleString()}</strong></span>
+          <span style="color:#ef4444;">🚨 Fallos: <strong>${criticalsCount.toLocaleString()}</strong></span>
+          <span style="color:#f59e0b;">🛡️ AUD: <strong>${warningsCount.toLocaleString()}</strong></span>
+          <span>🏷️ Códigos: <strong>${uCodes.toLocaleString()}</strong></span>
+          <span>👤 Usuarios: <strong>${uUsers.toLocaleString()}</strong></span>
+          <span>🌐 IPs: <strong>${uIps.toLocaleString()}</strong></span>
+          <span>⚡ Trazas RAM: <strong>${ramTraces.toLocaleString()}</strong></span>`;
+      }
+    }
 
     // 1. Tarjeta Total Logs
     const totalEl = document.getElementById('total-logs-count') || dom.totalLogsCount;
@@ -8844,6 +8935,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             realTotalWarnings = realTotalAuditsCount;
             gsm.totalErrors = (gsm.totalErrors || 0) + realTotalErrors;
             gsm.totalWarnings = (gsm.totalWarnings || 0) + realTotalWarnings;
+            gsm.totalUniqueCodes = codeMap.size;
+            gsm.totalUniqueUsers = userMap.size;
+            gsm.totalUniqueIps = ipMap.size;
             gsm.topCodes = Array.from(codeMap.entries()).map(([code, count]) => ({ code, count })).sort((a, b) => b.count - a.count);
             gsm.topUsers = Array.from(userMap.values()).sort((a, b) => (b.errors * 10 + b.count) - (a.errors * 10 + a.count)).slice(0, 2500);
             gsm.topIps = Array.from(ipMap.entries()).map(([ip, count]) => ({ ip, count })).sort((a, b) => b.count - a.count).slice(0, 200);
