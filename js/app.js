@@ -1014,10 +1014,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.5.0',
-    build: 576,
+    version: 'v3.5.1',
+    build: 577,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'MULTI-SERVER-CONFIG-DIFF-PRINT-FIX-350',
+    gitCommit: 'MULTIPAGE-PDF-EXPORT-FIX-351',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -2520,52 +2520,64 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (typeof window.html2pdf === 'function') {
-      const opt = {
-        margin: [12, 10, 14, 10], // top, left, bottom, right in mm
-        filename: filename,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
-        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait', compress: true },
-        pagebreak: { 
-          mode: ['avoid-all', 'css', 'legacy'], 
-          avoid: ['tr', 'th', 'td', 'h1', 'h2', 'h3', 'h4', '.report-card', '.metric-card', '.avoid-break', 'div[style*="border"]'] 
-        }
-      };
+      // Clonar en un contenedor sin recortes de modal (max-height/overflow) para capturar TODAS las páginas
+      const printWrapper = document.createElement('div');
+      printWrapper.style.cssText = 'position:absolute; left:-99999px; top:0; width:820px; height:auto; overflow:visible; background:#ffffff; color:#0f172a; padding:0; margin:0; z-index:-1;';
+      const clonedSource = sourceElement.cloneNode(true);
+      clonedSource.style.width = '100%';
+      clonedSource.style.maxWidth = '100%';
+      clonedSource.style.height = 'auto';
+      clonedSource.style.maxHeight = 'none';
+      clonedSource.style.overflow = 'visible';
+      printWrapper.appendChild(clonedSource);
+      document.body.appendChild(printWrapper);
 
-      const pdfTask = window.html2pdf().set(opt).from(sourceElement).toPdf().get('pdf').then(function(pdf) {
-        const totalPages = pdf.internal.getNumberOfPages();
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-
-        for (let i = 1; i <= totalPages; i++) {
-          pdf.setPage(i);
-          
-          // Encabezado sutil en páginas 2 en adelante
-          if (i > 1) {
-            pdf.setFontSize(7.5);
-            pdf.setTextColor(148, 163, 184);
-            pdf.text(`IT SERVICIOS DE VENEZUELA, S.A. | Dictamen Técnico Entrust — ${clientLabel} (${clientVersion})`, 10, 7);
-            pdf.setDrawColor(226, 232, 240);
-            pdf.line(10, 8.5, pageWidth - 10, 8.5);
+      try {
+        const fullHeight = Math.max(printWrapper.scrollHeight, clonedSource.scrollHeight, 1200);
+        const opt = {
+          margin: [12, 10, 14, 10], // top, left, bottom, right in mm
+          filename: filename,
+          image: { type: 'jpeg', quality: 0.96 },
+          html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0, scrollX: 0, width: 820, windowWidth: 820, height: fullHeight, windowHeight: fullHeight },
+          jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait', compress: true },
+          pagebreak: {
+            mode: ['css', 'legacy'],
+            avoid: ['tr', 'h2', 'h3', '.avoid-break']
           }
+        };
 
-          // Pie de página en todas las páginas
-          pdf.setDrawColor(226, 232, 240);
-          pdf.line(10, pageHeight - 9, pageWidth - 10, pageHeight - 9);
-          pdf.setFontSize(7.5);
-          pdf.setTextColor(100, 116, 139);
-          pdf.text(`IT Servicios de Venezuela, S.A. | Entorno: ${clientLabel} (${clientVersion}) | Fecha: ${dateStamp}`, 10, pageHeight - 5);
-          pdf.text(`Página ${i} de ${totalPages}`, pageWidth - 28, pageHeight - 5);
-        }
-      }).save();
+        const pdfTask = window.html2pdf().set(opt).from(clonedSource).toPdf().get('pdf').then(function(pdf) {
+          const totalPages = pdf.internal.getNumberOfPages();
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const pageHeight = pdf.internal.pageSize.getHeight();
 
-      // Timeout de 7 segundos para evitar que la UI quede congelada
-      await Promise.race([
-        pdfTask,
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout de generación PDF cliente')), 7000))
-      ]);
+          for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            if (i > 1) {
+              pdf.setFontSize(7.5);
+              pdf.setTextColor(148, 163, 184);
+              pdf.text(`IT SERVICIOS DE VENEZUELA, S.A. | Dictamen Técnico Entrust — ${clientLabel} (${clientVersion})`, 10, 7);
+              pdf.setDrawColor(226, 232, 240);
+              pdf.line(10, 8.5, pageWidth - 10, 8.5);
+            }
+            pdf.setDrawColor(226, 232, 240);
+            pdf.line(10, pageHeight - 9, pageWidth - 10, pageHeight - 9);
+            pdf.setFontSize(7.5);
+            pdf.setTextColor(100, 116, 139);
+            pdf.text(`IT Servicios de Venezuela, S.A. | Entorno: ${clientLabel} (${clientVersion}) | Fecha: ${dateStamp}`, 10, pageHeight - 5);
+            pdf.text(`Página ${i} de ${totalPages}`, pageWidth - 28, pageHeight - 5);
+          }
+        }).save();
 
-      return;
+        await Promise.race([
+          pdfTask,
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout de generación PDF cliente')), 25000))
+        ]);
+
+        return;
+      } finally {
+        if (printWrapper.parentNode) printWrapper.parentNode.removeChild(printWrapper);
+      }
     }
 
     // Fallback con canvas si html2pdf no está listo
