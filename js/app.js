@@ -1009,10 +1009,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.3.1',
-    build: 572,
+    version: 'v3.3.2',
+    build: 573,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'MULTI-SERVER-DRAWER-FIX-331',
+    gitCommit: 'MULTI-SERVER-CHIP-SELECT-FIX-332',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -6989,12 +6989,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const client = getActiveClientProfile();
     const baseAvailNodes = getClientAvailableNodes();
     const effectiveNodesMap = new Map();
-    baseAvailNodes.forEach(n => effectiveNodesMap.set(n.key, n));
+    baseAvailNodes.forEach(n => effectiveNodesMap.set(n.name, n));
     files.forEach(f => {
-      const k = f.nodeKey || ('srv_' + String(f.serverTag || 'default').toLowerCase().replace(/[^a-z0-9]+/g, '_'));
-      const nm = f.nodeName || (f.serverTag ? (f.serverTag.startsWith('🖥️') ? f.serverTag : '🖥️ ' + f.serverTag) : '🖥️ Servidor 1');
-      if (!effectiveNodesMap.has(k)) {
-        effectiveNodesMap.set(k, { key: k, name: nm });
+      const nm = f.serverTag ? (f.serverTag.startsWith('🖥️') ? f.serverTag : '🖥️ ' + f.serverTag) : (f.nodeName || '🖥️ Servidor 1');
+      const k = f.nodeKey || ('srv_' + nm.toLowerCase().replace(/[^a-z0-9]+/g, '_'));
+      if (!effectiveNodesMap.has(nm)) {
+        effectiveNodesMap.set(nm, { key: k, name: nm });
       }
     });
     const availNodes = Array.from(effectiveNodesMap.values());
@@ -7034,12 +7034,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     files.forEach((f, idx) => {
       const sizeMb = f.size > 0 ? (f.size / (1024 * 1024)).toFixed(1) + ' MB' : 'Muestra';
-      const nodeIndex = availNodes.findIndex(n => n.key === f.nodeKey || n.name === f.nodeName);
+      const fileLabel = f.serverTag ? (f.serverTag.startsWith('🖥️') ? f.serverTag : '🖥️ ' + f.serverTag) : (f.nodeName || '🖥️ Servidor 1');
+      const nodeIndex = availNodes.findIndex(n => n.name === fileLabel || n.key === f.nodeKey);
       const colors = ['#0284c7', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4'];
       const chipColor = colors[nodeIndex >= 0 ? nodeIndex % colors.length : 0];
 
       const optionsHtml = availNodes.map(n => 
-        `<option value="${escapeHtml(n.key)}" ${f.nodeKey === n.key || f.nodeName === n.name ? 'selected' : ''}>${escapeHtml(n.name)}</option>`
+        `<option value="${escapeHtml(n.key)}" ${n.name === fileLabel ? 'selected' : ''}>${escapeHtml(n.name)}</option>`
       ).join('');
 
       html += `
@@ -7049,7 +7050,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             <strong style="color:var(--text-main); font-family:monospace;">${escapeHtml(f.name)}</strong>
             <span style="color:var(--text-muted); font-size:0.72rem;">(${sizeMb} | ${(f.count || 0).toLocaleString()} logs)</span>
           </span>
-          <select onchange="window.changeFileNodeGlobal('${escapeHtml(f.name)}', this.value)" style="background:var(--bg-primary); border:1px solid ${chipColor}; color:${chipColor}; font-weight:bold; font-size:0.72rem; padding:2px 6px; border-radius:4px; cursor:pointer;">
+          <select onchange="window.changeFileNodeGlobal(${idx}, this.value)" style="background:var(--bg-primary); border:1px solid ${chipColor}; color:${chipColor}; font-weight:bold; font-size:0.72rem; padding:2px 6px; border-radius:4px; cursor:pointer;">
             ${optionsHtml}
           </select>
           <button onclick="window.removeLoadedFileGlobal('${escapeHtml(f.name)}')" style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#ef4444; border-radius:3px; padding:1px 5px; cursor:pointer; font-weight:bold; font-size:0.75rem;" title="Eliminar este archivo de la sesión">✖</button>
@@ -7059,29 +7060,39 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     listContainer.innerHTML = html;
   }
 
-  window.changeFileNodeGlobal = function(fileName, targetNodeKey) {
+  window.changeFileNodeGlobal = function(fileRef, targetNodeKey) {
     if (!state.customNodeAssignments) state.customNodeAssignments = {};
     const availNodes = getClientAvailableNodes();
-    const match = availNodes.find(n => n.key === targetNodeKey);
-    const targetName = match ? match.name : (targetNodeKey.startsWith('🖥️') ? targetNodeKey : `🖥️ ${targetNodeKey}`);
-    state.customNodeAssignments[fileName] = { key: targetNodeKey, name: targetName };
+    const matchFromAvail = availNodes.find(n => n.key === targetNodeKey);
+    const matchFromFiles = (state.loadedFiles || []).find(f => f.nodeKey === targetNodeKey);
+    const targetName = matchFromAvail ? matchFromAvail.name : (matchFromFiles ? matchFromFiles.nodeName : (targetNodeKey.startsWith('🖥️') ? targetNodeKey : `🖥️ ${targetNodeKey}`));
+    const cleanTag = targetName.replace(/^🖥️\s*/, '');
 
-    if (state.loadedFiles) {
-      const f = state.loadedFiles.find(file => file.name === fileName);
-      if (f) {
-        f.nodeKey = targetNodeKey;
-        f.nodeName = targetName;
-      }
+    let targetFile = null;
+    if (typeof fileRef === 'number' && state.loadedFiles && state.loadedFiles[fileRef]) {
+      targetFile = state.loadedFiles[fileRef];
+    } else if (state.loadedFiles) {
+      targetFile = state.loadedFiles.find(file => file.name === fileRef);
     }
 
-    if (state.logs) {
+    const oldServerTag = targetFile?.serverTag;
+    if (targetFile) {
+      state.customNodeAssignments[targetFile.name] = { key: targetNodeKey, name: targetName };
+      targetFile.nodeKey = targetNodeKey;
+      targetFile.nodeName = targetName;
+      targetFile.serverTag = cleanTag;
+    }
+
+    if (state.logs && targetFile) {
       state.logs.forEach(log => {
-        if (log.sourceFile === fileName) {
+        if (log.sourceFile === targetFile.name && (!oldServerTag || log.serverTag === oldServerTag)) {
           log.node = targetName;
+          log.serverTag = cleanTag;
         }
       });
     }
 
+    if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
     renderLoadedFilesDrawer();
     updateNodeComparisonUI();
     renderTraceWaterfall();
@@ -7089,8 +7100,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
   window.assignAllFilesToNodeGlobal = function(targetNodeKey) {
     if (!state.loadedFiles || state.loadedFiles.length === 0) return;
-    state.loadedFiles.forEach(f => {
-      window.changeFileNodeGlobal(f.name, targetNodeKey);
+    state.loadedFiles.forEach((f, idx) => {
+      window.changeFileNodeGlobal(idx, targetNodeKey);
     });
   };
 
