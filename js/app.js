@@ -1014,10 +1014,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.4.0',
-    build: 575,
+    version: 'v3.5.0',
+    build: 576,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'FULL-STREAM-METRICS-2M-CENSUS-340',
+    gitCommit: 'MULTI-SERVER-CONFIG-DIFF-PRINT-FIX-350',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -1623,6 +1623,8 @@ document.addEventListener('DOMContentLoaded', () => {
       try { loadManual(state.currentManualVersion || 'v13_0_webhelp'); } catch(e) {}
     } else if (targetTab === 'notes' && window.notesEngine) {
       try { window.notesEngine.renderPortal('notes-portal-container'); } catch(e) {}
+    } else if (targetTab === 'diff' && typeof window.renderDiffNodesGridGlobal === 'function') {
+      try { window.renderDiffNodesGridGlobal(); } catch(e) {}
     }
 
     // Manejo de estado para el dropdown 'Más Vistas'
@@ -10805,55 +10807,139 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     });
   }
 
-  // 13.4 COMPARADOR DE CONFIGURACIONES (CONFIG DIFF)
+  // 13.4 COMPARADOR DE CONFIGURACIONES MULTI-SERVIDOR (CONFIG DIFF)
   function initConfigDiffModule() {
     const btnExec = document.getElementById('btn-execute-config-diff');
-    const inputA = document.getElementById('diff-input-a');
-    const inputB = document.getElementById('diff-input-b');
+    const nodesContainer = document.getElementById('diff-nodes-container');
     const container = document.getElementById('diff-results-container');
 
-    if (!btnExec || !container || !window.configDiffEngine) return;
+    if (!btnExec || !container || !nodesContainer || !window.configDiffEngine) return;
+
+    let extraDiffCount = 0;
+
+    const getDocRecommendationForParam = (key) => {
+      const k = String(key || '').toLowerCase();
+      if (k.includes('maxthreads') || k.includes('acceptcount') || k.includes('minsparethreads')) {
+        return 'Alinear maxThreads/acceptCount en server.xml en todos los nodos balanceados para evitar saturación asimétrica de hilos HTTP/HTTPS.';
+      }
+      if (k.includes('connectiontimeout')) {
+        return 'Mantener connectionTimeout uniforme en Tomcat para evitar cortes prematuros de sockets entre nodos.';
+      }
+      if (k.includes('clientauth') || k.includes('ssl') || k.includes('tls') || k.includes('keystore')) {
+        return 'CRÍTICO: clientAuth, protocolos TLS y keystore deben coincidir en todo el clúster para evitar fallos de handshake mTLS/SSL.';
+      }
+      if (k.includes('jdbc') || k.includes('db.') || k.includes('pool')) {
+        return 'CRÍTICO: Todos los nodos de un mismo clúster Entrust deben apuntar al mismo repositorio JDBC/SID y tamaño de pool consistente.';
+      }
+      if (k.includes('reseteventwindow') || k.includes('maxtimesteps')) {
+        return 'Alinear entrusttoken.conf en todos los nodos; diferencias en maxTimeSteps/resetEventWindow causan validación inconsistente de OTP según qué nodo atienda.';
+      }
+      if (k.includes('session-timeout')) {
+        return 'Igualar session-timeout en web.xml para mantener la misma expiración de sesión administrativa en todos los nodos.';
+      }
+      return 'Revisar directiva en documentación oficial Entrust / Tomcat para confirmar si la diferencia es intencional por rol del nodo.';
+    };
+
+    window.renderDiffNodesGridGlobal = function() {
+      const existingValues = {};
+      nodesContainer.querySelectorAll('textarea[data-diff-node-name]').forEach(ta => {
+        existingValues[ta.getAttribute('data-diff-node-name')] = ta.value;
+      });
+
+      const clientNodes = getClientAvailableNodes().map(n => n.name);
+      const baseNodes = clientNodes.length >= 2 ? [...clientNodes] : ['🖥️ Nodo 01 (Primario)', '🖥️ Nodo 02 (Secundario)'];
+      for (let i = 0; i < extraDiffCount; i++) {
+        baseNodes.push(`🖥️ Servidor Adicional ${i + 1}`);
+      }
+
+      nodesContainer.innerHTML = baseNodes.map((nodeName, idx) => {
+        const val = existingValues[nodeName] || '';
+        return `
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:10px;">
+            <div style="font-size:0.8rem; font-weight:bold; color:var(--text-main); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap;">
+              <span>${escapeHtml(nodeName)}</span>
+              <label class="btn" style="margin:0; padding:2px 8px; font-size:0.72rem; background:rgba(99,102,241,0.12); color:#6366f1; border:1px solid rgba(99,102,241,0.35); border-radius:4px; cursor:pointer; font-weight:700;">
+                📂 Subir archivo(s)
+                <input type="file" accept=".xml,.properties,.conf,.txt" multiple style="display:none;" onchange="window.loadDiffFilesIntoNodeGlobal(${idx}, this.files)">
+              </label>
+            </div>
+            <textarea id="diff-input-${idx}" data-diff-node-name="${escapeHtml(nodeName)}" class="form-control" style="width:100%; height:170px; font-family:monospace; font-size:0.74rem; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border-color); border-radius:6px; padding:8px; resize:vertical;" placeholder="Sube server.xml, identityguard.properties, web.xml o entrusttoken.conf de ${escapeHtml(nodeName)}...">${escapeHtml(val)}</textarea>
+          </div>`;
+      }).join('');
+    };
+
+    window.addExtraDiffNodeGlobal = function() {
+      extraDiffCount++;
+      window.renderDiffNodesGridGlobal();
+    };
+
+    window.loadDiffFilesIntoNodeGlobal = async function(idx, fileList) {
+      const ta = document.getElementById(`diff-input-${idx}`);
+      if (!ta || !fileList || !fileList.length) return;
+      const chunks = [];
+      for (const f of Array.from(fileList)) {
+        const txt = await f.text();
+        chunks.push(`# === ${f.name} ===\n${txt}`);
+      }
+      ta.value = (ta.value ? (ta.value.trim() + '\n\n') : '') + chunks.join('\n\n');
+    };
 
     const runDiff = () => {
-      const client = getActiveClientProfile();
-      const nodeA = client?.nodes?.[0]?.name || '🖥️ Nodo 01 (Primario)';
-      const nodeB = client?.nodes?.[1]?.name || '🖥️ Nodo 02 (Secundario)';
+      const textareas = Array.from(nodesContainer.querySelectorAll('textarea[data-diff-node-name]'));
+      const payload = textareas.map(ta => ({
+        name: ta.getAttribute('data-diff-node-name'),
+        text: ta.value || ''
+      }));
 
-      const res = window.configDiffEngine.compareConfigs(inputA?.value || '', inputB?.value || '', nodeA, nodeB);
-
-      if (res.diffsCount === 0) {
+      const populated = payload.filter(p => p.text.trim().length > 0);
+      if (populated.length < 2) {
         container.innerHTML = `
-          <div style="background:rgba(16,185,129,0.12); border:1.5px solid #10b981; border-radius:8px; padding:16px; text-align:center; color:#10b981;">
-            <strong>✅ 100% Sincronización Perfecta:</strong> No se encontraron discrepancias en las ${res.totalKeys} directivas evaluadas entre ambos nodos.
+          <div style="background:rgba(245,158,11,0.12); border:1.5px solid #f59e0b; border-radius:8px; padding:16px; text-align:center; color:#d97706;">
+            ⚠️ Sube o pega los archivos de configuración en al menos <strong>2 servidores</strong> para ejecutar la comparación real.
           </div>`;
         return;
       }
 
-      let rows = res.diffs.map(d => `
-        <tr style="border-bottom:1px solid var(--border-color); background:${d.isCritical ? 'rgba(239,68,68,0.06)' : 'transparent'};">
-          <td style="padding:8px 10px; font-family:monospace; font-weight:bold; color:${d.isCritical ? '#dc2626' : '#0284c7'};">${escapeHtml(d.key)}</td>
-          <td style="padding:8px 10px; font-family:monospace; font-size:0.78rem; color:#a5f3fc; background:rgba(15,23,42,0.6);">${escapeHtml(d.valA)}</td>
-          <td style="padding:8px 10px; font-family:monospace; font-size:0.78rem; color:#86efac; background:rgba(15,23,42,0.6);">${escapeHtml(d.valB)}</td>
-          <td style="padding:8px 10px; font-size:0.75rem; color:${d.isCritical ? '#ef4444' : 'var(--text-muted)'};">${escapeHtml(d.impact)}</td>
-        </tr>
-      `).join('');
+      const res = window.configDiffEngine.compareMultipleConfigs(populated);
+
+      if (res.diffsCount === 0) {
+        container.innerHTML = `
+          <div style="background:rgba(16,185,129,0.12); border:1.5px solid #10b981; border-radius:8px; padding:16px; text-align:center; color:#10b981;">
+            <strong>✅ 100% Sincronización Perfecta entre ${res.names.length} servidores:</strong> No se encontraron discrepancias en las ${res.totalKeys} directivas reales evaluadas.
+          </div>`;
+        return;
+      }
+
+      const headerCols = res.names.map(n => `<th style="padding:8px 10px;">${escapeHtml(n)}</th>`).join('');
+      const rows = res.diffs.map(d => {
+        const valCells = d.values.map(v => `<td style="padding:8px 10px; font-family:monospace; font-size:0.75rem; color:#e2e8f0; background:rgba(15,23,42,0.7);">${escapeHtml(v)}</td>`).join('');
+        const rec = getDocRecommendationForParam(d.key);
+        return `
+          <tr style="border-bottom:1px solid var(--border-color); background:${d.isCritical ? 'rgba(239,68,68,0.06)' : 'transparent'};">
+            <td style="padding:8px 10px; font-family:monospace; font-weight:bold; color:${d.isCritical ? '#dc2626' : '#0284c7'};">${escapeHtml(d.key)}</td>
+            ${valCells}
+            <td style="padding:8px 10px; font-size:0.74rem; color:${d.isCritical ? '#ef4444' : 'var(--text-muted)'};">
+              <div><strong>${escapeHtml(d.impact)}</strong></div>
+              <div style="color:var(--text-main); margin-top:2px;">💡 ${escapeHtml(rec)}</div>
+            </td>
+          </tr>`;
+      }).join('');
 
       container.innerHTML = `
         <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:8px; padding:14px; margin-top:12px;">
           <div class="flex-between mb-3">
             <span style="font-weight:bold; color:var(--text-main); font-size:0.9rem;">
-              Discrepancias Detectadas: <strong>${res.diffsCount}</strong> (${res.criticalDiffsCount} críticas)
+              Discrepancias Detectadas entre ${res.names.length} Servidores: <strong>${res.diffsCount}</strong> (${res.criticalDiffsCount} críticas)
             </span>
-            <span style="font-size:0.75rem; color:var(--text-muted);">Total parámetros: ${res.totalKeys}</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Total parámetros evaluados: ${res.totalKeys}</span>
           </div>
           <div style="overflow-x:auto;">
             <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.8rem;">
               <thead>
                 <tr style="background:var(--bg-primary); border-bottom:2px solid var(--border-color);">
                   <th style="padding:8px 10px;">Parámetro / Clave</th>
-                  <th style="padding:8px 10px;">${escapeHtml(res.nameA)}</th>
-                  <th style="padding:8px 10px;">${escapeHtml(res.nameB)}</th>
-                  <th style="padding:8px 10px;">Impacto Técnico</th>
+                  ${headerCols}
+                  <th style="padding:8px 10px;">Impacto &amp; Recomendación Documentada</th>
                 </tr>
               </thead>
               <tbody>
@@ -10864,6 +10950,7 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
         </div>`;
     };
 
+    window.renderDiffNodesGridGlobal();
     btnExec.addEventListener('click', runDiff);
   }
 

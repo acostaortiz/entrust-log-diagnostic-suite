@@ -1839,3 +1839,21 @@ body.dark-theme .app-header {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.35); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(2, 132, 199, 0.55); }
+
+/* Fix Firefox & Chrome multi-page printing for Executive Report */
+@media print {
+  .modal-overlay#exec-report-modal,
+  .modal-overlay#exec-report-modal > *,
+  .modal-overlay#exec-report-modal .modal-content,
+  #exec-report-container,
+  #exec-report-document {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    float: none !important;
+  }
+}
