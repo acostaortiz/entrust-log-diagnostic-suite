@@ -371,6 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     persistClientProfiles(state.clientProfiles);
     populateClientSessionSelectors();
+    if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
   }
 
   window.getActiveClientProfileGlobal = function() { return getActiveClientProfile(); };
@@ -522,6 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     persistClientProfiles(state.clientProfiles);
     populateClientSessionSelectors();
+    if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
 
     if (typeof syncClientSessionWithServer === 'function') {
       syncClientSessionWithServer(clientId);
@@ -836,6 +838,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     persistClientProfiles(state.clientProfiles);
     populateClientSessionSelectors();
+    if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
     window.cancelEditClientGlobal();
     showAnalysisStatus(false, `🗑️ Cliente Eliminado: ${clientToDelete.name}`, `El perfil del cliente ha sido removido exitosamente.`);
   };
@@ -866,6 +869,7 @@ document.addEventListener('DOMContentLoaded', () => {
           state.activeClientId = imported[0].id || '';
           persistClientProfiles(state.clientProfiles);
           populateClientSessionSelectors();
+    if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
           alert(`✅ Se importaron exitosamente ${imported.length} perfiles de cliente.`);
         } else {
           alert('❌ El archivo JSON no contiene una lista válida de clientes.');
@@ -997,6 +1001,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.activeEnvironment = environment;
     persistClientProfiles(state.clientProfiles);
     populateClientSessionSelectors();
+    if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
 
     const modal = document.getElementById('client-modal');
     if (modal) modal.classList.remove('active');
@@ -1009,10 +1014,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.3.2',
-    build: 573,
+    version: 'v3.3.3',
+    build: 574,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'MULTI-SERVER-CHIP-SELECT-FIX-332',
+    gitCommit: 'SELECTIVE-SERVER-ASSIGNMENT-333',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -7021,15 +7026,21 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       summaryText.textContent = `${nodeSummaryArr.join(' | ')} (Total: ${totalLogsInFiles.toLocaleString()} logs)`;
     }
 
-    const quickButtonsHtml = availNodes.map(n => 
-      `<button class="btn" onclick="window.assignAllFilesToNodeGlobal('${escapeHtml(n.key)}')" style="padding:2px 8px; font-size:0.72rem; background:var(--bg-secondary); color:var(--text-cyan); border:1px solid var(--border-color); border-radius:4px; font-weight:bold; cursor:pointer;" title="Asignar todos los archivos a este servidor">⚡ Asignar Todo a ${escapeHtml(n.name)}</button>`
-    ).join(' ');
+    const batchNodeOptions = availNodes.map(n =>
+      `<option value="${escapeHtml(n.key)}">${escapeHtml(n.name)}</option>`
+    ).join('');
 
     let html = `
-      <div style="width:100%; display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; align-items:center;">
-        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">Acción Rápida [${escapeHtml(client.name)}]:</span>
-        ${quickButtonsHtml}
-        <button class="btn" onclick="window.editClientNodesGlobal()" style="padding:2px 8px; font-size:0.72rem; background:rgba(56,189,248,0.15); color:var(--it-blue); border:1px solid var(--it-blue); border-radius:4px; font-weight:bold; cursor:pointer;">⚙️ Configurar Nodos de este Cliente</button>
+      <div style="width:100%; display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; align-items:center; padding-bottom:8px; border-bottom:1px solid var(--border-color);">
+        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">📌 Asignación Selectiva [${escapeHtml(client.name)}]:</span>
+        <button type="button" class="btn" onclick="document.querySelectorAll('.file-select-chk').forEach(c=>c.checked=true)" style="padding:2px 8px; font-size:0.72rem; border:1px solid var(--border-color);">☑ Todos</button>
+        <button type="button" class="btn" onclick="document.querySelectorAll('.file-select-chk').forEach(c=>c.checked=false)" style="padding:2px 8px; font-size:0.72rem; border:1px solid var(--border-color);">☐ Ninguno</button>
+        <span style="font-size:0.74rem; color:var(--text-muted);">Mover marcados a:</span>
+        <select id="batch-assign-node-select" class="form-control" style="width:auto; min-width:155px; font-size:0.74rem; padding:3px 8px;">
+          ${batchNodeOptions}
+        </select>
+        <button type="button" class="btn btn-primary" onclick="window.assignSelectedFilesToNodeGlobal()" style="padding:3px 10px; font-size:0.74rem; font-weight:700;">✅ Asignar Marcados</button>
+        <button type="button" class="btn" onclick="window.editClientNodesGlobal()" style="padding:3px 9px; font-size:0.72rem; background:rgba(56,189,248,0.15); color:var(--it-blue); border:1px solid var(--it-blue); border-radius:4px; font-weight:bold; cursor:pointer;">⚙️ Configurar Nodos de este Cliente</button>
       </div>`;
 
     files.forEach((f, idx) => {
@@ -7045,6 +7056,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       html += `
         <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-left:3px solid ${chipColor}; padding:4px 10px; border-radius:6px; display:inline-flex; align-items:center; gap:8px; font-size:0.78rem; max-width:100%; flex-wrap:wrap;">
+          <input type="checkbox" class="file-select-chk" data-file-idx="${idx}" style="cursor:pointer; accent-color:${chipColor};" title="Marcar para asignar a un servidor">
           <span style="display:flex; align-items:center; gap:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
             <span>📄</span>
             <strong style="color:var(--text-main); font-family:monospace;">${escapeHtml(f.name)}</strong>
@@ -7098,6 +7110,19 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     renderTraceWaterfall();
   };
 
+  window.assignSelectedFilesToNodeGlobal = function() {
+    const targetNodeKey = document.getElementById('batch-assign-node-select')?.value;
+    const checked = Array.from(document.querySelectorAll('.file-select-chk:checked'));
+    if (!targetNodeKey || checked.length === 0) {
+      alert('Marca al menos un archivo en la lista y selecciona el servidor destino.');
+      return;
+    }
+    checked.forEach(chk => {
+      const idx = parseInt(chk.getAttribute('data-file-idx'), 10);
+      if (!isNaN(idx)) window.changeFileNodeGlobal(idx, targetNodeKey);
+    });
+  };
+
   window.assignAllFilesToNodeGlobal = function(targetNodeKey) {
     if (!state.loadedFiles || state.loadedFiles.length === 0) return;
     state.loadedFiles.forEach((f, idx) => {
@@ -7126,22 +7151,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           console.warn('LocalStorage error:', e);
         }
 
-        // Re-asignar archivos si es necesario
-        if (state.loadedFiles) {
-          state.loadedFiles.forEach((f, idx) => {
-            const assignedNode = client.nodes[idx % client.nodes.length];
-            f.nodeKey = assignedNode.key;
-            f.nodeName = assignedNode.name;
-          });
-        }
-
-        if (state.logs) {
-          state.logs.forEach(log => {
-            const detected = detectNodeFromLog(log);
-            log.node = detected.name;
-          });
-        }
-
+        // No sobrescribir archivos ya cargados: solo actualizar selectores con los nuevos nodos
+        if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
         renderLoadedFilesDrawer();
         updateNodeComparisonUI();
         renderTraceWaterfall();
@@ -7542,18 +7553,25 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
   function populateServerFilterSelector() {
     const sel = document.getElementById('filter-server-select');
-    const dl = document.getElementById('upload-server-presets');
-    const servers = Array.from(new Set((state.loadedFiles || []).map(f => f.serverTag || 'Servidor 1 (Primario)')));
+    const uploadSel = document.getElementById('upload-server-tag');
+    const clientNodes = getClientAvailableNodes().map(n => n.name.replace(/^🖥️\s*/, '').replace(/^☁️\s*/, '').trim()).filter(Boolean);
+    const fileServers = (state.loadedFiles || []).map(f => (f.serverTag || '').replace(/^🖥️\s*/, '').trim()).filter(Boolean);
+    const allServers = Array.from(new Set([...clientNodes, ...fileServers]));
+
     if (sel) {
       const prev = sel.value || 'ALL';
       sel.innerHTML = '<option value="ALL">🖥️ Todos los Servidores</option>' +
-        servers.map(s => `<option value="${escapeHtml(s)}">🖥️ ${escapeHtml(s)}</option>`).join('');
-      if (servers.includes(prev)) sel.value = prev;
+        allServers.map(s => `<option value="${escapeHtml(s)}">🖥️ ${escapeHtml(s)}</option>`).join('');
+      if (allServers.includes(prev)) sel.value = prev;
     }
-    if (dl) {
-      const defaults = ['Servidor 1 (Primario)', 'Servidor 2 (Secundario)', 'Servidor 3 (Contingencia)'];
-      const merged = Array.from(new Set([...defaults, ...servers]));
-      dl.innerHTML = merged.map(s => `<option value="${escapeHtml(s)}"></option>`).join('');
+    if (uploadSel && uploadSel.tagName === 'SELECT') {
+      const prevUp = uploadSel.value;
+      const list = allServers.length ? allServers : ['Servidor 1 (Primario)'];
+      uploadSel.innerHTML = list.map(s => `<option value="${escapeHtml(s)}">🖥️ ${escapeHtml(s)}</option>`).join('') +
+        '<option value="__CUSTOM__">➕ Otro servidor...</option>';
+      if (prevUp && prevUp !== '__CUSTOM__' && list.includes(prevUp)) {
+        uploadSel.value = prevUp;
+      }
     }
   }
 
