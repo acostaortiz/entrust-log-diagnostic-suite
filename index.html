@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.8.8 (Build 596)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.8.9 (Build 597)</span>
           </div>
         </div>
       </div>
@@ -454,7 +454,7 @@
             <!-- Selector de Servidor / Nodo para el lote a cargar -->
             <div style="display:flex; align-items:center; gap:6px;">
               <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted);">🖥️ Cargar en Servidor:</span>
-              <select id="upload-server-tag" class="form-control" style="width:205px; font-size:0.78rem; padding:5px 10px; font-weight:600;" onchange="if(this.value==='__CUSTOM__'){ const n=prompt('Nombre o IP del nuevo servidor:'); if(n && n.trim()){ const opt=document.createElement('option'); opt.value=n.trim(); opt.textContent='🖥️ '+n.trim(); this.insertBefore(opt, this.lastElementChild); this.value=n.trim(); } else { this.selectedIndex=0; } }">
+              <select id="upload-server-tag" class="form-control" style="width:205px; font-size:0.78rem; padding:5px 10px; font-weight:600;" onchange="if(this.value==='__CUSTOM__'){ const n=prompt('Nombre o IP del nuevo servidor (ej. 10.5.11.1):'); if(n && n.trim() && window.addClientConfigServerGlobal){ window.addClientConfigServerGlobal(n.trim()); } else { this.selectedIndex=0; } }">
                 <option value="Servidor 1 (Primario)">🖥️ Servidor 1 (Primario)</option>
                 <option value="__CUSTOM__">➕ Otro servidor...</option>
               </select>
@@ -1730,7 +1730,7 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/syslog-collector.js?v=550.0"></script>
   <script src="js/user-trace-report.js?v=581.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
-  <script src="js/app.js?v=596.0"></script>
+  <script src="js/app.js?v=597.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

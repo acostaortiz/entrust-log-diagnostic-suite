@@ -768,11 +768,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  window.addClientConfigServerGlobal = async function() {
+  window.addClientConfigServerGlobal = async function(explicitName) {
     const sel = document.getElementById('client-config-server-select');
-    const raw = prompt('IP o nombre del servidor (ej. 10.5.11.50 o csent06.banco.mercantilsf.com):');
+    const upSel = document.getElementById('upload-server-tag');
+    const raw = explicitName || prompt('IP o nombre del servidor (ej. 10.5.11.1 o csent06.banco.mercantilsf.com):');
     if (!raw || !raw.trim()) {
       if (sel && sel.value === '__CUSTOM__' && sel.options.length > 1) sel.selectedIndex = 0;
+      if (upSel && upSel.value === '__CUSTOM__' && upSel.options.length > 1) upSel.selectedIndex = 0;
       return;
     }
     const srvName = raw.trim();
@@ -791,6 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.activeClientConfig.updatedAt = new Date().toISOString();
     await _persistClientConfigUpdate(clientId, state.activeClientConfig);
     if (sel) sel.value = srvName;
+    if (upSel) upSel.value = srvName;
   };
 
   window.renameClientConfigServerGlobal = async function(explicitName) {
@@ -1480,10 +1483,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.8',
-    build: 596,
+    version: 'v3.8.9',
+    build: 597,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'FIX-SERVER-INGEST-MODAL-OPEN-388',
+    gitCommit: 'SYNC-ADDED-SERVERS-ALL-SELECTORS-389',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
