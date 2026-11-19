@@ -1014,10 +1014,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.6.0',
-    build: 578,
+    version: 'v3.6.1',
+    build: 579,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'GLOBAL-VOLUMETRY-EXEC-REPORT-360',
+    gitCommit: 'EXACT-ZERO-DOUBLECOUNT-METRICS-361',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -6293,17 +6293,20 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       else if (!/bulkidentityguard|\.assignedgrid|idaas/i.test(c)) codeMapOther[c] = (codeMapOther[c] || 0) + cnt;
     });
 
-    (state.logs || []).forEach(l => {
-      const rawText = (l.message || '') + ' ' + (l.raw || '');
-      const code = l.entrustCode || (window.knowledgeBaseEngine && window.knowledgeBaseEngine.extractErrorCodeFromText(rawText));
-      if (code) {
-        if (/^520\d{4}/.test(code)) codeMap520[code] = (codeMap520[code] || 0) + 1;
-        else if (/^AUD\d+/i.test(code)) codeMapAud[code] = (codeMapAud[code] || 0) + 1;
-        else if (/^ORA-\d+/i.test(code)) codeMapOra[code] = (codeMapOra[code] || 0) + 1;
-        else if (isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(code)) codeMapIdaas[code] = (codeMapIdaas[code] || 0) + 1;
-        else if (!/bulkidentityguard|\.assignedgrid|idaas/i.test(code)) codeMapOther[code] = (codeMapOther[code] || 0) + 1;
-      }
-    });
+    // Solo escanear state.logs si globalStreamMetrics no aportó el mapa completo (evita doble conteo)
+    if (codeList.length === 0) {
+      (state.logs || []).forEach(l => {
+        const rawText = (l.message || '') + ' ' + (l.raw || '');
+        const code = l.entrustCode || (window.knowledgeBaseEngine && window.knowledgeBaseEngine.extractErrorCodeFromText(rawText));
+        if (code) {
+          if (/^520\d{4}/.test(code)) codeMap520[code] = (codeMap520[code] || 0) + 1;
+          else if (/^AUD\d+/i.test(code)) codeMapAud[code] = (codeMapAud[code] || 0) + 1;
+          else if (/^ORA-\d+/i.test(code)) codeMapOra[code] = (codeMapOra[code] || 0) + 1;
+          else if (isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(code)) codeMapIdaas[code] = (codeMapIdaas[code] || 0) + 1;
+          else if (!/bulkidentityguard|\.assignedgrid|idaas/i.test(code)) codeMapOther[code] = (codeMapOther[code] || 0) + 1;
+        }
+      });
+    }
 
     // Consolidación estricta sin alucinaciones:
     // Los códigos 520xxx, ORA y fallos proxy AUD150/154 son fallos críticos del motor.
