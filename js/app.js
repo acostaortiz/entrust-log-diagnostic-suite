@@ -1362,10 +1362,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.3',
-    build: 591,
+    version: 'v3.8.4',
+    build: 592,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'REACTIVE-CHARTS-TIME-WINDOW-383',
+    gitCommit: 'COMPACT-ACCORDION-FILES-DRAWER-384',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -7579,6 +7579,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   window.resetSessionGlobal = resetSession;
 
   // PILAR 1: GESTOR VISUAL DE ARCHIVOS CARGADOS EN LA SESIÓN ACTIVA (DINÁMICO POR CLIENTE)
+  window.toggleFileServerAccordionGlobal = function(serverLabel) {
+    if (!state.expandedFileServers) state.expandedFileServers = {};
+    state.expandedFileServers[serverLabel] = !state.expandedFileServers[serverLabel];
+    renderLoadedFilesDrawer();
+  };
+
   function renderLoadedFilesDrawer() {
     const listContainer = document.getElementById('loaded-files-list');
     const badgeCount = document.getElementById('loaded-files-count-badge');
@@ -7620,16 +7626,22 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       return;
     }
 
-    // Contar distribución por Nodos / Servidores
-    const nodeCountMap = {};
+    // Agrupar por Servidor/Nodo
+    const groupsMap = new Map();
     let totalLogsInFiles = 0;
-    files.forEach(f => {
+    files.forEach((f, idx) => {
       const label = f.serverTag ? (f.serverTag.startsWith('🖥️') ? f.serverTag : '🖥️ ' + f.serverTag) : (f.nodeName || '🖥️ Servidor 1');
-      nodeCountMap[label] = (nodeCountMap[label] || 0) + 1;
+      if (!groupsMap.has(label)) {
+        groupsMap.set(label, { label, items: [], totalBytes: 0, totalLogs: 0 });
+      }
+      const g = groupsMap.get(label);
+      g.items.push({ f, idx });
+      g.totalBytes += (f.size || 0);
+      g.totalLogs += (f.count || 0);
       totalLogsInFiles += (f.count || 0);
     });
 
-    const nodeSummaryArr = Object.entries(nodeCountMap).map(([nName, cnt]) => `${cnt} en ${nName}`);
+    const nodeSummaryArr = Array.from(groupsMap.values()).map(g => `${g.items.length} en ${g.label}`);
     if (summaryText) {
       summaryText.textContent = `${nodeSummaryArr.join(' | ')} (Total: ${totalLogsInFiles.toLocaleString()} logs)`;
     }
@@ -7638,44 +7650,95 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       `<option value="${escapeHtml(n.key)}">${escapeHtml(n.name)}</option>`
     ).join('');
 
-    let html = `
-      <div style="width:100%; display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; align-items:center; padding-bottom:8px; border-bottom:1px solid var(--border-color);">
-        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">📌 Asignación Selectiva [${escapeHtml(client.name)}]:</span>
-        <button type="button" class="btn" onclick="document.querySelectorAll('.file-select-chk').forEach(c=>c.checked=true)" style="padding:2px 8px; font-size:0.72rem; border:1px solid var(--border-color);">☑ Todos</button>
-        <button type="button" class="btn" onclick="document.querySelectorAll('.file-select-chk').forEach(c=>c.checked=false)" style="padding:2px 8px; font-size:0.72rem; border:1px solid var(--border-color);">☐ Ninguno</button>
-        <span style="font-size:0.74rem; color:var(--text-muted);">Mover marcados a:</span>
-        <select id="batch-assign-node-select" class="form-control" style="width:auto; min-width:155px; font-size:0.74rem; padding:3px 8px;">
-          ${batchNodeOptions}
-        </select>
-        <button type="button" class="btn btn-primary" onclick="window.assignSelectedFilesToNodeGlobal()" style="padding:3px 10px; font-size:0.74rem; font-weight:700;">✅ Asignar Marcados</button>
-      </div>`;
+    const colors = ['#0284c7', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4'];
+    const expandedMap = state.expandedFileServers || {};
 
-    files.forEach((f, idx) => {
-      const sizeMb = f.size > 0 ? (f.size / (1024 * 1024)).toFixed(1) + ' MB' : 'Muestra';
-      const fileLabel = f.serverTag ? (f.serverTag.startsWith('🖥️') ? f.serverTag : '🖥️ ' + f.serverTag) : (f.nodeName || '🖥️ Servidor 1');
-      const nodeIndex = availNodes.findIndex(n => n.name === fileLabel || n.key === f.nodeKey);
-      const colors = ['#0284c7', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4'];
-      const chipColor = colors[nodeIndex >= 0 ? nodeIndex % colors.length : 0];
+    let html = `<div style="width:100%; display:flex; flex-direction:column; gap:8px;">`;
 
-      const optionsHtml = availNodes.map(n => 
-        `<option value="${escapeHtml(n.key)}" ${n.name === fileLabel ? 'selected' : ''}>${escapeHtml(n.name)}</option>`
-      ).join('');
+    let gIdx = 0;
+    groupsMap.forEach((group) => {
+      const nodeIndex = availNodes.findIndex(n => n.name === group.label);
+      const accent = colors[(nodeIndex >= 0 ? nodeIndex : gIdx) % colors.length];
+      const isOpen = !!expandedMap[group.label];
+      const totalMb = group.totalBytes > 0 ? `${(group.totalBytes / (1024 * 1024)).toFixed(1)} MB` : 'Muestra';
+      const safeLabelAttr = escapeHtml(group.label).replace(/'/g, "\\'");
+
+      // Orden natural por nombre + rotación (.log, .log.1, .log.2...)
+      const sortedItems = [...group.items].sort((a, b) =>
+        a.f.name.localeCompare(b.f.name, undefined, { numeric: true, sensitivity: 'base' })
+      );
 
       html += `
-        <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-left:3px solid ${chipColor}; padding:4px 10px; border-radius:6px; display:inline-flex; align-items:center; gap:8px; font-size:0.78rem; max-width:100%; flex-wrap:wrap;">
-          <input type="checkbox" class="file-select-chk" data-file-idx="${idx}" style="cursor:pointer; accent-color:${chipColor};" title="Marcar para asignar a un servidor">
-          <span style="display:flex; align-items:center; gap:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-            <span>📄</span>
-            <strong style="color:var(--text-main); font-family:monospace;">${escapeHtml(f.name)}</strong>
-            <span style="color:var(--text-muted); font-size:0.72rem;">(${sizeMb} | ${(f.count || 0).toLocaleString()} logs)</span>
-          </span>
-          <select onchange="window.changeFileNodeGlobal(${idx}, this.value)" style="background:var(--bg-primary); border:1px solid ${chipColor}; color:${chipColor}; font-weight:bold; font-size:0.72rem; padding:2px 6px; border-radius:4px; cursor:pointer;">
-            ${optionsHtml}
-          </select>
-          <button onclick="window.removeLoadedFileGlobal('${escapeHtml(f.name)}')" style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#ef4444; border-radius:3px; padding:1px 5px; cursor:pointer; font-weight:bold; font-size:0.75rem;" title="Eliminar este archivo de la sesión">✖</button>
-        </div>`;
+        <div style="width:100%; border:1px solid var(--border-color); border-left:4px solid ${accent}; border-radius:8px; background:var(--bg-secondary); overflow:hidden;">
+          <div onclick="window.toggleFileServerAccordionGlobal('${safeLabelAttr}')" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:8px 12px; cursor:pointer; user-select:none;">
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+              <strong style="font-size:0.84rem; color:var(--text-main);">${escapeHtml(group.label)}</strong>
+              <span style="font-size:0.74rem; background:rgba(2,132,199,0.12); color:${accent}; padding:2px 8px; border-radius:12px; font-weight:700;">${group.items.length} archivo(s)</span>
+              <span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;">${totalMb} · ${group.totalLogs.toLocaleString()} registros</span>
+            </div>
+            <span style="font-size:0.75rem; font-weight:700; color:${accent};">${isOpen ? '▲ Ocultar detalle' : '▼ Ver detalle y asignar'}</span>
+          </div>`;
+
+      if (isOpen) {
+        const rowsHtml = sortedItems.map(({ f, idx }) => {
+          const sizeMb = f.size > 0 ? (f.size / (1024 * 1024)).toFixed(1) + ' MB' : 'Muestra';
+          const optionsHtml = availNodes.map(n =>
+            `<option value="${escapeHtml(n.key)}" ${n.name === group.label ? 'selected' : ''}>${escapeHtml(n.name)}</option>`
+          ).join('');
+          return `
+            <tr style="border-top:1px solid var(--border-color);">
+              <td style="padding:5px 8px; width:28px; text-align:center;">
+                <input type="checkbox" class="file-select-chk" data-file-idx="${idx}" style="cursor:pointer; accent-color:${accent};">
+              </td>
+              <td style="padding:5px 8px; font-family:monospace; font-size:0.77rem; color:var(--text-main); font-weight:600;">📄 ${escapeHtml(f.name)}</td>
+              <td style="padding:5px 8px; font-size:0.74rem; color:var(--text-muted); white-space:nowrap;">${sizeMb}</td>
+              <td style="padding:5px 8px; font-size:0.74rem; color:var(--text-muted); font-family:monospace; white-space:nowrap;">${(f.count || 0).toLocaleString()}</td>
+              <td style="padding:5px 8px;">
+                <select onchange="window.changeFileNodeGlobal(${idx}, this.value)" style="background:var(--bg-primary); border:1px solid ${accent}; color:${accent}; font-weight:700; font-size:0.72rem; padding:2px 6px; border-radius:4px; cursor:pointer;">
+                  ${optionsHtml}
+                </select>
+              </td>
+              <td style="padding:5px 8px; text-align:right;">
+                <button type="button" onclick="window.removeLoadedFileGlobal('${escapeHtml(f.name)}')" style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); color:#ef4444; border-radius:4px; padding:2px 7px; cursor:pointer; font-weight:bold; font-size:0.72rem;" title="Eliminar archivo">✖</button>
+              </td>
+            </tr>`;
+        }).join('');
+
+        html += `
+          <div style="border-top:1px solid var(--border-color); background:var(--bg-primary); padding:10px 12px;">
+            <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; align-items:center;">
+              <span style="font-size:0.74rem; color:var(--text-muted); font-weight:700;">📌 Asignación Selectiva [${escapeHtml(client.name)}]:</span>
+              <button type="button" class="btn" onclick="document.querySelectorAll('.file-select-chk').forEach(c=>c.checked=true)" style="padding:2px 8px; font-size:0.72rem; border:1px solid var(--border-color);">☑ Todos</button>
+              <button type="button" class="btn" onclick="document.querySelectorAll('.file-select-chk').forEach(c=>c.checked=false)" style="padding:2px 8px; font-size:0.72rem; border:1px solid var(--border-color);">☐ Ninguno</button>
+              <span style="font-size:0.73rem; color:var(--text-muted);">Mover marcados a:</span>
+              <select id="batch-assign-node-select" class="form-control" style="width:auto; min-width:155px; font-size:0.73rem; padding:3px 8px;">
+                ${batchNodeOptions}
+              </select>
+              <button type="button" class="btn btn-primary" onclick="window.assignSelectedFilesToNodeGlobal()" style="padding:3px 10px; font-size:0.73rem; font-weight:700;">✅ Asignar Marcados</button>
+            </div>
+            <div style="max-height:240px; overflow-y:auto; border:1px solid var(--border-color); border-radius:6px;">
+              <table style="width:100%; border-collapse:collapse; text-align:left;">
+                <thead style="background:var(--bg-secondary); position:sticky; top:0; font-size:0.72rem; color:var(--text-muted);">
+                  <tr>
+                    <th style="padding:6px 8px;"></th>
+                    <th style="padding:6px 8px;">Archivo</th>
+                    <th style="padding:6px 8px;">Tamaño</th>
+                    <th style="padding:6px 8px;">Registros</th>
+                    <th style="padding:6px 8px;">Servidor</th>
+                    <th style="padding:6px 8px; text-align:right;">Quitar</th>
+                  </tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+              </table>
+            </div>
+          </div>`;
+      }
+
+      html += `</div>`;
+      gIdx++;
     });
 
+    html += `</div>`;
     listContainer.innerHTML = html;
   }
 
