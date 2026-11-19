@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.8.6 (Build 594)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.8.7 (Build 595)</span>
           </div>
         </div>
       </div>
@@ -1363,10 +1363,11 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
               <div style="font-size:0.72rem; color:var(--text-muted);">Selecciona el servidor y sube <code>identityguard.properties</code>, <code>server.xml</code>, <code>web.xml</code>, <code>entrusttoken.conf</code> o certificados (contraseñas enmascaradas).</div>
             </div>
             <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-              <select id="client-config-server-select" class="form-control" style="width:auto; min-width:170px; font-size:0.76rem; padding:4px 8px; font-weight:600;" onchange="if(this.value==='__CUSTOM__'){ const n=prompt('IP o nombre del servidor (ej. 10.5.11.51):'); if(n && n.trim()){ const o=document.createElement('option'); o.value=n.trim(); o.textContent='🖥️ '+n.trim(); this.insertBefore(o, this.lastElementChild); this.value=n.trim(); } else { this.selectedIndex=0; } }">
+              <select id="client-config-server-select" class="form-control" style="width:auto; min-width:170px; font-size:0.76rem; padding:4px 8px; font-weight:600;" onchange="if(this.value==='__CUSTOM__'){ window.addClientConfigServerGlobal && window.addClientConfigServerGlobal(); }">
                 <option value="Servidor 1 (Primario)">🖥️ Servidor 1 (Primario)</option>
                 <option value="__CUSTOM__">➕ Registrar otro servidor...</option>
               </select>
+              <button type="button" class="btn" onclick="window.addClientConfigServerGlobal && window.addClientConfigServerGlobal();" title="Agregar un nuevo servidor" style="margin:0; padding:5px 9px; font-size:0.75rem; font-weight:700; background:rgba(16,185,129,0.14); color:#059669; border:1px solid rgba(16,185,129,0.4); cursor:pointer;">➕ Agregar</button>
               <button type="button" class="btn" onclick="window.renameClientConfigServerGlobal && window.renameClientConfigServerGlobal();" title="Renombrar el servidor seleccionado" style="margin:0; padding:5px 9px; font-size:0.75rem; font-weight:700; background:rgba(245,158,11,0.12); color:#d97706; border:1px solid rgba(245,158,11,0.4); cursor:pointer;">✏️ Renombrar</button>
               <button type="button" class="btn" onclick="window.deleteClientConfigServerGlobal && window.deleteClientConfigServerGlobal();" title="Eliminar el servidor seleccionado" style="margin:0; padding:5px 9px; font-size:0.75rem; font-weight:700; background:rgba(239,68,68,0.12); color:#dc2626; border:1px solid rgba(239,68,68,0.4); cursor:pointer;">🗑️ Eliminar</button>
               <label class="btn" style="margin:0; padding:5px 12px; font-size:0.76rem; font-weight:700; background:rgba(2,132,199,0.12); color:var(--accent-cyan); border:1px solid rgba(2,132,199,0.4); cursor:pointer;">
@@ -1723,7 +1724,7 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/syslog-collector.js?v=550.0"></script>
   <script src="js/user-trace-report.js?v=581.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
-  <script src="js/app.js?v=594.0"></script>
+  <script src="js/app.js?v=595.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

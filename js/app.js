@@ -680,7 +680,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const list = realNodes.length ? realNodes : ['Servidor 1 (Primario)'];
     sel.innerHTML = list.map(s => `<option value="${escapeHtml(s)}">🖥️ ${escapeHtml(s)}</option>`).join('') +
       '<option value="__CUSTOM__">➕ Registrar otro servidor...</option>';
-    if (prev && prev !== '__CUSTOM__' && list.includes(prev)) sel.value = prev;
+    if (prev && prev !== '__CUSTOM__' && list.includes(prev)) {
+      sel.value = prev;
+    } else if (sel.options.length > 1) {
+      sel.selectedIndex = 0;
+    }
   }
 
   function _renderSingleServerConfigHtml(srv) {
@@ -763,6 +767,31 @@ document.addEventListener('DOMContentLoaded', () => {
       window.certAuditorEngine.render('certificates-table-container', state.logs, state.activeClientConfig);
     }
   }
+
+  window.addClientConfigServerGlobal = async function() {
+    const sel = document.getElementById('client-config-server-select');
+    const raw = prompt('IP o nombre del servidor (ej. 10.5.11.50 o csent06.banco.mercantilsf.com):');
+    if (!raw || !raw.trim()) {
+      if (sel && sel.value === '__CUSTOM__' && sel.options.length > 1) sel.selectedIndex = 0;
+      return;
+    }
+    const srvName = raw.trim();
+    const clientId = document.getElementById('client-input-id')?.value || state.activeClientId || 'default';
+    if (!state.activeClientConfig) state.activeClientConfig = { clientId, servers: {} };
+    if (!state.activeClientConfig.servers || typeof state.activeClientConfig.servers !== 'object') {
+      state.activeClientConfig.servers = {};
+    }
+    if (!state.activeClientConfig.servers[srvName]) {
+      state.activeClientConfig.servers[srvName] = {
+        serverName: srvName,
+        files: [],
+        updatedAt: new Date().toISOString()
+      };
+    }
+    state.activeClientConfig.updatedAt = new Date().toISOString();
+    await _persistClientConfigUpdate(clientId, state.activeClientConfig);
+    if (sel) sel.value = srvName;
+  };
 
   window.renameClientConfigServerGlobal = async function(explicitName) {
     const sel = document.getElementById('client-config-server-select');
@@ -1451,10 +1480,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.6',
-    build: 594,
+    version: 'v3.8.7',
+    build: 595,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'SERVER-RENAME-DELETE-CONTROLS-386',
+    gitCommit: 'ADD-SERVER-BUTTON-FIX-387',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
