@@ -1,11 +1,11 @@
 {
   "appName": "IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise",
-  "version": "v3.7.3",
-  "build": 586,
+  "version": "v3.7.4",
+  "build": 587,
   "releaseChannel": "Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)",
-  "gitCommit": "CLEAN-SERVER-DROPDOWNS-SYNC-373",
+  "gitCommit": "DROPZONE-CLEANUP-AUTO-EXT-374",
   "gitBranch": "main",
-  "buildDate": "2026-11-19 11:20",
+  "buildDate": "2026-11-19 11:28",
   "engineer": "Tomás Acosta",
   "organization": "IT SERVICIOS V.S.A.",
   "features": [

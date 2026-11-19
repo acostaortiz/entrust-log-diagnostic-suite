@@ -1075,10 +1075,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.7.3',
-    build: 586,
+    version: 'v3.7.4',
+    build: 587,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'CLEAN-SERVER-DROPDOWNS-SYNC-373',
+    gitCommit: 'DROPZONE-CLEANUP-AUTO-EXT-374',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -5232,14 +5232,10 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           <div style="padding: 40px 20px; text-align: center; color: var(--text-muted);">
             <div style="font-size: 2.2rem; margin-bottom: 8px;">📂</div>
             <strong style="font-size: 1rem; color: var(--text-main); display: block; margin-bottom: 6px;">Consola Limpia y Lista para Análisis</strong>
-            <p style="margin-bottom:16px; font-size:0.85rem;">Arrastra aquí cualquier archivo de logs (.log, .txt, .csv, .json) o selecciona una opción:</p>
+            <p style="margin-bottom:16px; font-size:0.85rem;">Arrastra aquí tus archivos de logs (<code>.log</code>, rotados <code>.log.1..N</code>, Tomcat <code>.out</code>, <code>.txt</code>, <code>.csv</code>, <code>.json</code>) o usa <strong>Cargar Archivos</strong> arriba.</p>
             <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
-              <label class="btn btn-primary" style="font-size:0.82rem; padding:8px 18px; background:#0284c7; color:#fff; cursor:pointer; font-weight:bold; border-radius:6px; box-shadow:0 2px 6px rgba(2,132,199,0.35);">
-                📂 Cargar Archivos Locales (.log, .csv, .txt)
-                <input type="file" accept=".log,.txt,.json,.csv" onchange="document.getElementById('file-input').files = this.files; document.getElementById('file-input').dispatchEvent(new Event('change'))" multiple style="display:none;">
-              </label>
               <button type="button" class="btn" onclick="document.getElementById('btn-open-server-ingest')?.click()" style="font-size:0.82rem; padding:8px 18px; background:#059669; color:#fff; border:1px solid #10b981; border-radius:6px; font-weight:bold; cursor:pointer;">
-                ⚡ Ingesta Servidor (> 3 GB)
+                ⚡ Ingesta Servidor (&gt; 3 GB)
               </button>
             </div>
           </div>`;
@@ -8866,6 +8862,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       for (let fIdx = 0; fIdx < files.length; fIdx++) {
         const file = files[fIdx];
+        const fnameLower = (file.name || '').toLowerCase();
+        const isSupported = /\.(log|txt|csv|json|out|tsv)$/i.test(fnameLower) || /\.(log|out)\.\d+$/i.test(fnameLower) || /\.\d{4}-\d{2}-\d{2}$/.test(fnameLower);
+        if (!isSupported) {
+          showAnalysisStatus(false, `⚠️ Archivo omitido: ${file.name}`, 'Solo se procesan logs (.log, rotados .log.N, .out, .txt, .csv, .json).');
+          continue;
+        }
         try {
           const clientName = extractClientFromFilename(file.name) || (getActiveClientProfile()?.name) || 'Entrust General';
           const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
