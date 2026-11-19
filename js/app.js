@@ -541,6 +541,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const result = {
       updatedAt: new Date().toISOString(),
       files: [],
+      rawTexts: {},
       identityguard: null,
       serverXml: null,
       webXml: null,
@@ -553,6 +554,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = (file.name || '').toLowerCase();
       const text = await file.text();
       result.files.push(file.name);
+      // Redactar contraseñas antes de guardar copia de texto para Config Diff
+      const redactedText = text
+        .replace(/^([^#!\n]*(?:password|passwd|secret|passphrase|pin)[^=\n]*=).*$/gmi, '$1***REDACTED***')
+        .replace(/(keystorePass|truststorePass|password)=["'][^"']*["']/gi, '$1="***REDACTED***"');
+      if (!name.endsWith('.pem') && !name.endsWith('.crt') && !name.endsWith('.cer')) {
+        result.rawTexts[file.name] = redactedText.slice(0, 60000);
+      }
 
       if (name.endsWith('.properties')) {
         const props = {};
@@ -660,43 +668,68 @@ document.addEventListener('DOMContentLoaded', () => {
     return result;
   }
 
+  function populateClientConfigServerSelector() {
+    const sel = document.getElementById('client-config-server-select');
+    if (!sel) return;
+    const prev = sel.value;
+    const clientNodes = getClientAvailableNodes().map(n => n.name.replace(/^🖥️\s*/, '').replace(/^☁️\s*/, '').trim()).filter(Boolean);
+    const savedServers = Object.keys(state.activeClientConfig?.servers || {});
+    const merged = Array.from(new Set([...clientNodes, ...savedServers]));
+    const list = merged.length ? merged : ['Servidor 1 (Primario)'];
+    sel.innerHTML = list.map(s => `<option value="${escapeHtml(s)}">🖥️ ${escapeHtml(s)}</option>`).join('') +
+      '<option value="__CUSTOM__">➕ Registrar otro servidor...</option>';
+    if (prev && prev !== '__CUSTOM__' && list.includes(prev)) sel.value = prev;
+  }
+
+  function _renderSingleServerConfigHtml(srv) {
+    const parts = [];
+    if (srv.identityguard) {
+      parts.push(`
+        <div style="margin-bottom:6px;">
+          <strong>⚙️ ${escapeHtml(srv.identityguard.fileName || 'identityguard.properties')}:</strong>
+          <ul style="margin:3px 0 0 18px; padding:0; font-size:0.74rem; line-height:1.4;">
+            <li><code>jdbc.type</code>=<code>${escapeHtml(srv.identityguard.jdbcType || 'N/A')}</code> | <code>jdbc.url</code>=<code>${escapeHtml(srv.identityguard.jdbcUrl || 'N/A')}</code> | <code>schema</code>=<code>${escapeHtml(srv.identityguard.jdbcSchema || 'N/A')}</code></li>
+            <li><code>webadmin.url</code>=<code>${escapeHtml(srv.identityguard.webAdminUrl || 'N/A')}</code></li>
+          </ul>
+        </div>`);
+    }
+    if (srv.serverXml && Array.isArray(srv.serverXml.services)) {
+      const connRows = srv.serverXml.services.flatMap(s => (s.connectors || []).map(c =>
+        `<li><strong>${escapeHtml(s.name)}</strong> :<code>${escapeHtml(c.port)}</code> — <code>maxThreads=${escapeHtml(c.maxThreads || '-')}</code> (hilos), <code>acceptCount=${escapeHtml(c.acceptCount || '-')}</code> (cola), <code>connectionTimeout=${escapeHtml(c.connectionTimeout || '-')}ms</code>, <code>clientAuth=${escapeHtml(c.clientAuth || 'false')}</code>${c.keystoreFile ? `, keystore=<code>${escapeHtml(c.keystoreFile)}</code>` : ''}</li>`
+      )).join('');
+      parts.push(`<div style="margin-bottom:6px;"><strong>🌐 ${escapeHtml(srv.serverXml.fileName || 'server.xml')}:</strong><ul style="margin:3px 0 0 18px; padding:0; font-size:0.74rem; line-height:1.4;">${connRows || '<li>Sin conectores</li>'}</ul></div>`);
+    }
+    if (srv.webXml) {
+      parts.push(`<div style="margin-bottom:6px;"><strong>🧩 ${escapeHtml(srv.webXml.fileName || 'web.xml')}:</strong> <code>session-timeout=${escapeHtml(srv.webXml.sessionTimeout || 'Default')} min</code></div>`);
+    }
+    if (srv.entrusttoken) {
+      parts.push(`<div style="margin-bottom:6px;"><strong>🔑 ${escapeHtml(srv.entrusttoken.fileName || 'entrusttoken.conf')}:</strong> <code>resetEventWindow=${escapeHtml(srv.entrusttoken.resetEventWindow || 'N/A')}</code> • <code>maxTimeSteps=${escapeHtml(srv.entrusttoken.maxTimeSteps || 'N/A')}</code></div>`);
+    }
+    if (srv.uploadedCerts && srv.uploadedCerts.length) {
+      parts.push(`<div><strong>📜 Certificados:</strong> ${srv.uploadedCerts.map(c => `<code>${escapeHtml(c.fileName)}</code>`).join(', ')}</div>`);
+    }
+    return parts.join('');
+  }
+
   function renderClientConfigPreview(cfg) {
+    populateClientConfigServerSelector();
     const preview = document.getElementById('client-config-preview');
     if (!preview) return;
-    if (!cfg || (!cfg.identityguard && !cfg.serverXml && !cfg.webXml && !cfg.entrusttoken && !(cfg.uploadedCerts && cfg.uploadedCerts.length))) {
+    const srvMap = cfg && cfg.servers && typeof cfg.servers === 'object' ? cfg.servers : null;
+    const srvList = srvMap ? Object.values(srvMap) : ((cfg && (cfg.identityguard || cfg.serverXml || cfg.webXml || cfg.entrusttoken || (cfg.uploadedCerts && cfg.uploadedCerts.length))) ? [{ serverName: 'General', ...cfg }] : []);
+    if (!srvList.length) {
       preview.innerHTML = '<div style="font-size:0.76rem; color:var(--text-muted); padding:6px 0;">Sin archivos de configuración cargados para este cliente.</div>';
       return;
     }
 
-    const parts = [];
-    if (cfg.identityguard) {
-      parts.push(`
-        <div style="margin-bottom:8px;">
-          <strong>⚙️ ${escapeHtml(cfg.identityguard.fileName || 'identityguard.properties')} (Core &amp; Base de Datos):</strong>
-          <ul style="margin:4px 0 0 18px; padding:0; font-size:0.75rem; line-height:1.45;">
-            <li><code>jdbc.type</code> = <code>${escapeHtml(cfg.identityguard.jdbcType || 'N/A')}</code> — Motor relacional del repositorio de identidades.</li>
-            <li><code>jdbc.url</code> = <code>${escapeHtml(cfg.identityguard.jdbcUrl || 'N/A')}</code> — Endpoint/SID de conexión; saturación o caída aquí genera errores <code>520xxx / ORA-</code>.</li>
-            <li><code>jdbc.user / schema</code> = <code>${escapeHtml(cfg.identityguard.jdbcUser || 'N/A')}</code> / <code>${escapeHtml(cfg.identityguard.jdbcSchema || 'N/A')}</code> — Usuario y esquema propietario de tablas IG.</li>
-            <li><code>webadmin.url</code> = <code>${escapeHtml(cfg.identityguard.webAdminUrl || 'N/A')}</code> — URL de la consola administrativa.</li>
-          </ul>
-        </div>`);
-    }
-    if (cfg.serverXml && Array.isArray(cfg.serverXml.services)) {
-      const connRows = cfg.serverXml.services.flatMap(s => (s.connectors || []).map(c =>
-        `<li><strong>${escapeHtml(s.name)}</strong> puerto <code>${escapeHtml(c.port)}</code>: <code>maxThreads=${escapeHtml(c.maxThreads || '-')}</code> (peticiones simultáneas), <code>acceptCount=${escapeHtml(c.acceptCount || '-')}</code> (cola TCP), <code>connectionTimeout=${escapeHtml(c.connectionTimeout || '-')}ms</code>, <code>clientAuth=${escapeHtml(c.clientAuth || 'false')}</code> (${String(c.clientAuth).toLowerCase() === 'true' ? 'exige mTLS' : 'TLS unidireccional'})${c.keystoreFile ? `, keystore=<code>${escapeHtml(c.keystoreFile)}</code>` : ''}</li>`
-      )).join('');
-      parts.push(`<div style="margin-bottom:8px;"><strong>🌐 ${escapeHtml(cfg.serverXml.fileName || 'server.xml')} (Conectores &amp; Concurrencia Tomcat):</strong><ul style="margin:4px 0 0 18px; padding:0; font-size:0.75rem; line-height:1.45;">${connRows || '<li>Sin conectores</li>'}</ul></div>`);
-    }
-    if (cfg.webXml) {
-      parts.push(`<div style="margin-bottom:8px;"><strong>🧩 ${escapeHtml(cfg.webXml.fileName || 'web.xml')}:</strong> <code>session-timeout=${escapeHtml(cfg.webXml.sessionTimeout || 'Default')} min</code> (expiración por inactividad) • Servlets: ${cfg.webXml.servletCount || 0} • Filtros: ${cfg.webXml.filterCount || 0}</div>`);
-    }
-    if (cfg.entrusttoken) {
-      parts.push(`<div style="margin-bottom:8px;"><strong>🔑 ${escapeHtml(cfg.entrusttoken.fileName || 'entrusttoken.conf')} (Tokens OTP):</strong> <code>resetEventWindow=${escapeHtml(cfg.entrusttoken.resetEventWindow || 'N/A')}</code> (ventana resincronización HOTP) • <code>maxTimeSteps=${escapeHtml(cfg.entrusttoken.maxTimeSteps || 'N/A')}</code> (desfase máximo TOTP)</div>`);
-    }
-    if (cfg.uploadedCerts && cfg.uploadedCerts.length) {
-      parts.push(`<div><strong>📜 Certificados:</strong> ${cfg.uploadedCerts.map(c => `<code>${escapeHtml(c.fileName)}</code>`).join(', ')}</div>`);
-    }
-    preview.innerHTML = `<div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:10px; font-size:0.78rem; color:var(--text-main);">${parts.join('')}</div>`;
+    preview.innerHTML = srvList.map(srv => `
+      <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:10px; font-size:0.76rem; color:var(--text-main); margin-bottom:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; border-bottom:1px dashed rgba(16,185,129,0.3); padding-bottom:4px;">
+          <strong>🖥️ Servidor: ${escapeHtml(srv.serverName || 'General')}</strong>
+          <span style="font-size:0.7rem; color:var(--text-muted);">${escapeHtml((srv.files || []).join(', '))}</span>
+        </div>
+        ${_renderSingleServerConfigHtml(srv)}
+      </div>`).join('');
   }
 
   window.handleClientConfigUploadGlobal = async function(event) {
@@ -704,18 +737,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!files || files.length === 0) return;
 
     const clientId = document.getElementById('client-edit-id')?.value || state.activeClientId || 'default';
+    const selSrv = document.getElementById('client-config-server-select')?.value;
+    const serverName = (selSrv && selSrv !== '__CUSTOM__') ? selSrv : 'Servidor 1 (Primario)';
     const parsed = await parseEntrustConfigFiles(files);
-    const existing = state.activeClientConfig || {};
+    const existing = state.activeClientConfig || { clientId, servers: {} };
+    const prevServers = existing.servers && typeof existing.servers === 'object' ? { ...existing.servers } : {};
+    const prevSrv = prevServers[serverName] || {};
 
+    const mergedSrv = {
+      serverName,
+      updatedAt: parsed.updatedAt,
+      files: Array.from(new Set([...(prevSrv.files || []), ...parsed.files])),
+      rawTexts: { ...(prevSrv.rawTexts || {}), ...(parsed.rawTexts || {}) },
+      identityguard: parsed.identityguard || prevSrv.identityguard || null,
+      serverXml: parsed.serverXml || prevSrv.serverXml || null,
+      webXml: parsed.webXml || prevSrv.webXml || null,
+      entrusttoken: parsed.entrusttoken || prevSrv.entrusttoken || null,
+      uploadedCerts: [...(prevSrv.uploadedCerts || []), ...parsed.uploadedCerts]
+    };
+    prevServers[serverName] = mergedSrv;
+
+    const allFiles = Array.from(new Set(Object.values(prevServers).flatMap(s => s.files || [])));
     const merged = {
       clientId,
       updatedAt: parsed.updatedAt,
-      files: Array.from(new Set([...(existing.files || []), ...parsed.files])),
-      identityguard: parsed.identityguard || existing.identityguard || null,
-      serverXml: parsed.serverXml || existing.serverXml || null,
-      webXml: parsed.webXml || existing.webXml || null,
-      entrusttoken: parsed.entrusttoken || existing.entrusttoken || null,
-      uploadedCerts: [...(existing.uploadedCerts || []), ...parsed.uploadedCerts]
+      files: allFiles,
+      servers: prevServers,
+      // Mantener compatibilidad con lectores de primer nivel
+      identityguard: mergedSrv.identityguard || existing.identityguard || null,
+      serverXml: mergedSrv.serverXml || existing.serverXml || null,
+      webXml: mergedSrv.webXml || existing.webXml || null,
+      entrusttoken: mergedSrv.entrusttoken || existing.entrusttoken || null,
+      uploadedCerts: Object.values(prevServers).flatMap(s => s.uploadedCerts || [])
     };
 
     state.activeClientConfig = merged;
@@ -1014,10 +1067,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.6.4',
-    build: 582,
+    version: 'v3.7.0',
+    build: 583,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'VOLUMETRY-BAR-REAL-FALLBACK-364',
+    gitCommit: 'CLIENT-SERVERS-CONFIG-REGISTRY-370',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -4036,17 +4089,26 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
           ${(() => {
             const cfg = state.activeClientConfig;
-            if (!cfg || (!cfg.identityguard && !cfg.serverXml && !cfg.webXml && !cfg.entrusttoken)) return '';
-            const ig = cfg.identityguard || {};
-            const tok = cfg.entrusttoken || {};
-            const web = cfg.webXml || {};
-            const conns = (cfg.serverXml?.services || []).flatMap(s => (s.connectors || []).map(c => `${s.name}:${c.port} (maxThreads=${c.maxThreads || '-'}, acceptCount=${c.acceptCount || '-'}, clientAuth=${c.clientAuth || 'false'})`)).join(' | ');
+            const srvMap = cfg && cfg.servers && typeof cfg.servers === 'object' ? cfg.servers : null;
+            const srvEntries = srvMap ? Object.values(srvMap) : ((cfg && (cfg.identityguard || cfg.serverXml || cfg.webXml || cfg.entrusttoken)) ? [{ serverName: 'General', ...cfg }] : []);
+            if (!srvEntries.length) return '';
+            const blocks = srvEntries.map(srv => {
+              const ig = srv.identityguard || {};
+              const tok = srv.entrusttoken || {};
+              const web = srv.webXml || {};
+              const conns = (srv.serverXml?.services || []).flatMap(s => (s.connectors || []).map(c => `${s.name}:${c.port} (maxThreads=${c.maxThreads || '-'}, acceptCount=${c.acceptCount || '-'}, clientAuth=${c.clientAuth || 'false'})`)).join(' | ');
+              return `
+                <div style="border-top:1px dashed #cbd5e1; padding-top:8px; margin-top:8px;">
+                  <div style="font-weight:bold; color:#0f172a;">🖥️ ${escapeHtml(srv.serverName || 'General')} <span style="font-weight:normal; color:#64748b;">(${escapeHtml((srv.files || []).join(', '))})</span></div>
+                  <div><strong>JDBC:</strong> <code>${escapeHtml(ig.jdbcType || 'N/A')}</code> | <code>${escapeHtml(ig.jdbcUrl || 'N/A')}</code> (Schema: <code>${escapeHtml(ig.jdbcSchema || 'N/A')}</code>)</div>
+                  ${conns ? `<div><strong>Tomcat (server.xml):</strong> <code>${escapeHtml(conns)}</code></div>` : ''}
+                  <div><strong>Tokens:</strong> <code>resetEventWindow=${escapeHtml(tok.resetEventWindow || '-')}</code>, <code>maxTimeSteps=${escapeHtml(tok.maxTimeSteps || '-')}</code> | <strong>Session Timeout:</strong> <code>${escapeHtml(web.sessionTimeout || 'Default')} min</code></div>
+                </div>`;
+            }).join('');
             return `
               <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:14px; margin-bottom:20px; font-size:11px; page-break-inside:avoid;">
-                <h3 style="color:#0a3d6d; margin:0 0 8px 0; font-size:13.5px;">10. Línea Base de Configuración Real (${escapeHtml((cfg.files || []).join(', '))})</h3>
-                <div><strong>JDBC:</strong> <code>${escapeHtml(ig.jdbcType || 'N/A')}</code> | <code>${escapeHtml(ig.jdbcUrl || 'N/A')}</code> (Schema: <code>${escapeHtml(ig.jdbcSchema || 'N/A')}</code>)</div>
-                ${conns ? `<div style="margin-top:4px;"><strong>Conectores Tomcat (server.xml):</strong> <code>${escapeHtml(conns)}</code></div>` : ''}
-                <div style="margin-top:4px;"><strong>Tokens (entrusttoken.conf):</strong> <code>resetEventWindow=${escapeHtml(tok.resetEventWindow || '-')}</code>, <code>maxTimeSteps=${escapeHtml(tok.maxTimeSteps || '-')}</code> | <strong>Session Timeout (web.xml):</strong> <code>${escapeHtml(web.sessionTimeout || 'Default')} min</code></div>
+                <h3 style="color:#0a3d6d; margin:0 0 4px 0; font-size:13.5px;">10. Línea Base de Configuración Real por Servidor (${srvEntries.length} Servidor${srvEntries.length === 1 ? '' : 'es'})</h3>
+                ${blocks}
               </div>`;
           })()}
 
@@ -11074,6 +11136,31 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
             </table>
           </div>
         </div>`;
+    };
+
+    window.loadSavedConfigsIntoDiffGlobal = function() {
+      const cfg = state.activeClientConfig;
+      const srvMap = cfg && cfg.servers && typeof cfg.servers === 'object' ? cfg.servers : null;
+      if (!srvMap || Object.keys(srvMap).length === 0) {
+        alert('No hay configuraciones guardadas por servidor para este cliente. Súbelas primero en + Cliente.');
+        return;
+      }
+      window.renderDiffNodesGridGlobal();
+      const textareas = Array.from(nodesContainer.querySelectorAll('textarea[data-diff-node-name]'));
+      let loadedCount = 0;
+      textareas.forEach(ta => {
+        const cleanName = (ta.getAttribute('data-diff-node-name') || '').replace(/^🖥️\s*/, '').replace(/^☁️\s*/, '').trim();
+        const match = srvMap[cleanName] || Object.values(srvMap).find(s => (s.serverName || '').includes(cleanName) || cleanName.includes(s.serverName || ''));
+        if (match && match.rawTexts && Object.keys(match.rawTexts).length > 0) {
+          ta.value = Object.entries(match.rawTexts).map(([fn, txt]) => `# === ${fn} ===\n${txt}`).join('\n\n');
+          loadedCount++;
+        }
+      });
+      if (loadedCount === 0) {
+        alert('Las configuraciones guardadas no coinciden con los nodos visibles o fueron subidas antes de v3.7.0.');
+      } else {
+        runDiff();
+      }
     };
 
     window.renderDiffNodesGridGlobal();

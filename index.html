@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.6.4 (Build 582)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.7.0 (Build 583)</span>
           </div>
         </div>
       </div>
@@ -939,6 +939,7 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
             <div class="card-subtitle">Auditoría y detección automática de discrepancias en XML, Properties y .conf entre todos los servidores configurados del cliente</div>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn" onclick="if(window.loadSavedConfigsIntoDiffGlobal) window.loadSavedConfigsIntoDiffGlobal();" style="border:1px solid rgba(2,132,199,0.4); color:#0284c7; background:rgba(2,132,199,0.08); font-size:0.8rem; padding:7px 12px; font-weight:700;">📥 Cargar desde Expediente</button>
             <button type="button" class="btn" onclick="if(window.addExtraDiffNodeGlobal) window.addExtraDiffNodeGlobal();" style="border:1px solid var(--border-color); font-size:0.8rem; padding:7px 12px; font-weight:600;">➕ Agregar Servidor</button>
             <button class="btn btn-primary" id="btn-execute-config-diff" style="background:#6366f1; border:none; font-size:0.85rem; padding:8px 18px; font-weight:bold;">
               ⚡ Ejecutar Comparación Forense
@@ -1348,19 +1349,25 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
           </div>
         </div>
 
-        <!-- Base de Datos de Configuración Real de Plataforma (100% Real, sin inventar) -->
+        <!-- Base de Datos de Configuración Real de Plataforma por Servidor (100% Real, sin inventar) -->
         <div style="margin-top:14px; padding:12px; background:var(--bg-secondary); border:1px dashed rgba(2,132,199,0.45); border-radius:8px;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
             <div>
-              <div style="font-size:0.82rem; font-weight:800; color:var(--accent-cyan);">Configuración Real de Plataforma (Opcional)</div>
-              <div style="font-size:0.72rem; color:var(--text-muted);">Sube <code>identityguard.properties</code>, <code>server.xml</code>, <code>web.xml</code> o <code>entrusttoken.conf</code> para guardar la arquitectura real del cliente (contraseñas enmascaradas).</div>
+              <div style="font-size:0.82rem; font-weight:800; color:var(--accent-cyan);">Configuración Real por Servidor (N Servidores)</div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">Selecciona el servidor y sube <code>identityguard.properties</code>, <code>server.xml</code>, <code>web.xml</code>, <code>entrusttoken.conf</code> o certificados (contraseñas enmascaradas).</div>
             </div>
-            <label class="btn" style="margin:0; padding:5px 12px; font-size:0.76rem; font-weight:700; background:rgba(2,132,199,0.12); color:var(--accent-cyan); border:1px solid rgba(2,132,199,0.4); cursor:pointer;">
-              Cargar Archivos Config
-              <input type="file" id="client-config-files-input" accept=".properties,.xml,.conf,.txt" multiple style="display:none;" onchange="if(window.handleClientConfigUploadGlobal) window.handleClientConfigUploadGlobal(event);">
-            </label>
+            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+              <select id="client-config-server-select" class="form-control" style="width:auto; min-width:170px; font-size:0.76rem; padding:4px 8px; font-weight:600;" onchange="if(this.value==='__CUSTOM__'){ const n=prompt('IP o nombre del servidor (ej. 10.5.11.51):'); if(n && n.trim()){ const o=document.createElement('option'); o.value=n.trim(); o.textContent='🖥️ '+n.trim(); this.insertBefore(o, this.lastElementChild); this.value=n.trim(); } else { this.selectedIndex=0; } }">
+                <option value="Servidor 1 (Primario)">🖥️ Servidor 1 (Primario)</option>
+                <option value="__CUSTOM__">➕ Registrar otro servidor...</option>
+              </select>
+              <label class="btn" style="margin:0; padding:5px 12px; font-size:0.76rem; font-weight:700; background:rgba(2,132,199,0.12); color:var(--accent-cyan); border:1px solid rgba(2,132,199,0.4); cursor:pointer;">
+                Cargar Archivos Config
+                <input type="file" id="client-config-files-input" accept=".properties,.xml,.conf,.pem,.crt,.cer,.txt" multiple style="display:none;" onchange="if(window.handleClientConfigUploadGlobal) window.handleClientConfigUploadGlobal(event);">
+              </label>
+            </div>
           </div>
-          <div id="client-config-preview" style="margin-top:8px; font-size:0.74rem; color:var(--text-muted); font-family:'JetBrains Mono', monospace;">
+          <div id="client-config-preview" style="margin-top:8px; font-size:0.74rem; color:var(--text-muted); font-family:'JetBrains Mono', monospace; max-height:220px; overflow-y:auto;">
             Sin archivos de configuración cargados para este cliente.
           </div>
         </div>
@@ -1695,7 +1702,7 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
     <script src="js/threat-radar.js?v=550.0"></script>
   <script src="js/remediation-engine.js?v=550.0"></script>
   <script src="js/notes-engine.js?v=570.0"></script>
-  <script src="js/copilot-engine.js?v=570.0"></script>
+  <script src="js/copilot-engine.js?v=583.0"></script>
   <script src="js/compliance-auditor.js?v=550.0"></script>
   <script src="js/config-diff-engine.js?v=576.0"></script>
   <script src="js/siem-exporter.js?v=550.0"></script>
@@ -1704,7 +1711,7 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/syslog-collector.js?v=550.0"></script>
   <script src="js/user-trace-report.js?v=581.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
-  <script src="js/app.js?v=582.0"></script>
+  <script src="js/app.js?v=583.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

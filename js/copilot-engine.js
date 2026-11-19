@@ -208,40 +208,31 @@ if (typeof escapeHtml === 'undefined') {
         }
         suggestedQueries = ['resumen operativo', 'top errores', 'plan de remediacion'];
       }
-      // 0.5 Consulta sobre Configuración Real del Cliente (identityguard.properties / server.xml / web.xml / entrusttoken.conf)
+      // 0.5 Consulta sobre Configuración Real del Cliente / Servidores
       else if (q.includes('config') || q.includes('properties') || q.includes('server.xml') || q.includes('web.xml') || q.includes('entrusttoken') || q.includes('jdbc') || q.includes('maxthreads') || q.includes('keystore')) {
         const cfg = ctx.clientConfig;
-        if (cfg && cfg.files && cfg.files.length > 0) {
-          const jdbc = cfg.identityguard || cfg.jdbc || {};
-          const tok = cfg.entrusttoken || cfg.token || {};
-          const web = cfg.webXml || cfg.web || {};
-          const serverConns = (cfg.serverXml && Array.isArray(cfg.serverXml.services))
-            ? cfg.serverXml.services.flatMap(s => (s.connectors || []).map(c => ({ service: s.name, ...c })))
-            : (cfg.tomcatConnectors || []);
-          const conns = serverConns.map(c =>
-            `  • **${c.service || 'Connector'}** puerto \`${c.port}\`:\n` +
-            `    - \`maxThreads=${c.maxThreads || '-'}\` *(máximo de peticiones simultáneas que atiende Tomcat)*\n` +
-            `    - \`minSpareThreads=${c.minSpareThreads || '-'}\` *(hilos pre-iniciados en espera)*\n` +
-            `    - \`acceptCount=${c.acceptCount || '-'}\` *(cola de espera TCP cuando se saturan los hilos)*\n` +
-            `    - \`connectionTimeout=${c.connectionTimeout || '-'}\` *(ms máximos esperando datos del cliente)*\n` +
-            `    - \`clientAuth=${c.clientAuth || 'false'}\` *(${String(c.clientAuth).toLowerCase() === 'true' ? 'exige certificado mutuo mTLS' : 'TLS unidireccional sin certificado cliente'})*` +
-            (c.keystoreFile ? `\n    - \`keystoreFile=${c.keystoreFile}\` *(almacén de certificado servidor)*` : '')
-          ).join('\n') || '  • Sin conectores Tomcat registrados.';
-          answer = `⚙️ **Configuración Real y Significado de Parámetros — ${ctx.client.name}** *(archivos: \`${cfg.files.join(', ')}\`)*:\n\n` +
-                   `**1. Base de Datos & Core (` + '`identityguard.properties`' + `):**\n` +
-                   `• \`jdbc.type\` = \`${jdbc.jdbcType || jdbc.type || 'N/A'}\` *(Motor relacional del repositorio de identidades)*\n` +
-                   `• \`jdbc.url\` = \`${jdbc.jdbcUrl || jdbc.url || 'N/A'}\` *(Endpoint/SID de conexión; fallos aquí generan errores 520xxx/ORA)*\n` +
-                   `• \`jdbc.user\` / \`schema\` = \`${jdbc.jdbcUser || jdbc.user || 'N/A'}\` / \`${jdbc.jdbcSchema || jdbc.schema || 'N/A'}\` *(Cuenta y esquema propietario de tablas IG)*\n` +
-                   `• \`webadmin.url\` = \`${jdbc.webAdminUrl || (cfg.urls && cfg.urls.webadmin) || 'N/A'}\` *(URL consola administrativa)*\n` +
-                   `• \`authservice.https.url\` = \`${jdbc.authServiceHttpsUrl || (cfg.urls && cfg.urls.authHttps) || 'N/A'}\` *(Endpoint HTTPS de autenticación)*\n\n` +
-                   `**2. Tokens OTP (` + '`entrusttoken.conf`' + `):**\n` +
-                   `• \`resetEventWindow\` = \`${tok.resetEventWindow || '-'}\` *(Ventana de eventos permitida para resincronizar tokens HOTP)*\n` +
-                   `• \`maxTimeSteps\` = \`${tok.maxTimeSteps || '-'}\` *(Desfase máximo de pasos de tiempo permitido en tokens TOTP)*\n\n` +
-                   `**3. Sesiones Web (` + '`web.xml`' + `):**\n` +
-                   `• \`session-timeout\` = \`${web.sessionTimeout || 'Default'} min\` *(Minutos de inactividad antes de cerrar sesión web)*\n\n` +
-                   `**4. Conectores & Concurrencia Tomcat (` + '`server.xml`' + `):**\n${conns}`;
+        const srvMap = cfg && cfg.servers && typeof cfg.servers === 'object' ? cfg.servers : null;
+        const srvEntries = srvMap ? Object.values(srvMap) : ((cfg && cfg.files && cfg.files.length > 0) ? [{ serverName: 'General', ...cfg }] : []);
+        if (srvEntries.length > 0) {
+          const blocks = srvEntries.map(s => {
+            const jdbc = s.identityguard || s.jdbc || {};
+            const tok = s.entrusttoken || s.token || {};
+            const web = s.webXml || s.web || {};
+            const serverConns = (s.serverXml && Array.isArray(s.serverXml.services))
+              ? s.serverXml.services.flatMap(sv => (sv.connectors || []).map(c => ({ service: sv.name, ...c })))
+              : (s.tomcatConnectors || []);
+            const conns = serverConns.map(c =>
+              `    - **${c.service || 'Connector'}** :\`${c.port}\` — \`maxThreads=${c.maxThreads || '-'}\`, \`acceptCount=${c.acceptCount || '-'}\`, \`connectionTimeout=${c.connectionTimeout || '-'}ms\`, \`clientAuth=${c.clientAuth || 'false'}\`${c.keystoreFile ? `, keystore: \`${c.keystoreFile}\`` : ''}`
+            ).join('\n') || '    - Sin conectores Tomcat.';
+            return `### 🖥️ Servidor: ${s.serverName || 'Principal'} *(${(s.files || []).join(', ')})*\n` +
+                   `• **JDBC:** \`${jdbc.jdbcType || jdbc.type || 'N/A'}\` | \`${jdbc.jdbcUrl || jdbc.url || 'N/A'}\` *(Usuario: \`${jdbc.jdbcUser || jdbc.user || 'N/A'}\`, Schema: \`${jdbc.jdbcSchema || jdbc.schema || 'N/A'}\`)*\n` +
+                   `• **Tokens (` + '`entrusttoken.conf`' + `):** \`resetEventWindow=${tok.resetEventWindow || '-'}\`, \`maxTimeSteps=${tok.maxTimeSteps || '-'}\`\n` +
+                   `• **Session Timeout (` + '`web.xml`' + `):** \`${web.sessionTimeout || 'Default'} min\`\n` +
+                   `• **Conectores Tomcat (` + '`server.xml`' + `):**\n${conns}`;
+          }).join('\n\n---\n\n');
+          answer = `⚙️ **Expediente de Configuración Real — ${ctx.client.name} (${srvEntries.length} servidor${srvEntries.length === 1 ? '' : 'es'})**:\n\n${blocks}`;
         } else {
-          answer = `⚙️ No hay archivos de configuración cargados aún para **${ctx.client.name}**.\n\nPara analizar cada parámetro y su significado real, abre **+ Cliente** en la barra superior y sube sus archivos \`identityguard.properties\`, \`server.xml\`, \`web.xml\` o \`entrusttoken.conf\`.`;
+          answer = `⚙️ No hay archivos de configuración cargados aún para **${ctx.client.name}**.\n\nPara analizar cada parámetro y su significado real, abre **+ Cliente** en la barra superior, selecciona el servidor (ej. \`10.5.11.50\`) y sube sus archivos.`;
         }
         suggestedQueries = ['resumen operativo', 'base de datos oracle', 'generar informe ejecutivo'];
       }
