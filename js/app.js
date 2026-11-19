@@ -941,6 +941,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     state.activeClientConfig = loaded || null;
     renderClientConfigPreview(state.activeClientConfig);
+    if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
+    if (typeof renderLoadedFilesDrawer === 'function') renderLoadedFilesDrawer();
     if (typeof window.renderFullClientConfigExplorer === 'function') window.renderFullClientConfigExplorer();
     if (window.certAuditorEngine && typeof window.certAuditorEngine.render === 'function') {
       window.certAuditorEngine.render('certificates-table-container', state.logs, state.activeClientConfig);
@@ -1483,10 +1485,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.9',
-    build: 597,
+    version: 'v3.8.10',
+    build: 598,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'SYNC-ADDED-SERVERS-ALL-SELECTORS-389',
+    gitCommit: 'SYNC-SERVERS-ON-LOAD-AND-IP-10-16-13-86-3810',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
