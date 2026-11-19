@@ -1014,10 +1014,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.6.2',
-    build: 580,
+    version: 'v3.6.3',
+    build: 581,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'VOLUMETRY-RESTORED-FALLBACK-362',
+    gitCommit: 'EXACT-SEC6-VOLUMETRY-FIX-363',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',

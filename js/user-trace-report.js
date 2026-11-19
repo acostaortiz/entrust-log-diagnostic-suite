@@ -1427,7 +1427,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         primaryVector: totalDbInc > Math.max(migErrs, err520, audWarns) && totalDbInc > 0
           ? 'INFRAESTRUCTURA / BASE DE DATOS (Oracle / JDBC)'
           : (migErrs > 0 && migErrs >= err520 ? 'COLISIÓN DE MIGRACIÓN / APROVISIONAMIENTO (IDaaS / BulkIG)' : 'AUTENTICACIÓN, RETOS Y SEGURIDAD ENTRUST IDENTITYGUARD ONPREMISE [AUD / 520xxx]'),
-        executiveVerdict: `Análisis pericial Entrust IdentityGuard OnPremise sobre ${(window.appState?.globalStreamMetrics?.totalLogs || logs.length).toLocaleString()} registros y ${allUsers.length.toLocaleString()} usuarios nominales validados (0 usuarios ficticios). Alertas de Auditoría [AUD6001/AUD6002]: ${audWarns}. Errores 520xxx: ${err520}. Incidentes de Base de Datos: ${totalDbInc}.`,
+        executiveVerdict: `Análisis pericial Entrust IdentityGuard OnPremise sobre ${((typeof window.getConsolidatedMetricsGlobal === 'function' ? window.getConsolidatedMetricsGlobal().totalLogs : 0) || window.appState?.globalStreamMetrics?.totalLogs || logs.length).toLocaleString()} registros y ${allUsers.length.toLocaleString()} usuarios nominales validados (0 usuarios ficticios). Alertas de Auditoría [AUD6001/AUD6002]: ${audWarns}. Errores 520xxx: ${err520}. Incidentes de Base de Datos: ${totalDbInc}.`,
         breakdown: {
           databaseIncidents: totalDbInc,
           migrationCollisions: migErrs,
