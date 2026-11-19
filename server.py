@@ -617,7 +617,7 @@ def stream_lines_from_archive_or_file(file_path):
             for line in f:
                 yield line
 
-def index_file_in_background(file_path, client_name='Entrust Client'):
+def index_file_in_background(file_path, client_name='Entrust Client', append_mode=False):
     global upload_state, ACTIVE_DB_PATH
     client_slug = get_client_slug(client_name)
     db_name = f"{client_slug}_audit.db"
@@ -633,7 +633,7 @@ def index_file_in_background(file_path, client_name='Entrust Client'):
     upload_state['error'] = None
 
     try:
-        if os.path.exists(target_db):
+        if not append_mode and os.path.exists(target_db):
             try:
                 os.remove(target_db)
             except Exception:
@@ -1328,9 +1328,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             upload_state['progress'] = pct
 
             if chunk_index == total_chunks - 1:
+                append_mode = str(self.headers.get('X-Append-Mode', 'false')).lower() == 'true'
                 upload_state['status'] = 'indexing'
                 upload_state['progress'] = 0
-                thread = threading.Thread(target=index_file_in_background, args=(temp_path, client_name))
+                thread = threading.Thread(target=index_file_in_background, args=(temp_path, client_name, append_mode))
                 thread.daemon = True
                 thread.start()
 

@@ -1362,10 +1362,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.0',
-    build: 588,
+    version: 'v3.8.1',
+    build: 589,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'FULL-CONFIG-EXPLORER-INFRA-SHEET-380',
+    gitCommit: 'FULL-VOLUME-RETENTION-TRANSPARENCY-381',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -5525,13 +5525,17 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       const showingBadge = document.getElementById('pagination-showing-badge');
       const pageBadge = document.getElementById('pagination-current-page');
       const totalPagesBadge = document.getElementById('pagination-total-pages');
-      const realTotal = (state.globalStreamMetrics && state.globalStreamMetrics.totalLogs && state.filteredLogs.length === state.logs.length)
-        ? state.globalStreamMetrics.totalLogs
-        : totalMatching;
+      const globalTotal = (state.globalStreamMetrics && state.globalStreamMetrics.totalLogs) ? state.globalStreamMetrics.totalLogs : state.logs.length;
+      const isSampledRam = globalTotal > state.logs.length && state.logs.length > 0;
       if (showingBadge) {
-        showingBadge.textContent = totalMatching > 0
-          ? `${(startIdx + 1).toLocaleString()} - ${Math.min(startIdx + pageSize, totalMatching).toLocaleString()} de ${realTotal.toLocaleString()}`
-          : `0 - 0 de 0`;
+        if (totalMatching > 0) {
+          const baseRange = `${(startIdx + 1).toLocaleString()} - ${Math.min(startIdx + pageSize, totalMatching).toLocaleString()} de ${totalMatching.toLocaleString()}`;
+          showingBadge.textContent = isSampledRam
+            ? `${baseRange} (Muestra RAM: ${state.logs.length.toLocaleString()} / ${globalTotal.toLocaleString()} totales)`
+            : baseRange;
+        } else {
+          showingBadge.textContent = `0 - 0 de 0`;
+        }
       }
       if (pageBadge) pageBadge.textContent = state.localPage.toLocaleString();
       if (totalPagesBadge) totalPagesBadge.textContent = totalPages.toLocaleString();
@@ -9451,8 +9455,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       if (newLogs.length > 0) {
         state.logs = state.logs.concat(newLogs);
-        // Protección RAM estratificada uniforme entre TODOS los archivos/servidores (no solo el primero)
-        if (state.logs.length > 40000) {
+        // Protección RAM estratificada uniforme entre TODOS los archivos/servidores (hasta 250.000 trazas completas en navegador)
+        if (state.logs.length > 250000) {
           const allErrs = [];
           const allNonErrs = [];
           for (let i = 0; i < state.logs.length; i++) {
@@ -9464,12 +9468,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             }
           }
           let keptErrs = allErrs;
-          if (allErrs.length > 25000) {
-            const errStep = Math.max(1, Math.floor(allErrs.length / 25000));
+          if (allErrs.length > 150000) {
+            const errStep = Math.max(1, Math.floor(allErrs.length / 150000));
             keptErrs = [];
-            for (let i = 0; i < allErrs.length && keptErrs.length < 25000; i += errStep) keptErrs.push(allErrs[i]);
+            for (let i = 0; i < allErrs.length && keptErrs.length < 150000; i += errStep) keptErrs.push(allErrs[i]);
           }
-          const nomBudget = Math.max(10000, 40000 - keptErrs.length);
+          const nomBudget = Math.max(50000, 250000 - keptErrs.length);
           let keptNom = allNonErrs;
           if (allNonErrs.length > nomBudget) {
             const nomStep = Math.max(1, Math.floor(allNonErrs.length / nomBudget));
@@ -9514,7 +9518,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         setTimeout(() => {
           if (window.storageEngine && typeof window.storageEngine.saveActiveSession === 'function') {
             window.storageEngine.saveActiveSession({
-              logs: state.logs.slice(0, 5000),
+              logs: state.logs.slice(0, 50000),
               loadedFiles: state.loadedFiles,
               globalStreamMetrics: state.globalStreamMetrics,
               activeClientId: state.activeClientId
@@ -10070,7 +10074,11 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     const sampleScale = (totalReal > logs.length && logs.length > 0) ? (totalReal / logs.length) : 1;
     const estimatedSsh = Math.round(sshAndSyslogLogs.length * sampleScale);
 
-    if (rateVal) rateVal.textContent = estimatedSsh > 0 ? `${estimatedSsh.toLocaleString()} SSH/OS` : `${logs.length.toLocaleString()} Trazas`;
+    if (rateVal) {
+      rateVal.textContent = estimatedSsh > 0
+        ? `${estimatedSsh.toLocaleString()} SSH/OS`
+        : (totalReal > logs.length ? `Muestra RAM: ${logs.length.toLocaleString()} / ${totalReal.toLocaleString()}` : `100% En RAM (${logs.length.toLocaleString()})`);
+    }
     if (totalVal) totalVal.textContent = totalReal.toLocaleString();
     if (errorsVal) errorsVal.textContent = totalErrWarn.toLocaleString();
 
