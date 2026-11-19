@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.8.7 (Build 595)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.8.8 (Build 596)</span>
           </div>
         </div>
       </div>
@@ -1591,12 +1591,18 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
           </div>
         </div>
 
-        <!-- Sección 3: Instrucciones de Transferencia SCP -->
+        <!-- Sección 3: Instrucciones de Transferencia MobaXterm SFTP / SCP -->
         <div style="background:var(--bg-secondary); border:1px dashed var(--border-color); border-radius:8px; padding:12px 14px; font-size:0.78rem; margin-bottom:14px;">
-          <div style="font-weight:700; color:var(--text-cyan); margin-bottom:4px;">💡 ¿Cómo transferir un archivo de 10 GB directamente al servidor sin usar el navegador?</div>
-          <p style="margin:0 0 6px 0; color:var(--text-muted);">Puedes transferir cualquier archivo de cualquier cliente desde tu terminal de Windows usando SCP:</p>
-          <div style="background:#0f172a; color:#a5f3fc; padding:8px 12px; border-radius:6px; font-family:monospace; font-size:0.78rem; word-break:break-all;">
-            <code>scp "C:\ruta\tu_archivo_10gb.csv" tomas@10.16.13.175:/var/www/entrust-log-diagnostic-suite/data/</code>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+            <span style="font-weight:700; color:var(--text-cyan);">💡 Ruta exacta para subir archivos grandes (MobaXterm SFTP / SCP):</span>
+            <button type="button" class="btn btn-secondary" style="padding:2px 8px; font-size:0.72rem;" onclick="navigator.clipboard?.writeText('/var/www/entrust-log-diagnostic-suite/uploads/'); this.textContent='✅ Ruta copiada'; setTimeout(()=>this.textContent='📋 Copiar Ruta',1500);">📋 Copiar Ruta</button>
+          </div>
+          <p style="margin:0 0 6px 0; color:var(--text-muted);">En <strong>MobaXterm</strong> (panel SFTP izquierdo conectado a <code>tomas@10.16.13.86</code>), navega a esta ruta, arrastra tus archivos y luego pulsa <strong>🔄 Buscar Archivos</strong> arriba:</p>
+          <div style="background:#0f172a; color:#34d399; padding:7px 12px; border-radius:6px; font-family:monospace; font-size:0.78rem; margin-bottom:6px; word-break:break-all;">
+            <code>/var/www/entrust-log-diagnostic-suite/uploads/</code>
+          </div>
+          <div style="background:#0f172a; color:#a5f3fc; padding:7px 12px; border-radius:6px; font-family:monospace; font-size:0.75rem; word-break:break-all;">
+            <code>scp "C:\ruta\tu_archivo_15gb.log" tomas@10.16.13.86:/var/www/entrust-log-diagnostic-suite/uploads/</code>
           </div>
         </div>
 
@@ -1724,7 +1730,7 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/syslog-collector.js?v=550.0"></script>
   <script src="js/user-trace-report.js?v=581.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
-  <script src="js/app.js?v=595.0"></script>
+  <script src="js/app.js?v=596.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

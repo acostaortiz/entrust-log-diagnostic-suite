@@ -1480,10 +1480,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.7',
-    build: 595,
+    version: 'v3.8.8',
+    build: 596,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'ADD-SERVER-BUTTON-FIX-387',
+    gitCommit: 'FIX-SERVER-INGEST-MODAL-OPEN-388',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -5618,7 +5618,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
             <strong style="font-size: 1rem; color: var(--text-main); display: block; margin-bottom: 6px;">Consola Limpia y Lista para Análisis</strong>
             <p style="margin-bottom:16px; font-size:0.85rem;">Arrastra aquí tus archivos de logs (<code>.log</code>, rotados <code>.log.1..N</code>, Tomcat <code>.out</code>, <code>.txt</code>, <code>.csv</code>, <code>.json</code>) o usa <strong>Cargar Archivos</strong> arriba.</p>
             <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
-              <button type="button" class="btn" onclick="document.getElementById('btn-open-server-ingest')?.click()" style="font-size:0.82rem; padding:8px 18px; background:#059669; color:#fff; border:1px solid #10b981; border-radius:6px; font-weight:bold; cursor:pointer;">
+              <button type="button" class="btn" onclick="window.openServerIngestModalGlobal && window.openServerIngestModalGlobal()" style="font-size:0.82rem; padding:8px 18px; background:#059669; color:#fff; border:1px solid #10b981; border-radius:6px; font-weight:bold; cursor:pointer;">
                 ⚡ Ingesta Servidor (&gt; 3 GB)
               </button>
             </div>
@@ -9057,11 +9057,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const statusTitle = document.getElementById('server-ingest-status-title');
     const statusDetail = document.getElementById('server-ingest-status-detail');
 
+    window.openServerIngestModalGlobal = function() {
+      if (modal) modal.style.display = 'flex';
+      fetchServerFilesList();
+    };
+
     if (btnOpen) {
-      btnOpen.addEventListener('click', () => {
-        if (modal) modal.style.display = 'flex';
-        fetchServerFilesList();
-      });
+      btnOpen.addEventListener('click', window.openServerIngestModalGlobal);
     }
 
     if (btnClose) {
