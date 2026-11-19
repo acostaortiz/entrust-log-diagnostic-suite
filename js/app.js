@@ -1014,10 +1014,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.6.1',
-    build: 579,
+    version: 'v3.6.2',
+    build: 580,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'EXACT-ZERO-DOUBLECOUNT-METRICS-361',
+    gitCommit: 'VOLUMETRY-RESTORED-FALLBACK-362',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -3887,9 +3887,9 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
               <span>📐 <strong>Volumetría:</strong></span>
               <span>Archivos: <strong>${consolidated.fileCount || 1}</strong></span>
               <span>Servidores: <strong>${new Set((state.loadedFiles || []).map(f => f.serverTag || f.nodeName || 'Principal')).size || 1}</strong></span>
-              <span>Códigos Únicos: <strong>${(state.globalStreamMetrics?.totalUniqueCodes || Object.keys(consolidated.allCodesMap || {}).length || 0).toLocaleString()}</strong></span>
-              <span>Usuarios Auditados: <strong>${(state.globalStreamMetrics?.totalUniqueUsers || 0).toLocaleString()}</strong></span>
-              <span>IPs Únicas: <strong>${(state.globalStreamMetrics?.totalUniqueIps || 0).toLocaleString()}</strong></span>
+              <span>Códigos Únicos: <strong>${(state.globalStreamMetrics?.totalUniqueCodes || (Object.keys(consolidated.codeMap520 || {}).length + Object.keys(consolidated.codeMapAud || {}).length + Object.keys(consolidated.codeMapOra || {}).length) || 0).toLocaleString()}</strong></span>
+              <span>Usuarios Auditados: <strong>${(state.globalStreamMetrics?.totalUniqueUsers || (window.UserTraceReport?.cachedStats ? Object.keys(window.UserTraceReport.cachedStats).length : 0)).toLocaleString()}</strong></span>
+              <span>IPs Únicas: <strong>${(state.globalStreamMetrics?.totalUniqueIps || (state.globalStreamMetrics?.topIps || []).length || 0).toLocaleString()}</strong></span>
               <span>Muestra Trazas RAM: <strong>${targetLogs.length.toLocaleString()}</strong></span>
             </div>
           </div>
