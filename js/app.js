@@ -672,10 +672,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const sel = document.getElementById('client-config-server-select');
     if (!sel) return;
     const prev = sel.value;
-    const clientNodes = getClientAvailableNodes().map(n => n.name.replace(/^🖥️\s*/, '').replace(/^☁️\s*/, '').trim()).filter(Boolean);
     const savedServers = Object.keys(state.activeClientConfig?.servers || {});
-    const merged = Array.from(new Set([...clientNodes, ...savedServers]));
-    const list = merged.length ? merged : ['Servidor 1 (Primario)'];
+    const fileServers = (state.loadedFiles || []).map(f => (f.serverTag || '').replace(/^🖥️\s*/, '').trim()).filter(Boolean);
+    const clientNodes = getClientAvailableNodes().map(n => n.name.replace(/^🖥️\s*/, '').replace(/^☁️\s*/, '').trim()).filter(Boolean);
+    const realNodes = Array.from(new Set([...savedServers, ...fileServers, ...clientNodes]))
+      .filter(s => savedServers.length + fileServers.length === 0 || !/^Servidor (Primario|Secundario)/i.test(s));
+    const list = realNodes.length ? realNodes : ['Servidor 1 (Primario)'];
     sel.innerHTML = list.map(s => `<option value="${escapeHtml(s)}">🖥️ ${escapeHtml(s)}</option>`).join('') +
       '<option value="__CUSTOM__">➕ Registrar otro servidor...</option>';
     if (prev && prev !== '__CUSTOM__' && list.includes(prev)) sel.value = prev;
@@ -1071,10 +1073,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.7.1',
-    build: 584,
+    version: 'v3.7.2',
+    build: 585,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'CLIENT-MODAL-EDIT-SAVE-FIX-371',
+    gitCommit: 'REAL-SERVERS-DROPDOWN-PRIORITY-372',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -7749,9 +7751,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   function populateServerFilterSelector() {
     const sel = document.getElementById('filter-server-select');
     const uploadSel = document.getElementById('upload-server-tag');
-    const clientNodes = getClientAvailableNodes().map(n => n.name.replace(/^🖥️\s*/, '').replace(/^☁️\s*/, '').trim()).filter(Boolean);
+    const savedServers = Object.keys(state.activeClientConfig?.servers || {});
     const fileServers = (state.loadedFiles || []).map(f => (f.serverTag || '').replace(/^🖥️\s*/, '').trim()).filter(Boolean);
-    const allServers = Array.from(new Set([...clientNodes, ...fileServers]));
+    const clientNodes = getClientAvailableNodes().map(n => n.name.replace(/^🖥️\s*/, '').replace(/^☁️\s*/, '').trim()).filter(Boolean);
+    const hasReal = (savedServers.length + fileServers.length) > 0 || clientNodes.some(n => !/^Servidor (Primario|Secundario)/i.test(n));
+    const allServers = Array.from(new Set([...savedServers, ...fileServers, ...clientNodes]))
+      .filter(s => !hasReal || !/^Servidor (Primario|Secundario)/i.test(s));
 
     if (sel) {
       const prev = sel.value || 'ALL';
