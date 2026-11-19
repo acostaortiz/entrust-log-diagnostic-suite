@@ -789,6 +789,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     renderClientConfigPreview(merged);
+    if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
+    renderLoadedFilesDrawer();
     if (window.certAuditorEngine && typeof window.certAuditorEngine.render === 'function') {
       window.certAuditorEngine.render('certificates-table-container', state.logs, state.activeClientConfig);
     }
@@ -1073,10 +1075,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.7.2',
-    build: 585,
+    version: 'v3.7.3',
+    build: 586,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'REAL-SERVERS-DROPDOWN-PRIORITY-372',
+    gitCommit: 'CLEAN-SERVER-DROPDOWNS-SYNC-373',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -7189,11 +7191,24 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     const files = state.loadedFiles || [];
     const client = getActiveClientProfile();
+    const savedServers = Object.keys(state.activeClientConfig?.servers || {});
     const baseAvailNodes = getClientAvailableNodes();
+    const hasRealServers = savedServers.length > 0 ||
+      files.some(f => f.serverTag && !/^Servidor (Primario|Secundario)/i.test(f.serverTag)) ||
+      baseAvailNodes.some(n => !/^🖥️\s*Servidor (Primario|Secundario)/i.test(n.name));
+
     const effectiveNodesMap = new Map();
-    baseAvailNodes.forEach(n => effectiveNodesMap.set(n.name, n));
+    savedServers.forEach(s => {
+      const nm = s.startsWith('🖥️') ? s : '🖥️ ' + s;
+      effectiveNodesMap.set(nm, { key: 'srv_' + s.toLowerCase().replace(/[^a-z0-9]+/g, '_'), name: nm });
+    });
+    baseAvailNodes.forEach(n => {
+      if (hasRealServers && /^🖥️\s*Servidor (Primario|Secundario)/i.test(n.name)) return;
+      if (!effectiveNodesMap.has(n.name)) effectiveNodesMap.set(n.name, n);
+    });
     files.forEach(f => {
       const nm = f.serverTag ? (f.serverTag.startsWith('🖥️') ? f.serverTag : '🖥️ ' + f.serverTag) : (f.nodeName || '🖥️ Servidor 1');
+      if (hasRealServers && /^🖥️\s*Servidor (Primario|Secundario)/i.test(nm)) return;
       const k = f.nodeKey || ('srv_' + nm.toLowerCase().replace(/[^a-z0-9]+/g, '_'));
       if (!effectiveNodesMap.has(nm)) {
         effectiveNodesMap.set(nm, { key: k, name: nm });
@@ -7237,7 +7252,6 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           ${batchNodeOptions}
         </select>
         <button type="button" class="btn btn-primary" onclick="window.assignSelectedFilesToNodeGlobal()" style="padding:3px 10px; font-size:0.74rem; font-weight:700;">✅ Asignar Marcados</button>
-        <button type="button" class="btn" onclick="window.editClientNodesGlobal()" style="padding:3px 9px; font-size:0.72rem; background:rgba(56,189,248,0.15); color:var(--it-blue); border:1px solid var(--it-blue); border-radius:4px; font-weight:bold; cursor:pointer;">⚙️ Configurar Nodos de este Cliente</button>
       </div>`;
 
     files.forEach((f, idx) => {
