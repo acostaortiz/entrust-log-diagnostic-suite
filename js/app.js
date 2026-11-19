@@ -317,48 +317,47 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function loadClientProfiles() {
-    let loadedList = null;
+    let serverList = null;
+    let localList = null;
     const savedActiveId = localStorage.getItem('active_client_profile_id');
 
-    // 1. Prioridad: Servidor Backend (/api/clients)
+    // 1. Prioridad: Servidor Backend (/api/clients) compartido entre TODOS los navegadores
     try {
       const res = await fetch('/api/clients');
       if (res.ok) {
         const data = await res.json();
         if (data && Array.isArray(data.clients)) {
-          loadedList = data.clients;
+          serverList = data.clients;
         }
       }
     } catch(e) {}
 
-    // 2. Si el servidor no respondió, consultar LocalStorage
-    if (!loadedList) {
-      try {
-        const stored = localStorage.getItem('custom_client_profiles_stable');
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed)) {
-            loadedList = parsed;
-          }
-        }
-      } catch(e) {}
-    }
-
-    // 3. Consultar IndexedDB
-    if (!loadedList) {
+    // 2. Consultar respaldo local (LocalStorage / IndexedDB)
+    try {
+      const stored = localStorage.getItem('custom_client_profiles_stable');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) localList = parsed;
+      }
+    } catch(e) {}
+    if (!localList) {
       try {
         if (window.storageEngine && typeof window.storageEngine.loadClientProfiles === 'function') {
           const idbProfiles = await window.storageEngine.loadClientProfiles();
-          if (Array.isArray(idbProfiles)) {
-            loadedList = idbProfiles;
-          }
+          if (Array.isArray(idbProfiles) && idbProfiles.length > 0) localList = idbProfiles;
         }
       } catch(e) {}
     }
 
-    // 4. Fallback inicial si no hay nada guardado
-    if (!loadedList || !Array.isArray(loadedList)) {
-      loadedList = [];
+    let loadedList = [];
+    if (serverList && serverList.length > 0) {
+      loadedList = serverList;
+      // Sincronizar solo a caché local sin sobrescribir el servidor
+      try { localStorage.setItem('custom_client_profiles_stable', JSON.stringify(loadedList)); } catch(e) {}
+    } else if (localList && localList.length > 0) {
+      // Si el servidor estaba vacío pero este navegador tenía clientes, subirlos al servidor para compartirlos
+      loadedList = localList;
+      persistClientProfiles(loadedList);
     }
 
     state.clientProfiles = loadedList;
@@ -369,7 +368,9 @@ document.addEventListener('DOMContentLoaded', () => {
       state.activeClientId = state.clientProfiles[0]?.id || '';
     }
 
-    persistClientProfiles(state.clientProfiles);
+    if (state.activeClientId) {
+      try { localStorage.setItem('active_client_profile_id', state.activeClientId); } catch(e) {}
+    }
     populateClientSessionSelectors();
     if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
   }
@@ -1489,10 +1490,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.11',
-    build: 599,
+    version: 'v3.8.12',
+    build: 600,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'PERSIST-CLIENT-CONFIG-ON-CREATE-3811',
+    gitCommit: 'CROSS-BROWSER-CLIENT-SYNC-GUARD-3812',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
