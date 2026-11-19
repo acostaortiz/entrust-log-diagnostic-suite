@@ -724,15 +724,104 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    preview.innerHTML = srvList.map(srv => `
+    preview.innerHTML = srvList.map(srv => {
+      const sName = srv.serverName || 'General';
+      const safeAttr = escapeHtml(sName).replace(/'/g, "\\'");
+      return `
       <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:10px; font-size:0.76rem; color:var(--text-main); margin-bottom:8px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; border-bottom:1px dashed rgba(16,185,129,0.3); padding-bottom:4px;">
-          <strong>🖥️ Servidor: ${escapeHtml(srv.serverName || 'General')}</strong>
-          <span style="font-size:0.7rem; color:var(--text-muted);">${escapeHtml((srv.files || []).join(', '))}</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px; border-bottom:1px dashed rgba(16,185,129,0.3); padding-bottom:4px;">
+          <strong>🖥️ Servidor: ${escapeHtml(sName)}</strong>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:0.7rem; color:var(--text-muted);">${escapeHtml((srv.files || []).join(', '))}</span>
+            <button type="button" onclick="window.renameClientConfigServerGlobal('${safeAttr}')" title="Renombrar servidor" style="background:rgba(245,158,11,0.14); border:1px solid rgba(245,158,11,0.4); color:#d97706; border-radius:4px; padding:1px 6px; font-size:0.7rem; cursor:pointer;">✏️</button>
+            <button type="button" onclick="window.deleteClientConfigServerGlobal('${safeAttr}')" title="Eliminar servidor" style="background:rgba(239,68,68,0.14); border:1px solid rgba(239,68,68,0.4); color:#dc2626; border-radius:4px; padding:1px 6px; font-size:0.7rem; cursor:pointer;">🗑️</button>
+          </div>
         </div>
         ${_renderSingleServerConfigHtml(srv)}
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
+
+  async function _persistClientConfigUpdate(clientId, cfg) {
+    try {
+      localStorage.setItem('entrust_client_config_' + clientId, JSON.stringify(cfg));
+    } catch (e) {}
+    try {
+      await fetch('/api/client-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, config: cfg })
+      });
+    } catch (e) {
+      console.warn('No se pudo persistir cambio de servidor en backend:', e);
+    }
+    renderClientConfigPreview(cfg);
+    if (typeof window.renderFullClientConfigExplorer === 'function') window.renderFullClientConfigExplorer();
+    if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
+    if (typeof renderLoadedFilesDrawer === 'function') renderLoadedFilesDrawer();
+    if (window.certAuditorEngine && typeof window.certAuditorEngine.render === 'function') {
+      window.certAuditorEngine.render('certificates-table-container', state.logs, state.activeClientConfig);
+    }
+  }
+
+  window.renameClientConfigServerGlobal = async function(explicitName) {
+    const sel = document.getElementById('client-config-server-select');
+    const target = explicitName || (sel && sel.value !== '__CUSTOM__' ? sel.value : '');
+    if (!target) {
+      alert('Selecciona primero el servidor que deseas renombrar.');
+      return;
+    }
+    const nextRaw = prompt(`Nuevo nombre o IP para el servidor "${target}":`, target);
+    if (!nextRaw || !nextRaw.trim() || nextRaw.trim() === target) return;
+    const newName = nextRaw.trim();
+
+    const clientId = document.getElementById('client-input-id')?.value || state.activeClientId || 'default';
+    if (!state.activeClientConfig) state.activeClientConfig = { clientId, servers: {} };
+    if (!state.activeClientConfig.servers || typeof state.activeClientConfig.servers !== 'object') {
+      state.activeClientConfig.servers = {};
+    }
+
+    const servers = state.activeClientConfig.servers;
+    if (servers[target]) {
+      const moved = { ...servers[target], serverName: newName, updatedAt: new Date().toISOString() };
+      delete servers[target];
+      servers[newName] = moved;
+    } else {
+      servers[newName] = { serverName: newName, files: [], updatedAt: new Date().toISOString() };
+    }
+    state.activeClientConfig.updatedAt = new Date().toISOString();
+
+    (state.loadedFiles || []).forEach(f => {
+      if ((f.serverTag || '').replace(/^🖥️\s*/, '').trim() === target) {
+        f.serverTag = newName;
+        f.nodeName = newName.startsWith('🖥️') ? newName : '🖥️ ' + newName;
+      }
+    });
+
+    await _persistClientConfigUpdate(clientId, state.activeClientConfig);
+    if (sel) sel.value = newName;
+  };
+
+  window.deleteClientConfigServerGlobal = async function(explicitName) {
+    const sel = document.getElementById('client-config-server-select');
+    const target = explicitName || (sel && sel.value !== '__CUSTOM__' ? sel.value : '');
+    if (!target) {
+      alert('Selecciona primero el servidor que deseas eliminar.');
+      return;
+    }
+    if (!confirm(`¿Eliminar el servidor "${target}" y su configuración asociada de este cliente?`)) return;
+
+    const clientId = document.getElementById('client-input-id')?.value || state.activeClientId || 'default';
+    if (state.activeClientConfig && state.activeClientConfig.servers && state.activeClientConfig.servers[target]) {
+      delete state.activeClientConfig.servers[target];
+      state.activeClientConfig.files = Array.from(new Set(Object.values(state.activeClientConfig.servers).flatMap(s => s.files || [])));
+      state.activeClientConfig.updatedAt = new Date().toISOString();
+      await _persistClientConfigUpdate(clientId, state.activeClientConfig);
+    } else if (sel) {
+      Array.from(sel.options).forEach(opt => { if (opt.value === target) opt.remove(); });
+      if (sel.options.length > 0) sel.selectedIndex = 0;
+    }
+  };
 
   window.handleClientConfigUploadGlobal = async function(event) {
     const files = event?.target?.files;
@@ -1362,10 +1451,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.5',
-    build: 593,
+    version: 'v3.8.6',
+    build: 594,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'EXPAND-RAM-INDEXEDDB-50K-250K-385',
+    gitCommit: 'SERVER-RENAME-DELETE-CONTROLS-386',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
