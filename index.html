@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.8.1 (Build 589)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.8.3 (Build 591)</span>
           </div>
         </div>
       </div>
@@ -70,7 +70,7 @@
         <button class="nav-btn active" data-tab="overview"><span>📊</span> Visión General</button>
         <button class="nav-btn" data-tab="analyzer"><span>🔍</span> Analizador</button>
         <button class="nav-btn" data-tab="users"><span>👤</span> Censo &amp; Trazas de Usuario</button>
-        <button class="nav-btn" data-tab="radar"><span>🎯</span> Threat Radar</button>
+        <button class="nav-btn" data-tab="radar"><span>🛡️</span> Cuentas en Riesgo</button>
         <button class="nav-btn" data-tab="topology"><span>🏛️</span> Topología &amp; Config</button>
         <button class="nav-btn" data-tab="syslog"><span>📡</span> Syslog</button>
         <button class="nav-btn" data-tab="certificates"><span>🔐</span> Certificados</button>
@@ -890,9 +890,9 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
         <div class="card-header flex-between" style="flex-wrap:wrap; gap:10px;">
           <div>
             <div class="card-title" style="color:#f43f5e; font-size:1.15rem; display:flex; align-items:center; gap:8px;">
-              Radar Pericial de Cuentas Afectadas & Ataques de Fuerza Bruta
+              Monitor de Cuentas Bloqueadas y Anomalías de Autenticación
             </div>
-            <div class="card-subtitle">Detección de identidades bloqueadas, ataques de diccionario, ráfagas de autenticación y exportación forense SOC</div>
+            <div class="card-subtitle">Identificación de identidades bloqueadas, intentos fallidos recurrentes, patrones anómalos de acceso y exportación SOC</div>
           </div>
           <div style="display:flex; gap:10px; align-items:center;">
             <button class="btn btn-primary" id="btn-refresh-threat-radar" style="background:#0284c7; border:none; font-size:0.8rem; padding:6px 12px; font-weight:bold;">
@@ -1566,9 +1566,13 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
       <div class="modal-body" style="font-size:0.85rem; line-height:1.5;">
         <!-- Sección 1: Archivos Detectados en el Servidor -->
         <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:14px; margin-bottom:16px;">
-          <div class="flex-between mb-2">
-            <span style="font-weight:700; color:var(--text-main);">📁 Archivos Detectados en el Servidor (`/data` o raíz):</span>
-            <button class="btn btn-secondary" id="btn-refresh-server-files" style="padding:2px 8px; font-size:0.75rem;">🔄 Buscar Archivos</button>
+          <div class="flex-between mb-2" style="flex-wrap:wrap; gap:6px;">
+            <span style="font-weight:700; color:var(--text-main);">📁 Archivos Detectados en el Servidor (<code>uploads/</code>, <code>data/</code> o raíz):</span>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="btn" id="btn-ingest-selected-server-files" style="padding:3px 10px; font-size:0.75rem; background:#0284c7; color:#fff; border:none; border-radius:4px; font-weight:700; cursor:pointer;">☑️ Indexar Seleccionados</button>
+              <button type="button" class="btn" id="btn-ingest-all-server-files" style="padding:3px 10px; font-size:0.75rem; background:#10b981; color:#fff; border:none; border-radius:4px; font-weight:700; cursor:pointer;">🚀 Indexar Todos en SQLite</button>
+              <button type="button" class="btn btn-secondary" id="btn-refresh-server-files" style="padding:2px 8px; font-size:0.75rem;">🔄 Buscar Archivos</button>
+            </div>
           </div>
           <div id="server-files-list-container" style="max-height:160px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">
             <span style="color:var(--text-muted); font-size:0.8rem;">Haz clic en "Buscar Archivos" para listar los logs subidos al servidor.</span>
@@ -1717,7 +1721,7 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/syslog-collector.js?v=550.0"></script>
   <script src="js/user-trace-report.js?v=581.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
-  <script src="js/app.js?v=589.0"></script>
+  <script src="js/app.js?v=591.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

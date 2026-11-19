@@ -617,6 +617,20 @@ def stream_lines_from_archive_or_file(file_path):
             for line in f:
                 yield line
 
+def index_batch_in_background(file_paths, client_name='Entrust Client', force_reindex=True):
+    global upload_state
+    total_files = len(file_paths)
+    for idx, fp in enumerate(file_paths):
+        append_mode = (idx > 0) or (not force_reindex)
+        index_file_in_background(fp, client_name=client_name, append_mode=append_mode)
+        if upload_state.get('status') == 'error':
+            break
+    if upload_state.get('status') != 'error':
+        upload_state['fileName'] = f"Lote completo ({total_files} archivo(s))"
+        upload_state['status'] = 'ready'
+        upload_state['progress'] = 100
+
+
 def index_file_in_background(file_path, client_name='Entrust Client', append_mode=False):
     global upload_state, ACTIVE_DB_PATH
     client_slug = get_client_slug(client_name)
@@ -813,6 +827,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_upload_chunk()
         elif path == '/api/ingest-local':
             self.handle_ingest_local()
+        elif path == '/api/ingest-batch':
+            self.handle_ingest_batch()
         elif path == '/api/clients':
             self.handle_save_clients()
         elif path == '/api/engineers':
@@ -1281,7 +1297,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                             'records': records,
                             'errors': errors
                         })
-                    elif f.endswith(('.csv', '.log', '.txt', '.tsv')):
+                    elif re.search(r'\.(csv|log|txt|tsv|out|json)(\.\d+)?$', f, re.IGNORECASE):
                         found_files.append({
                             'name': f,
                             'path': full_p,
@@ -1431,6 +1447,71 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'success': True,
                 'status': 'indexing',
                 'filePath': file_path,
+                'client': client_name
+            })
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
+
+    def handle_ingest_batch(self):
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            body_data = self.rfile.read(content_length).decode('utf-8')
+            payload = json.loads(body_data) if body_data else {}
+
+            raw_paths = payload.get('filePaths') or []
+            ingest_all = bool(payload.get('ingestAll', False))
+            client_name = payload.get('clientName', 'Banco Mercantil C.A.').strip() or 'Banco Mercantil C.A.'
+            force_reindex = bool(payload.get('forceReindex', True))
+
+            resolved_paths = []
+            if ingest_all and not raw_paths:
+                for sdir in (UPLOADS_DIR, DATA_DIR):
+                    if not os.path.exists(sdir):
+                        continue
+                    for f in sorted(os.listdir(sdir)):
+                        if f.startswith('.'):
+                            continue
+                        full_p = os.path.join(sdir, f)
+                        if os.path.isfile(full_p) and re.search(r'\.(csv|log|txt|tsv|out|json)(\.\d+)?$', f, re.IGNORECASE):
+                            if not f.lower().endswith(self.BLOCKED_EXTENSIONS):
+                                resolved_paths.append(full_p)
+            else:
+                for p in raw_paths:
+                    safe_basename = os.path.basename(str(p).strip())
+                    if not safe_basename or safe_basename.lower().endswith(self.BLOCKED_EXTENSIONS):
+                        continue
+                    for allowed_dir in (DATA_DIR, UPLOADS_DIR, BASE_DIR):
+                        cand = os.path.abspath(os.path.join(allowed_dir, safe_basename))
+                        if os.path.isfile(cand):
+                            resolved_paths.append(cand)
+                            break
+
+            resolved_paths = list(dict.fromkeys(resolved_paths))
+            if not resolved_paths:
+                self.send_json({'error': 'No se encontraron archivos válidos para indexar en el servidor.'}, status=404)
+                return
+
+            client_slug = get_client_slug(client_name)
+            upload_state['status'] = 'indexing'
+            upload_state['progress'] = 0
+            upload_state['fileName'] = f"Lote de {len(resolved_paths)} archivo(s)"
+            upload_state['clientName'] = client_name
+            upload_state['clientSlug'] = client_slug
+            upload_state['linesProcessed'] = 0
+            upload_state['totalErrors'] = 0
+            upload_state['error'] = None
+
+            thread = threading.Thread(
+                target=index_batch_in_background,
+                args=(resolved_paths, client_name, force_reindex)
+            )
+            thread.daemon = True
+            thread.start()
+
+            self.send_json({
+                'success': True,
+                'status': 'indexing',
+                'totalFiles': len(resolved_paths),
                 'client': client_name
             })
         except Exception as e:

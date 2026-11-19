@@ -1362,10 +1362,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.1',
-    build: 589,
+    version: 'v3.8.3',
+    build: 591,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'FULL-VOLUME-RETENTION-TRANSPARENCY-381',
+    gitCommit: 'REACTIVE-CHARTS-TIME-WINDOW-383',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -6910,27 +6910,53 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const trendCanvas = document.getElementById('chart-trend');
       if (trendCanvas) {
         const ctx = trendCanvas.getContext('2d');
+        const gradTotal = ctx.createLinearGradient(0, 0, 0, 260);
+        gradTotal.addColorStop(0, 'rgba(2, 132, 199, 0.30)');
+        gradTotal.addColorStop(1, 'rgba(2, 132, 199, 0.01)');
+        const gradErr = ctx.createLinearGradient(0, 0, 0, 260);
+        gradErr.addColorStop(0, 'rgba(239, 68, 68, 0.32)');
+        gradErr.addColorStop(1, 'rgba(239, 68, 68, 0.02)');
+
         state.charts.trend = new Chart(ctx, {
           type: 'line',
           data: {
             labels: ['Inicio', 'Cargando...'],
             datasets: [
               {
-                label: 'Transacciones Totales (Nominales)', pointRadius: 1.5, pointHoverRadius: 5,
+                label: 'Transacciones Totales',
+                pointRadius: 2,
+                pointHoverRadius: 6,
+                borderWidth: 2.2,
                 data: [0, 0],
                 borderColor: '#0284c7',
-                backgroundColor: 'rgba(2, 132, 199, 0.12)',
+                backgroundColor: gradTotal,
                 tension: 0.35,
                 fill: true,
                 yAxisID: 'y'
               },
               {
-                label: 'Errores [520xxx / Fallas]', pointRadius: 1.5, pointHoverRadius: 5,
+                label: 'Errores Críticos [520xxx / Fallas]',
+                pointRadius: 2,
+                pointHoverRadius: 6,
+                borderWidth: 2.2,
                 data: [0, 0],
                 borderColor: '#ef4444',
-                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                backgroundColor: gradErr,
                 tension: 0.35,
                 fill: true,
+                yAxisID: 'y1'
+              },
+              {
+                label: 'Advertencias [WARN / AUD]',
+                pointRadius: 1.5,
+                pointHoverRadius: 5,
+                borderWidth: 1.8,
+                borderDash: [4, 3],
+                data: [0, 0],
+                borderColor: '#f59e0b',
+                backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                tension: 0.35,
+                fill: false,
                 yAxisID: 'y1'
               }
             ]
@@ -6940,21 +6966,32 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
             plugins: {
-              legend: { labels: { color: '#94a3b8', font: { family: 'Segoe UI', weight: '600', size: 11 } } },
+              legend: { labels: { color: '#94a3b8', usePointStyle: true, boxWidth: 8, font: { family: 'Segoe UI', weight: '600', size: 11 } } },
               tooltip: {
                 backgroundColor: '#0f172a',
                 titleColor: '#38bdf8',
                 bodyColor: '#f8fafc',
                 borderColor: '#334155',
-                borderWidth: 1
+                borderWidth: 1,
+                padding: 10,
+                callbacks: {
+                  afterBody: function(items) {
+                    if (!items || items.length < 2) return '';
+                    const tot = items[0]?.parsed?.y || 0;
+                    const err = items[1]?.parsed?.y || 0;
+                    if (tot <= 0) return '';
+                    return `\n📉 Tasa de Error en intervalo: ${((err / tot) * 100).toFixed(2)}%`;
+                  }
+                }
               }
             },
             scales: {
-              x: { grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 }, maxTicksLimit: 8, maxRotation: 0, autoSkip: true } },
+              x: { grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8', font: { size: 10 }, maxTicksLimit: 10, maxRotation: 0, autoSkip: true } },
               y: {
                 type: 'linear',
                 display: true,
                 position: 'left',
+                beginAtZero: true,
                 grid: { color: 'rgba(148, 163, 184, 0.1)' },
                 ticks: {
                   color: '#0284c7',
@@ -6969,8 +7006,17 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
                 type: 'linear',
                 display: true,
                 position: 'right',
+                beginAtZero: true,
                 grid: { drawOnChartArea: false },
-                ticks: { color: '#ef4444', font: { size: 10 } }
+                ticks: {
+                  color: '#ef4444',
+                  font: { size: 10 },
+                  callback: function(val) {
+                    if (val >= 1000000) return (val / 1000000).toFixed(1) + 'M';
+                    if (val >= 1000) return (val / 1000).toFixed(0) + 'K';
+                    return val;
+                  }
+                }
               }
             }
           }
@@ -6983,35 +7029,50 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         state.charts.severity = new Chart(ctxSev, {
           type: 'bar',
           data: {
-            labels: ['INFO (Nominal)', 'ERROR / 520xxx', 'WARN (Auditoría)', 'DEBUG'],
+            labels: ['INFO (Exitosos)', 'ERROR / 520xxx', 'WARN (Auditoría)', 'CRÍTICO (Bloqueos)', 'DEBUG / Sistema'],
             datasets: [{
               label: 'Eventos',
-              data: [0, 0, 0, 0],
+              data: [0, 0, 0, 0, 0],
               backgroundColor: [
                 'rgba(2, 132, 199, 0.85)',
                 'rgba(239, 68, 68, 0.9)',
                 'rgba(245, 158, 11, 0.9)',
+                'rgba(190, 18, 60, 0.92)',
                 'rgba(139, 92, 246, 0.85)'
               ],
+              borderColor: ['#0284c7', '#ef4444', '#f59e0b', '#be123c', '#8b5cf6'],
+              borderWidth: 1,
               borderRadius: 6,
-              barPercentage: 0.65
+              barPercentage: 0.68
             }]
           },
           options: {
             indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
+            onClick: function(_evt, elements) {
+              if (!elements || !elements.length) return;
+              const idx = elements[0].index;
+              const levelMap = ['INFO', 'ERROR', 'WARN', 'CRITICAL', 'DEBUG'];
+              const targetLevel = levelMap[idx];
+              if (targetLevel && dom.filterLevelSelect) {
+                dom.filterLevelSelect.value = targetLevel;
+                applyLogFilters();
+                switchTab('analyzer');
+              }
+            },
             plugins: {
               legend: { display: false },
               tooltip: {
                 backgroundColor: '#0f172a',
                 titleColor: '#38bdf8',
+                padding: 10,
                 callbacks: {
                   label: function(context) {
                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
                     const val = context.raw || 0;
                     const pct = total > 0 ? ((val / total) * 100).toFixed(2) : 0;
-                    return ` ${val.toLocaleString()} eventos (${pct}%)`;
+                    return ` ${val.toLocaleString()} eventos (${pct}%) · Clic para filtrar`;
                   }
                 }
               }
@@ -7097,104 +7158,173 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
   function updateTrendChart() {
     if (!state.charts.trend) return;
-    const logs = state.logs || [];
-    if (logs.length === 0 && !state.globalStreamMetrics) {
-      state.charts.trend.data.labels = ['Sin Datos'];
+    const allLogs = state.logs || [];
+    const win = state.activeTimeWindow;
+    const isWindowActive = !!(win && win.active && win.tStart != null && win.tEnd != null);
+    const activeLogs = (isWindowActive || (state.filteredLogs && state.filteredLogs.length !== allLogs.length))
+      ? (state.filteredLogs || [])
+      : allLogs;
+
+    if (activeLogs.length === 0 && (!state.globalStreamMetrics || isWindowActive)) {
+      state.charts.trend.data.labels = ['Sin Datos en Ventana'];
       state.charts.trend.data.datasets[0].data = [0];
       state.charts.trend.data.datasets[1].data = [0];
-      state.charts.trend.update();
+      if (state.charts.trend.data.datasets[2]) state.charts.trend.data.datasets[2].data = [0];
+      state.charts.trend.update('none');
+      const rangeBadge = document.getElementById('trend-time-range-badge');
+      if (rangeBadge && isWindowActive) {
+        rangeBadge.textContent = `🕒 Ventana: ${win.startLabel} ➔ ${win.endLabel} (0 eventos)`;
+      }
       return;
     }
 
     let labels = [];
     let totalData = [];
     let errorData = [];
+    let warnData = [];
 
     const rawBuckets = state.globalStreamMetrics?.timeBuckets || {};
     const bucketKeys = Object.keys(rawBuckets).sort();
+    const scaleFactor = (state.globalStreamMetrics?.totalLogs > allLogs.length && allLogs.length > 0)
+      ? (state.globalStreamMetrics.totalLogs / allLogs.length)
+      : 1;
 
-    if (bucketKeys.length > 1) {
-      // Múltiples buckets de tiempo reales (horas o días)
+    if (!isWindowActive && activeLogs.length === allLogs.length && bucketKeys.length > 1) {
       bucketKeys.forEach(k => {
-        labels.push(k.substring(5)); // e.g. "09-08 13"
-        totalData.push(rawBuckets[k].total);
-        errorData.push(rawBuckets[k].critical);
+        labels.push(k.substring(5));
+        const bTotal = rawBuckets[k].total || 0;
+        const bCrit = rawBuckets[k].critical || 0;
+        const bWarn = rawBuckets[k].warn || rawBuckets[k].warning || 0;
+        totalData.push(bTotal);
+        errorData.push(bCrit);
+        warnData.push(bWarn);
       });
-    } else if (state.globalStreamMetrics) {
-      // Archivo de un solo lote o una sola ventana horaria (ej. 3.88M registros / IDaaS Migration)
-      // Generar 12 intervalos de progresión de flujo para dibujar la curva completa de extremo a extremo
-      const totalGlobal = state.globalStreamMetrics.totalLogs || 3885429;
-      const errorGlobal = state.globalStreamMetrics.totalErrors || totalGlobal;
-      const singleKey = bucketKeys[0] || '2026-09-17 15';
-      const baseHour = singleKey.length >= 13 ? singleKey.substring(11, 13) : '15';
-      const baseDate = singleKey.length >= 10 ? singleKey.substring(5, 10) : '09-17';
-      const intervals = 12;
-      const sliceTotal = Math.round(totalGlobal / intervals);
-      const sliceErr = Math.round(errorGlobal / intervals);
-
-      for (let i = 0; i < intervals; i++) {
-        const min = String(Math.floor((i * 60) / intervals)).padStart(2, '0');
-        labels.push(`${baseDate} ${baseHour}:${min}`);
-        totalData.push(sliceTotal);
-        errorData.push(sliceErr);
+    } else if (activeLogs.length > 0) {
+      // Agrupación temporal real por timestamps dentro de la ventana activa (16 intervalos)
+      const timed = [];
+      for (let i = 0; i < activeLogs.length; i++) {
+        const l = activeLogs[i];
+        const ts = l.timestamp || l.time;
+        const ms = ts ? new Date(String(ts).replace(',', '.')).getTime() : NaN;
+        if (!isNaN(ms)) timed.push({ ms, log: l });
       }
-    } else if (logs.length > 0) {
-      // Agregación cronológica en 12 buckets a partir de los logs en memoria
-      const numBuckets = Math.min(12, Math.max(2, logs.length));
-      const bucketSize = Math.max(1, Math.floor(logs.length / numBuckets));
 
-      for (let b = 0; b < numBuckets; b++) {
-        const startIdx = b * bucketSize;
-        const endIdx = b === numBuckets - 1 ? logs.length : (b + 1) * bucketSize;
-        const slice = logs.slice(startIdx, endIdx);
-        if (slice.length === 0) continue;
+      if (timed.length >= 2) {
+        timed.sort((a, b) => a.ms - b.ms);
+        const minMs = isWindowActive ? win.tStart : timed[0].ms;
+        const maxMs = isWindowActive ? win.tEnd : timed[timed.length - 1].ms;
+        const span = Math.max(1000, maxMs - minMs);
+        const numBuckets = 16;
+        const bTotal = new Array(numBuckets).fill(0);
+        const bErr = new Array(numBuckets).fill(0);
+        const bWarn = new Array(numBuckets).fill(0);
 
-        const firstLog = slice[0];
-        let timeLabel = `Lote ${b + 1}`;
-        if (firstLog && firstLog.timestamp) {
-          const parts = firstLog.timestamp.split(' ');
-          timeLabel = parts[1] ? parts[1].substring(0, 5) : (parts[0] ? parts[0].substring(5) : `T-${b + 1}`);
+        for (let i = 0; i < timed.length; i++) {
+          const idx = Math.min(numBuckets - 1, Math.max(0, Math.floor(((timed[i].ms - minMs) / span) * numBuckets)));
+          const l = timed[i].log;
+          bTotal[idx]++;
+          const isErr = l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && /FAIL/i.test(l.outcome)) || /520\d{4}|AUD6002/.test(String(l.entrustCode || l.message || ''));
+          const isWarn = !isErr && (l.level === 'WARN' || l.level === 'WARNING' || /AUD6001|AUD2309/.test(String(l.entrustCode || '')));
+          if (isErr) bErr[idx]++;
+          else if (isWarn) bWarn[idx]++;
         }
 
-        const errorsInSlice = slice.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && l.outcome.includes('FAIL')) || /520\d{4}/.test(String(l.entrustCode || l.message || ''))).length;
-        labels.push(timeLabel);
-        totalData.push(slice.length);
-        errorData.push(errorsInSlice);
+        for (let b = 0; b < numBuckets; b++) {
+          const d = new Date(minMs + ((b + 0.5) / numBuckets) * span);
+          const hh = String(d.getHours()).padStart(2, '0');
+          const mm = String(d.getMinutes()).padStart(2, '0');
+          const dd = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          labels.push(`${dd} ${hh}:${mm}`);
+          totalData.push(Math.round(bTotal[b] * scaleFactor));
+          errorData.push(Math.round(bErr[b] * scaleFactor));
+          warnData.push(Math.round(bWarn[b] * scaleFactor));
+        }
+      } else {
+        const numBuckets = Math.min(12, Math.max(2, activeLogs.length));
+        const bucketSize = Math.max(1, Math.floor(activeLogs.length / numBuckets));
+        for (let b = 0; b < numBuckets; b++) {
+          const slice = activeLogs.slice(b * bucketSize, b === numBuckets - 1 ? activeLogs.length : (b + 1) * bucketSize);
+          if (!slice.length) continue;
+          const firstLog = slice[0];
+          labels.push(firstLog?.timestamp ? firstLog.timestamp.slice(5, 16) : `Lote ${b + 1}`);
+          let errs = 0, warns = 0;
+          slice.forEach(l => {
+            if (l.level === 'CRITICAL' || l.level === 'ERROR' || (l.outcome && /FAIL/i.test(l.outcome))) errs++;
+            else if (l.level === 'WARN' || l.level === 'WARNING') warns++;
+          });
+          totalData.push(Math.round(slice.length * scaleFactor));
+          errorData.push(Math.round(errs * scaleFactor));
+          warnData.push(Math.round(warns * scaleFactor));
+        }
       }
     }
 
-    // Asegurar que si hay 1 solo punto por cualquier motivo, duplicarlo para trazar la línea horizontal
     if (labels.length === 1) {
       labels = [`${labels[0]} (Inicio)`, `${labels[0]} (Fin)`];
       totalData = [totalData[0], totalData[0]];
       errorData = [errorData[0], errorData[0]];
+      warnData = [warnData[0] || 0, warnData[0] || 0];
     }
 
     state.charts.trend.data.labels = labels;
     state.charts.trend.data.datasets[0].data = totalData;
     state.charts.trend.data.datasets[1].data = errorData;
+    if (state.charts.trend.data.datasets[2]) {
+      state.charts.trend.data.datasets[2].data = warnData;
+    }
     state.charts.trend.update('none');
 
     const rangeBadge = document.getElementById('trend-time-range-badge');
     if (rangeBadge) {
-      if (bucketKeys.length > 1) {
+      if (isWindowActive) {
+        const estEvents = Math.round(activeLogs.length * scaleFactor);
+        rangeBadge.textContent = `🕒 Ventana: ${win.startLabel} ➔ ${win.endLabel} (${estEvents.toLocaleString()} eventos)`;
+      } else if (bucketKeys.length > 1) {
         rangeBadge.textContent = `${bucketKeys[0]} ➔ ${bucketKeys[bucketKeys.length - 1]} (Periodo Completo)`;
       } else if (state.globalStreamMetrics) {
         const totalFmt = (state.globalStreamMetrics.totalLogs || 0).toLocaleString();
         rangeBadge.textContent = `⚡ Flujo Masivo: ${totalFmt} eventos procesados`;
-      } else if (logs.length > 0) {
-        const firstT = logs[0].timestamp || 'Inicio';
-        const lastT = logs[logs.length - 1].timestamp || 'Fin';
-        rangeBadge.textContent = `${firstT} ➔ ${lastT}`;
+      } else if (activeLogs.length > 0) {
+        rangeBadge.textContent = `${activeLogs[0].timestamp || 'Inicio'} ➔ ${activeLogs[activeLogs.length - 1].timestamp || 'Fin'}`;
       }
     }
   }
 
   function updateSeverityChart() {
     if (!state.charts.severity) return;
+    const allLogs = state.logs || [];
+    const win = state.activeTimeWindow;
+    const isFiltered = (win && win.active) || (state.filteredLogs && state.filteredLogs.length !== allLogs.length);
+
+    if (isFiltered && allLogs.length > 0) {
+      const target = state.filteredLogs || [];
+      const scaleFactor = (state.globalStreamMetrics?.totalLogs > allLogs.length && allLogs.length > 0)
+        ? (state.globalStreamMetrics.totalLogs / allLogs.length)
+        : 1;
+      let infoC = 0, errC = 0, warnC = 0, critC = 0, dbgC = 0;
+      for (let i = 0; i < target.length; i++) {
+        const lvl = (target[i].level || 'INFO').toUpperCase();
+        if (lvl === 'CRITICAL') critC++;
+        else if (lvl === 'ERROR' || /520\d{4}/.test(String(target[i].entrustCode || ''))) errC++;
+        else if (lvl === 'WARN' || lvl === 'WARNING') warnC++;
+        else if (lvl === 'DEBUG') dbgC++;
+        else infoC++;
+      }
+      state.charts.severity.data.datasets[0].data = [
+        Math.round(infoC * scaleFactor),
+        Math.round(errC * scaleFactor),
+        Math.round(warnC * scaleFactor),
+        Math.round(critC * scaleFactor),
+        Math.round(dbgC * scaleFactor)
+      ];
+      state.charts.severity.update('none');
+      return;
+    }
+
     const m = getConsolidatedMetrics();
-    const debugCount = (state.logs || []).filter(l => l.level === 'DEBUG').length;
-    state.charts.severity.data.datasets[0].data = [m.totalInfo, m.totalErrors, m.totalWarnings, debugCount];
+    const critCount = allLogs.filter(l => (l.level || '').toUpperCase() === 'CRITICAL').length;
+    const debugCount = allLogs.filter(l => (l.level || '').toUpperCase() === 'DEBUG').length;
+    state.charts.severity.data.datasets[0].data = [m.totalInfo, m.totalErrors, m.totalWarnings, critCount, debugCount];
     state.charts.severity.update('none');
   }
 
@@ -8811,14 +8941,17 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             `;
           } else {
             html += `
-              <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-secondary); border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; margin-bottom:8px;">
-                <div>
-                  <strong style="color:var(--text-main); font-size:0.85rem;">📄 Log Raw: ${escapeHtml(f.name)}</strong>
-                  <span style="font-size:0.75rem; color:#38bdf8; margin-left:8px; font-weight:bold;">(${sizeText})</span>
-                  <div style="font-size:0.72rem; color:var(--text-muted); font-family:monospace;">${escapeHtml(f.path)}</div>
-                </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-secondary); border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; margin-bottom:8px; gap:10px;">
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; flex:1;">
+                  <input type="checkbox" class="server-raw-file-cb" value="${escapeHtml(f.path)}" checked style="width:15px; height:15px; accent-color:#10b981; cursor:pointer;" />
+                  <div>
+                    <strong style="color:var(--text-main); font-size:0.85rem;">📄 Log Raw: ${escapeHtml(f.name)}</strong>
+                    <span style="font-size:0.75rem; color:#38bdf8; margin-left:8px; font-weight:bold;">(${sizeText})</span>
+                    <div style="font-size:0.72rem; color:var(--text-muted); font-family:monospace;">${escapeHtml(f.path)}</div>
+                  </div>
+                </label>
                 <button type="button" class="btn btn-primary" style="padding:6px 14px; font-size:0.78rem; font-weight:bold; background:#10b981; color:#fff; border:none; border-radius:6px; cursor:pointer;" onclick="window.triggerServerFileIngestDirect('${escapeHtml(f.path)}')">
-                  🚀 Indexar en SQLite
+                  🚀 Indexar Solo
                 </button>
               </div>
             `;
@@ -8852,6 +8985,86 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       triggerServerFileIngestion(path);
     };
 
+    function startServerIngestPolling() {
+      const pollInterval = setInterval(async () => {
+        try {
+          const statusRes = await fetch('/api/upload-status');
+          if (!statusRes.ok) return;
+          const s = await statusRes.json();
+
+          if (s.status === 'indexing') {
+            const labelFile = s.fileName ? ` (${s.fileName})` : '';
+            if (statusTitle) statusTitle.textContent = `⚡ Indexando en Servidor: ${s.progress}%${labelFile}`;
+            if (statusDetail) statusDetail.textContent = `Procesados: ${(s.linesProcessed || 0).toLocaleString()} eventos | ${(s.totalErrors || 0).toLocaleString()} errores detectados`;
+            showAnalysisStatus(true, `⚡ Servidor Indexando: ${s.progress}%`, `${(s.linesProcessed || 0).toLocaleString()} registros${labelFile}`);
+          } else if (s.status === 'ready') {
+            clearInterval(pollInterval);
+            if (statusTitle) statusTitle.textContent = `✅ ¡Indexación 100% Completada!`;
+            if (statusDetail) statusDetail.textContent = `Total: ${(s.linesProcessed || 0).toLocaleString()} eventos listos para consulta.`;
+
+            await syncClientSessionWithServer(state.activeClientId || 'general');
+            await fetchSqlLogs(1);
+            updateMetricsAndCharts();
+            renderLoadedFilesDrawer();
+
+            setTimeout(() => {
+              if (modal) modal.style.display = 'none';
+            }, 1000);
+          } else if (s.status === 'error') {
+            clearInterval(pollInterval);
+            if (statusTitle) statusTitle.textContent = `❌ Error en indexación: ${s.error || 'Desconocido'}`;
+            setTimeout(() => {
+              if (modal) modal.style.display = 'none';
+            }, 2000);
+          }
+        } catch(e) {
+          clearInterval(pollInterval);
+          if (modal) modal.style.display = 'none';
+        }
+      }, 1000);
+    }
+
+    async function triggerServerBatchIngestion(filePaths = [], ingestAll = false) {
+      const activeClient = getActiveClientProfile();
+      const clientName = activeClient?.name || 'Banco Mercantil';
+
+      if (statusBox) statusBox.style.display = 'block';
+      if (statusTitle) statusTitle.textContent = ingestAll
+        ? 'Iniciando indexación masiva de toda la carpeta en Servidor...'
+        : `Iniciando indexación de ${filePaths.length} archivo(s) en Servidor...`;
+      if (statusDetail) statusDetail.textContent = 'Consolidando lote completo en SQLite (100% sin muestreo)...';
+
+      try {
+        const res = await fetch('/api/ingest-batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filePaths, ingestAll, clientName, forceReindex: true })
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) {
+          if (statusTitle) statusTitle.textContent = `❌ ${data.error || 'Error iniciando lote'}`;
+          return;
+        }
+        if (statusDetail) statusDetail.textContent = `Procesando ${data.totalFiles} archivo(s) para ${clientName}...`;
+        startServerIngestPolling();
+      } catch (err) {
+        if (statusTitle) statusTitle.textContent = `❌ Error de red: ${err.message}`;
+      }
+    }
+
+    document.getElementById('btn-ingest-all-server-files')?.addEventListener('click', () => {
+      triggerServerBatchIngestion([], true);
+    });
+
+    document.getElementById('btn-ingest-selected-server-files')?.addEventListener('click', () => {
+      const checked = Array.from(document.querySelectorAll('.server-raw-file-cb:checked')).map(cb => cb.value);
+      if (checked.length === 0) {
+        alert('Selecciona al menos un archivo raw de la lista.');
+        return;
+      }
+      triggerServerBatchIngestion(checked, false);
+    });
+
     async function triggerServerFileIngestion(filePath) {
       const activeClient = getActiveClientProfile();
       const clientName = activeClient?.name || 'Banco Mercantil';
@@ -8877,6 +9090,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         }
 
         if (errData && (errData.alreadyIndexed || errData.status === 'ready' || errData.success)) {
+          if (errData.status === 'indexing') {
+            startServerIngestPolling();
+            return;
+          }
           if (statusTitle) statusTitle.textContent = `✅ Base de Datos Conectada (${(errData.totalLogs || 0).toLocaleString()} eventos)`;
           if (statusDetail) statusDetail.textContent = `Cliente: ${clientName} | 100% Indexado en SQLite`;
 
@@ -8895,42 +9112,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           return;
         }
 
-        // Sondeo del estado en tiempo real si está indexando
-        const pollInterval = setInterval(async () => {
-          try {
-            const statusRes = await fetch('/api/upload-status');
-            if (!statusRes.ok) return;
-            const s = await statusRes.json();
-
-            if (s.status === 'indexing') {
-              if (statusTitle) statusTitle.textContent = `⚡ Indexando en Servidor: ${s.progress}% completado`;
-              if (statusDetail) statusDetail.textContent = `Procesados: ${(s.linesProcessed || 0).toLocaleString()} eventos | ${(s.totalErrors || 0).toLocaleString()} errores detectados`;
-              showAnalysisStatus(true, `⚡ Servidor Indexando: ${s.progress}%`, `${(s.linesProcessed || 0).toLocaleString()} registros`);
-            } else if (s.status === 'ready') {
-              clearInterval(pollInterval);
-              if (statusTitle) statusTitle.textContent = `✅ ¡Indexación 100% Completada!`;
-              if (statusDetail) statusDetail.textContent = `Total: ${(s.linesProcessed || 0).toLocaleString()} eventos listos para consulta.`;
-
-              await syncClientSessionWithServer(state.activeClientId || 'general');
-              await fetchSqlLogs(1);
-              updateMetricsAndCharts();
-              renderLoadedFilesDrawer();
-
-              setTimeout(() => {
-                if (modal) modal.style.display = 'none';
-              }, 1000);
-            } else if (s.status === 'error') {
-              clearInterval(pollInterval);
-              if (statusTitle) statusTitle.textContent = `❌ Error en indexación: ${s.error || 'Desconocido'}`;
-              setTimeout(() => {
-                if (modal) modal.style.display = 'none';
-              }, 2000);
-            }
-          } catch(e) {
-            clearInterval(pollInterval);
-            if (modal) modal.style.display = 'none';
-          }
-        }, 1000);
+        startServerIngestPolling();
       } catch (err) {
         console.error('Error iniciando ingesta:', err);
         if (modal) modal.style.display = 'none';
@@ -11735,25 +11917,36 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       if (startLabel) startLabel.textContent = formatSliderTime(tStart);
       if (endLabel) endLabel.textContent = formatSliderTime(tEnd);
 
+      state.activeTimeWindow = {
+        active: (vMin > 0.1 || vMax < 99.9),
+        tStart,
+        tEnd,
+        startLabel: formatSliderTime(tStart),
+        endLabel: formatSliderTime(tEnd)
+      };
+
       // Filtrar logs dentro de la ventana de tiempo
       const filtered = (state.logs || []).filter(l => {
         const rawT = l.timestamp || l.time;
         if (!rawT) return true;
-        const d = new Date(rawT).getTime();
+        const d = new Date(String(rawT).replace(',', '.')).getTime();
         if (isNaN(d)) return true;
         return d >= tStart && d <= tEnd;
       });
 
       state.filteredLogs = filtered;
+      state.localPage = 1;
 
       if (badge) {
         const pct = state.logs.length > 0 ? ((filtered.length / state.logs.length) * 100).toFixed(0) : 100;
         badge.textContent = `${filtered.length.toLocaleString()} logs filtrados (${pct}%)`;
       }
 
-      // Disparar refresco de vistas si existen
+      // Disparar refresco completo de gráficas, tabla y KPIs con base en la ventana
       try {
         if (typeof updateMetricsAndCharts === 'function') updateMetricsAndCharts();
+        if (typeof renderLogTable === 'function') renderLogTable();
+        if (typeof renderUserAndIpAnalytics === 'function') renderUserAndIpAnalytics();
         if (typeof renderOverviewKpis === 'function') renderOverviewKpis();
         if (typeof renderTraceWaterfall === 'function') renderTraceWaterfall();
       } catch(e) {
@@ -11787,10 +11980,14 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     window.resetTimeRangeFilterGlobal = function() {
       if (minSlider) minSlider.value = 0;
       if (maxSlider) maxSlider.value = 100;
+      state.activeTimeWindow = { active: false, tStart: null, tEnd: null };
       state.filteredLogs = [...(state.logs || [])];
+      state.localPage = 1;
       updateSliderUI();
       try {
         if (typeof updateMetricsAndCharts === 'function') updateMetricsAndCharts();
+        if (typeof renderLogTable === 'function') renderLogTable();
+        if (typeof renderUserAndIpAnalytics === 'function') renderUserAndIpAnalytics();
         if (typeof renderOverviewKpis === 'function') renderOverviewKpis();
         if (typeof renderTraceWaterfall === 'function') renderTraceWaterfall();
       } catch(e) {}
