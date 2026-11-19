@@ -789,6 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     renderClientConfigPreview(merged);
+    if (typeof window.renderFullClientConfigExplorer === 'function') window.renderFullClientConfigExplorer();
     if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
     renderLoadedFilesDrawer();
     if (window.certAuditorEngine && typeof window.certAuditorEngine.render === 'function') {
@@ -819,8 +820,294 @@ document.addEventListener('DOMContentLoaded', () => {
 
     state.activeClientConfig = loaded || null;
     renderClientConfigPreview(state.activeClientConfig);
+    if (typeof window.renderFullClientConfigExplorer === 'function') window.renderFullClientConfigExplorer();
     if (window.certAuditorEngine && typeof window.certAuditorEngine.render === 'function') {
       window.certAuditorEngine.render('certificates-table-container', state.logs, state.activeClientConfig);
+    }
+  };
+
+  window.saveClientEnvInfraGlobal = async function(envKey) {
+    const cid = state.activeClientId || 'default';
+    if (!state.activeClientConfig) {
+      state.activeClientConfig = { clientId: cid, updatedAt: new Date().toISOString(), files: [], servers: {} };
+    }
+    if (!state.activeClientConfig.environments || typeof state.activeClientConfig.environments !== 'object') {
+      state.activeClientConfig.environments = {};
+    }
+
+    const readVal = (id) => {
+      const el = document.getElementById(id);
+      return el ? el.value.trim() : '';
+    };
+
+    state.activeClientConfig.environments[envKey] = {
+      versionIdg: readVal('infra-versionIdg'),
+      instances: readVal('infra-instances'),
+      os: readVal('infra-os'),
+      virtual: readVal('infra-virtual'),
+      database: readVal('infra-database'),
+      webServices: readVal('infra-webServices'),
+      loadBalancer: readVal('infra-loadBalancer'),
+      gateway: readVal('infra-gateway'),
+      apiUrls: readVal('infra-apiUrls'),
+      dmzSeparated: readVal('infra-dmzSeparated'),
+      primaryNodeSpec: readVal('infra-primaryNodeSpec'),
+      replicaNodesSpec: readVal('infra-replicaNodesSpec'),
+      dbServerSpec: readVal('infra-dbServerSpec'),
+      updatedAt: new Date().toISOString()
+    };
+    state.activeClientConfig.updatedAt = new Date().toISOString();
+
+    try {
+      localStorage.setItem('entrust_client_config_' + cid, JSON.stringify(state.activeClientConfig));
+    } catch (e) {}
+
+    let savedRemote = false;
+    try {
+      const resp = await fetch('/api/client-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId: cid, config: state.activeClientConfig })
+      });
+      savedRemote = resp.ok;
+    } catch (e) {
+      console.warn('No se pudo persistir infraestructura en servidor:', e);
+    }
+
+    const statusEl = document.getElementById('infra-save-status');
+    if (statusEl) {
+      statusEl.innerHTML = savedRemote
+        ? `<span style="color:#15803d; font-weight:700;">✅ Ficha de ${escapeHtml(envKey)} guardada en servidor y sesión local.</span>`
+        : `<span style="color:#b45309; font-weight:700;">⚠️ Ficha de ${escapeHtml(envKey)} guardada en sesión local (sin conexión al servidor).</span>`;
+    }
+  };
+
+  window.renderFullClientConfigExplorer = function(opts = {}) {
+    const container = document.getElementById('client-full-config-explorer-container');
+    if (!container) return;
+
+    const cfg = state.activeClientConfig;
+    const activeClient = (state.clientProfiles || []).find(p => p.id === state.activeClientId);
+    const clientLabel = activeClient ? activeClient.name : (state.activeClientId || 'Cliente Activo');
+
+    const srvMap = cfg && cfg.servers && typeof cfg.servers === 'object' ? cfg.servers : null;
+    const srvList = srvMap && Object.keys(srvMap).length > 0
+      ? Object.values(srvMap)
+      : ((cfg && (cfg.identityguard || cfg.serverXml || cfg.webXml || cfg.entrusttoken)) ? [{ serverName: 'General', ...cfg }] : []);
+
+    const activePanel = opts.panel || container.dataset.activePanel || 'config';
+    const selectedServer = opts.server || container.dataset.selectedServer || (srvList[0]?.serverName || '');
+    const selectedEnv = opts.env || container.dataset.selectedEnv || 'PROD';
+    const propFilter = typeof opts.filter === 'string' ? opts.filter : (container.dataset.propFilter || '');
+
+    container.dataset.activePanel = activePanel;
+    container.dataset.selectedServer = selectedServer;
+    container.dataset.selectedEnv = selectedEnv;
+    container.dataset.propFilter = propFilter;
+
+    const tabBtnStyle = (isActive) => isActive
+      ? 'background:#0f172a; color:#ffffff; border:1px solid #0f172a; padding:7px 14px; border-radius:6px; font-weight:700; font-size:12px; cursor:pointer;'
+      : 'background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; padding:7px 14px; border-radius:6px; font-weight:600; font-size:12px; cursor:pointer;';
+
+    let bodyHtml = '';
+    if (activePanel === 'config') {
+      if (!srvList.length) {
+        bodyHtml = `
+          <div style="padding:18px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:8px; color:#475569; font-size:12.5px;">
+            ℹ️ No hay archivos de configuración cargados para <strong>${escapeHtml(clientLabel)}</strong>. Sube <code>identityguard.properties</code>, <code>server.xml</code>, <code>web.xml</code> o <code>entrusttoken.conf</code> desde el perfil del cliente (botón <strong>+ Cliente</strong> o <strong>Editar</strong>) para explorar todas sus propiedades aquí.
+          </div>`;
+      } else {
+        const srvObj = srvList.find(s => s.serverName === selectedServer) || srvList[0];
+        const ig = srvObj.identityguard || {};
+        const rawProps = ig.raw && typeof ig.raw === 'object' ? ig.raw : {};
+        const allKeys = Object.keys(rawProps).sort();
+        const q = propFilter.trim().toLowerCase();
+        const filteredKeys = q
+          ? allKeys.filter(k => k.toLowerCase().includes(q) || String(rawProps[k] ?? '').toLowerCase().includes(q))
+          : allKeys;
+
+        const propRows = filteredKeys.map(k => {
+          const isSensitive = /password|secret|pin|passphrase|keystore\.pass|truststore\.pass/i.test(k);
+          const val = isSensitive ? '***REDACTED***' : String(rawProps[k] ?? '');
+          return `
+            <tr style="border-bottom:1px solid #e2e8f0;">
+              <td style="padding:6px 10px; font-family:monospace; font-size:11.5px; color:#0f172a; word-break:break-word; width:42%;">${escapeHtml(k)}</td>
+              <td style="padding:6px 10px; font-family:monospace; font-size:11.5px; color:${isSensitive ? '#b91c1c' : '#334155'}; word-break:break-all;">${escapeHtml(val)}</td>
+            </tr>`;
+        }).join('');
+
+        const services = srvObj.serverXml?.services || [];
+        const connectorRows = services.flatMap(s => (s.connectors || []).map(c => `
+          <tr style="border-bottom:1px solid #e2e8f0;">
+            <td style="padding:6px 8px; font-weight:600;">${escapeHtml(s.name || '-')}</td>
+            <td style="padding:6px 8px; font-family:monospace;">${escapeHtml(c.port || '-')}</td>
+            <td style="padding:6px 8px; font-family:monospace;">${escapeHtml(c.protocol || '-')}</td>
+            <td style="padding:6px 8px; font-family:monospace;">${escapeHtml(c.maxThreads || '-')}</td>
+            <td style="padding:6px 8px; font-family:monospace;">${escapeHtml(c.acceptCount || '-')}</td>
+            <td style="padding:6px 8px; font-family:monospace;">${escapeHtml(c.connectionTimeout || '-')}</td>
+            <td style="padding:6px 8px; font-family:monospace;">${escapeHtml(c.clientAuth || 'false')}</td>
+          </tr>`)).join('');
+
+        const web = srvObj.webXml || {};
+        const tok = srvObj.entrusttoken || {};
+
+        bodyHtml = `
+          <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin-bottom:12px; background:#f8fafc; padding:10px 12px; border-radius:8px; border:1px solid #e2e8f0;">
+            <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+              <label style="font-size:12px; font-weight:700; color:#1e293b;">🖥️ Servidor:</label>
+              <select id="explorer-server-select" style="padding:5px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; background:#fff;"
+                onchange="window.renderFullClientConfigExplorer({ panel:'config', server: this.value })">
+                ${srvList.map(s => `<option value="${escapeHtml(s.serverName)}" ${s.serverName === srvObj.serverName ? 'selected' : ''}>${escapeHtml(s.serverName)} (${(s.files || []).length} archivo(s))</option>`).join('')}
+              </select>
+              <span style="font-size:11.5px; color:#64748b;">Archivos: <strong>${escapeHtml((srvObj.files || []).join(', ') || 'N/A')}</strong></span>
+            </div>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <input id="explorer-prop-search" type="text" value="${escapeHtml(propFilter)}" placeholder="Filtrar clave o valor..."
+                style="padding:5px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; min-width:220px;"
+                oninput="window.renderFullClientConfigExplorer({ panel:'config', server: '${escapeHtml(srvObj.serverName).replace(/'/g, "\\'")}', filter: this.value })" />
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin-bottom:14px;">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+              <div style="font-size:11px; color:#64748b; font-weight:700;">web.xml (Sesión &amp; Filtros)</div>
+              <div style="font-size:12px; margin-top:4px;"><strong>Session Timeout:</strong> <code>${escapeHtml(web.sessionTimeout || 'Default')} min</code></div>
+              <div style="font-size:11.5px; color:#475569; margin-top:2px;">Servlets: ${(web.servlets || []).length} | Filtros: ${(web.filters || []).length}</div>
+            </div>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+              <div style="font-size:11px; color:#64748b; font-weight:700;">entrusttoken.conf</div>
+              <div style="font-size:12px; margin-top:4px;"><strong>resetEventWindow:</strong> <code>${escapeHtml(tok.resetEventWindow || '-')}</code></div>
+              <div style="font-size:12px; margin-top:2px;"><strong>maxTimeSteps:</strong> <code>${escapeHtml(tok.maxTimeSteps || '-')}</code></div>
+            </div>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+              <div style="font-size:11px; color:#64748b; font-weight:700;">JDBC &amp; Propiedades Totales</div>
+              <div style="font-size:12px; margin-top:4px;"><strong>Tipo:</strong> <code>${escapeHtml(ig.jdbcType || 'N/A')}</code> | <strong>Claves:</strong> ${allKeys.length}</div>
+              <div style="font-size:11px; color:#475569; margin-top:2px; word-break:break-all;">${escapeHtml(ig.jdbcUrl || 'Sin URL JDBC')}</div>
+            </div>
+          </div>
+
+          ${connectorRows ? `
+            <div style="margin-bottom:14px;">
+              <h4 style="margin:0 0 6px 0; font-size:12.5px; color:#0f172a;">⚙️ Conectores Tomcat (<code>server.xml</code>)</h4>
+              <div style="overflow-x:auto; border:1px solid #e2e8f0; border-radius:8px;">
+                <table style="width:100%; border-collapse:collapse; font-size:11.5px; text-align:left;">
+                  <thead style="background:#f1f5f9; color:#334155;">
+                    <tr>
+                      <th style="padding:7px 8px;">Servicio</th>
+                      <th style="padding:7px 8px;">Puerto</th>
+                      <th style="padding:7px 8px;">Protocolo</th>
+                      <th style="padding:7px 8px;">maxThreads</th>
+                      <th style="padding:7px 8px;">acceptCount</th>
+                      <th style="padding:7px 8px;">Timeout</th>
+                      <th style="padding:7px 8px;">clientAuth</th>
+                    </tr>
+                  </thead>
+                  <tbody>${connectorRows}</tbody>
+                </table>
+              </div>
+            </div>` : ''}
+
+          <div>
+            <h4 style="margin:0 0 6px 0; font-size:12.5px; color:#0f172a;">📄 Propiedades Completas (<code>identityguard.properties</code> — ${filteredKeys.length} de ${allKeys.length} claves)</h4>
+            ${allKeys.length ? `
+              <div style="max-height:360px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px; background:#fff;">
+                <table style="width:100%; border-collapse:collapse;">
+                  <thead style="background:#f1f5f9; position:sticky; top:0;">
+                    <tr style="text-align:left; font-size:11.5px; color:#334155;">
+                      <th style="padding:7px 10px; border-bottom:1px solid #cbd5e1;">Propiedad</th>
+                      <th style="padding:7px 10px; border-bottom:1px solid #cbd5e1;">Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody>${propRows || '<tr><td colspan="2" style="padding:12px; color:#64748b; text-align:center;">Sin coincidencias para el filtro actual.</td></tr>'}</tbody>
+                </table>
+              </div>` : '<div style="font-size:12px; color:#64748b;">No se detectaron claves de <code>identityguard.properties</code> en este servidor.</div>'}
+          </div>`;
+      }
+    } else {
+      const envList = [
+        { key: 'PROD', label: 'Producción (PROD)' },
+        { key: 'QA', label: 'Calidad (QA)' },
+        { key: 'DEV', label: 'Desarrollo (DEV)' },
+        { key: 'DR', label: 'Centro Alterno (DR)' }
+      ];
+      const envData = (cfg && cfg.environments && cfg.environments[selectedEnv]) ? cfg.environments[selectedEnv] : {};
+      const fieldStyle = 'width:100%; padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; box-sizing:border-box;';
+      const labelStyle = 'display:block; font-size:11px; font-weight:700; color:#334155; margin-bottom:3px;';
+
+      bodyHtml = `
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; align-items:center;">
+          ${envList.map(e => `
+            <button type="button" onclick="window.renderFullClientConfigExplorer({ panel:'infra', env:'${e.key}' })"
+              style="${selectedEnv === e.key ? 'background:#0369a1; color:#fff; border:1px solid #0369a1;' : 'background:#f8fafc; color:#334155; border:1px solid #cbd5e1;'} padding:6px 12px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
+              ${e.label}
+            </button>`).join('')}
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin-bottom:12px;">
+          <div><label style="${labelStyle}">A.1 Versión de IDG</label><input id="infra-versionIdg" type="text" style="${fieldStyle}" value="${escapeHtml(envData.versionIdg || '')}" placeholder="Ej. identityguard110 / 12.0" /></div>
+          <div><label style="${labelStyle}">A.2 Nro. de Instancias</label><input id="infra-instances" type="text" style="${fieldStyle}" value="${escapeHtml(envData.instances || '')}" placeholder="Ej. 1 IGDB" /></div>
+          <div><label style="${labelStyle}">A.3 Sistema Operativo</label><input id="infra-os" type="text" style="${fieldStyle}" value="${escapeHtml(envData.os || '')}" placeholder="Ej. Windows Server 2012 Datacenter" /></div>
+          <div><label style="${labelStyle}">A.4 Virtual (SI / NO)</label><input id="infra-virtual" type="text" style="${fieldStyle}" value="${escapeHtml(envData.virtual || '')}" placeholder="SI / NO" /></div>
+          <div><label style="${labelStyle}">A.5 Base de Datos</label><input id="infra-database" type="text" style="${fieldStyle}" value="${escapeHtml(envData.database || '')}" placeholder="Ej. MS SQL Server 2012 / Oracle 19c" /></div>
+          <div><label style="${labelStyle}">A.6 Servicios Web de IDG</label><input id="infra-webServices" type="text" style="${fieldStyle}" value="${escapeHtml(envData.webServices || '')}" placeholder="SI / NO" /></div>
+          <div><label style="${labelStyle}">A.7 Balanceador (SI / NO)</label><input id="infra-loadBalancer" type="text" style="${fieldStyle}" value="${escapeHtml(envData.loadBalancer || '')}" placeholder="SI / NO (HAProxy / F5)" /></div>
+          <div><label style="${labelStyle}">A.8 Facade / Bus / Gateway</label><input id="infra-gateway" type="text" style="${fieldStyle}" value="${escapeHtml(envData.gateway || '')}" placeholder="Ej. Bus SOA / API Gateway" /></div>
+          <div><label style="${labelStyle}">DMZ / BD Separada</label><input id="infra-dmzSeparated" type="text" style="${fieldStyle}" value="${escapeHtml(envData.dmzSeparated || '')}" placeholder="Ej. BD separada, nodos en DMZ" /></div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <label style="${labelStyle}">A.9 Versión API / Endpoints (Web Services)</label>
+          <textarea id="infra-apiUrls" rows="2" style="${fieldStyle} font-family:monospace;" placeholder="Ej. https://host:8444/IdentityGuardAdminService/services/AdminServiceV8">${escapeHtml(envData.apiUrls || '')}</textarea>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px; margin-bottom:12px;">
+          <div>
+            <label style="${labelStyle}">Servidores - Primario (Hardware / Discos)</label>
+            <textarea id="infra-primaryNodeSpec" rows="4" style="${fieldStyle}" placeholder="OS, RAM, CPU/Cores, Discos C:/E:...">${escapeHtml(envData.primaryNodeSpec || '')}</textarea>
+          </div>
+          <div>
+            <label style="${labelStyle}">Servidores - Réplica (Nodos)</label>
+            <textarea id="infra-replicaNodesSpec" rows="4" style="${fieldStyle}" placeholder="Nodo 1 / Nodo 2 especificaciones...">${escapeHtml(envData.replicaNodesSpec || '')}</textarea>
+          </div>
+          <div>
+            <label style="${labelStyle}">Base de Datos - Servidores (Hardware / Discos)</label>
+            <textarea id="infra-dbServerSpec" rows="4" style="${fieldStyle}" placeholder="OS, RAM, CPU, C:/E:/L:/T:...">${escapeHtml(envData.dbServerSpec || '')}</textarea>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+          <button type="button" onclick="window.saveClientEnvInfraGlobal('${selectedEnv}')"
+            style="background:#0f172a; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-weight:700; font-size:12px; cursor:pointer;">
+            💾 Guardar Ficha ${selectedEnv}
+          </button>
+          <span id="infra-save-status" style="font-size:12px; color:#64748b;">
+            ${envData.updatedAt ? `Última actualización: ${escapeHtml(new Date(envData.updatedAt).toLocaleString())}` : 'Sin guardar para este ambiente.'}
+          </span>
+        </div>`;
+    }
+
+    container.innerHTML = `
+      <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:16px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
+          <div>
+            <h3 style="margin:0; font-size:15px; color:#0f172a;">🗂️ Explorador Completo de Configuración e Infraestructura — ${escapeHtml(clientLabel)}</h3>
+            <p style="margin:2px 0 0 0; font-size:12px; color:#64748b;">Acceso directo a la configuración real cargada por servidor y ficha técnica por ambiente (excluido del informe PDF ejecutivo).</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" style="${tabBtnStyle(activePanel === 'config')}" onclick="window.renderFullClientConfigExplorer({ panel:'config' })">⚙️ Configuración por Servidor (${srvList.length})</button>
+            <button type="button" style="${tabBtnStyle(activePanel === 'infra')}" onclick="window.renderFullClientConfigExplorer({ panel:'infra' })">🏗️ Infraestructura por Ambiente</button>
+          </div>
+        </div>
+        ${bodyHtml}
+      </div>`;
+
+    if (activePanel === 'config' && typeof opts.filter === 'string') {
+      const inp = document.getElementById('explorer-prop-search');
+      if (inp) {
+        inp.focus();
+        const len = inp.value.length;
+        inp.setSelectionRange(len, len);
+      }
     }
   };
 
@@ -1075,10 +1362,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.7.4',
-    build: 587,
+    version: 'v3.8.0',
+    build: 588,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'DROPZONE-CLEANUP-AUTO-EXT-374',
+    gitCommit: 'FULL-CONFIG-EXPLORER-INFRA-SHEET-380',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -1690,6 +1977,8 @@ document.addEventListener('DOMContentLoaded', () => {
       try { window.notesEngine.renderPortal('notes-portal-container'); } catch(e) {}
     } else if (targetTab === 'diff' && typeof window.renderDiffNodesGridGlobal === 'function') {
       try { window.renderDiffNodesGridGlobal(); } catch(e) {}
+    } else if (targetTab === 'topology' && typeof window.renderFullClientConfigExplorer === 'function') {
+      try { window.renderFullClientConfigExplorer(); } catch(e) {}
     }
 
     // Manejo de estado para el dropdown 'Más Vistas'
@@ -4099,30 +4388,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
               </div>`;
           })()}
 
-          ${(() => {
-            const cfg = state.activeClientConfig;
-            const srvMap = cfg && cfg.servers && typeof cfg.servers === 'object' ? cfg.servers : null;
-            const srvEntries = srvMap ? Object.values(srvMap) : ((cfg && (cfg.identityguard || cfg.serverXml || cfg.webXml || cfg.entrusttoken)) ? [{ serverName: 'General', ...cfg }] : []);
-            if (!srvEntries.length) return '';
-            const blocks = srvEntries.map(srv => {
-              const ig = srv.identityguard || {};
-              const tok = srv.entrusttoken || {};
-              const web = srv.webXml || {};
-              const conns = (srv.serverXml?.services || []).flatMap(s => (s.connectors || []).map(c => `${s.name}:${c.port} (maxThreads=${c.maxThreads || '-'}, acceptCount=${c.acceptCount || '-'}, clientAuth=${c.clientAuth || 'false'})`)).join(' | ');
-              return `
-                <div style="border-top:1px dashed #cbd5e1; padding-top:8px; margin-top:8px;">
-                  <div style="font-weight:bold; color:#0f172a;">🖥️ ${escapeHtml(srv.serverName || 'General')} <span style="font-weight:normal; color:#64748b;">(${escapeHtml((srv.files || []).join(', '))})</span></div>
-                  <div><strong>JDBC:</strong> <code>${escapeHtml(ig.jdbcType || 'N/A')}</code> | <code>${escapeHtml(ig.jdbcUrl || 'N/A')}</code> (Schema: <code>${escapeHtml(ig.jdbcSchema || 'N/A')}</code>)</div>
-                  ${conns ? `<div><strong>Tomcat (server.xml):</strong> <code>${escapeHtml(conns)}</code></div>` : ''}
-                  <div><strong>Tokens:</strong> <code>resetEventWindow=${escapeHtml(tok.resetEventWindow || '-')}</code>, <code>maxTimeSteps=${escapeHtml(tok.maxTimeSteps || '-')}</code> | <strong>Session Timeout:</strong> <code>${escapeHtml(web.sessionTimeout || 'Default')} min</code></div>
-                </div>`;
-            }).join('');
-            return `
-              <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:14px; margin-bottom:20px; font-size:11px; page-break-inside:avoid;">
-                <h3 style="color:#0a3d6d; margin:0 0 4px 0; font-size:13.5px;">10. Línea Base de Configuración Real por Servidor (${srvEntries.length} Servidor${srvEntries.length === 1 ? '' : 'es'})</h3>
-                ${blocks}
-              </div>`;
-          })()}
+          <!-- Sección de configuración movida al Explorador Completo en Topología & Config -->
 
           ${(() => {
             const notes = window.notesEngine?.notes || [];
@@ -5222,7 +5488,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           <div style="padding: 35px 20px; text-align: center; color: var(--text-muted);">
             <div style="font-size: 1.8rem; margin-bottom: 8px;">🔍</div>
             <strong style="font-size: 0.95rem; color: var(--text-main); display: block; margin-bottom: 6px;">No hay registros que coincidan con los filtros actuales</strong>
-            <p style="margin-bottom:14px; font-size:0.82rem;">La base de datos contiene ${(state.sqlTotalMatching || state.logs.length || 0).toLocaleString()} registros. Ajuste los filtros de severidad, tipo o búsqueda.</p>
+            <p style="margin-bottom:14px; font-size:0.82rem;">${state.logs.length > 0 ? `Hay ${state.logs.length.toLocaleString()} registros cargados en memoria, pero ninguno coincide con la combinación actual de servidor, origen, severidad o búsqueda.` : 'Ningún registro coincide con la combinación actual de filtros (o la indexación sigue en progreso). Ajuste los filtros de servidor, origen, severidad o búsqueda.'}</p>
             <button type="button" class="btn btn-secondary" onclick="window.resetTableFiltersGlobal && window.resetTableFiltersGlobal();" style="font-size:0.82rem; padding:6px 16px; cursor:pointer;">
               ✖ Restablecer Filtros
             </button>
@@ -8751,6 +9017,94 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const a = document.createElement('a');
       a.href = url;
       a.download = `Errores_y_Alertas_Auditoría_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    };
+
+    window.downloadFilteredCsvGlobal = async function() {
+      const serverVal = document.getElementById('filter-server-select')?.value || 'ALL';
+      const clientVal = dom.filterClientSelect?.value || 'ALL';
+      const levelVal = dom.filterLevelSelect?.value || 'ALL';
+      const typeVal = dom.filterTypeSelect?.value || 'ALL';
+      const searchVal = (dom.searchLogInput?.value || '').trim();
+      const modeVal = state.activeFilterMode || 'ALL';
+
+      const filterSummaryParts = [];
+      if (modeVal !== 'ALL') filterSummaryParts.push(`Modo=${modeVal}`);
+      if (serverVal !== 'ALL') filterSummaryParts.push(`Servidor=${serverVal}`);
+      if (clientVal !== 'ALL') filterSummaryParts.push(`Origen=${clientVal}`);
+      if (levelVal !== 'ALL') filterSummaryParts.push(`Severidad=${levelVal}`);
+      if (typeVal !== 'ALL') filterSummaryParts.push(`Tipo=${typeVal}`);
+      if (searchVal) filterSummaryParts.push(`Busqueda=${searchVal}`);
+      const filterSummary = filterSummaryParts.length > 0 ? filterSummaryParts.join(' | ') : 'Sin filtros (Todos)';
+
+      let rows = [];
+      if (state.isServerApi) {
+        try {
+          let outcome = 'ALL';
+          if (modeVal === '520_ONLY' || levelVal === 'CRITICAL' || levelVal === 'ERROR') outcome = 'FAIL';
+          else if (levelVal === 'INFO') outcome = 'SUCCESS';
+          const clientSlug = state.activeClientId || 'general';
+          const url = `/api/logs?page=1&limit=25000&search=${encodeURIComponent(searchVal)}&outcome=${outcome}&type=${encodeURIComponent(typeVal)}&client=${encodeURIComponent(clientSlug)}`;
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            rows = data.logs || [];
+          }
+        } catch (e) {}
+      }
+
+      if (!rows.length) {
+        rows = Array.isArray(state.filteredLogs) ? state.filteredLogs : [];
+      }
+
+      if (!rows.length) {
+        alert('No hay registros que coincidan con el filtro actual para exportar.');
+        return;
+      }
+
+      const csvCell = (val) => `"${String(val ?? '').replace(/\r?\n/g, ' ').replace(/"/g, '""')}"`;
+      let csvContent = '\uFEFFLinea,Fecha_Hora,Servidor_Nodo,Archivo_Origen,Nivel_Severidad,Tipo_Evento,Codigo_Entrust,Usuario,IP_Origen,Servicio_API,Resultado,Mensaje_Evento,Significado_Oficial,Causa_Raiz,Recomendacion_Oficial,Filtros_Aplicados\n';
+
+      rows.slice(0, 50000).forEach(l => {
+        const codeStr = l.entrustCode || l.code || l.type || '';
+        const diag = (l.diagnostic && l.diagnostic.matched)
+          ? l.diagnostic
+          : (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message || l.raw || '', codeStr) : {});
+        csvContent += [
+          l.lineNum || '',
+          csvCell(l.timestamp || ''),
+          csvCell(l.serverTag || serverVal !== 'ALL' ? (l.serverTag || serverVal) : 'Servidor 1 (Primario)'),
+          csvCell(l.sourceFile || l.client || ''),
+          csvCell(l.level || ''),
+          csvCell(l.type || ''),
+          csvCell(codeStr),
+          csvCell(l.user || ''),
+          csvCell(l.clientIp || ''),
+          csvCell(l.service || ''),
+          csvCell(l.outcome || ''),
+          csvCell(l.message || l.raw || ''),
+          csvCell(diag.meaning || diag.title || ''),
+          csvCell(diag.rootCause || ''),
+          csvCell(diag.remediation || ''),
+          csvCell(filterSummary)
+        ].join(',') + '\n';
+      });
+
+      const slugParts = [
+        serverVal !== 'ALL' ? serverVal : null,
+        levelVal !== 'ALL' ? levelVal : null,
+        typeVal !== 'ALL' ? typeVal : null,
+        modeVal !== 'ALL' ? modeVal : null
+      ].filter(Boolean).join('_').replace(/[^a-zA-Z0-9_-]/g, '_');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Entrust_Vista_Filtrada${slugParts ? '_' + slugParts : ''}_${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
