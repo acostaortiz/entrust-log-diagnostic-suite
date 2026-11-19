@@ -1164,7 +1164,7 @@ class LogParser {
     const timeBuckets = {};
 
     const displayLogs = [];
-    const MAX_DISPLAY_LOGS = 15000;
+    const MAX_DISPLAY_LOGS = 150000;
     let displayErrorCount = 0;
 
     while (offset < fileSize) {
@@ -1211,10 +1211,10 @@ class LogParser {
             ipCounter[parsed.clientIp] = (ipCounter[parsed.clientIp] || 0) + 1;
           }
 
-          if (isError && displayErrorCount < 5000) {
+          if (isError && displayErrorCount < 100000) {
             displayErrorCount++;
             displayLogs.push(parsed);
-          } else if (!isError && displayLogs.length < MAX_DISPLAY_LOGS && (lineCount % 1000 === 0 || displayLogs.length < 1000)) {
+          } else if (!isError && displayLogs.length < MAX_DISPLAY_LOGS && (displayLogs.length < 50000 || lineCount % 10 === 0)) {
             displayLogs.push(parsed);
           }
         }

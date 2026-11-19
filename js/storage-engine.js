@@ -71,8 +71,8 @@ class StorageEngine {
     const rawLogs = isObjPayload
       ? (Array.isArray(logsOrPayload.logs) ? logsOrPayload.logs : [])
       : (Array.isArray(logsOrPayload) ? logsOrPayload : []);
-    // Compactar logs guardados en IndexedDB (máx 5,000 muestras ligeras sin objetos diagnostic pesados)
-    const compactLogs = rawLogs.slice(0, 5000).map(l => ({
+    // Compactar logs guardados en IndexedDB (máx 50,000 muestras ligeras sin objetos diagnostic pesados)
+    const compactLogs = rawLogs.slice(0, 50000).map(l => ({
       lineNum: l.lineNum,
       timestamp: l.timestamp,
       level: l.level,
@@ -84,6 +84,8 @@ class StorageEngine {
       client: l.client,
       sourceFile: l.sourceFile,
       node: l.node,
+      nodeKey: l.nodeKey,
+      serverTag: l.serverTag,
       outcome: l.outcome,
       message: l.message ? String(l.message).slice(0, 260) : '',
       raw: l.raw ? String(l.raw).slice(0, 300) : ''

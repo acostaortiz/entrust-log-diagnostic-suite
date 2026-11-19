@@ -1362,10 +1362,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.4',
-    build: 592,
+    version: 'v3.8.5',
+    build: 593,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'COMPACT-ACCORDION-FILES-DRAWER-384',
+    gitCommit: 'EXPAND-RAM-INDEXEDDB-50K-250K-385',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',

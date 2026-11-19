@@ -74,9 +74,9 @@ async function processGiantFileStream(file, clientId) {
   const codeCounter = {};
   const timeBuckets = {};
 
-  // Buffer de visualización interactiva en UI (máximo 35.000 registros para evitar OOM)
+  // Buffer de visualización interactiva en UI (máximo 150.000 registros por archivo para evitar OOM)
   const displayLogs = [];
-  const MAX_DISPLAY_LOGS = 35000;
+  const MAX_DISPLAY_LOGS = 150000;
   let displayErrorCount = 0;
 
   let lastProgressReportTime = 0;
@@ -150,12 +150,12 @@ async function processGiantFileStream(file, clientId) {
           if (isWarn) timeBuckets[dateBucket].warn++;
         }
 
-        // 5. Muestreo Seguro con tope estricto de memoria (prioriza Errores, Alertas y Eventos AUD/ Usuarios)
+        // 5. Retención amplia hasta 150k registros (prioriza Errores, Alertas, AUD y Usuarios)
         const isPriority = isError || isWarn || (parsed.entrustCode && /^AUD/i.test(parsed.entrustCode)) || (parsed.user && parsed.user !== 'N/A');
-        if (isPriority && displayErrorCount < 25000) {
+        if (isPriority && displayErrorCount < 100000) {
           displayErrorCount++;
           displayLogs.push(parsed);
-        } else if (displayLogs.length < MAX_DISPLAY_LOGS && (lineCount % 100 === 0 || displayLogs.length < 5000)) {
+        } else if (displayLogs.length < MAX_DISPLAY_LOGS && (displayLogs.length < 50000 || lineCount % 10 === 0)) {
           displayLogs.push(parsed);
         }
       }
