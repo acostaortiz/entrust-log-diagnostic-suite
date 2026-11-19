@@ -736,7 +736,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const files = event?.target?.files;
     if (!files || files.length === 0) return;
 
-    const clientId = document.getElementById('client-edit-id')?.value || state.activeClientId || 'default';
+    const clientId = document.getElementById('client-input-id')?.value || state.activeClientId || 'default';
     const selSrv = document.getElementById('client-config-server-select')?.value;
     const serverName = (selSrv && selSrv !== '__CUSTOM__') ? selSrv : 'Servidor 1 (Primario)';
     const parsed = await parseEntrustConfigFiles(files);
@@ -1001,7 +1001,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const engineerInput = document.getElementById('client-input-engineer');
 
     const editId = idInput ? idInput.value.trim() : '';
-    const name = nameInput ? nameInput.value.trim() : '';
+    let name = nameInput ? nameInput.value.trim() : '';
+    if (!name && editId && Array.isArray(state.clientProfiles)) {
+      const existingCli = state.clientProfiles.find(c => c.id === editId);
+      if (existingCli && existingCli.name) name = existingCli.name;
+    }
     const platform = platformInput ? platformInput.value : 'Entrust IdentityGuard OnPremise';
     const version = versionInput ? versionInput.value : 'Release 13.0';
     const environment = envInput ? envInput.value : 'PROD';
@@ -1067,10 +1071,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.7.0',
-    build: 583,
+    version: 'v3.7.1',
+    build: 584,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'CLIENT-SERVERS-CONFIG-REGISTRY-370',
+    gitCommit: 'CLIENT-MODAL-EDIT-SAVE-FIX-371',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -1437,7 +1441,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const orgInput = document.getElementById('engineer-input-org');
 
     const editId = idInput ? idInput.value.trim() : '';
-    const name = nameInput ? nameInput.value.trim() : '';
+    let name = nameInput ? nameInput.value.trim() : '';
+    if (!name && editId && Array.isArray(state.clientProfiles)) {
+      const existingCli = state.clientProfiles.find(c => c.id === editId);
+      if (existingCli && existingCli.name) name = existingCli.name;
+    }
     const title = titleInput ? titleInput.value.trim() : 'Especialista en Seguridad Entrust';
     const signature = sigInput ? sigInput.value.trim() : (name.startsWith('Ing.') ? name : `Ing. ${name}`);
     const email = emailInput ? emailInput.value.trim() : '';
