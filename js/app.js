@@ -1465,6 +1465,10 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       state.clientProfiles.push(newProfile);
       state.activeClientId = newId;
+      if (state.activeClientConfig && typeof state.activeClientConfig === 'object') {
+        state.activeClientConfig.clientId = newId;
+        _persistClientConfigUpdate(newId, state.activeClientConfig);
+      }
       window.cancelEditClientGlobal();
       showAnalysisStatus(false, `✅ Nuevo Perfil Registrado: ${name}`, `Se configuró a ${name} (${version} • ${environment}) como el cliente activo.`);
     }
@@ -1485,10 +1489,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.10',
-    build: 598,
+    version: 'v3.8.11',
+    build: 599,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'SYNC-SERVERS-ON-LOAD-AND-IP-10-16-13-86-3810',
+    gitCommit: 'PERSIST-CLIENT-CONFIG-ON-CREATE-3811',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
