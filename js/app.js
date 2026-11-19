@@ -1014,10 +1014,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.6.3',
-    build: 581,
+    version: 'v3.6.4',
+    build: 582,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'EXACT-SEC6-VOLUMETRY-FIX-363',
+    gitCommit: 'VOLUMETRY-BAR-REAL-FALLBACK-364',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -6433,9 +6433,26 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       } else {
         const gsm = state.globalStreamMetrics || {};
         const srvCount = new Set((state.loadedFiles || []).map(f => f.serverTag || f.nodeName || 'Principal')).size || (fileCount > 0 ? 1 : 0);
-        const uUsers = gsm.totalUniqueUsers || (window.UserTraceReport?.cachedStats ? Object.keys(window.UserTraceReport.cachedStats).length : (gsm.topUsers || []).length) || 0;
-        const uIps = gsm.totalUniqueIps || (gsm.topIps || []).length || 0;
-        const uCodes = gsm.totalUniqueCodes || Object.keys(metrics.allCodesMap || {}).length || 0;
+        const fallbackCodesCount = Object.keys(metrics.codeMap520 || {}).length + Object.keys(metrics.codeMapAud || {}).length + Object.keys(metrics.codeMapOra || {}).length + Object.keys(metrics.codeMapOther || {}).length;
+        const uCodes = gsm.totalUniqueCodes || fallbackCodesCount || 0;
+        let uUsers = gsm.totalUniqueUsers || (window.UserTraceReport?.cachedStats ? Object.keys(window.UserTraceReport.cachedStats).length : 0) || (gsm.topUsers || []).length || 0;
+        if (!uUsers && state.logs && state.logs.length) {
+          const uSet = new Set();
+          for (let i = 0; i < state.logs.length; i++) {
+            const u = state.logs[i].user;
+            if (u && u !== 'N/A' && u !== 'unknown') uSet.add(u);
+          }
+          uUsers = uSet.size;
+        }
+        let uIps = gsm.totalUniqueIps || (gsm.topIps || []).length || 0;
+        if (!uIps && state.logs && state.logs.length) {
+          const ipSet = new Set();
+          for (let i = 0; i < state.logs.length; i++) {
+            const ip = state.logs[i].clientIp;
+            if (ip && ip !== 'N/A' && ip !== 'local') ipSet.add(ip);
+          }
+          uIps = ipSet.size;
+        }
         const ramTraces = (state.logs || []).length;
         volBarEl.innerHTML = `
           <span>📁 Archivos: <strong>${fileCount}</strong></span>
