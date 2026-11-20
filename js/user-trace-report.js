@@ -373,8 +373,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         return ok;
       };
 
-      const stride = logs.length > 15000 ? Math.max(1, Math.floor(logs.length / 15000)) : 1;
-      for (let idx = 0; idx < logs.length; idx += stride) {
+      for (let idx = 0; idx < logs.length; idx++) {
         const log = logs[idx];
         let user = log.user || log.usuario || log.username;
         const msg = log.raw || log.message || '';
@@ -1192,6 +1191,24 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
 
     downloadCsv() {
       const activeClient = this.getClientProfile();
+      const st = window.appState || window.state;
+      const isServerMode = !!(st && st.isServerApi);
+
+      // Si SQLite está activo en el servidor y no hay selección manual en modal, descargar el 100% real (sin tope de 600)
+      if (isServerMode && this.selectedUsers.size === 0) {
+        const searchEl = document.getElementById('tab-user-search-input');
+        const qVal = searchEl ? (searchEl.value || '').trim() : '';
+        const fltVal = this.activeTabFilter || 'all';
+        const exportUrl = `/api/users-export?client=${encodeURIComponent(activeClient?.name || '')}&filter=${encodeURIComponent(fltVal)}&q=${encodeURIComponent(qVal)}`;
+        const a = document.createElement('a');
+        a.href = exportUrl;
+        a.download = `Censo_Completo_100pct_${(activeClient?.name || 'Entrust').replace(/\s+/g, '_')}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        return;
+      }
+
       const filename = `Censo_Usuarios_Trazabilidad_${(activeClient.name || 'Entrust').replace(/\s+/g, '_')}_${Date.now()}.csv`;
 
       // Exportar todos los usuarios seleccionados o el censo completo si no hay filtro
@@ -1469,7 +1486,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       const fm = isServerMode ? this.forensicMatrixData : null;
       const localFallback = this.buildLocalForensicFallback();
 
-      const totalUsers = fm ? (fm.uniqueValidUsers || allUsers.length) : allUsers.length;
+      const totalUsers = fm ? (fm.uniqueValidUsers ?? allUsers.length) : Math.max(allUsers.length, st?.globalStreamMetrics?.totalUniqueUsers || 0);
       const errorUsers = fm ? (fm.usersWithErrors ?? allUsers.filter(u => u.errors > 0 || u.isLocked).length) : allUsers.filter(u => u.errors > 0 || u.isLocked).length;
       const successUsers = fm ? (fm.usersClean ?? Math.max(0, totalUsers - errorUsers)) : allUsers.filter(u => u.errors === 0 && !u.isLocked).length;
       const lockedUsers = allUsers.filter(u => u.isLocked).length;
@@ -1562,7 +1579,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           <!-- Barra de Navegación de Sub-Módulos Forenses -->
           <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
             <button onclick="window.UserTraceReport.switchSubView('users')" style="padding:8px 14px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer; border:1px solid ${this.activeSubView === 'users' ? '#0284c7' : 'var(--border-color)'}; background:${this.activeSubView === 'users' ? '#0284c7' : 'var(--bg-primary)'}; color:${this.activeSubView === 'users' ? '#fff' : 'var(--text-main)'};">
-              👤 1. Censo & Patrón de Solicitudes por Usuario (${allUsers.length})
+              👤 1. Censo & Patrón de Solicitudes por Usuario (${totalUsers.toLocaleString()})
             </button>
             <button onclick="window.UserTraceReport.switchSubView('patterns')" style="padding:8px 14px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer; border:1px solid ${this.activeSubView === 'patterns' ? '#8b5cf6' : 'var(--border-color)'}; background:${this.activeSubView === 'patterns' ? '#8b5cf6' : 'var(--bg-primary)'}; color:${this.activeSubView === 'patterns' ? '#fff' : 'var(--text-main)'};">
               🧬 2. Clústeres de Patrones de Comportamiento (${patternClusters.length})
@@ -1624,9 +1641,14 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       }
 
       // Default Sub-View 1: Censo & Patrón de Solicitudes por Usuario
-      const totalUsers = allUsers.length;
-      const errorUsers = allUsers.filter(u => u.errors > 0 || u.isLocked).length;
-      const successUsers = allUsers.filter(u => u.errors === 0 && !u.isLocked).length;
+      const st = window.appState || window.state;
+      const fmTab = (st && st.isServerApi) ? this.forensicMatrixData : null;
+      const totalUsers = fmTab ? (fmTab.uniqueValidUsers ?? allUsers.length) : Math.max(allUsers.length, st?.globalStreamMetrics?.totalUniqueUsers || 0);
+      const errorUsers = fmTab ? (fmTab.usersWithErrors ?? allUsers.filter(u => u.errors > 0 || u.isLocked).length) : allUsers.filter(u => u.errors > 0 || u.isLocked).length;
+      const successUsers = fmTab ? (fmTab.usersClean ?? Math.max(0, totalUsers - errorUsers)) : allUsers.filter(u => u.errors === 0 && !u.isLocked).length;
+      const directorySubtitle = (fmTab && totalUsers > allUsers.length)
+        ? `Directorio Nominal: Top ${allUsers.length.toLocaleString()} de ${totalUsers.toLocaleString()} usuarios — escriba en el buscador para consultar el 100% en SQLite`
+        : 'Directorio Nominal (Cero Falsos Positivos):';
 
       container.innerHTML = `
         <div style="display:grid; grid-template-columns: 350px 1fr; gap:16px; min-height:620px; border:1px solid var(--border-color); border-radius:8px; overflow:hidden; background:var(--bg-secondary);">
@@ -1638,12 +1660,12 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             </div>
 
             <div style="display:flex; gap:4px; flex-wrap:wrap;">
-              <button class="btn" onclick="window.UserTraceReport.selectTabFilter('all')" id="btn-tab-filter-all" style="background:${this.activeTabFilter === 'all' ? '#0284c7' : 'var(--bg-secondary)'}; color:${this.activeTabFilter === 'all' ? '#fff' : 'var(--text-muted)'}; font-size:0.7rem; font-weight:700; padding:4px 8px; border-radius:4px; border:none; cursor:pointer;">Todos (${totalUsers})</button>
-              <button class="btn" onclick="window.UserTraceReport.selectTabFilter('errors')" id="btn-tab-filter-errors" style="background:${this.activeTabFilter === 'errors' ? '#ef4444' : 'rgba(239,68,68,0.12)'}; border:1px solid #ef4444; color:${this.activeTabFilter === 'errors' ? '#fff' : '#ef4444'}; font-size:0.7rem; font-weight:700; padding:4px 8px; border-radius:4px; cursor:pointer;">🚨 Con Fallas (${errorUsers})</button>
-              <button class="btn" onclick="window.UserTraceReport.selectTabFilter('success')" id="btn-tab-filter-success" style="background:${this.activeTabFilter === 'success' ? '#10b981' : 'rgba(16,185,129,0.12)'}; border:1px solid #10b981; color:${this.activeTabFilter === 'success' ? '#fff' : '#10b981'}; font-size:0.7rem; font-weight:700; padding:4px 8px; border-radius:4px; cursor:pointer;">✅ Limpios (${successUsers})</button>
+              <button class="btn" onclick="window.UserTraceReport.selectTabFilter('all')" id="btn-tab-filter-all" style="background:${this.activeTabFilter === 'all' ? '#0284c7' : 'var(--bg-secondary)'}; color:${this.activeTabFilter === 'all' ? '#fff' : 'var(--text-muted)'}; font-size:0.7rem; font-weight:700; padding:4px 8px; border-radius:4px; border:none; cursor:pointer;">Todos (${totalUsers.toLocaleString()})</button>
+              <button class="btn" onclick="window.UserTraceReport.selectTabFilter('errors')" id="btn-tab-filter-errors" style="background:${this.activeTabFilter === 'errors' ? '#ef4444' : 'rgba(239,68,68,0.12)'}; border:1px solid #ef4444; color:${this.activeTabFilter === 'errors' ? '#fff' : '#ef4444'}; font-size:0.7rem; font-weight:700; padding:4px 8px; border-radius:4px; cursor:pointer;">🚨 Con Fallas (${errorUsers.toLocaleString()})</button>
+              <button class="btn" onclick="window.UserTraceReport.selectTabFilter('success')" id="btn-tab-filter-success" style="background:${this.activeTabFilter === 'success' ? '#10b981' : 'rgba(16,185,129,0.12)'}; border:1px solid #10b981; color:${this.activeTabFilter === 'success' ? '#fff' : '#10b981'}; font-size:0.7rem; font-weight:700; padding:4px 8px; border-radius:4px; cursor:pointer;">✅ Limpios (${successUsers.toLocaleString()})</button>
             </div>
 
-            <div style="font-size:0.74rem; font-weight:700; color:var(--text-muted); margin-top:2px;">Directorio Nominal (Cero Falsos Positivos):</div>
+            <div style="font-size:0.74rem; font-weight:700; color:var(--text-muted); margin-top:2px;">${directorySubtitle}</div>
             <div id="tab-user-items-list" style="flex:1; max-height:520px; overflow-y:auto; display:flex; flex-direction:column; gap:5px; padding-right:4px;"></div>
           </div>
 
@@ -1999,6 +2021,81 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       `;
     },
 
+    _hydrateSqliteUserSummary(su, eventsList = []) {
+      if (!su || !su.user) return null;
+      const uname = su.user;
+      const codesDetail = su.codesDetail || (su.codes && typeof Object.values(su.codes)[0] === 'object' ? su.codes : {});
+      const codesSimple = {};
+      Object.entries(su.codes || {}).forEach(([k, v]) => {
+        codesSimple[k] = typeof v === 'object' ? (v.total || 0) : Number(v || 0);
+      });
+      const isLocked = Boolean(su.isLocked) || Object.keys(codesSimple).some(c => /5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002/i.test(c));
+      const seq = (eventsList || []).slice(0, 40).map((ev, idx) => ({
+        step: idx + 1,
+        code: ev.code || 'EVENT',
+        outcome: (ev.level === 'ERROR' || ev.level === 'CRITICAL' || /FAIL|ERR/i.test(ev.outcome || '')) ? 'FAIL' : 'SUCCESS',
+        timestamp: ev.timestamp || '',
+        ip: ev.ip || 'local',
+        lineNum: ev.lineNum || (idx + 1),
+        msg: (ev.message || ev.raw || '').slice(0, 160)
+      }));
+      const uStat = {
+        username: uname,
+        totalEvents: Number(su.total || 0),
+        errors: Number(su.errors || 0),
+        criticals: Number(su.errors || 0),
+        warnings: 0,
+        successes: Number(su.success ?? Math.max(0, (su.total || 0) - (su.errors || 0))),
+        isLocked,
+        ips: new Set(su.ips || []),
+        nodes: new Set(['🖥️ Motor Core SQLite']),
+        codes: codesSimple,
+        codesDetail,
+        sequence: seq,
+        sampleLogs: [],
+        firstTimestamp: su.firstSeen || '',
+        lastTimestamp: su.lastSeen || ''
+      };
+      this.classifyUserSequence(uStat);
+      this.cachedStats[uname] = uStat;
+      return uStat;
+    },
+
+    _renderUserListItems(container, list, bannerHtml = '') {
+      if (!container) return;
+      if (!list || list.length === 0) {
+        container.innerHTML = `${bannerHtml}<div style="padding:16px; text-align:center; color:var(--text-muted); font-size:0.8rem;">No hay usuarios nominales que coincidan con este filtro.</div>`;
+        return;
+      }
+
+      let html = bannerHtml;
+      list.forEach(u => {
+        const isSelected = u.username === this.activeTabSelectedUser;
+        let badge = '<span style="background:rgba(16,185,129,0.15); color:#10b981; font-size:0.68rem; font-weight:700; padding:1px 6px; border-radius:4px;">✅ OK</span>';
+        if (u.isLocked) {
+          badge = '<span style="background:rgba(225,29,72,0.15); color:#e11d48; font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:4px;">🔒 LOCK</span>';
+        } else if (u.errors > 0) {
+          badge = `<span style="background:rgba(239,68,68,0.15); color:#ef4444; font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:4px;">${u.errors} fallas</span>`;
+        }
+
+        const patShort = u.patternCategory || 'Operación Nominal';
+        const codesSearch = Object.keys(u.codes || {}).join(' ');
+        const jsU = escapeHtml(u.username.replace(/'/g, "\\'"));
+
+        html += `
+          <div class="tab-user-list-item" data-username="${escapeHtml(u.username)}" data-pattern="${escapeHtml(patShort + ' ' + codesSearch)}" onclick="window.UserTraceReport.renderTabUserDetail('${jsU}')" style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:6px; cursor:pointer; background:${isSelected ? 'rgba(2,132,199,0.18)' : 'var(--bg-secondary)'}; border:1px solid ${isSelected ? '#0284c7' : 'var(--border-color)'}; margin-bottom:2px; transition:all 0.15s ease;">
+            <div style="overflow:hidden; padding-right:6px;">
+              <div style="font-weight:700; color:var(--text-main); font-size:0.82rem; font-family:'JetBrains Mono', monospace; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(u.username)}</div>
+              <div style="font-size:0.69rem; color:var(--text-muted); margin-top:2px;">${u.totalEvents.toLocaleString()} solicitudes • ${escapeHtml(patShort.slice(0, 28))}</div>
+            </div>
+            <div style="flex-shrink:0;">${badge}</div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    },
+
     selectTabFilter(type) {
       this.activeTabFilter = type;
       const bAll = document.getElementById('btn-tab-filter-all');
@@ -2009,19 +2106,62 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       if (bErr) { bErr.style.background = type === 'errors' ? '#ef4444' : 'rgba(239,68,68,0.12)'; bErr.style.color = type === 'errors' ? '#fff' : '#ef4444'; }
       if (bSuc) { bSuc.style.background = type === 'success' ? '#10b981' : 'rgba(16,185,129,0.12)'; bSuc.style.color = type === 'success' ? '#fff' : '#10b981'; }
 
-      this.renderTabUserList();
+      const searchEl = document.getElementById('tab-user-search-input');
+      const qVal = searchEl ? searchEl.value.trim() : '';
+      if (qVal.length >= 2 && this.forensicMatrixData && this.forensicMatrixData.activeDb) {
+        this.filterTabUserList(qVal);
+      } else {
+        this.renderTabUserList();
+      }
     },
 
     filterTabUserList(query) {
       const q = (query || '').toLowerCase().trim();
       const container = document.getElementById('tab-user-items-list');
       if (!container) return;
+
+      if (this._userSearchTimer) {
+        clearTimeout(this._userSearchTimer);
+        this._userSearchTimer = null;
+      }
+
+      if (!q) {
+        this.renderTabUserList();
+        return;
+      }
+
       const items = container.querySelectorAll('.tab-user-list-item');
       items.forEach(it => {
         const uName = (it.getAttribute('data-username') || '').toLowerCase();
         const uPat = (it.getAttribute('data-pattern') || '').toLowerCase();
         it.style.display = (uName.includes(q) || uPat.includes(q)) ? 'flex' : 'none';
       });
+
+      const st = window.appState || window.state;
+      if (st && st.isServerApi && this.forensicMatrixData && this.forensicMatrixData.activeDb && q.length >= 2) {
+        const seqToken = (this._userSearchSeq = (this._userSearchSeq || 0) + 1);
+        this._userSearchTimer = setTimeout(async () => {
+          try {
+            const activeClient = this.getClientProfile();
+            const cParam = encodeURIComponent(activeClient?.name || '');
+            const url = `/api/users-search?client=${cParam}&q=${encodeURIComponent(q)}&filter=${encodeURIComponent(this.activeTabFilter || 'all')}&limit=150`;
+            const res = await fetch(url);
+            if (!res.ok || seqToken !== this._userSearchSeq) return;
+            const data = await res.json();
+            if (!data || seqToken !== this._userSearchSeq) return;
+            const currentInput = (document.getElementById('tab-user-search-input')?.value || '').trim().toLowerCase();
+            if (currentInput !== q) return;
+
+            const hydratedList = (data.users || []).map(su => this._hydrateSqliteUserSummary(su)).filter(Boolean);
+            const countShown = hydratedList.length;
+            const totalMatch = Number(data.totalMatching || countShown);
+            const banner = `<div style="padding:6px 8px; margin-bottom:4px; border-radius:5px; background:rgba(2,132,199,0.12); border:1px solid rgba(2,132,199,0.35); font-size:0.71rem; font-weight:700; color:#0284c7;">🔍 ${totalMatch.toLocaleString()} coincidencias en el 100% de SQLite${totalMatch > countShown ? ` (mostrando ${countShown})` : ''}</div>`;
+            this._renderUserListItems(container, hydratedList, banner);
+          } catch (e) {
+            console.warn('Error consultando /api/users-search:', e);
+          }
+        }, 250);
+      }
     },
 
     renderTabUserList() {
@@ -2040,46 +2180,50 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         return b.totalEvents - a.totalEvents;
       });
 
-      if (list.length === 0) {
-        container.innerHTML = '<div style="padding:16px; text-align:center; color:var(--text-muted); font-size:0.8rem;">No hay usuarios nominales que coincidan con este filtro.</div>';
-        return;
-      }
-
-      let html = '';
-      list.forEach(u => {
-        const isSelected = u.username === this.activeTabSelectedUser;
-        let badge = '<span style="background:rgba(16,185,129,0.15); color:#10b981; font-size:0.68rem; font-weight:700; padding:1px 6px; border-radius:4px;">✅ OK</span>';
-        if (u.isLocked) {
-          badge = '<span style="background:rgba(225,29,72,0.15); color:#e11d48; font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:4px;">🔒 LOCK</span>';
-        } else if (u.errors > 0) {
-          badge = `<span style="background:rgba(239,68,68,0.15); color:#ef4444; font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:4px;">${u.errors} fallas</span>`;
-        }
-
-        const patShort = u.patternCategory || 'Operación Nominal';
-        const codesSearch = Object.keys(u.codes || {}).join(' ');
-
-        html += `
-          <div class="tab-user-list-item" data-username="${escapeHtml(u.username)}" data-pattern="${escapeHtml(patShort + ' ' + codesSearch)}" onclick="window.UserTraceReport.renderTabUserDetail('${escapeHtml(u.username)}')" style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:6px; cursor:pointer; background:${isSelected ? 'rgba(2,132,199,0.18)' : 'var(--bg-secondary)'}; border:1px solid ${isSelected ? '#0284c7' : 'var(--border-color)'}; margin-bottom:2px; transition:all 0.15s ease;">
-            <div style="overflow:hidden; padding-right:6px;">
-              <div style="font-weight:700; color:var(--text-main); font-size:0.82rem; font-family:'JetBrains Mono', monospace; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(u.username)}</div>
-              <div style="font-size:0.69rem; color:var(--text-muted); margin-top:2px;">${u.totalEvents.toLocaleString()} solicitudes • ${escapeHtml(patShort.slice(0, 28))}</div>
-            </div>
-            <div style="flex-shrink:0;">${badge}</div>
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
+      this._renderUserListItems(container, list);
     },
 
     async renderTabUserDetail(username) {
       this.activeTabSelectedUser = username;
-      this.renderTabUserList();
+      const searchInputVal = (document.getElementById('tab-user-search-input')?.value || '').trim();
+      if (!searchInputVal) {
+        this.renderTabUserList();
+      } else {
+        document.querySelectorAll('#tab-user-items-list .tab-user-list-item').forEach(el => {
+          const isSel = el.getAttribute('data-username') === username;
+          el.style.background = isSel ? 'rgba(2,132,199,0.18)' : 'var(--bg-secondary)';
+          el.style.borderColor = isSel ? '#0284c7' : 'var(--border-color)';
+        });
+      }
 
       const pane = document.getElementById('tab-user-detail-pane');
       if (!pane) return;
 
-      const u = this.cachedStats[username];
+      const st = window.appState || window.state;
+      const isServerMode = !!(st && st.isServerApi);
+      let u = this.cachedStats[username];
+
+      if (!u && username && isServerMode && this.forensicMatrixData && this.forensicMatrixData.activeDb) {
+        pane.innerHTML = '<div style="padding:36px; text-align:center; color:var(--text-muted); font-size:0.9rem;">⏳ Consultando historial completo del usuario en SQLite...</div>';
+        try {
+          const activeClient = this.getClientProfile();
+          const cParam = encodeURIComponent(activeClient?.name || '');
+          const uParam = encodeURIComponent(username);
+          const res = await fetch(`/api/user-pattern-detail?user=${uParam}&client=${cParam}`);
+          if (res.ok) {
+            const d = await res.json();
+            if (d && Array.isArray(d.events)) {
+              this.sqliteUserEventsCache[username] = d.events;
+            }
+            if (d && d.summary) {
+              u = this._hydrateSqliteUserSummary(d.summary, d.events || []);
+            }
+          }
+        } catch (e) {
+          console.warn('Error hidratando usuario desde SQLite:', e);
+        }
+      }
+
       if (!u) {
         pane.innerHTML = '<div style="padding:30px; text-align:center; color:var(--text-muted);">Seleccione un usuario de la lista para ver su patrón de solicitudes y expediente.</div>';
         return;

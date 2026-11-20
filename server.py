@@ -638,6 +638,115 @@ def index_batch_in_background(file_paths, client_name='Entrust Client', force_re
         upload_state['progress'] = 100
 
 
+def compute_exact_sqlite_distinct_counts(cur):
+    """Computes exact 100% distinct valid users, event codes, and source IPs across all rows in SQLite."""
+    cur.execute("SELECT DISTINCT subject_name FROM logs WHERE subject_name IS NOT NULL AND subject_name != '' AND subject_name != 'system' AND subject_name != 'unknown'")
+    unique_users = sum(1 for (u,) in cur.fetchall() if is_valid_user_candidate(u))
+    cur.execute("SELECT COUNT(DISTINCT event_type) FROM logs WHERE event_type IS NOT NULL AND event_type != ''")
+    unique_codes = int((cur.fetchone() or [0])[0] or 0)
+    cur.execute("SELECT COUNT(DISTINCT source_ip) FROM logs WHERE source_ip IS NOT NULL AND source_ip != '' AND source_ip != 'local'")
+    unique_ips = int((cur.fetchone() or [0])[0] or 0)
+    return unique_users, unique_codes, unique_ips
+
+
+def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all'):
+    """Aggregates 100% of valid nominal users directly from indexed SQLite logs without artificial truncation."""
+    q_low = (q_filter or '').strip().lower()
+    flt = (outcome_filter or 'all').strip().lower()
+    matched_set = None
+
+    if q_low:
+        like_q = f'%{q_low}%'
+        cur.execute('''
+            SELECT DISTINCT subject_name
+            FROM logs
+            WHERE subject_name IS NOT NULL AND subject_name != '' AND subject_name != 'system' AND subject_name != 'unknown'
+              AND (LOWER(subject_name) LIKE ? OR LOWER(event_type) LIKE ?)
+        ''', (like_q, like_q))
+        matched_set = {r[0].strip() for r in cur.fetchall() if r[0] and is_valid_user_candidate(r[0].strip())}
+        if not matched_set:
+            return []
+
+    if matched_set is not None and len(matched_set) <= 400:
+        placeholders = ','.join(['?'] * len(matched_set))
+        cur.execute(f'''
+            SELECT subject_name, event_type, event_outcome, COUNT(1) as cnt,
+                   MIN(event_time) as first_t, MAX(event_time) as last_t, MAX(source_ip) as sample_ip
+            FROM logs
+            WHERE subject_name IN ({placeholders})
+            GROUP BY subject_name, event_type, event_outcome
+        ''', list(matched_set))
+    else:
+        cur.execute('''
+            SELECT subject_name, event_type, event_outcome, COUNT(1) as cnt,
+                   MIN(event_time) as first_t, MAX(event_time) as last_t, MAX(source_ip) as sample_ip
+            FROM logs
+            WHERE subject_name IS NOT NULL AND subject_name != '' AND subject_name != 'system' AND subject_name != 'unknown'
+            GROUP BY subject_name, event_type, event_outcome
+        ''')
+
+    users_map = {}
+    lock_re = re.compile(r'5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002', re.IGNORECASE)
+
+    for subj, etype, outcome, cnt, first_t, last_t, sample_ip in cur.fetchall():
+        subj_str = (subj or '').strip()
+        if not subj_str or not is_valid_user_candidate(subj_str):
+            continue
+        if matched_set is not None and subj_str not in matched_set:
+            continue
+
+        code = (etype or 'SYSTEM_LOG').strip()
+        out_str = (outcome or 'SUCCESS').upper()
+        is_err = ('FAIL' in out_str) or ('ERR' in out_str)
+
+        if subj_str not in users_map:
+            users_map[subj_str] = {
+                'user': subj_str,
+                'total': 0,
+                'errors': 0,
+                'success': 0,
+                'isLocked': False,
+                'firstSeen': first_t or '',
+                'lastSeen': last_t or '',
+                'ips': set(),
+                'codes': {}
+            }
+        u_entry = users_map[subj_str]
+        u_entry['total'] += cnt
+        if is_err:
+            u_entry['errors'] += cnt
+        else:
+            u_entry['success'] += cnt
+        if lock_re.search(code):
+            u_entry['isLocked'] = True
+        if first_t and (not u_entry['firstSeen'] or first_t < u_entry['firstSeen']):
+            u_entry['firstSeen'] = first_t
+        if last_t and (not u_entry['lastSeen'] or last_t > u_entry['lastSeen']):
+            u_entry['lastSeen'] = last_t
+        if sample_ip and sample_ip not in ('local', ''):
+            u_entry['ips'].add(sample_ip)
+
+        if code not in u_entry['codes']:
+            u_entry['codes'][code] = {'total': 0, 'errors': 0, 'success': 0}
+        u_entry['codes'][code]['total'] += cnt
+        if is_err:
+            u_entry['codes'][code]['errors'] += cnt
+        else:
+            u_entry['codes'][code]['success'] += cnt
+
+    result = list(users_map.values())
+    if flt == 'errors':
+        result = [u for u in result if u['errors'] > 0 or u['isLocked']]
+    elif flt == 'success':
+        result = [u for u in result if u['errors'] == 0 and not u['isLocked']]
+
+    result.sort(
+        key=lambda u: (1 if u['isLocked'] else 0, 1 if u['errors'] > 0 else 0, u['errors'], u['total']),
+        reverse=True
+    )
+    return result
+
+
 def index_file_in_background(file_path, client_name='Entrust Client', append_mode=False, server_tag=''):
     global upload_state, ACTIVE_DB_PATH
     client_slug = get_client_slug(client_name)
@@ -815,6 +924,9 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
         ]
         loaded_files.append(file_entry)
 
+        # Compute exact 100% distinct counts across the full SQLite table (not capped by append merge)
+        exact_unique_users, exact_unique_codes, exact_unique_ips = compute_exact_sqlite_distinct_counts(cur)
+
         # Build instant cached stats object (< 0.1 ms)
         stats_obj = {
             'status': 'ready',
@@ -822,9 +934,9 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             'totalErrors': errors_all,
             'totalWarnings': warnings_all,
             'totalSuccess': max(0, total_all - errors_all),
-            'totalUniqueCodes': len(code_counts),
-            'totalUniqueUsers': len(user_counts),
-            'totalUniqueIps': len(ip_counts),
+            'totalUniqueCodes': exact_unique_codes or len(code_counts),
+            'totalUniqueUsers': exact_unique_users,
+            'totalUniqueIps': exact_unique_ips or len(ip_counts),
             'eventTypes': [{'code': k, 'count': v} for k, v in type_counts.most_common(100)],
             'topCodes': [{'code': k, 'count': v} for k, v in code_counts.most_common(100)],
             'topUsers': [{'user': k, 'count': v} for k, v in user_counts.most_common(200)],
@@ -837,7 +949,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
         }
         cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
         cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_obj, ensure_ascii=False)))
-        cur.execute("DELETE FROM server_stats WHERE key='forensic_matrix_v2'")
+        cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3')")
         conn.commit()
         conn.close()
 
@@ -971,6 +1083,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_forensic_matrix(query)
         elif path == '/api/user-pattern-detail':
             self.handle_user_pattern_detail(query)
+        elif path == '/api/users-search':
+            self.handle_api_users_search(query)
+        elif path == '/api/users-export':
+            self.handle_api_users_export(query)
         elif path == '/api/manuals-search':
             self.handle_manuals_search(query)
         elif path == '/api/client-config':
@@ -1640,6 +1756,16 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     stats_cached = json.loads(row[0])
                     stats_cached['activeDb'] = os.path.basename(db)
                     stats_cached['client'] = client_param or os.path.basename(db).replace('_audit.db', '')
+                    if (int(stats_cached.get('totalLogs', 0) or 0) > 200 and int(stats_cached.get('totalUniqueUsers', 0) or 0) <= 200) or 'totalUniqueUsers' not in stats_cached:
+                        ex_u, ex_c, ex_ip = compute_exact_sqlite_distinct_counts(cur)
+                        stats_cached['totalUniqueUsers'] = ex_u
+                        stats_cached['totalUniqueCodes'] = ex_c
+                        stats_cached['totalUniqueIps'] = ex_ip
+                        try:
+                            cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_cached, ensure_ascii=False)))
+                            conn.commit()
+                        except Exception:
+                            pass
                     if 'topUsers' in stats_cached and isinstance(stats_cached['topUsers'], list):
                         stats_cached['topUsers'] = [u for u in stats_cached['topUsers'] if is_valid_user_candidate(u.get('user', ''))]
                     conn.close()
@@ -1709,6 +1835,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             is_idaas = cur.fetchone() is not None
             detected_platform = 'Entrust IDaaS Cloud' if is_idaas else 'Entrust IdentityGuard OnPremise'
 
+            exact_u, exact_c, exact_ip = compute_exact_sqlite_distinct_counts(cur)
+
             conn.close()
             self.send_json({
                 'status': 'ready',
@@ -1716,6 +1844,9 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'totalErrors': errors,
                 'totalWarnings': 0,
                 'totalSuccess': total - errors,
+                'totalUniqueCodes': exact_c,
+                'totalUniqueUsers': exact_u,
+                'totalUniqueIps': exact_ip,
                 'eventTypes': types,
                 'topCodes': top_codes,
                 'topUsers': top_users,
@@ -1877,12 +2008,60 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         target_user = query.get('user', [''])[0].strip()
         db = resolve_client_db(client_param)
         if not db or not os.path.exists(db) or not target_user:
-            self.send_json({'status': 'empty', 'user': target_user, 'events': []}, status=200)
+            self.send_json({'status': 'empty', 'user': target_user, 'events': [], 'summary': None}, status=200)
             return
 
         try:
             conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
+
+            # Aggregate 100% summary across all rows for target_user (not truncated by 1,000-event preview cap)
+            cur.execute('''
+                SELECT event_type, event_outcome, COUNT(1), MIN(event_time), MAX(event_time), MAX(source_ip)
+                FROM logs
+                WHERE subject_name = ?
+                GROUP BY event_type, event_outcome
+            ''', (target_user,))
+            agg_summary_rows = cur.fetchall()
+
+            sum_total = 0
+            sum_errors = 0
+            sum_success = 0
+            first_seen = ''
+            last_seen = ''
+            ips_set = set()
+            codes_simple = {}
+            codes_detail = {}
+            is_locked = False
+            lock_re = re.compile(r'5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002', re.IGNORECASE)
+
+            for r_code, r_out, r_cnt, r_first, r_last, r_ip in agg_summary_rows:
+                code_lbl = (r_code or 'SYSTEM_LOG').strip()
+                out_up = (r_out or 'SUCCESS').upper()
+                is_err = ('FAIL' in out_up) or ('ERR' in out_up)
+                cnt_int = int(r_cnt or 0)
+                sum_total += cnt_int
+                if is_err:
+                    sum_errors += cnt_int
+                else:
+                    sum_success += cnt_int
+                if lock_re.search(code_lbl):
+                    is_locked = True
+                if r_first and (not first_seen or r_first < first_seen):
+                    first_seen = r_first
+                if r_last and (not last_seen or r_last > last_seen):
+                    last_seen = r_last
+                if r_ip and r_ip not in ('local', ''):
+                    ips_set.add(r_ip)
+                codes_simple[code_lbl] = codes_simple.get(code_lbl, 0) + cnt_int
+                if code_lbl not in codes_detail:
+                    codes_detail[code_lbl] = {'total': 0, 'errors': 0, 'success': 0}
+                codes_detail[code_lbl]['total'] += cnt_int
+                if is_err:
+                    codes_detail[code_lbl]['errors'] += cnt_int
+                else:
+                    codes_detail[code_lbl]['success'] += cnt_int
+
             cur.execute('''
                 SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw
                 FROM logs
@@ -1909,14 +2088,132 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     'raw': r[7] or ''
                 })
 
+            summary = {
+                'user': target_user,
+                'total': sum_total,
+                'errors': sum_errors,
+                'success': sum_success,
+                'isLocked': is_locked,
+                'firstSeen': first_seen,
+                'lastSeen': last_seen,
+                'ips': sorted(ips_set)[:10],
+                'codes': codes_simple,
+                'codesDetail': codes_detail
+            }
+
             self.send_json({
                 'status': 'ready',
                 'user': target_user,
                 'totalReturned': len(events),
+                'summary': summary,
                 'events': events
             })
         except Exception as e:
-            self.send_json({'error': str(e), 'user': target_user, 'events': []}, status=500)
+            self.send_json({'error': str(e), 'user': target_user, 'events': [], 'summary': None}, status=500)
+
+    def handle_api_users_search(self, query):
+        client_param = query.get('client', [None])[0]
+        q_filter = query.get('q', [''])[0].strip()
+        outcome_filter = query.get('filter', ['all'])[0].strip().lower()
+        page = max(1, int(query.get('page', ['1'])[0]))
+        limit = min(500, max(10, int(query.get('limit', ['100'])[0])))
+        db = resolve_client_db(client_param)
+
+        if not db or not os.path.exists(db):
+            self.send_json({'status': 'empty', 'totalMatching': 0, 'page': 1, 'totalPages': 0, 'users': []})
+            return
+
+        try:
+            conn = sqlite3.connect(db, timeout=30.0)
+            cur = conn.cursor()
+            users_all = aggregate_sqlite_users(cur, q_filter=q_filter, outcome_filter=outcome_filter)
+            conn.close()
+
+            total_matching = len(users_all)
+            total_pages = max(1, (total_matching + limit - 1) // limit)
+            offset = (page - 1) * limit
+            page_users = []
+            for u in users_all[offset:offset + limit]:
+                page_users.append({
+                    'user': u['user'],
+                    'total': u['total'],
+                    'errors': u['errors'],
+                    'success': u['success'],
+                    'isLocked': u['isLocked'],
+                    'firstSeen': u['firstSeen'],
+                    'lastSeen': u['lastSeen'],
+                    'ips': sorted(u['ips'])[:5],
+                    'codes': u['codes']
+                })
+
+            self.send_json({
+                'status': 'ready',
+                'totalMatching': total_matching,
+                'page': page,
+                'totalPages': total_pages,
+                'limit': limit,
+                'users': page_users
+            })
+        except Exception as e:
+            self.send_json({'error': str(e), 'status': 'error', 'totalMatching': 0, 'users': []}, status=500)
+
+    def handle_api_users_export(self, query):
+        import csv
+        client_param = query.get('client', [None])[0]
+        q_filter = query.get('q', [''])[0].strip()
+        outcome_filter = query.get('filter', ['all'])[0].strip().lower()
+        db = resolve_client_db(client_param)
+
+        if not db or not os.path.exists(db):
+            self.send_json({'error': 'Base de datos SQLite no encontrada'}, status=404)
+            return
+
+        try:
+            conn = sqlite3.connect(db, timeout=30.0)
+            cur = conn.cursor()
+            users_all = aggregate_sqlite_users(cur, q_filter=q_filter, outcome_filter=outcome_filter)
+            conn.close()
+
+            slug = get_client_slug(client_param or os.path.basename(db).replace('_audit.db', ''))
+            buf = io.StringIO()
+            buf.write('\ufeff')
+            writer = csv.writer(buf)
+            writer.writerow([
+                'Usuario', 'Total_Interacciones', 'Exitos', 'Fallas',
+                'Porcentaje_Falla', 'Estado_Seguridad', 'Primera_Actividad',
+                'Ultima_Actividad', 'IPs', 'Codigos_e_Interacciones'
+            ])
+            for u in users_all:
+                err_pct = f"{round((u['errors'] / max(1, u['total'])) * 100, 1)}%"
+                state_str = 'BLOQUEADO' if u['isLocked'] else ('CON_FALLAS' if u['errors'] > 0 else 'EXITOSO')
+                ips_str = '; '.join(sorted(u['ips']))
+                codes_str = '; '.join(
+                    f"{k}({v['total']})"
+                    for k, v in sorted(u['codes'].items(), key=lambda x: x[1]['total'], reverse=True)
+                )
+                writer.writerow([
+                    u['user'],
+                    u['total'],
+                    u['success'],
+                    u['errors'],
+                    err_pct,
+                    state_str,
+                    u['firstSeen'],
+                    u['lastSeen'],
+                    ips_str,
+                    codes_str
+                ])
+
+            csv_bytes = buf.getvalue().encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/csv; charset=utf-8')
+            self.send_header('Content-Disposition', f'attachment; filename="Censo_Completo_100pct_{slug}.csv"')
+            self.send_header('Content-Length', str(len(csv_bytes)))
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(csv_bytes)
+        except Exception as e:
+            self.send_json({'error': str(e), 'status': 'error'}, status=500)
 
     def handle_forensic_matrix(self, query):
         client_param = query.get('client', [None])[0]
@@ -1944,7 +2241,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
             if not refresh:
-                cur.execute("SELECT value FROM server_stats WHERE key='forensic_matrix_v2'")
+                cur.execute("SELECT value FROM server_stats WHERE key='forensic_matrix_v3'")
                 cached_row = cur.fetchone()
                 if cached_row and cached_row[0]:
                     cached_payload = json.loads(cached_row[0])
@@ -1972,6 +2269,13 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             import collections
             users_map = {}
             code_map = {}
+            cat_users = {
+                'audit': set(),
+                '520': set(),
+                'idaas': set(),
+                'system': set(),
+                'traffic': set()
+            }
             filtered_noise_users = set()
             filtered_noise_events = 0
 
@@ -1984,7 +2288,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     kind = 'SYSTEM_EVENT'
                     if re.match(r'^520\d{4}$', code):
                         kind = 'ERROR_520'
-                    elif re.match(r'^AUD\d{3,4}$', code) or 'AUDIT' in code.upper():
+                    elif re.match(r'^AUD\d{2,5}$', code, re.IGNORECASE) or 'AUDIT' in code.upper():
                         kind = 'AUDIT_AUD'
                     elif code.startswith('ORA-') or 'SQL' in code.upper() or 'JDBC' in code.upper():
                         kind = 'DATABASE_ORA'
@@ -2009,6 +2313,16 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 subj_str = (subj or '').strip()
                 if is_valid_user_candidate(subj_str):
+                    cat_users['traffic'].add(subj_str)
+                    if c_entry['kind'] == 'AUDIT_AUD':
+                        cat_users['audit'].add(subj_str)
+                    elif c_entry['kind'] == 'ERROR_520':
+                        cat_users['520'].add(subj_str)
+                    elif c_entry['kind'] == 'IDAAS_MIGRATION':
+                        cat_users['idaas'].add(subj_str)
+                    elif c_entry['kind'] in ('SYSTEM_EVENT', 'DATABASE_ORA'):
+                        cat_users['system'].add(subj_str)
+
                     if subj_str not in users_map:
                         users_map[subj_str] = {
                             'user': subj_str,
@@ -2408,6 +2722,14 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'uniqueValidUsers': len(users_map),
                 'usersWithErrors': sum(1 for u in users_map.values() if u['errors'] > 0),
                 'usersClean': sum(1 for u in users_map.values() if u['errors'] == 0),
+                'categoryUniqueUsers': {
+                    'audit': len(cat_users['audit']),
+                    '520': len(cat_users['520']),
+                    'idaas': len(cat_users['idaas']),
+                    'system': len(cat_users['system']),
+                    'traffic': len(cat_users['traffic']),
+                    'all': len(users_map)
+                },
                 'filteredNoiseUsers': len(filtered_noise_users),
                 'filteredNoiseEvents': filtered_noise_events,
                 'usersList': users_list_out,
@@ -2418,7 +2740,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             }
 
             try:
-                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('forensic_matrix_v2', json.dumps(result_payload, ensure_ascii=False)))
+                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('forensic_matrix_v3', json.dumps(result_payload, ensure_ascii=False)))
                 conn.commit()
             except Exception:
                 pass

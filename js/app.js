@@ -1498,12 +1498,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.16',
-    build: 604,
+    version: 'v3.8.17',
+    build: 605,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'CHUNKED-NONBLANK-PDF-ENGINE-3816',
+    gitCommit: 'EXACT-100PCT-USER-CENSUS-3817',
     gitBranch: 'main',
-    buildDate: '2026-11-07 17:30',
+    buildDate: '2026-11-20 15:25',
     engineer: 'Tomás Acosta',
     organization: 'IT SERVICIOS V.S.A.'
   };
@@ -3819,7 +3819,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     `;
   }
 
-  function generateExecutiveReport(onlyCatalogErrors = false) {
+  async function generateExecutiveReport(onlyCatalogErrors = false) {
     state.lastReportOnlyCatalog = onlyCatalogErrors;
     const container = document.getElementById('exec-report-container') || dom.execReportContainer;
     const modal = document.getElementById('exec-report-modal') || dom.execReportModal;
@@ -3897,16 +3897,31 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     const allUniqueCodesMap = new Map();
 
-    // Sincronizar motor de trazabilidad y censo de usuarios sin falsos positivos
+    // Sincronizar motor de trazabilidad y censo de usuarios sin falsos positivos (100% real desde SQLite si está activo)
     if (window.UserTraceReport) {
+      if (state.isServerApi && !window.UserTraceReport.forensicMatrixData && typeof window.UserTraceReport.fetchForensicMatrix === 'function') {
+        await window.UserTraceReport.fetchForensicMatrix(false);
+      }
       window.UserTraceReport.buildUserStats();
     }
+    const fmData = (state.isServerApi && window.UserTraceReport) ? window.UserTraceReport.forensicMatrixData : null;
     const forensicUsersList = window.UserTraceReport ? Object.values(window.UserTraceReport.cachedStats || {}) : [];
     const forensicFallback = window.UserTraceReport ? window.UserTraceReport.buildLocalForensicFallback() : { patternClusters: [], codeMatrix: [], dbHealth: { status: 'HEALTHY', totalDbIncidents: 0, indicators: [] }, postMortem: {} };
+    if (fmData) {
+      if (fmData.dbHealth) forensicFallback.dbHealth = fmData.dbHealth;
+      if (fmData.postMortem) forensicFallback.postMortem = fmData.postMortem;
+    }
     const codeToUsersLookup = {};
     (forensicFallback.codeMatrix || []).forEach(cm => {
-      codeToUsersLookup[cm.code] = cm.users || [];
+      codeToUsersLookup[cm.code] = { users: cm.users || [], uniqueUsersCount: Number(cm.uniqueUsersCount ?? (cm.users || []).length) };
     });
+    if (fmData && Array.isArray(fmData.codeMatrix)) {
+      fmData.codeMatrix.forEach(cm => {
+        if (cm && cm.code) {
+          codeToUsersLookup[cm.code] = { users: cm.users || [], uniqueUsersCount: Number(cm.uniqueUsersCount ?? (cm.users || []).length) };
+        }
+      });
+    }
 
     if (state.globalStreamMetrics?.topCodes) {
       state.globalStreamMetrics.topCodes.forEach(item => {
@@ -3971,9 +3986,11 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       const bDiag = getBilingualDiagnostic(diag, code, service, isEn);
       const pctStr = formatPctStr(count, totalCount);
 
-      const affectedUsersArr = codeToUsersLookup[code] || [];
+      const codeUsersEntry = codeToUsersLookup[code] || codeToUsersLookup[String(code).toUpperCase()] || { users: [], uniqueUsersCount: 0 };
+      const affectedUsersArr = Array.isArray(codeUsersEntry) ? codeUsersEntry : (codeUsersEntry.users || []);
+      const affectedUsersTotalCount = Array.isArray(codeUsersEntry) ? codeUsersEntry.length : Math.max(affectedUsersArr.length, Number(codeUsersEntry.uniqueUsersCount || 0));
       const affectedUsersBadges = affectedUsersArr.length > 0
-        ? affectedUsersArr.slice(0, 8).map(u => `<span style="display:inline-block; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:1px 5px; border-radius:4px; font-family:monospace; font-size:9px; font-weight:700; margin:1px;">👤 ${escapeHtml(u.user)} (${u.count}x)</span>`).join(' ') + (affectedUsersArr.length > 8 ? ` <span style="font-size:9px; color:#64748b; font-weight:bold;">+${affectedUsersArr.length - 8} más</span>` : '')
+        ? affectedUsersArr.slice(0, 8).map(u => `<span style="display:inline-block; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:1px 5px; border-radius:4px; font-family:monospace; font-size:9px; font-weight:700; margin:1px;">👤 ${escapeHtml(u.user)} (${u.count}x)</span>`).join(' ') + (affectedUsersTotalCount > 8 ? ` <span style="font-size:9px; color:#64748b; font-weight:bold;">+${(affectedUsersTotalCount - 8).toLocaleString()} más (${affectedUsersTotalCount.toLocaleString()} totales)</span>` : '')
         : `<span style="font-size:9px; color:#64748b; font-family:monospace;">⚙️ Evento de Sistema / Sin usuario nominal</span>`;
 
       const evidenceMetaHtml = `<div style="margin-top:4px; padding:4px 6px; background:#f1f5f9; border-left:2px solid #0284c7; border-radius:3px; font-family:monospace; font-size:9px; color:#334155;">📄 <strong>Evidencia:</strong> ${escapeHtml(sampleFile || 'Log')} (Línea #${sampleLine || 1} • ${escapeHtml(sampleTime || '-')})<br><span style="color:#0f172a;">${escapeHtml((sampleRaw || '').slice(0, 140))}</span></div>`;
@@ -4031,7 +4048,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
               [${escapeHtml(sampleFile || 'Log')} : Línea #${sampleLine || 1}] ${escapeHtml(sampleRaw)}
             </div>
             <div style="font-size:11px; color:#1e293b; margin-bottom:6px;">
-              <strong style="color:#0a3d6d;">👥 Usuarios Afectados (${affectedUsersArr.length}):</strong> ${affectedUsersBadges}
+              <strong style="color:#0a3d6d;">👥 Usuarios Afectados (${affectedUsersTotalCount.toLocaleString()}):</strong> ${affectedUsersBadges}
             </div>
             <div style="font-size:12px; color:#1e293b; margin-bottom:6px;">
               <strong style="color:#0a3d6d;">${i18n.diagnosis}</strong> ${escapeHtml(bDiag.meaning || code)}
@@ -4102,9 +4119,15 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     // Construir Sección III: Censo Nominal de Usuarios y Secuencia de Solicitudes (Solicitud 1 ➔ Solicitud N)
     const sortedForensicUsers = [...forensicUsersList].sort((a, b) => (b.isLocked ? 1 : 0) - (a.isLocked ? 1 : 0) || (b.errors - a.errors) || (b.totalEvents - a.totalEvents));
-    const totalValidUsersCount = sortedForensicUsers.length;
-    const usersWithErrorsCount = sortedForensicUsers.filter(u => u.errors > 0 || u.isLocked).length;
-    const usersCleanCount = sortedForensicUsers.filter(u => u.errors === 0 && !u.isLocked).length;
+    const totalValidUsersCount = fmData
+      ? Number(fmData.uniqueValidUsers ?? sortedForensicUsers.length)
+      : Math.max(sortedForensicUsers.length, state.globalStreamMetrics?.totalUniqueUsers || 0);
+    const usersWithErrorsCount = fmData
+      ? Number(fmData.usersWithErrors ?? sortedForensicUsers.filter(u => u.errors > 0 || u.isLocked).length)
+      : sortedForensicUsers.filter(u => u.errors > 0 || u.isLocked).length;
+    const usersCleanCount = fmData
+      ? Number(fmData.usersClean ?? Math.max(0, totalValidUsersCount - usersWithErrorsCount))
+      : Math.max(0, totalValidUsersCount - usersWithErrorsCount);
 
     let userCensusReportRowsHtml = '';
     sortedForensicUsers.slice(0, 40).forEach((u, uIdx) => {
@@ -4137,28 +4160,29 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         </tr>`;
     });
 
-    if (sortedForensicUsers.length > 40) {
-      const extraUsers = sortedForensicUsers.length - 40;
+    const displayedCensusCount = Math.min(40, sortedForensicUsers.length);
+    if (totalValidUsersCount > displayedCensusCount) {
+      const extraUsers = totalValidUsersCount - displayedCensusCount;
       const extraUsrMsg = isEn
-        ? `+ ${extraUsers} additional users available in CSV export / User Census tab`
-        : `+ ${extraUsers} usuarios adicionales disponibles en exportación CSV / pestaña Censo`;
+        ? `+ ${extraUsers.toLocaleString()} additional users available in CSV export / User Census tab`
+        : `+ ${extraUsers.toLocaleString()} usuarios adicionales disponibles en exportación CSV / pestaña Censo`;
       userCensusReportRowsHtml += `<tr><td colspan="5" style="padding:8px 10px; border:1px solid #cbd5e1; background:#f1f5f9; color:#475569; font-size:10px; text-align:center; font-weight:600;">👥 ${extraUsrMsg}</td></tr>`;
     }
 
     const userCensusSectionHtml = `
       <div style="margin-top:20px; margin-bottom:25px;">
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:10px; font-size:15px;">
-          5. Censo Forense de Usuarios &amp; Secuencia de Solicitudes (Solicitud 1 ➔ Solicitud N) — [${totalValidUsersCount} Usuarios Reales Validados | 0 Falsos Positivos]
+          5. Censo Forense de Usuarios &amp; Secuencia de Solicitudes (Solicitud 1 ➔ Solicitud N) — [${totalValidUsersCount.toLocaleString()} Usuarios Reales Validados | 0 Falsos Positivos]
         </h3>
         <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:12px;">
           <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:8px 12px; border-radius:6px; font-size:11px;">
-            <strong style="color:#0369a1;">👥 Total Usuarios Nominales Reales:</strong> <span style="font-family:monospace; font-weight:900; font-size:14px; color:#0a3d6d;">${totalValidUsersCount}</span> (Depuración estricta anti-alucinación)
+            <strong style="color:#0369a1;">👥 Total Usuarios Nominales Reales:</strong> <span style="font-family:monospace; font-weight:900; font-size:14px; color:#0a3d6d;">${totalValidUsersCount.toLocaleString()}</span> (Depuración estricta anti-alucinación)
           </div>
           <div style="background:#fef2f2; border:1px solid #fecaca; padding:8px 12px; border-radius:6px; font-size:11px;">
-            <strong style="color:#b91c1c;">🚨 Usuarios con Errores / Bloqueos:</strong> <span style="font-family:monospace; font-weight:900; font-size:14px; color:#dc2626;">${usersWithErrorsCount}</span>
+            <strong style="color:#b91c1c;">🚨 Usuarios con Errores / Bloqueos:</strong> <span style="font-family:monospace; font-weight:900; font-size:14px; color:#dc2626;">${usersWithErrorsCount.toLocaleString()}</span>
           </div>
           <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:8px 12px; border-radius:6px; font-size:11px;">
-            <strong style="color:#15803d;">✅ Usuarios 100% Exitosos:</strong> <span style="font-family:monospace; font-weight:900; font-size:14px; color:#16a34a;">${usersCleanCount}</span>
+            <strong style="color:#15803d;">✅ Usuarios 100% Exitosos:</strong> <span style="font-family:monospace; font-weight:900; font-size:14px; color:#16a34a;">${usersCleanCount.toLocaleString()}</span>
           </div>
         </div>
         <table class="report-table" style="width:100%; border-collapse:collapse; font-size:10.5px; table-layout:fixed; word-wrap:break-word;">
@@ -5192,7 +5216,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
   let currentInspectorData = [];
 
   window.openKpiInspectorModal = function(cat) { openKpiInspectorModal(cat); };
-  function openKpiInspectorModal(category = '520') {
+  async function openKpiInspectorModal(category = '520') {
     currentInspectorCategory = category;
     const modal = document.getElementById('modal-kpi-inspector');
     const titleEl = document.getElementById('kpi-inspector-title');
@@ -5203,6 +5227,12 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     if (!modal || !tableContainer) return;
 
     modal.style.display = 'flex';
+
+    if (state.isServerApi && window.UserTraceReport && !window.UserTraceReport.forensicMatrixData && typeof window.UserTraceReport.fetchForensicMatrix === 'function') {
+      if (summaryBar) summaryBar.innerHTML = '<div>⏳ Consultando población 100% real de usuarios en SQLite...</div>';
+      tableContainer.innerHTML = '<tr><td colspan="5" style="padding:24px; text-align:center; color:var(--text-muted);">⏳ Calculando población real de usuarios en el 100% de SQLite...</td></tr>';
+      await window.UserTraceReport.fetchForensicMatrix(false);
+    }
 
     const activeClient = getActiveClientProfile();
     const clientLabel = activeClient ? activeClient.name : 'Entorno Entrust';
@@ -5451,18 +5481,51 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       codesMap.set('Penalización por Alertas AUDxxx', { code: 'PENALTY-AUDIT', count: 0, sample: 'Descuento por eventos de auditoría no atendidos', service: 'Auditoría', usersMap: new Map(), actorsMap: new Map() });
     }
 
-    // Enriquecer con la matriz forense del backend SQLite si está disponible
-    if (window.UserTraceReport && window.UserTraceReport.forensicMatrixData && Array.isArray(window.UserTraceReport.forensicMatrixData.codeMatrix)) {
-      window.UserTraceReport.forensicMatrixData.codeMatrix.forEach(cm => {
-        const key = String(cm.code || '').toUpperCase();
-        const entry = codesMap.get(key) || codesMap.get(cm.code);
-        if (entry && entry.usersMap.size === 0 && Array.isArray(cm.users)) {
+    // Enriquecer con la matriz forense del backend SQLite si está disponible (100% de ocurrencias y población de usuarios)
+    const fm = (state.isServerApi && window.UserTraceReport) ? window.UserTraceReport.forensicMatrixData : null;
+    if (fm && Array.isArray(fm.codeMatrix)) {
+      const matchesCategory = (cm) => {
+        const c = String(cm.code || '');
+        const k = String(cm.kind || '');
+        if (category === 'audit') return k === 'AUDIT_AUD' || /^AUD\d+/i.test(c);
+        if (category === '520') return k === 'ERROR_520' || /^520\d{4}$/.test(c);
+        if (category === 'idaas') return k === 'IDAAS_MIGRATION' || /bulkidentityguard|\.assignedgrid|idaas/i.test(c);
+        if (category === 'system') return k === 'SYSTEM_EVENT' || k === 'DATABASE_ORA';
+        if (category === 'traffic') return true;
+        return false;
+      };
+
+      const matchingMatrixRows = fm.codeMatrix.filter(matchesCategory);
+      if (matchingMatrixRows.length > 0) {
+        ['SIN-EVENTOS-AUD', 'SIN-ERRORES-520', 'SIN-EVENTOS-IDAAS', 'IG.SYSTEM-NOMINAL', 'SIN-TRAFICO-API'].forEach(ph => codesMap.delete(ph));
+      }
+
+      matchingMatrixRows.forEach(cm => {
+        const normKey = (category === 'audit' || /^AUD\d+/i.test(cm.code))
+          ? String(cm.code).toUpperCase()
+          : String(cm.code);
+        let entry = codesMap.get(normKey) || codesMap.get(cm.code);
+        if (!entry) {
+          entry = {
+            code: normKey,
+            count: Number(cm.totalInteractions || 0),
+            sample: `[${normKey}] Evento indexado al 100% en SQLite (${Number(cm.totalInteractions || 0).toLocaleString()} ocurrencias)`,
+            service: category === 'audit' ? 'IG.AUDIT (SQLite)' : (category === '520' ? 'IdentityGuard Core (SQLite)' : 'SQLite Index'),
+            usersMap: new Map(),
+            actorsMap: new Map()
+          };
+          codesMap.set(normKey, entry);
+        }
+        entry.count = Math.max(Number(entry.count || 0), Number(cm.totalInteractions || 0));
+        entry.sqliteUniqueUsers = Number(cm.uniqueUsersCount ?? cm.uniqueUsers ?? 0);
+        if (Array.isArray(cm.users) && cm.users.length > 0) {
+          entry.usersMap.clear();
           cm.users.forEach(uObj => {
-            if (uObj && uObj.username) {
-              entry.usersMap.set(uObj.username, uObj.interactions || uObj.count || 1);
+            const uName = uObj && (uObj.user || uObj.username);
+            if (uName) {
+              entry.usersMap.set(uName, Number(uObj.count ?? uObj.interactions ?? 1));
             }
           });
-          entry.sqliteUniqueUsers = cm.uniqueUsers || entry.usersMap.size;
         }
       });
     }
@@ -5478,11 +5541,14 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     dataArray.forEach(d => {
       if (d.usersMap) d.usersMap.forEach((_, u) => globalUniqueUsers.add(u));
     });
+    const exactGlobalUniqueUsers = (fm && fm.categoryUniqueUsers && typeof fm.categoryUniqueUsers[category] === 'number')
+      ? fm.categoryUniqueUsers[category]
+      : (fm && category === 'traffic' && typeof fm.uniqueValidUsers === 'number' ? fm.uniqueValidUsers : globalUniqueUsers.size);
 
     summaryBar.innerHTML = `
       <div><strong>Códigos Únicos:</strong> <span style="color:#38bdf8; font-family:monospace; font-weight:bold;">${dataArray.length}</span></div>
       <div><strong>Total Eventos en esta Categoría:</strong> <span style="color:${category === 'audit' ? '#0d9488' : (category === '520' ? '#f43f5e' : '#38bdf8')}; font-family:monospace; font-weight:bold;">${totalOccurrences.toLocaleString()}</span></div>
-      <div><strong>Usuarios Únicos Afectados:</strong> <span style="color:#f59e0b; font-family:monospace; font-weight:bold;">${globalUniqueUsers.size.toLocaleString()} usuarios distintos</span></div>
+      <div><strong>Usuarios Únicos Afectados:</strong> <span style="color:#f59e0b; font-family:monospace; font-weight:bold;">${exactGlobalUniqueUsers.toLocaleString()} usuarios distintos${fm ? ' (100% SQLite)' : ''}</span></div>
       <div><strong>Entorno Activo:</strong> <span style="color:var(--text-main); font-weight:600;">${escapeHtml(clientLabel)} (${escapeHtml(clientVersion)})</span></div>
     `;
 
@@ -5507,7 +5573,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         const renderUserBadge = ([uName, uCnt]) => {
           const safeU = escapeHtml(uName);
           const jsU = escapeHtml(uName.replace(/'/g, "\\'"));
-          return `<span onclick="document.getElementById('modal-kpi-inspector').style.display='none'; if(window.switchTab) window.switchTab('users'); if(window.UserTraceReport){ window.UserTraceReport.switchSubTab('patterns'); window.UserTraceReport.openUserDetailModal('${jsU}'); }" title="Clic para abrir el patrón completo de solicitudes de ${safeU}" style="display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:999px; background:rgba(14,165,233,0.12); border:1px solid rgba(14,165,233,0.35); color:#0284c7; font-family:'JetBrains Mono', monospace; font-size:0.71rem; cursor:pointer; font-weight:600;">👤 ${safeU} <strong style="background:#0284c7; color:#fff; border-radius:999px; padding:0 5px; font-size:0.66rem;">${uCnt.toLocaleString()} int.</strong></span>`;
+          return `<span onclick="document.getElementById('modal-kpi-inspector').style.display='none'; if(window.switchTab) window.switchTab('users'); if(window.UserTraceReport){ window.UserTraceReport.switchSubView('users', '${jsU}'); }" title="Clic para abrir el patrón completo de solicitudes de ${safeU}" style="display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:999px; background:rgba(14,165,233,0.12); border:1px solid rgba(14,165,233,0.35); color:#0284c7; font-family:'JetBrains Mono', monospace; font-size:0.71rem; cursor:pointer; font-weight:600;">👤 ${safeU} <strong style="background:#0284c7; color:#fff; border-radius:999px; padding:0 5px; font-size:0.66rem;">${uCnt.toLocaleString()} int.</strong></span>`;
         };
 
         usersBreakdownHtml = `
@@ -5522,13 +5588,17 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
             ${restUsers.length > 0 ? `
               <details style="margin-top:6px;">
                 <summary style="cursor:pointer; font-size:0.72rem; font-weight:700; color:#0d9488; user-select:none;">
-                  ➕ Ver los otros ${restUsers.length.toLocaleString()} usuarios detectados en ${escapeHtml(item.code)}...
+                  ➕ Ver más usuarios (mostrando Top ${sortedUsers.length.toLocaleString()} de ${totalUniqueUsersForCode.toLocaleString()} usuarios en ${escapeHtml(item.code)}${totalUniqueUsersForCode > sortedUsers.length ? ' — 100% en Censo ➔ CSV' : ''})...
                 </summary>
                 <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; max-height:190px; overflow-y:auto; padding:4px;">
                   ${restUsers.map(renderUserBadge).join('')}
                 </div>
               </details>
-            ` : ''}
+            ` : (totalUniqueUsersForCode > sortedUsers.length ? `
+              <div style="margin-top:6px; font-size:0.71rem; font-weight:700; color:#0284c7;">
+                ℹ️ Total real: ${totalUniqueUsersForCode.toLocaleString()} usuarios distintos (100% exportable desde Censo &amp; Trazas ➔ .CSV).
+              </div>
+            ` : '')}
           </div>
         `;
       } else {
@@ -6748,6 +6818,18 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               nodeName: '🖥️ Servidor Core SQLite',
               client: currentClient.name
             }];
+        if (window.UserTraceReport) {
+          window.UserTraceReport.forensicMatrixData = null;
+          window.UserTraceReport.sqliteUserEventsCache = {};
+          if (typeof window.UserTraceReport.fetchForensicMatrix === 'function') {
+            window.UserTraceReport.fetchForensicMatrix(false).then(fm => {
+              if (fm && typeof fm.uniqueValidUsers === 'number' && state.globalStreamMetrics) {
+                state.globalStreamMetrics.totalUniqueUsers = Math.max(state.globalStreamMetrics.totalUniqueUsers || 0, fm.uniqueValidUsers);
+                renderUserAndIpAnalytics();
+              }
+            }).catch(() => {});
+          }
+        }
         await fetchSqlLogs(1);
         updateMetricsAndCharts();
         if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
@@ -8283,9 +8365,11 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       // Usar agregación global de los 9.7 GB calculada por el Web Worker sin escanear state.logs en RAM
       const globalUsers = state.globalStreamMetrics.topUsers.slice(0, 100);
       const globalIps = (state.globalStreamMetrics.topIps || []).slice(0, 100);
+      const totalU = state.globalStreamMetrics.totalUniqueUsers || state.globalStreamMetrics.topUsers.length;
+      const totalIp = state.globalStreamMetrics.totalUniqueIps || (state.globalStreamMetrics.topIps || []).length;
 
-      if (userBadge) userBadge.textContent = `${state.globalStreamMetrics.topUsers.length}+ Usuarios Identificados (Semana Completa)`;
-      if (ipBadge) ipBadge.textContent = `${(state.globalStreamMetrics.topIps || []).length}+ IPs Identificadas (Semana Completa)`;
+      if (userBadge) userBadge.textContent = totalU > globalUsers.length ? `${totalU.toLocaleString()} Usuarios Únicos (Top ${globalUsers.length})` : `${totalU.toLocaleString()} Usuarios Únicos`;
+      if (ipBadge) ipBadge.textContent = totalIp > globalIps.length ? `${totalIp.toLocaleString()} IPs Únicas (Top ${globalIps.length})` : `${totalIp.toLocaleString()} IPs Únicas`;
 
       let userHtml = `<table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.8rem;">
         <thead>
