@@ -1495,10 +1495,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.14',
-    build: 602,
+    version: 'v3.8.15',
+    build: 603,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'NON-BLOCKING-BOOT-LAZY-TABS-3814',
+    gitCommit: 'OFFICIAL-359-AUD-CATALOG-AND-ANTI-FREEZE-3815',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -4980,7 +4980,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         return u && String(u).trim().length >= 3 && !/^(unknown|system|n\/a|null|none|user|users|password|authentication|decode|not|specified|locked)$/i.test(String(u).trim());
       };
 
-      const bracketMatch = cleanMsg.match(/\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([A-Za-z0-9_\-\.\/@]+)\]/i);
+      const bracketMatch = cleanMsg.match(/\[AUD\d+\]\s*\[([A-Za-z0-9_\-\.\/@]+)\]/i) || cleanMsg.match(/\[IG\.AUDIT\]\s*\[(?!AUD\d+\])([A-Za-z0-9_\-\.\/@]+)\]/i);
       const forUserMatch = cleanMsg.match(/\bfor\s+user\s+['"]?([A-Za-z0-9_\-\.\/@]+)['"]?/i);
       const userActionMatch = cleanMsg.match(/\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|deleted|authenticated|locked|disabled|migrated)/i);
       const kvMatch = cleanMsg.match(/(?:user\s+name\s+or\s+alias|username|userId|user_id|subjectName)[\s:=]+['"]?([A-Za-z0-9_\-\.\/@]+)['"]?/i);
@@ -5313,6 +5313,10 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         </details>
       ` : '';
 
+      const manualRefHtml = diag.manualFile
+        ? `<div style="margin-top:4px;"><a href="manuals/${escapeHtml(diag.manualFile)}" target="_blank" rel="noopener" style="font-size:0.7rem; color:#0284c7; font-weight:700; text-decoration:none;">📖 Manual Oficial Entrust</a></div>`
+        : '';
+
       rowsHtml += `
         <tr style="border-bottom:1px solid var(--border-color); background:${idx % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.03)'};">
           <td style="padding:10px; font-family:'JetBrains Mono', monospace; font-weight:bold; color:${isAudit ? '#0d9488' : '#0284c7'}; white-space:nowrap; vertical-align:top;">
@@ -5327,6 +5331,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           <td style="padding:10px; font-size:0.8rem; color:var(--text-main); vertical-align:top;">
             <strong>${escapeHtml(diag.title || item.code)}</strong><br>
             <span style="font-size:0.75rem; color:var(--text-muted); line-height:1.35;">${escapeHtml(diag.meaning || 'Evento registrado en el motor Entrust IdentityGuard.')}</span>
+            ${manualRefHtml}
             ${usersBreakdownHtml}
             ${sampleHtml}
           </td>
@@ -7548,15 +7553,18 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           item.errors += (f.realErrors || 0);
         });
       } else {
-        (state.logs || []).forEach(log => {
+        const logsArr = state.logs || [];
+        const step = logsArr.length > 5000 ? Math.max(1, Math.floor(logsArr.length / 5000)) : 1;
+        for (let i = 0; i < logsArr.length; i += step) {
+          const log = logsArr[i];
           const nodeInfo = detectNodeFromLog(log);
           if (!nodeMap.has(nodeInfo.key)) {
             nodeMap.set(nodeInfo.key, { name: nodeInfo.name, count: 0, errors: 0 });
           }
           const item = nodeMap.get(nodeInfo.key);
-          item.count++;
-          if (log.level === 'ERROR' || log.level === 'CRITICAL') item.errors++;
-        });
+          item.count += step;
+          if (log.level === 'ERROR' || log.level === 'CRITICAL') item.errors += step;
+        }
       }
 
       const nodes = Array.from(nodeMap.values());
@@ -8004,49 +8012,16 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     if (!userContainer || !ipContainer) return;
 
-    const userMap = new Map();
-    const ipMap = new Map();
-    const ipUserSet = new Map();
+    const isUnfiltered = !(state.activeTimeWindow && state.activeTimeWindow.active) &&
+                         (!state.filteredLogs || state.filteredLogs.length === (state.logs || []).length);
 
-    const logsToAnalyze = state.filteredLogs && state.filteredLogs.length > 0 ? state.filteredLogs : state.logs;
+    if (isUnfiltered && state.globalStreamMetrics && state.globalStreamMetrics.topUsers && state.globalStreamMetrics.topUsers.length > 0) {
+      // Usar agregación global de los 9.7 GB calculada por el Web Worker sin escanear state.logs en RAM
+      const globalUsers = state.globalStreamMetrics.topUsers.slice(0, 100);
+      const globalIps = (state.globalStreamMetrics.topIps || []).slice(0, 100);
 
-    logsToAnalyze.forEach(l => {
-      const u = l.user;
-      const ip = l.clientIp;
-
-      if (u) {
-        if (!userMap.has(u)) {
-          userMap.set(u, { total: 1, errors: (l.level === 'ERROR' || l.level === 'CRITICAL') ? 1 : 0 });
-        } else {
-          const item = userMap.get(u);
-          item.total += 1;
-          if (l.level === 'ERROR' || l.level === 'CRITICAL') item.errors += 1;
-        }
-      }
-
-      if (ip) {
-        if (!ipMap.has(ip)) {
-          ipMap.set(ip, { total: 1, errors: (l.level === 'ERROR' || l.level === 'CRITICAL') ? 1 : 0 });
-        } else {
-          const item = ipMap.get(ip);
-          item.total += 1;
-          if (l.level === 'ERROR' || l.level === 'CRITICAL') item.errors += 1;
-        }
-
-        if (u) {
-          if (!ipUserSet.has(ip)) ipUserSet.set(ip, new Set());
-          ipUserSet.get(ip).add(u);
-        }
-      }
-    });
-
-    if (state.globalStreamMetrics && state.globalStreamMetrics.topUsers && state.globalStreamMetrics.topUsers.length > 0) {
-      // Usar agregación global de los 9.7 GB calculada por el Web Worker
-      const globalUsers = state.globalStreamMetrics.topUsers;
-      const globalIps = state.globalStreamMetrics.topIps || [];
-
-      if (userBadge) userBadge.textContent = `${globalUsers.length}+ Usuarios Identificados (Semana Completa)`;
-      if (ipBadge) ipBadge.textContent = `${globalIps.length}+ IPs Identificadas (Semana Completa)`;
+      if (userBadge) userBadge.textContent = `${state.globalStreamMetrics.topUsers.length}+ Usuarios Identificados (Semana Completa)`;
+      if (ipBadge) ipBadge.textContent = `${(state.globalStreamMetrics.topIps || []).length}+ IPs Identificadas (Semana Completa)`;
 
       let userHtml = `<table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.8rem;">
         <thead>
@@ -8100,8 +8075,47 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       return;
     }
 
-    if (userBadge) userBadge.textContent = `${userMap.size} Usuarios Únicos`;
-    if (ipBadge) ipBadge.textContent = `${ipMap.size} IPs Únicas`;
+    const userMap = new Map();
+    const ipMap = new Map();
+    const ipUserSet = new Map();
+
+    const logsToAnalyze = state.filteredLogs && state.filteredLogs.length > 0 ? state.filteredLogs : state.logs;
+    const step = logsToAnalyze.length > 15000 ? Math.max(1, Math.floor(logsToAnalyze.length / 15000)) : 1;
+
+    for (let i = 0; i < logsToAnalyze.length; i += step) {
+      const l = logsToAnalyze[i];
+      const u = l.user;
+      const ip = l.clientIp;
+      const isErr = l.level === 'ERROR' || l.level === 'CRITICAL';
+
+      if (u) {
+        if (!userMap.has(u)) {
+          userMap.set(u, { total: step, errors: isErr ? step : 0 });
+        } else {
+          const item = userMap.get(u);
+          item.total += step;
+          if (isErr) item.errors += step;
+        }
+      }
+
+      if (ip) {
+        if (!ipMap.has(ip)) {
+          ipMap.set(ip, { total: step, errors: isErr ? step : 0 });
+        } else {
+          const item = ipMap.get(ip);
+          item.total += step;
+          if (isErr) item.errors += step;
+        }
+
+        if (u) {
+          if (!ipUserSet.has(ip)) ipUserSet.set(ip, new Set());
+          ipUserSet.get(ip).add(u);
+        }
+      }
+    }
+
+    if (userBadge) userBadge.textContent = userMap.size > 100 ? `${userMap.size.toLocaleString()} Usuarios Únicos (Top 100)` : `${userMap.size} Usuarios Únicos`;
+    if (ipBadge) ipBadge.textContent = ipMap.size > 100 ? `${ipMap.size.toLocaleString()} IPs Únicas (Top 100)` : `${ipMap.size} IPs Únicas`;
 
     // Detección de Password Spraying (1 IP probando múltiples usuarios)
     let sprayingDetected = false;
@@ -8111,9 +8125,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }
     });
 
-    // Renderizar Usuarios
+    // Renderizar Usuarios (top 100 para evitar congelar el DOM)
     if (userMap.size > 0) {
-      const sortedUsers = Array.from(userMap.entries()).sort((a, b) => b[1].total - a[1].total);
+      const sortedUsers = Array.from(userMap.entries()).sort((a, b) => b[1].total - a[1].total).slice(0, 100);
       let userHtml = `<table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.8rem;">
         <thead>
           <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
@@ -8146,9 +8160,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       userContainer.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">No se detectaron identificadores de usuario explícitos en las trazas actuales.</div>`;
     }
 
-    // Renderizar IPs
+    // Renderizar IPs (top 100 para evitar congelar el DOM)
     if (ipMap.size > 0) {
-      const sortedIps = Array.from(ipMap.entries()).sort((a, b) => b[1].total - a[1].total);
+      const sortedIps = Array.from(ipMap.entries()).sort((a, b) => b[1].total - a[1].total).slice(0, 100);
       let ipHtml = `<table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.8rem;">
         <thead>
           <tr style="background:var(--bg-secondary); color:var(--text-main); text-align:left;">
@@ -8259,12 +8273,41 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     return base;
   }
 
+  var _availNodesCache = null;
+  var _availNodesSig = '';
+  function getCachedAvailNodes() {
+    const sig = `${state.activeClientId}|${(state.clientProfiles || []).length}|${Object.keys(state.activeClientConfig?.servers || {}).length}`;
+    if (_availNodesCache && _availNodesSig === sig) return _availNodesCache;
+    _availNodesCache = getClientAvailableNodes();
+    _availNodesSig = sig;
+    return _availNodesCache;
+  }
+
+  var _distinctFilesCache = null;
+  var _distinctFilesSig = '';
+  function getCachedDistinctFiles() {
+    if (state.loadedFiles && state.loadedFiles.length > 0) {
+      return state.loadedFiles.map(f => f.name);
+    }
+    const logs = state.logs || [];
+    const sig = `${logs.length}|${logs[0]?.sourceFile || ''}|${logs[logs.length - 1]?.sourceFile || ''}`;
+    if (_distinctFilesCache && _distinctFilesSig === sig) return _distinctFilesCache;
+    const fileSet = new Set();
+    const step = logs.length > 1000 ? Math.max(1, Math.floor(logs.length / 1000)) : 1;
+    for (let i = 0; i < logs.length; i += step) {
+      if (logs[i] && logs[i].sourceFile) fileSet.add(logs[i].sourceFile);
+    }
+    _distinctFilesCache = Array.from(fileSet);
+    _distinctFilesSig = sig;
+    return _distinctFilesCache;
+  }
+
   function detectNodeFromLog(log) {
     if (log.sourceFile && state.customNodeAssignments && state.customNodeAssignments[log.sourceFile]) {
       return state.customNodeAssignments[log.sourceFile];
     }
 
-    const availNodes = getClientAvailableNodes();
+    const availNodes = getCachedAvailNodes();
     const fileName = (log.sourceFile || '').trim();
     const fileLower = fileName.toLowerCase();
     const message = (log.message || log.raw || '').toLowerCase();
@@ -8299,9 +8342,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
 
     // 2. Si hay múltiples archivos cargados en la sesión, agrupar por archivo/flujo para correlacionar archivos rotados:
-    const distinctFiles = state.loadedFiles && state.loadedFiles.length > 1
-      ? state.loadedFiles.map(f => f.name)
-      : [...new Set((state.logs || []).map(l => l.sourceFile).filter(Boolean))];
+    const distinctFiles = getCachedDistinctFiles();
 
     if (distinctFiles.length > 1 && fileName) {
       const isRotated = /\.\d+$/i.test(fileName) || /\.\d{4}-\d{2}-\d{2}/.test(fileName);
@@ -8476,10 +8517,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const logs = state.logs || [];
     const nodeMap = new Map();
 
-    // Si hay logs en memoria, agrupar con granularidad real por fuente/rotación detectada
+    // Si hay logs en memoria, agrupar con granularidad real por fuente/rotación detectada (con paso uniforme máx 8000 pts)
     if (logs.length > 0) {
-      const sampleScale = (metrics.totalLogs > logs.length && logs.length > 0) ? (metrics.totalLogs / logs.length) : 1;
-      logs.forEach(log => {
+      const step = Math.max(1, Math.floor(logs.length / 8000));
+      const baseScale = (metrics.totalLogs > logs.length && logs.length > 0) ? (metrics.totalLogs / logs.length) : 1;
+      const sampleScale = baseScale * step;
+      for (let i = 0; i < logs.length; i += step) {
+        const log = logs[i];
         const nodeInfo = detectNodeFromLog(log);
         const nodeKey = nodeInfo.key;
         const nodeName = nodeInfo.name;
@@ -8520,10 +8564,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         } else if (log.service) {
           entry.entrustCodes[log.service] = (entry.entrustCodes[log.service] || 0) + 1;
         }
-      });
+      }
 
       nodeMap.forEach(entry => {
         entry.logsCount = Math.round(entry.rawSampleCount * sampleScale);
+        entry.errors = Math.round(entry.errors * step);
+        entry.warnings = Math.round(entry.warnings * step);
       });
     } else if (files.length > 0) {
       files.forEach(f => {
@@ -8797,14 +8843,18 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const totalRealLogs = metrics.totalLogs || logs.length;
     const sampleScale = (totalRealLogs > logs.length && logs.length > 0) ? (totalRealLogs / logs.length) : 1;
 
+    const wfStep = Math.max(1, Math.floor(logs.length / 10000));
+    const wfScale = sampleScale * wfStep;
+
     // Extraer los hosts/nodos reales presentes en los logs (CERO hostnames inventados)
     const detectedTargets = new Set();
     const detectedFiles = (state.loadedFiles || []).map(f => f.name).filter(Boolean);
-    logs.forEach(l => {
+    for (let i = 0; i < logs.length; i += wfStep) {
+      const l = logs[i];
       const m = (l.message || l.raw || '').match(/\bTarget:\s*([A-Za-z0-9._:-]+)/i);
       if (m) detectedTargets.add(m[1]);
       else if (l.clientIp && l.clientIp !== 'N/A' && l.clientIp !== 'local') detectedTargets.add(l.clientIp);
-    });
+    }
     const realHostLabel = detectedTargets.size > 0
       ? Array.from(detectedTargets).slice(0, 2).join(', ')
       : (detectedFiles.length > 0 ? detectedFiles[0] : 'Servidor Auditado');
@@ -8883,7 +8933,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }
     ];
 
-    logs.forEach(l => {
+    let wfSampledCount = 0;
+    for (let i = 0; i < logs.length; i += wfStep) {
+      wfSampledCount++;
+      const l = logs[i];
       const code = String(l.entrustCode || '');
       const srv = String(l.service || '');
       const msg = String(l.message || l.raw || '');
@@ -8917,14 +8970,14 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         const cKey = code || 'AUTH-CHECK';
         layerStats[1].codes[cKey] = (layerStats[1].codes[cKey] || 0) + 1;
       }
-    });
+    }
 
     let cumulativeOffset = 0;
     const hops = layerStats.map(layer => {
-      const scaledCount = Math.round(layer.count * sampleScale);
-      const scaledErrors = Math.round(layer.errors * sampleScale);
+      const scaledCount = Math.round(layer.count * wfScale);
+      const scaledErrors = Math.round(layer.errors * wfScale);
       const errRatio = layer.count > 0 ? (layer.errors / layer.count) : 0;
-      const duration = Math.max(12, Math.min(450, Math.round(18 + (layer.count / Math.max(1, logs.length)) * 90 + errRatio * 220)));
+      const duration = Math.max(12, Math.min(450, Math.round(18 + (layer.count / Math.max(1, wfSampledCount)) * 90 + errRatio * 220)));
       const hopObj = {
         ...layer,
         count: scaledCount,
@@ -10092,19 +10145,7 @@ ${escapeHtml(opinion.crossFileSummary)}
 
   // PILAR 2: PERSISTENCIA INDEXEDDB & GESTOR DE CASOS
   async function initStoragePersistence() {
-    // Restaurar sesión activa si existe
-    try {
-      const savedSession = await window.storageEngine.loadActiveSession();
-      if (savedSession && savedSession.logs && savedSession.logs.length > 0 && state.logs.length === 0) {
-        state.logs = savedSession.logs;
-        state.activeClientId = savedSession.activeClientId || state.activeClientId;
-        populateClientSelector();
-        applyLogFilters();
-        updateNodeComparisonUI();
-        renderTraceWaterfall();
-        showAnalysisStatus(false, `💾 Sesión Restaurada de IndexedDB (${state.logs.length} registros)`, `Cliente: ${state.activeClientId}`);
-      }
-    } catch(e) {}
+    // Restauración de sesión activa unificada en IIFE de arranque (evita carga duplicada y mantiene loadedFiles/globalStreamMetrics)
 
     const btnOpenCases = document.getElementById('btn-open-saved-cases');
     const modalCases = document.getElementById('saved-cases-modal');
@@ -10162,7 +10203,7 @@ ${escapeHtml(opinion.crossFileSummary)}
     window.loadHistoricalCaseGlobal = async (caseId) => {
       const record = await window.storageEngine.getCaseById(caseId);
       if (!record) return;
-      state.logs = record.logs || [];
+      state.logs = Array.isArray(record.logs) ? record.logs.slice(0, 15000) : [];
       populateClientSelector();
       applyLogFilters();
       updateNodeComparisonUI();

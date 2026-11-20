@@ -58,12 +58,14 @@ window.escapeHtml = escapeHtml;
         };
       }
 
-      targetLogs.forEach(l => {
+      const step = targetLogs.length > 15000 ? Math.max(1, Math.floor(targetLogs.length / 15000)) : 1;
+      for (let i = 0; i < targetLogs.length; i += step) {
+        const l = targetLogs[i];
         const msg = (l.message || '') + ' ' + (l.raw || '');
         const isAuthFail = (l.level === 'CRITICAL' || l.level === 'ERROR') ||
                            /(5202013|5205079|5201006|5201007|5201010|5203016|Invalid user ID|password|locked|FAIL|bulkidentityguard\.add\.error)/i.test(msg);
 
-        if (!isAuthFail) return;
+        if (!isAuthFail) continue;
         totalFailedAuth++;
 
         // Extraer usuario
@@ -96,7 +98,7 @@ window.escapeHtml = escapeHtml;
         if (ip && ip !== '127.0.0.1') {
           ipMap.set(ip, (ipMap.get(ip) || 0) + 1);
         }
-      });
+      }
 
       const topTargetUsers = Array.from(userMap.values())
         .sort((a, b) => b.attempts - a.attempts)

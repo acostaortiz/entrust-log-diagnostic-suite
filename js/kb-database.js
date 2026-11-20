@@ -59,30 +59,29 @@ const ENTRUST_EXACT_CATALOG = {
   '5205139': { title: 'Alias de Usuario Duplicado o No Válido', category: 'Gestión de Identidades', severity: 'ERROR', meaning: 'El alias o identificador secundario de usuario colisiona con otro registro.', rootCause: 'Asignación duplicada de alias en el proceso de carga o sincronización.', remediation: 'Depurar el alias en la consola de administración para garantizar unicidad.' },
   '5205150': { title: 'Método de Autenticación No Permitido por la Política', category: 'Políticas de Acceso', severity: 'ERROR', meaning: 'El usuario intentó autenticarse con un método que no está habilitado en su grupo de políticas.', rootCause: 'El grupo de usuarios no tiene asignada la directiva de tarjetas Grid o tokens.', remediation: 'Editar la política del grupo de usuarios en la consola de Entrust y habilitar el método requerido.' },
 
-  // AUDxxx: Auditoría Administrativa & Eventos Nominales
-  'AUD100': { title: 'Inicio / Arranque del Servicio Entrust IdentityGuard', category: 'Auditoría de Sistema', severity: 'INFO', meaning: 'El daemon/servicio principal de IdentityGuard completó su secuencia de inicialización.', rootCause: 'Inicio programado o reinicio del servicio.', remediation: 'Registro de auditoría nominal.' },
-  'AUD101': { title: 'Inicio de Sesión de Administrador Master en supersh', category: 'Auditoría Administrativa', severity: 'INFO', meaning: 'Un administrador con privilegios Master inició sesión en la consola interactiva supersh.', rootCause: 'Mantenimiento o ejecución de tareas administrativas autorizadas.', remediation: 'Auditar que las acciones ejecutadas coincidan con la ventana de cambio.' },
-  'AUD102': { title: 'Cierre de Sesión de Administrador Master en supersh', category: 'Auditoría Administrativa', severity: 'INFO', meaning: 'El administrador Master cerró la sesión interactiva supersh.', rootCause: 'Finalización de la sesión de administración.', remediation: 'Registro de auditoría nominal.' },
-  'AUD105': { title: 'Modificación de Parámetros de Configuración del Servidor', category: 'Auditoría Administrativa', severity: 'WARN', meaning: 'Se modificó una propiedad crítica de configuración en el servidor Entrust.', rootCause: 'Cambio administrativo aplicado vía consola o supersh.', remediation: 'Validar que el cambio cuente con ticket de control de cambios aprobado.' },
-  'AUD200': { title: 'Creación / Aprovisionamiento de Nuevo Usuario', category: 'Auditoría de Identidades', severity: 'INFO', meaning: 'Se registró un nuevo usuario en la base de datos de IdentityGuard.', rootCause: 'Alta automática vía sincronización LDAP o creación manual.', remediation: 'Registro de auditoría nominal.' },
-  'AUD500': { title: 'Eliminación de Usuario del Repositorio Entrust', category: 'Auditoría de Identidades', severity: 'WARN', meaning: 'Un usuario y sus autenticadores asociados fueron eliminados.', rootCause: 'Baja de personal o purga administrativa.', remediation: 'Confirmar que la baja corresponda a un proceso autorizado.' },
-  'AUD1000': { title: 'Modificación de Política o Grupo de Seguridad', category: 'Auditoría Administrativa', severity: 'WARN', meaning: 'Se alteraron reglas de bloqueo, complejidad o métodos MFA de un grupo.', rootCause: 'Ajuste de política administrativa.', remediation: 'Revisar impacto en los usuarios del grupo afectado.' },
-  'AUD1500': { title: 'Respaldo o Exportación de Repositorio / Llaves', category: 'Auditoría de Seguridad', severity: 'INFO', meaning: 'Se ejecutó una operación de respaldo o exportación de datos sensibles.', rootCause: 'Respaldo programado o preparación de migración.', remediation: 'Asegurar custodia cifrada del archivo generado.' },
-  'AUD2000': { title: 'Evento General de Validación / Flujo de Autenticación', category: 'Auditoría de Autenticación', severity: 'INFO', meaning: 'Trazabilidad estándar de petición procesada por el motor de autenticación.', rootCause: 'Operación normal de autenticación.', remediation: 'Registro de auditoría nominal.' },
-  'AUD150': { title: 'Fallo de Conexión del Proxy de Repositorio al Servicio de Autenticación', category: 'Servicios & Alta Disponibilidad', severity: 'ERROR', meaning: 'Entrust IdentityGuard no pudo conectarse al repositorio indicado en la URL registrada (Manual oficial IG 13.0, AUD150).', rootCause: 'Repositorio (BD/LDAP) caído, URL incorrecta o corte de red entre el servidor y el repositorio.', remediation: 'Verificar disponibilidad del repositorio y conectividad de red; revisar la URL configurada.' },
-  'AUD154': { title: 'Pool de Conexiones al Repositorio Agotado', category: 'Servicios & Alta Disponibilidad', severity: 'WARN', meaning: 'No se pudo obtener una conexión al repositorio desde el pool por agotamiento (Manual oficial IG 13.0, AUD154).', rootCause: 'Carga concurrente superior al tamaño máximo del pool o consultas lentas que retienen conexiones.', remediation: 'Revisar el tamaño máximo del pool y consultas colgadas; ampliar solo si la evidencia lo respalda.' },
-  'AUD155': { title: 'Pool de Conexiones al Repositorio al 80% de Uso', category: 'Servicios & Alta Disponibilidad', severity: 'WARN', meaning: 'El pool de conexiones al repositorio alcanzó el 80% de su capacidad (Manual oficial IG 13.0, AUD155).', rootCause: 'Aumento sostenido de autenticaciones concurrentes.', remediation: 'Monitorear el uso del pool y evaluar su ampliación antes de llegar al 100%.' },
-  'AUD2309': { title: 'Fallo en la Entrega de Notificación Push MFA', category: 'Pasarela Móvil MFA', severity: 'WARN', meaning: 'El servidor de notificaciones no pudo entregar el mensaje de autenticación Push al teléfono del usuario.', rootCause: 'Dispositivo móvil sin conexión a Internet, token revocado o certificado APNs/FCM desactualizado.', remediation: 'Verificar la conectividad del dispositivo y comprobar la vigencia de los certificados push en el servidor.' },
-  'AUD3000': { title: 'Autenticación de Usuario Exitosa (Authentication Succeeded)', category: 'Auditoría de Autenticación', severity: 'INFO', meaning: 'El usuario completó satisfactoriamente el desafío de autenticación asignado.', rootCause: 'Validación legítima de credenciales y segundo factor.', remediation: 'Registro de auditoría nominal; no requiere acción.' },
-  'AUD3004': { title: 'Creación o Emisión de Desafío de Autenticación', category: 'Auditoría de Autenticación', severity: 'INFO', meaning: 'El motor IdentityGuard generó un reto (Grid, OTP, Push o Q&A) para la sesión del usuario.', rootCause: 'Flujo normal de inicio de sesión multifactor.', remediation: 'Registro de auditoría nominal.' },
-  'AUD6000': { title: 'Autenticación Fallida / Rechazo de Credencial o Factor', category: 'Auditoría de Seguridad', severity: 'WARN', meaning: 'El intento de autenticación del usuario fue rechazado por coordenada, OTP o contraseña incorrecta.', rootCause: 'Error humano al ingresar el factor o intento no autorizado.', remediation: 'Monitorear reincidencia por usuario/IP; si supera el umbral, validar posible bloqueo o fuerza bruta.' },
-  'AUD6001': { title: 'Cuenta de Usuario Bloqueada por Umbral de Fallos (User Locked Out)', category: 'Auditoría de Seguridad', severity: 'CRITICAL', meaning: 'La cuenta alcanzó el máximo de intentos fallidos permitidos y fue bloqueada automáticamente por la política de seguridad.', rootCause: 'Múltiples intentos fallidos consecutivos (olvido de factor, desincronización de token o ataque de fuerza bruta).', remediation: '1. Verificar origen (IP / canal) de los intentos fallidos.\n2. Contactar al usuario o validar ticket de soporte.\n3. Desbloquear cuenta desde Entrust Admin Console o supersh.' },
-  'AUD6002': { title: 'Intento de Acceso sobre Cuenta Ya Bloqueada o Deshabilitada', category: 'Auditoría de Seguridad', severity: 'WARN', meaning: 'Se recibió una solicitud de autenticación para una cuenta que ya se encontraba bloqueada o inactiva.', rootCause: 'Usuario reintentando tras bloqueo previo o script/bot insistiendo sobre cuenta bloqueada.', remediation: 'Confirmar si el bloqueo es legítimo antes de rehabilitar y revisar si hay IPs agresoras.' },
-  'AUD1210': { title: 'Modificación de Perfil o Credencial de Usuario en Consola', category: 'Auditoría Administrativa', severity: 'INFO', meaning: 'Un operador o proceso administrativo modificó atributos o autenticadores de un usuario.', rootCause: 'Operación administrativa de soporte o aprovisionamiento.', remediation: 'Verificar que corresponda a una solicitud autorizada.' },
-  'AUD1221': { title: 'Asignación o Activación de Tarjeta Grid / Autenticador', category: 'Auditoría Administrativa', severity: 'INFO', meaning: 'Se asignó o activó un nuevo autenticador (Grid/Token) al perfil del usuario.', rootCause: 'Proceso de enrolamiento o reposición de factor MFA.', remediation: 'Registro de auditoría nominal.' },
-  'AUD8500': { title: 'Inicio de Exportación Masiva para Migración a IDaaS Cloud', category: 'Herramienta de Migración IDaaS', severity: 'INFO', meaning: 'Se inició el proceso de extracción y cifrado de credenciales para migración a la nube.', rootCause: 'Ejecución de la herramienta IG_Migration_Tool.', remediation: 'Monitorear la finalización exitosa de las 3 fases de exportación.' },
-  'AUD8502': { title: 'Exportación Masiva a IDaaS Cloud Completada con Éxito', category: 'Herramienta de Migración IDaaS', severity: 'INFO', meaning: 'La exportación de tarjetas y usuarios finalizó al 100% generando el paquete .dat cifrado.', rootCause: 'Extracción completa de credenciales desde la base de datos OnPremise.', remediation: 'Proceder a la importación en la consola de Entrust IDaaS Cloud.' },
-  'AUD8503': { title: 'Generación y Despliegue de Contraseña de Cifrado (.dat)', category: 'Herramienta de Migración IDaaS', severity: 'INFO', meaning: 'La clave de cifrado del paquete de migración fue generada y mostrada en pantalla al usuario Master.', rootCause: 'Protocolo de seguridad criptográfica de custodia de identidades.', remediation: 'Custodiar la clave para su ingreso en la consola Cloud de IDaaS.' },
+  // AUDxxx: Auditoría Administrativa & Eventos Nominales (Alineado 100% a Manuales Oficiales IG 11/12/13)
+  'AUD100': { title: 'Inicialización por Primera Vez (First Time Initialization)', category: 'System Initialization audit messages', severity: 'INFO', meaning: 'Entrust IdentityGuard completó la inicialización por primera vez con número de serie inicial, límite de usuarios de licencia y fecha de expiración (Manual oficial IG 13.0: First time initialization performed).', rootCause: 'Instalación o inicialización inicial de la instancia/base de datos IdentityGuard.', remediation: 'Registro de auditoría nominal de arranque inicial.' },
+  'AUD101': { title: 'Inicio de Sesión de Administrador Master en supersh (Master User Shell Login)', category: 'Master User audit messages', severity: 'INFO', meaning: 'Un administrador Master inició sesión en la consola interactiva supersh.', rootCause: 'Mantenimiento o ejecución de tareas administrativas autorizadas.', remediation: 'Auditar que las acciones ejecutadas coincidan con la ventana de cambio aprobada.' },
+  'AUD102': { title: 'Cierre de Sesión de Administrador Master en supersh (Master User Shell Logout)', category: 'Master User audit messages', severity: 'INFO', meaning: 'El administrador Master cerró la sesión interactiva supersh.', rootCause: 'Finalización de la sesión de administración.', remediation: 'Registro de auditoría nominal.' },
+  'AUD105': { title: 'Inicialización de Réplica (Replica Initialization)', category: 'Service audit messages', severity: 'INFO', meaning: 'Una instancia réplica de IdentityGuard completó su inicialización contra el clúster.', rootCause: 'Alta o sincronización inicial de nodo réplica en la topología.', remediation: 'Confirmar estado de replicación saludable en consola.' },
+  'AUD1000': { title: 'Usuario Creado (User Created)', category: 'User audit messages', severity: 'INFO', meaning: 'Se creó un nuevo usuario en Entrust IdentityGuard con su ID, estado (Active/Suspended) y DN/searchbase si usa LDAP (Manual oficial IG 13.0: User created).', rootCause: 'Aprovisionamiento automático vía LDAP/API o creación manual por operador.', remediation: 'Registro de auditoría nominal de ciclo de vida de identidades.' },
+  'AUD2000': { title: 'Tarjeta de Usuario Creada (User Card Created)', category: 'User card audit messages', severity: 'INFO', meaning: 'Se creó o aprovisionó una nueva tarjeta Grid para un usuario (Manual oficial IG 13.0).', rootCause: 'Enrolamiento o reposición de tarjeta de coordenadas Grid.', remediation: 'Registro de auditoría nominal.' },
+  'AUD150': { title: 'Fallo de Conexión del Proxy de Repositorio al Servicio de Autenticación', category: 'Service audit messages', severity: 'ERROR', meaning: 'Entrust IdentityGuard no pudo conectarse al repositorio indicado en la URL registrada (Manual oficial IG 13.0, AUD150).', rootCause: 'Repositorio (BD/LDAP) caído, URL incorrecta o corte de red entre el servidor y el repositorio.', remediation: 'Verificar disponibilidad del repositorio y conectividad de red; revisar la URL configurada.' },
+  'AUD154': { title: 'Pool de Conexiones al Repositorio Agotado', category: 'Service audit messages', severity: 'WARN', meaning: 'No se pudo obtener una conexión al repositorio desde el pool por agotamiento (Manual oficial IG 13.0, AUD154).', rootCause: 'Carga concurrente superior al tamaño máximo del pool o consultas lentas que retienen conexiones.', remediation: 'Revisar el tamaño máximo del pool y consultas colgadas; ampliar solo si la evidencia lo respalda.' },
+  'AUD155': { title: 'Pool de Conexiones al Repositorio al 80% de Uso', category: 'Service audit messages', severity: 'WARN', meaning: 'El pool de conexiones al repositorio alcanzó el 80% de su capacidad (Manual oficial IG 13.0, AUD155).', rootCause: 'Aumento sostenido de autenticaciones concurrentes.', remediation: 'Monitorear el uso del pool y evaluar su ampliación antes de llegar al 100%.' },
+  'AUD2300': { title: 'Token Asignado a Usuario (User Token Assigned)', category: 'User token audit messages', severity: 'INFO', meaning: 'Se asignó un token (marca y serial) al usuario indicado (Manual oficial IG 13.0: User Token Assigned).', rootCause: 'Enrolamiento o asignación de hardware/soft token MFA.', remediation: 'Registro de auditoría nominal.' },
+  'AUD2309': { title: 'Fallo en Entrega de Detalles de Transacción / Token (User Token Delivery Failed)', category: 'User token audit messages', severity: 'ERROR', meaning: 'El servidor no pudo entregar los detalles de transacción para el token/usuario indicado (Manual oficial IG 13.0, SNMP Trap: Sí).', rootCause: 'Dispositivo inalcanzable, gateway Push/SMS/SMTP con error o certificado APNs/FCM vencido.', remediation: 'Verificar conectividad hacia el proveedor Push/SMS/SMTP y vigencia de certificados.' },
+  'AUD3000': { title: 'PIN Temporal Creado (Temporary PIN Created)', category: 'Temporary PIN audit messages', severity: 'INFO', meaning: 'Se generó un PIN temporal para el usuario indicado (Manual oficial IG 13.0: Temporary PIN created).', rootCause: 'Emisión de PIN temporal para acceso de contingencia o enrolamiento.', remediation: 'Confirmar que la emisión de PIN temporal haya sido solicitada por canal autorizado.' },
+  'AUD3004': { title: 'OTP Eliminado / Consumido (OTP Deleted)', category: 'OTP audit messages', severity: 'INFO', meaning: 'Se eliminó/consumió un código de un solo uso (One Time Password) con su índice para el usuario objetivo (Manual oficial IG 13.0: One time password deleted).', rootCause: 'Consumo normal post-autenticación o depuración de OTP vía cuenta integradora API.', remediation: 'Distinguir la cuenta de servicio API ejecutora del usuario final ("for user <cliente>") y confirmar uso nominal.' },
+  'AUD4003': { title: 'Inicio de Sesión de Administrador / Cuenta API (Administrator Login)', category: 'Administrator audit messages', severity: 'INFO', meaning: 'Un administrador o cuenta administradora de servicio API inició sesión en Entrust IdentityGuard (Manual oficial IG 13.0: Administrator logged in).', rootCause: 'Acceso a consola de administración o apertura de sesión de servicio API desde banca en línea / bus de servicios.', remediation: '1. Verificar que la cuenta administradora y la IP remota pertenezcan a servidores autorizados.\n2. Auditar picos anómalos de logins API para evaluar reutilización de sesión o credenciales.' },
+  'AUD4004': { title: 'Cierre de Sesión de Administrador (Administrator Logout)', category: 'Administrator audit messages', severity: 'INFO', meaning: 'Un administrador cerró su sesión en Entrust IdentityGuard (Manual oficial IG 13.0: Administrator logged out).', rootCause: 'Finalización normal de sesión administrativa o de servicio.', remediation: 'Registro nominal de trazabilidad administrativa.' },
+  'AUD4005': { title: 'Administrador Bloqueado por Fallo de Acceso (Administrator Failed Login And Was Locked Out)', category: 'Administrator audit messages', severity: 'ERROR', meaning: 'Una cuenta de administrador falló la autenticación y quedó bloqueada hasta la hora indicada (Manual oficial IG 13.0).', rootCause: 'Múltiples intentos fallidos consecutivos de acceso administrativo o cuenta API mal configurada.', remediation: 'Verificar IP de origen de los intentos fallidos y validar autorización antes de desbloquear.' },
+  'AUD6000': { title: 'Autenticación Exitosa (Authentication Success)', category: 'Authentication audit messages', severity: 'INFO', meaning: 'El usuario completó satisfactoriamente el desafío de autenticación asignado (Manual oficial IG 13.0: User successfully authenticated a challenge).', rootCause: 'Validación legítima de credenciales y segundo factor (Password / OTP / Token / Grid).', remediation: 'Registro nominal de auditoría; útil para confirmar recuperación de usuarios tras intentos fallidos previos (AUD6001).' },
+  'AUD6001': { title: 'Fallo de Autenticación de Usuario (Authentication Failure)', category: 'Authentication audit messages', severity: 'WARN', meaning: 'El intento de autenticación del usuario falló (Manual oficial IG 13.0: User failed authentication).', rootCause: 'Coordenada Grid, OTP o contraseña incorrecta, token desincronizado o intento no autorizado.', remediation: 'Monitorear reincidencia por usuario e IP; múltiples AUD6001 consecutivos disparan el bloqueo automático (AUD6002).' },
+  'AUD6002': { title: 'Usuario Bloqueado por Fallos de Autenticación (Authentication Failure Locks Out User)', category: 'Authentication audit messages', severity: 'ERROR', meaning: 'El usuario superó el límite de intentos fallidos y su autenticación quedó bloqueada por política (Manual oficial IG 13.0: User failed authentication and is now locked out).', rootCause: 'Activación de la directiva de bloqueo (Lockout Policy) por intentos repetidos fallidos o posible fuerza bruta.', remediation: '1. Verificar origen (IP / canal) de los intentos previos (AUD6001).\n2. Confirmar legitimidad del titular antes de desbloquear en IdentityGuard Admin.' },
+  'AUD8500': { title: 'Inicio de Exportación para Migración (IntelliTrust Migration Export Start)', category: 'Migration audit messages', severity: 'INFO', meaning: 'Se inició la exportación masiva de credenciales para migración hacia Entrust IDaaS / IntelliTrust.', rootCause: 'Ejecución de herramienta de exportación de migración.', remediation: 'Monitorear finalización exitosa en AUD8502.' },
+  'AUD8502': { title: 'Exportación de Migración Finalizada (IntelliTrust Migration Export Finished)', category: 'Migration audit messages', severity: 'INFO', meaning: 'La exportación de usuarios y autenticadores finalizó correctamente.', rootCause: 'Fin exitoso de extracción de credenciales.', remediation: 'Proceder con la importación segura en la plataforma destino.' },
+  'AUD8503': { title: 'Visualización de Clave de Exportación (IntelliTrust Migration Export Password View)', category: 'Migration audit messages', severity: 'INFO', meaning: 'Se mostró la contraseña de cifrado del paquete de migración al administrador Master.', rootCause: 'Custodia criptográfica de exportación.', remediation: 'Resguardar la clave según política de seguridad.' },
 
   // ORA-xxxxx: Errores de Base de Datos Oracle
   'ORA-01555': { title: 'Saturación de Tablespace UNDO / Snapshot Too Old', category: 'Persistencia Oracle DB', severity: 'CRITICAL', meaning: 'Fallo de lectura consistente en tablas de tarjetas Grid y datos cifrados de usuarios en Oracle DB.', rootCause: 'Parámetro UNDO_RETENTION insuficiente o espacio insuficiente en el tablespace UNDO.', remediation: 'Ejecutar ALTER SYSTEM SET UNDO_RETENTION = 10800 SCOPE=BOTH y ampliar el Tablespace UNDO con AUTOEXTEND ON.' },
@@ -1284,6 +1283,8 @@ class KnowledgeBase {
 
     // 0. Búsqueda exacta e instantánea en el Catálogo de Precisión Oficial
     const cleanCode = (targetCode || (typeof this.extractErrorCodeFromText === 'function' ? this.extractErrorCodeFromText(searchText) : '') || '').trim();
+    const officialAudCatalog = (typeof window !== 'undefined' && window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG) ? window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG : {};
+    const officialAudMeta = cleanCode ? officialAudCatalog[cleanCode.toUpperCase()] : null;
     if (cleanCode && typeof ENTRUST_EXACT_CATALOG !== 'undefined' && ENTRUST_EXACT_CATALOG[cleanCode]) {
       const entry = ENTRUST_EXACT_CATALOG[cleanCode];
       return {
@@ -1298,6 +1299,9 @@ class KnowledgeBase {
         remediation: entry.remediation,
         riskLevel: entry.severity === 'CRITICAL' ? 'Crítico (P1)' : (entry.severity === 'ERROR' ? 'Alto (P2)' : (entry.severity === 'WARN' ? 'Medio (Advertencia)' : 'Nominal / Auditoría')),
         manualVersion: activeVersionLabel,
+        manualFile: officialAudMeta ? officialAudMeta.manualFile : null,
+        officialName: officialAudMeta ? officialAudMeta.name : null,
+        snmpTrap: officialAudMeta ? officialAudMeta.snmp : null,
         sectionId: `sec-${cleanCode.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
         sectionTitle: `Código [${cleanCode}]: ${entry.title}`
       };
@@ -1426,85 +1430,33 @@ class KnowledgeBase {
       }
     }
 
-    // 4. Diagnóstico Oficial Entrust OnPremise AUDxxxx (Soporta con o sin corchetes y llamadas por código directo)
+    // 4. Diagnóstico Oficial Entrust OnPremise AUDxxxx (Catálogo completo de 359 códigos extraído de WebHelp IG 11/12/13)
     const audBracketMatch = searchText.match(/\[(AUD\d+)\]\s*(.*)/i);
     const isDirectAud = cleanCode && /^AUD\d+/i.test(cleanCode);
     if (audBracketMatch || isDirectAud) {
       const audCode = (isDirectAud ? cleanCode : audBracketMatch[1]).toUpperCase();
       const audDetail = audBracketMatch && audBracketMatch[2] ? audBracketMatch[2].trim() : searchText;
-      
+      const official = officialAudCatalog[audCode] || null;
+
       let audTitle = `Evento de Auditoría Entrust [${audCode}]`;
       let audMeaning = `Registro oficial de auditoría [${audCode}] emitido por el subsistema IG.AUDIT de Entrust IdentityGuard.`;
       let audContext = 'Operación registrada por el motor de trazabilidad y control de accesos del clúster.';
       let audControl = '1. Verificar que los usuarios y canales listados correspondan a operaciones autorizadas.\n2. Correlacionar con la matriz de usuarios e interacciones para detectar anomalías de volumen.';
       let audSeverity = 'INFO';
+      let audCategory = 'Auditoría & Trazabilidad de Seguridad (AUD)';
+      let audManualFile = null;
 
-      const OFFICIAL_AUD_CATALOG = {
-        'AUD6000': {
-          title: 'Autenticación de Usuario Exitosa [AUD6000]',
-          meaning: 'El motor de autenticación Entrust IdentityGuard validó satisfactoriamente las credenciales del usuario (Password / OTP / Token / Grid).',
-          context: 'Transacción de autenticación completada con resultado SUCCESS.',
-          control: '1. Monitoreo nominal de línea base transaccional.\n2. Utilizar para confirmar auto-recuperación de usuarios tras intentos fallidos previos (AUD6001).',
-          severity: 'INFO'
-        },
-        'AUD6001': {
-          title: 'Intento Fallido de Autenticación de Usuario [AUD6001]',
-          meaning: 'El subsistema IG.AUDIT registró un rechazo de autenticación (contraseña, OTP, Token o desafío Grid inválido) sobre las cuentas de usuario afectadas.',
-          context: 'Credencial incorrecta o expirada ingresada por el usuario final, desincronización de token, o reintentos automatizados desde una aplicación cliente.',
-          control: '1. Revisar en la Matriz de Códigos los usuarios con mayor número de interacciones en AUD6001.\n2. Si un usuario acumula múltiples AUD6001 seguidos de AUD6002, su cuenta quedó bloqueada por política.\n3. Auditar las IPs de origen para descartar ataques de fuerza bruta o Password Spraying.',
-          severity: 'WARN'
-        },
-        'AUD6002': {
-          title: 'Cuenta de Usuario Bloqueada Automáticamente (Lockout) [AUD6002]',
-          meaning: 'El usuario superó el umbral máximo permitido de intentos fallidos consecutivos y su autenticador (PASSWORD / OTP / GRID) fue bloqueado automáticamente por seguridad.',
-          context: 'Activación de la directiva de protección contra fuerza bruta (Lockout Policy) en Entrust IdentityGuard tras rechazos repetidos (AUD6001).',
-          control: '1. Identificar todos los usuarios afectados en el desglose inferior.\n2. Validar la legitimidad del titular antes de ejecutar el desbloqueo en IdentityGuard Admin.\n3. Verificar si el bloqueo fue provocado por credenciales cacheadas en un dispositivo móvil o script.',
-          severity: 'ERROR'
-        },
-        'AUD3000': {
-          title: 'Creación / Emisión de Credencial OTP [AUD3000]',
-          meaning: 'Se generó o asignó un nuevo código de autenticación de un solo uso (One-Time Password) para el usuario.',
-          context: 'Aprovisionamiento o despacho de OTP vía API de integración.',
-          control: 'Verificar correspondencia con solicitudes legítimas de segundo factor (2FA).',
-          severity: 'INFO'
-        },
-        'AUD3004': {
-          title: 'Consumo / Depuración de Contraseña OTP por Canal API [AUD3004]',
-          meaning: 'Un código temporal de un solo uso (One-Time Password con índice específico) fue eliminado o consumido para el cliente final a través de una cuenta integradora API.',
-          context: 'En la traza "[AUD3004] [actor_api] One time password with index N deleted for user <cliente>", el primer identificador en corchetes es la Cuenta de Servicio API ejecutora (ej. bmapiuser8) y "for user <cliente>" es el usuario bancario final.',
-          control: '1. Distinguir entre la cuenta de servicio integradora (Actor API) y los clientes finales afectados.\n2. Confirmar que el consumo de OTP corresponda al flujo normal post-autenticación o limpieza de códigos expirados.',
-          severity: 'INFO'
-        },
-        'AUD1210': {
-          title: 'Inicio de Sesión Administrativo en Consola [AUD1210]',
-          meaning: 'Un operador o administrador inició sesión exitosamente en la consola administrativa de Entrust IdentityGuard.',
-          context: 'Acceso administrativo privilegiado.',
-          control: 'Verificar que el operador y la IP de origen estén autorizados dentro del segmento de gestión.',
-          severity: 'INFO'
-        },
-        'AUD1221': {
-          title: 'Cierre de Sesión Administrativo [AUD1221]',
-          meaning: 'Finalización formal de sesión de un operador en la consola administrativa.',
-          context: 'Cierre de sesión estándar.',
-          control: 'Control de trazabilidad de sesiones privilegiadas.',
-          severity: 'INFO'
-        },
-        'AUD2309': {
-          title: 'Fallo en Entrega de Notificación / Despacho OTP Externo [AUD2309]',
-          meaning: 'El motor de despacho de Entrust no pudo entregar el código OTP o notificación al gateway externo (SMS / Correo / Push).',
-          context: 'Timeout o rechazo en el conector SMTP / SMPP / HTTP del proveedor de mensajería.',
-          control: '1. Verificar conectividad de red y certificados TLS hacia el Gateway SMS/Email.\n2. Revisar cola de despacho en IdentityGuard.',
-          severity: 'WARN'
-        }
-      };
-
-      if (OFFICIAL_AUD_CATALOG[audCode]) {
-        const entry = OFFICIAL_AUD_CATALOG[audCode];
-        audTitle = entry.title;
-        audMeaning = entry.meaning;
-        audContext = entry.context;
-        audControl = entry.control;
-        audSeverity = entry.severity;
+      if (official) {
+        const rawLvl = (official.level || 'INFO').toUpperCase();
+        audSeverity = /ERROR|CRITICAL|FATAL/.test(rawLvl) ? 'ERROR' : (/WARN/.test(rawLvl) ? 'WARN' : 'INFO');
+        audTitle = `[${audCode}] ${official.name}`;
+        audCategory = official.category || audCategory;
+        audManualFile = official.manualFile || null;
+        audMeaning = `Definición oficial Entrust (${audCategory}): ${official.desc}` + (official.snmp ? ` [SNMP Trap por defecto: ${official.snmp}]` : '');
+        audContext = `Evento oficial ${audSeverity} en "${audCategory}" — Manual Entrust IdentityGuard.`;
+        audControl = (audSeverity === 'ERROR' || audSeverity === 'WARN')
+          ? `1. Revisar cuentas de usuario, nodos e IPs involucradas en [${audCode}].\n2. Consultar la tabla oficial del manual (manuals/${official.manualFile || ''}) y aplicar remediación según directiva de seguridad.`
+          : `1. Registro nominal de auditoría (${audCategory}).\n2. Validar en trazas de cumplimiento o consultar manuals/${official.manualFile || ''}.`;
       } else if (/failed authentication/i.test(audDetail)) {
         audTitle = `Intento Fallido de Autenticación de Usuario [${audCode}]`;
         audMeaning = `El subsistema IG.AUDIT registró un rechazo de autenticación sobre las cuentas de usuario listadas.`;
@@ -1540,18 +1492,21 @@ class KnowledgeBase {
         matched: true,
         ruleId: `KB-ENTRUST-${audCode}`,
         title: audTitle,
-        category: 'Auditoría & Trazabilidad de Seguridad (AUD)',
+        category: audCategory,
         severity: audSeverity,
         meaning: audMeaning,
         rootCause: audContext,
         governanceControl: audControl,
         remediation: audControl,
-        riskLevel: audSeverity === 'ERROR' ? 'Alto (Bloqueo de Cuenta)' : (audSeverity === 'WARN' ? 'Medio (Alerta de Seguridad)' : 'Nominal (Auditoría)'),
+        riskLevel: audSeverity === 'ERROR' ? 'Alto (Bloqueo / Error Auditoría)' : (audSeverity === 'WARN' ? 'Medio (Alerta de Seguridad)' : 'Nominal (Auditoría)'),
         manualVersion: activeVersionLabel,
+        manualFile: audManualFile,
+        officialName: official ? official.name : null,
+        snmpTrap: official ? official.snmp : null,
         docsUrl: 'https://docs.trustedauth.com',
         trustedCareUrl: 'https://trustedcare.entrust.com',
         sectionId: `sec-${audCode.toLowerCase()}`,
-        sectionTitle: `Código [${audCode}]: Evento de Auditoría Entrust`
+        sectionTitle: `Código [${audCode}]: ${official ? official.name : 'Evento de Auditoría Entrust'}`
       };
     }
 

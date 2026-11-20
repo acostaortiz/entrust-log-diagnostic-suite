@@ -373,7 +373,8 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         return ok;
       };
 
-      for (let idx = 0; idx < logs.length; idx++) {
+      const stride = logs.length > 15000 ? Math.max(1, Math.floor(logs.length / 15000)) : 1;
+      for (let idx = 0; idx < logs.length; idx += stride) {
         const log = logs[idx];
         let user = log.user || log.usuario || log.username;
         const msg = log.raw || log.message || '';

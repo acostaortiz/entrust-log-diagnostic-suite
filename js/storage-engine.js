@@ -138,7 +138,7 @@ class StorageEngine {
           if (res && res.logs && !Array.isArray(res.logs) && typeof res.logs === 'object') {
             resolve({
               id: 'current_session',
-              logs: Array.isArray(res.logs.logs) ? res.logs.logs : [],
+              logs: Array.isArray(res.logs.logs) ? res.logs.logs.slice(0, 15000) : [],
               loadedFiles: res.logs.loadedFiles || res.loadedFiles || [],
               globalStreamMetrics: res.logs.globalStreamMetrics || res.globalStreamMetrics || null,
               activeClientId: res.logs.activeClientId || res.activeClientId || 'general',
@@ -146,6 +146,9 @@ class StorageEngine {
               updatedAt: res.updatedAt
             });
             return;
+          }
+          if (res && Array.isArray(res.logs) && res.logs.length > 15000) {
+            res.logs = res.logs.slice(0, 15000);
           }
           resolve(res);
         };
