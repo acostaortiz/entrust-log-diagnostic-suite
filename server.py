@@ -1355,7 +1355,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             'buildDate': time.strftime('%Y-%m-%d %H:%M'),
             'releaseChannel': 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
             'engineer': 'Tomás Acosta',
-            'organization': 'IT SERVICIOS V.S.A.',
+            'organization': 'IT Servicios de Venezuela, S.A.',
             'serverUptimeSeconds': round(time.time() - SERVER_START_TIME, 1) if 'SERVER_START_TIME' in globals() else 0,
             'pythonVersion': sys.version.split()[0],
             'activeDb': os.path.basename(ACTIVE_DB_PATH) if ACTIVE_DB_PATH else 'Ninguna'
@@ -1426,6 +1426,17 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 with open(engineers_file, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                 if isinstance(data, list):
+                    changed = False
+                    for eng in data:
+                        if isinstance(eng, dict) and re.match(r'^IT\s+SERVICIOS\s+V\.?S\.?A\.?$', str(eng.get('organization') or '').strip(), re.IGNORECASE):
+                            eng['organization'] = 'IT Servicios de Venezuela, S.A.'
+                            changed = True
+                    if changed:
+                        try:
+                            with open(engineers_file, 'w', encoding='utf-8') as fw:
+                                json.dump(data, fw, indent=2, ensure_ascii=False)
+                        except Exception:
+                            pass
                     self.send_json({'success': True, 'engineers': data})
                     return
             except Exception as e:
@@ -1438,7 +1449,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 "title": "Especialista Senior en Seguridad & Identidad Entrust",
                 "email": "tacosta@itservicios.com",
                 "signature": "Ing. Tomás Acosta",
-                "organization": "IT SERVICIOS V.S.A.",
+                "organization": "IT Servicios de Venezuela, S.A.",
                 "initials": "TA"
             }
         ]

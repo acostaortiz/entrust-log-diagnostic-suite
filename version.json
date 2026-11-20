@@ -1,13 +1,13 @@
 {
   "appName": "IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise",
-  "version": "v3.8.17",
-  "build": 605,
+  "version": "v3.8.18",
+  "build": 606,
   "releaseChannel": "Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)",
-  "gitCommit": "EXACT-100PCT-USER-CENSUS-3817",
+  "gitCommit": "ORG-NAME-AND-520-USERS-FIX-3818",
   "gitBranch": "main",
-  "buildDate": "2026-11-20 15:25",
+  "buildDate": "2026-11-20 16:30",
   "engineer": "Tomás Acosta",
-  "organization": "IT SERVICIOS V.S.A.",
+  "organization": "IT Servicios de Venezuela, S.A.",
   "features": [
     "Rediseño Visual Completo Enterprise SOC (Header, Pestañas, Tarjetas KPI, Tablas y Scrollbars)",
     "Visor de Manuales Integrado desde Copilot (Abre citas de WebHelp v11/v12/v13 e IDaaS dentro de la app)",

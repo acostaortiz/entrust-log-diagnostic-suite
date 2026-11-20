@@ -964,7 +964,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
                 <div><strong>Ambiente de Operación:</strong> <span style="font-weight:700; color:${(window.state?.activeEnvironment === 'PROD' || !window.state?.activeEnvironment) ? '#15803d' : (window.state?.activeEnvironment === 'QA' ? '#b45309' : '#0284c7')};">${window.state?.activeEnvironment === 'PROD' ? '🟢 Producción (PROD)' : (window.state?.activeEnvironment === 'QA' ? '🟡 Pruebas / QA (STAGING)' : '🔵 Desarrollo (DEV)')}</span></div>
                 <div><strong>Plataforma &amp; Versión:</strong> ${escapeHtml(clientVersion)}</div>
                 <div><strong>Fecha de Emisión:</strong> ${nowFormatted}</div>
-                <div><strong>Auditor Responsable:</strong> ${(typeof window.getActiveEngineerGlobal === 'function') ? escapeHtml(window.getActiveEngineerGlobal().signature || window.getActiveEngineerGlobal().name) : 'Tomás Acosta'} (${(typeof window.getActiveEngineerGlobal === 'function') ? escapeHtml(window.getActiveEngineerGlobal().organization || 'IT Servicios de Venezuela') : 'IT Servicios de Venezuela'})</div>
+                <div><strong>Auditor Responsable:</strong> ${(typeof window.getActiveEngineerGlobal === 'function') ? escapeHtml(window.getActiveEngineerGlobal().signature || window.getActiveEngineerGlobal().name) : 'Ing. Tomás Acosta'} (${(typeof window.getActiveEngineerGlobal === 'function') ? escapeHtml(window.getActiveEngineerGlobal().organization || 'IT Servicios de Venezuela, S.A.') : 'IT Servicios de Venezuela, S.A.'})</div>
               </div>
             </div>
           </div>

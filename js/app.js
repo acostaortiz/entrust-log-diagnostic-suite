@@ -1498,14 +1498,14 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.17',
-    build: 605,
+    version: 'v3.8.18',
+    build: 606,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'EXACT-100PCT-USER-CENSUS-3817',
+    gitCommit: 'ORG-NAME-AND-520-USERS-FIX-3818',
     gitBranch: 'main',
-    buildDate: '2026-11-20 15:25',
+    buildDate: '2026-11-20 16:30',
     engineer: 'Tomás Acosta',
-    organization: 'IT SERVICIOS V.S.A.'
+    organization: 'IT Servicios de Venezuela, S.A.'
   };
 
   async function initAppVersionModule() {
@@ -1578,7 +1578,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div style="font-size:0.78rem; color:var(--text-muted); border-top:1px solid var(--border-color); padding-top:12px; display:flex; justify-content:space-between; align-items:center;">
         <div>
           <span>Ingeniero Responsable: <strong style="color:var(--text-main);">${escapeHtml(systemVersionData.engineer || 'Tomás Acosta')}</strong></span><br>
-          <span>Organización: <strong style="color:var(--text-main);">${escapeHtml(systemVersionData.organization || 'IT SERVICIOS V.S.A.')}</strong></span>
+          <span>Organización: <strong style="color:var(--text-main);">${escapeHtml(systemVersionData.organization || 'IT Servicios de Venezuela, S.A.')}</strong></span>
         </div>
         <button class="btn btn-primary" style="padding:4px 12px; font-size:0.8rem;" onclick="document.getElementById('system-version-modal').classList.remove('active');">Aceptar</button>
       </div>
@@ -1597,7 +1597,7 @@ document.addEventListener('DOMContentLoaded', () => {
       title: 'Especialista Senior en Seguridad & Identidad Entrust',
       email: 'tacosta@itservicios.com',
       signature: 'Ing. Tomás Acosta',
-      organization: 'IT SERVICIOS V.S.A.',
+      organization: 'IT Servicios de Venezuela, S.A.',
       initials: 'TA'
     }
   ];
@@ -1654,6 +1654,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!loadedList || loadedList.length === 0) {
       loadedList = [...defaultEngineers];
     }
+
+    loadedList.forEach(eng => {
+      if (eng && /^IT\s+SERVICIOS\s+V\.?S\.?A\.?$/i.test(String(eng.organization || '').trim())) {
+        eng.organization = 'IT Servicios de Venezuela, S.A.';
+      }
+    });
 
     state.engineers = loadedList;
 
@@ -1765,7 +1771,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (titleInput) titleInput.value = eng.title || '';
     if (sigInput) sigInput.value = eng.signature || eng.name || '';
     if (emailInput) emailInput.value = eng.email || '';
-    if (orgInput) orgInput.value = eng.organization || 'IT SERVICIOS V.S.A.';
+    if (orgInput) orgInput.value = eng.organization || 'IT Servicios de Venezuela, S.A.';
 
     if (titleEl) titleEl.textContent = `✏️ Editando Especialista: ${eng.name}`;
     if (btnCancel) btnCancel.style.display = 'inline-block';
@@ -1790,7 +1796,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (titleInput) titleInput.value = '';
     if (sigInput) sigInput.value = '';
     if (emailInput) emailInput.value = '';
-    if (orgInput) orgInput.value = 'IT SERVICIOS V.S.A.';
+    if (orgInput) orgInput.value = 'IT Servicios de Venezuela, S.A.';
 
     if (titleEl) titleEl.textContent = '➕ Registrar Nuevo Especialista / Ingeniero';
     if (btnCancel) btnCancel.style.display = 'none';
@@ -1876,7 +1882,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const title = titleInput ? titleInput.value.trim() : 'Especialista en Seguridad Entrust';
     const signature = sigInput ? sigInput.value.trim() : (name.startsWith('Ing.') ? name : `Ing. ${name}`);
     const email = emailInput ? emailInput.value.trim() : '';
-    const organization = orgInput ? orgInput.value.trim() : 'IT SERVICIOS V.S.A.';
+    const organization = orgInput ? orgInput.value.trim() : 'IT Servicios de Venezuela, S.A.';
 
     if (!name) {
       alert('Por favor ingrese el nombre del especialista / ingeniero.');
@@ -4500,9 +4506,11 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       const { code, diag, count, service } = item;
       const bDiag = getBilingualDiagnostic(diag, code, service, isEn);
       const pctStr = formatPctStr(count, totalCount);
-      const affectedUsersArr = codeToUsersLookup[code] || [];
+      const codeUsersEntry520 = codeToUsersLookup[code] || codeToUsersLookup[String(code).toUpperCase()] || { users: [], uniqueUsersCount: 0 };
+      const affectedUsersArr = Array.isArray(codeUsersEntry520) ? codeUsersEntry520 : (codeUsersEntry520.users || []);
+      const affectedUsersTotal520 = Array.isArray(codeUsersEntry520) ? codeUsersEntry520.length : Math.max(affectedUsersArr.length, Number(codeUsersEntry520.uniqueUsersCount || 0));
       const userPills = affectedUsersArr.length > 0
-        ? affectedUsersArr.slice(0, 5).map(u => `<span style="background:#e0f2fe; color:#0369a1; padding:1px 5px; border-radius:3px; font-family:monospace; font-size:9px; font-weight:700; margin:1px;">👤 ${escapeHtml(u.user)} (${u.count}x)</span>`).join(' ') + (affectedUsersArr.length > 5 ? ` <span style="font-size:9px; color:#64748b;">+${affectedUsersArr.length - 5}</span>` : '')
+        ? affectedUsersArr.slice(0, 5).map(u => `<span style="background:#e0f2fe; color:#0369a1; padding:1px 5px; border-radius:3px; font-family:monospace; font-size:9px; font-weight:700; margin:1px;">👤 ${escapeHtml(u.user)} (${u.count}x)</span>`).join(' ') + (affectedUsersTotal520 > 5 ? ` <span style="font-size:9px; color:#64748b;">+${(affectedUsersTotal520 - 5).toLocaleString()} (${affectedUsersTotal520.toLocaleString()} totales)</span>` : '')
         : '<span style="font-size:9px; color:#64748b; font-family:monospace;">Sin usuario nominal / Error de socket de motor</span>';
 
       rows520Html += `
