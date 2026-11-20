@@ -71,8 +71,8 @@ class StorageEngine {
     const rawLogs = isObjPayload
       ? (Array.isArray(logsOrPayload.logs) ? logsOrPayload.logs : [])
       : (Array.isArray(logsOrPayload) ? logsOrPayload : []);
-    // Compactar logs guardados en IndexedDB (máx 15,000 muestras ligeras para arranque instantáneo sin bloquear Chrome)
-    const compactLogs = rawLogs.slice(0, 15000).map(l => ({
+    // Compactar logs guardados en IndexedDB (máx 60,000 muestras ligeras para arranque instantáneo en modo offline)
+    const compactLogs = rawLogs.slice(0, 60000).map(l => ({
       lineNum: l.lineNum,
       timestamp: l.timestamp,
       level: l.level,
@@ -138,7 +138,7 @@ class StorageEngine {
           if (res && res.logs && !Array.isArray(res.logs) && typeof res.logs === 'object') {
             resolve({
               id: 'current_session',
-              logs: Array.isArray(res.logs.logs) ? res.logs.logs.slice(0, 15000) : [],
+              logs: Array.isArray(res.logs.logs) ? res.logs.logs.slice(0, 60000) : [],
               loadedFiles: res.logs.loadedFiles || res.loadedFiles || [],
               globalStreamMetrics: res.logs.globalStreamMetrics || res.globalStreamMetrics || null,
               activeClientId: res.logs.activeClientId || res.activeClientId || 'general',
@@ -147,8 +147,8 @@ class StorageEngine {
             });
             return;
           }
-          if (res && Array.isArray(res.logs) && res.logs.length > 15000) {
-            res.logs = res.logs.slice(0, 15000);
+          if (res && Array.isArray(res.logs) && res.logs.length > 60000) {
+            res.logs = res.logs.slice(0, 60000);
           }
           resolve(res);
         };

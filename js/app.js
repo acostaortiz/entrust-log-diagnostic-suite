@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Inicialización de datos de sesión: Priorizar sesión local IndexedDB saneada antes de consultar servidor
+  // Inicialización de datos de sesión: Consultar SQLite del Servidor primero (100% paginable y compartido) antes de respaldo local IndexedDB
   (async () => {
     try {
       await new Promise(r => setTimeout(r, 0));
@@ -222,7 +222,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (window.notesEngine && typeof window.notesEngine.loadNotes === 'function') {
         window.notesEngine.loadNotes().then(() => window.notesEngine.renderPortal('notes-portal-container')).catch(() => {});
       }
-      let restoredLocal = false;
+
+      const synced = await syncClientSessionWithServer(state.activeClientId || 'general');
+      if (synced) {
+        if (window.UserTraceReport && typeof window.UserTraceReport.fetchForensicMatrix === 'function') {
+          setTimeout(() => {
+            try { window.UserTraceReport.fetchForensicMatrix(true); } catch (e) {}
+          }, 120);
+        }
+        return;
+      }
+
       if (window.storageEngine && typeof window.storageEngine.loadActiveSession === 'function') {
         const savedSession = await window.storageEngine.loadActiveSession();
         if (savedSession && savedSession.logs && savedSession.logs.length > 0) {
@@ -232,12 +242,11 @@ document.addEventListener('DOMContentLoaded', () => {
           if (savedSession.globalStreamMetrics) state.globalStreamMetrics = savedSession.globalStreamMetrics;
           state.activeClientId = savedSession.activeClientId || state.activeClientId;
           sanitizeOnPremiseSessionData();
-          restoredLocal = true;
           populateClientSelector();
           if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
           renderLoadedFilesDrawer();
           applyLogFilters(); // ya invoca renderLogTable, updateMetricsAndCharts y renderUserAndIpAnalytics
-          showAnalysisStatus(false, `💾 Sesión OnPremise Restaurada (${(state.globalStreamMetrics?.totalLogs || state.logs.length).toLocaleString()} registros)`, `Archivo: ${(state.loadedFiles && state.loadedFiles[0]?.name) || 'Local'}`);
+          showAnalysisStatus(false, `💾 Sesión Local Restaurada (${(state.globalStreamMetrics?.totalLogs || state.logs.length).toLocaleString()} registros)`, `Archivo: ${(state.loadedFiles && state.loadedFiles[0]?.name) || 'Local'}`);
 
           // Diferir widgets secundarios y censo de usuarios para no saturar el hilo de Firefox/Chrome
           setTimeout(() => {
@@ -255,12 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
               } catch (e) {}
             }
           }, 200);
-        }
-      }
-      if (!restoredLocal) {
-        const synced = await syncClientSessionWithServer(state.activeClientId || 'general');
-        if (synced && window.UserTraceReport && typeof window.UserTraceReport.fetchForensicMatrix === 'function') {
-          window.UserTraceReport.fetchForensicMatrix(true);
         }
       }
     } catch(e) {
@@ -1495,10 +1498,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.15',
-    build: 603,
+    version: 'v3.8.16',
+    build: 604,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'OFFICIAL-359-AUD-CATALOG-AND-ANTI-FREEZE-3815',
+    gitCommit: 'CHUNKED-NONBLANK-PDF-ENGINE-3816',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -2284,7 +2287,9 @@ document.addEventListener('DOMContentLoaded', () => {
   <style>
     body { font-family: 'Segoe UI', Arial, -apple-system, BlinkMacSystemFont, sans-serif; background: #ffffff; color: #0f172a; padding: 25px; margin: 0; font-size: 12px; }
     h1, h2, h3, h4 { color: #0a3d6d; margin-top: 0; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; page-break-inside: avoid; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; break-inside: avoid; }
     th, td { border: 1px solid #cbd5e1; padding: 6px 8px; font-size: 11px; text-align: left; }
     th { background: #0a3d6d; color: #ffffff; font-weight: bold; }
     tr:nth-child(even) { background: #f8fafc; }
@@ -2990,134 +2995,313 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  async function generateAndSavePdf(sourceElement, filename, activeClient) {
+  async function generateAndSavePdf(sourceElement, filename, activeClient, options = {}) {
     if (!sourceElement) {
       throw new Error('Elemento fuente para PDF no encontrado');
+    }
+
+    const hasH2C = typeof window.html2canvas === 'function';
+    const jsPdfClass = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+    if (!hasH2C || !jsPdfClass) {
+      throw new Error('html2canvas o jsPDF no inicializados en window');
     }
 
     const clientLabel = activeClient ? (activeClient.name || 'Entrust General') : 'Entrust General';
     const clientVersion = activeClient ? `${activeClient.platform || 'IdentityGuard'} ${activeClient.version || 'Release 12.0'}` : 'Entrust IdentityGuard';
     const dateStamp = new Date().toLocaleDateString('es-ES');
+    const headerTitle = options.headerTitle || `IT SERVICIOS DE VENEZUELA, S.A. | Dictamen Técnico Entrust — ${clientLabel} (${clientVersion})`;
+    const footerTitle = options.footerTitle || `IT Servicios de Venezuela, S.A. | Entorno: ${clientLabel} (${clientVersion}) | Fecha: ${dateStamp}`;
+    const isExecReport = sourceElement.id === 'exec-report-container' || !!sourceElement.querySelector('#exec-report-document');
 
-    // Inyectar clases y estilos para evitar cortes de tablas antes de generar PDF
-    const tables = sourceElement.querySelectorAll('table, tr, td, th, .report-card, .metric-card, .avoid-break');
-    tables.forEach(el => {
-      el.style.pageBreakInside = 'avoid';
-      el.style.breakInside = 'avoid';
-    });
+    const measureStage = document.createElement('div');
+    measureStage.style.cssText = 'position:fixed; left:0; top:0; width:1020px; background:#ffffff; color:#0f172a; padding:0; margin:0; z-index:-9999; pointer-events:none; opacity:1; visibility:visible; overflow:visible; box-sizing:border-box;';
 
-    if (typeof window.html2pdf === 'function') {
-      // Clonar en un contenedor sin recortes de modal (max-height/overflow) para capturar TODAS las páginas
-      const printWrapper = document.createElement('div');
-      printWrapper.style.cssText = 'position:absolute; left:-99999px; top:0; width:820px; height:auto; overflow:visible; background:#ffffff; color:#0f172a; padding:0; margin:0; z-index:-1;';
-      const clonedSource = sourceElement.cloneNode(true);
-      clonedSource.style.width = '100%';
-      clonedSource.style.maxWidth = '100%';
-      clonedSource.style.height = 'auto';
-      clonedSource.style.maxHeight = 'none';
-      clonedSource.style.overflow = 'visible';
-      printWrapper.appendChild(clonedSource);
-      document.body.appendChild(printWrapper);
+    const clonedSource = sourceElement.cloneNode(true);
+    clonedSource.querySelectorAll('.no-print').forEach(n => n.remove());
+    clonedSource.style.position = 'static';
+    clonedSource.style.left = 'auto';
+    clonedSource.style.top = 'auto';
+    clonedSource.style.opacity = '1';
+    clonedSource.style.visibility = 'visible';
+    clonedSource.style.width = '100%';
+    clonedSource.style.maxWidth = '100%';
+    clonedSource.style.height = 'auto';
+    clonedSource.style.maxHeight = 'none';
+    clonedSource.style.overflow = 'visible';
+    clonedSource.style.boxSizing = 'border-box';
+    clonedSource.style.boxShadow = 'none';
+    clonedSource.style.padding = isExecReport ? '8px 18px' : (clonedSource.style.padding || '12px 20px');
 
-      try {
-        const fullHeight = Math.max(printWrapper.scrollHeight, clonedSource.scrollHeight, 1200);
-        const opt = {
-          margin: [12, 10, 14, 10], // top, left, bottom, right in mm
-          filename: filename,
-          image: { type: 'jpeg', quality: 0.96 },
-          html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0, scrollX: 0, width: 820, windowWidth: 820, height: fullHeight, windowHeight: fullHeight },
-          jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait', compress: true },
-          pagebreak: {
-            mode: ['css', 'legacy'],
-            avoid: ['tr', 'h2', 'h3', '.avoid-break']
+    measureStage.appendChild(clonedSource);
+    document.body.appendChild(measureStage);
+
+    const renderHost = document.createElement('div');
+    renderHost.style.cssText = 'position:fixed; left:0; top:0; width:1020px; background:#ffffff; color:#0f172a; padding:4px 20px; box-sizing:border-box; font-family:\'Segoe UI\', -apple-system, BlinkMacSystemFont, Arial, sans-serif; z-index:-9999; pointer-events:none; opacity:1;';
+    let blockTarget = renderHost;
+    if (isExecReport) {
+      const sc = document.createElement('div');
+      sc.id = 'exec-report-container';
+      sc.style.cssText = 'background:#ffffff; color:#0f172a; padding:0; margin:0; box-shadow:none; max-height:none; overflow:visible; width:100%; box-sizing:border-box;';
+      const sd = document.createElement('div');
+      sd.id = 'exec-report-document';
+      sd.style.cssText = 'background:#ffffff; color:#0f172a; padding:0; margin:0; width:100%; box-sizing:border-box;';
+      sc.appendChild(sd);
+      renderHost.appendChild(sc);
+      blockTarget = sd;
+    }
+    document.body.appendChild(renderHost);
+
+    let pdf = null;
+    let totalPages = 0;
+    let renderedBlocksCount = 0;
+
+    try {
+      const execDoc = clonedSource.id === 'exec-report-document' ? clonedSource : clonedSource.querySelector('#exec-report-document');
+      const contentRoot = execDoc || clonedSource;
+      const rawBlocks = [];
+
+      const splitTableIntoChunks = (tableEl, maxBlockPx) => {
+        const thead = tableEl.querySelector('thead');
+        const rows = Array.from(tableEl.querySelectorAll('tbody > tr'));
+        const allRows = rows.length > 0 ? rows : Array.from(tableEl.querySelectorAll('tr')).filter(r => !thead || !thead.contains(r));
+
+        const makeChunkTable = (rowsChunk) => {
+          const tbl = document.createElement('table');
+          if (tableEl.className) tbl.className = tableEl.className;
+          if (tableEl.getAttribute('style')) tbl.setAttribute('style', tableEl.getAttribute('style'));
+          tbl.style.pageBreakInside = 'auto';
+          tbl.style.breakInside = 'auto';
+          tbl.style.marginBottom = '8px';
+          if (thead) {
+            const theadClone = thead.cloneNode(true);
+            theadClone.querySelectorAll('th').forEach(th => { th.style.position = 'static'; });
+            tbl.appendChild(theadClone);
           }
+          const tb = document.createElement('tbody');
+          rowsChunk.forEach(r => tb.appendChild(r.cloneNode(true)));
+          tbl.appendChild(tb);
+          return tbl;
         };
 
-        const pdfTask = window.html2pdf().set(opt).from(clonedSource).toPdf().get('pdf').then(function(pdf) {
-          const totalPages = pdf.internal.getNumberOfPages();
-          const pageWidth = pdf.internal.pageSize.getWidth();
-          const pageHeight = pdf.internal.pageSize.getHeight();
+        if (tableEl.offsetHeight <= maxBlockPx || allRows.length <= 1) {
+          rawBlocks.push({ node: makeChunkTable(allRows), estH: Math.max(40, tableEl.offsetHeight), isHeading: false });
+          return;
+        }
 
-          for (let i = 1; i <= totalPages; i++) {
-            pdf.setPage(i);
-            if (i > 1) {
-              pdf.setFontSize(7.5);
-              pdf.setTextColor(148, 163, 184);
-              pdf.text(`IT SERVICIOS DE VENEZUELA, S.A. | Dictamen Técnico Entrust — ${clientLabel} (${clientVersion})`, 10, 7);
-              pdf.setDrawColor(226, 232, 240);
-              pdf.line(10, 8.5, pageWidth - 10, 8.5);
-            }
-            pdf.setDrawColor(226, 232, 240);
-            pdf.line(10, pageHeight - 9, pageWidth - 10, pageHeight - 9);
-            pdf.setFontSize(7.5);
-            pdf.setTextColor(100, 116, 139);
-            pdf.text(`IT Servicios de Venezuela, S.A. | Entorno: ${clientLabel} (${clientVersion}) | Fecha: ${dateStamp}`, 10, pageHeight - 5);
-            pdf.text(`Página ${i} de ${totalPages}`, pageWidth - 28, pageHeight - 5);
+        const theadH = thead ? Math.max(24, thead.offsetHeight) : 28;
+        let currentRows = [];
+        let currentH = theadH;
+        for (let i = 0; i < allRows.length; i++) {
+          const r = allRows[i];
+          const rh = Math.max(18, r.offsetHeight || 24);
+          if (currentRows.length > 0 && currentH + rh > maxBlockPx) {
+            rawBlocks.push({ node: makeChunkTable(currentRows), estH: currentH, isHeading: false });
+            currentRows = [];
+            currentH = theadH;
           }
-        }).save();
+          currentRows.push(r);
+          currentH += rh;
+        }
+        if (currentRows.length > 0) {
+          rawBlocks.push({ node: makeChunkTable(currentRows), estH: currentH, isHeading: false });
+        }
+      };
 
-        await Promise.race([
-          pdfTask,
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout de generación PDF cliente')), 25000))
-        ]);
+      const walkElement = (el, maxBlockPx) => {
+        if (!el || el.nodeType !== 1) return;
+        const st = window.getComputedStyle(el);
+        if (st.display === 'none' || st.visibility === 'hidden' || el.offsetHeight === 0) return;
 
-        return;
-      } finally {
-        if (printWrapper.parentNode) printWrapper.parentNode.removeChild(printWrapper);
+        if (el.tagName === 'TABLE') {
+          splitTableIntoChunks(el, maxBlockPx);
+          return;
+        }
+
+        if (el.offsetHeight <= maxBlockPx) {
+          const clone = el.cloneNode(true);
+          clone.querySelectorAll('th').forEach(th => { th.style.position = 'static'; });
+          const isH = /^H[1-4]$/.test(el.tagName) || (el.offsetHeight < 80 && !!el.querySelector('h1,h2,h3,h4') && !el.querySelector('table'));
+          if (isH) clone.setAttribute('data-pdf-heading', '1');
+          rawBlocks.push({ node: clone, estH: Math.max(20, el.offsetHeight), isHeading: isH });
+          return;
+        }
+
+        const children = Array.from(el.children).filter(c => {
+          const cst = window.getComputedStyle(c);
+          return cst.display !== 'none' && cst.visibility !== 'hidden' && c.offsetHeight > 0;
+        });
+        if (children.length > 0) {
+          children.forEach(c => walkElement(c, maxBlockPx));
+        } else {
+          rawBlocks.push({ node: el.cloneNode(true), estH: Math.max(20, el.offsetHeight), isHeading: false });
+        }
+      };
+
+      Array.from(contentRoot.children).forEach(child => walkElement(child, 560));
+      if (rawBlocks.length === 0 && contentRoot.offsetHeight > 0) {
+        rawBlocks.push({ node: contentRoot.cloneNode(true), estH: contentRoot.offsetHeight, isHeading: false });
       }
+
+      // Empaquetar bloques pequeños contiguos hasta ~520px (optimiza llenado de página y evita huecos)
+      const blocks = [];
+      let curGroup = [];
+      let curGroupH = 0;
+      const flushGroup = () => {
+        if (!curGroup.length) return;
+        if (curGroup.length === 1) {
+          blocks.push(curGroup[0].node);
+        } else {
+          const wrap = document.createElement('div');
+          wrap.style.cssText = 'width:100%; box-sizing:border-box;';
+          if (curGroup[0].isHeading) wrap.setAttribute('data-pdf-heading', '1');
+          curGroup.forEach((item, idx) => {
+            item.node.style.marginTop = idx === 0 ? '0' : '6px';
+            item.node.style.marginBottom = '0';
+            wrap.appendChild(item.node);
+          });
+          blocks.push(wrap);
+        }
+        curGroup = [];
+        curGroupH = 0;
+      };
+
+      for (let i = 0; i < rawBlocks.length; i++) {
+        const rb = rawBlocks[i];
+        if (curGroup.length > 0 && curGroupH + rb.estH > 520) {
+          flushGroup();
+        }
+        curGroup.push(rb);
+        curGroupH += rb.estH + 6;
+      }
+      flushGroup();
+
+      pdf = new jsPdfClass({ orientation: 'portrait', unit: 'mm', format: 'letter', compress: true });
+      const pageWidth = 215.9;
+      const pageHeight = 279.4;
+      const marginX = 10;
+      const marginTopFirst = 10;
+      const marginTopNext = 13;
+      const usableW = pageWidth - (marginX * 2); // 195.9 mm
+      const maxContentY = pageHeight - 13; // 266.4 mm
+      const freshUsableH = maxContentY - marginTopNext; // 253.4 mm
+
+      let pageIdx = 1;
+      let cursorY = marginTopFirst;
+
+      for (let bIdx = 0; bIdx < blocks.length; bIdx++) {
+        if (typeof options.onProgress === 'function') {
+          try { options.onProgress(bIdx + 1, blocks.length); } catch (e) {}
+        }
+        if (bIdx > 0 && bIdx % 3 === 0) {
+          await new Promise(r => setTimeout(r, 0));
+        }
+
+        const block = blocks[bIdx];
+        block.style.marginTop = '0';
+        block.style.marginBottom = '0';
+        block.style.pageBreakInside = 'auto';
+        block.style.breakInside = 'auto';
+        blockTarget.innerHTML = '';
+        blockTarget.appendChild(block);
+
+        const bh = Math.max(1, renderHost.scrollHeight);
+        const safeScale = bh > 3500 ? 1 : 1.5;
+
+        const canvas = await window.html2canvas(renderHost, {
+          scale: safeScale,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          scrollX: 0,
+          scrollY: 0,
+          width: 1020,
+          windowWidth: 1020,
+          height: bh,
+          windowHeight: bh,
+          ignoreElements: (node) => node && node !== renderHost && node.parentElement === document.body
+        });
+
+        if (!canvas || canvas.width === 0 || canvas.height === 0) continue;
+
+        const imgH = (canvas.height * usableW) / canvas.width;
+        const pageTopY = pageIdx === 1 ? marginTopFirst : marginTopNext;
+
+        if (block.hasAttribute('data-pdf-heading') && cursorY > pageTopY + 5 && cursorY + imgH + 36 > maxContentY) {
+          pdf.addPage();
+          pageIdx++;
+          cursorY = marginTopNext;
+        }
+
+        if (imgH <= freshUsableH) {
+          const curTopY = pageIdx === 1 ? marginTopFirst : marginTopNext;
+          if (cursorY > curTopY + 1 && cursorY + imgH > maxContentY) {
+            pdf.addPage();
+            pageIdx++;
+            cursorY = marginTopNext;
+          }
+          const imgData = canvas.toDataURL('image/jpeg', 0.86);
+          pdf.addImage(imgData, 'JPEG', marginX, cursorY, usableW, imgH, undefined, 'FAST');
+          cursorY += imgH + 2.2;
+        } else {
+          const slicePx = Math.max(100, Math.floor((freshUsableH / usableW) * canvas.width));
+          let sy = 0;
+          while (sy < canvas.height) {
+            const sh = Math.min(slicePx, canvas.height - sy);
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = sh;
+            const tctx = tempCanvas.getContext('2d');
+            tctx.fillStyle = '#ffffff';
+            tctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            tctx.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
+            const curTopY = pageIdx === 1 ? marginTopFirst : marginTopNext;
+            if (sy > 0 || cursorY > curTopY + 1) {
+              pdf.addPage();
+              pageIdx++;
+              cursorY = marginTopNext;
+            }
+            const sliceMmH = (sh * usableW) / canvas.width;
+            pdf.addImage(tempCanvas.toDataURL('image/jpeg', 0.86), 'JPEG', marginX, cursorY, usableW, sliceMmH, undefined, 'FAST');
+            cursorY += sliceMmH + 2.2;
+            sy += sh;
+          }
+        }
+        renderedBlocksCount++;
+      }
+
+      if (renderedBlocksCount === 0) {
+        throw new Error('No se pudo renderizar contenido visual para el PDF');
+      }
+
+      totalPages = pdf.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        if (i > 1) {
+          pdf.setFontSize(7.5);
+          pdf.setTextColor(148, 163, 184);
+          pdf.text(headerTitle, 10, 7);
+          pdf.setDrawColor(226, 232, 240);
+          pdf.line(10, 8.5, pageWidth - 10, 8.5);
+        }
+        pdf.setDrawColor(226, 232, 240);
+        pdf.line(10, pageHeight - 9, pageWidth - 10, pageHeight - 9);
+        pdf.setFontSize(7.5);
+        pdf.setTextColor(100, 116, 139);
+        pdf.text(footerTitle, 10, pageHeight - 5);
+        pdf.text(`Página ${i} de ${totalPages}`, pageWidth - 28, pageHeight - 5);
+      }
+
+      if (!options.dryRun) {
+        pdf.save(filename);
+      }
+
+      return { pdf, totalPages, renderedBlocksCount };
+    } finally {
+      if (measureStage.parentNode) measureStage.parentNode.removeChild(measureStage);
+      if (renderHost.parentNode) renderHost.parentNode.removeChild(renderHost);
     }
-
-    // Fallback con canvas si html2pdf no está listo
-    const hasH2C = typeof window.html2canvas === 'function';
-    const jsPdfClass = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-
-    if (!hasH2C || !jsPdfClass) {
-      throw new Error('html2canvas o jsPDF no inicializados en window');
-    }
-
-    const canvas = await window.html2canvas(sourceElement, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-      scrollX: 0,
-      scrollY: 0,
-      windowWidth: sourceElement.scrollWidth || 800
-    });
-
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const pdf = new jsPdfClass({ orientation: 'portrait', unit: 'mm', format: 'letter', compress: true });
-    const pageWidth = 215.9;
-    const pageHeight = 279.4;
-    const margin = 8;
-    const printWidth = pageWidth - (margin * 2);
-    const printHeight = (canvas.height * printWidth) / canvas.width;
-    const pageContentHeight = pageHeight - (margin * 2);
-
-    let heightLeft = printHeight;
-    let position = margin;
-
-    pdf.addImage(imgData, 'JPEG', margin, position, printWidth, printHeight);
-    heightLeft -= pageContentHeight;
-
-    while (heightLeft > 0) {
-      position = margin - (printHeight - heightLeft);
-      pdf.addPage();
-      pdf.addImage(imgData, 'JPEG', margin, position, printWidth, printHeight);
-      heightLeft -= pageContentHeight;
-    }
-
-    const totalPages = pdf.internal.getNumberOfPages();
-    for (let i = 1; i <= totalPages; i++) {
-      pdf.setPage(i);
-      pdf.setFontSize(8);
-      pdf.setTextColor(100, 116, 139);
-      pdf.text(`IT SERVICIOS DE VENEZUELA, S.A. | Dictamen Entrust (${clientLabel} - ${clientVersion})`, margin, pageHeight - 3.5);
-      pdf.text(`Página ${i} de ${totalPages}`, pageWidth - margin - 22, pageHeight - 3.5);
-    }
-
-    pdf.save(filename);
   }
+  window.generateAndSavePdfGlobal = generateAndSavePdf;
 
   function downloadExecutiveReportDocx() {
     const container = document.getElementById('exec-report-container');
@@ -3201,10 +3385,10 @@ document.addEventListener('DOMContentLoaded', () => {
     pageWrapper.style.fontFamily = "'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif";
     pageWrapper.style.boxSizing = 'border-box';
     pageWrapper.style.position = 'fixed';
-    pageWrapper.style.left = '-9999px';
+    pageWrapper.style.left = '0';
     pageWrapper.style.top = '0';
-    pageWrapper.style.zIndex = '-1';
-    pageWrapper.style.opacity = '0';
+    pageWrapper.style.zIndex = '-9999';
+    pageWrapper.style.opacity = '1';
     pageWrapper.style.pointerEvents = 'none';
 
     pageWrapper.innerHTML = `
@@ -3369,7 +3553,11 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const filename = `Informe_Entrust_${clientSanitized}_${dateStamp}.pdf`;
 
     try {
-      await generateAndSavePdf(container, filename, activeClient);
+      await generateAndSavePdf(container, filename, activeClient, {
+        onProgress: (done, total) => {
+          if (btn) btn.innerHTML = `⏳ Generando PDF (${Math.round((done / Math.max(1, total)) * 100)}%)...`;
+        }
+      });
     } catch (err) {
       console.warn('Fallo generación directa jsPDF/html2canvas, abriendo ventana de impresión nativa:', err);
       openPrintWindow(container.innerHTML, `Informe Oficial Entrust - ${activeClient ? activeClient.name : 'Entrust'}`);
@@ -3562,7 +3750,30 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     if (hourBuckets.size === 0) return '';
 
-    const sortedBuckets = Array.from(hourBuckets.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+    let sortedBuckets = Array.from(hourBuckets.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+    let heatmapCollapsedNote = '';
+    if (sortedBuckets.length > 36) {
+      const dailyMap = new Map();
+      sortedBuckets.forEach(([sKey, data]) => {
+        const dayKey = sKey.slice(0, 10);
+        const dayLabel = dayKey === '9999-99-99' ? (isEn ? 'General Schedule (Daily Summary)' : 'Horario General (Resumen Diario)') : `📅 ${dayKey} (Resumen Diario Consolidado)`;
+        if (!dailyMap.has(dayKey)) {
+          dailyMap.set(dayKey, { key: dayLabel, total: 0, critical: 0, warn: 0, info: 0 });
+        }
+        const dBucket = dailyMap.get(dayKey);
+        dBucket.total += data.total;
+        dBucket.critical += data.critical;
+        dBucket.warn += data.warn;
+        dBucket.info += data.info;
+      });
+      sortedBuckets = Array.from(dailyMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+      if (sortedBuckets.length > 36) {
+        sortedBuckets = sortedBuckets.slice(-36);
+      }
+      heatmapCollapsedNote = isEn
+        ? ' • Grouped by day for multi-day clarity'
+        : ' • Agrupado por día para legibilidad ejecutiva';
+    }
 
     let rowsHtml = '';
     sortedBuckets.forEach(([sKey, data]) => {
@@ -3583,12 +3794,12 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     });
 
     return `
-      <div style="margin-bottom:25px; page-break-inside:avoid; break-inside:avoid;">
+      <div style="margin-bottom:25px;">
         <h3 style="color:#0a3d6d; font-size:14px; margin-bottom:10px; border-bottom:2px solid #0a3d6d; padding-bottom:4px;">
           ${i18n.timelineHeatmapTitle}
         </h3>
         <p style="font-size:11px; color:#475569; margin-bottom:10px;">
-          ${i18n.timelineHeatmapSub} ${isGlobal ? (isEn ? '(Entire SQLite Indexed Dataset)' : '(Totalidad del Dataset Indexado en SQLite)') : ''}
+          ${i18n.timelineHeatmapSub} ${isGlobal ? (isEn ? '(Entire SQLite Indexed Dataset)' : '(Totalidad del Dataset Indexado en SQLite)') : ''}${heatmapCollapsedNote}
         </p>
         <table style="width:100%; border-collapse:collapse; font-size:11px;">
           <thead>
@@ -3752,8 +3963,9 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     sortedIncidents = Array.from(allUniqueCodesMap.values()).sort((a, b) => b.count - a.count);
     const diagMapSize = sortedIncidents.length;
+    const displayIncidents = sortedIncidents.slice(0, 40);
 
-    sortedIncidents.forEach((item, idx) => {
+    displayIncidents.forEach((item, idx) => {
       const idxNum = idx + 1;
       const { code, diag, count, sampleRaw, level, service, sampleFile, sampleTime, sampleLine } = item;
       const bDiag = getBilingualDiagnostic(diag, code, service, isEn);
@@ -3875,6 +4087,19 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         </tr>`;
     });
 
+    if (sortedIncidents.length > 40) {
+      const extraCodes = sortedIncidents.length - 40;
+      const extraMsg = isEn
+        ? `+ ${extraCodes} additional low-frequency codes available in CSV export / Analyzer`
+        : `+ ${extraCodes} códigos adicionales de menor frecuencia disponibles en CSV / Analizador`;
+      if (onlyCatalogErrors) {
+        incidentsHtml += `<div style="padding:10px 14px; background:#f1f5f9; border:1px dashed #94a3b8; border-radius:6px; font-size:11px; color:#475569; text-align:center; margin-top:8px;">📋 ${extraMsg}</div>`;
+      } else {
+        incidentsHtml += `<tr><td colspan="5" style="padding:8px 10px; border:1px solid #cbd5e1; background:#f1f5f9; color:#475569; font-size:10px; text-align:center; font-weight:600;">📋 ${extraMsg}</td></tr>`;
+      }
+      topCodesHtml += `<tr><td colspan="4" style="padding:8px 10px; border:1px solid #cbd5e1; background:#f1f5f9; color:#475569; font-size:10px; text-align:center; font-weight:600;">📋 ${extraMsg}</td></tr>`;
+    }
+
     // Construir Sección III: Censo Nominal de Usuarios y Secuencia de Solicitudes (Solicitud 1 ➔ Solicitud N)
     const sortedForensicUsers = [...forensicUsersList].sort((a, b) => (b.isLocked ? 1 : 0) - (a.isLocked ? 1 : 0) || (b.errors - a.errors) || (b.totalEvents - a.totalEvents));
     const totalValidUsersCount = sortedForensicUsers.length;
@@ -3882,7 +4107,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const usersCleanCount = sortedForensicUsers.filter(u => u.errors === 0 && !u.isLocked).length;
 
     let userCensusReportRowsHtml = '';
-    sortedForensicUsers.slice(0, 60).forEach((u, uIdx) => {
+    sortedForensicUsers.slice(0, 40).forEach((u, uIdx) => {
       const uStatusBadge = u.isLocked
         ? `<span style="background:#ffe4e6; color:#e11d48; border:1px solid #fda4af; padding:2px 6px; border-radius:4px; font-weight:800; font-size:9px;">🔒 BLOQUEADO</span>`
         : (u.errors > 0
@@ -3912,8 +4137,16 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         </tr>`;
     });
 
+    if (sortedForensicUsers.length > 40) {
+      const extraUsers = sortedForensicUsers.length - 40;
+      const extraUsrMsg = isEn
+        ? `+ ${extraUsers} additional users available in CSV export / User Census tab`
+        : `+ ${extraUsers} usuarios adicionales disponibles en exportación CSV / pestaña Censo`;
+      userCensusReportRowsHtml += `<tr><td colspan="5" style="padding:8px 10px; border:1px solid #cbd5e1; background:#f1f5f9; color:#475569; font-size:10px; text-align:center; font-weight:600;">👥 ${extraUsrMsg}</td></tr>`;
+    }
+
     const userCensusSectionHtml = `
-      <div style="margin-top:20px; margin-bottom:25px; page-break-inside:avoid; break-inside:avoid;">
+      <div style="margin-top:20px; margin-bottom:25px;">
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:10px; font-size:15px;">
           5. Censo Forense de Usuarios &amp; Secuencia de Solicitudes (Solicitud 1 ➔ Solicitud N) — [${totalValidUsersCount} Usuarios Reales Validados | 0 Falsos Positivos]
         </h3>
@@ -4102,6 +4335,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     let coreFilesCount = 0;
     let auditFilesCount = 0;
     let otherFilesCount = 0;
+    const enrichedAuditedFiles = [];
 
     auditedFiles.forEach((file, fIdx) => {
       const fName = file.name || `Archivo #${fIdx + 1}`;
@@ -4139,45 +4373,59 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       }
 
       if (fErrors > 0) filesWithErrorsCount++;
-
-      const fSizeStr = file.size ? `${(file.size / (1024 * 1024)).toFixed(2)} MB` : '-';
-      const pctOfTotal = totalCount > 0 ? ((fLines / totalCount) * 100).toFixed(1) + '%' : '-';
-
-      let statusBadge = '';
-      if (fErrors > 0) {
-        statusBadge = `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 8px; border-radius:12px; font-weight:800; font-size:10px;">🚨 ${fErrors.toLocaleString()} Fallos Críticos</span>`;
-      } else if (fLower.includes('audit')) {
-        statusBadge = `<span style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">📋 Trazabilidad Audit</span>`;
-      } else {
-        statusBadge = `<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">✅ Nominal (0 Fallas)</span>`;
-      }
-
-      filesTableRowsHtml += `
-        <tr style="background:${fIdx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
-          <td style="padding:7px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:11px; font-weight:bold; color:#0f172a; word-break:break-all;">
-            📄 ${escapeHtml(fName)}
-          </td>
-          <td style="padding:7px 8px; border:1px solid #cbd5e1; font-size:10.5px;">
-            <span style="background:${fBadgeBg}; color:${fBadgeColor}; padding:2px 6px; border-radius:4px; font-weight:700; font-size:10px; display:inline-block;">${fLayer}</span>
-          </td>
-          <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:right; font-family:monospace; font-weight:700; font-size:11px; color:#0f172a;">
-            ${fLines.toLocaleString()}
-          </td>
-          <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:center; font-size:10px; color:#64748b; font-family:monospace;">
-            ${pctOfTotal}
-          </td>
-          <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:center; font-family:monospace; font-size:10.5px; color:#475569;">
-            ${fSizeStr}
-          </td>
-          <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:center;">
-            ${statusBadge}
-          </td>
-        </tr>
-      `;
+      enrichedAuditedFiles.push({ file, fName, fLower, fLayer, fBadgeBg, fBadgeColor, fLines, fErrors });
     });
 
+    enrichedAuditedFiles
+      .sort((a, b) => (b.fErrors - a.fErrors) || (b.fLines - a.fLines))
+      .slice(0, 40)
+      .forEach((item, fIdx) => {
+        const { file, fName, fLower, fLayer, fBadgeBg, fBadgeColor, fLines, fErrors } = item;
+        const fSizeStr = file.size ? `${(file.size / (1024 * 1024)).toFixed(2)} MB` : '-';
+        const pctOfTotal = totalCount > 0 ? ((fLines / totalCount) * 100).toFixed(1) + '%' : '-';
+
+        let statusBadge = '';
+        if (fErrors > 0) {
+          statusBadge = `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 8px; border-radius:12px; font-weight:800; font-size:10px;">🚨 ${fErrors.toLocaleString()} Fallos Críticos</span>`;
+        } else if (fLower.includes('audit')) {
+          statusBadge = `<span style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">📋 Trazabilidad Audit</span>`;
+        } else {
+          statusBadge = `<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">✅ Nominal (0 Fallas)</span>`;
+        }
+
+        filesTableRowsHtml += `
+          <tr style="background:${fIdx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+            <td style="padding:7px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:11px; font-weight:bold; color:#0f172a; word-break:break-all;">
+              📄 ${escapeHtml(fName)}
+            </td>
+            <td style="padding:7px 8px; border:1px solid #cbd5e1; font-size:10.5px;">
+              <span style="background:${fBadgeBg}; color:${fBadgeColor}; padding:2px 6px; border-radius:4px; font-weight:700; font-size:10px; display:inline-block;">${fLayer}</span>
+            </td>
+            <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:right; font-family:monospace; font-weight:700; font-size:11px; color:#0f172a;">
+              ${fLines.toLocaleString()}
+            </td>
+            <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:center; font-size:10px; color:#64748b; font-family:monospace;">
+              ${pctOfTotal}
+            </td>
+            <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:center; font-family:monospace; font-size:10.5px; color:#475569;">
+              ${fSizeStr}
+            </td>
+            <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:center;">
+              ${statusBadge}
+            </td>
+          </tr>
+        `;
+      });
+
+    if (auditedFiles.length > 40) {
+      const extraFilesMsg = isEn
+        ? `+ ${auditedFiles.length - 40} additional files in consolidated session (Top 40 by errors/volume shown)`
+        : `+ ${auditedFiles.length - 40} archivos adicionales consolidados en la sesión (mostrando Top 40 por fallos/volumen)`;
+      filesTableRowsHtml += `<tr><td colspan="6" style="padding:8px 10px; border:1px solid #cbd5e1; background:#f1f5f9; color:#475569; font-size:10px; text-align:center; font-weight:600;">📁 ${extraFilesMsg}</td></tr>`;
+    }
+
     const filesInventorySectionHtml = `
-      <div style="margin-top:20px; margin-bottom:25px; page-break-inside:avoid; break-inside:avoid;">
+      <div style="margin-top:20px; margin-bottom:25px;">
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:10px; font-size:15px;">
           2. Inventario Forense &amp; Desglose por Fuentes y Archivos Rotados [${auditedFiles.length} Archivos Auditados | ${totalCount.toLocaleString()} Eventos]
         </h3>
@@ -4222,7 +4470,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     `;
 
     // Construir Sección 3: Matriz Forense de Errores Críticos 520xxx del Motor Entrust
-    const incidents520 = sortedIncidents.filter(i => /^520/i.test(i.code));
+    const incidents520 = sortedIncidents.filter(i => /^520/i.test(i.code)).slice(0, 40);
     let rows520Html = '';
     incidents520.forEach((item, idx) => {
       const { code, diag, count, service } = item;
@@ -4259,7 +4507,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     });
 
     const top520ErrorsSectionHtml = `
-      <div style="margin-top:20px; margin-bottom:25px; page-break-inside:avoid; break-inside:avoid;">
+      <div style="margin-top:20px; margin-bottom:25px;">
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:10px; font-size:15px;">
           3. Matriz Forense de Errores Críticos 520xxx del Motor Entrust IdentityGuard [${count520Total.toLocaleString()} Ocurrencias Reales]
         </h3>
@@ -4433,7 +4681,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         <div id="rpt-sec-520" class="rpt-s-tec">${top520ErrorsSectionHtml}</div>
 
         <!-- Sección 4: Análisis de Frecuencia de Errores y Usuarios Afectados -->
-        <div id="rpt-sec-frecuencia" class="rpt-s-tec" style="margin-top:20px; page-break-inside:avoid; break-inside:avoid;">
+        <div id="rpt-sec-frecuencia" class="rpt-s-tec" style="margin-top:20px;">
           <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
             4. ${i18n.sec2Title.replace(/^2\.\s*/, '')}
           </h3>
@@ -4462,7 +4710,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         <div id="rpt-sec-heatmap" class="rpt-s-tec">${generateTimelineHeatmapHtml(targetLogs)}</div>
 
         <!-- Sección 8: Plan Estratégico de Remediación en 3 Fases (100% Basado en Evidencia) -->
-        <div id="rpt-sec-roadmap" class="rpt-s-tec" style="page-break-inside:avoid; break-inside:avoid; margin-top:20px;">
+        <div id="rpt-sec-roadmap" class="rpt-s-tec" style="margin-top:20px;">
           <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
             8. ${i18n.sec3Title.replace(/^3\.\s*/, '').replace(/^5\.\s*/, '')}
           </h3>
@@ -5669,7 +5917,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         if (totalMatching > 0) {
           const baseRange = `${(startIdx + 1).toLocaleString()} - ${Math.min(startIdx + pageSize, totalMatching).toLocaleString()} de ${totalMatching.toLocaleString()}`;
           showingBadge.textContent = isSampledRam
-            ? `${baseRange} (Muestra RAM: ${state.logs.length.toLocaleString()} / ${globalTotal.toLocaleString()} totales)`
+            ? `${baseRange} (Muestra local: ${state.logs.length.toLocaleString()} / ${globalTotal.toLocaleString()} — active server.py para navegar el 100%)`
             : baseRange;
         } else {
           showingBadge.textContent = `0 - 0 de 0`;
@@ -6402,11 +6650,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
   }
 
-  async function uploadFileInChunksToServer(file, clientName, onProgress) {
+  async function uploadFileInChunksToServer(file, clientName, onProgress, appendMode = false, serverTag = '') {
     const chunkSize = 10 * 1024 * 1024; // 10 MB por bloque (mantiene el uso de RAM del navegador en <15 MB)
     const totalChunks = Math.ceil(file.size / chunkSize);
     const fileName = encodeURIComponent(file.name);
     const encClientName = encodeURIComponent(clientName);
+    const encServerTag = encodeURIComponent(serverTag || '');
 
     for (let i = 0; i < totalChunks; i++) {
       const start = i * chunkSize;
@@ -6421,7 +6670,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           'X-Chunk-Index': String(i),
           'X-Total-Chunks': String(totalChunks),
           'X-File-Name': fileName,
-          'X-Client-Name': encClientName
+          'X-Client-Name': encClientName,
+          'X-Append-Mode': appendMode ? 'true' : 'false',
+          'X-Server-Tag': encServerTag
         },
         body: chunkBuffer
       });
@@ -6463,8 +6714,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   async function syncClientSessionWithServer(clientId) {
     const cId = clientId || state.activeClientId || 'general';
     const currentClient = getActiveClientProfile();
+    const clientQuery = (currentClient && currentClient.name) ? currentClient.name : cId;
     try {
-      const statsRes = await fetch(`/api/stats?client=${encodeURIComponent(cId)}`);
+      const statsRes = await fetch(`/api/stats?client=${encodeURIComponent(clientQuery)}`);
       if (!statsRes.ok) return false;
       const statsData = await statsRes.json();
       if (statsData.status === 'ready' && statsData.totalLogs > 0) {
@@ -6473,30 +6725,37 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           totalLogs: statsData.totalLogs || 0,
           totalErrors: statsData.totalErrors || 0,
           totalWarnings: statsData.totalWarnings || 0,
+          totalUniqueCodes: statsData.totalUniqueCodes || (statsData.topCodes || []).length || 0,
+          totalUniqueUsers: statsData.totalUniqueUsers || (statsData.topUsers || []).length || 0,
+          totalUniqueIps: statsData.totalUniqueIps || (statsData.topIps || []).length || 0,
           topUsers: statsData.topUsers || [],
           topIps: statsData.topIps || [],
           topCodes: statsData.topCodes || (statsData.eventTypes || []).map(t => ({ code: t.code, count: t.count })),
           eventTypes: statsData.eventTypes || [],
           timelineBuckets: statsData.timelineBuckets || [],
-          detectedPlatform: statsData.detectedPlatform || 'Entrust IDaaS Cloud'
+          detectedPlatform: statsData.detectedPlatform || 'Entrust IdentityGuard OnPremise'
         };
-        state.loadedFiles = [{
-          name: statsData.activeDb || `${cId}_audit.db`,
-          size: 0,
-          count: statsData.totalLogs,
-          sampleCount: 50,
-          realErrors: statsData.totalErrors,
-          realWarnings: 0,
-          nodeKey: 'server_cluster',
-          nodeName: '🖥️ Servidor Core SQLite',
-          client: currentClient.name
-        }];
+        state.loadedFiles = (Array.isArray(statsData.loadedFiles) && statsData.loadedFiles.length > 0)
+          ? statsData.loadedFiles
+          : [{
+              name: statsData.activeDb || `${cId}_audit.db`,
+              size: 0,
+              count: statsData.totalLogs,
+              sampleCount: 50,
+              realErrors: statsData.totalErrors,
+              realWarnings: statsData.totalWarnings || 0,
+              nodeKey: 'server_cluster',
+              nodeName: '🖥️ Servidor Core SQLite',
+              client: currentClient.name
+            }];
         await fetchSqlLogs(1);
         updateMetricsAndCharts();
+        if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
         renderLoadedFilesDrawer();
         renderUserAndIpAnalytics();
         updateOverviewWidgets();
-        showAnalysisStatus(false, `Base de Datos Conectada: ${currentClient.name}`, `${statsData.totalLogs.toLocaleString()} eventos indexados en el Servidor.`);
+        if (typeof window.updateTimeSliderBounds === 'function') window.updateTimeSliderBounds();
+        showAnalysisStatus(false, `🗄️ SQLite Conectado (${currentClient.name}): ${statsData.totalLogs.toLocaleString()} registros 100% paginables`, `Base de Datos: ${statsData.activeDb || 'SQLite'}`);
         return true;
       } else {
         if (state.isServerApi) {
@@ -6525,10 +6784,15 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const search = dom.searchLogInput?.value || '';
     const level = dom.filterLevelSelect?.value || 'ALL';
     const type = dom.filterTypeSelect?.value || 'ALL';
-    const clientSlug = state.activeClientId || 'general';
+    const activeClient = getActiveClientProfile();
+    const clientSlug = (activeClient && activeClient.name) ? activeClient.name : (state.activeClientId || 'general');
     let outcome = 'ALL';
     if (state.activeFilterMode === '520_ONLY' || level === 'CRITICAL' || level === 'ERROR') {
       outcome = 'FAIL';
+    } else if (state.activeFilterMode === 'AUDIT_ONLY') {
+      outcome = 'AUD';
+    } else if (level === 'WARN' || level === 'WARNING') {
+      outcome = 'WARN';
     } else if (level === 'INFO') {
       outcome = 'SUCCESS';
     }
@@ -9489,8 +9753,11 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         try {
           let outcome = 'ALL';
           if (modeVal === '520_ONLY' || levelVal === 'CRITICAL' || levelVal === 'ERROR') outcome = 'FAIL';
+          else if (modeVal === 'AUDIT_ONLY') outcome = 'AUD';
+          else if (levelVal === 'WARN' || levelVal === 'WARNING') outcome = 'WARN';
           else if (levelVal === 'INFO') outcome = 'SUCCESS';
-          const clientSlug = state.activeClientId || 'general';
+          const activeCli = getActiveClientProfile();
+          const clientSlug = (activeCli && activeCli.name) ? activeCli.name : (state.activeClientId || 'general');
           const url = `/api/logs?page=1&limit=25000&search=${encodeURIComponent(searchVal)}&outcome=${outcome}&type=${encodeURIComponent(typeVal)}&client=${encodeURIComponent(clientSlug)}`;
           const res = await fetch(url);
           if (res.ok) {
@@ -9639,6 +9906,17 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const files = Array.from(e.target.files);
       if (files.length === 0) return;
 
+      const isSupportedFile = (f) => {
+        const fn = (f.name || '').toLowerCase();
+        return /\.(log|txt|csv|json|out|tsv)$/i.test(fn) || /\.(log|out)\.\d+$/i.test(fn) || /\.\d{4}-\d{2}-\d{2}$/.test(fn);
+      };
+      const supportedFiles = files.filter(isSupportedFile);
+      const skippedFiles = files.filter(f => !isSupportedFile(f));
+      skippedFiles.forEach(sf => {
+        showAnalysisStatus(false, `⚠️ Archivo omitido: ${sf.name}`, 'Solo se procesan logs (.log, rotados .log.N, .out, .txt, .csv, .json).');
+      });
+      if (supportedFiles.length === 0) return;
+
       state.isServerApi = false;
       if (window.UserTraceReport) {
         window.UserTraceReport.forensicMatrixData = null;
@@ -9649,27 +9927,79 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         state.filteredLogs = [];
         state.loadedFiles = [];
         state.globalStreamMetrics = null;
-        fetch('/api/clear-session', { method: 'POST' }).catch(() => {});
       }
       state.executiveReportCache = null;
 
       if (!state.loadedFiles) state.loadedFiles = [];
 
+      const totalBatchBytes = supportedFiles.reduce((acc, f) => acc + (f.size || 0), 0);
+      const activeProfile = getActiveClientProfile();
+      const activeServerTag = (document.getElementById('upload-server-tag')?.value || '').trim() || 'Servidor 1 (Primario)';
+      const activeClientName = (activeProfile && activeProfile.name)
+        ? activeProfile.name
+        : (extractClientFromFilename(supportedFiles[0].name) || 'Entrust General');
+
+      let serverAvailable = false;
+      if (totalBatchBytes > 5 * 1024 * 1024) {
+        try {
+          const probeCtrl = new AbortController();
+          const probeTimer = setTimeout(() => probeCtrl.abort(), 2500);
+          const vRes = await fetch('/api/version', { signal: probeCtrl.signal });
+          clearTimeout(probeTimer);
+          serverAvailable = vRes.ok;
+        } catch (probeErr) {
+          serverAvailable = false;
+        }
+      }
+
+      if (serverAvailable) {
+        let uploadedToServer = 0;
+        let serverUploadFailed = false;
+        for (let fIdx = 0; fIdx < supportedFiles.length; fIdx++) {
+          const file = supportedFiles[fIdx];
+          const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+          const useAppend = isAccumulate || uploadedToServer > 0;
+          showAnalysisStatus(true, `🚀 Indexando en SQLite Servidor [${fIdx + 1}/${supportedFiles.length}]: ${file.name} (${sizeMb} MB)...`, 'Modo 100% paginable sin límite de 15,000 registros...');
+          try {
+            await uploadFileInChunksToServer(file, activeClientName, (current, total, msg) => {
+              showAnalysisStatus(true, `⚙️ [${fIdx + 1}/${supportedFiles.length}] ${file.name} (${sizeMb} MB)`, msg);
+            }, useAppend, activeServerTag);
+            uploadedToServer++;
+          } catch (serverErr) {
+            console.warn('Fallo en subida al servidor, intentando fallback local...', serverErr);
+            serverUploadFailed = true;
+            break;
+          }
+        }
+        if (!serverUploadFailed && uploadedToServer === supportedFiles.length) {
+          if (window.storageEngine && typeof window.storageEngine.clearSession === 'function') {
+            window.storageEngine.clearSession().catch(() => {});
+          }
+          state.isServerApi = true;
+          await syncClientSessionWithServer(state.activeClientId);
+          if (window.UserTraceReport && typeof window.UserTraceReport.fetchForensicMatrix === 'function') {
+            window.UserTraceReport.fetchForensicMatrix(true);
+          }
+          const srvMetrics = getConsolidatedMetrics();
+          showAnalysisStatus(false, `✅ ${supportedFiles.length} Archivo(s) Indexados en SQLite (${srvMetrics.totalLogs.toLocaleString()} registros 100% paginables)`, `Servidor activo: ${(srvMetrics.totalLogs || 0).toLocaleString()} registros navegables página a página.`);
+          switchTab('analyzer');
+          return;
+        }
+      }
+
+      if (!isAccumulate) {
+        fetch('/api/clear-session', { method: 'POST' }).catch(() => {});
+      }
+
       let newLogs = [];
       let fileCount = 0;
 
-      for (let fIdx = 0; fIdx < files.length; fIdx++) {
-        const file = files[fIdx];
-        const fnameLower = (file.name || '').toLowerCase();
-        const isSupported = /\.(log|txt|csv|json|out|tsv)$/i.test(fnameLower) || /\.(log|out)\.\d+$/i.test(fnameLower) || /\.\d{4}-\d{2}-\d{2}$/.test(fnameLower);
-        if (!isSupported) {
-          showAnalysisStatus(false, `⚠️ Archivo omitido: ${file.name}`, 'Solo se procesan logs (.log, rotados .log.N, .out, .txt, .csv, .json).');
-          continue;
-        }
+      for (let fIdx = 0; fIdx < supportedFiles.length; fIdx++) {
+        const file = supportedFiles[fIdx];
         try {
-          const clientName = extractClientFromFilename(file.name) || (getActiveClientProfile()?.name) || 'Entrust General';
+          const clientName = extractClientFromFilename(file.name) || activeClientName;
           const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-          showAnalysisStatus(true, `⚙️ Procesando [${fIdx + 1}/${files.length}]: ${file.name} (${sizeMb} MB)...`, 'Iniciando motor streaming de alta velocidad...');
+          showAnalysisStatus(true, `⚙️ Procesando [${fIdx + 1}/${supportedFiles.length}]: ${file.name} (${sizeMb} MB)...`, 'Iniciando motor streaming de alta velocidad...');
 
           let rawEntries = [];
           let realTotalLines = 0;
@@ -9677,60 +10007,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           let realTotalWarnings = 0;
           let realTotalAuditsCount = 0;
 
-          if (file.size > 50 * 1024 * 1024) {
-            // ARCHIVOS MASIVOS (> 50 MB / 10 GB+): Subida y procesamiento streaming en el Servidor (0% uso de RAM en Chrome)
-            showAnalysisStatus(true, `🚀 Procesando Archivo Masivo [${file.name} — ${sizeMb} MB]...`, 'Subiendo en bloques de 10 MB al motor SQLite del Servidor para prevenir saturación de memoria...');
-            try {
-              const serverResult = await uploadFileInChunksToServer(file, clientName, (current, total, msg) => {
-                showAnalysisStatus(true, `⚙️ [${file.name} — ${sizeMb} MB]`, msg);
-              });
-
-              // Cargar estadísticas globales desde SQLite del Servidor
-              const statsRes = await fetch('/api/stats');
-              if (statsRes.ok) {
-                const statsData = await statsRes.json();
-                state.globalStreamMetrics = {
-                  totalLogs: statsData.totalLogs || serverResult.linesProcessed || 0,
-                  totalErrors: statsData.totalErrors || serverResult.totalErrors || 0,
-                  totalWarnings: statsData.totalWarnings || 0,
-                  topUsers: statsData.topUsers || [],
-                  topIps: statsData.topIps || [],
-                  topCodes: statsData.topCodes || (statsData.eventTypes || []).map(t => ({ code: t.code, count: t.count })),
-                  eventTypes: statsData.eventTypes || [],
-                  timelineBuckets: statsData.timelineBuckets || [],
-                  detectedPlatform: statsData.detectedPlatform || 'Entrust IDaaS Cloud'
-                };
-              }
-
-              // Registrar archivo en la lista
-              state.loadedFiles.push({
-                name: file.name,
-                size: file.size,
-                count: serverResult.linesProcessed || 0,
-                sampleCount: 50,
-                realErrors: serverResult.totalErrors || 0,
-                realWarnings: 0,
-                nodeKey: 'server_cluster',
-                nodeName: '🖥️ Servidor Core SQLite',
-                client: clientName
-              });
-
-              state.isServerApi = true;
-              await syncClientSessionWithServer(clientName);
-              await fetchSqlLogs(1);
-              updateMetricsAndCharts();
-              renderLoadedFilesDrawer();
-              showAnalysisStatus(false, `✅ Archivo Masivo Indexado con Éxito (${(serverResult.linesProcessed || 0).toLocaleString()} registros)`, `Base de Datos SQLite activa: ${serverResult.dbPath || 'data/active_audit.db'}`);
-              fileCount++;
-              continue;
-            } catch (serverErr) {
-              console.warn('Fallo en subida al servidor, intentando fallback local...', serverErr);
-              showAnalysisStatus(true, `⚠️ Fallback local para ${file.name}...`, 'Procesando muestra segura para proteger el navegador...');
-            }
-          }
-
           if (file.size > 10 * 1024 * 1024) {
-            // Archivos medianos (10MB - 50MB) -> Procesamiento Streaming en Web Worker (Hilo Secundario)
+            // Archivos medianos/grandes sin server.py -> Procesamiento Streaming en Web Worker (Hilo Secundario)
             const streamResult = await window.logParserEngine.parseLargeFileWithWorker(file, clientName, (current, total, msg) => {
               showAnalysisStatus(true, `⚙️ [${file.name} — ${sizeMb} MB]`, msg);
             });
@@ -9771,7 +10049,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           } else {
             const content = await file.text();
             rawEntries = await window.logParserEngine.parseLogsAsync(content, (current, total, msg) => {
-              showAnalysisStatus(true, `⚙️ [Archivo ${fIdx + 1}/${files.length}] ${file.name}`, `${msg}`);
+              showAnalysisStatus(true, `⚙️ [Archivo ${fIdx + 1}/${supportedFiles.length}] ${file.name}`, `${msg}`);
             }, 2500);
             realTotalLines = rawEntries.length;
             realTotalErrors = 0;
@@ -9852,7 +10130,6 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             gsm.topIps = Array.from(ipMap.entries()).map(([ip, count]) => ({ ip, count })).sort((a, b) => b.count - a.count).slice(0, 200);
           }
 
-          const activeServerTag = (document.getElementById('upload-server-tag')?.value || '').trim() || 'Servidor 1 (Primario)';
           const serverNodeKey = 'srv_' + activeServerTag.toLowerCase().replace(/[^a-z0-9]+/g, '_');
           const serverNodeName = activeServerTag.startsWith('🖥️') ? activeServerTag : ('🖥️ ' + activeServerTag);
 
@@ -9895,8 +10172,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       if (newLogs.length > 0) {
         state.logs = state.logs.concat(newLogs);
-        // Protección RAM estratificada uniforme entre TODOS los archivos/servidores (hasta 250.000 trazas completas en navegador)
-        if (state.logs.length > 250000) {
+        // Protección RAM estratificada uniforme entre TODOS los archivos/servidores (hasta 600.000 trazas completas en navegador sin server.py)
+        if (state.logs.length > 600000) {
           const allErrs = [];
           const allNonErrs = [];
           for (let i = 0; i < state.logs.length; i++) {
@@ -9908,12 +10185,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             }
           }
           let keptErrs = allErrs;
-          if (allErrs.length > 150000) {
-            const errStep = Math.max(1, Math.floor(allErrs.length / 150000));
+          if (allErrs.length > 300000) {
+            const errStep = Math.max(1, Math.floor(allErrs.length / 300000));
             keptErrs = [];
-            for (let i = 0; i < allErrs.length && keptErrs.length < 150000; i += errStep) keptErrs.push(allErrs[i]);
+            for (let i = 0; i < allErrs.length && keptErrs.length < 300000; i += errStep) keptErrs.push(allErrs[i]);
           }
-          const nomBudget = Math.max(50000, 250000 - keptErrs.length);
+          const nomBudget = Math.max(100000, 600000 - keptErrs.length);
           let keptNom = allNonErrs;
           if (allNonErrs.length > nomBudget) {
             const nomStep = Math.max(1, Math.floor(allNonErrs.length / nomBudget));
@@ -9958,7 +10235,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         setTimeout(() => {
           if (window.storageEngine && typeof window.storageEngine.saveActiveSession === 'function') {
             window.storageEngine.saveActiveSession({
-              logs: state.logs.slice(0, 50000),
+              logs: state.logs.slice(0, 60000),
               loadedFiles: state.loadedFiles,
               globalStreamMetrics: state.globalStreamMetrics,
               activeClientId: state.activeClientId

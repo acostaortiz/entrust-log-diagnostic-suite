@@ -1107,7 +1107,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       container.innerHTML = reportHtml;
     },
 
-    downloadPdf() {
+    async downloadPdf() {
       const el = document.getElementById('user-trace-printable-document');
       if (!el) {
         alert('Por favor selecciona al menos un usuario para generar el informe.');
@@ -1120,27 +1120,27 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       const dateStamp = new Date().toLocaleDateString('es-ES');
       const filename = `Informe_Trazabilidad_Usuarios_${clientLabel.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
 
-      // Prevenir cortes de filas en tablas
-      const tables = el.querySelectorAll('table, tr, td, th, .report-card, .metric-card, .avoid-break');
-      tables.forEach(node => {
-        node.style.pageBreakInside = 'avoid';
-        node.style.breakInside = 'avoid';
-      });
+      if (typeof window.generateAndSavePdfGlobal === 'function') {
+        try {
+          await window.generateAndSavePdfGlobal(el, filename, activeClient, {
+            headerTitle: `IT SERVICIOS DE VENEZUELA, S.A. | Trazabilidad de Usuario — ${clientLabel} (${clientVersion})`
+          });
+          return;
+        } catch (pdfErr) {
+          console.warn('Fallo motor PDF paginado por bloques, intentando fallback:', pdfErr);
+        }
+      }
 
-      if (window.html2pdf) {
+      if (window.html2pdf && el.scrollHeight <= 6500) {
         const opt = {
           margin: [12, 10, 14, 10],
           filename: filename,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
-          jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait', compress: true },
-          pagebreak: { 
-            mode: ['avoid-all', 'css', 'legacy'], 
-            avoid: ['tr', 'th', 'td', 'h1', 'h2', 'h3', 'h4', '.report-card', '.metric-card', '.avoid-break', 'div[style*="border"]'] 
-          }
+          image: { type: 'jpeg', quality: 0.94 },
+          html2canvas: { scale: 1.5, useCORS: true, logging: false, scrollY: 0 },
+          jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait', compress: true }
         };
 
-        window.html2pdf().set(opt).from(el).toPdf().get('pdf').then(function(pdf) {
+        await window.html2pdf().set(opt).from(el).toPdf().get('pdf').then(function(pdf) {
           const totalPages = pdf.internal.getNumberOfPages();
           const pageWidth = pdf.internal.pageSize.getWidth();
           const pageHeight = pdf.internal.pageSize.getHeight();

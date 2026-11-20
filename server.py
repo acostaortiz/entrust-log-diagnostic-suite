@@ -337,7 +337,12 @@ def clear_active_session():
 
 def resolve_client_db(client_param=None):
     global ACTIVE_DB_PATH
-    
+
+    if client_param and str(client_param).strip().lower() not in ('all', 'general', 'none', ''):
+        cand_db = os.path.join(DATA_DIR, f"{get_client_slug(client_param)}_audit.db")
+        if os.path.exists(cand_db):
+            return cand_db
+
     # 1. Check ACTIVE_DB_PATH if set explicitly in current session
     if ACTIVE_DB_PATH and os.path.exists(ACTIVE_DB_PATH):
         return ACTIVE_DB_PATH
@@ -545,8 +550,10 @@ def parse_line_for_db(line, line_num):
         aud = re.search(r'AUD\d{3,4}', msg) or re.search(r'AUD\d{3,4}', line)
         ora = re.search(r'ORA-\d{5}', msg) or re.search(r'ORA-\d{5}', line)
 
-        if c520 or ora or (aud and aud.group(0).upper() in ('AUD150', 'AUD154', 'AUD6001', 'AUD6002')):
+        if c520 or ora or (aud and aud.group(0).upper() in ('AUD150', 'AUD154', 'AUD6002')):
             outcome = 'FAIL'
+        elif aud and aud.group(0).upper() in ('AUD6001', 'AUD2309', 'AUD155') and outcome != 'FAIL':
+            outcome = 'WARN'
 
         if c520:
             event_type = c520.group(0)
@@ -631,12 +638,12 @@ def index_batch_in_background(file_paths, client_name='Entrust Client', force_re
         upload_state['progress'] = 100
 
 
-def index_file_in_background(file_path, client_name='Entrust Client', append_mode=False):
+def index_file_in_background(file_path, client_name='Entrust Client', append_mode=False, server_tag=''):
     global upload_state, ACTIVE_DB_PATH
     client_slug = get_client_slug(client_name)
     db_name = f"{client_slug}_audit.db"
     target_db = os.path.join(DATA_DIR, db_name)
-    
+
     upload_state['clientName'] = client_name
     upload_state['clientSlug'] = client_slug
     upload_state['fileName'] = os.path.basename(file_path)
@@ -652,17 +659,12 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
                 os.remove(target_db)
             except Exception:
                 pass
-        
+
         init_db(target_db)
-        
+
         file_size = os.path.getsize(file_path)
         upload_state['fileSize'] = file_size
-        
-        conn = sqlite3.connect(target_db, timeout=30.0)
-        cur = conn.cursor()
-        cur.execute('PRAGMA synchronous = OFF;')
-        cur.execute('PRAGMA journal_mode = WAL;')
-        
+
         import collections
         user_counts = collections.Counter()
         ip_counts = collections.Counter()
@@ -671,42 +673,98 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
         hour_counts = collections.defaultdict(lambda: {'total': 0, 'errors': 0, 'info': 0})
         is_idaas = False
 
+        line_num = 0
+        prev_total = 0
+        prev_errors = 0
+        prev_warnings = 0
+        existing_files = []
+
+        if append_mode:
+            try:
+                conn_prev = sqlite3.connect(target_db, timeout=30.0)
+                cur_prev = conn_prev.cursor()
+                cur_prev.execute('SELECT COALESCE(MAX(line_num), 0) FROM logs')
+                line_num = int(cur_prev.fetchone()[0] or 0)
+                cur_prev.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='server_stats'")
+                if cur_prev.fetchone():
+                    cur_prev.execute("SELECT value FROM server_stats WHERE key='stats_json'")
+                    row_prev = cur_prev.fetchone()
+                    if row_prev and row_prev[0]:
+                        existing_stats = json.loads(row_prev[0]) or {}
+                        prev_total = int(existing_stats.get('totalLogs', line_num) or 0)
+                        prev_errors = int(existing_stats.get('totalErrors', 0) or 0)
+                        prev_warnings = int(existing_stats.get('totalWarnings', 0) or 0)
+                        existing_files = list(existing_stats.get('loadedFiles') or [])
+                        if 'idaas' in str(existing_stats.get('detectedPlatform', '')).lower():
+                            is_idaas = True
+                        for item in (existing_stats.get('topUsers') or []):
+                            if item.get('user'):
+                                user_counts[item['user']] += int(item.get('count', 0) or 0)
+                        for item in (existing_stats.get('topIps') or []):
+                            if item.get('ip'):
+                                ip_counts[item['ip']] += int(item.get('count', 0) or 0)
+                        for item in (existing_stats.get('topCodes') or []):
+                            if item.get('code'):
+                                code_counts[item['code']] += int(item.get('count', 0) or 0)
+                        for item in (existing_stats.get('eventTypes') or []):
+                            if item.get('code'):
+                                type_counts[item['code']] += int(item.get('count', 0) or 0)
+                        for b in (existing_stats.get('timelineBuckets') or []):
+                            bk = b.get('bucket')
+                            if bk:
+                                hour_counts[bk]['total'] += int(b.get('total', 0) or 0)
+                                hour_counts[bk]['errors'] += int(b.get('errors', 0) or 0)
+                                hour_counts[bk]['info'] += int(b.get('info', 0) or 0)
+                conn_prev.close()
+            except Exception as merge_err:
+                print(f"Aviso leyendo stats previos para merge: {merge_err}")
+
+        conn = sqlite3.connect(target_db, timeout=30.0)
+        cur = conn.cursor()
+        cur.execute('PRAGMA synchronous = OFF;')
+        cur.execute('PRAGMA journal_mode = WAL;')
+
         batch = []
         batch_size = 25000
-        line_num = 0
-        total_errors = 0
+        file_lines = 0
+        file_errors = 0
+        file_warnings = 0
         bytes_est = 0
-        
+
         for line in stream_lines_from_archive_or_file(file_path):
             line_str = line.strip()
             if not line_str:
                 continue
             line_num += 1
+            file_lines += 1
             bytes_est += len(line)
-            
+
             parsed = parse_line_for_db(line_str, line_num)
             if parsed:
-                outcome = parsed[4]
+                outcome = str(parsed[4] or '')
+                etype = str(parsed[3] or '')
                 is_err = 'FAIL' in outcome or 'ERR' in outcome
+                is_warn = (not is_err) and ('WARN' in outcome or etype.upper().startswith('AUD'))
                 if is_err:
-                    total_errors += 1
-                
+                    file_errors += 1
+                elif is_warn:
+                    file_warnings += 1
+
                 # In-memory streaming aggregation (0 cost)
                 user = parsed[2]
                 if user and user not in ['unknown', 'system', '']:
                     user_counts[user] += 1
-                
+
                 ip = parsed[6]
                 if ip and ip not in ['local', '127.0.0.1', '']:
                     ip_counts[ip] += 1
-                    
-                etype = parsed[3]
+
                 if etype:
                     type_counts[etype] += 1
                     code_counts[etype] += 1
                     if 'bulkidentityguard' in etype.lower():
                         is_idaas = True
-                        
+
                 t_str = parsed[1]
                 if t_str and len(t_str) >= 13:
                     h_bucket = t_str[:13]
@@ -715,50 +773,82 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
                         hour_counts[h_bucket]['errors'] += 1
                     else:
                         hour_counts[h_bucket]['info'] += 1
-                
+
                 batch.append(parsed)
-            
+
             if len(batch) >= batch_size:
-                cur.executemany('INSERT INTO logs VALUES (?,?,?,?,?,?,?,?)', batch)
+                cur.executemany('INSERT OR REPLACE INTO logs VALUES (?,?,?,?,?,?,?,?)', batch)
                 conn.commit()
                 batch = []
-                upload_state['linesProcessed'] = line_num
-                upload_state['totalErrors'] = total_errors
+                upload_state['linesProcessed'] = prev_total + file_lines
+                upload_state['totalErrors'] = prev_errors + file_errors
                 upload_state['progress'] = min(99, int((bytes_est / max(1, file_size)) * 100))
-        
+
         if batch:
-            cur.executemany('INSERT INTO logs VALUES (?,?,?,?,?,?,?,?)', batch)
+            cur.executemany('INSERT OR REPLACE INTO logs VALUES (?,?,?,?,?,?,?,?)', batch)
             conn.commit()
+
+        total_all = prev_total + file_lines
+        errors_all = prev_errors + file_errors
+        warnings_all = prev_warnings + file_warnings
+
+        clean_tag = (server_tag or '').strip() or 'Servidor Core SQLite'
+        clean_tag_plain = re.sub(r'^[^\w\.\-]+', '', clean_tag).strip() or clean_tag
+        node_key = 'srv_' + re.sub(r'[^a-z0-9]+', '_', clean_tag_plain.lower()).strip('_')
+        node_name = clean_tag if clean_tag.startswith('🖥️') else f'🖥️ {clean_tag_plain}'
+
+        file_entry = {
+            'name': os.path.basename(file_path),
+            'size': file_size,
+            'count': file_lines,
+            'sampleCount': file_lines,
+            'realErrors': file_errors,
+            'realWarnings': file_warnings,
+            'nodeKey': node_key,
+            'nodeName': node_name,
+            'serverTag': clean_tag_plain,
+            'client': client_name
+        }
+        loaded_files = [
+            f for f in existing_files
+            if not (f.get('name') == file_entry['name'] and (f.get('serverTag') or clean_tag_plain) == clean_tag_plain)
+        ]
+        loaded_files.append(file_entry)
 
         # Build instant cached stats object (< 0.1 ms)
         stats_obj = {
             'status': 'ready',
-            'totalLogs': line_num,
-            'totalErrors': total_errors,
-            'totalWarnings': 0,
-            'totalSuccess': line_num - total_errors,
-            'eventTypes': [{'code': k, 'count': v} for k, v in type_counts.most_common(20)],
-            'topCodes': [{'code': k, 'count': v} for k, v in code_counts.most_common(20)],
-            'topUsers': [{'user': k, 'count': v} for k, v in user_counts.most_common(20)],
-            'topIps': [{'ip': k, 'count': v} for k, v in ip_counts.most_common(20)],
-            'timelineBuckets': [{'bucket': k, 'total': v['total'], 'errors': v['errors'], 'info': v['info']} for k, v in sorted(hour_counts.items())[:100]],
+            'totalLogs': total_all,
+            'totalErrors': errors_all,
+            'totalWarnings': warnings_all,
+            'totalSuccess': max(0, total_all - errors_all),
+            'totalUniqueCodes': len(code_counts),
+            'totalUniqueUsers': len(user_counts),
+            'totalUniqueIps': len(ip_counts),
+            'eventTypes': [{'code': k, 'count': v} for k, v in type_counts.most_common(100)],
+            'topCodes': [{'code': k, 'count': v} for k, v in code_counts.most_common(100)],
+            'topUsers': [{'user': k, 'count': v} for k, v in user_counts.most_common(200)],
+            'topIps': [{'ip': k, 'count': v} for k, v in ip_counts.most_common(50)],
+            'timelineBuckets': [{'bucket': k, 'total': v['total'], 'errors': v['errors'], 'info': v['info']} for k, v in sorted(hour_counts.items())[:200]],
             'detectedPlatform': 'Entrust IDaaS Cloud' if is_idaas else 'Entrust IdentityGuard OnPremise',
             'activeDb': os.path.basename(target_db),
-            'client': client_name
+            'client': client_name,
+            'loadedFiles': loaded_files
         }
         cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
         cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_obj, ensure_ascii=False)))
+        cur.execute("DELETE FROM server_stats WHERE key='forensic_matrix_v2'")
         conn.commit()
         conn.close()
-        
+
         ACTIVE_DB_PATH = target_db
         save_active_session(target_db, client_name)
         upload_state['dbPath'] = target_db
         upload_state['status'] = 'ready'
         upload_state['progress'] = 100
-        upload_state['linesProcessed'] = line_num
-        upload_state['totalErrors'] = total_errors
-        print(f"Indexación completada: {line_num:,} registros, {total_errors:,} errores en {target_db}")
+        upload_state['linesProcessed'] = total_all
+        upload_state['totalErrors'] = errors_all
+        print(f"Indexación completada: {total_all:,} registros ({file_lines:,} en archivo), {errors_all:,} errores en {target_db}")
     except Exception as e:
         upload_state['status'] = 'error'
         upload_state['error'] = str(e)
@@ -1345,9 +1435,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             if chunk_index == total_chunks - 1:
                 append_mode = str(self.headers.get('X-Append-Mode', 'false')).lower() == 'true'
+                server_tag = urllib.parse.unquote(self.headers.get('X-Server-Tag', '')).strip()
                 upload_state['status'] = 'indexing'
                 upload_state['progress'] = 0
-                thread = threading.Thread(target=index_file_in_background, args=(temp_path, client_name, append_mode))
+                thread = threading.Thread(target=index_file_in_background, args=(temp_path, client_name, append_mode, server_tag))
                 thread.daemon = True
                 thread.start()
 
@@ -1646,8 +1737,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         try:
-            page = int(query.get('page', ['1'])[0])
-            limit = min(200, max(10, int(query.get('limit', ['50'])[0])))
+            page = max(1, int(query.get('page', ['1'])[0]))
+            limit = min(25000, max(10, int(query.get('limit', ['50'])[0])))
             offset = (page - 1) * limit
             search = query.get('search', [''])[0].strip()
             outcome = query.get('outcome', ['ALL'])[0].strip().upper()
@@ -1657,8 +1748,14 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             params = []
 
             if outcome in ['FAIL', 'ERROR']:
-                conditions.append('event_outcome LIKE ?')
-                params.append('%FAIL%')
+                conditions.append('(event_outcome LIKE ? OR event_outcome LIKE ?)')
+                params.extend(['%FAIL%', '%ERR%'])
+            elif outcome in ['WARN', 'WARNING']:
+                conditions.append("(event_outcome LIKE ? OR event_type IN ('AUD6001', 'AUD2309', 'AUD155'))")
+                params.append('%WARN%')
+            elif outcome == 'AUD':
+                conditions.append('event_type LIKE ?')
+                params.append('AUD%')
             elif outcome in ['SUCCESS', 'INFO']:
                 conditions.append('event_outcome = ?')
                 params.append('SUCCESS')
@@ -1668,9 +1765,9 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 params.append(event_type)
 
             if search:
-                conditions.append('(message LIKE ? OR subject_name LIKE ? OR source_ip LIKE ? OR event_type LIKE ?)')
+                conditions.append('(message LIKE ? OR subject_name LIKE ? OR source_ip LIKE ? OR event_type LIKE ? OR raw LIKE ?)')
                 term = f'%{search}%'
-                params.extend([term, term, term, term])
+                params.extend([term, term, term, term, term])
 
             where_clause = ('WHERE ' + ' AND '.join(conditions)) if conditions else ''
 
@@ -1689,18 +1786,25 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             resolved_client_name = client_param or os.path.basename(db).replace('_audit.db', '').replace('_', ' ').title()
             logs = []
             for r in rows:
-                is_err = 'FAIL' in (r[4] or '')
+                etype = str(r[3] or '')
+                outcome_str = str(r[4] or '')
+                msg_str = str(r[5] or '')
+                is_err = ('FAIL' in outcome_str.upper() or 'ERR' in outcome_str.upper() or etype in ('AUD150', 'AUD154', 'AUD6002') or etype.startswith('520') or etype.startswith('ORA-'))
+                is_warn = (not is_err) and ('WARN' in outcome_str.upper() or etype in ('AUD6001', 'AUD2309', 'AUD155'))
+                level = 'ERROR' if is_err else ('WARN' if is_warn else 'INFO')
+                svc = 'IG.AUDIT' if etype.upper().startswith('AUD') else ('IDaaS Cloud' if 'bulkidentityguard' in etype.lower() else 'IG.SYSTEM')
+                display_msg = msg_str if (f'[{etype}]' in msg_str or not etype) else f'[{etype}] {msg_str}'
                 logs.append({
                     'id': f'log-{r[0]}',
                     'lineNum': r[0],
                     'timestamp': r[1],
                     'user': r[2],
-                    'service': 'Administration Portal',
-                    'entrustCode': r[3],
-                    'type': r[3],
-                    'level': 'ERROR' if is_err else 'INFO',
-                    'outcome': r[4],
-                    'message': f'[{r[3]}] {r[5]} (Outcome: {r[4]})',
+                    'service': svc,
+                    'entrustCode': etype,
+                    'type': etype,
+                    'level': level,
+                    'outcome': outcome_str,
+                    'message': display_msg,
                     'clientIp': r[6],
                     'raw': r[7],
                     'client': resolved_client_name,
