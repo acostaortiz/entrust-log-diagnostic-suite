@@ -211,11 +211,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicialización de datos de sesión: Priorizar sesión local IndexedDB saneada antes de consultar servidor
   (async () => {
     try {
+      await new Promise(r => setTimeout(r, 0));
       resetSession(false);
       await loadClientProfiles();
+      await new Promise(r => setTimeout(r, 0));
       if (typeof window.loadActiveClientConfigGlobal === 'function') {
         await window.loadActiveClientConfigGlobal(state.activeClientId);
       }
+      await new Promise(r => setTimeout(r, 0));
       if (window.notesEngine && typeof window.notesEngine.loadNotes === 'function') {
         window.notesEngine.loadNotes().then(() => window.notesEngine.renderPortal('notes-portal-container')).catch(() => {});
       }
@@ -944,8 +947,10 @@ document.addEventListener('DOMContentLoaded', () => {
     renderClientConfigPreview(state.activeClientConfig);
     if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
     if (typeof renderLoadedFilesDrawer === 'function') renderLoadedFilesDrawer();
-    if (typeof window.renderFullClientConfigExplorer === 'function') window.renderFullClientConfigExplorer();
-    if (window.certAuditorEngine && typeof window.certAuditorEngine.render === 'function') {
+    if (document.getElementById('tab-topology')?.classList.contains('active') && typeof window.renderFullClientConfigExplorer === 'function') {
+      window.renderFullClientConfigExplorer();
+    }
+    if (document.getElementById('tab-certificates')?.classList.contains('active') && window.certAuditorEngine && typeof window.certAuditorEngine.render === 'function') {
       window.certAuditorEngine.render('certificates-table-container', state.logs, state.activeClientConfig);
     }
   };
@@ -1490,10 +1495,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.13',
-    build: 601,
+    version: 'v3.8.14',
+    build: 602,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'ANTI-FREEZE-STRIDE-DEFER-STARTUP-3813',
+    gitCommit: 'NON-BLOCKING-BOOT-LAZY-TABS-3814',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -7018,17 +7023,19 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     updateTrendChart();
     updateSeverityChart();
     updateOverviewWidgets();
-    setTimeout(() => {
-      try {
-        if (window.complianceAuditorEngine) {
-          window.complianceAuditorEngine.render('compliance-auditor-main-container', state.logs || [], getActiveClientProfile());
-        }
-        if (window.threatRadarEngine) {
-          window.threatRadarEngine.render('threat-radar-overview-container', state.filteredLogs || state.logs);
-          window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
-        }
-      } catch (e) {}
-    }, 50);
+    if ((state.logs || []).length > 0) {
+      setTimeout(() => {
+        try {
+          if (window.complianceAuditorEngine) {
+            window.complianceAuditorEngine.render('compliance-auditor-main-container', state.logs || [], getActiveClientProfile());
+          }
+          if (window.threatRadarEngine) {
+            window.threatRadarEngine.render('threat-radar-overview-container', state.filteredLogs || state.logs);
+            window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
+          }
+        } catch (e) {}
+      }, 50);
+    }
   }
 
   function initCharts() {
@@ -7672,8 +7679,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     // Resetear Gráficos
     try {
       if (state.charts.severity) {
-        state.charts.severity.data.datasets[0].data = [1, 0, 0, 0];
-        state.charts.severity.update();
+        state.charts.severity.data.datasets[0].data = [0, 0, 0, 0, 0];
+        state.charts.severity.update('none');
       }
       if (state.charts.trend) {
         state.charts.trend.data.labels = ['Inicio'];
