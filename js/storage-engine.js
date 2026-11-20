@@ -71,8 +71,8 @@ class StorageEngine {
     const rawLogs = isObjPayload
       ? (Array.isArray(logsOrPayload.logs) ? logsOrPayload.logs : [])
       : (Array.isArray(logsOrPayload) ? logsOrPayload : []);
-    // Compactar logs guardados en IndexedDB (máx 50,000 muestras ligeras sin objetos diagnostic pesados)
-    const compactLogs = rawLogs.slice(0, 50000).map(l => ({
+    // Compactar logs guardados en IndexedDB (máx 15,000 muestras ligeras para arranque instantáneo sin bloquear Chrome)
+    const compactLogs = rawLogs.slice(0, 15000).map(l => ({
       lineNum: l.lineNum,
       timestamp: l.timestamp,
       level: l.level,

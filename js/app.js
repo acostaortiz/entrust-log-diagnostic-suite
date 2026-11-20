@@ -1490,10 +1490,10 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.12',
-    build: 600,
+    version: 'v3.8.13',
+    build: 601,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'CROSS-BROWSER-CLIENT-SYNC-GUARD-3812',
+    gitCommit: 'ANTI-FREEZE-STRIDE-DEFER-STARTUP-3813',
     gitBranch: 'main',
     buildDate: '2026-11-07 17:30',
     engineer: 'Tomás Acosta',
@@ -7018,14 +7018,17 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     updateTrendChart();
     updateSeverityChart();
     updateOverviewWidgets();
-    if (window.complianceAuditorEngine) {
-      window.complianceAuditorEngine.render('compliance-auditor-main-container', state.logs || [], getActiveClientProfile());
-    }
-
-    if (window.threatRadarEngine) {
-      window.threatRadarEngine.render('threat-radar-overview-container', state.filteredLogs || state.logs);
-      window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
-    }
+    setTimeout(() => {
+      try {
+        if (window.complianceAuditorEngine) {
+          window.complianceAuditorEngine.render('compliance-auditor-main-container', state.logs || [], getActiveClientProfile());
+        }
+        if (window.threatRadarEngine) {
+          window.threatRadarEngine.render('threat-radar-overview-container', state.filteredLogs || state.logs);
+          window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
+        }
+      } catch (e) {}
+    }, 50);
   }
 
   function initCharts() {
@@ -7328,14 +7331,16 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         warnData.push(bWarn);
       });
     } else if (activeLogs.length > 0) {
-      // Agrupación temporal real por timestamps dentro de la ventana activa (16 intervalos)
+      // Agrupación temporal real por timestamps dentro de la ventana activa (muestreo uniforme máx 5000 pts para evitar congelamiento)
       const timed = [];
-      for (let i = 0; i < activeLogs.length; i++) {
+      const stride = Math.max(1, Math.floor(activeLogs.length / 5000));
+      for (let i = 0; i < activeLogs.length; i += stride) {
         const l = activeLogs[i];
         const ts = l.timestamp || l.time;
         const ms = ts ? new Date(String(ts).replace(',', '.')).getTime() : NaN;
         if (!isNaN(ms)) timed.push({ ms, log: l });
       }
+      const strideScale = scaleFactor * stride;
 
       if (timed.length >= 2) {
         timed.sort((a, b) => a.ms - b.ms);
@@ -7363,9 +7368,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           const mm = String(d.getMinutes()).padStart(2, '0');
           const dd = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
           labels.push(`${dd} ${hh}:${mm}`);
-          totalData.push(Math.round(bTotal[b] * scaleFactor));
-          errorData.push(Math.round(bErr[b] * scaleFactor));
-          warnData.push(Math.round(bWarn[b] * scaleFactor));
+          totalData.push(Math.round(bTotal[b] * strideScale));
+          errorData.push(Math.round(bErr[b] * strideScale));
+          warnData.push(Math.round(bWarn[b] * strideScale));
         }
       } else {
         const numBuckets = Math.min(12, Math.max(2, activeLogs.length));
