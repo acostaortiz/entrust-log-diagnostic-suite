@@ -1498,12 +1498,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.8.18',
-    build: 606,
+    version: 'v3.9.0',
+    build: 607,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'ORG-NAME-AND-520-USERS-FIX-3818',
+    gitCommit: 'PCAP-WIRESHARK-ANALYZER-390',
     gitBranch: 'main',
-    buildDate: '2026-11-20 16:30',
+    buildDate: '2026-11-23 15:00',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -2158,6 +2158,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (targetTab === 'users' && window.UserTraceReport && typeof window.UserTraceReport.renderTab === 'function') {
       window.UserTraceReport.renderTab('tab-users-main-container');
+    }
+    if (targetTab === 'pcap' && window.PcapAnalyzer && typeof window.PcapAnalyzer.renderTab === 'function') {
+      window.PcapAnalyzer.renderTab('tab-pcap-main-container');
     }
     if (targetTab === 'radar' && window.threatRadarEngine) {
       window.threatRadarEngine.render('threat-radar-main-container', state.filteredLogs || state.logs);
@@ -9998,14 +10001,24 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const files = Array.from(e.target.files);
       if (files.length === 0) return;
 
+      const isPcapFile = (f) => /\.(pcapng|pcap|cap|dmp)(\.gz)?$/i.test((f.name || '').toLowerCase());
+      const pcapFiles = files.filter(isPcapFile);
+      const nonPcapFiles = files.filter(f => !isPcapFile(f));
+
+      if (pcapFiles.length > 0 && window.PcapAnalyzer && typeof window.PcapAnalyzer.uploadAndAnalyzeFile === 'function') {
+        switchTab('pcap');
+        await window.PcapAnalyzer.uploadAndAnalyzeFile(pcapFiles[0]);
+        if (nonPcapFiles.length === 0) return;
+      }
+
       const isSupportedFile = (f) => {
         const fn = (f.name || '').toLowerCase();
         return /\.(log|txt|csv|json|out|tsv)$/i.test(fn) || /\.(log|out)\.\d+$/i.test(fn) || /\.\d{4}-\d{2}-\d{2}$/.test(fn);
       };
-      const supportedFiles = files.filter(isSupportedFile);
-      const skippedFiles = files.filter(f => !isSupportedFile(f));
+      const supportedFiles = nonPcapFiles.filter(isSupportedFile);
+      const skippedFiles = nonPcapFiles.filter(f => !isSupportedFile(f));
       skippedFiles.forEach(sf => {
-        showAnalysisStatus(false, `⚠️ Archivo omitido: ${sf.name}`, 'Solo se procesan logs (.log, rotados .log.N, .out, .txt, .csv, .json).');
+        showAnalysisStatus(false, `⚠️ Archivo omitido: ${sf.name}`, 'Solo se procesan logs (.log, .log.N, .out, .txt, .csv, .json) o capturas PCAP (.pcap, .pcapng, .cap).');
       });
       if (supportedFiles.length === 0) return;
 

@@ -15,6 +15,10 @@ import tarfile
 import bz2
 import io
 from html.parser import HTMLParser
+try:
+    import pcap_analyzer
+except Exception:
+    pcap_analyzer = None
 
 PORT = 8085
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -37,6 +41,17 @@ upload_state = {
     'linesProcessed': 0,
     'totalErrors': 0,
     'totalWarnings': 0,
+    'dbPath': None,
+    'error': None
+}
+
+pcap_upload_state = {
+    'status': 'idle',
+    'fileName': '',
+    'clientName': 'Entrust General',
+    'clientSlug': 'general',
+    'packetsProcessed': 0,
+    'bytesProcessed': 0,
     'dbPath': None,
     'error': None
 }
@@ -1043,6 +1058,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_delete_note()
         elif path == '/api/upload-manual':
             self.handle_upload_manual()
+        elif path == '/api/pcap-upload':
+            self.handle_pcap_upload()
+        elif path == '/api/pcap-analyze-server-file':
+            self.handle_pcap_analyze_server_file()
         elif path == '/api/clear-session':
             clear_active_session()
             self.send_json({'success': True, 'activeDb': None})
@@ -1095,6 +1114,16 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_get_notes(query)
         elif path == '/api/custom-manuals':
             self.handle_list_custom_manuals()
+        elif path == '/api/pcap-status':
+            self.send_json(pcap_upload_state)
+        elif path == '/api/pcap-summary':
+            self.handle_pcap_summary(query)
+        elif path == '/api/pcap-packets':
+            self.handle_pcap_packets(query)
+        elif path == '/api/pcap-correlate':
+            self.handle_pcap_correlate(query)
+        elif path == '/api/pcap-export-csv':
+            self.handle_pcap_export_csv(query)
         elif path == '/api/manuals-status':
             if not MANUALS_INDEX_BUILT and not MANUALS_INDEX_BUILDING:
                 threading.Thread(target=build_manuals_index, daemon=True).start()
@@ -1491,7 +1520,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     continue
                 try:
                     sz = os.path.getsize(full_p)
-                    if f.endswith('.db') and sz > 0:
+                    if f.endswith('.db') and sz > 0 and not f.startswith('pcap_'):
                         records = 0
                         errors = 0
                         try:
@@ -1513,6 +1542,18 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                             'sizeGb': round(sz / (1024 * 1024 * 1024), 2),
                             'records': records,
                             'errors': errors
+                        })
+                    elif re.search(r'\.(pcapng|pcap|cap|dmp)(\.gz)?$', f, re.IGNORECASE):
+                        found_files.append({
+                            'name': f,
+                            'path': full_p,
+                            'type': 'pcap',
+                            'isPcap': True,
+                            'sizeBytes': sz,
+                            'sizeMb': round(sz / (1024 * 1024), 2),
+                            'sizeGb': round(sz / (1024 * 1024 * 1024), 2),
+                            'records': 0,
+                            'errors': 0
                         })
                     elif re.search(r'\.(csv|log|txt|tsv|out|json)(\.\d+)?$', f, re.IGNORECASE):
                         found_files.append({
@@ -2758,6 +2799,183 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             conn.close()
             self.send_json(result_payload)
+        except Exception as e:
+            self.send_json({'error': str(e), 'status': 'error'}, status=500)
+
+    def _resolve_pcap_db(self, client_param=None):
+        slug = get_client_slug(client_param) if client_param else 'general'
+        cand = os.path.join(DATA_DIR, f'pcap_{slug}.db')
+        if os.path.exists(cand):
+            return cand
+        if not client_param and ACTIVE_DB_PATH:
+            active_base = os.path.basename(ACTIVE_DB_PATH).replace('_audit.db', '')
+            cand2 = os.path.join(DATA_DIR, f'pcap_{active_base}.db')
+            if os.path.exists(cand2):
+                return cand2
+        return cand
+
+    def _run_pcap_job_in_background(self, file_path, client_name):
+        global pcap_upload_state
+        if pcap_analyzer is None:
+            pcap_upload_state['status'] = 'error'
+            pcap_upload_state['error'] = 'Módulo pcap_analyzer no disponible en el servidor.'
+            return
+        client_slug = get_client_slug(client_name)
+        target_pcap_db = os.path.join(DATA_DIR, f'pcap_{client_slug}.db')
+        pcap_upload_state['status'] = 'analyzing'
+        pcap_upload_state['fileName'] = os.path.basename(file_path)
+        pcap_upload_state['clientName'] = client_name
+        pcap_upload_state['clientSlug'] = client_slug
+        pcap_upload_state['packetsProcessed'] = 0
+        pcap_upload_state['bytesProcessed'] = 0
+        pcap_upload_state['error'] = None
+        pcap_upload_state['dbPath'] = target_pcap_db
+
+        def _on_prog(pkts, bts):
+            pcap_upload_state['packetsProcessed'] = pkts
+            pcap_upload_state['bytesProcessed'] = bts
+
+        try:
+            summary = pcap_analyzer.analyze_pcap_to_sqlite(file_path, target_pcap_db, progress_callback=_on_prog)
+            pcap_upload_state['packetsProcessed'] = summary.get('totalPackets', 0)
+            pcap_upload_state['bytesProcessed'] = summary.get('totalBytes', 0)
+            pcap_upload_state['status'] = 'ready'
+        except Exception as e:
+            pcap_upload_state['status'] = 'error'
+            pcap_upload_state['error'] = str(e)
+            print(f'Error analizando PCAP {file_path}: {e}')
+
+    def handle_pcap_upload(self):
+        try:
+            if pcap_analyzer is None:
+                self.send_json({'error': 'Módulo pcap_analyzer no disponible'}, status=500)
+                return
+            content_length = int(self.headers.get('Content-Length', 0))
+            if content_length > 25 * 1024 * 1024:
+                self.send_json({'error': 'Chunk PCAP excede el límite máximo permitido de 25 MB'}, status=413)
+                return
+            chunk_data = self.rfile.read(content_length)
+            chunk_index = int(self.headers.get('X-Chunk-Index', 0))
+            total_chunks = int(self.headers.get('X-Total-Chunks', 1))
+            file_name = urllib.parse.unquote(self.headers.get('X-File-Name', 'capture.pcap'))
+            client_name = urllib.parse.unquote(self.headers.get('X-Client-Name', 'Entrust Client'))
+
+            safe_file_name = re.sub(r'[^a-zA-Z0-9_\.-]', '_', os.path.basename(file_name))
+            if not safe_file_name or safe_file_name.lower().endswith(self.BLOCKED_EXTENSIONS):
+                self.send_json({'error': 'Extensión de archivo bloqueada por directiva de seguridad'}, status=403)
+                return
+            temp_path = os.path.join(UPLOADS_DIR, safe_file_name)
+            mode = 'wb' if chunk_index == 0 else 'ab'
+            with open(temp_path, mode) as f:
+                f.write(chunk_data)
+
+            pct = int(((chunk_index + 1) / max(1, total_chunks)) * 100)
+            pcap_upload_state['fileName'] = file_name
+            pcap_upload_state['clientName'] = client_name
+            pcap_upload_state['clientSlug'] = get_client_slug(client_name)
+            pcap_upload_state['status'] = 'uploading'
+            pcap_upload_state['error'] = None
+
+            if chunk_index >= total_chunks - 1:
+                pcap_upload_state['status'] = 'analyzing'
+                thread = threading.Thread(target=self._run_pcap_job_in_background, args=(temp_path, client_name))
+                thread.daemon = True
+                thread.start()
+
+            self.send_json({'success': True, 'chunkIndex': chunk_index, 'progress': pct})
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
+
+    def handle_pcap_analyze_server_file(self):
+        try:
+            if pcap_analyzer is None:
+                self.send_json({'error': 'Módulo pcap_analyzer no disponible'}, status=500)
+                return
+            content_length = int(self.headers.get('Content-Length', 0))
+            body_data = self.rfile.read(content_length).decode('utf-8') if content_length > 0 else '{}'
+            payload = json.loads(body_data) if body_data else {}
+            raw_path = str(payload.get('filePath', '')).strip()
+            client_name = str(payload.get('clientName', 'Banco Mercantil C.A.')).strip() or 'Banco Mercantil C.A.'
+            safe_basename = os.path.basename(raw_path)
+            if not safe_basename or safe_basename.lower().endswith(self.BLOCKED_EXTENSIONS):
+                self.send_json({'error': 'Nombre o extensión de captura inválida.'}, status=403)
+                return
+
+            resolved = None
+            for d in (UPLOADS_DIR, DATA_DIR, BASE_DIR):
+                cand = os.path.abspath(os.path.join(d, safe_basename))
+                if cand.startswith(os.path.abspath(d) + os.sep) and os.path.isfile(cand):
+                    resolved = cand
+                    break
+            if not resolved:
+                self.send_json({'error': f'Archivo PCAP no encontrado en uploads/data: {safe_basename}'}, status=404)
+                return
+
+            thread = threading.Thread(target=self._run_pcap_job_in_background, args=(resolved, client_name))
+            thread.daemon = True
+            thread.start()
+            self.send_json({'success': True, 'status': 'analyzing', 'fileName': safe_basename})
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
+
+    def handle_pcap_summary(self, query):
+        if pcap_analyzer is None:
+            self.send_json({'error': 'Módulo pcap_analyzer no disponible', 'status': 'error'}, status=500)
+            return
+        client_param = query.get('client', [None])[0]
+        pcap_db = self._resolve_pcap_db(client_param)
+        try:
+            self.send_json(pcap_analyzer.query_pcap_summary(pcap_db))
+        except Exception as e:
+            self.send_json({'error': str(e), 'status': 'error'}, status=500)
+
+    def handle_pcap_packets(self, query):
+        if pcap_analyzer is None:
+            self.send_json({'error': 'Módulo pcap_analyzer no disponible', 'status': 'error'}, status=500)
+            return
+        client_param = query.get('client', [None])[0]
+        page = max(1, int(query.get('page', ['1'])[0]))
+        limit = min(500, max(10, int(query.get('limit', ['100'])[0])))
+        q_str = query.get('q', [''])[0].strip()
+        proto = query.get('proto', ['ALL'])[0].strip()
+        severity = query.get('severity', ['ALL'])[0].strip()
+        flow = query.get('flow', [''])[0].strip()
+        pcap_db = self._resolve_pcap_db(client_param)
+        try:
+            self.send_json(pcap_analyzer.query_pcap_packets(pcap_db, page=page, limit=limit, q=q_str, proto=proto, severity=severity, flow=flow))
+        except Exception as e:
+            self.send_json({'error': str(e), 'status': 'error', 'packets': []}, status=500)
+
+    def handle_pcap_correlate(self, query):
+        if pcap_analyzer is None:
+            self.send_json({'error': 'Módulo pcap_analyzer no disponible', 'status': 'error'}, status=500)
+            return
+        client_param = query.get('client', [None])[0]
+        window_sec = max(1, min(300, int(query.get('window', ['5'])[0])))
+        pcap_db = self._resolve_pcap_db(client_param)
+        logs_db = resolve_client_db(client_param)
+        try:
+            self.send_json(pcap_analyzer.correlate_pcap_with_entrust_logs(pcap_db, logs_db, window_sec=window_sec))
+        except Exception as e:
+            self.send_json({'error': str(e), 'status': 'error', 'correlations': []}, status=500)
+
+    def handle_pcap_export_csv(self, query):
+        if pcap_analyzer is None:
+            self.send_json({'error': 'Módulo pcap_analyzer no disponible'}, status=500)
+            return
+        client_param = query.get('client', [None])[0]
+        exp_type = query.get('type', ['anomalies'])[0].strip().lower()
+        pcap_db = self._resolve_pcap_db(client_param)
+        try:
+            csv_bytes = pcap_analyzer.export_pcap_csv(pcap_db, export_type=exp_type)
+            slug = get_client_slug(client_param or 'capture')
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/csv; charset=utf-8')
+            self.send_header('Content-Disposition', f'attachment; filename="PCAP_{exp_type}_{slug}.csv"')
+            self.send_header('Content-Length', str(len(csv_bytes)))
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(csv_bytes)
         except Exception as e:
             self.send_json({'error': str(e), 'status': 'error'}, status=500)
 

@@ -1,11 +1,11 @@
 {
   "appName": "IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise",
-  "version": "v3.8.18",
-  "build": 606,
+  "version": "v3.9.0",
+  "build": 607,
   "releaseChannel": "Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)",
-  "gitCommit": "ORG-NAME-AND-520-USERS-FIX-3818",
+  "gitCommit": "PCAP-WIRESHARK-ANALYZER-390",
   "gitBranch": "main",
-  "buildDate": "2026-11-20 16:30",
+  "buildDate": "2026-11-23 15:00",
   "engineer": "Tomás Acosta",
   "organization": "IT Servicios de Venezuela, S.A.",
   "features": [
