@@ -1341,6 +1341,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             if (/^520\d{4}$/.test(code)) kind = 'ERROR_520';
             else if (/^AUD\d+/i.test(code) || /AUDIT/i.test(code)) kind = 'AUDIT_AUD';
             else if (/^ORA-/i.test(code) || /SQL|JDBC/i.test(code)) kind = 'DATABASE_ORA';
+            else if (/^(?:TOMCAT_|JVM_)/i.test(code)) kind = 'TOMCAT_JVM';
             else if (/bulkidentityguard|migration|idaas/i.test(code)) kind = 'IDAAS_MIGRATION';
             codeMap[code] = {
               code,
@@ -1436,22 +1437,52 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       const migErrs = codeMatrix.filter(c => c.kind === 'IDAAS_MIGRATION').reduce((a, b) => a + b.failCount, 0);
       const err520 = codeMatrix.filter(c => c.kind === 'ERROR_520').reduce((a, b) => a + b.failCount, 0);
       const audWarns = codeMatrix.filter(c => c.kind === 'AUDIT_AUD').reduce((a, b) => a + b.failCount, 0);
+      const tomcatJvmErrs = codeMatrix.filter(c => c.kind === 'TOMCAT_JVM').reduce((a, b) => a + b.failCount, 0);
       const totalErrs = logs.filter(l => l.level === 'ERROR' || l.level === 'CRITICAL' || l.level === 'WARN').length;
+
+      const tcCount = (re) => logs.filter(l => re.test(`${l.entrustCode || ''} ${l.message || ''}`)).length;
+      const tcOom = tcCount(/\bJVM_OOM\b|OutOfMemoryError|Java heap space/i);
+      const tcSsl = tcCount(/\bTOMCAT_SSL_TLS\b|SSLHandshakeException|PKIX path building failed/i);
+      const tcLdap = tcCount(/\bTOMCAT_LDAP_ERROR\b|LDAPException|javax\.naming\.CommunicationException/i);
+      const tcDeploy = tcCount(/\bTOMCAT_DEPLOY_ERROR\b|LifecycleException|Error listenerStart/i);
+      const tcNet = tcCount(/\bTOMCAT_NETWORK_ERROR\b|BindException|ConnectException|SocketTimeoutException/i);
+      const tcPool = tcCount(/\bTOMCAT_THREAD_POOL\b|StuckThreadDetectionValve|RejectedExecutionException/i);
+      const tcAbort = tcCount(/\bTOMCAT_CLIENT_ABORT\b|ClientAbortException|Broken pipe/i);
+      const tcTotalErrs = logs.filter(l => /^(?:JVM_OOM|TOMCAT_(?:SSL_TLS|LDAP_ERROR|DEPLOY_ERROR|NETWORK_ERROR|JAVA_EXCEPTION|SEVERE))$/.test(l.entrustCode || '')).length;
+      const tomcatHealth = {
+        status: (tcOom + tcSsl + tcDeploy + tcNet + tcLdap) > 0 ? 'CRITICAL' : (tcTotalErrs > 0 ? 'WARNING' : 'HEALTHY'),
+        totalTomcatIncidents: logs.filter(l => /^(?:TOMCAT_|JVM_)/.test(l.entrustCode || '')).length,
+        totalTomcatErrors: tcTotalErrs,
+        clientAbortsIgnored: tcAbort,
+        indicators: [
+          { code: 'JVM_OOM (Heap / Metaspace / GC)', count: tcOom, severity: tcOom > 0 ? 'CRÍTICO' : 'OK' },
+          { code: 'TOMCAT_SSL_TLS (Keystore / PKIX / Handshake)', count: tcSsl, severity: tcSsl > 0 ? 'CRÍTICO' : 'OK' },
+          { code: 'TOMCAT_LDAP_ERROR (Directorio JNDI / LDAPS)', count: tcLdap, severity: tcLdap > 0 ? 'ALTO' : 'OK' },
+          { code: 'TOMCAT_DEPLOY_ERROR (Lifecycle / listenerStart / JARs)', count: tcDeploy, severity: tcDeploy > 0 ? 'CRÍTICO' : 'OK' },
+          { code: 'TOMCAT_NETWORK_ERROR (Bind / SocketTimeout / Connect)', count: tcNet, severity: tcNet > 0 ? 'ALTO' : 'OK' },
+          { code: 'TOMCAT_THREAD_POOL (StuckThread / maxThreads)', count: tcPool, severity: tcPool > 0 ? 'ADVERTENCIA' : 'OK' },
+          { code: 'TOMCAT_CLIENT_ABORT (Cierre cliente HTTP, no error servidor)', count: tcAbort, severity: 'INFO' }
+        ],
+        evidenceSamples: []
+      };
 
       const postMortem = {
         startTime: logs[0]?.timestamp || 'N/A',
         endTime: logs[logs.length - 1]?.timestamp || 'N/A',
         peakHours: [],
-        primaryVector: totalDbInc > Math.max(migErrs, err520, audWarns) && totalDbInc > 0
-          ? 'INFRAESTRUCTURA / BASE DE DATOS (Oracle / JDBC)'
-          : (migErrs > 0 && migErrs >= err520 ? 'COLISIÓN DE MIGRACIÓN / APROVISIONAMIENTO (IDaaS / BulkIG)' : 'AUTENTICACIÓN, RETOS Y SEGURIDAD ENTRUST IDENTITYGUARD ONPREMISE [AUD / 520xxx]'),
-        executiveVerdict: `Análisis pericial Entrust IdentityGuard OnPremise sobre ${((typeof window.getConsolidatedMetricsGlobal === 'function' ? window.getConsolidatedMetricsGlobal().totalLogs : 0) || window.appState?.globalStreamMetrics?.totalLogs || logs.length).toLocaleString()} registros y ${allUsers.length.toLocaleString()} usuarios nominales validados (0 usuarios ficticios). Alertas de Auditoría [AUD6001/AUD6002]: ${audWarns}. Errores 520xxx: ${err520}. Incidentes de Base de Datos: ${totalDbInc}.`,
+        primaryVector: tomcatJvmErrs > Math.max(totalDbInc, migErrs, err520, audWarns) && tomcatJvmErrs > 0
+          ? 'SERVIDOR DE APLICACIONES TOMCAT / JVM (catalina.out)'
+          : (totalDbInc > Math.max(migErrs, err520, audWarns) && totalDbInc > 0
+            ? 'INFRAESTRUCTURA / BASE DE DATOS (Oracle / JDBC)'
+            : (migErrs > 0 && migErrs >= err520 ? 'COLISIÓN DE MIGRACIÓN / APROVISIONAMIENTO (IDaaS / BulkIG)' : 'AUTENTICACIÓN, RETOS Y SEGURIDAD ENTRUST IDENTITYGUARD ONPREMISE [AUD / 520xxx]')),
+        executiveVerdict: `Análisis pericial Entrust IdentityGuard OnPremise sobre ${((typeof window.getConsolidatedMetricsGlobal === 'function' ? window.getConsolidatedMetricsGlobal().totalLogs : 0) || window.appState?.globalStreamMetrics?.totalLogs || logs.length).toLocaleString()} registros y ${allUsers.length.toLocaleString()} usuarios nominales validados (0 usuarios ficticios). Alertas de Auditoría [AUD6001/AUD6002]: ${audWarns}. Errores 520xxx: ${err520}. Incidentes de Base de Datos: ${totalDbInc}. Incidentes Tomcat/JVM: ${tomcatJvmErrs}.`,
         breakdown: {
           databaseIncidents: totalDbInc,
+          tomcatJvmErrors: tomcatJvmErrs,
           migrationCollisions: migErrs,
           auditAlertsCount: audWarns,
           authentication520Errors: err520,
-          otherSystemErrors: Math.max(0, totalErrs - (totalDbInc + migErrs + err520))
+          otherSystemErrors: Math.max(0, totalErrs - (totalDbInc + tomcatJvmErrs + migErrs + err520))
         },
         officialPortals: [
           { name: 'Entrust TrustedCare Portal (Knowledge Base & Support Cases)', url: 'https://trustedcare.entrust.com', description: 'Portal oficial de soporte técnico Entrust, boletines de seguridad, parches de IdentityGuard OnPremise y resolución de códigos ORA / 520xxx / AUD.' },
@@ -1459,7 +1490,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         ]
       };
 
-      return { patternClusters, codeMatrix, dbHealth, postMortem };
+      return { patternClusters, codeMatrix, dbHealth, tomcatHealth, postMortem };
     },
 
     async renderTab(containerId, forceRefresh = false) {

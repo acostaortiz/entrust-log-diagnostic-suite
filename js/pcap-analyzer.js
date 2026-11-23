@@ -68,36 +68,57 @@
 
       const clientName = getActiveClientName();
       const qCli = encodeURIComponent(clientName);
-      let backendOffline = false;
+      let backendState = 'ok'; // 'ok' | 'stale_server' | 'static_server'
+      let runningVersion = '';
 
       try {
-        const [sumRes, filesRes] = await Promise.all([
-          fetch(`/api/pcap-summary?client=${qCli}`),
-          fetch('/api/list-server-files')
+        const [sumRes, filesRes, verRes] = await Promise.all([
+          fetch(`/api/pcap-summary?client=${qCli}`).catch(() => null),
+          fetch('/api/list-server-files').catch(() => null),
+          fetch('/api/version').catch(() => null)
         ]);
-        if (sumRes.ok) {
-          this.summaryData = await sumRes.json();
-        } else if (sumRes.status === 404) {
-          backendOffline = true;
+        let verOk = false;
+        if (verRes && verRes.ok) {
+          verOk = true;
+          try {
+            const vd = await verRes.json();
+            runningVersion = (vd && vd.version && vd.version.version) ? String(vd.version.version) : '';
+          } catch (e) {}
         }
-        if (filesRes.ok) {
+        if (sumRes && sumRes.ok) {
+          this.summaryData = await sumRes.json();
+        } else if (verOk && (!sumRes || sumRes.status === 404)) {
+          backendState = 'stale_server';
+        } else {
+          backendState = 'static_server';
+        }
+        if (filesRes && filesRes.ok) {
           const fd = await filesRes.json();
           this.serverPcapFiles = (fd.files || []).filter(f => f.isPcap || f.type === 'pcap');
         }
       } catch (e) {
-        backendOffline = true;
+        backendState = 'static_server';
       }
 
-      this._renderMainShell(target, clientName, backendOffline);
+      this._renderMainShell(target, clientName, backendState, runningVersion);
 
       if (this.summaryData && this.summaryData.status === 'ready') {
         this._renderActiveSubView();
       }
     },
 
-    _renderMainShell(target, clientName, backendOffline) {
+    _renderMainShell(target, clientName, backendState, runningVersion = '') {
       const s = this.summaryData;
       const hasData = !!(s && s.status === 'ready');
+      const bannerHtml = backendState === 'stale_server' ? `
+            <div style="background:rgba(245,158,11,0.12); border:1px solid #f59e0b; border-left:4px solid #f59e0b; border-radius:8px; padding:12px 14px; margin-bottom:16px; font-size:0.82rem; color:var(--text-main);">
+              <strong>🔄 Proceso <code>server.py</code> antiguo en ejecución en RAM${runningVersion ? ` (${esc(runningVersion)})` : ''}:</strong> los archivos web ya se actualizaron, pero el proceso <code>python3 server.py</code> del puerto actual sigue con la versión previa en memoria y aún no expone <code>/api/pcap-*</code> ni el parser nativo de <code>catalina.out</code>. Reinicie el servicio en Linux (<code>pkill -f server.py && nohup python3 server.py &amp;</code> o <code>systemctl restart ...</code>).
+            </div>
+          ` : (backendState === 'static_server' ? `
+            <div style="background:rgba(239,68,68,0.12); border:1px solid #ef4444; border-left:4px solid #ef4444; border-radius:8px; padding:12px 14px; margin-bottom:16px; font-size:0.82rem; color:var(--text-main);">
+              <strong>⚠️ Backend API (<code>server.py</code>) no detectado en el puerto actual:</strong> el navegador está conectado a un servidor estático (Nginx/Apache o <code>http.server</code>) sin decodificador binario PCAP ni SQLite. Verifique con <code>ss -tlnp | grep 8085</code> e inicie <code>python3 server.py</code> en el puerto <code>8085</code> (o configure <code>location /api/ { proxy_pass http://127.0.0.1:8085; }</code> en Nginx).
+            </div>
+          ` : '');
       const serverOptionsHtml = this.serverPcapFiles.map(f =>
         `<option value="${esc(f.name)}">${esc(f.name)} (${f.sizeMb} MB)</option>`
       ).join('');
@@ -138,11 +159,7 @@
             </div>
           </div>
 
-          ${backendOffline ? `
-            <div style="background:rgba(239,68,68,0.12); border:1px solid #ef4444; border-left:4px solid #ef4444; border-radius:8px; padding:12px 14px; margin-bottom:16px; font-size:0.82rem; color:var(--text-main);">
-              <strong>⚠️ Backend API (<code>server.py</code>) no detectado en el puerto actual:</strong> el navegador está conectado a un servidor estático sin decodificador binario PCAP. Ejecute <code>python3 server.py</code> en el servidor <code>8085</code> para habilitar la decodificación de <code>.pcap</code> / <code>.pcapng</code> / <code>tcpdump</code>.
-            </div>
-          ` : ''}
+          ${bannerHtml}
 
           <!-- Barra de Carga + Selector de Archivos PCAP en uploads/ -->
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px; margin-bottom:14px;">

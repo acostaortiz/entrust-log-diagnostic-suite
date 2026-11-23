@@ -441,7 +441,15 @@ INVALID_USER_STOPWORDS = {
     'port', 'url', 'uri', 'http', 'https', 'api', 'soap', 'rest', 'xml', 'json', 'csv',
     'data', 'value', 'values', 'key', 'keys', 'type', 'types', 'code', 'codes', 'result',
     'results', 'reason', 'details', 'detail', 'description', 'summary', 'count', 'total',
-    'number', 'level', 'category', 'source', 'target', 'subject', 'object', 'context'
+    'number', 'level', 'category', 'source', 'target', 'subject', 'object', 'context',
+    'catalina', 'tomcat', 'servlet', 'jsp', 'valve', 'connector', 'coyote', 'jasper',
+    'naming', 'wrapper', 'lifecycle', 'protocol', 'standardcontext', 'standardengine',
+    'standardhost', 'standardservice', 'standardwrapper', 'ajp', 'nio', 'apr', 'ssl',
+    'tls', 'keystore', 'truststore', 'cacerts', 'jvm', 'java', 'jdk', 'jre', 'gc',
+    'heap', 'metaspace', 'permgen', 'oom', 'stdout', 'stderr', 'localhost', 'webapps',
+    'bootstrap', 'classloader', 'webappclassloader', 'jndi', 'datasource', 'driver',
+    'hikari', 'dbcp', 'postgres', 'postgresql', 'sqlserver', 'mysql', 'charset',
+    'utf-8', 'iso-8859-1', 'tomcat8', 'tomcat9'
 }
 
 def is_valid_user_candidate(cand):
@@ -510,20 +518,221 @@ def extract_valid_user(line, msg=''):
 
     return 'system'
 
-def parse_line_for_db(line, line_num):
+TOMCAT_MONTHS = {
+    'jan': '01', 'ene': '01', 'feb': '02', 'mar': '03',
+    'apr': '04', 'abr': '04', 'may': '05', 'jun': '06',
+    'jul': '07', 'aug': '08', 'ago': '08', 'sep': '09', 'sept': '09',
+    'oct': '10', 'nov': '11', 'dec': '12', 'dic': '12'
+}
+
+_TOMCAT_BANNER_RE = re.compile(
+    r'\b(?:Command line argument:|Server version:|Server built:|Server number:|'
+    r'OS Name:|OS Version:|Architecture:|Java Home:|JVM Version:|JVM Vendor:|'
+    r'CATALINA_BASE:|CATALINA_HOME:|VersionLoggerListener\.log|The Apache Tomcat Native library)\b',
+    re.I
+)
+
+_TOMCAT_JULI_ONELINE_RE = re.compile(
+    r'^(\d{1,2})-([A-Za-z]{3,4})-(\d{4})\s+(\d{2}:\d{2}:\d{2})(?:[.,]\d{1,6})?\s+(.*)$'
+)
+_TOMCAT_JULI_SIMPLE_RE = re.compile(
+    r'^([A-Za-z]{3,4})\s+(\d{1,2}),\s+(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})(?:\s*(AM|PM|a\.\s*m\.|p\.\s*m\.))?\s+(.*)$',
+    re.I
+)
+_TOMCAT_ISO_LINE_RE = re.compile(
+    r'^(\d{4})[-/](\d{2})[-/](\d{2})[\sT](\d{2}:\d{2}:\d{2})(?:[.,]\d{1,6})?(?:Z|[+-]\d{2}:?\d{2})?\s+(.*)$'
+)
+_ENTRUST_SYSLOG_RE = re.compile(
+    r'^([A-Za-z]{3})\s+(\d{1,2})\s+(\d{2}:\d{2}:\d{2})\s+(\S+)\s+(.*)$'
+)
+_TOMCAT_SIMPLE_LEVEL_RE = re.compile(
+    r'^(SEVERE|WARNING|WARN|INFO|CONFIG|FINE|FINER|FINEST|GRAVE|ADVERTENCIA|INFORMACI[OÓ]N):\s*(.*)$'
+)
+_JAVA_STACK_PATTERNS = (
+    re.compile(r'^\s+at\s+[A-Za-z0-9_$.<>\/]+\('),
+    re.compile(r'^\s*Caused by:\s+'),
+    re.compile(r'^\s*Suppressed:\s+'),
+    re.compile(r'^\s*\.\.\.\s+\d+\s+(?:more|common frames omitted)\b'),
+    re.compile(
+        r'^\s*(?:java|javax|jakarta|sun|com\.sun|org\.apache|com\.entrust|oracle|com\.microsoft|org\.postgresql|org\.hibernate|org\.springframework|net\.sf)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b'
+    ),
+)
+
+_AUD_FAIL_SET = {'AUD110', 'AUD125', 'AUD126', 'AUD127', 'AUD150', 'AUD153', 'AUD2309', 'AUD4005', 'AUD6002'}
+_AUD_WARN_SET = {'AUD151', 'AUD154', 'AUD155', 'AUD6001'}
+
+def is_tomcat_startup_banner(text):
+    return bool(text and _TOMCAT_BANNER_RE.search(text))
+
+def parse_tomcat_timestamp(line):
     if not line:
+        return None, line, None
+    m = _TOMCAT_JULI_ONELINE_RE.match(line)
+    if m:
+        mon = TOMCAT_MONTHS.get(m.group(2).lower())
+        if mon:
+            dd = m.group(1).zfill(2)
+            return f"{m.group(3)}-{mon}-{dd} {m.group(4)}", m.group(5), 'juli_oneline'
+
+    m = _TOMCAT_JULI_SIMPLE_RE.match(line)
+    if m:
+        mon = TOMCAT_MONTHS.get(m.group(1).lower())
+        if mon:
+            dd = m.group(2).zfill(2)
+            yyyy = m.group(3)
+            hh = int(m.group(4))
+            ampm = (m.group(7) or '').lower().replace('.', '').replace(' ', '')
+            if ampm == 'am' and hh == 12:
+                hh = 0
+            elif ampm == 'pm' and hh < 12:
+                hh += 12
+            return f"{yyyy}-{mon}-{dd} {hh:02d}:{m.group(5)}:{m.group(6)}", m.group(8), 'juli_simple'
+
+    m = _TOMCAT_ISO_LINE_RE.match(line)
+    if m:
+        return f"{m.group(1)}-{m.group(2)}-{m.group(3)} {m.group(4)}", m.group(5), 'iso'
+
+    m = _ENTRUST_SYSLOG_RE.match(line)
+    if m:
+        mon = TOMCAT_MONTHS.get(m.group(1).lower())
+        if mon:
+            dd = m.group(2).zfill(2)
+            yr = time.strftime('%Y')
+            return f"{yr}-{mon}-{dd} {m.group(3)}", m.group(5), 'syslog'
+
+    return None, line, None
+
+def is_java_stack_continuation(raw_line):
+    if not raw_line:
+        return False
+    return any(p.match(raw_line) for p in _JAVA_STACK_PATTERNS)
+
+def is_tomcat_simple_level_line(raw_line):
+    if not raw_line:
         return None
-    
+    m = _TOMCAT_SIMPLE_LEVEL_RE.match(raw_line.strip())
+    if not m:
+        return None
+    raw_lvl = m.group(1).upper()
+    norm_map = {
+        'GRAVE': 'SEVERE',
+        'ADVERTENCIA': 'WARNING',
+        'INFORMACION': 'INFO',
+        'INFORMACIÓN': 'INFO'
+    }
+    return norm_map.get(raw_lvl, raw_lvl), m.group(2)
+
+def extract_non_version_ip(text):
+    if not text:
+        return 'local'
+    for m in re.finditer(r'(?<![.\d])((?:\d{1,3}\.){3}\d{1,3})(?![.\d])', text):
+        ip = m.group(1)
+        if ip in ('127.0.0.1', '0.0.0.0') or ip.startswith('255.'):
+            continue
+        parts = ip.split('.')
+        if not all(0 <= int(p) <= 255 for p in parts):
+            continue
+        prefix = text[max(0, m.start() - 28):m.start()].lower()
+        if re.search(r'(?:jdk|java|jre|tomcat|version|server number|built|release)\s*[:=\s/\-]*$', prefix):
+            continue
+        return ip
+    return 'local'
+
+def classify_tomcat_java_event(text, base_level='INFO', has_stack=False):
+    txt = text or ''
+    low = txt.lower()
+    base_u = (base_level or 'INFO').upper()
+    if base_u == 'GRAVE':
+        base_u = 'SEVERE'
+    elif base_u == 'ADVERTENCIA':
+        base_u = 'WARNING'
+
+    c520 = re.search(r'(?:\b|\[)(520\d{4})(?:\b|\])', txt)
+    if c520:
+        return (c520.group(1), 'FAIL', None)
+
+    aud = re.search(r'(?:\b|\[)(AUD\d{3,4})(?:\b|\])', txt, re.I)
+    if aud:
+        aud_code = aud.group(1).upper()
+        if aud_code in _AUD_FAIL_SET or base_u in ('ERROR', 'SEVERE', 'FATAL', 'CRITICAL'):
+            out = 'FAIL'
+        elif aud_code in _AUD_WARN_SET or base_u in ('WARNING', 'WARN'):
+            out = 'WARN'
+        else:
+            out = 'SUCCESS'
+        return (aud_code, out, None)
+
+    ora = re.search(r'\b(ORA-\d{5})\b', txt, re.I)
+    if ora:
+        return (ora.group(1).upper(), 'FAIL', 'database')
+
+    if re.search(r'(?:ClientAbortException|Broken pipe|Connection reset by peer)', txt, re.I):
+        return ('TOMCAT_CLIENT_ABORT', 'INFO', None)
+
+    if re.search(r'(?:OutOfMemoryError|Java heap space|GC overhead limit exceeded|Metaspace|PermGen space|unable to create new native thread)', txt, re.I):
+        return ('JVM_OOM', 'FAIL', None)
+
+    if re.search(r'(?:SSLHandshakeException|PKIX path building failed|SunCertPathBuilderException|CertificateExpiredException|CertificateNotYetValidException|KeyStoreException|UnrecoverableKeyException|SSLException|handshake_failure|bad_certificate|certificate_unknown|protocol_version)', txt, re.I):
+        return ('TOMCAT_SSL_TLS', 'FAIL', None)
+
+    if re.search(r'(?:SQLException|SQLRecoverableException|SQLTransientConnectionException|SQLNonTransientConnectionException|SQLTimeoutException|CannotGetJdbcConnectionException|HikariPool|BasicDataSource|PoolExhaustedException|CommunicationsException|JdbcCardRepository|BlobAccess|AuditDBLogger|No suitable driver)', txt, re.I):
+        return ('JDBC_SQL_EXCEPTION', 'FAIL', 'database')
+
+    if re.search(r'(?:LDAPException|javax\.naming\.CommunicationException|javax\.naming\.AuthenticationException|javax\.naming\.NamingException|PartialResultException|LDAP:\s*error code)', txt, re.I):
+        return ('TOMCAT_LDAP_ERROR', 'FAIL', None)
+
+    if re.search(r'(?:BindException|Address already in use|ConnectException|SocketTimeoutException|UnknownHostException|NoRouteToHostException|Port\s+\d+.*already in use)', txt, re.I):
+        return ('TOMCAT_NETWORK_ERROR', 'FAIL', None)
+
+    if re.search(r'(?:ClassNotFoundException|NoClassDefFoundError|UnsatisfiedLinkError|LifecycleException|Failed to start component|Error listenerStart|Error filterStart|startup failed)', txt, re.I):
+        return ('TOMCAT_DEPLOY_ERROR', 'FAIL', None)
+
+    if re.search(r'(?:StuckThreadDetectionValve|All threads .* are currently busy|maxThreads|RejectedExecutionException|failed to stop thread|memory leak)', txt, re.I):
+        out = 'FAIL' if (base_u in ('SEVERE', 'FATAL', 'ERROR', 'CRITICAL') or 'rejectedexecutionexception' in low) else 'WARN'
+        return ('TOMCAT_THREAD_POOL', out, None)
+
+    is_err_level = base_u in ('SEVERE', 'FATAL', 'ERROR', 'CRITICAL')
+    if (is_err_level or has_stack) and (
+        re.search(r'\b[a-z][a-z0-9_.]*\.[A-Z][A-Za-z0-9_]*(?:Exception|Error|Throwable)\b', txt)
+        or 'caused by:' in low
+    ):
+        return ('TOMCAT_JAVA_EXCEPTION', 'FAIL', None)
+
+    if is_err_level:
+        return ('TOMCAT_SEVERE', 'FAIL', None)
+
+    if base_u in ('WARNING', 'WARN'):
+        return ('TOMCAT_WARN', 'WARN', None)
+
+    if re.search(r'(?:Server startup in|Starting ProtocolHandler|Starting Servlet Engine|Deploying web application|Deployment of web application|Stopping service|Destroying ProtocolHandler|Initialization processed in)', txt, re.I):
+        return ('TOMCAT_LIFECYCLE', 'SUCCESS', None)
+
+    return ('TOMCAT_INFO', 'SUCCESS', None)
+
+def parse_line_meta_for_db(line, line_num, last_seen_ts=''):
+    if not line:
+        return None, {}
+
+    meta = {
+        'has_explicit_ts': False,
+        'is_tomcat_simple_hdr': False,
+        'is_tomcat': False,
+        'base_level': 'INFO',
+        'locked_code': False
+    }
+
     # 1. Check IDaaS Cloud Migration Tool format: [ERROR] IdentityGuard migration: ...
     if 'IdentityGuard migration:' in line:
         outcome = 'FAIL' if any(k in line for k in ['[ERROR]', 'error', 'fail', 'already']) else 'SUCCESS'
-        event_time = time.strftime('%Y-%m-%d %H:%M:%S')
         time_match = re.search(r'\d{4}[-/.]\d{2}[-/.]\d{2}[\sT]\d{2}:\d{2}:\d{2}', line)
         if time_match:
             event_time = time_match.group(0)
-        
+            meta['has_explicit_ts'] = True
+        else:
+            event_time = last_seen_ts or ''
+
         user = extract_valid_user(line)
-            
+
         if 'grid already assigned' in line.lower() or 'assignedgrid' in line.lower():
             event_type = 'bulkidentityguard.add.error.assignedgrid'
         elif 'currently has a password' in line.lower() or 'password will not be migrated' in line.lower():
@@ -532,8 +741,8 @@ def parse_line_for_db(line, line_num):
             event_type = 'bulkidentityguard.add.error.qa'
         else:
             event_type = 'IDG_MIGRATION_EVENT'
-            
-        return (line_num, event_time, user, event_type, outcome, line[:300], 'idaas.entrust.com', line[:500])
+
+        return (line_num, event_time, user, event_type, outcome, line[:300], 'idaas.entrust.com', line[:500]), meta
 
     # 1.5. Check IDaaS Cloud CSV / TSV format (strictly validated to avoid matching stack traces or SQL lines)
     if (',' in line or '\t' in line) and not line.startswith('[') and not line.startswith('\t') and not line.startswith('Caused by:'):
@@ -544,63 +753,140 @@ def parse_line_for_db(line, line_num):
             col8_is_outcome = col8_upper in ('SUCCESS', 'FAIL', 'FAILURE', 'ERROR', 'WARNING', 'INFO')
             if col1_is_date and col8_is_outcome:
                 event_time = parts[1].replace('T', ' ').replace('Z', '')[:19] if len(parts) > 1 else ''
+                meta['has_explicit_ts'] = bool(event_time)
                 raw_user = parts[4].strip() if len(parts) > 4 else ''
                 user = raw_user if is_valid_user_candidate(raw_user) else 'system'
                 event_type = parts[7].strip() if len(parts) > 7 and parts[7].strip() else 'IDaaS.Audit'
-                outcome = 'FAIL' if col8_upper in ('FAIL', 'FAILURE', 'ERROR') else ('SUCCESS' if col8_upper else 'SUCCESS')
+                outcome = 'FAIL' if col8_upper in ('FAIL', 'FAILURE', 'ERROR') else 'SUCCESS'
                 msg = parts[9].strip() if len(parts) > 9 else event_type
                 ip = parts[12].strip() if len(parts) > 12 else ''
-                return (line_num, event_time, user, event_type, outcome, msg, ip, line[:500])
+                return (line_num, event_time, user, event_type, outcome, msg, ip, line[:500]), meta
 
     # 2. Check Entrust Bracket format: [timestamp] [thread] [LEVEL] [Category] [520xxx/AUD] Message
-    bracket_match = re.match(r'^\[([^\]]+)\]\s*\[([^\]]*)\]\s*\[([A-Za-z]+)\s*\]\s*\[([^\]]*)\]\s*(.*)$', line)
+    bracket_match = re.match(r'^\[+([^\]]+)\]\s*\[([^\]]*)\]\s*\[([A-Za-z]+)\s*\]\s*\[([^\]]*)\]\s*(.*)$', line)
     if bracket_match:
         event_time = bracket_match.group(1)[:19]
+        meta['has_explicit_ts'] = bool(re.match(r'^\d{4}[-/.]\d{2}[-/.]\d{2}', event_time))
         level = bracket_match.group(3).upper()
+        meta['base_level'] = level
         category = bracket_match.group(4)
         msg = bracket_match.group(5)
-        outcome = 'FAIL' if any(k in level for k in ['ERR', 'CRIT', 'FATAL']) else ('DEBUG' if level == 'DEBUG' else 'SUCCESS')
-        
+        outcome = 'FAIL' if any(k in level for k in ['ERR', 'CRIT', 'FATAL', 'SEVERE']) else ('DEBUG' if level == 'DEBUG' else ('WARN' if 'WARN' in level else 'SUCCESS'))
+
         c520 = re.search(r'520\d{4}', msg) or re.search(r'520\d{4}', line)
         aud = re.search(r'AUD\d{3,4}', msg) or re.search(r'AUD\d{3,4}', line)
         ora = re.search(r'ORA-\d{5}', msg) or re.search(r'ORA-\d{5}', line)
 
-        if c520 or ora or (aud and aud.group(0).upper() in ('AUD150', 'AUD154', 'AUD6002')):
+        if c520 or ora or (aud and aud.group(0).upper() in ('AUD150', 'AUD154', 'AUD6002', 'AUD110', 'AUD125', 'AUD126', 'AUD127', 'AUD153', 'AUD4005')):
             outcome = 'FAIL'
-        elif aud and aud.group(0).upper() in ('AUD6001', 'AUD2309', 'AUD155') and outcome != 'FAIL':
+        elif aud and aud.group(0).upper() in ('AUD6001', 'AUD2309', 'AUD155', 'AUD151') and outcome != 'FAIL':
             outcome = 'WARN'
 
         if c520:
             event_type = c520.group(0)
+            meta['locked_code'] = True
         elif aud:
-            event_type = aud.group(0)
+            event_type = aud.group(0).upper()
+            meta['locked_code'] = True
         elif ora:
-            event_type = ora.group(0)
+            event_type = ora.group(0).upper()
+            meta['locked_code'] = True
         elif category:
             event_type = category.split('.')[-2] if '.' in category else category
         else:
             event_type = 'ENTRUST_LOG'
-        
-        user = extract_valid_user(line, msg)
-        
+
+        user = extract_valid_user(line, msg) if not is_tomcat_startup_banner(line) else 'system'
         ip_match = re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', msg)
         ip = ip_match.group(0) if ip_match else 'local'
-        
-        return (line_num, event_time, user, event_type, outcome, msg, ip, line[:500])
 
-    # 3. Check for SQL Exception / ORA Error Stack Trace lines
-    ora_match = re.search(r'ORA-\d{5}', line)
-    is_stack = line.startswith('\tat ') or line.startswith('Caused by:') or 'SQLException' in line or ora_match
-    if is_stack:
-        ora_code = ora_match.group(0) if ora_match else 'SQL_EXCEPTION'
-        return (line_num, time.strftime('%Y-%m-%d %H:%M:%S'), 'system', ora_code, 'FAIL', line.strip()[:300], 'database', line[:500])
+        return (line_num, event_time, user, event_type, outcome, msg, ip, line[:1200]), meta
+
+    # 2.5 Check Entrust Linux Syslog + Apache Tomcat JULI / Catalina formats
+    ts, rest, fmt = parse_tomcat_timestamp(line)
+    if ts:
+        meta['has_explicit_ts'] = True
+        if fmt == 'syslog' and (rest.startswith('[') or '520' in rest or 'AUD' in rest):
+            meta['is_tomcat'] = True
+            lvl_m = re.search(r'\[(ERROR|FATAL|SEVERE|CRIT|CRITICAL|WARN|WARNING|INFO|DEBUG)\s*\]', rest, re.I)
+            base_level = lvl_m.group(1).upper() if lvl_m else ('ERROR' if 'FAILED' in rest or '[520' in rest else 'INFO')
+            meta['base_level'] = base_level
+            event_type, outcome, ip_ov = classify_tomcat_java_event(line, base_level)
+            meta['locked_code'] = event_type.startswith('520') or event_type.startswith('AUD') or event_type.startswith('ORA-')
+            msg = rest[:600]
+            user = 'system' if is_tomcat_startup_banner(line) else extract_valid_user(line, msg)
+            ip = ip_ov or extract_non_version_ip(msg)
+            return (line_num, ts, user, event_type, outcome, msg, ip, line[:1200]), meta
+
+        is_iso_tomcat_java = (
+            fmt == 'iso'
+            and (
+                re.search(r'\b(?:SEVERE|FATAL|ERROR|WARNING|WARN|INFO|DEBUG|GRAVE|ADVERTENCIA)\b', rest)
+                or re.search(r'(?:catalina|org\.apache|com\.entrust|Exception|Error|Server startup|Starting ProtocolHandler|HikariPool|ORA-\d{5}|520\d{4}|AUD\d{3,4})', line)
+            )
+        )
+        if fmt in ('juli_oneline', 'juli_simple') or is_iso_tomcat_java:
+            meta['is_tomcat'] = True
+            base_level = 'INFO'
+            msg = rest
+            if fmt == 'juli_oneline':
+                m_one = re.match(r'^([A-ZÁÉÍÓÚÑ]+)\s+\[([^\]]*)\]\s+(.*)$', rest)
+                if m_one:
+                    base_level = m_one.group(1).upper()
+                    msg = f"[{m_one.group(2)}] {m_one.group(3)}"
+                else:
+                    m_lvl = re.match(r'^(SEVERE|WARNING|WARN|INFO|CONFIG|FINE|FINER|FINEST|GRAVE|ADVERTENCIA)\s+(.*)$', rest, re.I)
+                    if m_lvl:
+                        base_level = m_lvl.group(1).upper()
+                        msg = m_lvl.group(2)
+            elif fmt == 'juli_simple':
+                meta['is_tomcat_simple_hdr'] = True
+                m_lvl = re.search(r'\b(SEVERE|FATAL|ERROR|WARNING|WARN|GRAVE|ADVERTENCIA)\b', rest)
+                if m_lvl:
+                    base_level = m_lvl.group(1).upper()
+            else:
+                m_lvl = re.match(r'^[\[\s]*(SEVERE|FATAL|ERROR|WARNING|WARN|INFO|DEBUG|GRAVE|ADVERTENCIA)[\]\s:]+(.*)$', rest, re.I)
+                if m_lvl:
+                    base_level = m_lvl.group(1).upper()
+                    msg = m_lvl.group(2)
+                else:
+                    m_lvl2 = re.search(r'\b(SEVERE|FATAL|ERROR|WARNING|WARN|INFO|DEBUG)\b', rest)
+                    if m_lvl2:
+                        base_level = m_lvl2.group(1).upper()
+
+            meta['base_level'] = base_level
+            event_type, outcome, ip_ov = classify_tomcat_java_event(line, base_level)
+            meta['locked_code'] = event_type.startswith('520') or event_type.startswith('AUD') or event_type.startswith('ORA-')
+            user = 'system' if is_tomcat_startup_banner(line) else extract_valid_user(line, msg)
+            ip = ip_ov or extract_non_version_ip(msg)
+            return (line_num, ts, user, event_type, outcome, msg[:600], ip, line[:1200]), meta
+
+    # 3. Orphan Java / Oracle exception or stack trace line (no timestamp in line)
+    if is_java_stack_continuation(line) or re.search(r'\b(ORA-\d{5}|SQLException|OutOfMemoryError|SSLHandshakeException|Exception|Error)\b', line):
+        base_lvl = 'INFO' if re.search(r'(?:ClientAbortException|Broken pipe|Connection reset by peer)', line, re.I) else 'ERROR'
+        event_type, outcome, ip_ov = classify_tomcat_java_event(line, base_lvl, has_stack=True)
+        user = 'system' if is_tomcat_startup_banner(line) else extract_valid_user(line)
+        ip = ip_ov or extract_non_version_ip(line)
+        return (line_num, last_seen_ts or '', user, event_type, outcome, line.strip()[:600], ip, line[:1200]), meta
 
     # 4. Fallback generic line
-    level = 'FAIL' if any(k in line.lower() for k in ['error', 'fail', 'crit', 'fatal', 'exception']) else 'SUCCESS'
-    time_match = re.search(r'\d{4}[-/.]\d{2}[-/.]\d{2}[\sT]\d{2}:\d{2}:\d{2}', line)
-    event_time = time_match.group(0) if time_match else time.strftime('%Y-%m-%d %H:%M:%S')
-    user = extract_valid_user(line)
-    return (line_num, event_time, user, 'SYSTEM_LOG', level, line[:200], 'local', line[:500])
+    low_line = line.lower()
+    if any(k in low_line for k in ['error', 'fail', 'crit', 'fatal', 'exception', 'severe']):
+        level = 'FAIL'
+    elif any(k in low_line for k in ['warn', 'warning']):
+        level = 'WARN'
+    else:
+        level = 'SUCCESS'
+    event_time = ts or last_seen_ts or ''
+    if ts:
+        meta['has_explicit_ts'] = True
+    user = 'system' if is_tomcat_startup_banner(line) else extract_valid_user(line)
+    ip = extract_non_version_ip(line)
+    return (line_num, event_time, user, 'SYSTEM_LOG', level, line[:300], ip, line[:1200]), meta
+
+def parse_line_for_db(line, line_num, last_seen_ts=''):
+    parsed, _ = parse_line_meta_for_db(line, line_num, last_seen_ts=last_seen_ts)
+    return parsed
 
 def stream_lines_from_archive_or_file(file_path):
     """
@@ -853,52 +1139,107 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
         file_lines = 0
         file_errors = 0
         file_warnings = 0
+        raw_lines_read = 0
+        folded_stack_lines = 0
         bytes_est = 0
+        last_seen_ts = ''
+        pending = None
 
-        for line in stream_lines_from_archive_or_file(file_path):
-            line_str = line.strip()
-            if not line_str:
-                continue
-            line_num += 1
-            file_lines += 1
-            bytes_est += len(line)
+        def flush_pending():
+            nonlocal batch, file_lines, file_errors, file_warnings, pending
+            if pending is None:
+                return
 
-            parsed = parse_line_for_db(line_str, line_num)
-            if parsed:
-                outcome = str(parsed[4] or '')
-                etype = str(parsed[3] or '')
-                is_err = 'FAIL' in outcome or 'ERR' in outcome
-                is_warn = (not is_err) and ('WARN' in outcome or etype.upper().startswith('AUD'))
-                if is_err:
-                    file_errors += 1
-                elif is_warn:
-                    file_warnings += 1
+            msg_out = pending['message'] or ''
+            raw_out = pending['raw'] or ''
+            etype = pending['event_type']
+            outcome = pending['outcome']
+            ip = pending['ip']
 
-                # In-memory streaming aggregation (0 cost)
-                user = parsed[2]
-                if user and user not in ['unknown', 'system', '']:
-                    user_counts[user] += 1
+            if pending['stack_frames'] > 0 or pending['causes']:
+                combined_txt = msg_out + ' ' + ' '.join(pending['causes'])
+                new_etype, new_out, new_ip = classify_tomcat_java_event(
+                    combined_txt, pending['base_level'], has_stack=True
+                )
+                ora_cause = re.search(r'\b(ORA-\d{5})\b', ' '.join(pending['causes']), re.I)
 
-                ip = parsed[6]
-                if ip and ip not in ['local', '127.0.0.1', '']:
-                    ip_counts[ip] += 1
+                if pending['locked_code']:
+                    # Preserve explicit 520xxxx / AUDxxx in header unless cause brings a more specific ORA-xxxxx
+                    if ora_cause:
+                        etype = ora_cause.group(1).upper()
+                        outcome = 'FAIL'
+                        ip = 'database'
+                else:
+                    etype = new_etype
+                    outcome = new_out
+                    if new_ip:
+                        ip = new_ip
 
-                if etype:
-                    type_counts[etype] += 1
-                    code_counts[etype] += 1
-                    if 'bulkidentityguard' in etype.lower():
-                        is_idaas = True
-
-                t_str = parsed[1]
-                if t_str and len(t_str) >= 13:
-                    h_bucket = t_str[:13]
-                    hour_counts[h_bucket]['total'] += 1
-                    if is_err:
-                        hour_counts[h_bucket]['errors'] += 1
+                parts_extra = []
+                if pending['causes']:
+                    deepest = re.sub(r'^Caused by:\s*', '', pending['causes'][-1], flags=re.I).strip()
+                    parts_extra.append(f"Root Cause: {deepest}")
+                if pending['entrust_frame']:
+                    parts_extra.append(f"Frame: {pending['entrust_frame']}")
+                if parts_extra:
+                    extra_str = ' | ' + ' | '.join(parts_extra)
+                    if len(msg_out) + len(extra_str) > 600:
+                        keep_len = max(180, 596 - len(extra_str))
+                        msg_out = msg_out[:keep_len].rstrip() + '…' + extra_str
                     else:
-                        hour_counts[h_bucket]['info'] += 1
+                        msg_out = msg_out + extra_str
+                msg_out = msg_out[:600]
 
-                batch.append(parsed)
+                if pending['stack_frames'] > 0:
+                    suffix = f"\n[+{pending['stack_frames']} stack frames]"
+                    raw_out = raw_out[:max(200, 1800 - len(suffix))] + suffix
+                raw_out = raw_out[:1800]
+
+            parsed_row = (
+                pending['line_num'],
+                pending['event_time'],
+                pending['user'],
+                etype,
+                outcome,
+                msg_out,
+                ip,
+                raw_out
+            )
+            pending = None
+
+            file_lines += 1
+            out_u = str(outcome or '').upper()
+            etype_u = str(etype or '').upper()
+            is_err = 'FAIL' in out_u or 'ERR' in out_u
+            is_warn = (not is_err) and ('WARN' in out_u or etype_u.startswith('AUD'))
+            if is_err:
+                file_errors += 1
+            elif is_warn:
+                file_warnings += 1
+
+            user = parsed_row[2]
+            if user and user not in ['unknown', 'system', '']:
+                user_counts[user] += 1
+
+            if ip and ip not in ['local', '127.0.0.1', '']:
+                ip_counts[ip] += 1
+
+            if etype:
+                type_counts[etype] += 1
+                code_counts[etype] += 1
+                if 'bulkidentityguard' in etype.lower():
+                    is_idaas = True
+
+            t_str = parsed_row[1]
+            if t_str and len(t_str) >= 13 and re.match(r'^\d{4}-\d{2}-\d{2}', t_str):
+                h_bucket = t_str[:13]
+                hour_counts[h_bucket]['total'] += 1
+                if is_err:
+                    hour_counts[h_bucket]['errors'] += 1
+                else:
+                    hour_counts[h_bucket]['info'] += 1
+
+            batch.append(parsed_row)
 
             if len(batch) >= batch_size:
                 cur.executemany('INSERT OR REPLACE INTO logs VALUES (?,?,?,?,?,?,?,?)', batch)
@@ -907,6 +1248,77 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
                 upload_state['linesProcessed'] = prev_total + file_lines
                 upload_state['totalErrors'] = prev_errors + file_errors
                 upload_state['progress'] = min(99, int((bytes_est / max(1, file_size)) * 100))
+
+        for raw_line in stream_lines_from_archive_or_file(file_path):
+            raw_no_nl = raw_line.rstrip('\r\n')
+            line_str = raw_no_nl.strip()
+            if not line_str:
+                continue
+            raw_lines_read += 1
+            bytes_est += len(raw_line)
+
+            if pending is not None and pending['is_tomcat_simple_hdr']:
+                lvl_pair = is_tomcat_simple_level_line(raw_no_nl)
+                if lvl_pair:
+                    lvl, lvl_msg = lvl_pair
+                    pending['base_level'] = lvl
+                    pending['is_tomcat_simple_hdr'] = False
+                    merged_msg = f"{pending['message']} — {lvl}: {lvl_msg}".strip()
+                    pending['message'] = merged_msg[:600]
+                    if len(pending['raw']) < 1600:
+                        pending['raw'] = (pending['raw'] + '\n' + line_str)[:1600]
+                    if not pending['locked_code']:
+                        ev_t, ev_o, ev_ip = classify_tomcat_java_event(merged_msg, lvl)
+                        pending['event_type'] = ev_t
+                        pending['outcome'] = ev_o
+                        pending['locked_code'] = ev_t.startswith('520') or ev_t.startswith('AUD') or ev_t.startswith('ORA-')
+                        if ev_ip:
+                            pending['ip'] = ev_ip
+                    folded_stack_lines += 1
+                    continue
+
+            if pending is not None and is_java_stack_continuation(raw_no_nl):
+                folded_stack_lines += 1
+                pending['stack_frames'] += 1
+                if (
+                    line_str.startswith('Caused by:')
+                    or line_str.startswith('Suppressed:')
+                    or re.match(r'^(?:java|javax|jakarta|oracle|org\.apache|com\.entrust)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b', line_str)
+                ):
+                    if len(pending['causes']) < 6:
+                        pending['causes'].append(line_str[:220])
+                if not pending['entrust_frame'] and 'com.entrust.' in line_str:
+                    pending['entrust_frame'] = line_str.lstrip('at ').strip()[:140]
+                if len(pending['raw']) < 1550:
+                    pending['raw'] = (pending['raw'] + '\n' + line_str)[:1600]
+                continue
+
+            flush_pending()
+
+            line_num += 1
+            parsed, meta = parse_line_meta_for_db(line_str, line_num, last_seen_ts=last_seen_ts)
+            if parsed:
+                if meta.get('has_explicit_ts') and parsed[1]:
+                    last_seen_ts = parsed[1]
+                pending = {
+                    'line_num': parsed[0],
+                    'event_time': parsed[1],
+                    'user': parsed[2],
+                    'event_type': parsed[3],
+                    'outcome': parsed[4],
+                    'message': parsed[5],
+                    'ip': parsed[6],
+                    'raw': parsed[7],
+                    'base_level': meta.get('base_level', 'INFO'),
+                    'is_tomcat_simple_hdr': meta.get('is_tomcat_simple_hdr', False),
+                    'is_tomcat': meta.get('is_tomcat', False),
+                    'locked_code': meta.get('locked_code', False),
+                    'stack_frames': 0,
+                    'causes': [],
+                    'entrust_frame': ''
+                }
+
+        flush_pending()
 
         if batch:
             cur.executemany('INSERT OR REPLACE INTO logs VALUES (?,?,?,?,?,?,?,?)', batch)
@@ -926,6 +1338,8 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             'size': file_size,
             'count': file_lines,
             'sampleCount': file_lines,
+            'rawLinesRead': raw_lines_read,
+            'foldedStackLines': folded_stack_lines,
             'realErrors': file_errors,
             'realWarnings': file_warnings,
             'nodeKey': node_key,
@@ -942,10 +1356,15 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
         # Compute exact 100% distinct counts across the full SQLite table (not capped by append merge)
         exact_unique_users, exact_unique_codes, exact_unique_ips = compute_exact_sqlite_distinct_counts(cur)
 
+        prev_raw_total = sum(int(f.get('rawLinesRead', f.get('count', 0)) or 0) for f in loaded_files)
+        prev_folded_total = sum(int(f.get('foldedStackLines', 0) or 0) for f in loaded_files)
+
         # Build instant cached stats object (< 0.1 ms)
         stats_obj = {
             'status': 'ready',
             'totalLogs': total_all,
+            'rawLinesRead': prev_raw_total or raw_lines_read,
+            'foldedStackLines': prev_folded_total,
             'totalErrors': errors_all,
             'totalWarnings': warnings_all,
             'totalSuccess': max(0, total_all - errors_all),
@@ -964,7 +1383,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
         }
         cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
         cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_obj, ensure_ascii=False)))
-        cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3')")
+        cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4')")
         conn.commit()
         conn.close()
 
@@ -975,7 +1394,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
         upload_state['progress'] = 100
         upload_state['linesProcessed'] = total_all
         upload_state['totalErrors'] = errors_all
-        print(f"Indexación completada: {total_all:,} registros ({file_lines:,} en archivo), {errors_all:,} errores en {target_db}")
+        print(f"Indexación completada: {total_all:,} registros ({file_lines:,} en archivo, {folded_stack_lines:,} líneas trace plegadas), {errors_all:,} errores en {target_db}")
     except Exception as e:
         upload_state['status'] = 'error'
         upload_state['error'] = str(e)
@@ -988,7 +1407,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
     BLOCKED_EXTENSIONS = ('.php', '.php3', '.php4', '.php5', '.phtml', '.phar', '.asp', '.aspx', '.jsp', '.jspx', '.cgi', '.pl', '.sh', '.py', '.pyc', '.db', '.sqlite', '.sqlite3', '.env', '.git', '.htaccess', '.htpasswd', '.ini', '.bak', '.sql')
     BLOCKED_PATHS = ('/.git', '/.env', '/data/', '/scripts/', '/server.py', '/sync.sh', '/wp-admin', '/wp-login', '/wp-content', '/phpmyadmin', '/cgi-bin', '/vendor/phpunit', '/etc/passwd', '/proc/self')
-    ALLOWED_UPLOAD_EXTS = ('.log', '.txt', '.csv', '.tsv', '.json', '.xml', '.properties', '.conf', '.pem', '.crt', '.cer', '.dat', '.zip', '.gz', '.tgz', '.bz2', '.tar', '.html', '.htm', '.db', '.1', '.2', '.3', '.4', '.5')
+    ALLOWED_UPLOAD_EXTS = ('.log', '.out', '.txt', '.csv', '.tsv', '.json', '.xml', '.properties', '.conf', '.pem', '.crt', '.cer', '.dat', '.zip', '.gz', '.tgz', '.bz2', '.tar', '.html', '.htm', '.db', '.1', '.2', '.3', '.4', '.5')
 
     def list_directory(self, path):
         # Security Hardening: Disable directory listing completely (CWE-548)
@@ -1975,7 +2394,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 is_err = ('FAIL' in outcome_str.upper() or 'ERR' in outcome_str.upper() or etype in ('AUD150', 'AUD154', 'AUD6002') or etype.startswith('520') or etype.startswith('ORA-'))
                 is_warn = (not is_err) and ('WARN' in outcome_str.upper() or etype in ('AUD6001', 'AUD2309', 'AUD155'))
                 level = 'ERROR' if is_err else ('WARN' if is_warn else 'INFO')
-                svc = 'IG.AUDIT' if etype.upper().startswith('AUD') else ('IDaaS Cloud' if 'bulkidentityguard' in etype.lower() else 'IG.SYSTEM')
+                svc = 'IG.AUDIT' if etype.upper().startswith('AUD') else ('IDaaS Cloud' if 'bulkidentityguard' in etype.lower() else ('Tomcat Catalina' if etype.upper().startswith(('TOMCAT_', 'JVM_')) else ('Oracle / JDBC' if (etype.upper().startswith('ORA-') or etype == 'JDBC_SQL_EXCEPTION') else 'IG.SYSTEM')))
                 display_msg = msg_str if (f'[{etype}]' in msg_str or not etype) else f'[{etype}] {msg_str}'
                 logs.append({
                     'id': f'log-{r[0]}',
@@ -2293,7 +2712,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
             if not refresh:
-                cur.execute("SELECT value FROM server_stats WHERE key='forensic_matrix_v3'")
+                cur.execute("SELECT value FROM server_stats WHERE key='forensic_matrix_v4'")
                 cached_row = cur.fetchone()
                 if cached_row and cached_row[0]:
                     cached_payload = json.loads(cached_row[0])
@@ -2344,6 +2763,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                         kind = 'AUDIT_AUD'
                     elif code.startswith('ORA-') or 'SQL' in code.upper() or 'JDBC' in code.upper():
                         kind = 'DATABASE_ORA'
+                    elif code.startswith('TOMCAT_') or code.startswith('JVM_'):
+                        kind = 'TOMCAT_JVM'
                     elif 'bulkidentityguard' in code.lower() or 'migration' in code.lower() or 'idaas' in code.lower():
                         kind = 'IDAAS_MIGRATION'
                     code_map[code] = {
@@ -2372,7 +2793,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                         cat_users['520'].add(subj_str)
                     elif c_entry['kind'] == 'IDAAS_MIGRATION':
                         cat_users['idaas'].add(subj_str)
-                    elif c_entry['kind'] in ('SYSTEM_EVENT', 'DATABASE_ORA'):
+                    elif c_entry['kind'] in ('SYSTEM_EVENT', 'DATABASE_ORA', 'TOMCAT_JVM'):
                         cat_users['system'].add(subj_str)
 
                     if subj_str not in users_map:
@@ -2602,7 +3023,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     SUM(CASE WHEN event_type IN ('ORA-03113', 'ORA-03114', 'ORA-12170', 'ORA-12514', 'ORA-12541') OR message LIKE '%ORA-03113%' OR message LIKE '%ORA-12170%' THEN 1 ELSE 0 END) as ora_net,
                     SUM(CASE WHEN event_type IN ('ORA-00060', 'ORA-00054') OR message LIKE '%ORA-00060%' OR message LIKE '%deadlock%' THEN 1 ELSE 0 END) as ora_lock,
                     SUM(CASE WHEN message LIKE '%JdbcCardRepository%' OR message LIKE '%BlobAccess%' THEN 1 ELSE 0 END) as jdbc_blob,
-                    SUM(CASE WHEN event_type = 'SQL_EXCEPTION' OR message LIKE '%SQLException%' OR message LIKE '%HikariPool%' OR message LIKE '%Connection timed out%' THEN 1 ELSE 0 END) as sql_exc,
+                    SUM(CASE WHEN event_type IN ('SQL_EXCEPTION', 'JDBC_SQL_EXCEPTION') OR message LIKE '%SQLException%' OR message LIKE '%HikariPool%' OR message LIKE '%Connection timed out%' THEN 1 ELSE 0 END) as sql_exc,
                     SUM(CASE WHEN message LIKE '%TransactionQueue%' THEN 1 ELSE 0 END) as tx_queue
                 FROM logs
                 WHERE event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%'
@@ -2615,7 +3036,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 SELECT line_num, event_time, subject_name, event_type, SUBSTR(message, 1, 220)
                 FROM logs
                 WHERE (event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%')
-                  AND (event_type LIKE 'ORA-%' OR event_type = 'SQL_EXCEPTION' OR message LIKE '%ORA-%' OR message LIKE '%SQLException%' OR message LIKE '%JdbcCardRepository%' OR message LIKE '%TransactionQueue%')
+                  AND (event_type LIKE 'ORA-%' OR event_type IN ('SQL_EXCEPTION', 'JDBC_SQL_EXCEPTION') OR message LIKE '%ORA-%' OR message LIKE '%SQLException%' OR message LIKE '%JdbcCardRepository%' OR message LIKE '%TransactionQueue%')
                 ORDER BY line_num ASC
                 LIMIT 15
             ''')
@@ -2703,6 +3124,69 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'evidenceSamples': db_samples
             }
 
+            # 6.5 Tomcat / Catalina / JVM Health (exact counts from indexed events)
+            cur.execute('''
+                SELECT
+                    SUM(CASE WHEN event_type = 'JVM_OOM' THEN 1 ELSE 0 END) as jvm_oom,
+                    SUM(CASE WHEN event_type = 'TOMCAT_SSL_TLS' THEN 1 ELSE 0 END) as ssl_tls,
+                    SUM(CASE WHEN event_type = 'TOMCAT_LDAP_ERROR' THEN 1 ELSE 0 END) as ldap_err,
+                    SUM(CASE WHEN event_type = 'TOMCAT_DEPLOY_ERROR' THEN 1 ELSE 0 END) as deploy_err,
+                    SUM(CASE WHEN event_type = 'TOMCAT_NETWORK_ERROR' THEN 1 ELSE 0 END) as net_err,
+                    SUM(CASE WHEN event_type = 'TOMCAT_THREAD_POOL' THEN 1 ELSE 0 END) as thread_pool,
+                    SUM(CASE WHEN event_type = 'TOMCAT_CLIENT_ABORT' THEN 1 ELSE 0 END) as client_abort,
+                    SUM(CASE WHEN event_type = 'TOMCAT_JAVA_EXCEPTION' THEN 1 ELSE 0 END) as java_exc,
+                    SUM(CASE WHEN event_type = 'TOMCAT_SEVERE' THEN 1 ELSE 0 END) as tomcat_severe,
+                    SUM(CASE WHEN event_type = 'TOMCAT_WARN' THEN 1 ELSE 0 END) as tomcat_warn,
+                    SUM(CASE WHEN event_type = 'TOMCAT_LIFECYCLE' THEN 1 ELSE 0 END) as tomcat_lifecycle
+                FROM logs
+            ''')
+            tc_row = cur.fetchone() or (0,) * 11
+            (
+                tc_oom, tc_ssl, tc_ldap, tc_deploy, tc_net,
+                tc_pool, tc_abort, tc_java, tc_severe, tc_warn, tc_lifecycle
+            ) = [int(x or 0) for x in tc_row]
+            total_tomcat_errors = tc_oom + tc_ssl + tc_ldap + tc_deploy + tc_net + tc_java + tc_severe + (
+                sum(c['failCount'] for c in code_matrix if c['code'] == 'TOMCAT_THREAD_POOL')
+            )
+            total_tomcat_incidents = total_tomcat_errors + tc_warn + tc_abort + tc_lifecycle
+
+            cur.execute('''
+                SELECT line_num, event_time, event_type, event_outcome, SUBSTR(message, 1, 240)
+                FROM logs
+                WHERE event_type LIKE 'TOMCAT_%' OR event_type LIKE 'JVM_%' OR event_type = 'JDBC_SQL_EXCEPTION'
+                ORDER BY CASE
+                    WHEN event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%' THEN 0
+                    WHEN event_outcome LIKE '%WARN%' THEN 1
+                    ELSE 2
+                END, line_num ASC
+                LIMIT 15
+            ''')
+            tc_samples = [
+                {'lineNum': r[0], 'timestamp': r[1], 'code': r[2], 'outcome': r[3], 'message': r[4]}
+                for r in cur.fetchall()
+            ]
+
+            tomcat_health = {
+                'status': 'CRITICAL' if (tc_oom + tc_ssl + tc_deploy + tc_net + tc_ldap) > 0 else ('WARNING' if (total_tomcat_errors + tc_warn) > 0 else 'HEALTHY'),
+                'totalTomcatIncidents': total_tomcat_incidents,
+                'totalTomcatErrors': total_tomcat_errors,
+                'clientAbortsIgnored': tc_abort,
+                'indicators': [
+                    {'code': 'JVM_OOM (Heap / Metaspace / GC)', 'count': tc_oom, 'severity': 'CRÍTICO' if tc_oom > 0 else 'OK'},
+                    {'code': 'TOMCAT_SSL_TLS (Keystore / PKIX / Handshake)', 'count': tc_ssl, 'severity': 'CRÍTICO' if tc_ssl > 0 else 'OK'},
+                    {'code': 'TOMCAT_LDAP_ERROR (Directorio JNDI / LDAPS)', 'count': tc_ldap, 'severity': 'ALTO' if tc_ldap > 0 else 'OK'},
+                    {'code': 'TOMCAT_DEPLOY_ERROR (Lifecycle / listenerStart / JARs)', 'count': tc_deploy, 'severity': 'CRÍTICO' if tc_deploy > 0 else 'OK'},
+                    {'code': 'TOMCAT_NETWORK_ERROR (Bind / SocketTimeout / Connect)', 'count': tc_net, 'severity': 'ALTO' if tc_net > 0 else 'OK'},
+                    {'code': 'TOMCAT_THREAD_POOL (StuckThread / maxThreads)', 'count': tc_pool, 'severity': 'ADVERTENCIA' if tc_pool > 0 else 'OK'},
+                    {'code': 'TOMCAT_JAVA_EXCEPTION (Excepciones Java)', 'count': tc_java, 'severity': 'ALTO' if tc_java > 0 else 'OK'},
+                    {'code': 'TOMCAT_SEVERE (Otros errores SEVERE)', 'count': tc_severe, 'severity': 'ALTO' if tc_severe > 0 else 'OK'},
+                    {'code': 'TOMCAT_WARN (Advertencias Catalina)', 'count': tc_warn, 'severity': 'ADVERTENCIA' if tc_warn > 0 else 'OK'},
+                    {'code': 'TOMCAT_CLIENT_ABORT (Cierre cliente HTTP, no error servidor)', 'count': tc_abort, 'severity': 'INFO'},
+                    {'code': 'TOMCAT_LIFECYCLE (Arranque / Parada servidor)', 'count': tc_lifecycle, 'severity': 'INFO'}
+                ],
+                'evidenceSamples': tc_samples
+            }
+
             # 7. Automated Post-Mortem Forensic Summary
             cur.execute('''
                 SELECT MIN(event_time), MAX(event_time)
@@ -2724,8 +3208,16 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             migration_errors = sum(c['failCount'] for c in code_matrix if c['kind'] == 'IDAAS_MIGRATION')
             auth_520_errors = sum(c['failCount'] for c in code_matrix if c['kind'] == 'ERROR_520')
+            tomcat_jvm_errors = sum(c['failCount'] for c in code_matrix if c['kind'] == 'TOMCAT_JVM')
 
-            if total_db_incidents > max(migration_errors, auth_520_errors) and total_db_incidents > 0:
+            if tomcat_jvm_errors > max(total_db_incidents, migration_errors, auth_520_errors) and tomcat_jvm_errors > 0:
+                primary_vector = 'SERVIDOR DE APLICACIONES TOMCAT / JVM (catalina.out)'
+                executive_verdict = (
+                    f'La mayor concentración de fallos proviene del contenedor Apache Tomcat / JVM '
+                    f'({tomcat_jvm_errors:,} incidentes clasificados tras agrupar stack traces Java, '
+                    f'con {total_db_incidents:,} incidentes BD/JDBC y {auth_520_errors:,} eventos 520xxx).'
+                )
+            elif total_db_incidents > max(migration_errors, auth_520_errors) and total_db_incidents > 0:
                 primary_vector = 'INFRAESTRUCTURA / BASE DE DATOS (Oracle / JDBC)'
                 executive_verdict = f'Se confirmó que la causa primaria de degradación proviene de la capa de Base de Datos ({total_db_incidents:,} incidentes de persistencia/ORA detectados). Los fallos de usuarios asociados son síntoma secundario de interrupción de lectura/escritura en BD.'
             elif migration_errors > 0 and migration_errors >= auth_520_errors:
@@ -2746,9 +3238,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'executiveVerdict': executive_verdict,
                 'breakdown': {
                     'databaseIncidents': total_db_incidents,
+                    'tomcatJvmErrors': tomcat_jvm_errors,
                     'migrationCollisions': migration_errors,
                     'authentication520Errors': auth_520_errors,
-                    'otherSystemErrors': max(0, total_errors - (total_db_incidents + migration_errors + auth_520_errors))
+                    'otherSystemErrors': max(0, total_errors - (total_db_incidents + migration_errors + auth_520_errors + tomcat_jvm_errors))
                 },
                 'officialPortals': [
                     {
@@ -2788,11 +3281,12 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'patternClusters': pattern_clusters,
                 'codeMatrix': code_matrix,
                 'dbHealth': db_health,
+                'tomcatHealth': tomcat_health,
                 'postMortem': post_mortem
             }
 
             try:
-                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('forensic_matrix_v3', json.dumps(result_payload, ensure_ascii=False)))
+                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('forensic_matrix_v4', json.dumps(result_payload, ensure_ascii=False)))
                 conn.commit()
             except Exception:
                 pass

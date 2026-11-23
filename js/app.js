@@ -1498,12 +1498,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.9.0',
-    build: 607,
+    version: 'v3.9.1',
+    build: 608,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'PCAP-WIRESHARK-ANALYZER-390',
+    gitCommit: 'CATALINA-TOMCAT-NATIVE-391',
     gitBranch: 'main',
-    buildDate: '2026-11-23 15:00',
+    buildDate: '2026-11-23 16:00',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -3918,6 +3918,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const forensicFallback = window.UserTraceReport ? window.UserTraceReport.buildLocalForensicFallback() : { patternClusters: [], codeMatrix: [], dbHealth: { status: 'HEALTHY', totalDbIncidents: 0, indicators: [] }, postMortem: {} };
     if (fmData) {
       if (fmData.dbHealth) forensicFallback.dbHealth = fmData.dbHealth;
+      if (fmData.tomcatHealth) forensicFallback.tomcatHealth = fmData.tomcatHealth;
       if (fmData.postMortem) forensicFallback.postMortem = fmData.postMortem;
     }
     const codeToUsersLookup = {};
@@ -5090,11 +5091,17 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     function getDetectedCodes(regex) {
       const set = new Set();
       targetLogs.forEach(l => {
-        const msg = l.message || '';
+        const msg = `${l.entrustCode || ''} ${l.message || ''}`;
         if (regex.test(msg)) {
-          const match = msg.match(/(?:\[|\b)(520\d{4}|AUD\d+)(?:\]|\b)/i);
+          const match = msg.match(/(?:\[|\b)(520\d{4}|AUD\d+|JDBC_SQL_EXCEPTION|JVM_OOM|TOMCAT_[A-Z_]+)(?:\]|\b)/i);
           if (match) set.add(match[1].toUpperCase());
         }
+      });
+      (state.globalStreamMetrics?.topCodes || []).forEach(c => {
+        if (c && c.code && regex.test(c.code)) set.add(String(c.code).toUpperCase());
+      });
+      (window.UserTraceReport?.forensicMatrixData?.codeMatrix || []).forEach(cm => {
+        if (cm && cm.code && regex.test(cm.code)) set.add(String(cm.code).toUpperCase());
       });
       return Array.from(set);
     }
@@ -5103,12 +5110,20 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const notFoundCodes = getDetectedCodes(/(5205139|5203004|Unable to find a user|User.*not found)/i);
     const gridPinCodes = getDetectedCodes(/(5201006|5201007|5201008|5201010|5203000|5203007|5203033|5202057|5202050|Card does not match|PIN|Challenge|Grid)/i);
     const apiCodes = getDetectedCodes(/(5202340|Authorization Failure)/i);
-    const dbCodes = getDetectedCodes(/(AUD154|AUD155|AUD150|5201000|5202404|Connection pool|exhaustion|SQLException)/i);
+    const dbCodes = getDetectedCodes(/(AUD154|AUD155|AUD150|5201000|5202404|JDBC_SQL_EXCEPTION|SQL_EXCEPTION|Connection pool|exhaustion|SQLException)/i);
     const pushCodes = getDetectedCodes(/(AUD2309|5209525|Failed delivery|Push)/i);
     const samlCodes = getDetectedCodes(/(SAML|OIDC|OAuth2|Assertion|X509|Certificate)/i);
 
-    const hasTomcatOom = targetLogs.some(l => /(OutOfMemoryError|Java heap space)/i.test(l.message || ''));
-    const hasTomcatSsl = targetLogs.some(l => /(SSLHandshakeException|PKIX path building failed)/i.test(l.message || ''));
+    const hasMetricCode = (re) => (
+      targetLogs.some(l => re.test(`${l.entrustCode || ''} ${l.message || ''}`)) ||
+      (state.globalStreamMetrics?.topCodes || []).some(c => re.test(c.code || '')) ||
+      (window.UserTraceReport?.forensicMatrixData?.codeMatrix || []).some(cm => re.test(cm.code || ''))
+    );
+
+    const hasTomcatOom = hasMetricCode(/\bJVM_OOM\b|OutOfMemoryError|Java heap space|GC overhead limit exceeded/i);
+    const hasTomcatSsl = hasMetricCode(/\bTOMCAT_SSL_TLS\b|SSLHandshakeException|PKIX path building failed|KeyStoreException/i);
+    const hasTomcatLdap = hasMetricCode(/\bTOMCAT_LDAP_ERROR\b|LDAPException|javax\.naming\.CommunicationException/i);
+    const hasTomcatDeploy = hasMetricCode(/\bTOMCAT_DEPLOY_ERROR\b|LifecycleException|Error listenerStart|ClassNotFoundException/i);
 
     const isMigration = isCloud && (targetLogs.some(l => /bulkidentityguard|\.assignedgrid/i.test(l.message || '') || /bulkidentityguard|\.assignedgrid/i.test(l.raw || '')) || (state.globalStreamMetrics?.topCodes || []).some(c => c.code.includes('bulkidentityguard')));
 
@@ -5191,17 +5206,33 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     if (hasTomcatOom) {
       if (isEn) {
-        items.push(`<li><strong>JVM Heap Memory Fine-Tuning in Tomcat Catalina:</strong> Memory exhaustion exceptions detected <code>OutOfMemoryError: Java heap space</code>. Increase allocation parameters <code>-Xms2048m -Xmx4096m</code> in <code>catalina.sh / setenv.sh</code>. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} Tomcat Tuning Guide: Section 9.3 - JVM Heap Settings)</em></li>`);
+        items.push(`<li><strong>JVM Memory &amp; Workload Tuning on Embedded Tomcat:</strong> Detected <code>JVM_OOM</code> (<code>OutOfMemoryError</code>). Validate IG 13.0 base RAM requirement (minimum 4 GB for AdoptOpenJDK 11 + embedded Apache Tomcat 8.5.57, scale per user volume), review <code>identityguard.webadmin.bulk.inMemoryThreshold</code> and offload heavy reports to off-peak hours or replicas, plus inspect JVM <code>-Xms/-Xmx</code> flags and heap dumps. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/entrust_ig_130_releasenotes.html" target="_blank" style="color:#0284c7;">IG 13.0 Release Notes</a> &amp; <a href="manuals/IG_130_Admin_WebHelp/ig_admin/usingpropeditor/web_application_settings.htm" target="_blank" style="color:#0284c7;">Web Application Settings</a>)</em></li>`);
       } else {
-        items.push(`<li><strong>Ajuste de Memoria Heap de la JVM en Tomcat Catalina:</strong> Se identificaron excepciones de agotamiento de memoria <code>OutOfMemoryError: Java heap space</code>. Se recomienda incrementar los parámetros <code>-Xms2048m -Xmx4096m</code> en <code>catalina.sh / setenv.sh</code>. <em style="color:#64748b; font-size:11px;">(Ref. Manual ${platformTitle} Tomcat Tuning: Sección 9.3 - JVM Heap Settings)</em></li>`);
+        items.push(`<li><strong>Memoria JVM y Carga Operativa en Tomcat Embebido:</strong> Se detectaron eventos <code>JVM_OOM</code> (<code>OutOfMemoryError</code>). Verificar el requisito base IG 13.0 (mínimo 4 GB RAM en AdoptOpenJDK 11 + Apache Tomcat 8.5.57 embebido, ampliable según volumen de usuarios), ajustar <code>identityguard.webadmin.bulk.inMemoryThreshold</code> y ejecutar reportes pesados en horario bajo o nodos réplica; en JVM/Tomcat estándar, revisar flags <code>-Xms/-Xmx</code> y heap dump. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/entrust_ig_130_releasenotes.html" target="_blank" style="color:#0284c7;">IG 13.0 Release Notes</a> &amp; <a href="manuals/IG_130_Admin_WebHelp/ig_admin/usingpropeditor/web_application_settings.htm" target="_blank" style="color:#0284c7;">Web Application Settings</a>)</em></li>`);
       }
     }
 
     if (hasTomcatSsl) {
       if (isEn) {
-        items.push(`<li><strong>Import CA Certificates into Java Truststore (cacerts):</strong> Identified <code>SSLHandshakeException / PKIX</code> exceptions. Import CA root certificate using <code>keytool -importcert -keystore cacerts</code>. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} TLS Security Guide: Section 6.2 - Keystore Management)</em></li>`);
+        items.push(`<li><strong>Keystore &amp; TLS Certificates in IdentityGuard / Tomcat:</strong> Detected <code>TOMCAT_SSL_TLS</code> (<code>SSLHandshakeException / PKIX</code>). Import trusted certificates into <code>$IG_HOME/etc/keystore</code> (alias <code>tomcat</code>, <code>-storepass entrust</code>) using <code>$IG_HOME/jdk&lt;version&gt;/bin/keytool</code>, and validate <code>IG_CIPHER_OPTS</code> (<code>-Djdk.tls.client.protocols=TLSv1.2</code>) in <code>env_settings.sh</code>. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/IG_130_Admin_WebHelp/ig_admin/config_security/import_certificates_using_keytool.htm" target="_blank" style="color:#0284c7;">Import certificates using keytool</a> &amp; <a href="manuals/IG_130_Admin_WebHelp/ig_admin/outofbandauth/tls_version_downgrade.htm" target="_blank" style="color:#0284c7;">TLS version downgrade</a>)</em></li>`);
       } else {
-        items.push(`<li><strong>Importación de Certificados CA en Truststore de Java (cacerts):</strong> Se detectaron excepciones <code>SSLHandshakeException / PKIX</code>. Se recomienda importar el certificado de la Entidad Emisora mediante <code>keytool -importcert -keystore cacerts</code>. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad ${platformTitle} TLS: Sección 6.2 - Keystore Management)</em></li>`);
+        items.push(`<li><strong>Certificados TLS y Keystore de IdentityGuard / Tomcat:</strong> Se detectaron errores <code>TOMCAT_SSL_TLS</code> (<code>SSLHandshakeException / PKIX</code>). Importar el certificado confiable en <code>$IG_HOME/etc/keystore</code> (alias <code>tomcat</code>, <code>-storepass entrust</code>) con <code>$IG_HOME/jdk&lt;version&gt;/bin/keytool</code>, y validar <code>IG_CIPHER_OPTS</code> (<code>-Djdk.tls.client.protocols=TLSv1.2</code>) en <code>env_settings.sh</code>. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/IG_130_Admin_WebHelp/ig_admin/config_security/import_certificates_using_keytool.htm" target="_blank" style="color:#0284c7;">Import certificates using keytool</a> &amp; <a href="manuals/IG_130_Admin_WebHelp/ig_admin/outofbandauth/tls_version_downgrade.htm" target="_blank" style="color:#0284c7;">TLS version downgrade</a>)</em></li>`);
+      }
+    }
+
+    if (hasTomcatLdap) {
+      if (isEn) {
+        items.push(`<li><strong>LDAPS Directory Certificate &amp; Hostname Validation:</strong> Detected <code>TOMCAT_LDAP_ERROR</code>. Verify the LDAP server certificate contains a hostname (not an IP address) in Subject/subjectAltName, import it into <code>$IG_HOME/etc/keystore</code> (<code>-alias ldapssl</code>), and check <code>identityguard.ldap.url</code>. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/IG_130_Admin_WebHelp/ig_admin/config_igserver/securing_the_ldap_connection_with_ssl.htm" target="_blank" style="color:#0284c7;">Securing the LDAP connection with SSL</a>)</em></li>`);
+      } else {
+        items.push(`<li><strong>Validación LDAPS y Certificado con Hostname en Directorio LDAP:</strong> Se detectaron errores <code>TOMCAT_LDAP_ERROR</code>. Confirmar que el certificado LDAP incluya el hostname (no IP) en Subject/subjectAltName, importarlo en <code>$IG_HOME/etc/keystore</code> (<code>-alias ldapssl</code>) y revisar <code>identityguard.ldap.url</code>. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/IG_130_Admin_WebHelp/ig_admin/config_igserver/securing_the_ldap_connection_with_ssl.htm" target="_blank" style="color:#0284c7;">Securing the LDAP connection with SSL</a>)</em></li>`);
+      }
+    }
+
+    if (hasTomcatDeploy) {
+      if (isEn) {
+        items.push(`<li><strong>Tomcat Component Startup &amp; Driver JAR Placement:</strong> Detected <code>TOMCAT_DEPLOY_ERROR</code>. Confirm required JDBC JARs exist in both <code>$IG_HOME/lib/db</code> and <code>$CATALINA_HOME/lib</code>, and ensure <code>$IG_HOME/etc/keystore</code> keeps at least one trusted certificate. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/IG_130_Admin_WebHelp/ig_admin/config_igserver/adding_a_new_database_repository.htm" target="_blank" style="color:#0284c7;">Adding a new database repository</a> &amp; <a href="manuals/entrust_ig_120_releasenotes.html" target="_blank" style="color:#0284c7;">IG 12.0 Release Notes</a>)</em></li>`);
+      } else {
+        items.push(`<li><strong>Arranque de Componentes Tomcat y Drivers JAR:</strong> Se detectaron errores <code>TOMCAT_DEPLOY_ERROR</code>. Validar que los drivers JAR estén en <code>$IG_HOME/lib/db</code> y <code>$CATALINA_HOME/lib</code>, y confirmar que <code>$IG_HOME/etc/keystore</code> mantenga al menos un certificado confiable. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/IG_130_Admin_WebHelp/ig_admin/config_igserver/adding_a_new_database_repository.htm" target="_blank" style="color:#0284c7;">Adding a new database repository</a> &amp; <a href="manuals/entrust_ig_120_releasenotes.html" target="_blank" style="color:#0284c7;">IG 12.0 Release Notes</a>)</em></li>`);
       }
     }
 

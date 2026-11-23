@@ -20,9 +20,247 @@ if (typeof escapeHtml === 'undefined') {
  * Syslog, Auditd, JSON, Nginx/Apache Access Logs y Trazas Distribuidas OpenTelemetry.
  */
 
+const LP_TOMCAT_MONTHS = {
+  jan: '01', ene: '01', feb: '02', mar: '03',
+  apr: '04', abr: '04', may: '05', jun: '06',
+  jul: '07', aug: '08', ago: '08', sep: '09', sept: '09',
+  oct: '10', nov: '11', dec: '12', dic: '12'
+};
+const LP_RE_TOMCAT_BANNER = /\b(?:Command line argument:|Server version:|Server built:|Server number:|OS Name:|OS Version:|Architecture:|Java Home:|JVM Version:|JVM Vendor:|CATALINA_BASE:|CATALINA_HOME:|VersionLoggerListener\.log|The Apache Tomcat Native library)\b/i;
+const LP_RE_JULI_ONELINE = /^(\d{1,2})-([A-Za-z]{3,4})-(\d{4})\s+(\d{2}:\d{2}:\d{2})(?:[.,]\d{1,6})?\s+(.*)$/;
+const LP_RE_JULI_SIMPLE = /^([A-Za-z]{3,4})\s+(\d{1,2}),\s+(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})(?:\s*(AM|PM|a\.\s*m\.|p\.\s*m\.))?\s+(.*)$/i;
+const LP_RE_ISO_LINE = /^(\d{4})[-/](\d{2})[-/](\d{2})[\sT](\d{2}:\d{2}:\d{2})(?:[.,]\d{1,6})?(?:Z|[+-]\d{2}:?\d{2})?\s+(.*)$/;
+const LP_RE_ENTRUST_SYSLOG = /^([A-Za-z]{3})\s+(\d{1,2})\s+(\d{2}:\d{2}:\d{2})\s+(\S+)\s+(.*)$/;
+const LP_RE_SIMPLE_LEVEL = /^(SEVERE|WARNING|WARN|INFO|CONFIG|FINE|FINER|FINEST|GRAVE|ADVERTENCIA|INFORMACI[OÓ]N):\s*(.*)$/;
+const LP_JAVA_STACK_PATTERNS = [
+  /^\s+at\s+[A-Za-z0-9_$.<>\/]+\(/,
+  /^\s*Caused by:\s+/,
+  /^\s*Suppressed:\s+/,
+  /^\s*\.\.\.\s+\d+\s+(?:more|common frames omitted)\b/,
+  /^\s*(?:java|javax|jakarta|sun|com\.sun|org\.apache|com\.entrust|oracle|com\.microsoft|org\.postgresql|org\.hibernate|org\.springframework|net\.sf)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b/
+];
+const LP_AUD_FAIL_SET = new Set(['AUD110', 'AUD125', 'AUD126', 'AUD127', 'AUD150', 'AUD153', 'AUD2309', 'AUD4005', 'AUD6002']);
+const LP_AUD_WARN_SET = new Set(['AUD151', 'AUD154', 'AUD155', 'AUD6001']);
+
 class LogParser {
   constructor() {
     this.severityLevels = ['EMERGENCY', 'CRITICAL', 'ERROR', 'WARN', 'WARNING', 'INFO', 'DEBUG'];
+  }
+
+  _parseTomcatTimestamp(line) {
+    if (!line) return { ts: null, rest: line, fmt: null };
+    let m = line.match(LP_RE_JULI_ONELINE);
+    if (m) {
+      const mon = LP_TOMCAT_MONTHS[m[2].toLowerCase()];
+      if (mon) return { ts: `${m[3]}-${mon}-${m[1].padStart(2, '0')} ${m[4]}`, rest: m[5], fmt: 'juli_oneline' };
+    }
+    m = line.match(LP_RE_JULI_SIMPLE);
+    if (m) {
+      const mon = LP_TOMCAT_MONTHS[m[1].toLowerCase()];
+      if (mon) {
+        let hh = parseInt(m[4], 10);
+        const ampm = (m[7] || '').toLowerCase().replace(/[\s.]/g, '');
+        if (ampm === 'am' && hh === 12) hh = 0;
+        else if (ampm === 'pm' && hh < 12) hh += 12;
+        return { ts: `${m[3]}-${mon}-${m[2].padStart(2, '0')} ${String(hh).padStart(2, '0')}:${m[5]}:${m[6]}`, rest: m[8], fmt: 'juli_simple' };
+      }
+    }
+    m = line.match(LP_RE_ISO_LINE);
+    if (m) return { ts: `${m[1]}-${m[2]}-${m[3]} ${m[4]}`, rest: m[5], fmt: 'iso' };
+    m = line.match(LP_RE_ENTRUST_SYSLOG);
+    if (m) {
+      const mon = LP_TOMCAT_MONTHS[m[1].toLowerCase()];
+      if (mon) return { ts: `${new Date().getFullYear()}-${mon}-${m[2].padStart(2, '0')} ${m[3]}`, rest: m[5], fmt: 'syslog' };
+    }
+    return { ts: null, rest: line, fmt: null };
+  }
+
+  _isJavaStackContinuation(rawLine) {
+    return Boolean(rawLine && LP_JAVA_STACK_PATTERNS.some(re => re.test(rawLine)));
+  }
+
+  _isTomcatSimpleLevelLine(rawLine) {
+    if (!rawLine) return null;
+    const m = rawLine.trim().match(LP_RE_SIMPLE_LEVEL);
+    if (!m) return null;
+    const u = m[1].toUpperCase();
+    const lvl = u === 'GRAVE' ? 'SEVERE' : (u === 'ADVERTENCIA' ? 'WARNING' : ((u === 'INFORMACION' || u === 'INFORMACIÓN') ? 'INFO' : u));
+    return { level: lvl, msg: m[2] };
+  }
+
+  _isTomcatStartupBanner(text) {
+    return Boolean(text && LP_RE_TOMCAT_BANNER.test(text));
+  }
+
+  _extractNonVersionIp(text) {
+    if (!text) return null;
+    if (text.includes('jasperreports') || text.includes('TLS_DHE') || text.includes('virtualizer') || text.includes('delete.on.exit')) return null;
+    const re = /(?:^|[^.\d])((?:\d{1,3}\.){3}\d{1,3})(?![.\d])/g;
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      const ip = m[1];
+      if (ip === '127.0.0.1' || ip === '0.0.0.0' || ip.startsWith('255.')) continue;
+      if (!ip.split('.').every(p => { const n = Number(p); return !isNaN(n) && n >= 0 && n <= 255; })) continue;
+      const prefix = text.slice(Math.max(0, m.index - 28), m.index).toLowerCase();
+      if (/(?:jdk|java|jre|tomcat|version|server number|built|release)\s*[:=\s/\-]*$/.test(prefix)) continue;
+      return ip;
+    }
+    return null;
+  }
+
+  _classifyTomcatJavaEvent(text, baseLevel = 'INFO', hasStack = false) {
+    const txt = text || '';
+    const low = txt.toLowerCase();
+    let baseU = (baseLevel || 'INFO').toUpperCase();
+    if (baseU === 'GRAVE') baseU = 'SEVERE';
+    else if (baseU === 'ADVERTENCIA') baseU = 'WARNING';
+
+    const c520 = txt.match(/(?:\b|\[)(520\d{4})(?:\b|\])/);
+    if (c520) return { code: c520[1], level: 'ERROR', service: 'IG.SYSTEM' };
+
+    const aud = txt.match(/(?:\b|\[)(AUD\d{3,4})(?:\b|\])/i);
+    if (aud) {
+      const audCode = aud[1].toUpperCase();
+      let lvl = 'INFO';
+      if (LP_AUD_FAIL_SET.has(audCode) || baseU === 'ERROR' || baseU === 'SEVERE' || baseU === 'FATAL' || baseU === 'CRITICAL') lvl = 'ERROR';
+      else if (LP_AUD_WARN_SET.has(audCode) || baseU === 'WARNING' || baseU === 'WARN') lvl = 'WARN';
+      return { code: audCode, level: lvl, service: 'IG.AUDIT' };
+    }
+
+    const ora = txt.match(/\b(ORA-\d{5})\b/i);
+    if (ora) return { code: ora[1].toUpperCase(), level: 'CRITICAL', service: 'Oracle Database' };
+
+    if (/(?:ClientAbortException|Broken pipe|Connection reset by peer)/i.test(txt)) {
+      return { code: 'TOMCAT_CLIENT_ABORT', level: 'INFO', service: 'Tomcat HTTP ClientAbort' };
+    }
+    if (/(?:OutOfMemoryError|Java heap space|GC overhead limit exceeded|Metaspace|PermGen space|unable to create new native thread)/i.test(txt)) {
+      return { code: 'JVM_OOM', level: 'CRITICAL', service: 'Tomcat JVM Memory' };
+    }
+    if (/(?:SSLHandshakeException|PKIX path building failed|SunCertPathBuilderException|CertificateExpiredException|CertificateNotYetValidException|KeyStoreException|UnrecoverableKeyException|SSLException|handshake_failure|bad_certificate|certificate_unknown|protocol_version)/i.test(txt)) {
+      return { code: 'TOMCAT_SSL_TLS', level: 'ERROR', service: 'Tomcat TLS / Keystore' };
+    }
+    if (/(?:SQLException|SQLRecoverableException|SQLTransientConnectionException|SQLNonTransientConnectionException|SQLTimeoutException|CannotGetJdbcConnectionException|HikariPool|BasicDataSource|PoolExhaustedException|CommunicationsException|JdbcCardRepository|BlobAccess|AuditDBLogger|No suitable driver)/i.test(txt)) {
+      return { code: 'JDBC_SQL_EXCEPTION', level: 'ERROR', service: 'Tomcat JDBC Pool' };
+    }
+    if (/(?:LDAPException|javax\.naming\.CommunicationException|javax\.naming\.AuthenticationException|javax\.naming\.NamingException|PartialResultException|LDAP:\s*error code)/i.test(txt)) {
+      return { code: 'TOMCAT_LDAP_ERROR', level: 'ERROR', service: 'Tomcat LDAP / JNDI' };
+    }
+    if (/(?:BindException|Address already in use|ConnectException|SocketTimeoutException|UnknownHostException|NoRouteToHostException|Port\s+\d+.*already in use)/i.test(txt)) {
+      return { code: 'TOMCAT_NETWORK_ERROR', level: 'ERROR', service: 'Tomcat Network / Socket' };
+    }
+    if (/(?:ClassNotFoundException|NoClassDefFoundError|UnsatisfiedLinkError|LifecycleException|Failed to start component|Error listenerStart|Error filterStart|startup failed)/i.test(txt)) {
+      return { code: 'TOMCAT_DEPLOY_ERROR', level: 'CRITICAL', service: 'Tomcat Lifecycle / Deploy' };
+    }
+    if (/(?:StuckThreadDetectionValve|All threads .* are currently busy|maxThreads|RejectedExecutionException|failed to stop thread|memory leak)/i.test(txt)) {
+      const isErr = baseU === 'SEVERE' || baseU === 'FATAL' || baseU === 'ERROR' || baseU === 'CRITICAL' || low.includes('rejectedexecutionexception');
+      return { code: 'TOMCAT_THREAD_POOL', level: isErr ? 'ERROR' : 'WARN', service: 'Tomcat Executor / Threads' };
+    }
+
+    const isErrLvl = baseU === 'SEVERE' || baseU === 'FATAL' || baseU === 'ERROR' || baseU === 'CRITICAL';
+    if ((isErrLvl || hasStack) && (/\b[a-z][a-z0-9_.]*\.[A-Z][A-Za-z0-9_]*(?:Exception|Error|Throwable)\b/.test(txt) || low.includes('caused by:'))) {
+      return { code: 'TOMCAT_JAVA_EXCEPTION', level: 'ERROR', service: 'Tomcat JVM Exception' };
+    }
+    if (isErrLvl) return { code: 'TOMCAT_SEVERE', level: 'ERROR', service: 'Tomcat Catalina' };
+    if (baseU === 'WARNING' || baseU === 'WARN') return { code: 'TOMCAT_WARN', level: 'WARN', service: 'Tomcat Catalina' };
+    if (/(?:Server startup in|Starting ProtocolHandler|Starting Servlet Engine|Deploying web application|Deployment of web application|Stopping service|Destroying ProtocolHandler|Initialization processed in)/i.test(txt)) {
+      return { code: 'TOMCAT_LIFECYCLE', level: 'INFO', service: 'Tomcat Catalina' };
+    }
+    return { code: 'TOMCAT_INFO', level: 'INFO', service: 'Tomcat Catalina' };
+  }
+
+  _parseSingleEventRecord(line, index, lastSeenTs = '') {
+    let parsed = this.tryParseEntrustMigrationLog(line, index, lastSeenTs);
+    if (!parsed) parsed = this.fastParseEntrustBracket(line, index);
+    if (!parsed) parsed = this.tryParseEntrustIdentityGuard(line, index, lastSeenTs);
+    if (!parsed) parsed = this.tryParseSoapWebService(line, index, lastSeenTs);
+    if (!parsed) parsed = this.tryParseTomcatCatalina(line, index, lastSeenTs);
+    if (!parsed) parsed = this.tryParseEntrustIdaasAuditTsv(line, index);
+    if (!parsed) parsed = this.tryParseCsv(line, index, lastSeenTs);
+    if (!parsed) parsed = this.tryParseJson(line, index);
+    if (!parsed) parsed = this.tryParseAuditd(line, index);
+    if (!parsed) parsed = this.tryParseSyslog(line, index);
+    if (!parsed) parsed = this.tryParseWebAccess(line, index);
+    if (!parsed) parsed = this.fallbackParse(line, index, lastSeenTs);
+    return parsed;
+  }
+
+  _applyFoldedStack(parsed, slot) {
+    if (!parsed || (!slot.stackFrames && slot.causes.length === 0)) return parsed;
+    const combined = `${parsed.message || ''} ${slot.causes.join(' ')}`;
+    const cls = this._classifyTomcatJavaEvent(combined, slot.baseLevel || parsed.level || 'INFO', true);
+    const oraCause = slot.causes.join(' ').match(/\b(ORA-\d{5})\b/i);
+    if (slot.lockedCode) {
+      if (oraCause) {
+        parsed.entrustCode = oraCause[1].toUpperCase();
+        parsed.level = 'CRITICAL';
+        parsed.service = 'Oracle Database';
+      }
+    } else {
+      parsed.entrustCode = cls.code;
+      parsed.level = cls.level;
+      parsed.service = cls.service;
+    }
+    const extraParts = [];
+    if (slot.causes.length > 0) {
+      extraParts.push('Root Cause: ' + slot.causes[slot.causes.length - 1].replace(/^Caused by:\s*/i, '').trim());
+    }
+    if (slot.entrustFrame) {
+      extraParts.push('Frame: ' + slot.entrustFrame);
+    }
+    if (extraParts.length > 0) {
+      const extraStr = ' | ' + extraParts.join(' | ');
+      const baseMsg = String(parsed.message || '');
+      parsed.message = (baseMsg.length + extraStr.length > 600)
+        ? (baseMsg.slice(0, Math.max(180, 596 - extraStr.length)).trimEnd() + '…' + extraStr).slice(0, 600)
+        : (baseMsg + extraStr);
+    }
+    if (slot.stackFrames > 0) {
+      const suffix = `\n[+${slot.stackFrames} stack frames]`;
+      parsed.raw = (String(slot.raw || parsed.raw || '').slice(0, Math.max(200, 1800 - suffix.length)) + suffix).slice(0, 1800);
+    }
+    return parsed;
+  }
+
+  _foldLinesArray(lines) {
+    const slots = [];
+    for (let i = 0; i < lines.length; i++) {
+      const rawLine = lines[i].replace(/\r$/, '');
+      const trimmed = rawLine.trim();
+      if (!trimmed) continue;
+
+      const prev = slots.length > 0 ? slots[slots.length - 1] : null;
+      if (/^\[520\d{4}\]/.test(trimmed) && prev) {
+        prev.line = prev.line + ' \n ' + trimmed;
+        prev.raw = (prev.raw + '\n' + trimmed).slice(0, 1600);
+      } else if (prev && prev.isTomcatSimpleHdr && this._isTomcatSimpleLevelLine(rawLine)) {
+        const lvlPair = this._isTomcatSimpleLevelLine(rawLine);
+        prev.isTomcatSimpleHdr = false;
+        prev.baseLevel = lvlPair.level;
+        prev.line = `${prev.line} — ${lvlPair.level}: ${lvlPair.msg}`;
+        prev.raw = (prev.raw + '\n' + trimmed).slice(0, 1600);
+      } else if (prev && this._isJavaStackContinuation(rawLine)) {
+        prev.stackFrames++;
+        if (/^(?:Caused by:|Suppressed:)|^(?:java|javax|jakarta|oracle|org\.apache|com\.entrust)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b/.test(trimmed)) {
+          if (prev.causes.length < 6) prev.causes.push(trimmed.slice(0, 220));
+        }
+        if (!prev.entrustFrame && trimmed.includes('com.entrust.')) {
+          prev.entrustFrame = trimmed.replace(/^at\s+/, '').trim().slice(0, 140);
+        }
+        if (prev.raw.length < 1550) prev.raw = (prev.raw + '\n' + trimmed).slice(0, 1600);
+      } else {
+        slots.push({
+          line: trimmed,
+          raw: trimmed,
+          isTomcatSimpleHdr: LP_RE_JULI_SIMPLE.test(trimmed),
+          baseLevel: 'INFO',
+          lockedCode: /^(?:520\d{4}|AUD\d+|ORA-)/i.test(trimmed),
+          stackFrames: 0,
+          causes: [],
+          entrustFrame: ''
+        });
+      }
+    }
+    return slots;
   }
 
   /**
@@ -35,56 +273,20 @@ class LogParser {
 
     const lines = rawContent.split(/\r?\n/);
     const parsedEntries = [];
+    const slots = this._foldLinesArray(lines);
+    let lastSeenTs = '';
 
-    // Pre-procesar para combinar líneas multi-línea de Entrust IdentityGuard ([520xxx])
-    const mergedLines = [];
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
-
-      // Si la línea actual empieza por un código [520xxxx] y la línea anterior es un header de Entrust IdentityGuard
-      if (/^\[520\d{4}\]/.test(line) && mergedLines.length > 0) {
-        const lastIndex = mergedLines.length - 1;
-        mergedLines[lastIndex] = mergedLines[lastIndex] + ' \n ' + line;
-      } else {
-        mergedLines.push(line);
+    slots.forEach((slot, index) => {
+      const parsed = this._parseSingleEventRecord(slot.line, index, lastSeenTs);
+      if (parsed.timestamp && /^\d{4}-\d{2}-\d{2}/.test(parsed.timestamp)) {
+        lastSeenTs = parsed.timestamp;
       }
-    }
-
-    mergedLines.forEach((line, index) => {
-      let parsed = this.tryParseEntrustMigrationLog(line, index);
-
-      if (!parsed) {
-        parsed = this.tryParseEntrustIdentityGuard(line, index);
-      }
-      if (!parsed) {
-        parsed = this.tryParseSoapWebService(line, index);
-      }
-      if (!parsed) {
-        parsed = this.tryParseTomcatCatalina(line, index);
-      }
-      if (!parsed) {
-        parsed = this.tryParseCsv(line, index);
-      }
-      if (!parsed) {
-        parsed = this.tryParseJson(line, index);
-      }
-      if (!parsed) {
-        parsed = this.tryParseAuditd(line, index);
-      }
-      if (!parsed) {
-        parsed = this.tryParseSyslog(line, index);
-      }
-      if (!parsed) {
-        parsed = this.tryParseWebAccess(line, index);
-      }
-      if (!parsed) {
-        parsed = this.fallbackParse(line, index);
-      }
+      slot.lockedCode = Boolean(parsed.entrustCode && /^(?:520\d{4}|AUD\d+|ORA-|bulkidentityguard)/i.test(parsed.entrustCode));
+      this._applyFoldedStack(parsed, slot);
 
       // Enriquecer con el motor de Base de Conocimientos
       if (window.knowledgeBaseEngine) {
-        parsed.diagnostic = window.knowledgeBaseEngine.diagnoseLog(parsed.message || parsed.raw);
+        parsed.diagnostic = window.knowledgeBaseEngine.diagnoseLog(parsed.message || parsed.raw, parsed.entrustCode || '');
       }
 
       parsedEntries.push(parsed);
@@ -108,18 +310,44 @@ class LogParser {
     const startTime = performance.now();
     const lines = rawContent.split(/\r?\n/);
     const totalLines = lines.length;
-    const mergedLines = [];
+    const slots = [];
 
-    // Pre-procesamiento de combinación multi-línea asíncrono
+    // Pre-procesamiento de combinación multi-línea y plegado de stack traces asíncrono
     for (let i = 0; i < totalLines; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
+      const rawLine = lines[i].replace(/\r$/, '');
+      const trimmed = rawLine.trim();
+      if (!trimmed) continue;
 
-      if (/^\[520\d{4}\]/.test(line) && mergedLines.length > 0) {
-        const lastIndex = mergedLines.length - 1;
-        mergedLines[lastIndex] = mergedLines[lastIndex] + ' \n ' + line;
+      const prev = slots.length > 0 ? slots[slots.length - 1] : null;
+      if (/^\[520\d{4}\]/.test(trimmed) && prev) {
+        prev.line = prev.line + ' \n ' + trimmed;
+        prev.raw = (prev.raw + '\n' + trimmed).slice(0, 1600);
+      } else if (prev && prev.isTomcatSimpleHdr && this._isTomcatSimpleLevelLine(rawLine)) {
+        const lvlPair = this._isTomcatSimpleLevelLine(rawLine);
+        prev.isTomcatSimpleHdr = false;
+        prev.baseLevel = lvlPair.level;
+        prev.line = `${prev.line} — ${lvlPair.level}: ${lvlPair.msg}`;
+        prev.raw = (prev.raw + '\n' + trimmed).slice(0, 1600);
+      } else if (prev && this._isJavaStackContinuation(rawLine)) {
+        prev.stackFrames++;
+        if (/^(?:Caused by:|Suppressed:)|^(?:java|javax|jakarta|oracle|org\.apache|com\.entrust)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b/.test(trimmed)) {
+          if (prev.causes.length < 6) prev.causes.push(trimmed.slice(0, 220));
+        }
+        if (!prev.entrustFrame && trimmed.includes('com.entrust.')) {
+          prev.entrustFrame = trimmed.replace(/^at\s+/, '').trim().slice(0, 140);
+        }
+        if (prev.raw.length < 1550) prev.raw = (prev.raw + '\n' + trimmed).slice(0, 1600);
       } else {
-        mergedLines.push(line);
+        slots.push({
+          line: trimmed,
+          raw: trimmed,
+          isTomcatSimpleHdr: LP_RE_JULI_SIMPLE.test(trimmed),
+          baseLevel: 'INFO',
+          lockedCode: false,
+          stackFrames: 0,
+          causes: [],
+          entrustFrame: ''
+        });
       }
 
       if (i % (chunkSize * 2) === 0) {
@@ -131,29 +359,25 @@ class LogParser {
       }
     }
 
-    const totalMerged = mergedLines.length;
+    const totalMerged = slots.length;
     const parsedEntries = [];
+    let lastSeenTs = '';
 
     for (let i = 0; i < totalMerged; i++) {
-      const line = mergedLines[i];
-      let parsed = this.tryParseEntrustMigrationLog(line, i);
-      if (!parsed) parsed = this.fastParseEntrustBracket(line, i);
-      if (!parsed) parsed = this.tryParseEntrustIdentityGuard(line, i);
-      if (!parsed) parsed = this.tryParseSoapWebService(line, i);
-      if (!parsed) parsed = this.tryParseTomcatCatalina(line, i);
-      if (!parsed) parsed = this.tryParseCsv(line, i);
-      if (!parsed) parsed = this.tryParseJson(line, i);
-      if (!parsed) parsed = this.tryParseAuditd(line, i);
-      if (!parsed) parsed = this.tryParseSyslog(line, i);
-      if (!parsed) parsed = this.tryParseWebAccess(line, i);
-      if (!parsed) parsed = this.fallbackParse(line, i);
+      const slot = slots[i];
+      const parsed = this._parseSingleEventRecord(slot.line, i, lastSeenTs);
+      if (parsed.timestamp && /^\d{4}-\d{2}-\d{2}/.test(parsed.timestamp)) {
+        lastSeenTs = parsed.timestamp;
+      }
+      slot.lockedCode = Boolean(parsed.entrustCode && /^(?:520\d{4}|AUD\d+|ORA-|bulkidentityguard)/i.test(parsed.entrustCode));
+      this._applyFoldedStack(parsed, slot);
 
       // Fast-path: Diagnóstico profundo solo para eventos con indicadores de error o auditoría
-      const hasDiagKeyword = /(520\d{4}|AUD\d+|error|critical|fatal|warn|fail|exception|oom|kill|timeout|disconnect|broken|unauthorized|denied|fault)/i.test(line);
+      const hasDiagKeyword = /(520\d{4}|AUD\d+|TOMCAT_|JVM_OOM|JDBC_SQL|ORA-|error|critical|fatal|warn|fail|exception|oom|kill|timeout|disconnect|broken|unauthorized|denied|fault|severe)/i.test((parsed.entrustCode || '') + ' ' + slot.line + ' ' + (parsed.message || ''));
       if (hasDiagKeyword && window.knowledgeBaseEngine) {
         parsed.diagnostic = window.knowledgeBaseEngine.diagnoseLogWithCli 
           ? window.knowledgeBaseEngine.diagnoseLogWithCli(parsed.message || parsed.raw)
-          : window.knowledgeBaseEngine.diagnoseLog(parsed.message || parsed.raw);
+          : window.knowledgeBaseEngine.diagnoseLog(parsed.message || parsed.raw, parsed.entrustCode || '');
       } else {
         parsed.diagnostic = {
           matched: false,
@@ -198,7 +422,7 @@ class LogParser {
     if (window.Worker) {
       return new Promise((resolve) => {
         try {
-          const worker = new Worker('js/log-parser-worker.js?v=550.0');
+          const worker = new Worker('js/log-parser-worker.js?v=608.0');
           worker.postMessage({ rawContent, clientId });
 
           worker.onmessage = (e) => {
@@ -233,7 +457,7 @@ class LogParser {
     if (window.Worker) {
       return new Promise((resolve) => {
         try {
-          const worker = new Worker('js/log-parser-worker.js?v=' + Date.now());
+          const worker = new Worker('js/log-parser-worker.js?v=608.0');
           worker.postMessage({ file: file, clientId: clientId, mode: 'fileBlob' });
 
           worker.onmessage = (e) => {
@@ -243,19 +467,25 @@ class LogParser {
                 onProgress(
                   data.current,
                   data.total,
-                  `⚡ Streaming Multihilo: ${data.mbProcessed} MB / ${data.totalMb} MB (${data.pct}%) — ${data.lineCount.toLocaleString()} eventos | ${data.totalErrors} errores`
+                  `⚡ Streaming Multihilo: ${data.mbProcessed} MB / ${data.totalMb} MB (${data.pct}%) — ${(data.lineCount || 0).toLocaleString()} eventos | ${data.totalErrors || 0} errores`
                 );
               }
-            } else if (data.type === 'complete') {
+            } else if (data.type === 'complete' || data.type === 'done') {
               worker.terminate();
               if (onProgress) onProgress(file.size, file.size, `✅ 100% Completado (${(data.totalLinesProcessed || 0).toLocaleString()} eventos procesados)`);
               this.correlateAutoHealing(data.parsedLogs);
               resolve({
                 parsedLogs: data.parsedLogs || [],
-                totalLinesProcessed: data.totalLinesProcessed || data.parsedLogs.length,
+                totalLinesProcessed: data.totalLinesProcessed || (data.parsedLogs ? data.parsedLogs.length : 0),
                 totalErrors: data.totalErrors || 0,
                 totalWarnings: data.totalWarnings || 0,
                 globalMetrics: data.globalMetrics || null
+              });
+            } else if (data.type === 'error') {
+              worker.terminate();
+              console.warn('Worker reported error, fallback streaming:', data.error);
+              this.parseFileStreaming(file, clientId, onProgress).then(resolve).catch(() => {
+                resolve({ parsedLogs: [], totalLinesProcessed: 0, totalErrors: 0, totalWarnings: 0 });
               });
             }
           };
@@ -263,15 +493,19 @@ class LogParser {
           worker.onerror = (err) => {
             console.error('Worker error fallback:', err);
             worker.terminate();
-            resolve({ parsedLogs: [], totalLinesProcessed: 0, totalErrors: 0, totalWarnings: 0 });
+            this.parseFileStreaming(file, clientId, onProgress).then(resolve).catch(() => {
+              resolve({ parsedLogs: [], totalLinesProcessed: 0, totalErrors: 0, totalWarnings: 0 });
+            });
           };
         } catch (e) {
-          console.warn('Worker init error:', e);
-          resolve({ parsedLogs: [], totalLinesProcessed: 0, totalErrors: 0, totalWarnings: 0 });
+          console.warn('Worker init error, fallback streaming:', e);
+          this.parseFileStreaming(file, clientId, onProgress).then(resolve).catch(() => {
+            resolve({ parsedLogs: [], totalLinesProcessed: 0, totalErrors: 0, totalWarnings: 0 });
+          });
         }
       });
     } else {
-      return this.parseLargeFileInChunks(file, onProgress);
+      return this.parseFileStreaming(file, clientId, onProgress);
     }
   }
 
@@ -380,9 +614,10 @@ class LogParser {
     if (!line || line.length < 15) return null;
     if (line.charCodeAt(0) !== 91) return null; // Debe comenzar con '['
 
-    const p1 = line.indexOf(']', 1);
-    if (p1 <= 8 || p1 >= 36) return null;
-    const timestamp = line.substring(1, p1);
+    const tsStart = line.charCodeAt(1) === 91 ? 2 : 1;
+    const p1 = line.indexOf(']', tsStart);
+    if (p1 <= 8 || p1 >= 38) return null;
+    const timestamp = line.substring(tsStart, p1).slice(0, 19);
 
     const p2Start = line.indexOf('[', p1 + 1);
     const p2End = p2Start !== -1 ? line.indexOf(']', p2Start + 1) : -1;
@@ -408,7 +643,7 @@ class LogParser {
       level = 'DEBUG';
     }
 
-    // Código 520xxx o AUDxxx
+    // Código 520xxx, AUDxxx o ORA-
     let entrustCode = null;
     const c520Idx = line.indexOf('520');
     if (c520Idx !== -1 && /520\d{4}/.test(line.substring(c520Idx, c520Idx + 7))) {
@@ -418,11 +653,19 @@ class LogParser {
       const audIdx = line.indexOf('AUD');
       if (audIdx !== -1 && /AUD\d{3,4}/i.test(line.substring(audIdx, audIdx + 7))) {
         entrustCode = line.substring(audIdx, audIdx + 7).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+        if (LP_AUD_FAIL_SET.has(entrustCode)) level = 'ERROR';
+        else if (LP_AUD_WARN_SET.has(entrustCode) && level === 'INFO') level = 'WARN';
+      } else {
+        const oraM = line.match(/\b(ORA-\d{5})\b/i);
+        if (oraM) {
+          entrustCode = oraM[1].toUpperCase();
+          level = 'CRITICAL';
+        }
       }
     }
 
     // Extracción de usuario rápida y precisa
-    const user = this.extractUser(line);
+    const user = this._isTomcatStartupBanner(line) ? null : this.extractUser(line);
 
     return {
       id: `entrust-${lineNum}-${Date.now()}`,
@@ -527,51 +770,69 @@ class LogParser {
   }
 
   /**
-   * Parser especializado para Tomcat / Catalina (Entrust IdentityGuard Application Server)
+   * Parser especializado para Tomcat / Catalina (Entrust IdentityGuard Application Server) y Syslog Entrust
    */
-  tryParseTomcatCatalina(line, lineNum) {
-    const isCatalinaPattern = /(catalina|org\.apache\.catalina|com\.entrust|OutOfMemoryError|SQLException|SSLHandshakeException|ClientAbortException|NullPointerException|Servlet\.service)/i.test(line);
-    const dateMatch = line.match(/^(\d{2}-[A-Za-z]{3}-\d{4}\s+\d{2}:\d{2}:\d{2}(?:\.\d+)?)/) ||
-                      line.match(/^([A-Za-z]{3}\s+\d{1,2},\s+\d{4}\s+\d{1,2}:\d{2}:\d{2}\s+(?:AM|PM))/i) ||
-                      line.match(/^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(?:,\d{3})?)/);
+  tryParseTomcatCatalina(line, lineNum, lastSeenTs = '') {
+    if (!line || typeof line !== 'string') return null;
+    const { ts, rest, fmt } = this._parseTomcatTimestamp(line);
+    const hasStackKeyword = this._isJavaStackContinuation(line) || /\b(ORA-\d{5}|SQLException|OutOfMemoryError|SSLHandshakeException|ClientAbortException)\b/.test(line);
+    const isIsoTomcatJava = (fmt === 'iso') && (
+      /\b(?:SEVERE|FATAL|ERROR|WARNING|WARN|INFO|DEBUG|GRAVE|ADVERTENCIA)\b/.test(rest) ||
+      /(?:catalina|org\.apache|com\.entrust|Exception|Error|Server startup|Starting ProtocolHandler|HikariPool|ORA-\d{5}|520\d{4}|AUD\d{3,4})/.test(line)
+    );
+    const isEntrustSyslog = (fmt === 'syslog') && (rest.startsWith('[') || rest.includes('520') || rest.includes('AUD'));
 
-    const levelMatch = line.match(/\b(SEVERE|FATAL|ERROR|WARNING|WARN|INFO|CONFIG|FINE|FINER|FINEST)\b/i);
+    if (!ts && !hasStackKeyword) return null;
+    if (fmt === 'iso' && !isIsoTomcatJava) return null;
+    if (fmt === 'syslog' && !isEntrustSyslog) return null;
 
-    if (!isCatalinaPattern && !dateMatch && !levelMatch) return null;
-
-    let level = 'INFO';
-    const isDisconnection = /(ClientAbortException|Broken pipe|ClientAbort|Connection reset)/i.test(line);
-    if (isDisconnection) {
-      level = 'INFO';
-    } else if (levelMatch) {
-      level = this.normalizeLevel(levelMatch[1]);
-    } else if (/(OutOfMemoryError|SQLException|SSLHandshakeException|FATAL|CRITICAL)/i.test(line)) {
-      level = 'CRITICAL';
-    } else if (/(Exception|Error|Failed)/i.test(line)) {
-      level = 'ERROR';
+    let baseLevel = 'INFO';
+    let msg = rest;
+    if (fmt === 'syslog') {
+      const lvlM = rest.match(/\[(ERROR|FATAL|SEVERE|CRIT|CRITICAL|WARN|WARNING|INFO|DEBUG)\s*\]/i);
+      baseLevel = lvlM ? lvlM[1].toUpperCase() : ((rest.includes('FAILED') || rest.includes('[520')) ? 'ERROR' : 'INFO');
+    } else if (fmt === 'juli_oneline') {
+      const mOne = rest.match(/^([A-ZÁÉÍÓÚÑ]+)\s+\[([^\]]*)\]\s+(.*)$/);
+      if (mOne) {
+        baseLevel = mOne[1].toUpperCase();
+        msg = `[${mOne[2]}] ${mOne[3]}`;
+      } else {
+        const mLvl = rest.match(/^(SEVERE|WARNING|WARN|INFO|CONFIG|FINE|FINER|FINEST|GRAVE|ADVERTENCIA)\s+(.*)$/i);
+        if (mLvl) {
+          baseLevel = mLvl[1].toUpperCase();
+          msg = mLvl[2];
+        }
+      }
+    } else if (fmt === 'juli_simple') {
+      const mLvl = rest.match(/\b(SEVERE|FATAL|ERROR|WARNING|WARN|GRAVE|ADVERTENCIA)\b/);
+      if (mLvl) baseLevel = mLvl[1].toUpperCase();
+    } else if (fmt === 'iso') {
+      const mLvl = rest.match(/^[\[\s]*(SEVERE|FATAL|ERROR|WARNING|WARN|INFO|DEBUG|GRAVE|ADVERTENCIA)[\]\s:]+(.*)$/i)
+        || rest.match(/\b(SEVERE|FATAL|ERROR|WARNING|WARN|INFO|DEBUG)\b/);
+      if (mLvl) {
+        baseLevel = mLvl[1].toUpperCase();
+        if (mLvl[2]) msg = mLvl[2];
+      }
+    } else {
+      baseLevel = /(?:ClientAbortException|Broken pipe|Connection reset by peer)/i.test(line) ? 'INFO' : 'ERROR';
     }
 
-    const timestamp = dateMatch ? dateMatch[1] : new Date().toISOString().replace('T', ' ').substring(0, 19);
-
-    let service = 'Tomcat Catalina / IDG';
-    const exceptionClassMatch = line.match(/\b(java\.[a-zA-Z0-9\._]+Exception|javax\.[a-zA-Z0-9\._]+Exception|java\.lang\.OutOfMemoryError|org\.apache\.[a-zA-Z0-9\._]+)\b/);
-    if (exceptionClassMatch) {
-      service = `Tomcat [${exceptionClassMatch[1].split('.').pop()}]`;
-    }
-
-    const codeMatch = line.match(/(520\d{4}|AUD\d+)/i);
+    const cls = this._classifyTomcatJavaEvent(line, baseLevel, !ts && hasStackKeyword);
+    const timestamp = ts || lastSeenTs || '';
 
     return {
       id: `tomcat-${lineNum}-${Date.now()}`,
       lineNum: lineNum + 1,
-      type: 'Tomcat Catalina',
+      type: fmt === 'syslog' ? 'Entrust Syslog / Catalina' : 'Tomcat Catalina',
       timestamp: timestamp,
-      level: level,
-      hostname: 'idg-tomcat-srv',
-      service: service,
-      message: line,
+      level: cls.level,
+      hostname: fmt === 'syslog' ? 'localhost' : 'idg-tomcat-srv',
+      service: cls.service,
+      message: msg.slice(0, 600),
       raw: line,
-      entrustCode: codeMatch ? codeMatch[1] : null
+      user: this._isTomcatStartupBanner(line) ? null : this.extractUser(line),
+      clientIp: this._extractNonVersionIp(msg),
+      entrustCode: cls.code
     };
   }
 
@@ -895,10 +1156,10 @@ class LogParser {
     };
   }
 
-  fallbackParse(line, lineNum) {
+  fallbackParse(line, lineNum, lastSeenTs = '') {
     let level = 'INFO';
     if (/emergency|alert|critical|fatal|panic/i.test(line)) level = 'CRITICAL';
-    else if (/error|failed|exception|invalid|locked/i.test(line)) level = 'ERROR';
+    else if (/error|failed|exception|invalid|locked|severe/i.test(line)) level = 'ERROR';
     else if (/warning|warn/i.test(line)) level = 'WARN';
 
     let entrustCode = null;
@@ -932,8 +1193,9 @@ class LogParser {
       if (sshTarget) hostLabel = sshTarget[1];
     }
 
+    const { ts } = this._parseTomcatTimestamp(line);
     const timestampMatch = line.match(/(\d{4}[-/.]\d{2}[-/.]\d{2}[\sT]\d{2}:\d{2}:\d{2}(?:[.,]\d{3,6})?)/);
-    const timestamp = timestampMatch ? timestampMatch[1].replace('T', ' ').substring(0, 19) : new Date().toISOString().replace('T', ' ').substring(0, 19);
+    const timestamp = ts || (timestampMatch ? timestampMatch[1].replace('T', ' ').substring(0, 19) : (lastSeenTs || ''));
 
     return {
       id: `log-${lineNum}-${Date.now()}`,
@@ -945,8 +1207,8 @@ class LogParser {
       service: service,
       message: line,
       raw: line,
-      user: this.extractUser(line),
-      clientIp: this.extractClientIp(line),
+      user: this._isTomcatStartupBanner(line) ? null : this.extractUser(line),
+      clientIp: this._extractNonVersionIp(line),
       entrustCode: entrustCode
     };
   }
@@ -992,7 +1254,15 @@ class LogParser {
         'your', 'my', 'who', 'whom', 'which', 'what', 'where', 'when', 'why', 'how', 'all',
         'any', 'some', 'each', 'every', 'other', 'another', 'such', 'only', 'own', 'same',
         'so', 'than', 'too', 'very', 'just', 'now', 'then', 'here', 'there', 'calling', 'main',
-        'type', 'user', 'users', 'admin_console', 'user_3238', 'user_8912', 'user_1042'
+        'type', 'user', 'users', 'admin_console', 'user_3238', 'user_8912', 'user_1042',
+        'catalina', 'tomcat', 'servlet', 'jsp', 'valve', 'connector', 'coyote', 'jasper',
+        'naming', 'wrapper', 'lifecycle', 'protocol', 'standardcontext', 'standardengine',
+        'standardhost', 'standardservice', 'standardwrapper', 'ajp', 'nio', 'apr', 'ssl',
+        'tls', 'keystore', 'truststore', 'cacerts', 'jvm', 'java', 'jdk', 'jre', 'gc',
+        'heap', 'metaspace', 'permgen', 'oom', 'stdout', 'stderr', 'localhost', 'webapps',
+        'bootstrap', 'classloader', 'webappclassloader', 'jndi', 'datasource', 'driver',
+        'hikari', 'dbcp', 'postgres', 'postgresql', 'sqlserver', 'mysql', 'charset',
+        'utf-8', 'iso-8859-1', 'tomcat8', 'tomcat9'
       ]);
       if (stopWords.has(low)) return false;
       if (/^[-.=/\\:;,]/.test(clean)) return false;
@@ -1074,79 +1344,28 @@ class LogParser {
     return isoOrStr;
   }
 
-  parseLine(line, lineNum) {
+  parseLine(line, lineNum, lastSeenTs = '') {
     if (!line || typeof line !== 'string') {
-      return this.fallbackParse('', lineNum || 0);
+      return this.fallbackParse('', lineNum || 0, lastSeenTs);
     }
 
-    let parsed = this.tryParseEntrustIdentityGuard(line, lineNum || 0);
+    let parsed = this.tryParseEntrustMigrationLog(line, lineNum || 0);
+    if (!parsed) parsed = this.fastParseEntrustBracket(line, lineNum || 0);
+    if (!parsed) parsed = this.tryParseEntrustIdentityGuard(line, lineNum || 0);
+    if (!parsed) parsed = this.tryParseSoapWebService(line, lineNum || 0);
+    if (!parsed) parsed = this.tryParseTomcatCatalina(line, lineNum || 0, lastSeenTs);
     if (!parsed) parsed = this.tryParseEntrustIdaasAuditTsv(line, lineNum || 0);
     if (!parsed) parsed = this.tryParseJson(line, lineNum || 0);
     if (!parsed) parsed = this.tryParseAuditd(line, lineNum || 0);
     if (!parsed) parsed = this.tryParseSyslog(line, lineNum || 0);
     if (!parsed) parsed = this.tryParseWebAccess(line, lineNum || 0);
-    if (!parsed) parsed = this.fallbackParse(line, lineNum || 0);
+    if (!parsed) parsed = this.fallbackParse(line, lineNum || 0, lastSeenTs);
 
     if (window.knowledgeBaseEngine) {
-      parsed.diagnostic = window.knowledgeBaseEngine.diagnoseLog(parsed.message || parsed.raw);
+      parsed.diagnostic = window.knowledgeBaseEngine.diagnoseLog(parsed.message || parsed.raw, parsed.entrustCode || '');
     }
 
     return parsed;
-  }
-
-  async parseLargeFileWithWorker(file, clientId, onProgress) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let worker;
-        try {
-          worker = new Worker('js/log-parser-worker.js?v=450.0');
-        } catch (workerErr) {
-          console.warn('Web Worker no disponible, ejecutando en streaming directo:', workerErr);
-          const res = await this.parseFileStreaming(file, clientId, onProgress);
-          return resolve(res);
-        }
-
-        worker.onmessage = (e) => {
-          const data = e.data;
-          if (data.type === 'progress') {
-            if (onProgress) {
-              const currentMb = data.mbProcessed || ((data.current || 0) / (1024 * 1024)).toFixed(0);
-              const totalMb = data.totalMb || ((data.total || file.size) / (1024 * 1024)).toFixed(0);
-              const pct = data.pct || Math.round(((data.current || 0) / (data.total || file.size)) * 100);
-              onProgress(data.current || 0, data.total || file.size, `⚡ Indexando: ${currentMb} MB / ${totalMb} MB (${pct}%) — ${(data.lineCount || 0).toLocaleString()} eventos`);
-            }
-          } else if (data.type === 'complete' || data.type === 'done') {
-            worker.terminate();
-            resolve({
-              parsedLogs: data.parsedLogs || [],
-              totalLinesProcessed: data.totalLinesProcessed || (data.parsedLogs ? data.parsedLogs.length : 0),
-              totalErrors: data.totalErrors || 0,
-              totalWarnings: data.totalWarnings || 0,
-              globalMetrics: data.globalMetrics || null
-            });
-          } else if (data.type === 'error') {
-            worker.terminate();
-            console.error('Error en Web Worker, usando fallback directo:', data.error);
-            this.parseFileStreaming(file, clientId, onProgress).then(resolve).catch(reject);
-          }
-        };
-
-        worker.onerror = (err) => {
-          console.error('Error en Web Worker onerror, usando fallback directo:', err);
-          worker.terminate();
-          this.parseFileStreaming(file, clientId, onProgress).then(resolve).catch(reject);
-        };
-
-        worker.postMessage({
-          file: file,
-          mode: 'fileBlob',
-          clientId: clientId
-        });
-      } catch (err) {
-        console.error('Fallo iniciando parseLargeFileWithWorker, ejecutando fallback:', err);
-        this.parseFileStreaming(file, clientId, onProgress).then(resolve).catch(reject);
-      }
-    });
   }
 
   async parseFileStreaming(file, clientId, onProgress) {
@@ -1155,8 +1374,12 @@ class LogParser {
     let offset = 0;
     let leftover = '';
     let lineCount = 0;
+    let rawLinesRead = 0;
+    let foldedStackLines = 0;
     let totalErrors = 0;
     let totalWarnings = 0;
+    let lastSeenTs = '';
+    let pending = null;
 
     const userCounter = {};
     const ipCounter = {};
@@ -1166,6 +1389,46 @@ class LogParser {
     const displayLogs = [];
     const MAX_DISPLAY_LOGS = 150000;
     let displayErrorCount = 0;
+
+    const commitSlot = (slot) => {
+      if (!slot) return;
+      const parsed = this._parseSingleEventRecord(slot.line, lineCount - 1, lastSeenTs);
+      if (parsed.timestamp && /^\d{4}-\d{2}-\d{2}/.test(parsed.timestamp)) {
+        lastSeenTs = parsed.timestamp;
+      }
+      slot.lockedCode = Boolean(parsed.entrustCode && /^(?:520\d{4}|AUD\d+|ORA-|bulkidentityguard)/i.test(parsed.entrustCode));
+      this._applyFoldedStack(parsed, slot);
+
+      if (clientId) parsed.client = clientId;
+      const isError = parsed.level === 'ERROR' || parsed.level === 'CRITICAL';
+      const isWarn = parsed.level === 'WARN';
+      if (isError) totalErrors++;
+      if (isWarn) totalWarnings++;
+
+      const codeKey = parsed.entrustCode || parsed.code || parsed.service || 'UNKNOWN';
+      codeCounter[codeKey] = (codeCounter[codeKey] || 0) + 1;
+
+      if (parsed.user && parsed.user !== 'unknown' && parsed.user !== 'N/A') {
+        userCounter[parsed.user] = (userCounter[parsed.user] || 0) + 1;
+      }
+      if (parsed.clientIp && parsed.clientIp !== 'N/A') {
+        ipCounter[parsed.clientIp] = (ipCounter[parsed.clientIp] || 0) + 1;
+      }
+      const dateBucket = (parsed.timestamp || '').substring(0, 16);
+      if (dateBucket && /^\d{4}-\d{2}-\d{2}/.test(dateBucket)) {
+        if (!timeBuckets[dateBucket]) timeBuckets[dateBucket] = { total: 0, critical: 0, warn: 0 };
+        timeBuckets[dateBucket].total++;
+        if (isError) timeBuckets[dateBucket].critical++;
+        if (isWarn) timeBuckets[dateBucket].warn++;
+      }
+
+      if (isError && displayErrorCount < 100000) {
+        displayErrorCount++;
+        displayLogs.push(parsed);
+      } else if (!isError && displayLogs.length < MAX_DISPLAY_LOGS && (displayLogs.length < 50000 || lineCount % 10 === 0)) {
+        displayLogs.push(parsed);
+      }
+    };
 
     while (offset < fileSize) {
       const slice = file.slice(offset, Math.min(offset + chunkSize, fileSize));
@@ -1182,42 +1445,53 @@ class LogParser {
       }
 
       for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        lineCount++;
+        const rawLine = lines[i].replace(/\r$/, '');
+        const trimmed = rawLine.trim();
+        if (!trimmed) continue;
+        rawLinesRead++;
 
-        let parsed = this.tryParseEntrustMigrationLog(line, lineCount);
-        if (!parsed) parsed = this.fastParseEntrustBracket(line, lineCount);
-        if (!parsed) parsed = this.tryParseEntrustIdentityGuard(line, lineCount);
-        if (!parsed) parsed = this.tryParseCsv(line, lineCount);
-        if (!parsed) parsed = this.tryParseJson(line, lineCount);
-        if (!parsed) parsed = this.tryParseSyslog(line, lineCount);
-        if (!parsed) parsed = this.fallbackParse(line, lineCount);
-
-        if (parsed) {
-          if (clientId) parsed.client = clientId;
-          const isError = parsed.level === 'ERROR' || parsed.level === 'CRITICAL';
-          const isWarn = parsed.level === 'WARN';
-          if (isError) totalErrors++;
-          if (isWarn) totalWarnings++;
-
-          const codeKey = parsed.entrustCode || parsed.code || parsed.service || 'UNKNOWN';
-          codeCounter[codeKey] = (codeCounter[codeKey] || 0) + 1;
-
-          if (parsed.user && parsed.user !== 'unknown' && parsed.user !== 'N/A') {
-            userCounter[parsed.user] = (userCounter[parsed.user] || 0) + 1;
-          }
-          if (parsed.clientIp && parsed.clientIp !== 'N/A') {
-            ipCounter[parsed.clientIp] = (ipCounter[parsed.clientIp] || 0) + 1;
-          }
-
-          if (isError && displayErrorCount < 100000) {
-            displayErrorCount++;
-            displayLogs.push(parsed);
-          } else if (!isError && displayLogs.length < MAX_DISPLAY_LOGS && (displayLogs.length < 50000 || lineCount % 10 === 0)) {
-            displayLogs.push(parsed);
-          }
+        if (pending && /^\[520\d{4}\]/.test(trimmed)) {
+          pending.line = pending.line + ' \n ' + trimmed;
+          pending.raw = (pending.raw + '\n' + trimmed).slice(0, 1600);
+          continue;
         }
+        if (pending && pending.isTomcatSimpleHdr && this._isTomcatSimpleLevelLine(rawLine)) {
+          const lvlPair = this._isTomcatSimpleLevelLine(rawLine);
+          pending.isTomcatSimpleHdr = false;
+          pending.baseLevel = lvlPair.level;
+          pending.line = `${pending.line} — ${lvlPair.level}: ${lvlPair.msg}`;
+          pending.raw = (pending.raw + '\n' + trimmed).slice(0, 1600);
+          foldedStackLines++;
+          continue;
+        }
+        if (pending && this._isJavaStackContinuation(rawLine)) {
+          pending.stackFrames++;
+          foldedStackLines++;
+          if (/^(?:Caused by:|Suppressed:)|^(?:java|javax|jakarta|oracle|org\.apache|com\.entrust)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b/.test(trimmed)) {
+            if (pending.causes.length < 6) pending.causes.push(trimmed.slice(0, 220));
+          }
+          if (!pending.entrustFrame && trimmed.includes('com.entrust.')) {
+            pending.entrustFrame = trimmed.replace(/^at\s+/, '').trim().slice(0, 140);
+          }
+          if (pending.raw.length < 1550) pending.raw = (pending.raw + '\n' + trimmed).slice(0, 1600);
+          continue;
+        }
+
+        if (pending) {
+          lineCount++;
+          commitSlot(pending);
+          pending = null;
+        }
+        pending = {
+          line: trimmed,
+          raw: trimmed,
+          isTomcatSimpleHdr: LP_RE_JULI_SIMPLE.test(trimmed),
+          baseLevel: 'INFO',
+          lockedCode: false,
+          stackFrames: 0,
+          causes: [],
+          entrustFrame: ''
+        };
       }
 
       if (onProgress) {
@@ -1230,12 +1504,40 @@ class LogParser {
     }
 
     if (leftover && leftover.trim()) {
-      lineCount++;
-      const parsed = this.fallbackParse(leftover.trim(), lineCount);
-      if (parsed) {
-        if (clientId) parsed.client = clientId;
-        displayLogs.push(parsed);
+      const rawLine = leftover.replace(/\r$/, '');
+      const trimmed = rawLine.trim();
+      rawLinesRead++;
+      if (pending && pending.isTomcatSimpleHdr && this._isTomcatSimpleLevelLine(rawLine)) {
+        const lvlPair = this._isTomcatSimpleLevelLine(rawLine);
+        pending.isTomcatSimpleHdr = false;
+        pending.baseLevel = lvlPair.level;
+        pending.line = `${pending.line} — ${lvlPair.level}: ${lvlPair.msg}`;
+        foldedStackLines++;
+      } else if (pending && this._isJavaStackContinuation(rawLine)) {
+        pending.stackFrames++;
+        foldedStackLines++;
+      } else {
+        if (pending) {
+          lineCount++;
+          commitSlot(pending);
+        }
+        pending = {
+          line: trimmed,
+          raw: trimmed,
+          isTomcatSimpleHdr: LP_RE_JULI_SIMPLE.test(trimmed),
+          baseLevel: 'INFO',
+          lockedCode: false,
+          stackFrames: 0,
+          causes: [],
+          entrustFrame: ''
+        };
       }
+    }
+
+    if (pending) {
+      lineCount++;
+      commitSlot(pending);
+      pending = null;
     }
 
     const topUsers = Object.entries(userCounter).sort((a, b) => b[1] - a[1]).slice(0, 50).map(([user, count]) => ({ user, count }));
@@ -1249,6 +1551,8 @@ class LogParser {
       totalWarnings: totalWarnings,
       globalMetrics: {
         totalLogs: lineCount,
+        rawLinesRead: rawLinesRead,
+        foldedStackLines: foldedStackLines,
         totalErrors: totalErrors,
         totalWarnings: totalWarnings,
         topUsers: topUsers,

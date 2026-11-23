@@ -100,7 +100,135 @@ const ENTRUST_EXACT_CATALOG = {
 
   // Sistema Operativo / SSH / PAM
   'SSH-FAIL': { title: 'Fallo de Autenticación SSH / PAM en Servidor Linux', category: 'Sistema & SSH/OS', severity: 'ERROR', meaning: 'Se registró un intento fallido de acceso SSH o escalamiento PAM en el host.', rootCause: 'Contraseña incorrecta, llave SSH rechazada o sondeo no autorizado de puerto 22.', remediation: 'Revisar IP de origen en /var/log/auth.log o secure; bloquear IPs repetitivas en firewall/fail2ban.' },
-  'SSH-AUTH': { title: 'Sesión SSH / PAM Administrativa Autorizada', category: 'Sistema & SSH/OS', severity: 'INFO', meaning: 'Un operador autorizado inició o ejecutó comandos mediante sesión SSH/PAM.', rootCause: 'Acceso administrativo programado o mantenimiento del servidor.', remediation: 'Auditar que la IP de origen y horario correspondan a personal autorizado.' }
+  'SSH-AUTH': { title: 'Sesión SSH / PAM Administrativa Autorizada', category: 'Sistema & SSH/OS', severity: 'INFO', meaning: 'Un operador autorizado inició o ejecutó comandos mediante sesión SSH/PAM.', rootCause: 'Acceso administrativo programado o mantenimiento del servidor.', remediation: 'Auditar que la IP de origen y horario correspondan a personal autorizado.' },
+
+  // Apache Tomcat Embebido / JVM Catalina (catalina.out en Entrust IdentityGuard OnPremise)
+  'TOMCAT_SSL_TLS': {
+    title: 'Fallo TLS / SSL / PKIX o Keystore en Tomcat Catalina',
+    category: 'Tomcat Catalina / TLS & Keystore',
+    severity: 'CRITICAL',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/config_security/import_certificates_using_keytool.htm',
+    meaning: 'El contenedor Apache Tomcat embebido de Entrust IdentityGuard reportó un error de negociación TLS/SSL (SSLHandshakeException, PKIX path building failed, KeyStoreException o certificado expirado/no confiable).',
+    rootCause: 'Certificado raíz/intermedio faltante en el keystore de IdentityGuard, certificado de servidor o par LDAP/HTTPS expirado, o incompatibilidad de versión TLS (-Djdk.tls.client.protocols). Nota de IG 12.0 Release Notes: si se elimina el último certificado confiable del keystore, el servidor Tomcat embebido no inicia.',
+    remediation: '1. [Manual Oficial IG 13.0 — Import certificates using keytool] Importar el certificado confiable usando $IG_HOME/jdk<version>/bin/keytool (Linux) o <$IG_HOME>\\jdk<version>\\bin\\keytool (Windows) en el keystore $IG_HOME/etc/keystore con alias tomcat (servidor) o alias descriptivo y contraseña entrust (o verificar identityguard.keystore.certificateImport.enabled=true e identityguard.keystore.name).\n2. [Manual Oficial IG 13.0 — TLS version downgrade] Para conexiones salientes TLS, validar IG_CIPHER_OPTS (-Djdk.tls.client.protocols=TLSv1.2) en <$IG_HOME>/env_settings.sh (Linux) y reiniciar con $IG_HOME/bin/igservice.sh identityguard restart.\n3. Correlacionar el timestamp exacto en la pestaña 🌐 Red / PCAP para verificar alertas TLS (certificate_expired / handshake_failure).'
+  },
+  'JDBC_SQL_EXCEPTION': {
+    title: 'Excepción JDBC / SQL o Saturación del Pool de Base de Datos',
+    category: 'Tomcat Catalina / Pool JDBC & BD',
+    severity: 'CRITICAL',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/usingpropeditor/jdbc_database_settings.htm',
+    meaning: 'Se detectó una SQLException, fallo de obtención de conexión del pool JDBC (HikariPool/BasicDataSource) o fallo de repositorio JDBC/BLOB (JdbcCardRepository / AuditDBLogger) en catalina.out.',
+    rootCause: 'Agotamiento de conexiones del pool JDBC (default 10), timeout superado al obtener conexión/login o esquema/driver incorrecto en Entrust IdentityGuard.',
+    remediation: '1. [Manual Oficial IG 13.0 — JDBC Database Settings] Revisar en Properties Editor: identityguard.jdbc.url, Connection Pool Maximum Size (identityguard.jdbc.connectionpool.max, default 10), Max Wait Time (identityguard.jdbc.connectionpool.maxWait, default 30000 ms), Database Login Timeout (30 s), Query Timeout, Remove Abandoned Timeout (300 s), Database Connection Test Interval (identityguard.jdbc.ha.testInterval, default 50 s), Blob Access (identityguard.jdbc.blobAccess) e Include Sequence (identityguard.jdbc.includeSequence=True en Oracle para evitar SQLException en AUDITS.AUDIT_SEQNO).\n2. [Manual Oficial IG 13.0 — Adding a new database repository] Confirmar el JAR del driver JDBC en $IG_HOME/lib/db y $CATALINA_HOME/lib.'
+  },
+  'SQL_EXCEPTION': {
+    title: 'Excepción SQL / JDBC Reportada en Trazas',
+    category: 'Tomcat Catalina / Pool JDBC & BD',
+    severity: 'CRITICAL',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/usingpropeditor/jdbc_database_settings.htm',
+    meaning: 'Excepción SQL o fallo de persistencia JDBC registrada en la salida del servidor.',
+    rootCause: 'Error de comunicación con la base de datos, consulta rechazada o pool JDBC agotado.',
+    remediation: '1. [Manual Oficial IG 13.0 — JDBC Database Settings] Verificar identityguard.jdbc.url, identityguard.jdbc.connectionpool.max (default 10), maxWait (default 30000 ms) y identityguard.jdbc.includeSequence en Oracle.\n2. Confirmar disponibilidad del motor de base de datos y existencia de los JARs en $IG_HOME/lib/db y $CATALINA_HOME/lib.'
+  },
+  'JVM_OOM': {
+    title: 'Agotamiento de Memoria JVM (OutOfMemoryError / Heap / Metaspace / Hilos)',
+    category: 'Tomcat Catalina / JVM & Memoria',
+    severity: 'CRITICAL',
+    manualFile: 'entrust_ig_130_releasenotes.html',
+    meaning: 'La Máquina Virtual Java (JVM) que ejecuta Apache Tomcat embebido alcanzó el límite de Heap Space, Metaspace, GC overhead o hilos nativos del SO.',
+    rootCause: 'Carga masiva en consola web (bulk operations), reportes de auditoría muy extensos, memoria física/JVM insuficiente respecto al volumen de usuarios concurrentes o fuga de memoria.',
+    remediation: '1. [Manual Oficial IG 13.0 — Release Notes & Web Application Settings] Verificar el requisito base (mínimo 4 GB RAM en AdoptOpenJDK 11 + Apache Tomcat 8.5.57 embebido, recomendado ampliar según volumen de usuarios) y revisar identityguard.webadmin.bulk.inMemoryThreshold para que archivos bulk extensos se almacenen en disco.\n2. [Manual Oficial IG 13.0 — Tips for optimal reporting performance & Performance Statistics Logging] Programar reportes pesados en horarios de baja carga o en nodos réplica y monitorear estadísticas con identityguard.estat.enabled ($IG_HOME/Log/identityguard_estat.log).\n3. [Estándar Apache Tomcat / JVM] Revisar los flags -Xms/-Xmx y recolectar heap dump para identificar qué objetos retienen memoria antes de ajustar memoria.'
+  },
+  'TOMCAT_LDAP_ERROR': {
+    title: 'Fallo de Comunicación / Enlace LDAP / JNDI en Tomcat',
+    category: 'Tomcat Catalina / Directorio LDAP',
+    severity: 'ERROR',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/config_igserver/securing_the_ldap_connection_with_ssl.htm',
+    meaning: 'El servidor de aplicaciones registró LDAPException, javax.naming.CommunicationException o error de autenticación/enlace hacia el directorio LDAP/AD.',
+    rootCause: 'Controlador de dominio LDAP inalcanzable, puerto 389/636 bloqueado, certificado LDAPS usando dirección IP en Subject/SAN en lugar de hostname, o conexiones LDAP inactivas cerradas.',
+    remediation: '1. [Manual Oficial IG 13.0 — Securing the LDAP connection with SSL] Confirmar que el certificado del servidor LDAP incluya el hostname (no IP) en Subject o subjectAltName e importar el certificado o su CA en $IG_HOME/etc/keystore (-alias ldapssl -storepass entrust); validar identityguard.ldap.url y SSL LDAP Connection.\n2. [Manual Oficial IG 13.0 — JDBC/LDAP Pool Settings] Revisar identityguard.ldap.connectionpool.minIdleCloseTime e identityguard.ldap.connectionpool.closeSchedule (default 180000 ms).'
+  },
+  'TOMCAT_DEPLOY_ERROR': {
+    title: 'Fallo de Arranque / Despliegue de Componente en Apache Tomcat',
+    category: 'Tomcat Catalina / Ciclo de Vida',
+    severity: 'CRITICAL',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/config_igserver/adding_a_new_database_repository.htm',
+    meaning: 'Tomcat reportó LifecycleException, ClassNotFoundException, Error listenerStart/filterStart o fallo al inicializar la aplicación web de IdentityGuard.',
+    rootCause: 'Falta del driver JAR requerido en $IG_HOME/lib/db o $CATALINA_HOME/lib, keystore sin certificado confiable (en IG 12.0+ Tomcat no inicia si se elimina el último certificado confiable), o fallo de arranque del servicio (AUD110).',
+    remediation: '1. [Manual Oficial IG 13.0 — Adding a new database repository] Verificar que los drivers JAR estén copiados tanto en $IG_HOME/lib/db como en $CATALINA_HOME/lib (/opt/entrust/apache-tomcat<version>/lib).\n2. [Manual IG 12.0 Release Notes & Service Audit AUD110] Confirmar que $IG_HOME/etc/keystore contenga al menos un certificado confiable y revisar eventos AUD110 en identityguard_audit.log.'
+  },
+  'TOMCAT_NETWORK_ERROR': {
+    title: 'Error de Red / Puerto o Timeout de Socket en Tomcat Catalina',
+    category: 'Tomcat Catalina / Conectividad',
+    severity: 'ERROR',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/usingpropeditor/web_application_settings.htm',
+    meaning: 'Tomcat reportó BindException (puerto ya en uso), ConnectException, SocketTimeoutException o UnknownHostException.',
+    rootCause: 'Conflicto de puerto en conectores de server.xml, proceso Tomcat previo colgado ocupando el puerto, DNS sin resolver o caída/latencia extrema hacia un nodo backend.',
+    remediation: '1. [Manual Oficial IG 13.0 — Web Application Settings] Validar los conectores definidos en el server.xml de Tomcat embebido y las URLs identityguard.webadmin.url / identityguard.preditor.url.\n2. [Práctica estándar OS/Red] Verificar procesos y puertos locales (ss -tlnp) y correlacionar con la pestaña 🌐 Red / PCAP para detectar SYN sin respuesta o TCP RST.'
+  },
+  'TOMCAT_THREAD_POOL': {
+    title: 'Congestión o Hilos Bloqueados en Executor de Tomcat',
+    category: 'Tomcat Catalina / Hilos & Rendimiento',
+    severity: 'WARN',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/usingpropeditor/performance_statistics_logging_settings.htm',
+    meaning: 'Tomcat registró StuckThreadDetectionValve, saturación de hilos (maxThreads), RejectedExecutionException o advertencia de memory leak al detener hilos.',
+    rootCause: 'Peticiones bloqueadas esperando respuestas lentas de base de datos/LDAP/servicios externos o concurrencia superior al pool configurado.',
+    remediation: '1. [Manual Oficial IG 13.0 — Performance Statistics Logging Settings] Activar identityguard.estat.enabled=True (registra en <$IG_HOME>/Log/identityguard_estat.log) y monitoreo de pool JDBC para medir contención real.\n2. [Estándar Apache Tomcat] Inspeccionar thread dumps durante el incidente y evaluar maxThreads / connectionTimeout en server.xml solo tras resolver bloqueos downstream.'
+  },
+  'TOMCAT_CLIENT_ABORT': {
+    title: 'Desconexión del Cliente HTTP (ClientAbortException / Broken Pipe)',
+    category: 'Tomcat Catalina / Conectividad HTTP',
+    severity: 'INFO',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/usingpropeditor/web_application_settings.htm',
+    meaning: 'El navegador, balanceador o cliente consumidor cerró la conexión TCP antes de que Tomcat terminara de enviar la respuesta HTTP (comportamiento informativo, no error interno de Entrust).',
+    rootCause: 'Usuario canceló la carga, timeout corto en balanceador frontal o cierre prematuro del socket cliente.',
+    remediation: 'No representa una falla del servidor Entrust por sí mismo; solo revisar timeouts del proxy/balanceador frontal si ocurre de forma masiva.'
+  },
+  'TOMCAT_JAVA_EXCEPTION': {
+    title: 'Excepción Java Registrada en Catalina (catalina.out)',
+    category: 'Tomcat Catalina / JVM & Servlets',
+    severity: 'ERROR',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/config_logging/logging_overview.htm',
+    meaning: 'El servidor de aplicaciones Apache Tomcat embebido emitió una excepción Java en salida estándar (catalina.out), agrupada con su Caused by raíz sin multiplicar conteos por cada línea at.',
+    rootCause: 'Error de ejecución en servlet, filtro o librería invocado en Tomcat; revisar la cadena Root Cause y el código 520xxxx/ORA-xxxxx asociado si existe.',
+    remediation: '1. [Manual Oficial IG 13.0 — Logging Overview] Correlacionar la marca de tiempo exacta con identityguard_system.log e identityguard_audit.log (loggers Log4J oficiales de Entrust) y revisar la causa raíz mostrada en el detalle del evento.'
+  },
+  'TOMCAT_SEVERE': {
+    title: 'Evento SEVERE / FATAL de Apache Tomcat (catalina.out)',
+    category: 'Tomcat Catalina / Eventos Severos',
+    severity: 'ERROR',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/config_logging/logging_overview.htm',
+    meaning: 'Apache Tomcat embebido registró un mensaje con severidad JULI SEVERE o GRAVE en catalina.out.',
+    rootCause: 'Condición crítica en el contenedor de servlets Tomcat o componente desplegado a la hora exacta del evento.',
+    remediation: 'Inspeccionar el mensaje completo del evento en catalina.out y correlacionar con identityguard_system.log (Manual Oficial IG 13.0 — Logging Overview).'
+  },
+  'TOMCAT_WARN': {
+    title: 'Advertencia WARNING de Apache Tomcat (catalina.out)',
+    category: 'Tomcat Catalina / Advertencias',
+    severity: 'WARN',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/config_logging/logging_overview.htm',
+    meaning: 'Apache Tomcat registró una advertencia JULI (WARNING / ADVERTENCIA) durante arranque u operación.',
+    rootCause: 'Parámetro obsoleto, advertencia de configuración o condición transitoria en Tomcat.',
+    remediation: 'Revisar el detalle de la advertencia para descartar impacto funcional en producción.'
+  },
+  'TOMCAT_LIFECYCLE': {
+    title: 'Ciclo de Vida de Apache Tomcat (Arranque / Despliegue / Parada)',
+    category: 'Tomcat Catalina / Ciclo de Vida',
+    severity: 'INFO',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/config_logging/logging_overview.htm',
+    meaning: 'Registro nominal de inicio de conectores, despliegue de aplicaciones o finalización del arranque de Tomcat (Server startup in ... ms).',
+    rootCause: 'Reinicio programado o arranque del servicio Entrust IdentityGuard Server.',
+    remediation: 'Evento informativo útil para confirmar ventanas de reinicio y correlacionar con AUD106/AUD107.'
+  },
+  'TOMCAT_INFO': {
+    title: 'Registro Operativo Informativo de Tomcat (catalina.out)',
+    category: 'Tomcat Catalina / Informativo',
+    severity: 'INFO',
+    manualFile: 'IG_130_Admin_WebHelp/ig_admin/config_logging/logging_overview.htm',
+    meaning: 'Traza informativa emitida por Apache Tomcat en catalina.out.',
+    rootCause: 'Operación normal o diagnóstico de arranque del contenedor Tomcat.',
+    remediation: 'No requiere acción.'
+  }
 };
 
 /**
@@ -1299,7 +1427,7 @@ class KnowledgeBase {
         remediation: entry.remediation,
         riskLevel: entry.severity === 'CRITICAL' ? 'Crítico (P1)' : (entry.severity === 'ERROR' ? 'Alto (P2)' : (entry.severity === 'WARN' ? 'Medio (Advertencia)' : 'Nominal / Auditoría')),
         manualVersion: activeVersionLabel,
-        manualFile: officialAudMeta ? officialAudMeta.manualFile : null,
+        manualFile: entry.manualFile || (officialAudMeta ? officialAudMeta.manualFile : null),
         officialName: officialAudMeta ? officialAudMeta.name : null,
         snmpTrap: officialAudMeta ? officialAudMeta.snmp : null,
         sectionId: `sec-${cleanCode.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
@@ -1746,9 +1874,14 @@ journalctl -u wso2am -n 50 --no-pager`;
     if (/already has QA|QA in migration file will be ignored|bulkidentityguard\.add\.error\.qa/i.test(text)) {
       return 'bulkidentityguard.add.error.qa';
     }
-    const m = text.match(/\[(520\d{4}|AUD\d+|[A-Za-z0-9_\.-]+\.error\.[A-Za-z0-9_\.-]+|ORA-\d+|AWS-S3-404-NOKEY)\]/i) ||
-              text.match(/\b(520\d{4}|AUD\d+|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d+|AWS-S3-404-NOKEY)\b/i);
+    const m = text.match(/\[(520\d{4}|AUD\d+|[A-Za-z0-9_\.-]+\.error\.[A-Za-z0-9_\.-]+|ORA-\d+|AWS-S3-404-NOKEY|JVM_OOM|TOMCAT_[A-Z_]+|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)\]/i) ||
+              text.match(/\b(520\d{4}|AUD\d+|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d+|AWS-S3-404-NOKEY|JVM_OOM|TOMCAT_[A-Z_]+|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)\b/i);
     if (m) return m[1];
+    if (/(?:ClientAbortException|Broken pipe|Connection reset by peer)/i.test(text)) return 'TOMCAT_CLIENT_ABORT';
+    if (/(?:OutOfMemoryError|Java heap space|GC overhead limit exceeded)/i.test(text)) return 'JVM_OOM';
+    if (/(?:SSLHandshakeException|PKIX path building failed|SunCertPathBuilderException|KeyStoreException)/i.test(text)) return 'TOMCAT_SSL_TLS';
+    if (/(?:SQLException|HikariPool|BasicDataSource|JdbcCardRepository)/i.test(text)) return 'JDBC_SQL_EXCEPTION';
+    if (/(?:LDAPException|javax\.naming\.CommunicationException)/i.test(text)) return 'TOMCAT_LDAP_ERROR';
     return null;
   }
 
@@ -1932,7 +2065,7 @@ journalctl -u wso2am -n 50 --no-pager`;
     if (!q) return [];
     const qLower = q.toLowerCase();
     const stopWords = new Set(['de', 'la', 'el', 'los', 'las', 'un', 'una', 'en', 'y', 'o', 'por', 'para', 'con', 'que', 'como', 'cual', 'es', 'son', 'the', 'and', 'for', 'how', 'what', 'error', 'errores', 'falla', 'fallo', 'solucion', 'resuelvo', 'resolver', 'significa']);
-    const codes = qLower.match(/(?:520\d{4}|aud\d+|ora-\d+|s3-404|ssh-\w+)/gi) || [];
+    const codes = qLower.match(/(?:520\d{4}|aud\d+|ora-\d+|s3-404|ssh-\w+|tomcat_\w+|jvm_oom|jdbc_sql_exception|sql_exception)/gi) || [];
     const tokens = (qLower.match(/[a-z0-9_.\-áéíóúñ]{3,}/gi) || []).filter(t => !stopWords.has(t));
     const results = [];
     const seenKeys = new Set();

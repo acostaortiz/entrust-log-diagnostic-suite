@@ -1,6 +1,6 @@
-// Global HTML sanitizer
-if (typeof window !== 'undefined' && !window.escapeHtml) {
-  window.escapeHtml = function(text) {
+// Global HTML sanitizer (safe in Web Worker where `window` is undefined)
+(function (root) {
+  const escFn = function(text) {
     if (text === null || text === undefined) return '';
     return String(text)
       .replace(/&/g, '&amp;')
@@ -9,15 +9,220 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
   };
-}
+  if (root && !root.escapeHtml) {
+    root.escapeHtml = escFn;
+  }
+})(typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : globalThis));
 if (typeof escapeHtml === 'undefined') {
-  var escapeHtml = window.escapeHtml;
+  var escapeHtml = (typeof self !== 'undefined' && self.escapeHtml)
+    ? self.escapeHtml
+    : ((typeof window !== 'undefined' && window.escapeHtml) ? window.escapeHtml : (t => String(t ?? '')));
 }
 
 /* ==========================================================================
    ENTRUST LOG DIAGNOSTIC SUITE - WEB WORKER MULTIHILO ULTRA-RÁPIDO (v77.0)
    Procesamiento asíncrono en segundo plano (350.000+ líneas/segundo)
    ========================================================================== */
+
+const TOMCAT_MONTHS = {
+  jan: '01', ene: '01', feb: '02', mar: '03',
+  apr: '04', abr: '04', may: '05', jun: '06',
+  jul: '07', aug: '08', ago: '08', sep: '09', sept: '09',
+  oct: '10', nov: '11', dec: '12', dic: '12'
+};
+
+const RE_TOMCAT_BANNER = /\b(?:Command line argument:|Server version:|Server built:|Server number:|OS Name:|OS Version:|Architecture:|Java Home:|JVM Version:|JVM Vendor:|CATALINA_BASE:|CATALINA_HOME:|VersionLoggerListener\.log|The Apache Tomcat Native library)\b/i;
+const RE_JULI_ONELINE = /^(\d{1,2})-([A-Za-z]{3,4})-(\d{4})\s+(\d{2}:\d{2}:\d{2})(?:[.,]\d{1,6})?\s+(.*)$/;
+const RE_JULI_SIMPLE = /^([A-Za-z]{3,4})\s+(\d{1,2}),\s+(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})(?:\s*(AM|PM|a\.\s*m\.|p\.\s*m\.))?\s+(.*)$/i;
+const RE_ISO_LINE = /^(\d{4})[-/](\d{2})[-/](\d{2})[\sT](\d{2}:\d{2}:\d{2})(?:[.,]\d{1,6})?(?:Z|[+-]\d{2}:?\d{2})?\s+(.*)$/;
+const RE_ENTRUST_SYSLOG = /^([A-Za-z]{3})\s+(\d{1,2})\s+(\d{2}:\d{2}:\d{2})\s+(\S+)\s+(.*)$/;
+const RE_SIMPLE_LEVEL_LINE = /^(SEVERE|WARNING|WARN|INFO|CONFIG|FINE|FINER|FINEST|GRAVE|ADVERTENCIA|INFORMACI[OÓ]N):\s*(.*)$/;
+const JAVA_STACK_PATTERNS = [
+  /^\s+at\s+[A-Za-z0-9_$.<>\/]+\(/,
+  /^\s*Caused by:\s+/,
+  /^\s*Suppressed:\s+/,
+  /^\s*\.\.\.\s+\d+\s+(?:more|common frames omitted)\b/,
+  /^\s*(?:java|javax|jakarta|sun|com\.sun|org\.apache|com\.entrust|oracle|com\.microsoft|org\.postgresql|org\.hibernate|org\.springframework|net\.sf)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b/
+];
+const AUD_FAIL_SET = new Set(['AUD110', 'AUD125', 'AUD126', 'AUD127', 'AUD150', 'AUD153', 'AUD2309', 'AUD4005', 'AUD6002']);
+const AUD_WARN_SET = new Set(['AUD151', 'AUD154', 'AUD155', 'AUD6001']);
+
+function isTomcatStartupBanner(text) {
+  return Boolean(text && RE_TOMCAT_BANNER.test(text));
+}
+
+function parseTomcatTimestamp(line) {
+  if (!line) return { ts: null, rest: line, fmt: null };
+  let m = line.match(RE_JULI_ONELINE);
+  if (m) {
+    const mon = TOMCAT_MONTHS[m[2].toLowerCase()];
+    if (mon) {
+      const dd = m[1].padStart(2, '0');
+      return { ts: `${m[3]}-${mon}-${dd} ${m[4]}`, rest: m[5], fmt: 'juli_oneline' };
+    }
+  }
+  m = line.match(RE_JULI_SIMPLE);
+  if (m) {
+    const mon = TOMCAT_MONTHS[m[1].toLowerCase()];
+    if (mon) {
+      const dd = m[2].padStart(2, '0');
+      let hh = parseInt(m[4], 10);
+      const ampm = (m[7] || '').toLowerCase().replace(/[\s.]/g, '');
+      if (ampm === 'am' && hh === 12) hh = 0;
+      else if (ampm === 'pm' && hh < 12) hh += 12;
+      return { ts: `${m[3]}-${mon}-${dd} ${String(hh).padStart(2, '0')}:${m[5]}:${m[6]}`, rest: m[8], fmt: 'juli_simple' };
+    }
+  }
+  m = line.match(RE_ISO_LINE);
+  if (m) {
+    return { ts: `${m[1]}-${m[2]}-${m[3]} ${m[4]}`, rest: m[5], fmt: 'iso' };
+  }
+  m = line.match(RE_ENTRUST_SYSLOG);
+  if (m) {
+    const mon = TOMCAT_MONTHS[m[1].toLowerCase()];
+    if (mon) {
+      const dd = m[2].padStart(2, '0');
+      const yr = new Date().getFullYear();
+      return { ts: `${yr}-${mon}-${dd} ${m[3]}`, rest: m[5], fmt: 'syslog' };
+    }
+  }
+  return { ts: null, rest: line, fmt: null };
+}
+
+function isJavaStackContinuation(rawLine) {
+  if (!rawLine) return false;
+  return JAVA_STACK_PATTERNS.some(re => re.test(rawLine));
+}
+
+function isTomcatSimpleLevelLine(rawLine) {
+  if (!rawLine) return null;
+  const m = rawLine.trim().match(RE_SIMPLE_LEVEL_LINE);
+  if (!m) return null;
+  const u = m[1].toUpperCase();
+  const lvl = u === 'GRAVE' ? 'SEVERE' : (u === 'ADVERTENCIA' ? 'WARNING' : ((u === 'INFORMACION' || u === 'INFORMACIÓN') ? 'INFO' : u));
+  return { level: lvl, msg: m[2] };
+}
+
+function extractNonVersionIp(text) {
+  if (!text) return null;
+  if (text.includes('jasperreports') || text.includes('TLS_DHE') || text.includes('virtualizer') || text.includes('delete.on.exit')) {
+    return null;
+  }
+  const re = /(?:^|[^.\d])((?:\d{1,3}\.){3}\d{1,3})(?![.\d])/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const ip = m[1];
+    if (ip === '127.0.0.1' || ip === '0.0.0.0' || ip.startsWith('255.')) continue;
+    const parts = ip.split('.').map(Number);
+    if (!parts.every(p => !isNaN(p) && p >= 0 && p <= 255)) continue;
+    const prefix = text.slice(Math.max(0, m.index - 28), m.index).toLowerCase();
+    if (/(?:jdk|java|jre|tomcat|version|server number|built|release)\s*[:=\s/\-]*$/.test(prefix)) continue;
+    return ip;
+  }
+  return null;
+}
+
+function classifyTomcatJavaEvent(text, baseLevel = 'INFO', hasStack = false) {
+  const txt = text || '';
+  const low = txt.toLowerCase();
+  let baseU = (baseLevel || 'INFO').toUpperCase();
+  if (baseU === 'GRAVE') baseU = 'SEVERE';
+  else if (baseU === 'ADVERTENCIA') baseU = 'WARNING';
+
+  const c520 = txt.match(/(?:\b|\[)(520\d{4})(?:\b|\])/);
+  if (c520) return { code: c520[1], level: 'ERROR', service: 'IG.SYSTEM' };
+
+  const aud = txt.match(/(?:\b|\[)(AUD\d{3,4})(?:\b|\])/i);
+  if (aud) {
+    const audCode = aud[1].toUpperCase();
+    let lvl = 'INFO';
+    if (AUD_FAIL_SET.has(audCode) || baseU === 'ERROR' || baseU === 'SEVERE' || baseU === 'FATAL' || baseU === 'CRITICAL') lvl = 'ERROR';
+    else if (AUD_WARN_SET.has(audCode) || baseU === 'WARNING' || baseU === 'WARN') lvl = 'WARN';
+    return { code: audCode, level: lvl, service: 'IG.AUDIT' };
+  }
+
+  const ora = txt.match(/\b(ORA-\d{5})\b/i);
+  if (ora) return { code: ora[1].toUpperCase(), level: 'CRITICAL', service: 'Oracle Database' };
+
+  if (/(?:ClientAbortException|Broken pipe|Connection reset by peer)/i.test(txt)) {
+    return { code: 'TOMCAT_CLIENT_ABORT', level: 'INFO', service: 'Tomcat HTTP ClientAbort' };
+  }
+  if (/(?:OutOfMemoryError|Java heap space|GC overhead limit exceeded|Metaspace|PermGen space|unable to create new native thread)/i.test(txt)) {
+    return { code: 'JVM_OOM', level: 'CRITICAL', service: 'Tomcat JVM Memory' };
+  }
+  if (/(?:SSLHandshakeException|PKIX path building failed|SunCertPathBuilderException|CertificateExpiredException|CertificateNotYetValidException|KeyStoreException|UnrecoverableKeyException|SSLException|handshake_failure|bad_certificate|certificate_unknown|protocol_version)/i.test(txt)) {
+    return { code: 'TOMCAT_SSL_TLS', level: 'ERROR', service: 'Tomcat TLS / Keystore' };
+  }
+  if (/(?:SQLException|SQLRecoverableException|SQLTransientConnectionException|SQLNonTransientConnectionException|SQLTimeoutException|CannotGetJdbcConnectionException|HikariPool|BasicDataSource|PoolExhaustedException|CommunicationsException|JdbcCardRepository|BlobAccess|AuditDBLogger|No suitable driver)/i.test(txt)) {
+    return { code: 'JDBC_SQL_EXCEPTION', level: 'ERROR', service: 'Tomcat JDBC Pool' };
+  }
+  if (/(?:LDAPException|javax\.naming\.CommunicationException|javax\.naming\.AuthenticationException|javax\.naming\.NamingException|PartialResultException|LDAP:\s*error code)/i.test(txt)) {
+    return { code: 'TOMCAT_LDAP_ERROR', level: 'ERROR', service: 'Tomcat LDAP / JNDI' };
+  }
+  if (/(?:BindException|Address already in use|ConnectException|SocketTimeoutException|UnknownHostException|NoRouteToHostException|Port\s+\d+.*already in use)/i.test(txt)) {
+    return { code: 'TOMCAT_NETWORK_ERROR', level: 'ERROR', service: 'Tomcat Network / Socket' };
+  }
+  if (/(?:ClassNotFoundException|NoClassDefFoundError|UnsatisfiedLinkError|LifecycleException|Failed to start component|Error listenerStart|Error filterStart|startup failed)/i.test(txt)) {
+    return { code: 'TOMCAT_DEPLOY_ERROR', level: 'CRITICAL', service: 'Tomcat Lifecycle / Deploy' };
+  }
+  if (/(?:StuckThreadDetectionValve|All threads .* are currently busy|maxThreads|RejectedExecutionException|failed to stop thread|memory leak)/i.test(txt)) {
+    const isErr = baseU === 'SEVERE' || baseU === 'FATAL' || baseU === 'ERROR' || baseU === 'CRITICAL' || low.includes('rejectedexecutionexception');
+    return { code: 'TOMCAT_THREAD_POOL', level: isErr ? 'ERROR' : 'WARN', service: 'Tomcat Executor / Threads' };
+  }
+
+  const isErrLvl = baseU === 'SEVERE' || baseU === 'FATAL' || baseU === 'ERROR' || baseU === 'CRITICAL';
+  if ((isErrLvl || hasStack) && (/\b[a-z][a-z0-9_.]*\.[A-Z][A-Za-z0-9_]*(?:Exception|Error|Throwable)\b/.test(txt) || low.includes('caused by:'))) {
+    return { code: 'TOMCAT_JAVA_EXCEPTION', level: 'ERROR', service: 'Tomcat JVM Exception' };
+  }
+  if (isErrLvl) return { code: 'TOMCAT_SEVERE', level: 'ERROR', service: 'Tomcat Catalina' };
+  if (baseU === 'WARNING' || baseU === 'WARN') return { code: 'TOMCAT_WARN', level: 'WARN', service: 'Tomcat Catalina' };
+  if (/(?:Server startup in|Starting ProtocolHandler|Starting Servlet Engine|Deploying web application|Deployment of web application|Stopping service|Destroying ProtocolHandler|Initialization processed in)/i.test(txt)) {
+    return { code: 'TOMCAT_LIFECYCLE', level: 'INFO', service: 'Tomcat Catalina' };
+  }
+  return { code: 'TOMCAT_INFO', level: 'INFO', service: 'Tomcat Catalina' };
+}
+
+function finalizePendingEvent(pending) {
+  if (!pending) return null;
+  const meta = pending._meta || {};
+  if (meta.stackFrames > 0 || (meta.causes && meta.causes.length > 0)) {
+    const combined = `${pending.message || ''} ${meta.causes.join(' ')}`;
+    const cls = classifyTomcatJavaEvent(combined, meta.baseLevel || 'INFO', true);
+    const oraCause = meta.causes.join(' ').match(/\b(ORA-\d{5})\b/i);
+    if (meta.lockedCode) {
+      if (oraCause) {
+        pending.entrustCode = oraCause[1].toUpperCase();
+        pending.level = 'CRITICAL';
+        pending.service = 'Oracle Database';
+      }
+    } else {
+      pending.entrustCode = cls.code;
+      pending.level = cls.level;
+      pending.service = cls.service;
+    }
+    const extraParts = [];
+    if (meta.causes.length > 0) {
+      extraParts.push('Root Cause: ' + meta.causes[meta.causes.length - 1].replace(/^Caused by:\s*/i, '').trim());
+    }
+    if (meta.entrustFrame) {
+      extraParts.push('Frame: ' + meta.entrustFrame);
+    }
+    if (extraParts.length > 0) {
+      const extraStr = ' | ' + extraParts.join(' | ');
+      const baseMsg = String(pending.message || '');
+      pending.message = (baseMsg.length + extraStr.length > 600)
+        ? (baseMsg.slice(0, Math.max(180, 596 - extraStr.length)).trimEnd() + '…' + extraStr).slice(0, 600)
+        : (baseMsg + extraStr);
+    }
+    if (meta.stackFrames > 0) {
+      const suffix = `\n[+${meta.stackFrames} stack frames]`;
+      const baseRaw = String(pending.raw || '');
+      pending.raw = (baseRaw.slice(0, Math.max(200, 1800 - suffix.length)) + suffix).slice(0, 1800);
+    }
+  }
+  delete pending._meta;
+  return pending;
+}
 
 self.onmessage = async function (e) {
   const { file, rawContent, clientId, mode } = e.data;
@@ -38,20 +243,76 @@ self.onmessage = async function (e) {
   const total = lines.length;
   const parsedLogs = [];
   const chunkSize = 25000;
+  let lastSeenTs = '';
+  let pending = null;
+  let eventIdx = 0;
 
   for (let i = 0; i < total; i++) {
-    const line = lines[i].trim();
+    const rawLine = lines[i].replace(/\r$/, '');
+    const line = rawLine.trim();
     if (!line) continue;
 
-    let parsed = parseSingleLineFast(line, i);
-    if (parsed) {
-      if (clientId) parsed.client = clientId;
-      parsedLogs.push(parsed);
+    if (pending && pending._meta && pending._meta.isTomcatSimpleHdr) {
+      const lvlPair = isTomcatSimpleLevelLine(rawLine);
+      if (lvlPair) {
+        pending._meta.baseLevel = lvlPair.level;
+        pending._meta.isTomcatSimpleHdr = false;
+        const mergedMsg = `${pending.message} — ${lvlPair.level}: ${lvlPair.msg}`.trim();
+        pending.message = mergedMsg.slice(0, 600);
+        if (pending.raw.length < 1600) pending.raw = (pending.raw + '\n' + line).slice(0, 1600);
+        if (!pending._meta.lockedCode) {
+          const cls = classifyTomcatJavaEvent(mergedMsg, lvlPair.level);
+          pending.entrustCode = cls.code;
+          pending.level = cls.level;
+          pending.service = cls.service;
+          pending._meta.lockedCode = /^(?:520\d{4}|AUD\d+|ORA-)/i.test(cls.code);
+        }
+        continue;
+      }
+    }
+
+    if (pending && isJavaStackContinuation(rawLine)) {
+      const m = pending._meta;
+      m.stackFrames++;
+      if (/^(?:Caused by:|Suppressed:)|^(?:java|javax|jakarta|oracle|org\.apache|com\.entrust)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b/.test(line)) {
+        if (m.causes.length < 6) m.causes.push(line.slice(0, 220));
+      }
+      if (!m.entrustFrame && line.includes('com.entrust.')) {
+        m.entrustFrame = line.replace(/^at\s+/, '').trim().slice(0, 140);
+      }
+      if (pending.raw.length < 1550) pending.raw = (pending.raw + '\n' + line).slice(0, 1600);
+      continue;
+    }
+
+    if (pending) {
+      const doneEv = finalizePendingEvent(pending);
+      if (doneEv) {
+        if (clientId) doneEv.client = clientId;
+        parsedLogs.push(doneEv);
+      }
+      pending = null;
+    }
+
+    eventIdx++;
+    const nextEv = parseSingleLineFast(line, eventIdx - 1, lastSeenTs);
+    if (nextEv) {
+      if (nextEv._meta && nextEv._meta.hasExplicitTs && nextEv.timestamp) {
+        lastSeenTs = nextEv.timestamp;
+      }
+      pending = nextEv;
     }
 
     if (i % chunkSize === 0 || i === total - 1) {
       const pct = Math.round(((i + 1) / total) * 100);
       self.postMessage({ type: 'progress', current: i + 1, total, pct });
+    }
+  }
+
+  if (pending) {
+    const doneEv = finalizePendingEvent(pending);
+    if (doneEv) {
+      if (clientId) doneEv.client = clientId;
+      parsedLogs.push(doneEv);
     }
   }
 
@@ -64,8 +325,12 @@ async function processGiantFileStream(file, clientId) {
   let offset = 0;
   let leftover = '';
   let lineCount = 0;
+  let rawLinesRead = 0;
+  let foldedStackLines = 0;
   let totalErrors = 0;
   let totalWarnings = 0;
+  let lastSeenTs = '';
+  let pending = null;
 
   // Agregadores Globales para el Panorama Completo (100% de los 9.7 GB)
   const userCounter = {};
@@ -80,6 +345,67 @@ async function processGiantFileStream(file, clientId) {
   let displayErrorCount = 0;
 
   let lastProgressReportTime = 0;
+
+  const commitEvent = (ev) => {
+    const parsed = finalizePendingEvent(ev);
+    if (!parsed) return;
+    if (clientId) parsed.client = clientId;
+
+    const isError = parsed.level === 'ERROR' || parsed.level === 'CRITICAL';
+    const isWarn = parsed.level === 'WARN';
+
+    if (isError) totalErrors++;
+    if (isWarn) totalWarnings++;
+
+    // 1. Agregación de Códigos / Eventos
+    const codeKey = parsed.entrustCode || parsed.service || 'UNKNOWN';
+    codeCounter[codeKey] = (codeCounter[codeKey] || 0) + 1;
+
+    // 2. Agregación de Usuarios Nominales con detalles forenses
+    if (parsed.user && parsed.user !== 'unknown' && parsed.user !== 'N/A') {
+      const u = parsed.user;
+      userCounter[u] = (userCounter[u] || 0) + 1;
+      if (!userDetails[u] && Object.keys(userDetails).length < 5000) {
+        userDetails[u] = { count: 0, errors: 0, codes: {}, firstSeen: parsed.timestamp || '', lastSeen: parsed.timestamp || '' };
+      }
+      if (userDetails[u]) {
+        userDetails[u].count++;
+        if (isError || isWarn || parsed.entrustCode === 'AUD6001' || parsed.entrustCode === 'AUD6002') {
+          userDetails[u].errors++;
+        }
+        if (parsed.entrustCode) {
+          userDetails[u].codes[parsed.entrustCode] = (userDetails[u].codes[parsed.entrustCode] || 0) + 1;
+        }
+        if (parsed.timestamp) userDetails[u].lastSeen = parsed.timestamp;
+      }
+    }
+
+    // 3. Agregación de IPs
+    if (parsed.clientIp && parsed.clientIp !== 'N/A') {
+      ipCounter[parsed.clientIp] = (ipCounter[parsed.clientIp] || 0) + 1;
+    }
+
+    // 4. Agregación de Tiempos (Día / Hora / Minutos)
+    let dateBucket = (parsed.timestamp || '').substring(0, 16); // 'YYYY-MM-DD HH:mm'
+    if (!dateBucket || dateBucket.length < 10) {
+      dateBucket = (parsed.timestamp || '').substring(0, 13);
+    }
+    if (dateBucket && /^\d{4}-\d{2}-\d{2}/.test(dateBucket) && dateBucket.length >= 10) {
+      if (!timeBuckets[dateBucket]) timeBuckets[dateBucket] = { total: 0, critical: 0, warn: 0 };
+      timeBuckets[dateBucket].total++;
+      if (isError) timeBuckets[dateBucket].critical++;
+      if (isWarn) timeBuckets[dateBucket].warn++;
+    }
+
+    // 5. Retención amplia hasta 150k registros (prioriza Errores, Alertas, AUD y Usuarios)
+    const isPriority = isError || isWarn || (parsed.entrustCode && /^AUD/i.test(parsed.entrustCode)) || (parsed.user && parsed.user !== 'N/A');
+    if (isPriority && displayErrorCount < 100000) {
+      displayErrorCount++;
+      displayLogs.push(parsed);
+    } else if (displayLogs.length < MAX_DISPLAY_LOGS && (displayLogs.length < 50000 || lineCount % 10 === 0)) {
+      displayLogs.push(parsed);
+    }
+  };
 
   while (offset < fileSize) {
     const slice = file.slice(offset, Math.min(offset + chunkSize, fileSize));
@@ -96,68 +422,57 @@ async function processGiantFileStream(file, clientId) {
     }
 
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
+      const rawLine = lines[i].replace(/\r$/, '');
+      const line = rawLine.trim();
       if (!line) continue;
+      rawLinesRead++;
+
+      if (pending && pending._meta && pending._meta.isTomcatSimpleHdr) {
+        const lvlPair = isTomcatSimpleLevelLine(rawLine);
+        if (lvlPair) {
+          pending._meta.baseLevel = lvlPair.level;
+          pending._meta.isTomcatSimpleHdr = false;
+          const mergedMsg = `${pending.message} — ${lvlPair.level}: ${lvlPair.msg}`.trim();
+          pending.message = mergedMsg.slice(0, 600);
+          if (pending.raw.length < 1600) pending.raw = (pending.raw + '\n' + line).slice(0, 1600);
+          if (!pending._meta.lockedCode) {
+            const cls = classifyTomcatJavaEvent(mergedMsg, lvlPair.level);
+            pending.entrustCode = cls.code;
+            pending.level = cls.level;
+            pending.service = cls.service;
+            pending._meta.lockedCode = /^(?:520\d{4}|AUD\d+|ORA-)/i.test(cls.code);
+          }
+          foldedStackLines++;
+          continue;
+        }
+      }
+
+      if (pending && isJavaStackContinuation(rawLine)) {
+        const m = pending._meta;
+        m.stackFrames++;
+        foldedStackLines++;
+        if (/^(?:Caused by:|Suppressed:)|^(?:java|javax|jakarta|oracle|org\.apache|com\.entrust)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b/.test(line)) {
+          if (m.causes.length < 6) m.causes.push(line.slice(0, 220));
+        }
+        if (!m.entrustFrame && line.includes('com.entrust.')) {
+          m.entrustFrame = line.replace(/^at\s+/, '').trim().slice(0, 140);
+        }
+        if (pending.raw.length < 1550) pending.raw = (pending.raw + '\n' + line).slice(0, 1600);
+        continue;
+      }
+
+      if (pending) {
+        commitEvent(pending);
+        pending = null;
+      }
+
       lineCount++;
-
-      const parsed = parseSingleLineFast(line, lineCount);
+      const parsed = parseSingleLineFast(line, lineCount, lastSeenTs);
       if (parsed) {
-        if (clientId) parsed.client = clientId;
-
-        const isError = parsed.level === 'ERROR' || parsed.level === 'CRITICAL';
-        const isWarn = parsed.level === 'WARN';
-
-        if (isError) totalErrors++;
-        if (isWarn) totalWarnings++;
-
-        // 1. Agregación de Códigos / Eventos
-        const codeKey = parsed.entrustCode || parsed.service || 'UNKNOWN';
-        codeCounter[codeKey] = (codeCounter[codeKey] || 0) + 1;
-
-        // 2. Agregación de Usuarios Nominales con detalles forenses
-        if (parsed.user && parsed.user !== 'unknown' && parsed.user !== 'N/A') {
-          const u = parsed.user;
-          userCounter[u] = (userCounter[u] || 0) + 1;
-          if (!userDetails[u] && Object.keys(userDetails).length < 5000) {
-            userDetails[u] = { count: 0, errors: 0, codes: {}, firstSeen: parsed.timestamp || '', lastSeen: parsed.timestamp || '' };
-          }
-          if (userDetails[u]) {
-            userDetails[u].count++;
-            if (isError || isWarn || parsed.entrustCode === 'AUD6001' || parsed.entrustCode === 'AUD6002') {
-              userDetails[u].errors++;
-            }
-            if (parsed.entrustCode) {
-              userDetails[u].codes[parsed.entrustCode] = (userDetails[u].codes[parsed.entrustCode] || 0) + 1;
-            }
-            if (parsed.timestamp) userDetails[u].lastSeen = parsed.timestamp;
-          }
+        if (parsed._meta && parsed._meta.hasExplicitTs && parsed.timestamp) {
+          lastSeenTs = parsed.timestamp;
         }
-
-        // 3. Agregación de IPs
-        if (parsed.clientIp && parsed.clientIp !== 'N/A') {
-          ipCounter[parsed.clientIp] = (ipCounter[parsed.clientIp] || 0) + 1;
-        }
-
-        // 4. Agregación de Tiempos (Día / Hora / Minutos)
-        let dateBucket = (parsed.timestamp || '').substring(0, 16); // 'YYYY-MM-DD HH:mm'
-        if (!dateBucket || dateBucket.length < 10) {
-          dateBucket = (parsed.timestamp || '').substring(0, 13);
-        }
-        if (dateBucket && dateBucket.length >= 10) {
-          if (!timeBuckets[dateBucket]) timeBuckets[dateBucket] = { total: 0, critical: 0, warn: 0 };
-          timeBuckets[dateBucket].total++;
-          if (isError) timeBuckets[dateBucket].critical++;
-          if (isWarn) timeBuckets[dateBucket].warn++;
-        }
-
-        // 5. Retención amplia hasta 150k registros (prioriza Errores, Alertas, AUD y Usuarios)
-        const isPriority = isError || isWarn || (parsed.entrustCode && /^AUD/i.test(parsed.entrustCode)) || (parsed.user && parsed.user !== 'N/A');
-        if (isPriority && displayErrorCount < 100000) {
-          displayErrorCount++;
-          displayLogs.push(parsed);
-        } else if (displayLogs.length < MAX_DISPLAY_LOGS && (displayLogs.length < 50000 || lineCount % 10 === 0)) {
-          displayLogs.push(parsed);
-        }
+        pending = parsed;
       }
     }
 
@@ -184,12 +499,45 @@ async function processGiantFileStream(file, clientId) {
   }
 
   if (leftover && leftover.trim()) {
-    lineCount++;
-    const parsed = parseSingleLineFast(leftover.trim(), lineCount);
-    if (parsed) {
-      if (clientId) parsed.client = clientId;
-      displayLogs.push(parsed);
+    const rawLine = leftover.replace(/\r$/, '');
+    const line = rawLine.trim();
+    rawLinesRead++;
+    if (pending && pending._meta && pending._meta.isTomcatSimpleHdr) {
+      const lvlPair = isTomcatSimpleLevelLine(rawLine);
+      if (lvlPair) {
+        pending._meta.baseLevel = lvlPair.level;
+        pending._meta.isTomcatSimpleHdr = false;
+        const mergedMsg = `${pending.message} — ${lvlPair.level}: ${lvlPair.msg}`.trim();
+        pending.message = mergedMsg.slice(0, 600);
+        if (!pending._meta.lockedCode) {
+          const cls = classifyTomcatJavaEvent(mergedMsg, lvlPair.level);
+          pending.entrustCode = cls.code;
+          pending.level = cls.level;
+          pending.service = cls.service;
+        }
+        foldedStackLines++;
+      } else if (isJavaStackContinuation(rawLine)) {
+        pending._meta.stackFrames++;
+        foldedStackLines++;
+      } else {
+        commitEvent(pending);
+        pending = null;
+        lineCount++;
+        pending = parseSingleLineFast(line, lineCount, lastSeenTs);
+      }
+    } else if (pending && isJavaStackContinuation(rawLine)) {
+      pending._meta.stackFrames++;
+      foldedStackLines++;
+    } else {
+      if (pending) commitEvent(pending);
+      lineCount++;
+      pending = parseSingleLineFast(line, lineCount, lastSeenTs);
     }
+  }
+
+  if (pending) {
+    commitEvent(pending);
+    pending = null;
   }
 
   // Ordenar y recortar Top Usuarios (hasta 2500) y Top IPs
@@ -223,6 +571,8 @@ async function processGiantFileStream(file, clientId) {
     totalWarnings: totalWarnings,
     globalMetrics: {
       totalLogs: lineCount,
+      rawLinesRead: rawLinesRead,
+      foldedStackLines: foldedStackLines,
       totalErrors: totalErrors,
       totalWarnings: totalWarnings,
       topUsers: topUsers,
@@ -233,16 +583,17 @@ async function processGiantFileStream(file, clientId) {
   });
 }
 
-function parseSingleLineFast(line, lineNum) {
+function parseSingleLineFast(line, lineNum, lastSeenTs = '') {
   // 1. Formato IdentityGuard OnPremise Bracket: [2026-09-08 10:15:23] [http-nio-8443-exec-12] [ERROR] ...
   if (line.charCodeAt(0) === 91) {
-    const p1 = line.indexOf(']', 1);
-    if (p1 > 8 && p1 < 36) {
-      const timestamp = line.substring(1, p1);
+    const tsStart = line.charCodeAt(1) === 91 ? 2 : 1;
+    const p1 = line.indexOf(']', tsStart);
+    if (p1 > 8 && p1 < 38) {
+      const timestamp = line.substring(tsStart, p1).slice(0, 19);
 
       const p2Start = line.indexOf('[', p1 + 1);
       const p2End = p2Start !== -1 ? line.indexOf(']', p2Start + 1) : -1;
-      const thread = p2End !== -1 ? line.substring(p2Start + 1, p2End) : 'main';
+      const category_or_thread = p2End !== -1 ? line.substring(p2Start + 1, p2End) : 'main';
 
       const p3Start = p2End !== -1 ? line.indexOf('[', p2End + 1) : -1;
       const p3End = p3Start !== -1 ? line.indexOf(']', p3Start + 1) : -1;
@@ -250,34 +601,43 @@ function parseSingleLineFast(line, lineNum) {
 
       const p4Start = p3End !== -1 ? line.indexOf('[', p3End + 1) : -1;
       const p4End = p4Start !== -1 ? line.indexOf(']', p4Start + 1) : -1;
-      const category = p4End !== -1 ? line.substring(p4Start + 1, p4End).trim() : 'IG.SYSTEM';
+      const category = p4End !== -1 ? line.substring(p4Start + 1, p4End).trim() : category_or_thread;
 
       const message = p4End !== -1 ? line.substring(p4End + 1).trim() : line.substring(p1 + 1).trim();
 
       let level = 'INFO';
-      if (rawLevel.includes('ERR') || rawLevel.includes('CRIT') || rawLevel.includes('FATAL')) {
+      if (rawLevel.includes('ERR') || rawLevel.includes('CRIT') || rawLevel.includes('FATAL') || rawLevel.includes('SEVERE')) {
         level = 'ERROR';
       } else if (rawLevel.includes('WARN')) {
         level = 'WARN';
       }
 
       let entrustCode = null;
+      let lockedCode = false;
       const c520Idx = line.indexOf('520');
       if (c520Idx !== -1 && /520\d{4}/.test(line.substring(c520Idx, c520Idx + 7))) {
         entrustCode = line.substring(c520Idx, c520Idx + 7);
         level = 'ERROR';
+        lockedCode = true;
       } else {
         const audIdx = line.indexOf('AUD');
         if (audIdx !== -1 && /AUD\d{3,4}/i.test(line.substring(audIdx, audIdx + 7))) {
           entrustCode = line.substring(audIdx, audIdx + 7).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-          if (entrustCode === 'AUD6001' || entrustCode === 'AUD6002' || entrustCode === 'AUD2309') {
-            if (level === 'INFO') level = 'WARN';
+          lockedCode = true;
+          if (AUD_FAIL_SET.has(entrustCode)) level = 'ERROR';
+          else if (AUD_WARN_SET.has(entrustCode) && level === 'INFO') level = 'WARN';
+        } else {
+          const oraM = line.match(/\b(ORA-\d{5})\b/i);
+          if (oraM) {
+            entrustCode = oraM[1].toUpperCase();
+            level = 'CRITICAL';
+            lockedCode = true;
           }
         }
       }
 
-      let user = extractUser(line);
-      let clientIp = extractClientIp(line);
+      const user = isTomcatStartupBanner(line) ? null : extractUser(line);
+      const clientIp = extractClientIp(line);
 
       return {
         id: `worker-log-${lineNum}-${Date.now()}`,
@@ -291,7 +651,16 @@ function parseSingleLineFast(line, lineNum) {
         raw: line,
         user: user,
         clientIp: clientIp,
-        entrustCode: entrustCode
+        entrustCode: entrustCode,
+        _meta: {
+          hasExplicitTs: /^\d{4}[-/.]\d{2}[-/.]\d{2}/.test(timestamp),
+          isTomcatSimpleHdr: false,
+          baseLevel: rawLevel.toUpperCase(),
+          lockedCode: lockedCode,
+          stackFrames: 0,
+          causes: [],
+          entrustFrame: ''
+        }
       };
     }
   }
@@ -321,7 +690,7 @@ function parseSingleLineFast(line, lineNum) {
     }
 
     const timestampMatch = line.match(/(\d{4}[-/.]\d{2}[-/.]\d{2}[\sT]\d{2}:\d{2}:\d{2}(?:\.\d{3})?)/);
-    const timestamp = timestampMatch ? timestampMatch[1] : new Date().toISOString().replace('T', ' ').substring(0, 19);
+    const timestamp = timestampMatch ? timestampMatch[1] : (lastSeenTs || '');
 
     return {
       id: `worker-log-${lineNum}-${Date.now()}`,
@@ -335,7 +704,8 @@ function parseSingleLineFast(line, lineNum) {
       raw: line,
       user: user,
       clientIp: 'local',
-      entrustCode: entrustCode
+      entrustCode: entrustCode,
+      _meta: { hasExplicitTs: Boolean(timestampMatch), isTomcatSimpleHdr: false, baseLevel: level, lockedCode: true, stackFrames: 0, causes: [], entrustFrame: '' }
     };
   }
 
@@ -363,7 +733,7 @@ function parseSingleLineFast(line, lineNum) {
       }
 
       let formattedTime = rawTime.replace('T', ' ').replace('Z', '').substring(0, 19);
-      if (!formattedTime) formattedTime = new Date().toISOString().replace('T', ' ').substring(0, 19);
+      if (!formattedTime) formattedTime = lastSeenTs || '';
 
       let summaryMsg = `[${eventType}] ${eventMessage || eventType}`;
       if (entityName) summaryMsg += ` (Entidad: ${entityName} ${entityAction})`;
@@ -380,15 +750,114 @@ function parseSingleLineFast(line, lineNum) {
         raw: line,
         user: subjectName || 'unknown',
         clientIp: sourceIp || null,
-        entrustCode: eventType
+        entrustCode: eventType,
+        _meta: { hasExplicitTs: Boolean(rawTime), isTomcatSimpleHdr: false, baseLevel: level, lockedCode: true, stackFrames: 0, causes: [], entrustFrame: '' }
       };
     }
+  }
+
+  // 2.5 Entrust Linux Syslog + Apache Tomcat JULI / Catalina
+  const { ts, rest, fmt } = parseTomcatTimestamp(line);
+  if (ts) {
+    if (fmt === 'syslog' && (rest.startsWith('[') || rest.includes('520') || rest.includes('AUD'))) {
+      const lvlM = rest.match(/\[(ERROR|FATAL|SEVERE|CRIT|CRITICAL|WARN|WARNING|INFO|DEBUG)\s*\]/i);
+      const baseLvl = lvlM ? lvlM[1].toUpperCase() : ((rest.includes('FAILED') || rest.includes('[520')) ? 'ERROR' : 'INFO');
+      const cls = classifyTomcatJavaEvent(line, baseLvl);
+      const lockedCode = /^(?:520\d{4}|AUD\d+|ORA-)/i.test(cls.code);
+      return {
+        id: `worker-log-${lineNum}-${Date.now()}`,
+        lineNum: lineNum + 1,
+        type: 'Entrust Syslog / Catalina',
+        timestamp: ts,
+        level: cls.level,
+        hostname: 'localhost',
+        service: cls.service,
+        message: rest.slice(0, 600),
+        raw: line,
+        user: isTomcatStartupBanner(line) ? null : extractUser(line),
+        clientIp: extractNonVersionIp(rest),
+        entrustCode: cls.code,
+        _meta: { hasExplicitTs: true, isTomcatSimpleHdr: false, baseLevel: baseLvl, lockedCode: lockedCode, stackFrames: 0, causes: [], entrustFrame: '' }
+      };
+    }
+
+    const isIsoTomcatJava = (fmt === 'iso') && (
+      /\b(?:SEVERE|FATAL|ERROR|WARNING|WARN|INFO|DEBUG|GRAVE|ADVERTENCIA)\b/.test(rest) ||
+      /(?:catalina|org\.apache|com\.entrust|Exception|Error|Server startup|Starting ProtocolHandler|HikariPool|ORA-\d{5}|520\d{4}|AUD\d{3,4})/.test(line)
+    );
+    if (fmt === 'juli_oneline' || fmt === 'juli_simple' || isIsoTomcatJava) {
+      let baseLvl = 'INFO';
+      let msg = rest;
+      let isSimpleHdr = false;
+      if (fmt === 'juli_oneline') {
+        const mOne = rest.match(/^([A-ZÁÉÍÓÚÑ]+)\s+\[([^\]]*)\]\s+(.*)$/);
+        if (mOne) {
+          baseLvl = mOne[1].toUpperCase();
+          msg = `[${mOne[2]}] ${mOne[3]}`;
+        } else {
+          const mLvl = rest.match(/^(SEVERE|WARNING|WARN|INFO|CONFIG|FINE|FINER|FINEST|GRAVE|ADVERTENCIA)\s+(.*)$/i);
+          if (mLvl) {
+            baseLvl = mLvl[1].toUpperCase();
+            msg = mLvl[2];
+          }
+        }
+      } else if (fmt === 'juli_simple') {
+        isSimpleHdr = true;
+        const mLvl = rest.match(/\b(SEVERE|FATAL|ERROR|WARNING|WARN|GRAVE|ADVERTENCIA)\b/);
+        if (mLvl) baseLvl = mLvl[1].toUpperCase();
+      } else {
+        const mLvl = rest.match(/^[\[\s]*(SEVERE|FATAL|ERROR|WARNING|WARN|INFO|DEBUG|GRAVE|ADVERTENCIA)[\]\s:]+(.*)$/i)
+          || rest.match(/\b(SEVERE|FATAL|ERROR|WARNING|WARN|INFO|DEBUG)\b/);
+        if (mLvl) {
+          baseLvl = mLvl[1].toUpperCase();
+          if (mLvl[2]) msg = mLvl[2];
+        }
+      }
+      const cls = classifyTomcatJavaEvent(line, baseLvl);
+      const lockedCode = /^(?:520\d{4}|AUD\d+|ORA-)/i.test(cls.code);
+      return {
+        id: `worker-log-${lineNum}-${Date.now()}`,
+        lineNum: lineNum + 1,
+        type: 'Tomcat Catalina',
+        timestamp: ts,
+        level: cls.level,
+        hostname: 'idg-tomcat-srv',
+        service: cls.service,
+        message: msg.slice(0, 600),
+        raw: line,
+        user: isTomcatStartupBanner(line) ? null : extractUser(line),
+        clientIp: extractNonVersionIp(msg),
+        entrustCode: cls.code,
+        _meta: { hasExplicitTs: true, isTomcatSimpleHdr: isSimpleHdr, baseLevel: baseLvl, lockedCode: lockedCode, stackFrames: 0, causes: [], entrustFrame: '' }
+      };
+    }
+  }
+
+  // 3. Huérfana Java/Oracle sin timestamp
+  if (isJavaStackContinuation(line) || /\b(ORA-\d{5}|SQLException|OutOfMemoryError|SSLHandshakeException|Exception|Error)\b/.test(line)) {
+    const baseLvl = /(?:ClientAbortException|Broken pipe|Connection reset by peer)/i.test(line) ? 'INFO' : 'ERROR';
+    const cls = classifyTomcatJavaEvent(line, baseLvl, true);
+    return {
+      id: `worker-log-${lineNum}-${Date.now()}`,
+      lineNum: lineNum + 1,
+      type: 'Tomcat Catalina / Java',
+      timestamp: lastSeenTs || '',
+      level: cls.level,
+      hostname: 'idg-tomcat-srv',
+      service: cls.service,
+      message: line.slice(0, 600),
+      raw: line,
+      user: isTomcatStartupBanner(line) ? null : extractUser(line),
+      clientIp: extractNonVersionIp(line),
+      entrustCode: cls.code,
+      _meta: { hasExplicitTs: false, isTomcatSimpleHdr: false, baseLevel: baseLvl, lockedCode: false, stackFrames: 0, causes: [], entrustFrame: '' }
+    };
   }
 
   // Fallback OnPremise / SSH / Sistema (Cero contaminación IDaaS)
   let level = 'INFO';
   if (/emergency|alert|critical|fatal|panic/i.test(line)) level = 'CRITICAL';
-  else if (/error|failed|exception|invalid|locked/i.test(line)) level = 'ERROR';
+  else if (/error|failed|exception|invalid|locked|severe/i.test(line)) level = 'ERROR';
   else if (/warning|warn/i.test(line)) level = 'WARN';
 
   let entrustCode = null;
@@ -423,7 +892,7 @@ function parseSingleLineFast(line, lineNum) {
   }
 
   const timestampMatch = line.match(/(\d{4}[-/.]\d{2}[-/.]\d{2}[\sT]\d{2}:\d{2}:\d{2}(?:[.,]\d{3,6})?)/);
-  const timestamp = timestampMatch ? timestampMatch[1].replace('T', ' ').substring(0, 19) : new Date().toISOString().replace('T', ' ').substring(0, 19);
+  const timestamp = timestampMatch ? timestampMatch[1].replace('T', ' ').substring(0, 19) : (ts || lastSeenTs || '');
 
   return {
     id: `worker-log-${lineNum}-${Date.now()}`,
@@ -435,9 +904,10 @@ function parseSingleLineFast(line, lineNum) {
     service: service,
     message: line,
     raw: line,
-    user: extractUser(line),
-    clientIp: extractClientIp(line),
-    entrustCode: entrustCode
+    user: isTomcatStartupBanner(line) ? null : extractUser(line),
+    clientIp: extractNonVersionIp(line),
+    entrustCode: entrustCode,
+    _meta: { hasExplicitTs: Boolean(timestampMatch || ts), isTomcatSimpleHdr: false, baseLevel: level, lockedCode: Boolean(c520 || aud || ora), stackFrames: 0, causes: [], entrustFrame: '' }
   };
 }
 
@@ -500,7 +970,15 @@ function extractUser(line) {
       'your', 'my', 'who', 'whom', 'which', 'what', 'where', 'when', 'why', 'how', 'all',
       'any', 'some', 'each', 'every', 'other', 'another', 'such', 'only', 'own', 'same',
       'so', 'than', 'too', 'very', 'just', 'now', 'then', 'here', 'there', 'calling', 'main',
-      'type', 'user', 'users', 'admin_console', 'user_3238', 'user_8912', 'user_1042'
+      'type', 'user', 'users', 'admin_console', 'user_3238', 'user_8912', 'user_1042',
+      'catalina', 'tomcat', 'servlet', 'jsp', 'valve', 'connector', 'coyote', 'jasper',
+      'naming', 'wrapper', 'lifecycle', 'protocol', 'standardcontext', 'standardengine',
+      'standardhost', 'standardservice', 'standardwrapper', 'ajp', 'nio', 'apr', 'ssl',
+      'tls', 'keystore', 'truststore', 'cacerts', 'jvm', 'java', 'jdk', 'jre', 'gc',
+      'heap', 'metaspace', 'permgen', 'oom', 'stdout', 'stderr', 'localhost', 'webapps',
+      'bootstrap', 'classloader', 'webappclassloader', 'jndi', 'datasource', 'driver',
+      'hikari', 'dbcp', 'postgres', 'postgresql', 'sqlserver', 'mysql', 'charset',
+      'utf-8', 'iso-8859-1', 'tomcat8', 'tomcat9'
     ]);
     if (stopWords.has(low)) return false;
     if (/^[-.=/\\:;,]/.test(clean)) return false;
