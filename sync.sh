@@ -120,11 +120,17 @@ sync_diagnostic() {
         if [ $? -eq 0 ]; then
             sudo chmod -R 775 "$DIR_DIAGNOSTIC" >/dev/null 2>&1 || true
 
-            # Reiniciar server.py en el puerto 8085 automáticamente tras sincronizar
-            sudo kill -9 $(sudo lsof -t -i:8085 2>/dev/null) 2>/dev/null || true
-            sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
-            sleep 1
-            nohup python3 "$DIR_DIAGNOSTIC/server.py" > /tmp/server_8085.log 2>&1 &
+            # Reiniciar servicio en puerto 8085 usando systemd si existe logdiagnostix.service
+            if systemctl list-unit-files logdiagnostix.service 2>/dev/null | grep -q "logdiagnostix.service"; then
+                sudo systemctl restart logdiagnostix.service
+                sleep 2
+            else
+                sudo kill -9 $(sudo lsof -t -i:8085 2>/dev/null) 2>/dev/null || true
+                sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
+                sleep 1
+                nohup python3 "$DIR_DIAGNOSTIC/server.py" > /tmp/server_8085.log 2>&1 &
+                sleep 2
+            fi
 
             local commit_msg=$(git log -1 --pretty=format:"%h - %s (%cr)")
             printf "${GREEN}${BOLD}? entrust-log-diagnostic-suite actualizado y servicio 8085 reiniciado con éxito.${NC}\n"
@@ -189,18 +195,25 @@ start_server_8085() {
         cd "$DIR_DIAGNOSTIC" || return
         sudo chown -R $(whoami):$(whoami) "$DIR_DIAGNOSTIC" 2>/dev/null || true
         sudo chmod -R 775 "$DIR_DIAGNOSTIC" 2>/dev/null || true
-        sudo kill -9 $(sudo lsof -t -i:8085 2>/dev/null) 2>/dev/null || true
-        sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
-        sleep 1
-        if [ -f "server.py" ]; then
-            nohup python3 server.py > /tmp/server_8085.log 2>&1 &
+        if systemctl list-unit-files logdiagnostix.service 2>/dev/null | grep -q "logdiagnostix.service"; then
+            sudo systemctl restart logdiagnostix.service
+            sleep 2
         else
-            nohup python3 -m http.server 8085 --bind 0.0.0.0 > /tmp/server_8085.log 2>&1 &
+            sudo kill -9 $(sudo lsof -t -i:8085 2>/dev/null) 2>/dev/null || true
+            sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
+            sleep 1
+            if [ -f "server.py" ]; then
+                nohup python3 server.py > /tmp/server_8085.log 2>&1 &
+            else
+                nohup python3 -m http.server 8085 --bind 0.0.0.0 > /tmp/server_8085.log 2>&1 &
+            fi
+            sleep 2
         fi
-        sleep 2
-        if sudo lsof -i:8085 >/dev/null 2>&1; then
-            printf "${GREEN}${BOLD}✅ Suite de Diagnóstico ACTIVA y OPERATIVA en puerto 8085.${NC}\n"
+        if curl -sf http://127.0.0.1:8085/api/version >/dev/null 2>&1; then
+            printf "${GREEN}${BOLD}✅ Suite de Diagnóstico ACTIVA y OPERATIVA (server.py API) en puerto 8085.${NC}\n"
             printf "${YELLOW}   🌐 Abre: http://%s:8085/${NC}\n" "$SERVER_IP"
+        elif sudo lsof -i:8085 >/dev/null 2>&1; then
+            printf "${YELLOW}⚠️ Puerto 8085 escuchando, pero /api/version no respondió como server.py.${NC}\n"
         else
             printf "${RED}❌ Error iniciando server.py. Últimas líneas del log:${NC}\n"
             tail -n 10 /tmp/server_8085.log 2>/dev/null || true

@@ -1498,12 +1498,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.10.0',
-    build: 609,
+    version: 'v3.10.1',
+    build: 610,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'PDF-MANUALS-UNIFIED-KB-310',
+    gitCommit: 'PDF-MODAL-FIX-3101',
     gitBranch: 'main',
-    buildDate: '2026-11-24 10:00',
+    buildDate: '2026-11-24 10:50',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -6351,6 +6351,70 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       });
     });
 
+    function resetAddManualModal() {
+      const fileEl = document.getElementById('custom-manual-file');
+      const verEl = document.getElementById('custom-manual-ver');
+      const titleEl = document.getElementById('custom-manual-title');
+      const htmlEl = document.getElementById('custom-manual-html');
+      const pdfNoticeEl = document.getElementById('custom-manual-pdf-notice');
+      const htmlWrapEl = document.getElementById('custom-manual-html-wrap');
+      const saveStatusEl = document.getElementById('custom-manual-save-status');
+      if (fileEl) fileEl.value = '';
+      if (verEl) verEl.value = '';
+      if (titleEl) titleEl.value = '';
+      if (htmlEl) htmlEl.value = '';
+      if (pdfNoticeEl) {
+        pdfNoticeEl.style.display = 'none';
+        pdfNoticeEl.innerHTML = '';
+      }
+      if (htmlWrapEl) htmlWrapEl.style.display = 'block';
+      if (saveStatusEl) saveStatusEl.innerHTML = '';
+    }
+
+    const customManualFileInput = document.getElementById('custom-manual-file');
+    customManualFileInput?.addEventListener('change', async () => {
+      const file = customManualFileInput.files?.[0];
+      const verEl = document.getElementById('custom-manual-ver');
+      const titleEl = document.getElementById('custom-manual-title');
+      const htmlEl = document.getElementById('custom-manual-html');
+      const pdfNoticeEl = document.getElementById('custom-manual-pdf-notice');
+      const htmlWrapEl = document.getElementById('custom-manual-html-wrap');
+      const saveStatusEl = document.getElementById('custom-manual-save-status');
+      if (saveStatusEl) saveStatusEl.innerHTML = '';
+      if (!file) return;
+
+      const stem = file.name.replace(/\.[^.]+$/, '');
+      if (titleEl && !titleEl.value.trim()) titleEl.value = stem;
+      if (verEl && !verEl.value.trim()) {
+        verEl.value = stem.replace(/[^a-zA-Z0-9._-]/g, '-').slice(0, 48);
+      }
+
+      const isPdf = /\.pdf$/i.test(file.name) || file.type === 'application/pdf';
+      if (isPdf) {
+        if (htmlEl) htmlEl.value = '';
+        if (htmlWrapEl) htmlWrapEl.style.display = 'none';
+        if (pdfNoticeEl) {
+          const sizeStr = file.size >= 1024 * 1024
+            ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
+            : `${Math.max(1, Math.round(file.size / 1024))} KB`;
+          pdfNoticeEl.style.display = 'block';
+          pdfNoticeEl.innerHTML = `📕 <strong>PDF seleccionado:</strong> <code>${escapeHtml(file.name)}</code> (${sizeStr}).<br>Al presionar <strong>Guardar e Indexar Manual</strong>, se subirá en binario a <code>/api/upload-manual</code>, se abrirá en el visor PDF integrado y se extraerán los códigos reales sin mostrar texto binario crudo.`;
+        }
+      } else {
+        if (pdfNoticeEl) {
+          pdfNoticeEl.style.display = 'none';
+          pdfNoticeEl.innerHTML = '';
+        }
+        if (htmlWrapEl) htmlWrapEl.style.display = 'block';
+        try {
+          const txt = await file.text();
+          if (htmlEl) htmlEl.value = txt;
+        } catch (err) {
+          if (saveStatusEl) saveStatusEl.innerHTML = `<span style="color:#ef4444;">Error leyendo archivo de texto: ${escapeHtml(err.message || err)}</span>`;
+        }
+      }
+    });
+
     dom.btnOpenAddManualModal?.addEventListener('click', () => {
       dom.addManualModal.classList.add('active');
     });
@@ -6358,13 +6422,82 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       dom.addManualModal.classList.remove('active');
     });
 
-    dom.btnSaveCustomManual?.addEventListener('click', () => {
-      const verName = document.getElementById('custom-manual-ver')?.value;
-      const title = document.getElementById('custom-manual-title')?.value;
-      const htmlContent = document.getElementById('custom-manual-html')?.value;
+    dom.btnSaveCustomManual?.addEventListener('click', async () => {
+      const verEl = document.getElementById('custom-manual-ver');
+      const titleEl = document.getElementById('custom-manual-title');
+      const htmlEl = document.getElementById('custom-manual-html');
+      const saveStatusEl = document.getElementById('custom-manual-save-status');
+      const selectedFile = document.getElementById('custom-manual-file')?.files?.[0] || null;
+      const verName = verEl?.value?.trim();
+      const title = titleEl?.value?.trim();
+      const htmlContent = htmlEl?.value || '';
+
+      const isPdfFile = !!(selectedFile && (/\.pdf$/i.test(selectedFile.name) || selectedFile.type === 'application/pdf'));
+      if (isPdfFile) {
+        const maxBytes = 60 * 1024 * 1024;
+        if (selectedFile.size > maxBytes) {
+          if (saveStatusEl) saveStatusEl.innerHTML = '<span style="color:#ef4444;">❌ El archivo PDF supera el límite de 60 MB.</span>';
+          return;
+        }
+        const btnSave = dom.btnSaveCustomManual;
+        const origLabel = btnSave ? btnSave.textContent : '';
+        if (btnSave) {
+          btnSave.disabled = true;
+          btnSave.textContent = '⏳ Subiendo PDF...';
+        }
+        if (saveStatusEl) saveStatusEl.innerHTML = '<span style="color:#0284c7;">⏳ Subiendo PDF binario e indexando páginas y códigos en el servidor...</span>';
+        try {
+          const buf = await selectedFile.arrayBuffer();
+          const resp = await fetch('/api/upload-manual', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/pdf',
+              'X-File-Name': encodeURIComponent(selectedFile.name)
+            },
+            body: buf
+          });
+          const data = await resp.json().catch(() => ({}));
+          if (!resp.ok) {
+            if (saveStatusEl) saveStatusEl.innerHTML = `<span style="color:#ef4444;">❌ ${escapeHtml(data.error || ('HTTP ' + resp.status))}</span>`;
+            return;
+          }
+          window.copilotEngine?.manualsCache?.clear?.();
+          if (typeof window.loadCustomPdfCodesGlobal === 'function') {
+            await window.loadCustomPdfCodesGlobal();
+          }
+          if (typeof window.refreshCustomServerManualsGlobal === 'function') {
+            await window.refreshCustomServerManualsGlobal();
+          }
+          const pdfPath = data.path;
+          const pdfTitle = title || data.filename;
+          const statusMsg = data.isScannedOrEmpty
+            ? `<div style="color:#d97706;">⚠️ <strong>${escapeHtml(data.filename)}</strong> guardado (${data.pageCount || 0} pág.), ${escapeHtml(data.warning || 'sin texto seleccionable')}; 0 códigos inventados.</div>`
+            : `<div style="color:#10b981; font-weight:600;">✅ <strong>${escapeHtml(data.filename)}</strong>: ${data.pageCount || 0} pág(s) (${escapeHtml(data.engine || 'stdlib-pdf')}), <strong>${data.extractedCodesCount || 0} código(s)</strong> extraídos e indexados.</div>`;
+          const uploadStatusEl = document.getElementById('server-manual-upload-status');
+          if (uploadStatusEl) uploadStatusEl.innerHTML = statusMsg;
+          dom.addManualModal.classList.remove('active');
+          resetAddManualModal();
+          if (typeof window.openManualPathInViewer === 'function') {
+            window.openManualPathInViewer(pdfPath, pdfTitle, 'PDF Oficial');
+          }
+        } catch (e) {
+          if (saveStatusEl) saveStatusEl.innerHTML = `<span style="color:#ef4444;">❌ Error subiendo PDF: ${escapeHtml(e.message || e)}</span>`;
+        } finally {
+          if (btnSave) {
+            btnSave.disabled = false;
+            btnSave.textContent = origLabel || 'Guardar e Indexar Manual';
+          }
+        }
+        return;
+      }
+
+      if (/^%PDF-\d\.\d/i.test(htmlContent.trimStart())) {
+        if (saveStatusEl) saveStatusEl.innerHTML = '<span style="color:#ef4444;">❌ El texto pegado parece un archivo binario PDF (%PDF-). Selecciona el archivo .pdf directamente en el selector de archivo.</span>';
+        return;
+      }
 
       if (!verName || !htmlContent) {
-        alert('Por favor complete la versión y el contenido HTML.');
+        alert('Por favor complete la versión y el contenido HTML/texto (o selecciona un archivo .pdf).');
         return;
       }
 
@@ -6375,6 +6508,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         loadManual(newVerKey);
         renderKbRulesList();
         dom.addManualModal.classList.remove('active');
+        resetAddManualModal();
         alert(`¡Manual ${verName} cargado e indexado automáticamente en la Base de Conocimientos!`);
       } catch (e) {
         alert('Error al guardar manual HTML: ' + e.message);

@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.10.0 (Build 609)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.10.1 (Build 610)</span>
           </div>
         </div>
       </div>
@@ -1224,21 +1224,21 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
     </div>
   </div>
 
-  <!-- MODAL: AGREGAR MANUAL HTML PERSONALIZADO -->
+  <!-- MODAL: AGREGAR MANUAL PDF / HTML PERSONALIZADO -->
   <div class="modal-overlay" id="add-manual-modal">
     <div class="modal-content">
       <div class="card-header">
-        <div class="card-title">📥 Incorporar Manual Administrativo Entrust OnPremise / IDaaS en HTML</div>
+        <div class="card-title">📥 Incorporar Manual Administrativo Entrust OnPremise / IDaaS (PDF, HTML, MD, TXT)</div>
         <button class="btn" id="btn-close-add-manual">✖</button>
       </div>
 
       <p class="text-muted" style="font-size:0.85rem; margin-bottom:12px;">
-        💡 Al cargar un manual en HTML, el sistema analizará automáticamente el documento para extraer todos los códigos de error <code>[520xxxx]</code>, eventos <code>[AUDxxxx]</code> e IDaaS e indexarlos de forma automática en la Base de Conocimientos.
+        💡 Soporta archivos <strong>PDF oficiales</strong> (subida binaria al servidor en <code>manuals/custom/</code>, visor integrado y extracción literal de códigos <code>520xxxx</code>, <code>AUDxxx</code>, <code>ORA-xxxxx</code> sin alucinaciones) además de manuales locales en <code>.html</code>, <code>.htm</code>, <code>.md</code> o <code>.txt</code>.
       </p>
 
       <div class="mt-4">
-        <div class="diag-label">Versión / Identificador del Manual (ej. Entrust-v12.4, IDaaS-Cloud-Manual):</div>
-        <input type="text" class="form-control" id="custom-manual-ver" placeholder="Entrust-v12.4">
+        <div class="diag-label">Versión / Identificador del Manual (ej. Entrust-v12.0, IDaaS-Cloud-Manual):</div>
+        <input type="text" class="form-control" id="custom-manual-ver" placeholder="Entrust-v12.0">
       </div>
 
       <div class="mt-4">
@@ -1247,18 +1247,19 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
       </div>
 
       <div class="mt-4">
-        <div class="diag-label">Subir Archivo de Manual (.html, .htm, .md, .txt) o Pegar Contenido:</div>
-        <input type="file" id="custom-manual-file" class="form-control" accept=".html,.htm,.txt,.md" onchange="if(this.files && this.files[0]){ const f=this.files[0]; const t=document.getElementById('custom-manual-title'); if(t && !t.value) t.value=f.name.replace(/\.[^.]+$/, ''); f.text().then(txt=>{ const h=document.getElementById('custom-manual-html'); if(h) h.value=txt; }); }">
+        <div class="diag-label">Subir Archivo de Manual (.pdf, .html, .htm, .md, .txt):</div>
+        <input type="file" id="custom-manual-file" class="form-control" accept=".pdf,.html,.htm,.txt,.md">
+        <div id="custom-manual-pdf-notice" style="display:none; margin-top:10px; padding:10px 12px; border-radius:8px; background:rgba(2,132,199,0.12); border:1px solid rgba(2,132,199,0.35); font-size:0.82rem; color:var(--text-main);"></div>
       </div>
 
-      <div class="mt-4">
+      <div class="mt-4" id="custom-manual-html-wrap">
         <div class="diag-label">Contenido HTML / Texto del Manual:</div>
         <textarea class="form-control font-mono" id="custom-manual-html" rows="8" placeholder="<html><body><h1>1.1 Código [5202013]...</body></html>"></textarea>
       </div>
 
-      <div class="flex-between mt-4">
-        <span></span>
-        <button class="btn btn-primary" id="btn-save-custom-manual">Guardar e Indexar Manual HTML</button>
+      <div class="flex-between mt-4" style="gap:10px; flex-wrap:wrap;">
+        <div id="custom-manual-save-status" style="font-size:0.8rem; color:var(--text-muted); flex:1;"></div>
+        <button class="btn btn-primary" id="btn-save-custom-manual">Guardar e Indexar Manual</button>
       </div>
     </div>
   </div>
@@ -1756,7 +1757,7 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/user-trace-report.js?v=608.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
   <script src="js/pcap-analyzer.js?v=608.0"></script>
-  <script src="js/app.js?v=609.0"></script>
+  <script src="js/app.js?v=610.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->
