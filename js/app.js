@@ -379,6 +379,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     populateClientSessionSelectors();
     if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
+    syncManualsAndKbToActiveClient(false);
+  }
+
+  function getDefaultManualKeyForActiveClient() {
+    const client = getActiveClientProfile();
+    const combined = `${client?.platform || ''} ${client?.version || ''}`.trim();
+    let ver = 'IG 12.0';
+    if (window.knowledgeBaseEngine && typeof window.knowledgeBaseEngine._normalizeDocVersionLabel === 'function') {
+      const norm = window.knowledgeBaseEngine._normalizeDocVersionLabel(combined);
+      if (norm !== 'General') ver = norm;
+    } else if (/idaas|cloud/i.test(combined)) ver = 'IDaaS Cloud';
+    else if (/13/i.test(combined)) ver = 'IG 13.0';
+    else if (/12/i.test(combined)) ver = 'IG 12.0';
+    else if (/11/i.test(combined)) ver = 'IG 11.0';
+    else if (/10/i.test(combined)) ver = 'IG 10.0';
+    else if (/(?:^|[^\d])9(?:\.\d+)?(?:[^\d]|$)/i.test(combined)) ver = 'IG 9.0';
+
+    const map = {
+      'IG 13.0': 'v13_0_webhelp',
+      'IG 12.0': 'v12_0_webhelp',
+      'IG 11.0': 'v11_0_webhelp',
+      'IG 10.0': 'v10_0_custom',
+      'IG 9.0': 'v9_0_custom',
+      'IDaaS Cloud': 'vIDaaS_docs'
+    };
+    return map[ver] || 'v12_0_webhelp';
+  }
+
+  function syncManualsAndKbToActiveClient(reloadViewerIfLoaded = false) {
+    const defaultVer = getDefaultManualKeyForActiveClient();
+    state.currentManualVersion = defaultVer;
+    if (dom?.manualVersionSelect) {
+      dom.manualVersionSelect.value = defaultVer;
+    }
+    window.copilotEngine?.manualsCache?.clear?.();
+    if (reloadViewerIfLoaded && dom?.manualIframe && dom.manualIframe.getAttribute('src')) {
+      try { loadManual(defaultVer); } catch (e) {}
+    }
+    if (typeof renderKbRulesList === 'function') {
+      try { renderKbRulesList(); } catch (e) {}
+    }
   }
 
   window.getActiveClientProfileGlobal = function() { return getActiveClientProfile(); };
@@ -535,6 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof syncClientSessionWithServer === 'function') {
       syncClientSessionWithServer(clientId);
     }
+    syncManualsAndKbToActiveClient(true);
     if (typeof window.loadActiveClientConfigGlobal === 'function') {
       window.loadActiveClientConfigGlobal(clientId);
     }
@@ -1498,12 +1540,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.11.1',
-    build: 613,
+    version: 'v3.12.0',
+    build: 614,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'HTML-CODES-BATCH-PROGRESS-3111',
+    gitCommit: 'STRICT-VERSION-HEALTH-TIMELINE-312',
     gitBranch: 'main',
-    buildDate: '2026-11-24 12:00',
+    buildDate: '2026-11-24 12:55',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -1993,6 +2035,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof syncClientSessionWithServer === 'function') {
           syncClientSessionWithServer(state.activeClientId);
         }
+        syncManualsAndKbToActiveClient(true);
 
         showAnalysisStatus(false, `🏢 Sesión Cambiada a: ${currentClient.name}`, `Nodos activos: ${availNodes.map(n => n.name).join(' | ')}`);
       });
@@ -2119,7 +2162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (targetTab === 'overview') {
       try { updateMetricsAndCharts(); } catch(e) {}
     } else if (targetTab === 'manuals' && dom.manualIframe && !dom.manualIframe.getAttribute('src')) {
-      try { loadManual(state.currentManualVersion || 'v13_0_webhelp'); } catch(e) {}
+      try { loadManual(state.currentManualVersion || getDefaultManualKeyForActiveClient()); } catch(e) {}
     } else if (targetTab === 'notes' && window.notesEngine) {
       try { window.notesEngine.renderPortal('notes-portal-container'); } catch(e) {}
     } else if (targetTab === 'diff' && typeof window.renderDiffNodesGridGlobal === 'function') {
@@ -5209,35 +5252,69 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       }
     }
 
-    if (hasTomcatOom) {
-      if (isEn) {
-        items.push(`<li><strong>JVM Memory &amp; Workload Tuning on Embedded Tomcat:</strong> Detected <code>JVM_OOM</code> (<code>OutOfMemoryError</code>). Validate IG 13.0 base RAM requirement (minimum 4 GB for AdoptOpenJDK 11 + embedded Apache Tomcat 8.5.57, scale per user volume), review <code>identityguard.webadmin.bulk.inMemoryThreshold</code> and offload heavy reports to off-peak hours or replicas, plus inspect JVM <code>-Xms/-Xmx</code> flags and heap dumps. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/entrust_ig_130_releasenotes.html" target="_blank" style="color:#0284c7;">IG 13.0 Release Notes</a> &amp; <a href="manuals/IG_130_Admin_WebHelp/ig_admin/usingpropeditor/web_application_settings.htm" target="_blank" style="color:#0284c7;">Web Application Settings</a>)</em></li>`);
-      } else {
-        items.push(`<li><strong>Memoria JVM y Carga Operativa en Tomcat Embebido:</strong> Se detectaron eventos <code>JVM_OOM</code> (<code>OutOfMemoryError</code>). Verificar el requisito base IG 13.0 (mínimo 4 GB RAM en AdoptOpenJDK 11 + Apache Tomcat 8.5.57 embebido, ampliable según volumen de usuarios), ajustar <code>identityguard.webadmin.bulk.inMemoryThreshold</code> y ejecutar reportes pesados en horario bajo o nodos réplica; en JVM/Tomcat estándar, revisar flags <code>-Xms/-Xmx</code> y heap dump. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/entrust_ig_130_releasenotes.html" target="_blank" style="color:#0284c7;">IG 13.0 Release Notes</a> &amp; <a href="manuals/IG_130_Admin_WebHelp/ig_admin/usingpropeditor/web_application_settings.htm" target="_blank" style="color:#0284c7;">Web Application Settings</a>)</em></li>`);
-      }
-    }
+    if (hasTomcatOom || hasTomcatSsl || hasTomcatLdap || hasTomcatDeploy) {
+      const repDocVer = (window.knowledgeBaseEngine && typeof window.knowledgeBaseEngine._normalizeDocVersionLabel === 'function')
+        ? window.knowledgeBaseEngine._normalizeDocVersionLabel(`${activeClient?.platform || ''} ${activeClient?.version || ''}`)
+        : (/12/i.test(activeClient?.version || '') ? 'IG 12.0' : (/11/i.test(activeClient?.version || '') ? 'IG 11.0' : 'IG 13.0'));
+      const verNorm = repDocVer === 'General' ? 'IG 12.0' : repDocVer;
+      const verRefLink = (rawPath, label) => {
+        const resolved = (typeof window.resolveVersionedManualPath === 'function')
+          ? window.resolveVersionedManualPath(rawPath, verNorm)
+          : rawPath;
+        if (!resolved) return '';
+        return `<a href="${resolved}" target="_blank" style="color:#0284c7;">${label}</a>`;
+      };
+      const tomcatStackSpec = verNorm === 'IG 12.0'
+        ? 'IG 12.0 (Java 8 / Apache Tomcat embebido)'
+        : (verNorm === 'IG 11.0' ? 'IG 11.0 (Java / Apache Tomcat embebido)' : `${verNorm} (AdoptOpenJDK / Apache Tomcat embebido)`);
+      const tomcatStackSpecEn = verNorm === 'IG 12.0'
+        ? 'IG 12.0 base RAM requirement (Java 8 + embedded Apache Tomcat, scale per user volume)'
+        : `${verNorm} base RAM requirement (scale per user volume)`;
 
-    if (hasTomcatSsl) {
-      if (isEn) {
-        items.push(`<li><strong>Keystore &amp; TLS Certificates in IdentityGuard / Tomcat:</strong> Detected <code>TOMCAT_SSL_TLS</code> (<code>SSLHandshakeException / PKIX</code>). Import trusted certificates into <code>$IG_HOME/etc/keystore</code> (alias <code>tomcat</code>, <code>-storepass entrust</code>) using <code>$IG_HOME/jdk&lt;version&gt;/bin/keytool</code>, and validate <code>IG_CIPHER_OPTS</code> (<code>-Djdk.tls.client.protocols=TLSv1.2</code>) in <code>env_settings.sh</code>. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/IG_130_Admin_WebHelp/ig_admin/config_security/import_certificates_using_keytool.htm" target="_blank" style="color:#0284c7;">Import certificates using keytool</a> &amp; <a href="manuals/IG_130_Admin_WebHelp/ig_admin/outofbandauth/tls_version_downgrade.htm" target="_blank" style="color:#0284c7;">TLS version downgrade</a>)</em></li>`);
-      } else {
-        items.push(`<li><strong>Certificados TLS y Keystore de IdentityGuard / Tomcat:</strong> Se detectaron errores <code>TOMCAT_SSL_TLS</code> (<code>SSLHandshakeException / PKIX</code>). Importar el certificado confiable en <code>$IG_HOME/etc/keystore</code> (alias <code>tomcat</code>, <code>-storepass entrust</code>) con <code>$IG_HOME/jdk&lt;version&gt;/bin/keytool</code>, y validar <code>IG_CIPHER_OPTS</code> (<code>-Djdk.tls.client.protocols=TLSv1.2</code>) en <code>env_settings.sh</code>. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/IG_130_Admin_WebHelp/ig_admin/config_security/import_certificates_using_keytool.htm" target="_blank" style="color:#0284c7;">Import certificates using keytool</a> &amp; <a href="manuals/IG_130_Admin_WebHelp/ig_admin/outofbandauth/tls_version_downgrade.htm" target="_blank" style="color:#0284c7;">TLS version downgrade</a>)</em></li>`);
+      if (hasTomcatOom) {
+        const l1 = verRefLink('manuals/entrust_ig_130_releasenotes.html', `${verNorm} Release Notes`);
+        const l2 = verRefLink('manuals/IG_130_Admin_WebHelp/ig_admin/usingpropeditor/web_application_settings.htm', 'Web Application Settings');
+        const refParts = [l1, l2].filter(Boolean);
+        const refHtml = refParts.length ? ` <em style="color:#64748b; font-size:11px;">(Ref. ${refParts.join(' &amp; ')})</em>` : ` <em style="color:#64748b; font-size:11px;">(Ref. Documentación Oficial ${verNorm})</em>`;
+        if (isEn) {
+          items.push(`<li><strong>JVM Memory &amp; Workload Tuning on Embedded Tomcat:</strong> Detected <code>JVM_OOM</code> (<code>OutOfMemoryError</code>). Validate ${tomcatStackSpecEn}, review <code>identityguard.webadmin.bulk.inMemoryThreshold</code> and offload heavy reports to off-peak hours or replicas, plus inspect JVM <code>-Xms/-Xmx</code> flags and heap dumps.${refHtml}</li>`);
+        } else {
+          items.push(`<li><strong>Memoria JVM y Carga Operativa en Tomcat Embebido:</strong> Se detectaron eventos <code>JVM_OOM</code> (<code>OutOfMemoryError</code>). Verificar el requisito base ${tomcatStackSpec}, ajustar <code>identityguard.webadmin.bulk.inMemoryThreshold</code> y ejecutar reportes pesados en horario bajo o nodos réplica; en JVM/Tomcat estándar, revisar flags <code>-Xms/-Xmx</code> y heap dump.${refHtml}</li>`);
+        }
       }
-    }
 
-    if (hasTomcatLdap) {
-      if (isEn) {
-        items.push(`<li><strong>LDAPS Directory Certificate &amp; Hostname Validation:</strong> Detected <code>TOMCAT_LDAP_ERROR</code>. Verify the LDAP server certificate contains a hostname (not an IP address) in Subject/subjectAltName, import it into <code>$IG_HOME/etc/keystore</code> (<code>-alias ldapssl</code>), and check <code>identityguard.ldap.url</code>. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/IG_130_Admin_WebHelp/ig_admin/config_igserver/securing_the_ldap_connection_with_ssl.htm" target="_blank" style="color:#0284c7;">Securing the LDAP connection with SSL</a>)</em></li>`);
-      } else {
-        items.push(`<li><strong>Validación LDAPS y Certificado con Hostname en Directorio LDAP:</strong> Se detectaron errores <code>TOMCAT_LDAP_ERROR</code>. Confirmar que el certificado LDAP incluya el hostname (no IP) en Subject/subjectAltName, importarlo en <code>$IG_HOME/etc/keystore</code> (<code>-alias ldapssl</code>) y revisar <code>identityguard.ldap.url</code>. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/IG_130_Admin_WebHelp/ig_admin/config_igserver/securing_the_ldap_connection_with_ssl.htm" target="_blank" style="color:#0284c7;">Securing the LDAP connection with SSL</a>)</em></li>`);
+      if (hasTomcatSsl) {
+        const l1 = verRefLink('manuals/IG_130_Admin_WebHelp/ig_admin/config_security/import_certificates_using_keytool.htm', 'Import certificates using keytool');
+        const l2 = verRefLink('manuals/IG_130_Admin_WebHelp/ig_admin/outofbandauth/tls_version_downgrade.htm', `WebHelp ${verNorm} Security`);
+        const refParts = [l1, l2].filter(Boolean);
+        const refHtml = refParts.length ? ` <em style="color:#64748b; font-size:11px;">(Ref. ${refParts.join(' &amp; ')})</em>` : ` <em style="color:#64748b; font-size:11px;">(Ref. Documentación Oficial ${verNorm})</em>`;
+        if (isEn) {
+          items.push(`<li><strong>Keystore &amp; TLS Certificates in IdentityGuard / Tomcat:</strong> Detected <code>TOMCAT_SSL_TLS</code> (<code>SSLHandshakeException / PKIX</code>). Import trusted certificates into <code>$IG_HOME/etc/keystore</code> (alias <code>tomcat</code>, <code>-storepass entrust</code>) using <code>$IG_HOME/jdk&lt;version&gt;/bin/keytool</code>, and validate <code>IG_CIPHER_OPTS</code> (<code>-Djdk.tls.client.protocols=TLSv1.2</code>) in <code>env_settings.sh</code>.${refHtml}</li>`);
+        } else {
+          items.push(`<li><strong>Certificados TLS y Keystore de IdentityGuard / Tomcat:</strong> Se detectaron errores <code>TOMCAT_SSL_TLS</code> (<code>SSLHandshakeException / PKIX</code>). Importar el certificado confiable en <code>$IG_HOME/etc/keystore</code> (alias <code>tomcat</code>, <code>-storepass entrust</code>) con <code>$IG_HOME/jdk&lt;version&gt;/bin/keytool</code>, y validar <code>IG_CIPHER_OPTS</code> (<code>-Djdk.tls.client.protocols=TLSv1.2</code>) en <code>env_settings.sh</code>.${refHtml}</li>`);
+        }
       }
-    }
 
-    if (hasTomcatDeploy) {
-      if (isEn) {
-        items.push(`<li><strong>Tomcat Component Startup &amp; Driver JAR Placement:</strong> Detected <code>TOMCAT_DEPLOY_ERROR</code>. Confirm required JDBC JARs exist in both <code>$IG_HOME/lib/db</code> and <code>$CATALINA_HOME/lib</code>, and ensure <code>$IG_HOME/etc/keystore</code> keeps at least one trusted certificate. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/IG_130_Admin_WebHelp/ig_admin/config_igserver/adding_a_new_database_repository.htm" target="_blank" style="color:#0284c7;">Adding a new database repository</a> &amp; <a href="manuals/entrust_ig_120_releasenotes.html" target="_blank" style="color:#0284c7;">IG 12.0 Release Notes</a>)</em></li>`);
-      } else {
-        items.push(`<li><strong>Arranque de Componentes Tomcat y Drivers JAR:</strong> Se detectaron errores <code>TOMCAT_DEPLOY_ERROR</code>. Validar que los drivers JAR estén en <code>$IG_HOME/lib/db</code> y <code>$CATALINA_HOME/lib</code>, y confirmar que <code>$IG_HOME/etc/keystore</code> mantenga al menos un certificado confiable. <em style="color:#64748b; font-size:11px;">(Ref. <a href="manuals/IG_130_Admin_WebHelp/ig_admin/config_igserver/adding_a_new_database_repository.htm" target="_blank" style="color:#0284c7;">Adding a new database repository</a> &amp; <a href="manuals/entrust_ig_120_releasenotes.html" target="_blank" style="color:#0284c7;">IG 12.0 Release Notes</a>)</em></li>`);
+      if (hasTomcatLdap) {
+        const l1 = verRefLink('manuals/IG_130_Admin_WebHelp/ig_admin/config_igserver/securing_the_ldap_connection_with_ssl.htm', 'Securing the LDAP connection with SSL');
+        const refHtml = l1 ? ` <em style="color:#64748b; font-size:11px;">(Ref. ${l1})</em>` : ` <em style="color:#64748b; font-size:11px;">(Ref. Documentación Oficial ${verNorm})</em>`;
+        if (isEn) {
+          items.push(`<li><strong>LDAPS Directory Certificate &amp; Hostname Validation:</strong> Detected <code>TOMCAT_LDAP_ERROR</code>. Verify the LDAP server certificate contains a hostname (not an IP address) in Subject/subjectAltName, import it into <code>$IG_HOME/etc/keystore</code> (<code>-alias ldapssl</code>), and check <code>identityguard.ldap.url</code>.${refHtml}</li>`);
+        } else {
+          items.push(`<li><strong>Validación LDAPS y Certificado con Hostname en Directorio LDAP:</strong> Se detectaron errores <code>TOMCAT_LDAP_ERROR</code>. Confirmar que el certificado LDAP incluya el hostname (no IP) en Subject/subjectAltName, importarlo en <code>$IG_HOME/etc/keystore</code> (<code>-alias ldapssl</code>) y revisar <code>identityguard.ldap.url</code>.${refHtml}</li>`);
+        }
+      }
+
+      if (hasTomcatDeploy) {
+        const l1 = verRefLink('manuals/IG_130_Admin_WebHelp/ig_admin/config_igserver/adding_a_new_database_repository.htm', 'Adding a new database repository');
+        const l2 = verRefLink('manuals/entrust_ig_130_releasenotes.html', `${verNorm} Release Notes`);
+        const refParts = [l1, l2].filter(Boolean);
+        const refHtml = refParts.length ? ` <em style="color:#64748b; font-size:11px;">(Ref. ${refParts.join(' &amp; ')})</em>` : ` <em style="color:#64748b; font-size:11px;">(Ref. Documentación Oficial ${verNorm})</em>`;
+        if (isEn) {
+          items.push(`<li><strong>Tomcat Component Startup &amp; Driver JAR Placement:</strong> Detected <code>TOMCAT_DEPLOY_ERROR</code>. Confirm required JDBC JARs exist in both <code>$IG_HOME/lib/db</code> and <code>$CATALINA_HOME/lib</code>, and ensure <code>$IG_HOME/etc/keystore</code> keeps at least one trusted certificate.${refHtml}</li>`);
+        } else {
+          items.push(`<li><strong>Arranque de Componentes Tomcat y Drivers JAR:</strong> Se detectaron errores <code>TOMCAT_DEPLOY_ERROR</code>. Validar que los drivers JAR estén en <code>$IG_HOME/lib/db</code> y <code>$CATALINA_HOME/lib</code>, y confirmar que <code>$IG_HOME/etc/keystore</code> mantenga al menos un certificado confiable.${refHtml}</li>`);
+        }
       }
     }
 
@@ -6276,12 +6353,18 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
   function jumpToManualSection(version, sectionId) {
     let realVersion = version;
-    if (!realVersion || realVersion === 'vEntrust' || realVersion === 'v13.0' || realVersion === 'v13_0') {
+    if (!realVersion || realVersion === 'vEntrust') {
+      realVersion = getDefaultManualKeyForActiveClient();
+    } else if (realVersion === 'v13.0' || realVersion === 'v13_0') {
       realVersion = 'v13_0_webhelp';
     } else if (realVersion === 'v12.0' || realVersion === 'v12_0') {
       realVersion = 'v12_0_webhelp';
     } else if (realVersion === 'v11.0' || realVersion === 'v11_0') {
       realVersion = 'v11_0_webhelp';
+    } else if (realVersion === 'v10.0' || realVersion === 'v10_0') {
+      realVersion = 'v10_0_custom';
+    } else if (realVersion === 'v9.0' || realVersion === 'v9_0') {
+      realVersion = 'v9_0_custom';
     }
 
     switchTab('manuals');
@@ -6322,7 +6405,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               vIDaaS: 'IDaaS Cloud', vIDaaS_docs: 'IDaaS Cloud'
             };
             const preferVer = curVerMap[state.currentManualVersion] || '';
-            const verQuery = preferVer ? '&preferVersion=' + encodeURIComponent(preferVer) : '';
+            const verQuery = preferVer
+              ? `&version=${encodeURIComponent(preferVer)}&includeGeneral=1&preferVersion=${encodeURIComponent(preferVer)}`
+              : '';
             const resp = await fetch('/api/manuals-search?q=' + encodeURIComponent(query) + '&limit=10' + verQuery);
             if (!resp.ok) return;
             const data = await resp.json();
@@ -6535,9 +6620,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }
     });
 
-    // Lazy-load: no cargar el frameset WebHelp v13.0 en segundo plano al abrir la página (evita bloqueo en Firefox/Chrome)
-    state.currentManualVersion = 'v13_0_webhelp';
-    if (dom.manualVersionSelect) dom.manualVersionSelect.value = 'v13_0_webhelp';
+    // Lazy-load: alinear selector inicial con la versión del cliente activo sin cargar iframe en segundo plano
+    const defaultManualVer = getDefaultManualKeyForActiveClient();
+    state.currentManualVersion = defaultManualVer;
+    if (dom.manualVersionSelect) dom.manualVersionSelect.value = defaultManualVer;
   }
 
   function populateManualVersionSelect() {
@@ -7356,6 +7442,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           renderLoadedFilesDrawer();
           renderLogTable();
           updateMetricsAndCharts();
+          const tbReset = document.getElementById('trend-time-range-badge');
+          if (tbReset) tbReset.textContent = 'Sin ventana activa';
+          if (typeof window.updateTimeSliderBounds === 'function') window.updateTimeSliderBounds();
           showAnalysisStatus(false, `🏢 Sesión Activa: ${currentClient.name}`, 'Listo para cargar o indexar logs de auditoría sin límite de tamaño.');
         }
         return false;
@@ -7844,26 +7933,26 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (auditRateBadge) auditRateBadge.textContent = `${warnPct}% Auditoría`;
     if (warnBar) warnBar.style.width = `${Math.min(100, Math.max(2, parseFloat(warnPct) * 5))}%`;
 
-    // 4. Tarjeta Salud Clúster
-    const critPenalty = criticalsCount > 0 ? Math.min(65, Math.max(5, (criticalsCount / Math.max(1, total)) * 100 * 5 + criticalsCount * 0.005)) : 0;
-    const warnPenalty = warningsCount > 0 ? Math.min(25, (warningsCount / Math.max(1, total)) * 100 * 2) : 0;
-    const health = total > 0 ? Math.max(10, Math.round(100 - critPenalty - warnPenalty)) : 100;
-    
+    // 4. Tarjeta Salud Clúster (Disponibilidad Operativa Real coherente con Informe Ejecutivo y Copilot)
+    const health = total > 0
+      ? Math.max(0, Math.min(100, parseFloat((((total - criticalsCount) / total) * 100).toFixed(2))))
+      : 100;
+
     const healthEl = document.getElementById('health-index') || dom.healthIndex; if (healthEl) healthEl.textContent = `${health}%`;
     const healthBar = document.getElementById('health-progress-bar');
     const healthBadge = document.getElementById('health-status-badge');
-    
+
     if (healthBar) {
       healthBar.style.width = `${health}%`;
-      healthBar.style.background = health >= 80 ? '#10b981' : (health >= 50 ? '#f59e0b' : '#ef4444');
+      healthBar.style.background = health >= 95 ? '#10b981' : (health >= 80 ? '#f59e0b' : '#ef4444');
     }
     if (healthBadge) {
-      if (health >= 80) {
+      if (health >= 95) {
         healthBadge.textContent = 'ÓPTIMO';
         healthBadge.style.color = '#10b981';
         healthBadge.style.background = 'rgba(16, 185, 129, 0.15)';
         healthBadge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-      } else if (health >= 50) {
+      } else if (health >= 80) {
         healthBadge.textContent = 'DEGRADADO';
         healthBadge.style.color = '#f59e0b';
         healthBadge.style.background = 'rgba(245, 158, 11, 0.15)';
@@ -7896,6 +7985,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }, 50);
     }
   }
+  window.updateMetricsAndCharts = updateMetricsAndCharts;
 
   function initCharts() {
     if (typeof Chart === 'undefined') {
@@ -8161,16 +8251,19 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const activeLogs = (isWindowActive || (state.filteredLogs && state.filteredLogs.length !== allLogs.length))
       ? (state.filteredLogs || [])
       : allLogs;
+    const sqlBuckets = Array.isArray(state.globalStreamMetrics?.timelineBuckets) ? state.globalStreamMetrics.timelineBuckets : [];
 
-    if (activeLogs.length === 0 && (!state.globalStreamMetrics || isWindowActive)) {
+    if (activeLogs.length === 0 && (!state.globalStreamMetrics || isWindowActive || sqlBuckets.length === 0)) {
       state.charts.trend.data.labels = ['Sin Datos en Ventana'];
       state.charts.trend.data.datasets[0].data = [0];
       state.charts.trend.data.datasets[1].data = [0];
       if (state.charts.trend.data.datasets[2]) state.charts.trend.data.datasets[2].data = [0];
       state.charts.trend.update('none');
       const rangeBadge = document.getElementById('trend-time-range-badge');
-      if (rangeBadge && isWindowActive) {
-        rangeBadge.textContent = `🕒 Ventana: ${win.startLabel} ➔ ${win.endLabel} (0 eventos)`;
+      if (rangeBadge) {
+        rangeBadge.textContent = isWindowActive
+          ? `🕒 Ventana: ${win.startLabel} ➔ ${win.endLabel} (0 eventos)`
+          : 'Sin ventana activa';
       }
       return;
     }
@@ -8195,6 +8288,17 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         totalData.push(bTotal);
         errorData.push(bCrit);
         warnData.push(bWarn);
+      });
+    } else if (!isWindowActive && activeLogs.length === allLogs.length && sqlBuckets.length > 0) {
+      sqlBuckets.forEach(b => {
+        const rawB = String(b.bucket || '');
+        labels.push(rawB.length === 13 ? `${rawB.slice(5)}:00` : (rawB || 'N/A'));
+        const bTot = Number(b.total || 0);
+        const bErr = Number(b.errors || 0);
+        const bInfo = Number(b.info || 0);
+        totalData.push(bTot);
+        errorData.push(bErr);
+        warnData.push(Math.max(0, bTot - bErr - bInfo));
       });
     } else if (activeLogs.length > 0) {
       // Agrupación temporal real por timestamps dentro de la ventana activa (muestreo uniforme máx 5000 pts para evitar congelamiento)
@@ -8280,6 +8384,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         rangeBadge.textContent = `🕒 Ventana: ${win.startLabel} ➔ ${win.endLabel} (${estEvents.toLocaleString()} eventos)`;
       } else if (bucketKeys.length > 1) {
         rangeBadge.textContent = `${bucketKeys[0]} ➔ ${bucketKeys[bucketKeys.length - 1]} (Periodo Completo)`;
+      } else if (sqlBuckets.length > 0) {
+        const firstB = String(sqlBuckets[0].bucket || '');
+        const lastB = String(sqlBuckets[sqlBuckets.length - 1].bucket || '');
+        const firstFmt = firstB.length === 13 ? `${firstB}:00` : firstB;
+        const lastFmt = lastB.length === 13 ? `${lastB}:00` : lastB;
+        rangeBadge.textContent = `${firstFmt} ➔ ${lastFmt} (SQLite Completo)`;
       } else if (state.globalStreamMetrics) {
         const totalFmt = (state.globalStreamMetrics.totalLogs || 0).toLocaleString();
         rangeBadge.textContent = `⚡ Flujo Masivo: ${totalFmt} eventos procesados`;
@@ -8549,6 +8659,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         state.charts.trend.data.datasets[0].data = [0];
         state.charts.trend.data.datasets[1].data = [0];
         state.charts.trend.update();
+      }
+      state.activeTimeWindow = { active: false, tStart: null, tEnd: null };
+      const trendRangeResetBadge = document.getElementById('trend-time-range-badge');
+      if (trendRangeResetBadge) trendRangeResetBadge.textContent = 'Sin ventana activa';
+      if (typeof window.updateTimeSliderBounds === 'function') {
+        try { window.updateTimeSliderBounds(); } catch (e) {}
       }
     } catch(e) {}
 
@@ -13281,11 +13397,18 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       if (rawT === null || rawT === undefined) return NaN;
       let s = String(rawT).trim();
       if (!s) return NaN;
-      // Log4J comma ms: "2026-11-06 15:41:37,000" -> "2026-11-06T15:41:37.000"
-      s = s.replace(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}(?::\d{2})?)(?:,(\d{1,3}))?/, (_, d, t, ms) => {
-        const fullTime = t.length === 5 ? `${t}:00` : t;
-        return ms ? `${d}T${fullTime}.${ms}` : `${d}T${fullTime}`;
-      });
+      // SQLite hourly bucket: "2026-11-06 15" -> "2026-11-06T15:00:00"
+      if (/^\d{4}-\d{2}-\d{2}\s+\d{2}$/.test(s)) {
+        s = s.replace(/^(\d{4}-\d{2}-\d{2})\s+(\d{2})$/, '$1T$2:00:00');
+      } else if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+        s = `${s}T00:00:00`;
+      } else {
+        // Log4J comma ms: "2026-11-06 15:41:37,000" -> "2026-11-06T15:41:37.000"
+        s = s.replace(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}(?::\d{2})?)(?:,(\d{1,3}))?/, (_, d, t, ms) => {
+          const fullTime = t.length === 5 ? `${t}:00` : t;
+          return ms ? `${d}T${fullTime}.${ms}` : `${d}T${fullTime}`;
+        });
+      }
       // Tomcat JULI dd-MMM-yyyy: "23-Nov-2026 15:41:37.000" -> "23 Nov 2026 15:41:37.000"
       s = s.replace(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})\s+/, '$1 $2 $3 ');
       const ms = new Date(s).getTime();
@@ -13295,7 +13418,8 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     function calculateTimeBounds() {
       const logs = state.logs || [];
       const buckets = state.globalStreamMetrics?.timelineBuckets || [];
-      if (!logs.length && !buckets.length) {
+      const timeMapKeys = Object.keys(state.globalStreamMetrics?.timeBuckets || {});
+      if (!logs.length && !buckets.length && !timeMapKeys.length) {
         timeBounds = { min: 0, max: 0, hasValidTimes: false };
         return;
       }
@@ -13312,10 +13436,22 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       }
 
       for (let i = 0; i < buckets.length; i++) {
-        const d = parseSliderTimestamp(buckets[i]?.bucket);
+        const rawB = buckets[i]?.bucket;
+        const d = parseSliderTimestamp(rawB);
         if (!isNaN(d)) {
           if (d < minTs) minTs = d;
-          if (d > maxTs) maxTs = d;
+          const endMs = (/^\d{4}-\d{2}-\d{2}\s+\d{2}$/.test(String(rawB || '').trim())) ? (d + 3599000) : d;
+          if (endMs > maxTs) maxTs = endMs;
+        }
+      }
+
+      for (let i = 0; i < timeMapKeys.length; i++) {
+        const rawK = timeMapKeys[i];
+        const d = parseSliderTimestamp(rawK);
+        if (!isNaN(d)) {
+          if (d < minTs) minTs = d;
+          const endMs = (/^\d{4}-\d{2}-\d{2}\s+\d{2}$/.test(String(rawK || '').trim())) ? (d + 3599000) : d;
+          if (endMs > maxTs) maxTs = endMs;
         }
       }
 

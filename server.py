@@ -746,7 +746,30 @@ def build_manuals_index():
             MANUALS_INDEX_BUILDING = False
         return 0
 
-def search_manuals(query_str, version_filter=None, limit=6, prefer_version=None):
+def _extract_index_doc_version(ver_str):
+    v = str(ver_str or '').strip()
+    if not v:
+        return 'General'
+    vl = v.lower()
+    if 'kb error' in vl:
+        return 'KB Errores'
+    if vl.startswith('general'):
+        return 'General'
+    if 'idaas' in vl or 'cloud' in vl:
+        return 'IDaaS Cloud'
+    if '13' in vl:
+        return 'IG 13.0'
+    if '12' in vl:
+        return 'IG 12.0'
+    if '11' in vl:
+        return 'IG 11.0'
+    if '10' in vl:
+        return 'IG 10.0'
+    if re.search(r'\big\s*9(?:\.\d+)?\b', vl):
+        return 'IG 9.0'
+    return 'General'
+
+def search_manuals(query_str, version_filter=None, limit=6, prefer_version=None, include_general=False):
     if not MANUALS_INDEX_BUILT:
         if not MANUALS_INDEX_BUILDING:
             threading.Thread(target=build_manuals_index, daemon=True).start()
@@ -755,7 +778,7 @@ def search_manuals(query_str, version_filter=None, limit=6, prefer_version=None)
     if not q_raw:
         return []
     q_lower = q_raw.lower()
-    codes = re.findall(r'(?:520\d{4}|aud\d+|ora-\d+|s3-404)', q_lower)
+    codes = re.findall(r'(?:52\d{4,5}|aud\d+|ora-\d+|s3-404)', q_lower)
     raw_tokens = re.findall(r'[a-z0-9_.\-]{3,}', q_lower)
     tokens = [t for t in raw_tokens if t not in MANUALS_STOP_WORDS]
     if not tokens and codes:
@@ -763,15 +786,24 @@ def search_manuals(query_str, version_filter=None, limit=6, prefer_version=None)
     if not tokens:
         tokens = raw_tokens[:4]
 
-    ver_filter_norm = _normalize_doc_version(version_filter) if version_filter else None
-    pref_norm = _normalize_doc_version(prefer_version) if prefer_version else None
+    ver_filter_norm = _extract_index_doc_version(version_filter) if version_filter else None
+    pref_norm = _extract_index_doc_version(prefer_version) if prefer_version else None
 
     scored = []
     for doc in MANUALS_INDEX:
-        doc_ver_low = str(doc.get('version') or '').lower()
+        doc_ver_raw = str(doc.get('version') or '')
+        doc_ver_low = doc_ver_raw.lower()
+        doc_rel = _extract_index_doc_version(doc_ver_raw)
         if version_filter:
             vf_low = version_filter.lower()
-            if vf_low not in doc_ver_low and (not ver_filter_norm or ver_filter_norm.lower() not in doc_ver_low):
+            if ver_filter_norm in ('IG 13.0', 'IG 12.0', 'IG 11.0', 'IG 10.0', 'IG 9.0', 'IDaaS Cloud'):
+                if include_general:
+                    if doc_rel != ver_filter_norm and doc_rel not in ('General', 'KB Errores'):
+                        continue
+                else:
+                    if doc_rel != ver_filter_norm:
+                        continue
+            elif vf_low not in doc_ver_low:
                 continue
         score = 0
         t_low = doc['title_lower']
@@ -816,12 +848,12 @@ def search_manuals(query_str, version_filter=None, limit=6, prefer_version=None)
             continue
         if len(tokens) > 1 and matched_tokens >= len(tokens):
             score += 30
-        if pref_norm and pref_norm != 'General' and pref_norm.lower() in doc_ver_low:
+        if ver_filter_norm and doc_rel == ver_filter_norm:
+            score += 60
+        if pref_norm and pref_norm != 'General' and doc_rel == pref_norm:
             score += 45
         elif prefer_version and prefer_version.lower() in doc_ver_low:
             score += 45
-        if doc['version'] in ('IG 13.0', 'KB Errores', 'IDaaS Cloud'):
-            score += 5
 
         if best_pos == -1:
             snippet = doc['text'][:240]
@@ -2647,11 +2679,18 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         q = query.get('q', [''])[0]
         version = query.get('version', [None])[0]
         prefer_version = query.get('preferVersion', [None])[0]
+        include_general = str(query.get('includeGeneral', ['0'])[0]).strip().lower() in ('1', 'true', 'yes')
         try:
             limit = min(15, max(1, int(query.get('limit', ['6'])[0])))
         except Exception:
             limit = 6
-        results = search_manuals(q, version_filter=version, limit=limit, prefer_version=prefer_version)
+        results = search_manuals(
+            q,
+            version_filter=version,
+            limit=limit,
+            prefer_version=prefer_version,
+            include_general=include_general
+        )
         self.send_json({
             'query': q,
             'totalIndexedPages': len(MANUALS_INDEX),

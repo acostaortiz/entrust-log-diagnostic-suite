@@ -143,14 +143,18 @@ if (typeof escapeHtml === 'undefined') {
       return 'IG 12.0';
     }
 
-    async _searchManualsServer(query, limit = 4, preferVersion = '') {
-      const key = `${query}::${limit}::${preferVersion || ''}`;
+    async _searchManualsServer(query, limit = 4, targetVersion = '') {
+      const strictVers = new Set(['IG 13.0', 'IG 12.0', 'IG 11.0', 'IG 10.0', 'IG 9.0', 'IDaaS Cloud']);
+      const isStrict = strictVers.has(targetVersion);
+      const key = `${query}::${limit}::${targetVersion || ''}::${isStrict ? '1' : '0'}`;
       if (this.manualsCache.has(key)) return this.manualsCache.get(key);
       if (typeof window === 'undefined' || window.location.protocol === 'file:') return [];
       try {
         const ctrl = new AbortController();
         const timer = setTimeout(() => ctrl.abort(), 2200);
-        const verParam = preferVersion ? `&preferVersion=${encodeURIComponent(preferVersion)}` : '';
+        const verParam = isStrict
+          ? `&version=${encodeURIComponent(targetVersion)}&includeGeneral=1&preferVersion=${encodeURIComponent(targetVersion)}`
+          : (targetVersion ? `&preferVersion=${encodeURIComponent(targetVersion)}` : '');
         const res = await fetch(`/api/manuals-search?q=${encodeURIComponent(query)}&limit=${limit}${verParam}`, { signal: ctrl.signal });
         clearTimeout(timer);
         if (!res.ok) return [];
@@ -192,7 +196,8 @@ if (typeof escapeHtml === 'undefined') {
       if (!manualResults || manualResults.length === 0) return '';
       const lines = manualResults.slice(0, 3).map(r => {
         const verTag = r.docVersion || r.version || 'Manual';
-        const srcTag = r.url ? ` — \`${r.url}\`` : '';
+        const mPath = r.path || r.url || '';
+        const srcTag = mPath ? ` — \`${mPath}\`` : '';
         return `• **[${verTag}] ${r.title}**${srcTag}\n  _${r.snippet || ''}_`;
       }).join('\n');
       return `\n\n---\n\n### 📚 Referencias en Manuales Oficiales\n${lines}`;

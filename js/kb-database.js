@@ -1402,13 +1402,126 @@ class KnowledgeBase {
     let client = null;
     if (typeof window.getActiveClientProfileGlobal === 'function') {
       client = window.getActiveClientProfileGlobal();
-    } else if (window.state && window.state.activeClientId) {
-      client = (window.state.clientProfiles || []).find(p => p.id === window.state.activeClientId);
+    } else {
+      const st = window.appState || window.state;
+      if (st && st.activeClientId) {
+        client = (st.clientProfiles || []).find(p => p.id === st.activeClientId);
+      }
     }
     if (!client) return 'IG 12.0';
     const combined = `${client.platform || ''} ${client.version || ''}`.trim();
     const detected = this._normalizeDocVersionLabel(combined);
     return detected === 'General' ? 'IG 12.0' : detected;
+  }
+
+  resolveVersionedManualPath(rawPath, targetDocVer = null) {
+    if (!rawPath) return null;
+    const s = String(rawPath).trim();
+    if (!s) return null;
+    if (/^https?:\/\//i.test(s) || /^\/?manuals\/custom\//i.test(s)) return s;
+
+    const ver = targetDocVer ? this._normalizeDocVersionLabel(targetDocVer) : this._detectActiveDocVersion();
+    const hasPrefix = /^manuals\//i.test(s);
+    const prefix = hasPrefix ? 'manuals/' : '';
+    const rel = s.replace(/^manuals\//i, '');
+
+    if (ver === 'IG 13.0') return s;
+
+    const isIgWebHelp = /^IG_1[123]0_Admin_WebHelp\//i.test(rel);
+    const isIgRelNotes = /^entrust_ig_1[123]0_releasenotes\.html/i.test(rel);
+
+    if (ver === 'IDaaS Cloud') {
+      if (isIgWebHelp || isIgRelNotes) return `${prefix}entrust_idaas_docs.html`;
+      return s;
+    }
+
+    if (ver === 'IG 10.0' || ver === 'IG 9.0') {
+      if (isIgWebHelp || isIgRelNotes) return null;
+      return s;
+    }
+
+    if (ver === 'IG 12.0' || ver === 'IG 11.0') {
+      if (isIgRelNotes) {
+        return ver === 'IG 12.0'
+          ? `${prefix}entrust_ig_120_releasenotes.html`
+          : `${prefix}entrust_ig_110_releasenotes.html`;
+      }
+      if (isIgWebHelp) {
+        const targetFolder = ver === 'IG 12.0' ? 'IG_120_Admin_WebHelp' : 'IG_110_Admin_WebHelp';
+        const baseFile = rel.split('#')[0].split('?')[0].split('/').pop().toLowerCase();
+        const ig13OnlyAudit = new Set([
+          'reporting_audit_messages.htm',
+          'intellitrust_migration_audit_messages.htm',
+          'risk_engine_audit_messages.htm'
+        ]);
+        const ig13OnlyOther = new Set([
+          'configure_token_authentication.htm',
+          'tls_version_downgrade.htm'
+        ]);
+        const ig11Missing = new Set([
+          'authenticate_with_your_entrust_datacard_ot_token.htm',
+          'import_certificates_using_keytool.htm'
+        ]);
+
+        if (ig13OnlyAudit.has(baseFile)) {
+          return `${prefix}${targetFolder}/ig_admin/config_logging/audited_event_reference.htm`;
+        }
+        if (ig13OnlyOther.has(baseFile) || (ver === 'IG 11.0' && ig11Missing.has(baseFile))) {
+          return `${prefix}${targetFolder}/index.htm`;
+        }
+        return `${prefix}${rel.replace(/^IG_1[123]0_Admin_WebHelp/i, targetFolder)}`;
+      }
+    }
+
+    return s;
+  }
+
+  _adaptTextToDocVersion(text, activeDocVer) {
+    if (!text) return '';
+    let out = String(text);
+    const ver = activeDocVer ? this._normalizeDocVersionLabel(activeDocVer) : this._detectActiveDocVersion();
+    if (!ver || ver === 'IG 13.0') return out;
+    out = out.replace(/(Manual\s+[Oo]ficial\s+)IG\s*13(?:\.0)?/g, `$1${ver}`);
+    out = out.replace(/IG\s*13\.0\s*WebHelp/gi, `${ver} WebHelp`);
+    out = out.replace(/WebHelp\s*IG\s*13(?:\.0)?/gi, `WebHelp ${ver}`);
+    out = out.replace(/Release\s*Notes\s*v?13(?:\.0)?\b/gi, `Release Notes ${ver}`);
+    out = out.replace(/\bIG\s*13(?:\.0)?\b/gi, ver);
+    if (ver === 'IG 12.0') {
+      out = out.replace(/IG_130_Admin_WebHelp/g, 'IG_120_Admin_WebHelp');
+      out = out.replace(/entrust_ig_130_releasenotes\.html/g, 'entrust_ig_120_releasenotes.html');
+    } else if (ver === 'IG 11.0') {
+      out = out.replace(/IG_130_Admin_WebHelp/g, 'IG_110_Admin_WebHelp');
+      out = out.replace(/entrust_ig_130_releasenotes\.html/g, 'entrust_ig_110_releasenotes.html');
+    } else {
+      out = out.replace(/IG_130_Admin_WebHelp[^\s)\]]*/g, `documentación oficial ${ver}`);
+      out = out.replace(/entrust_ig_130_releasenotes\.html/g, `Release Notes ${ver}`);
+    }
+    return out;
+  }
+
+  _findVersionMatchedCustomEntry(cleanCode, targetDocVer) {
+    if (!cleanCode || typeof window === 'undefined') return null;
+    const ver = targetDocVer ? this._normalizeDocVersionLabel(targetDocVer) : this._detectActiveDocVersion();
+    const cleanUp = cleanCode.toUpperCase();
+    const customPdfByVer = window.ENTRUST_CUSTOM_PDF_CATALOG_BY_VERSION || {};
+    const customPdfCatalog = window.ENTRUST_CUSTOM_PDF_CATALOG || {};
+    const checkBucket = (bucket) => (bucket ? (bucket[cleanCode] || bucket[cleanUp] || null) : null);
+
+    let hit = checkBucket(customPdfByVer[ver]);
+    if (!hit && ver !== 'General') {
+      hit = checkBucket(customPdfByVer['General']);
+    }
+    if (!hit) {
+      const flatHit = checkBucket(customPdfCatalog);
+      if (flatHit) {
+        const flatVer = flatHit.docVersion ? this._normalizeDocVersionLabel(flatHit.docVersion) : '';
+        const hasVersionBuckets = Object.keys(customPdfByVer).length > 0;
+        if ((!flatVer && !hasVersionBuckets) || flatVer === ver || flatVer === 'General') {
+          hit = flatHit;
+        }
+      }
+    }
+    return hit;
   }
 
   diagnoseLog(logText, targetCode) {
@@ -1418,12 +1531,16 @@ class KnowledgeBase {
     // Determinar la versión activa de la plataforma del cliente en sesión (v9, v10, v11, v12, v13, IDaaS)
     let activeVersionLabel = 'Entrust IdentityGuard (Admin Guide)';
     let activeVersionKey = 'v12_0_webhelp';
+    const activeDocVer = this._detectActiveDocVersion();
     if (typeof window !== 'undefined') {
       let client = null;
       if (typeof window.getActiveClientProfileGlobal === 'function') {
         client = window.getActiveClientProfileGlobal();
-      } else if (window.state && window.state.activeClientId) {
-        client = (window.state.clientProfiles || []).find(p => p.id === window.state.activeClientId);
+      } else {
+        const st = window.appState || window.state;
+        if (st && st.activeClientId) {
+          client = (st.clientProfiles || []).find(p => p.id === st.activeClientId);
+        }
       }
       if (client) {
         const pVer = client.version || 'Release 12.0';
@@ -1438,25 +1555,34 @@ class KnowledgeBase {
       }
     }
 
-    // 0. Búsqueda exacta e instantánea en el Catálogo de Precisión Oficial
+    // 0. Búsqueda exacta e instantánea en el Catálogo de Precisión Oficial (estricto por versión del cliente + errors.html/PDF cargado)
     const cleanCode = (targetCode || (typeof this.extractErrorCodeFromText === 'function' ? this.extractErrorCodeFromText(searchText) : '') || '').trim();
     const officialAudCatalog = (typeof window !== 'undefined' && window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG) ? window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG : {};
     const officialAudMeta = cleanCode ? officialAudCatalog[cleanCode.toUpperCase()] : null;
+    const matchingCustom = cleanCode ? this._findVersionMatchedCustomEntry(cleanCode, activeDocVer) : null;
     if (cleanCode && typeof ENTRUST_EXACT_CATALOG !== 'undefined' && ENTRUST_EXACT_CATALOG[cleanCode]) {
       const entry = ENTRUST_EXACT_CATALOG[cleanCode];
+      const rawManual = entry.manualFile || (officialAudMeta ? officialAudMeta.manualFile : null);
+      const resolvedManual = this.resolveVersionedManualPath(rawManual, activeDocVer);
+      const customRef = matchingCustom ? matchingCustom.manualFile : null;
+      const customNote = matchingCustom
+        ? `\n📄 Referencia en ${matchingCustom.sourceFile} [${matchingCustom.docVersion || activeDocVer}]: ${matchingCustom.excerpt}`
+        : '';
       return {
         matched: true,
         ruleId: `KB-EXACT-${cleanCode}`,
         title: `[${cleanCode}] ${entry.title}`,
         category: entry.category,
         severity: entry.severity,
-        meaning: entry.meaning,
-        rootCause: entry.rootCause,
-        governanceControl: entry.governanceControl || entry.remediation,
-        remediation: entry.remediation,
+        meaning: this._adaptTextToDocVersion(entry.meaning, activeDocVer) + customNote,
+        rootCause: this._adaptTextToDocVersion(entry.rootCause, activeDocVer),
+        governanceControl: this._adaptTextToDocVersion(entry.governanceControl || entry.remediation, activeDocVer) + (customRef ? ` | Manual subido: ${customRef}` : ''),
+        remediation: this._adaptTextToDocVersion(entry.remediation, activeDocVer),
         riskLevel: entry.severity === 'CRITICAL' ? 'Crítico (P1)' : (entry.severity === 'ERROR' ? 'Alto (P2)' : (entry.severity === 'WARN' ? 'Medio (Advertencia)' : 'Nominal / Auditoría')),
         manualVersion: activeVersionLabel,
-        manualFile: entry.manualFile || (officialAudMeta ? officialAudMeta.manualFile : null),
+        manualFile: resolvedManual || customRef || null,
+        customDocRef: customRef,
+        docVersion: activeDocVer,
         officialName: officialAudMeta ? officialAudMeta.name : null,
         snmpTrap: officialAudMeta ? officialAudMeta.snmp : null,
         sectionId: `sec-${cleanCode.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
@@ -1464,21 +1590,8 @@ class KnowledgeBase {
       };
     }
 
-    // 0.5 Búsqueda exacta en códigos extraídos literalmente de PDFs oficiales cargados en el servidor (prioriza versión del cliente)
-    const activeDocVer = this._detectActiveDocVersion();
-    const customPdfByVer = (typeof window !== 'undefined' && window.ENTRUST_CUSTOM_PDF_CATALOG_BY_VERSION) ? window.ENTRUST_CUSTOM_PDF_CATALOG_BY_VERSION : {};
-    const customPdfCatalog = (typeof window !== 'undefined' && window.ENTRUST_CUSTOM_PDF_CATALOG) ? window.ENTRUST_CUSTOM_PDF_CATALOG : {};
-    const cleanUp = cleanCode ? cleanCode.toUpperCase() : '';
-    let pdfEntry = null;
-    if (cleanCode) {
-      const verBucket = customPdfByVer[activeDocVer];
-      if (verBucket) {
-        pdfEntry = verBucket[cleanCode] || verBucket[cleanUp] || null;
-      }
-      if (!pdfEntry) {
-        pdfEntry = customPdfCatalog[cleanCode] || customPdfCatalog[cleanUp] || null;
-      }
-    }
+    // 0.5 Búsqueda exacta en códigos extraídos literalmente de PDFs/HTML cargados (estricto: solo activeDocVer o General)
+    const pdfEntry = matchingCustom;
     if (pdfEntry) {
       const pdfVer = pdfEntry.docVersion || 'General';
       const isPdf = /\.pdf($|#)/i.test(pdfEntry.manualFile || pdfEntry.sourceFile || '');
@@ -1654,12 +1767,13 @@ class KnowledgeBase {
         audSeverity = /ERROR|CRITICAL|FATAL/.test(rawLvl) ? 'ERROR' : (/WARN/.test(rawLvl) ? 'WARN' : 'INFO');
         audTitle = `[${audCode}] ${official.name}`;
         audCategory = official.category || audCategory;
-        audManualFile = official.manualFile || null;
-        audMeaning = `Definición oficial Entrust (${audCategory}): ${official.desc}` + (official.snmp ? ` [SNMP Trap por defecto: ${official.snmp}]` : '');
-        audContext = `Evento oficial ${audSeverity} en "${audCategory}" — Manual Entrust IdentityGuard.`;
+        audManualFile = this.resolveVersionedManualPath(official.manualFile || null, activeDocVer) || (matchingCustom ? matchingCustom.manualFile : null);
+        audMeaning = `Definición oficial Entrust ${activeDocVer} (${audCategory}): ${official.desc}` + (official.snmp ? ` [SNMP Trap por defecto: ${official.snmp}]` : '');
+        audContext = `Evento oficial ${audSeverity} en "${audCategory}" — Manual Entrust IdentityGuard (${activeDocVer}).`;
+        const refTxt = audManualFile ? (/^manuals\//i.test(audManualFile) ? audManualFile : `manuals/${audManualFile}`) : `documentación oficial ${activeDocVer}`;
         audControl = (audSeverity === 'ERROR' || audSeverity === 'WARN')
-          ? `1. Revisar cuentas de usuario, nodos e IPs involucradas en [${audCode}].\n2. Consultar la tabla oficial del manual (manuals/${official.manualFile || ''}) y aplicar remediación según directiva de seguridad.`
-          : `1. Registro nominal de auditoría (${audCategory}).\n2. Validar en trazas de cumplimiento o consultar manuals/${official.manualFile || ''}.`;
+          ? `1. Revisar cuentas de usuario, nodos e IPs involucradas en [${audCode}].\n2. Consultar la tabla oficial del manual (${refTxt}) y aplicar remediación según directiva de seguridad.`
+          : `1. Registro nominal de auditoría (${audCategory}).\n2. Validar en trazas de cumplimiento o consultar ${refTxt}.`;
       } else if (/failed authentication/i.test(audDetail)) {
         audTitle = `Intento Fallido de Autenticación de Usuario [${audCode}]`;
         audMeaning = `El subsistema IG.AUDIT registró un rechazo de autenticación sobre las cuentas de usuario listadas.`;
@@ -2166,16 +2280,26 @@ journalctl -u wso2am -n 50 --no-pager`;
       });
       if (score > 0) {
         seenKeys.add(cLower);
+        const rawExactManual = entry.manualFile || null;
+        const resolvedExactManual = rawExactManual
+          ? this.resolveVersionedManualPath(
+              /^manuals\//i.test(rawExactManual) ? rawExactManual : `manuals/${rawExactManual}`,
+              effectiveVersion
+            )
+          : null;
+        const verTag = (effectiveVersion && effectiveVersion !== 'General') ? `${effectiveVersion} / KB Oficial` : 'KB Oficial';
         results.push({
           source: 'ENTRUST_EXACT_CATALOG',
           code,
           title: entry.title,
           category: entry.category,
           severity: entry.severity || 'ERROR',
-          meaning: entry.meaning,
-          rootCause: entry.rootCause,
-          remediation: entry.remediation,
-          manualVersion: 'IG 13.0 / KB Oficial',
+          meaning: this._adaptTextToDocVersion(entry.meaning, effectiveVersion),
+          rootCause: this._adaptTextToDocVersion(entry.rootCause, effectiveVersion),
+          remediation: this._adaptTextToDocVersion(entry.remediation, effectiveVersion),
+          manualVersion: verTag,
+          docVersion: effectiveVersion,
+          manualFile: resolvedExactManual,
           sectionTitle: `${code} — ${entry.title}`,
           score
         });
@@ -2222,14 +2346,18 @@ journalctl -u wso2am -n 50 --no-pager`;
       }
     });
 
-    // 3. Buscar en códigos extraídos de PDFs oficiales cargados en el servidor (todas las versiones)
+    // 3. Buscar en códigos extraídos de PDFs/HTML cargados en el servidor (estricto por effectiveVersion o General)
     const customPdfCatalog = (typeof window !== 'undefined' && window.ENTRUST_CUSTOM_PDF_CATALOG) ? window.ENTRUST_CUSTOM_PDF_CATALOG : {};
     const customPdfEntries = (typeof window !== 'undefined' && Array.isArray(window.ENTRUST_CUSTOM_PDF_ENTRIES) && window.ENTRUST_CUSTOM_PDF_ENTRIES.length > 0)
       ? window.ENTRUST_CUSTOM_PDF_ENTRIES
       : Object.values(customPdfCatalog);
+    const restrictToSpecificVer = Boolean(effectiveVersion && effectiveVersion !== 'General');
     customPdfEntries.forEach(entry => {
       if (!entry || !entry.code) return;
-      const entryVer = entry.docVersion || 'General';
+      const entryVer = this._normalizeDocVersionLabel(entry.docVersion || 'General');
+      if (restrictToSpecificVer && entryVer !== effectiveVersion && entryVer !== 'General') {
+        return;
+      }
       let score = 0;
       const cLower = String(entry.code).toLowerCase();
       const hay = `${cLower} ${entry.title || ''} ${entry.excerpt || ''} ${entry.sourceFile || ''} ${entryVer}`.toLowerCase();
@@ -2243,7 +2371,7 @@ journalctl -u wso2am -n 50 --no-pager`;
       });
       if (score > 0) {
         if (effectiveVersion && entryVer === effectiveVersion) {
-          score += 15;
+          score += 20;
         }
         const isPdf = /\.pdf($|#)/i.test(entry.manualFile || entry.sourceFile || '');
         const kindBadge = isPdf ? 'PDF Oficial' : 'Documento';
@@ -2268,7 +2396,7 @@ journalctl -u wso2am -n 50 --no-pager`;
       }
     });
 
-    // 4. Buscar en los 361 códigos AUD oficiales del WebHelp (IG 11/12/13)
+    // 4. Buscar en los 361 códigos AUD oficiales del WebHelp (resueltos estrictamente a effectiveVersion)
     const officialAudCatalog = (typeof window !== 'undefined' && window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG) ? window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG : {};
     Object.entries(officialAudCatalog).forEach(([code, entry]) => {
       const cLower = code.toLowerCase();
@@ -2286,6 +2414,11 @@ journalctl -u wso2am -n 50 --no-pager`;
       if (score > 0) {
         const rawLvl = String(entry.level || 'INFO').toUpperCase();
         const sev = /ERROR|CRITICAL|FATAL/.test(rawLvl) ? 'ERROR' : (/WARN/.test(rawLvl) ? 'WARN' : 'INFO');
+        const rawAudPath = entry.manualFile ? (entry.manualFile.startsWith('manuals/') ? entry.manualFile : `manuals/${entry.manualFile}`) : null;
+        const resolvedAudPath = rawAudPath ? this.resolveVersionedManualPath(rawAudPath, effectiveVersion) : null;
+        const audVerTag = (effectiveVersion === 'IG 13.0' || effectiveVersion === 'IG 12.0' || effectiveVersion === 'IG 11.0')
+          ? `${effectiveVersion} WebHelp Oficial`
+          : `${effectiveVersion} — Catálogo AUD`;
         results.push({
           source: 'WEBHELP_AUD',
           code,
@@ -2293,10 +2426,11 @@ journalctl -u wso2am -n 50 --no-pager`;
           category: entry.category || 'Auditoría Entrust (AUD)',
           severity: sev,
           meaning: `${entry.desc || ''}${entry.snmp ? ` [SNMP Trap: ${entry.snmp}]` : ''}`,
-          rootCause: `Definición oficial Entrust WebHelp (${entry.category || 'Auditoría'}).`,
-          remediation: entry.manualFile ? `Consultar tabla oficial en manuals/${entry.manualFile}` : 'Consultar documentación oficial WebHelp Entrust.',
-          manualVersion: 'IG 13.0 WebHelp Oficial',
-          manualFile: entry.manualFile ? (entry.manualFile.startsWith('manuals/') ? entry.manualFile : `manuals/${entry.manualFile}`) : null,
+          rootCause: `Definición oficial Entrust (${entry.category || 'Auditoría'}) — ${effectiveVersion}.`,
+          remediation: resolvedAudPath ? `Consultar tabla oficial en ${resolvedAudPath}` : `Consultar documentación oficial Entrust (${effectiveVersion}).`,
+          manualVersion: audVerTag,
+          docVersion: effectiveVersion,
+          manualFile: resolvedAudPath,
           sectionTitle: `${code} — ${entry.name || ''}`,
           score
         });
@@ -2310,25 +2444,28 @@ journalctl -u wso2am -n 50 --no-pager`;
   getUnifiedCatalogEntries() {
     const entries = [];
     const representedCodes = new Set();
-    const normalizePath = (p) => {
+    const activeDocVer = this._detectActiveDocVersion();
+    const normalizePath = (p, verOverride = null) => {
       if (!p) return null;
       const s = String(p).trim();
       if (!s) return null;
-      if (/^(https?:\/\/|\/|manuals\/)/i.test(s)) return s;
-      return `manuals/${s}`;
+      const withPrefix = /^(https?:\/\/|\/|manuals\/)/i.test(s) ? s : `manuals/${s}`;
+      return this.resolveVersionedManualPath(withPrefix, verOverride || activeDocVer);
     };
     const classifyFamily = (code, category = '', ruleId = '') => {
       const c = String(code || '').toUpperCase();
       const cat = String(category || '');
       const rid = String(ruleId || '').toUpperCase();
-      if (/^520\d{4}$/.test(c) || /ENTRUST-520\d{4}/.test(rid)) return '520';
+      if (/^52\d{4,5}$/.test(c) || /ENTRUST-52\d{4,5}/.test(rid)) return '520';
       if (/^AUD\d+/.test(c) || /ENTRUST-AUD\d+/.test(rid)) return 'AUD';
       if (/^(TOMCAT_|JVM_|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)/.test(c) || /tomcat|jvm/i.test(cat)) return 'TOMCAT';
       if (/^ORA-\d+/.test(c) || /oracle/i.test(cat)) return 'ORA';
       return 'IDAAS';
     };
+    const activeHasWebHelp = activeDocVer === 'IG 13.0' || activeDocVer === 'IG 12.0' || activeDocVer === 'IG 11.0';
+    const webHelpBadge = activeHasWebHelp ? `📘 WebHelp Oficial ${activeDocVer}` : `📘 Catálogo AUD (${activeDocVer})`;
 
-    // A. Todos los códigos oficiales AUDxxx del WebHelp IG 11.0 / 12.0 / 13.0
+    // A. Todos los códigos oficiales AUDxxx (enlazados estrictamente a la versión activa)
     const officialAudCatalog = (typeof window !== 'undefined' && window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG) ? window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG : {};
     Object.entries(officialAudCatalog).forEach(([code, aud]) => {
       const codeUp = code.toUpperCase();
@@ -2336,6 +2473,7 @@ journalctl -u wso2am -n 50 --no-pager`;
       const exact = (typeof ENTRUST_EXACT_CATALOG !== 'undefined') ? ENTRUST_EXACT_CATALOG[codeUp] : null;
       const rawLvl = String(aud.level || (exact && exact.severity) || 'INFO').toUpperCase();
       const sev = /CRITICAL|FATAL/.test(rawLvl) ? 'CRITICAL' : (/ERROR/.test(rawLvl) ? 'ERROR' : (/WARN/.test(rawLvl) ? 'WARN' : 'INFO'));
+      const audMPath = normalizePath(aud.manualFile);
       entries.push({
         uid: `AUD-${codeUp}`,
         code: codeUp,
@@ -2344,17 +2482,17 @@ journalctl -u wso2am -n 50 --no-pager`;
         severity: sev,
         family: 'AUD',
         meaning: (exact && exact.meaning)
-          ? exact.meaning
+          ? this._adaptTextToDocVersion(exact.meaning, activeDocVer)
           : `${aud.desc || ''}${aud.snmp ? ` [SNMP Trap: ${aud.snmp}]` : ''}`,
-        rootCause: (exact && exact.rootCause) ? exact.rootCause : `Evento oficial de auditoría Entrust IdentityGuard (${aud.category || 'Logging'}).`,
+        rootCause: (exact && exact.rootCause) ? this._adaptTextToDocVersion(exact.rootCause, activeDocVer) : `Evento oficial de auditoría Entrust IdentityGuard (${aud.category || 'Logging'}).`,
         remediation: (exact && exact.remediation)
-          ? exact.remediation
-          : `Consultar referencia oficial en ${normalizePath(aud.manualFile) || 'WebHelp Admin Guide'}.`,
-        sourceLabel: '📘 WebHelp Oficial IG 11/12/13',
+          ? this._adaptTextToDocVersion(exact.remediation, activeDocVer)
+          : `Consultar referencia oficial en ${audMPath || `documentación ${activeDocVer}`}.`,
+        sourceLabel: webHelpBadge,
         sourceKind: 'WEBHELP_AUD',
         docVersion: 'IG 11/12/13',
         docVersions: ['IG 13.0', 'IG 12.0', 'IG 11.0'],
-        manualPath: normalizePath(aud.manualFile),
+        manualPath: audMPath,
         snmp: aud.snmp || ''
       });
     });
@@ -2366,15 +2504,15 @@ journalctl -u wso2am -n 50 --no-pager`;
         if (representedCodes.has(codeUp)) return;
         representedCodes.add(codeUp);
         const fam = classifyFamily(code, entry.category);
-        const mPath = normalizePath(entry.manualFile);
+        const isIdaas = fam === 'IDAAS' && /idaas/i.test(`${code} ${entry.manualFile || ''} ${entry.category || ''}`);
+        const mPath = normalizePath(entry.manualFile, isIdaas ? 'IDaaS Cloud' : activeDocVer);
         let srcLabel = '🛡️ Catálogo Técnico KB';
         if (fam === 'TOMCAT') {
-          srcLabel = mPath ? '🐱 WebHelp IG 13 + Apache Tomcat' : '🐱 Tomcat / JVM Catalina';
+          srcLabel = mPath ? `🐱 WebHelp ${activeDocVer} + Apache Tomcat` : '🐱 Tomcat / JVM Catalina';
         } else if (mPath) {
-          srcLabel = '📘 Catálogo Técnico (WebHelp)';
+          srcLabel = activeHasWebHelp ? `📘 Catálogo Técnico (${activeDocVer})` : `🛡️ Catálogo Técnico (${activeDocVer})`;
         }
-        const isIdaas = fam === 'IDAAS' && /idaas/i.test(`${code} ${mPath || ''} ${entry.category || ''}`);
-        const exactDocVer = isIdaas ? 'IDaaS Cloud' : (mPath && /IG_130/i.test(mPath) ? 'IG 13.0' : (mPath ? 'IG 11/12/13' : 'General'));
+        const exactDocVer = isIdaas ? 'IDaaS Cloud' : (activeHasWebHelp ? activeDocVer : 'IG 11/12/13');
         const exactDocVers = isIdaas ? ['IDaaS Cloud'] : (mPath ? ['IG 13.0', 'IG 12.0', 'IG 11.0'] : ['General']);
         entries.push({
           uid: `EXACT-${code}`,
@@ -2385,9 +2523,9 @@ journalctl -u wso2am -n 50 --no-pager`;
           family: fam,
           docVersion: exactDocVer,
           docVersions: exactDocVers,
-          meaning: entry.meaning || '',
-          rootCause: entry.rootCause || '',
-          remediation: entry.remediation || '',
+          meaning: this._adaptTextToDocVersion(entry.meaning || '', activeDocVer),
+          rootCause: this._adaptTextToDocVersion(entry.rootCause || '', activeDocVer),
+          remediation: this._adaptTextToDocVersion(entry.remediation || '', activeDocVer),
           sourceLabel: srcLabel,
           sourceKind: 'EXACT_CATALOG',
           manualPath: mPath,
@@ -2477,3 +2615,6 @@ journalctl -u wso2am -n 50 --no-pager`;
 }
 
 window.knowledgeBaseEngine = new KnowledgeBase();
+if (typeof window !== 'undefined') {
+  window.resolveVersionedManualPath = (p, v) => window.knowledgeBaseEngine.resolveVersionedManualPath(p, v);
+}
