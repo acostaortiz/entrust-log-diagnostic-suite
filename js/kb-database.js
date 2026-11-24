@@ -1435,6 +1435,29 @@ class KnowledgeBase {
       };
     }
 
+    // 0.5 Búsqueda exacta en códigos extraídos literalmente de PDFs oficiales cargados en el servidor
+    const customPdfCatalog = (typeof window !== 'undefined' && window.ENTRUST_CUSTOM_PDF_CATALOG) ? window.ENTRUST_CUSTOM_PDF_CATALOG : {};
+    const pdfEntry = cleanCode ? (customPdfCatalog[cleanCode] || customPdfCatalog[cleanCode.toUpperCase()]) : null;
+    if (pdfEntry) {
+      return {
+        matched: true,
+        ruleId: `KB-PDF-${pdfEntry.code}`,
+        title: `[${pdfEntry.code}] ${pdfEntry.title}`,
+        category: `Documentación PDF Oficial (${pdfEntry.sourceFile})`,
+        severity: pdfEntry.severity || 'ERROR',
+        meaning: `Extracto literal del PDF oficial "${pdfEntry.sourceFile}" (Pág. ${pdfEntry.page}): ${pdfEntry.excerpt}`,
+        rootCause: `Consulte el contexto completo en ${pdfEntry.sourceFile}, página ${pdfEntry.page}.`,
+        governanceControl: `Abrir documento oficial: ${pdfEntry.manualFile}`,
+        remediation: `Abrir el manual oficial "${pdfEntry.sourceFile}" en la página ${pdfEntry.page} desde el visor integrado para aplicar el procedimiento del fabricante.`,
+        riskLevel: pdfEntry.severity === 'ERROR' ? 'Alto (Documentado en PDF)' : 'Informativo / Auditoría (PDF)',
+        manualVersion: `PDF Oficial: ${pdfEntry.sourceFile} (Pág. ${pdfEntry.page})`,
+        manualFile: pdfEntry.manualFile,
+        sourceType: 'PDF_CUSTOM',
+        sectionId: `sec-pdf-${pdfEntry.code.toLowerCase()}`,
+        sectionTitle: `PDF [${pdfEntry.code}]: ${pdfEntry.title}`
+      };
+    }
+
     // 1. Si el usuario cargó manuales específicos para la versión activa (v11, v12, v13), buscar primero en las reglas de esa versión
     if (targetCode) {
       const specRuleVersion = this.rules.find(r => (r.manualVersion === activeVersionKey || r.manualVersion === activeVersionLabel) && (r.id === `KB-ENTRUST-${targetCode}` || (r.pattern && r.pattern.test(`[${targetCode}]`))));
@@ -1558,7 +1581,7 @@ class KnowledgeBase {
       }
     }
 
-    // 4. Diagnóstico Oficial Entrust OnPremise AUDxxxx (Catálogo completo de 359 códigos extraído de WebHelp IG 11/12/13)
+    // 4. Diagnóstico Oficial Entrust OnPremise AUDxxxx (Catálogo completo de 361 códigos extraído de WebHelp IG 11/12/13)
     const audBracketMatch = searchText.match(/\[(AUD\d+)\]\s*(.*)/i);
     const isDirectAud = cleanCode && /^AUD\d+/i.test(cleanCode);
     if (audBracketMatch || isDirectAud) {
@@ -2141,8 +2164,216 @@ journalctl -u wso2am -n 50 --no-pager`;
       }
     });
 
+    // 3. Buscar en códigos extraídos de PDFs oficiales cargados en el servidor
+    const customPdfCatalog = (typeof window !== 'undefined' && window.ENTRUST_CUSTOM_PDF_CATALOG) ? window.ENTRUST_CUSTOM_PDF_CATALOG : {};
+    Object.values(customPdfCatalog).forEach(entry => {
+      if (!entry || !entry.code) return;
+      let score = 0;
+      const cLower = String(entry.code).toLowerCase();
+      const hay = `${cLower} ${entry.title || ''} ${entry.excerpt || ''} ${entry.sourceFile || ''}`.toLowerCase();
+      if (codes.some(c => c.toLowerCase() === cLower) || qLower.includes(cLower)) {
+        score += 145;
+      }
+      tokens.forEach(tok => {
+        if (cLower.includes(tok)) score += 60;
+        if ((entry.title || '').toLowerCase().includes(tok)) score += 28;
+        if (hay.includes(tok)) score += 12;
+      });
+      if (score > 0) {
+        results.push({
+          source: 'PDF_CUSTOM',
+          code: entry.code,
+          title: entry.title || entry.code,
+          category: `PDF Oficial (${entry.sourceFile || 'custom'})`,
+          severity: entry.severity || 'ERROR',
+          meaning: entry.excerpt || '',
+          rootCause: `Extracto literal del PDF "${entry.sourceFile || 'custom'}" (Pág. ${entry.page || 1}).`,
+          remediation: `Abrir documento oficial: ${entry.manualFile || ''}`,
+          manualVersion: `PDF Oficial: ${entry.sourceFile || 'custom'} (Pág. ${entry.page || 1})`,
+          manualFile: entry.manualFile || null,
+          sectionTitle: `${entry.code} — ${entry.title || ''}`,
+          score
+        });
+      }
+    });
+
+    // 4. Buscar en los 361 códigos AUD oficiales del WebHelp (IG 11/12/13)
+    const officialAudCatalog = (typeof window !== 'undefined' && window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG) ? window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG : {};
+    Object.entries(officialAudCatalog).forEach(([code, entry]) => {
+      const cLower = code.toLowerCase();
+      if (seenKeys.has(cLower)) return;
+      let score = 0;
+      const hay = `${cLower} ${entry.name || ''} ${entry.category || ''} ${entry.desc || ''}`.toLowerCase();
+      if (codes.some(c => c.toLowerCase() === cLower) || qLower.includes(cLower)) {
+        score += 140;
+      }
+      tokens.forEach(tok => {
+        if (cLower.includes(tok)) score += 60;
+        if ((entry.name || '').toLowerCase().includes(tok)) score += 26;
+        if (hay.includes(tok)) score += 10;
+      });
+      if (score > 0) {
+        const rawLvl = String(entry.level || 'INFO').toUpperCase();
+        const sev = /ERROR|CRITICAL|FATAL/.test(rawLvl) ? 'ERROR' : (/WARN/.test(rawLvl) ? 'WARN' : 'INFO');
+        results.push({
+          source: 'WEBHELP_AUD',
+          code,
+          title: `[${code}] ${entry.name || 'Evento Entrust'}`,
+          category: entry.category || 'Auditoría Entrust (AUD)',
+          severity: sev,
+          meaning: `${entry.desc || ''}${entry.snmp ? ` [SNMP Trap: ${entry.snmp}]` : ''}`,
+          rootCause: `Definición oficial Entrust WebHelp (${entry.category || 'Auditoría'}).`,
+          remediation: entry.manualFile ? `Consultar tabla oficial en manuals/${entry.manualFile}` : 'Consultar documentación oficial WebHelp Entrust.',
+          manualVersion: 'IG 13.0 WebHelp Oficial',
+          manualFile: entry.manualFile ? (entry.manualFile.startsWith('manuals/') ? entry.manualFile : `manuals/${entry.manualFile}`) : null,
+          sectionTitle: `${code} — ${entry.name || ''}`,
+          score
+        });
+      }
+    });
+
     results.sort((a, b) => b.score - a.score);
     return results.slice(0, limit);
+  }
+
+  getUnifiedCatalogEntries() {
+    const entries = [];
+    const representedCodes = new Set();
+    const normalizePath = (p) => {
+      if (!p) return null;
+      const s = String(p).trim();
+      if (!s) return null;
+      if (/^(https?:\/\/|\/|manuals\/)/i.test(s)) return s;
+      return `manuals/${s}`;
+    };
+    const classifyFamily = (code, category = '', ruleId = '') => {
+      const c = String(code || '').toUpperCase();
+      const cat = String(category || '');
+      const rid = String(ruleId || '').toUpperCase();
+      if (/^520\d{4}$/.test(c) || /ENTRUST-520\d{4}/.test(rid)) return '520';
+      if (/^AUD\d+/.test(c) || /ENTRUST-AUD\d+/.test(rid)) return 'AUD';
+      if (/^(TOMCAT_|JVM_|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)/.test(c) || /tomcat|jvm/i.test(cat)) return 'TOMCAT';
+      if (/^ORA-\d+/.test(c) || /oracle/i.test(cat)) return 'ORA';
+      return 'IDAAS';
+    };
+
+    // A. Todos los códigos oficiales AUDxxx del WebHelp IG 11.0 / 12.0 / 13.0
+    const officialAudCatalog = (typeof window !== 'undefined' && window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG) ? window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG : {};
+    Object.entries(officialAudCatalog).forEach(([code, aud]) => {
+      const codeUp = code.toUpperCase();
+      representedCodes.add(codeUp);
+      const exact = (typeof ENTRUST_EXACT_CATALOG !== 'undefined') ? ENTRUST_EXACT_CATALOG[codeUp] : null;
+      const rawLvl = String(aud.level || (exact && exact.severity) || 'INFO').toUpperCase();
+      const sev = /CRITICAL|FATAL/.test(rawLvl) ? 'CRITICAL' : (/ERROR/.test(rawLvl) ? 'ERROR' : (/WARN/.test(rawLvl) ? 'WARN' : 'INFO'));
+      entries.push({
+        uid: `AUD-${codeUp}`,
+        code: codeUp,
+        title: (exact && exact.title) ? exact.title : (aud.name || codeUp),
+        category: aud.category || (exact && exact.category) || 'Auditoría Entrust (WebHelp)',
+        severity: sev,
+        family: 'AUD',
+        meaning: (exact && exact.meaning)
+          ? exact.meaning
+          : `${aud.desc || ''}${aud.snmp ? ` [SNMP Trap: ${aud.snmp}]` : ''}`,
+        rootCause: (exact && exact.rootCause) ? exact.rootCause : `Evento oficial de auditoría Entrust IdentityGuard (${aud.category || 'Logging'}).`,
+        remediation: (exact && exact.remediation)
+          ? exact.remediation
+          : `Consultar referencia oficial en ${normalizePath(aud.manualFile) || 'WebHelp Admin Guide'}.`,
+        sourceLabel: '📘 WebHelp Oficial IG 11/12/13',
+        sourceKind: 'WEBHELP_AUD',
+        manualPath: normalizePath(aud.manualFile),
+        snmp: aud.snmp || ''
+      });
+    });
+
+    // B. Catálogo Exacto ENTRUST_EXACT_CATALOG (520xxxx, Tomcat/JVM/JDBC, ORA-, SSH, S3, IDaaS)
+    if (typeof ENTRUST_EXACT_CATALOG !== 'undefined') {
+      Object.entries(ENTRUST_EXACT_CATALOG).forEach(([code, entry]) => {
+        const codeUp = code.toUpperCase();
+        if (representedCodes.has(codeUp)) return;
+        representedCodes.add(codeUp);
+        const fam = classifyFamily(code, entry.category);
+        const mPath = normalizePath(entry.manualFile);
+        let srcLabel = '🛡️ Catálogo Técnico KB';
+        if (fam === 'TOMCAT') {
+          srcLabel = mPath ? '🐱 WebHelp IG 13 + Apache Tomcat' : '🐱 Tomcat / JVM Catalina';
+        } else if (mPath) {
+          srcLabel = '📘 Catálogo Técnico (WebHelp)';
+        }
+        entries.push({
+          uid: `EXACT-${code}`,
+          code,
+          title: entry.title || code,
+          category: entry.category || 'Catálogo Técnico',
+          severity: entry.severity || 'ERROR',
+          family: fam,
+          meaning: entry.meaning || '',
+          rootCause: entry.rootCause || '',
+          remediation: entry.remediation || '',
+          sourceLabel: srcLabel,
+          sourceKind: 'EXACT_CATALOG',
+          manualPath: mPath,
+          snmp: ''
+        });
+      });
+    }
+
+    // C. Códigos extraídos literalmente de PDFs oficiales cargados por el usuario
+    const customPdfCatalog = (typeof window !== 'undefined' && window.ENTRUST_CUSTOM_PDF_CATALOG) ? window.ENTRUST_CUSTOM_PDF_CATALOG : {};
+    Object.values(customPdfCatalog).forEach(pdf => {
+      if (!pdf || !pdf.code) return;
+      entries.push({
+        uid: `PDF-${pdf.code}`,
+        code: pdf.code,
+        title: pdf.title || pdf.code,
+        category: `PDF Oficial: ${pdf.sourceFile || 'Documento'} (Pág. ${pdf.page || 1})`,
+        severity: pdf.severity || 'ERROR',
+        family: 'PDF',
+        meaning: pdf.excerpt || '',
+        rootCause: `Contexto literal extraído de ${pdf.sourceFile || 'PDF'} (Pág. ${pdf.page || 1}).`,
+        remediation: `Abrir ${pdf.sourceFile || 'el manual PDF'} en la página ${pdf.page || 1} para revisar el detalle completo del fabricante.`,
+        sourceLabel: `📄 PDF Oficial: ${pdf.sourceFile || 'Custom'} (Pág. ${pdf.page || 1})`,
+        sourceKind: 'PDF_CUSTOM',
+        manualPath: normalizePath(pdf.manualFile),
+        snmp: ''
+      });
+    });
+
+    // D. Reglas detalladas del motor KB y reglas personalizadas del usuario
+    const customOnlyIds = new Set((this.getCustomRulesOnly() || []).map(r => r.id));
+    (this.rules || []).forEach(rule => {
+      const isCustom = customOnlyIds.has(rule.id);
+      const idCode = String(rule.id || '').replace(/^KB-(?:ENTRUST-|ORA-)?/i, '');
+      const titleCodeMatch = String(rule.title || '').match(/(520\d{4}|AUD\d+|ORA-\d{5}|S3-404|SSH-\w+)/i);
+      const primaryCode = (titleCodeMatch ? titleCodeMatch[1] : idCode).toUpperCase();
+
+      if (!isCustom && (representedCodes.has(primaryCode) || representedCodes.has(idCode.toUpperCase()))) {
+        return;
+      }
+      if (!isCustom) {
+        representedCodes.add(primaryCode);
+      }
+
+      const fam = isCustom ? 'CUSTOM' : classifyFamily(primaryCode, rule.category, rule.id);
+      const docUrl = rule.docsUrl ? String(rule.docsUrl) : null;
+      entries.push({
+        uid: `RULE-${rule.id}`,
+        code: isCustom ? (rule.id || 'CUSTOM') : primaryCode,
+        title: rule.title || rule.id,
+        category: rule.category || 'Regla KB',
+        severity: rule.severity || 'ERROR',
+        family: fam,
+        meaning: rule.meaning || '',
+        rootCause: rule.rootCause || '',
+        remediation: rule.remediation || '',
+        sourceLabel: isCustom ? '🧩 Regla Personalizada' : '🛡️ Regla Base KB',
+        sourceKind: isCustom ? 'CUSTOM_RULE' : 'KB_RULE',
+        manualPath: docUrl,
+        snmp: ''
+      });
+    });
+
+    return entries;
   }
 
   getAllRules() {

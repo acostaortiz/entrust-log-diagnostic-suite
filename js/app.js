@@ -1498,12 +1498,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.9.1',
-    build: 608,
+    version: 'v3.10.0',
+    build: 609,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'CATALINA-TOMCAT-NATIVE-391',
+    gitCommit: 'PDF-MANUALS-UNIFIED-KB-310',
     gitBranch: 'main',
-    buildDate: '2026-11-23 16:00',
+    buildDate: '2026-11-24 10:00',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -6300,11 +6300,41 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       loadManual(e.target.value);
     });
 
+    let manualSearchTimer = null;
     dom.manualSearchInput?.addEventListener('input', (e) => {
-      const query = e.target.value;
+      const query = (e.target.value || '').trim();
+      if (manualSearchTimer) clearTimeout(manualSearchTimer);
       if (query.length >= 2) {
-        const results = window.manualsEngine.searchManuals(query);
-        renderManualSearchResults(results);
+        const localResults = window.manualsEngine.searchManuals(query);
+        renderManualSearchResults(localResults, false);
+        manualSearchTimer = setTimeout(async () => {
+          try {
+            const resp = await fetch('/api/manuals-search?q=' + encodeURIComponent(query) + '&limit=10');
+            if (!resp.ok) return;
+            const data = await resp.json();
+            if (((dom.manualSearchInput?.value) || '').trim() !== query) return;
+            const serverHits = (data.results || []).map(r => ({
+              type: 'server_manual',
+              path: r.path,
+              version: r.version || 'Manual',
+              title: r.title || r.path,
+              snippet: r.snippet || ''
+            }));
+            if (serverHits.length > 0) {
+              const seenPaths = new Set();
+              const combined = [...localResults];
+              serverHits.forEach(sh => {
+                if (!seenPaths.has(sh.path)) {
+                  seenPaths.add(sh.path);
+                  combined.push(sh);
+                }
+              });
+              renderManualSearchResults(combined, true);
+            }
+          } catch (err) {
+            // Ignorar si no hay backend HTTP (ej. file://)
+          }
+        }, 220);
       } else {
         loadManual(state.currentManualVersion);
       }
@@ -6378,6 +6408,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       targetSrc = 'manuals/IG_130_Admin_WebHelp/index.htm';
       tocItems = [
         { id: 'manuals/IG_130_Admin_WebHelp/index.htm', text: '📖 Inicio WebHelp Entrust v13.0', level: 'h2' },
+        { id: 'manuals/IG_130_Admin_WebHelp/ig_admin/config_logging/audited_event_reference.htm', text: '📋 Referencia Oficial de Códigos AUD (v13.0)', level: 'h2' },
+        { id: 'manuals/IG_130_Admin_WebHelp/ig_admin/certauth/auditing_user_certificates.htm', text: '🔐 Auditoría de Certificados (AUD160 / AUD161)', level: 'h3' },
         { id: 'manuals/IG_130_Admin_WebHelp/reference.htm', text: '📘 Referencia General de Administración', level: 'h2' },
         { id: 'manuals/IG_130_Admin_WebHelp/configure_token_authentication.htm', text: '🔑 Configuración de Autenticación de Tokens', level: 'h3' },
         { id: 'manuals/IG_130_Admin_WebHelp/authenticate_with_your_entrust_datacard_ot_token.htm', text: '📲 Autenticación Soft Token / Identity Guard', level: 'h3' }
@@ -6386,6 +6418,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       targetSrc = 'manuals/IG_120_Admin_WebHelp/index.htm';
       tocItems = [
         { id: 'manuals/IG_120_Admin_WebHelp/index.htm', text: '📖 Inicio WebHelp Entrust v12.0', level: 'h2' },
+        { id: 'manuals/IG_120_Admin_WebHelp/ig_admin/config_logging/audited_event_reference.htm', text: '📋 Referencia Oficial de Códigos AUD (v12.0)', level: 'h2' },
         { id: 'manuals/IG_120_Admin_WebHelp/reference.htm', text: '📘 Referencia General de Administración v12.0', level: 'h2' },
         { id: 'manuals/IG_120_Admin_WebHelp/configuration_worksheets.htm', text: '📋 Hojas de Configuración v12.0', level: 'h3' },
         { id: 'manuals/IG_120_Admin_WebHelp/authenticate_with_your_entrust_datacard_ot_token.htm', text: '📲 Autenticación Soft Token / Identity Guard', level: 'h3' }
@@ -6394,6 +6427,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       targetSrc = 'manuals/IG_110_Admin_WebHelp/index.htm';
       tocItems = [
         { id: 'manuals/IG_110_Admin_WebHelp/index.htm', text: '📖 Inicio WebHelp Entrust v11.0', level: 'h2' },
+        { id: 'manuals/IG_110_Admin_WebHelp/ig_admin/config_logging/audited_event_reference.htm', text: '📋 Referencia Oficial de Códigos AUD (v11.0)', level: 'h2' },
         { id: 'manuals/IG_110_Admin_WebHelp/reference.htm', text: '📘 Referencia General de Administración v11.0', level: 'h2' },
         { id: 'manuals/IG_110_Admin_WebHelp/configuration_worksheets.htm', text: '📋 Hojas de Configuración v11.0', level: 'h3' }
       ];
@@ -6475,8 +6509,16 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       li.textContent = item.text;
       li.addEventListener('click', () => {
-        if (state.currentManualVersion === 'v13_0_webhelp') {
+        if (/\.(htm|html|pdf)(#.*)?$/i.test(String(item.id || ''))) {
           dom.manualIframe.src = item.id;
+          const banner = document.getElementById('manual-active-banner');
+          const bannerText = document.getElementById('manual-active-banner-text');
+          const bannerExt = document.getElementById('manual-active-banner-ext');
+          if (banner && bannerText) {
+            bannerText.innerHTML = `📖 <strong>[${escapeHtml(state.currentManualVersion || 'Manual')}]</strong> ${escapeHtml(item.text)}`;
+            if (bannerExt) bannerExt.href = item.id;
+            banner.style.display = 'flex';
+          }
         } else {
           const doc = dom.manualIframe.contentDocument || dom.manualIframe.contentWindow.document;
           const targetEl = doc.getElementById(item.id) || Array.from(doc.querySelectorAll('h1,h2,h3')).find(h => h.textContent.includes(item.text));
@@ -6490,7 +6532,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     });
   }
 
-  function renderManualSearchResults(results) {
+  function renderManualSearchResults(results, preserveIframe = false) {
     if (!dom.manualTocList) return;
     dom.manualTocList.innerHTML = `<div class="diag-label" style="font-weight:bold; color:var(--text-cyan); padding:4px 0; border-bottom:1px solid var(--border-color); margin-bottom:8px;">
       🔍 Resultados (${results.length} coincidencias):
@@ -6525,6 +6567,19 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         div.addEventListener('click', () => {
           renderRuleInManualViewer(res.rule);
         });
+      } else if (res.type === 'server_manual' && res.path) {
+        div.innerHTML = `
+          <div class="flex-between" style="margin-bottom:3px;">
+            <span style="font-weight:bold; font-size:0.78rem; color:var(--text-cyan);">📄 ${escapeHtml(res.title || res.path)}</span>
+            <span style="font-size:0.68rem; background:rgba(2,132,199,0.16); color:#38bdf8; padding:1px 6px; border-radius:4px; flex-shrink:0;">${escapeHtml(res.version || 'Manual')}</span>
+          </div>
+          <div style="font-size:0.74rem; color:var(--text-muted); line-height:1.25;">${escapeHtml(res.snippet)}</div>
+        `;
+        div.addEventListener('click', () => {
+          if (typeof window.openManualPathInViewer === 'function') {
+            window.openManualPathInViewer(res.path, res.title, res.version);
+          }
+        });
       } else {
         div.innerHTML = `
           <div style="font-weight:bold; font-size:0.8rem; color:var(--text-cyan); margin-bottom:2px;">📖 ${escapeHtml(res.title || res.version)}</div>
@@ -6538,8 +6593,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       dom.manualTocList.appendChild(div);
     });
 
-    // Auto-mostrar el primer resultado si hay coincidencia de código de error
-    if (results.length > 0 && results[0].type === 'error_rule' && results[0].rule) {
+    // Auto-mostrar el primer resultado si hay coincidencia de código de error local
+    if (!preserveIframe && results.length > 0 && results[0].type === 'error_rule' && results[0].rule) {
       renderRuleInManualViewer(results[0].rule);
     }
   }
@@ -6621,10 +6676,51 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   }
 
   /* ==========================================================================
-     6. MÓDULO DE BASE DE CONOCIMIENTO (KB)
+     6. MÓDULO DE BASE DE CONOCIMIENTO (KB UNIFICADA)
      ========================================================================== */
+  const kbUiState = {
+    family: 'ALL',
+    query: '',
+    page: 1,
+    pageSize: 50
+  };
+  let kbSearchDebounceTimer = null;
+
+  window.loadCustomPdfCodesGlobal = async function() {
+    try {
+      const resp = await fetch('/api/custom-codes');
+      if (!resp.ok) return;
+      const data = await resp.json();
+      window.ENTRUST_CUSTOM_PDF_CATALOG = (data && data.codes && typeof data.codes === 'object') ? data.codes : {};
+      renderKbRulesList();
+    } catch (e) {
+      // Ignorar si se abre en modo file:// sin backend
+    }
+  };
+
+  window.setKbFamilyFilterGlobal = function(familyKey) {
+    kbUiState.family = familyKey || 'ALL';
+    kbUiState.page = 1;
+    renderKbRulesList();
+  };
+
+  window.setKbPageGlobal = function(pageNum) {
+    kbUiState.page = Math.max(1, Number(pageNum) || 1);
+    renderKbRulesList();
+    document.getElementById('tab-kb')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   function initKbModule() {
     renderKbRulesList();
+    window.loadCustomPdfCodesGlobal();
+
+    const kbSearchInput = document.getElementById('kb-search-input');
+    kbSearchInput?.addEventListener('input', (e) => {
+      kbUiState.query = (e.target.value || '').trim();
+      kbUiState.page = 1;
+      if (kbSearchDebounceTimer) clearTimeout(kbSearchDebounceTimer);
+      kbSearchDebounceTimer = setTimeout(() => renderKbRulesList(), 100);
+    });
 
     dom.btnOpenAddKbModal?.addEventListener('click', () => {
       dom.addKbModal.classList.add('active');
@@ -6656,31 +6752,166 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     });
   }
 
+  function renderKbPaginationBar(barEl, totalFiltered, totalPages) {
+    if (!barEl) return;
+    if (totalPages <= 1) {
+      barEl.innerHTML = '';
+      return;
+    }
+    const p = kbUiState.page;
+    barEl.innerHTML = `
+      <div style="font-size:0.78rem; color:var(--text-muted);">Página <strong>${p}</strong> de <strong>${totalPages}</strong> (${totalFiltered} entradas)</div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <button type="button" class="btn kb-page-prev" ${p <= 1 ? 'disabled' : ''} style="padding:4px 10px; font-size:0.76rem; border:1px solid var(--border-color); background:var(--bg-secondary);">◀ Anterior</button>
+        <button type="button" class="btn kb-page-next" ${p >= totalPages ? 'disabled' : ''} style="padding:4px 10px; font-size:0.76rem; border:1px solid var(--border-color); background:var(--bg-secondary);">Siguiente ▶</button>
+      </div>
+    `;
+    barEl.querySelector('.kb-page-prev')?.addEventListener('click', () => {
+      if (kbUiState.page > 1) window.setKbPageGlobal(kbUiState.page - 1);
+    });
+    barEl.querySelector('.kb-page-next')?.addEventListener('click', () => {
+      if (kbUiState.page < totalPages) window.setKbPageGlobal(kbUiState.page + 1);
+    });
+  }
+
   function renderKbRulesList() {
     if (!dom.kbRulesList) return;
-    const rules = window.knowledgeBaseEngine.getAllRules();
+    const allEntries = (window.knowledgeBaseEngine && typeof window.knowledgeBaseEngine.getUnifiedCatalogEntries === 'function')
+      ? window.knowledgeBaseEngine.getUnifiedCatalogEntries()
+      : (window.knowledgeBaseEngine.getAllRules() || []).map(r => ({
+          uid: r.id,
+          code: r.id,
+          title: r.title,
+          category: r.category,
+          severity: r.severity || 'INFO',
+          family: 'CUSTOM',
+          meaning: r.meaning || '',
+          rootCause: r.rootCause || '',
+          remediation: r.remediation || '',
+          sourceLabel: '🛡️ Base de Conocimientos',
+          manualPath: null
+        }));
+
+    const counts = { ALL: allEntries.length, AUD: 0, '520': 0, PDF: 0, TOMCAT: 0, ORA: 0, IDAAS: 0, CUSTOM: 0 };
+    allEntries.forEach(item => {
+      if (Object.prototype.hasOwnProperty.call(counts, item.family)) {
+        counts[item.family]++;
+      } else {
+        counts.IDAAS++;
+      }
+    });
+
+    const pillsContainer = document.getElementById('kb-family-pills');
+    if (pillsContainer) {
+      const families = [
+        { key: 'ALL', label: 'Todos' },
+        { key: 'AUD', label: 'AUD Oficiales WebHelp' },
+        { key: '520', label: 'Errores 520xxxx' },
+        { key: 'PDF', label: 'Extraídos de PDFs' },
+        { key: 'TOMCAT', label: 'Tomcat / JVM' },
+        { key: 'ORA', label: 'Oracle / JDBC' },
+        { key: 'IDAAS', label: 'IDaaS / SSH / Otros' },
+        { key: 'CUSTOM', label: 'Reglas Personalizadas' }
+      ];
+      pillsContainer.innerHTML = families.map(f => {
+        const isActive = kbUiState.family === f.key;
+        const cnt = counts[f.key] || 0;
+        const cls = isActive ? 'btn btn-primary' : 'btn';
+        const sty = isActive
+          ? 'padding:4px 10px; font-size:0.75rem; font-weight:700;'
+          : 'padding:4px 10px; font-size:0.75rem; background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main);';
+        return `<button type="button" class="${cls} kb-family-pill" data-kb-family="${f.key}" style="${sty}">${escapeHtml(f.label)} <span style="opacity:0.85;">(${cnt})</span></button>`;
+      }).join('');
+
+      pillsContainer.querySelectorAll('.kb-family-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          window.setKbFamilyFilterGlobal(btn.getAttribute('data-kb-family'));
+        });
+      });
+    }
+
+    const qTokens = (kbUiState.query || '').toLowerCase().split(/\s+/).filter(Boolean);
+    const filtered = allEntries.filter(item => {
+      if (kbUiState.family !== 'ALL' && item.family !== kbUiState.family) return false;
+      if (qTokens.length > 0) {
+        const hay = `${item.code} ${item.title} ${item.category} ${item.meaning} ${item.rootCause} ${item.remediation} ${item.sourceLabel} ${item.manualPath || ''}`.toLowerCase();
+        return qTokens.every(tok => hay.includes(tok));
+      }
+      return true;
+    });
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / kbUiState.pageSize));
+    if (kbUiState.page > totalPages) kbUiState.page = totalPages;
+    const startIdx = (kbUiState.page - 1) * kbUiState.pageSize;
+    const pageItems = filtered.slice(startIdx, startIdx + kbUiState.pageSize);
+
+    const summaryEl = document.getElementById('kb-results-summary');
+    if (summaryEl) {
+      if (filtered.length === 0) {
+        summaryEl.textContent = `0 coincidencias (Catálogo total: ${allEntries.length})`;
+      } else {
+        summaryEl.textContent = `Mostrando ${startIdx + 1}–${startIdx + pageItems.length} de ${filtered.length} registros (Total catálogo: ${allEntries.length})`;
+      }
+    }
+
+    renderKbPaginationBar(document.getElementById('kb-pagination-bar'), filtered.length, totalPages);
+    renderKbPaginationBar(document.getElementById('kb-pagination-bar-bottom'), filtered.length, totalPages);
+
     dom.kbRulesList.innerHTML = '';
 
-    rules.forEach(rule => {
+    if (pageItems.length === 0) {
+      const emptyMsg = kbUiState.family === 'PDF' && counts.PDF === 0
+        ? 'No hay códigos extraídos de PDFs aún. Sube un manual oficial <code>.pdf</code> desde <strong>Manuales Administrativos → Subir Documento al Servidor</strong> para indexar su texto y extraer códigos automáticamente.'
+        : 'No hay códigos o reglas que coincidan con el filtro/búsqueda actual.';
+      dom.kbRulesList.innerHTML = `<div class="glass-card" style="text-align:center; padding:24px; color:var(--text-muted);">${emptyMsg}</div>`;
+      return;
+    }
+
+    pageItems.forEach(item => {
       const card = document.createElement('div');
       card.className = 'glass-card';
-      card.style.marginBottom = '12px';
+      card.style.marginBottom = '10px';
+
+      let manualActionHtml = '';
+      if (item.manualPath) {
+        if (/^https?:\/\//i.test(item.manualPath)) {
+          manualActionHtml = `<a href="${escapeHtml(item.manualPath)}" target="_blank" rel="noopener noreferrer" class="btn" style="padding:3px 10px; font-size:0.74rem; border:1px solid var(--border-color); background:var(--bg-secondary); text-decoration:none; color:var(--accent-cyan);">🌐 Ver Documentación ↗</a>`;
+        } else {
+          manualActionHtml = `<button type="button" class="btn btn-primary kb-open-manual-btn" data-manual-path="${escapeHtml(item.manualPath)}" data-manual-title="${escapeHtml(item.code + ' — ' + item.title)}" data-manual-ver="${escapeHtml(item.sourceLabel)}" style="padding:3px 10px; font-size:0.74rem; font-weight:700;">📖 Abrir Manual</button>`;
+        }
+      }
 
       card.innerHTML = `
-        <div class="flex-between" style="margin-bottom:8px;">
-          <h4 class="text-cyan font-mono">${rule.id}: ${escapeHtml(rule.title)}</h4>
-          <span class="badge-sev ${rule.severity}">${rule.severity}</span>
+        <div class="flex-between" style="margin-bottom:6px; flex-wrap:wrap; gap:8px;">
+          <h4 class="text-cyan font-mono" style="margin:0; font-size:0.95rem;">[${escapeHtml(item.code)}] ${escapeHtml(item.title)}</h4>
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <span style="font-size:0.72rem; padding:2px 8px; border-radius:6px; background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-muted); font-weight:600;">${escapeHtml(item.sourceLabel)}</span>
+            <span class="badge-sev ${escapeHtml(item.severity)}">${escapeHtml(item.severity)}</span>
+          </div>
         </div>
-        <div style="font-size:0.85rem; margin-bottom:6px;"><strong>Categoría:</strong> ${rule.category}</div>
-        <div style="font-size:0.9rem; margin-bottom:8px;">${escapeHtml(rule.meaning)}</div>
-        <div style="font-size:0.85rem; color:var(--text-warn); margin-bottom:8px;"><strong>Causa Raíz:</strong> ${escapeHtml(rule.rootCause)}</div>
-        <div style="font-size:0.85rem; background:var(--bg-primary); padding:8px; border-radius:4px; border:1px solid var(--border-color); white-space:pre-line;">
-          <strong>Remediación / Pasos:</strong><br>${escapeHtml(rule.remediation)}
+        <div style="font-size:0.82rem; margin-bottom:6px; color:var(--text-muted);">
+          <strong>Categoría:</strong> ${escapeHtml(item.category)}${item.snmp ? ` • <strong>SNMP Trap:</strong> ${escapeHtml(item.snmp)}` : ''}
         </div>
+        ${item.meaning ? `<div style="font-size:0.88rem; margin-bottom:6px; line-height:1.45;">${escapeHtml(item.meaning)}</div>` : ''}
+        ${item.rootCause ? `<div style="font-size:0.82rem; color:var(--text-warn); margin-bottom:6px;"><strong>Causa / Contexto:</strong> ${escapeHtml(item.rootCause)}</div>` : ''}
+        ${item.remediation ? `<div style="font-size:0.82rem; background:var(--bg-primary); padding:8px 10px; border-radius:6px; border:1px solid var(--border-color); white-space:pre-line; margin-bottom:${manualActionHtml ? '8px' : '0'};"><strong>Remediación / Referencia:</strong><br>${escapeHtml(item.remediation)}</div>` : ''}
+        ${manualActionHtml ? `<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-top:6px;"><span style="font-size:0.72rem; font-family:monospace; color:var(--text-muted);">${escapeHtml(item.manualPath)}</span>${manualActionHtml}</div>` : ''}
       `;
       dom.kbRulesList.appendChild(card);
     });
+
+    dom.kbRulesList.querySelectorAll('.kb-open-manual-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mPath = btn.getAttribute('data-manual-path');
+        const mTitle = btn.getAttribute('data-manual-title');
+        const mVer = btn.getAttribute('data-manual-ver');
+        if (typeof window.openManualPathInViewer === 'function') {
+          window.openManualPathInViewer(mPath, mTitle, mVer);
+        }
+      });
+    });
   }
+  window.renderKbRulesListGlobal = renderKbRulesList;
 
   /* ==========================================================================
      7. PRESETS DE LOGS & SIMULADOR
@@ -11910,8 +12141,10 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
         const res = await fetch('/api/manuals-status');
         if (!res.ok) return;
         const data = await res.json();
-        const kbCount = (window.knowledgeBaseEngine && window.knowledgeBaseEngine.getAllRules)
-          ? window.knowledgeBaseEngine.getAllRules().length
+        const kbCount = window.knowledgeBaseEngine
+          ? (typeof window.knowledgeBaseEngine.getUnifiedCatalogEntries === 'function'
+              ? window.knowledgeBaseEngine.getUnifiedCatalogEntries().length
+              : (window.knowledgeBaseEngine.getAllRules ? window.knowledgeBaseEngine.getAllRules().length : 0))
           : 0;
         if (data.ready) {
           kbStatusEl.textContent = `📚 ${kbCount} reglas KB • ${data.indexedPages.toLocaleString()} págs. de manuales indexadas`;
@@ -11943,19 +12176,29 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
         const manualsTabBtn = document.querySelector('.nav-btn[data-tab="manuals"]');
         if (manualsTabBtn) manualsTabBtn.click();
       }
+      if (typeof window.switchKnowledgeSubTab === 'function') {
+        window.switchKnowledgeSubTab('docs');
+      }
+      const rawPath = String(relPath).trim();
+      const normalizedPath = /^(https?:\/\/|\/|manuals\/)/i.test(rawPath) ? rawPath : `manuals/${rawPath}`;
       const iframe = document.getElementById('manual-iframe');
       if (iframe) {
-        iframe.src = relPath;
+        iframe.src = normalizedPath;
       }
       const banner = document.getElementById('manual-active-banner');
       const bannerText = document.getElementById('manual-active-banner-text');
       const bannerExt = document.getElementById('manual-active-banner-ext');
       if (banner && bannerText) {
-        bannerText.innerHTML = `📖 <strong>[${escapeHtml(version || 'Manual')}]</strong> ${escapeHtml(title || relPath)}`;
-        if (bannerExt) bannerExt.href = relPath;
+        bannerText.innerHTML = `📖 <strong>[${escapeHtml(version || 'Manual')}]</strong> ${escapeHtml(title || normalizedPath)}`;
+        if (bannerExt) bannerExt.href = normalizedPath;
         banner.style.display = 'flex';
       }
-      window.toggleCopilot(false);
+      if (typeof window.toggleCopilot === 'function') {
+        window.toggleCopilot(false);
+      }
+    };
+    window.openManualInViewer = (relPath, version, title) => {
+      window.openManualPathInViewer(relPath, title || relPath, version || 'Manual');
     };
 
     triggers.forEach(btn => {
@@ -12107,6 +12350,30 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       }
     };
 
+    window.deleteCustomServerManualGlobal = async function(filename, skipConfirm = false) {
+      if (!filename) return;
+      if (!skipConfirm && !confirm(`¿Eliminar "${filename}" del servidor y de la indexación?`)) return;
+      try {
+        const resp = await fetch('/api/custom-manuals/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename })
+        });
+        if (!resp.ok) {
+          const errData = await resp.json().catch(() => ({}));
+          alert('Error eliminando documento: ' + (errData.error || ('HTTP ' + resp.status)));
+          return;
+        }
+        window.copilotEngine?.manualsCache?.clear?.();
+        if (typeof window.loadCustomPdfCodesGlobal === 'function') {
+          await window.loadCustomPdfCodesGlobal();
+        }
+        await window.refreshCustomServerManualsGlobal();
+      } catch (e) {
+        alert('Error eliminando documento: ' + (e.message || e));
+      }
+    };
+
     window.refreshCustomServerManualsGlobal = async function() {
       const container = document.getElementById('server-custom-manuals-list');
       if (!container) return;
@@ -12119,14 +12386,47 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
           container.innerHTML = '<div style="padding:14px; border:1px dashed var(--border-color); border-radius:8px; text-align:center;">Sin documentos personalizados subidos aún en <code>manuals/custom/</code>.</div>';
           return;
         }
-        container.innerHTML = items.map(m => `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-bottom:1px solid var(--border-color); gap:8px;">
-            <div>
-              <strong>📄 ${escapeHtml(m.filename)}</strong>
-              <span style="font-size:0.74rem; color:var(--text-muted); margin-left:6px;">(${Math.max(1, Math.round((m.size || 0) / 1024))} KB)</span>
-            </div>
-            <button type="button" class="btn btn-primary" style="padding:3px 10px; font-size:0.74rem;" onclick="window.switchKnowledgeSubTab('docs'); window.openManualInViewer('${escapeHtml(m.path)}', 'Custom', '${escapeHtml(m.filename)}');">Abrir</button>
-          </div>`).join('');
+        container.innerHTML = items.map(m => {
+          const isPdf = !!m.isPdf || /\.pdf$/i.test(m.filename || '');
+          const icon = isPdf ? '📕' : '📄';
+          let metaBadge = '';
+          if (isPdf) {
+            const pagesTxt = m.pageCount ? `${m.pageCount} pág(s)` : 'PDF';
+            const codesTxt = m.isScannedOrEmpty
+              ? '<span style="color:#d97706; font-weight:600;">⚠️ Sin texto seleccionable (escaneado/cifrado)</span>'
+              : `<span style="color:#10b981; font-weight:600;">${Number(m.extractedCodesCount || 0)} código(s) extraídos</span>`;
+            metaBadge = `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">${pagesTxt}${m.engine ? ` • ${escapeHtml(m.engine)}` : ''} • ${codesTxt}</div>`;
+          }
+          return `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-bottom:1px solid var(--border-color); gap:8px;">
+              <div style="min-width:0; flex:1;">
+                <div>
+                  <strong>${icon} ${escapeHtml(m.filename)}</strong>
+                  <span style="font-size:0.74rem; color:var(--text-muted); margin-left:6px;">(${Math.max(1, Math.round((m.size || 0) / 1024))} KB)</span>
+                </div>
+                ${metaBadge}
+              </div>
+              <div style="display:flex; gap:6px; flex-shrink:0;">
+                <button type="button" class="btn btn-primary btn-open-custom-manual" data-path="${escapeHtml(m.path)}" data-filename="${escapeHtml(m.filename)}" data-ver="${isPdf ? 'PDF Oficial' : 'Custom'}" style="padding:3px 10px; font-size:0.74rem;">Abrir</button>
+                <button type="button" class="btn btn-delete-custom-manual" data-filename="${escapeHtml(m.filename)}" style="padding:3px 8px; font-size:0.74rem; background:var(--bg-secondary); border:1px solid var(--border-color);" title="Eliminar documento">🗑️</button>
+              </div>
+            </div>`;
+        }).join('');
+
+        container.querySelectorAll('.btn-open-custom-manual').forEach(btn => {
+          btn.addEventListener('click', () => {
+            window.openManualPathInViewer(
+              btn.getAttribute('data-path'),
+              btn.getAttribute('data-filename'),
+              btn.getAttribute('data-ver') || 'Custom'
+            );
+          });
+        });
+        container.querySelectorAll('.btn-delete-custom-manual').forEach(btn => {
+          btn.addEventListener('click', () => {
+            window.deleteCustomServerManualGlobal(btn.getAttribute('data-filename'));
+          });
+        });
       } catch (e) {
         container.innerHTML = '<span style="color:#ef4444;">No se pudo consultar /api/custom-manuals.</span>';
       }
@@ -12137,29 +12437,81 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       const statusEl = document.getElementById('server-manual-upload-status');
       const files = inputEl?.files;
       if (!files || !files.length) {
-        if (statusEl) statusEl.innerHTML = '<span style="color:#d97706;">Selecciona al menos un archivo (.html, .htm, .md, .txt).</span>';
+        if (statusEl) statusEl.innerHTML = '<span style="color:#d97706;">Selecciona al menos un archivo (.pdf, .html, .htm, .md, .txt).</span>';
         return;
       }
-      if (statusEl) statusEl.innerHTML = '<span style="color:#0284c7;">⏳ Subiendo e indexando documentos...</span>';
+      if (statusEl) statusEl.innerHTML = '<span style="color:#0284c7;">⏳ Subiendo, validando y extrayendo texto/códigos en el servidor...</span>';
+
+      const maxBytes = 60 * 1024 * 1024;
+      const reportLines = [];
       let okCount = 0;
+
       for (const file of Array.from(files)) {
+        const lowerName = (file.name || '').toLowerCase();
+        if (!/\.(pdf|html|htm|md|txt)$/i.test(lowerName)) {
+          reportLines.push(`<div style="color:#ef4444;">❌ <strong>${escapeHtml(file.name)}</strong>: formato no permitido (solo .pdf, .html, .htm, .md, .txt).</div>`);
+          continue;
+        }
+        if (file.size > maxBytes) {
+          reportLines.push(`<div style="color:#ef4444;">❌ <strong>${escapeHtml(file.name)}</strong>: excede el límite de 60 MB.</div>`);
+          continue;
+        }
         try {
-          const content = await file.text();
-          const resp = await fetch('/api/upload-manual', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ filename: file.name, content })
-          });
-          if (resp.ok) okCount++;
-        } catch (e) {}
+          let resp;
+          if (/\.pdf$/i.test(lowerName)) {
+            const buf = await file.arrayBuffer();
+            resp = await fetch('/api/upload-manual', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/pdf',
+                'X-File-Name': encodeURIComponent(file.name)
+              },
+              body: buf
+            });
+          } else {
+            const content = await file.text();
+            resp = await fetch('/api/upload-manual', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ filename: file.name, content })
+            });
+          }
+
+          const data = await resp.json().catch(() => ({}));
+          if (!resp.ok) {
+            reportLines.push(`<div style="color:#ef4444;">❌ <strong>${escapeHtml(file.name)}</strong>: ${escapeHtml(data.error || ('HTTP ' + resp.status))}</div>`);
+            continue;
+          }
+
+          okCount++;
+          if (data.isPdf) {
+            if (data.isScannedOrEmpty) {
+              reportLines.push(`<div style="color:#d97706;">⚠️ <strong>${escapeHtml(data.filename)}</strong>: PDF guardado para el visor (${data.pageCount || 0} pág.), ${escapeHtml(data.warning || 'sin capa de texto seleccionable')}; 0 códigos inventados.</div>`);
+            } else {
+              const sample = (data.extractedCodesSample && data.extractedCodesSample.length > 0)
+                ? ` (${data.extractedCodesSample.slice(0, 5).join(', ')}${data.extractedCodesCount > 5 ? '...' : ''})`
+                : '';
+              reportLines.push(`<div style="color:#10b981; font-weight:600;">✅ <strong>${escapeHtml(data.filename)}</strong>: ${data.pageCount || 0} pág(s) (${escapeHtml(data.engine || 'stdlib-pdf')}), <strong>${data.extractedCodesCount || 0} código(s)</strong> extraídos e indexados${escapeHtml(sample)}.</div>`);
+            }
+          } else {
+            reportLines.push(`<div style="color:#10b981; font-weight:600;">✅ <strong>${escapeHtml(data.filename)}</strong>: guardado e indexado (${Math.max(1, Math.round((data.size || 0) / 1024))} KB).</div>`);
+          }
+        } catch (e) {
+          reportLines.push(`<div style="color:#ef4444;">❌ <strong>${escapeHtml(file.name)}</strong>: ${escapeHtml(e.message || e)}</div>`);
+        }
       }
+
       if (inputEl) inputEl.value = '';
       if (statusEl) {
-        statusEl.innerHTML = okCount > 0
-          ? `<span style="color:#10b981; font-weight:700;">✅ ${okCount} documento(s) guardado(s) e indexado(s) para Entrust Forensics AI.</span>`
-          : '<span style="color:#ef4444;">❌ Error al subir los documentos al servidor.</span>';
+        statusEl.innerHTML = reportLines.join('') || '<span style="color:#ef4444;">❌ Error al subir los documentos al servidor.</span>';
       }
-      window.refreshCustomServerManualsGlobal();
+      if (okCount > 0) {
+        window.copilotEngine?.manualsCache?.clear?.();
+        if (typeof window.loadCustomPdfCodesGlobal === 'function') {
+          await window.loadCustomPdfCodesGlobal();
+        }
+      }
+      await window.refreshCustomServerManualsGlobal();
     };
 
     window.saveAiReplyAsNoteGlobal = function(queryText, answerText) {

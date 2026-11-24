@@ -15,3 +15,5 @@ data/uploads/
 .DS_Store
 Thumbs.db
 *.db
+manuals/custom/.extracted/
+data/custom_pdf_codes.json

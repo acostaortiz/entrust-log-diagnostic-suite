@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.9.1 (Build 608)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.10.0 (Build 609)</span>
           </div>
         </div>
       </div>
@@ -629,18 +629,36 @@
     <!-- 4. PESTAÑA: BASE DE CONOCIMIENTOS -->
     <div class="tab-pane" id="tab-kb">
       <div class="glass-card">
-        <div class="card-header">
-          <div class="card-title">🧠 Base de Conocimientos (Entrust 520xxx, AUDxxx & IDaaS Cloud)</div>
-          <button class="btn btn-primary" id="btn-open-add-kb">➕ Agregar Regla Personalizada</button>
+        <div class="card-header" style="flex-wrap:wrap; gap:10px;">
+          <div>
+            <div class="card-title">🧠 Base de Conocimientos Unificada (WebHelp AUDxxx, 520xxxx, Tomcat, Oracle, IDaaS &amp; PDFs)</div>
+            <div class="card-subtitle" style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+              Catálogo completo sin ocultamientos: <strong>361 códigos AUDxxx oficiales</strong> (WebHelp IG 11.0 / 12.0 / 13.0), códigos <strong>520xxxx</strong>, eventos Tomcat/JVM/Oracle/IDaaS, reglas personalizadas y códigos extraídos literalmente de tus <strong>PDFs oficiales</strong>.
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn" style="border:1px solid var(--border-color); background:var(--bg-secondary);" onclick="if(window.switchTabGlobal) window.switchTabGlobal('manuals'); if(window.switchKnowledgeSubTab) window.switchKnowledgeSubTab('upload');">📤 Subir PDF Oficial</button>
+            <button class="btn btn-primary" id="btn-open-add-kb">➕ Agregar Regla Personalizada</button>
+          </div>
         </div>
 
-        <p class="text-muted" style="font-size:0.9rem; margin-bottom:20px;">
-          El motor de la Base de Conocimientos mapea automáticamente códigos de error <code>[520xxxx]</code>, eventos <code>[AUDxxxx]</code> y fallos IDaaS (SAML, MFA, RADIUS) con su significado, causa raíz y remediación.
-        </p>
+        <div id="kb-toolbar" style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px; padding:12px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:10px;">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <input type="text" id="kb-search-input" class="form-control" style="flex:1; min-width:260px;" placeholder="🔍 Buscar por código (ej. 5202013, AUD160, AUD6002, ORA-01555, Tomcat), nombre, fuente o texto...">
+            <div id="kb-results-summary" style="font-size:0.8rem; font-weight:700; color:var(--text-muted); white-space:nowrap;">Cargando catálogo...</div>
+          </div>
+          <div id="kb-family-pills" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+            <!-- Pills inyectadas por JS -->
+          </div>
+        </div>
+
+        <div id="kb-pagination-bar" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;"></div>
 
         <div id="kb-rules-list">
           <!-- Reglas inyectadas por JS -->
         </div>
+
+        <div id="kb-pagination-bar-bottom" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:12px;"></div>
       </div>
     </div>
 
@@ -707,12 +725,12 @@
         <div id="knowledge-subtab-upload" style="display:none; margin-top:16px;">
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:18px; align-items:start;">
             <div class="card" style="padding:18px;">
-              <h3 style="margin:0 0 8px 0; font-size:1rem;">📤 Subir Manual o Documento Técnico al Servidor</h3>
+              <h3 style="margin:0 0 8px 0; font-size:1rem;">📤 Subir Manual PDF o Documento Técnico al Servidor</h3>
               <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">
-                Los archivos cargados (<code>.html</code>, <code>.htm</code>, <code>.md</code>, <code>.txt</code>) se guardan en <code>manuals/custom/</code> y se indexan automáticamente en tiempo real para que <strong>Entrust Forensics AI</strong> los cite en sus diagnósticos.
+                Soporta <strong>PDFs oficiales de Entrust</strong> (<code>.pdf</code>, hasta 60 MB) además de <code>.html</code>, <code>.htm</code>, <code>.md</code> y <code>.txt</code>. Los archivos se guardan en <code>manuals/custom/</code>, se abren en el visor integrado y se indexa su texto real más los códigos literales (<code>520xxxx</code>, <code>AUDxxx</code>, <code>ORA-xxxxx</code>) sin alucinaciones para la <strong>Base de Conocimientos</strong> y <strong>Entrust Forensics AI</strong>.
               </p>
-              <input type="file" id="server-manual-upload-input" class="form-control" accept=".html,.htm,.md,.txt" multiple style="margin-bottom:12px;">
-              <button type="button" class="btn btn-primary" style="width:100%; font-weight:700;" onclick="window.uploadManualFileToServerGlobal();">🚀 Subir e Indexar en Entrust Forensics AI</button>
+              <input type="file" id="server-manual-upload-input" class="form-control" accept=".pdf,.html,.htm,.md,.txt" multiple style="margin-bottom:12px;">
+              <button type="button" class="btn btn-primary" style="width:100%; font-weight:700;" onclick="window.uploadManualFileToServerGlobal();">🚀 Subir, Extraer e Indexar en Servidor</button>
               <div id="server-manual-upload-status" style="margin-top:10px; font-size:0.8rem;"></div>
             </div>
             <div class="card" style="padding:18px;">
@@ -1720,8 +1738,8 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <!-- Scripts JavaScript -->
   <script src="js/pptxgen.bundle.js" defer></script>
   <script src="js/topology-engine.js?v=550.0"></script>
-  <script src="js/aud-official-catalog.js?v=603.0"></script>
-  <script src="js/kb-database.js?v=608.0"></script>
+  <script src="js/aud-official-catalog.js?v=609.0"></script>
+  <script src="js/kb-database.js?v=609.0"></script>
   <script src="js/manuals-engine.js?v=550.0"></script>
   <script src="js/log-parser.js?v=608.0"></script>
   <script src="js/storage-engine.js?v=604.0"></script>
@@ -1738,7 +1756,7 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/user-trace-report.js?v=608.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
   <script src="js/pcap-analyzer.js?v=608.0"></script>
-  <script src="js/app.js?v=608.0"></script>
+  <script src="js/app.js?v=609.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

@@ -392,6 +392,22 @@ window.ENTRUST_OFFICIAL_AUD_MANUAL_CATALOG = {
     "category": "Service audit messages",
     "manualFile": "IG_130_Admin_WebHelp/ig_admin/config_logging/service_audit_messages.htm"
   },
+  "AUD160": {
+    "name": "Certificate Near Expiry",
+    "level": "WARN",
+    "snmp": "",
+    "desc": "If a certificate is near expiry, AUD160 is logged. Generated when the current date gets within Certificate Audit Expiry Day Limit (default 30 days) for monitored keystore certificates.",
+    "category": "Certificate auditing",
+    "manualFile": "IG_130_Admin_WebHelp/ig_admin/certauth/auditing_user_certificates.htm"
+  },
+  "AUD161": {
+    "name": "Certificate Past Expiry",
+    "level": "ERROR",
+    "snmp": "",
+    "desc": "If a certificate is past expiry, AUD161 is logged for monitored keystore certificates.",
+    "category": "Certificate auditing",
+    "manualFile": "IG_130_Admin_WebHelp/ig_admin/certauth/auditing_user_certificates.htm"
+  },
   "AUD1000": {
     "name": "User Created",
     "level": "INFO",
