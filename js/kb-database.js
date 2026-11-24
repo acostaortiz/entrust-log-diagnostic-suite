@@ -1481,23 +1481,32 @@ class KnowledgeBase {
     }
     if (pdfEntry) {
       const pdfVer = pdfEntry.docVersion || 'General';
+      const isPdf = /\.pdf($|#)/i.test(pdfEntry.manualFile || pdfEntry.sourceFile || '');
+      const kindNoun = isPdf ? 'PDF oficial' : 'documento técnico';
+      const kindBadge = isPdf ? 'PDF Oficial' : 'Documento';
+      const locLabel = isPdf
+        ? `página ${pdfEntry.page || 1}`
+        : ((Number(pdfEntry.page || 1) > 1) ? `sección ${pdfEntry.page}` : 'referencia oficial');
+      const shortLoc = isPdf
+        ? `Pág. ${pdfEntry.page || 1}`
+        : ((Number(pdfEntry.page || 1) > 1) ? `Secc. ${pdfEntry.page}` : 'HTML/Doc');
       return {
         matched: true,
-        ruleId: `KB-PDF-${pdfEntry.code}`,
+        ruleId: `KB-${isPdf ? 'PDF' : 'DOC'}-${pdfEntry.code}`,
         title: `[${pdfEntry.code}] ${pdfEntry.title}`,
-        category: `Documentación PDF ${pdfVer} (${pdfEntry.sourceFile})`,
+        category: `Documentación ${isPdf ? 'PDF' : 'HTML/Doc'} ${pdfVer} (${pdfEntry.sourceFile})`,
         severity: pdfEntry.severity || 'ERROR',
-        meaning: `Extracto literal del PDF oficial [${pdfVer}] "${pdfEntry.sourceFile}" (Pág. ${pdfEntry.page}): ${pdfEntry.excerpt}`,
-        rootCause: `Consulte el contexto completo en ${pdfEntry.sourceFile} (${pdfVer}), página ${pdfEntry.page}.`,
-        governanceControl: `Abrir documento oficial: ${pdfEntry.manualFile}`,
-        remediation: `Abrir el manual oficial "${pdfEntry.sourceFile}" (${pdfVer}) en la página ${pdfEntry.page} desde el visor integrado para aplicar el procedimiento del fabricante.`,
-        riskLevel: pdfEntry.severity === 'ERROR' ? `Alto (Documentado en PDF ${pdfVer})` : `Informativo / Auditoría (PDF ${pdfVer})`,
-        manualVersion: `PDF Oficial ${pdfVer}: ${pdfEntry.sourceFile} (Pág. ${pdfEntry.page})`,
+        meaning: `Extracto literal del ${kindNoun} [${pdfVer}] "${pdfEntry.sourceFile}" (${shortLoc}): ${pdfEntry.excerpt}`,
+        rootCause: `Consulte el contexto completo en ${pdfEntry.sourceFile} (${pdfVer}), ${locLabel}.`,
+        governanceControl: `Abrir ${kindNoun}: ${pdfEntry.manualFile}`,
+        remediation: `Abrir el manual "${pdfEntry.sourceFile}" (${pdfVer}) en ${locLabel} desde el visor integrado para aplicar el procedimiento del fabricante.`,
+        riskLevel: pdfEntry.severity === 'ERROR' ? `Alto (Documentado en ${kindBadge} ${pdfVer})` : `Informativo / Auditoría (${kindBadge} ${pdfVer})`,
+        manualVersion: `${kindBadge} ${pdfVer}: ${pdfEntry.sourceFile} (${shortLoc})`,
         manualFile: pdfEntry.manualFile,
         docVersion: pdfVer,
-        sourceType: 'PDF_CUSTOM',
+        sourceType: pdfEntry.sourceType || (isPdf ? 'PDF_CUSTOM' : 'DOC_CUSTOM'),
         sectionId: `sec-pdf-${pdfEntry.code.toLowerCase()}`,
-        sectionTitle: `PDF ${pdfVer} [${pdfEntry.code}]: ${pdfEntry.title}`
+        sectionTitle: `${kindBadge} ${pdfVer} [${pdfEntry.code}]: ${pdfEntry.title}`
       };
     }
 
@@ -2137,7 +2146,7 @@ journalctl -u wso2am -n 50 --no-pager`;
       ? this._normalizeDocVersionLabel(preferVersion)
       : (qVerMatch ? this._normalizeDocVersionLabel(qVerMatch[1]) : this._detectActiveDocVersion());
     const stopWords = new Set(['de', 'la', 'el', 'los', 'las', 'un', 'una', 'en', 'y', 'o', 'por', 'para', 'con', 'que', 'como', 'cual', 'es', 'son', 'the', 'and', 'for', 'how', 'what', 'error', 'errores', 'falla', 'fallo', 'solucion', 'resuelvo', 'resolver', 'significa']);
-    const codes = qLower.match(/(?:520\d{4}|aud\d+|ora-\d+|s3-404|ssh-\w+|tomcat_\w+|jvm_oom|jdbc_sql_exception|sql_exception)/gi) || [];
+    const codes = qLower.match(/(?:52\d{4,5}|aud\d+|ora-\d+|s3-404|ssh-\w+|tomcat_\w+|jvm_oom|jdbc_sql_exception|sql_exception)/gi) || [];
     const tokens = (qLower.match(/[a-z0-9_.\-áéíóúñ]{3,}/gi) || []).filter(t => !stopWords.has(t));
     const results = [];
     const seenKeys = new Set();
@@ -2236,16 +2245,21 @@ journalctl -u wso2am -n 50 --no-pager`;
         if (effectiveVersion && entryVer === effectiveVersion) {
           score += 15;
         }
+        const isPdf = /\.pdf($|#)/i.test(entry.manualFile || entry.sourceFile || '');
+        const kindBadge = isPdf ? 'PDF Oficial' : 'Documento';
+        const locLabel = isPdf
+          ? `Pág. ${entry.page || 1}`
+          : ((Number(entry.page || 1) > 1) ? `Secc. ${entry.page}` : 'HTML/Doc');
         results.push({
-          source: 'PDF_CUSTOM',
+          source: entry.sourceType || (isPdf ? 'PDF_CUSTOM' : 'DOC_CUSTOM'),
           code: entry.code,
           title: entry.title || entry.code,
-          category: `PDF Oficial ${entryVer} (${entry.sourceFile || 'custom'})`,
+          category: `${kindBadge} ${entryVer} (${entry.sourceFile || 'custom'})`,
           severity: entry.severity || 'ERROR',
           meaning: entry.excerpt || '',
-          rootCause: `Extracto literal del PDF [${entryVer}] "${entry.sourceFile || 'custom'}" (Pág. ${entry.page || 1}).`,
+          rootCause: `Extracto literal de "${entry.sourceFile || 'custom'}" [${entryVer}] (${locLabel}).`,
           remediation: `Abrir documento oficial (${entryVer}): ${entry.manualFile || ''}`,
-          manualVersion: `PDF Oficial ${entryVer}: ${entry.sourceFile || 'custom'} (Pág. ${entry.page || 1})`,
+          manualVersion: `${kindBadge} ${entryVer}: ${entry.sourceFile || 'custom'} (${locLabel})`,
           manualFile: entry.manualFile || null,
           docVersion: entryVer,
           sectionTitle: `${entry.code} (${entryVer}) — ${entry.title || ''}`,
@@ -2392,20 +2406,27 @@ journalctl -u wso2am -n 50 --no-pager`;
       const pdfVer = pdf.docVersion || 'General';
       const verSlug = pdfVer.replace(/[^a-z0-9]/gi, '_').toLowerCase();
       const fileSlug = String(pdf.sourceFile || 'doc').replace(/[^a-z0-9]/gi, '_').toLowerCase().slice(0, 24);
+      const isPdf = /\.pdf($|#)/i.test(pdf.manualFile || pdf.sourceFile || '');
+      const locLabel = isPdf
+        ? `Pág. ${pdf.page || 1}`
+        : ((Number(pdf.page || 1) > 1) ? `Secc. ${pdf.page}` : 'HTML/Doc');
+      const srcLabel = isPdf
+        ? `📄 PDF ${pdfVer}: ${pdf.sourceFile || 'Custom'} (${locLabel})`
+        : `🌐 Doc ${pdfVer}: ${pdf.sourceFile || 'Custom'}${Number(pdf.page || 1) > 1 ? ` (Secc. ${pdf.page})` : ''}`;
       entries.push({
         uid: `PDF-${verSlug}-${pdf.code}-${fileSlug}`,
         code: pdf.code,
         title: pdf.title || pdf.code,
-        category: `PDF [${pdfVer}]: ${pdf.sourceFile || 'Documento'} (Pág. ${pdf.page || 1})`,
+        category: `${isPdf ? 'PDF' : 'Doc'} [${pdfVer}]: ${pdf.sourceFile || 'Documento'} (${locLabel})`,
         severity: pdf.severity || 'ERROR',
         family: 'PDF',
         docVersion: pdfVer,
         docVersions: [pdfVer],
         meaning: pdf.excerpt || '',
-        rootCause: `Contexto literal extraído de ${pdf.sourceFile || 'PDF'} (${pdfVer}, Pág. ${pdf.page || 1}).`,
-        remediation: `Abrir ${pdf.sourceFile || 'el manual PDF'} (${pdfVer}) en la página ${pdf.page || 1} para revisar el detalle completo del fabricante.`,
-        sourceLabel: `📄 PDF ${pdfVer}: ${pdf.sourceFile || 'Custom'} (Pág. ${pdf.page || 1})`,
-        sourceKind: 'PDF_CUSTOM',
+        rootCause: `Contexto literal extraído de ${pdf.sourceFile || 'documento'} (${pdfVer}, ${locLabel}).`,
+        remediation: `Abrir ${pdf.sourceFile || 'el manual'} (${pdfVer}) en ${locLabel} para revisar el detalle completo del fabricante.`,
+        sourceLabel: srcLabel,
+        sourceKind: pdf.sourceType || (isPdf ? 'PDF_CUSTOM' : 'DOC_CUSTOM'),
         manualPath: normalizePath(pdf.manualFile),
         snmp: ''
       });

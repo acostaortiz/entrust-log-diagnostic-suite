@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.11.0 (Build 612)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.11.1 (Build 613)</span>
           </div>
         </div>
       </div>
@@ -753,7 +753,16 @@
                 <option value="General">General / Independiente de Versión</option>
               </select>
               <input type="file" id="server-manual-upload-input" class="form-control" accept=".pdf,.html,.htm,.md,.txt" multiple style="margin-bottom:12px;">
-              <button type="button" class="btn btn-primary" style="width:100%; font-weight:700;" onclick="window.uploadManualFileToServerGlobal();">🚀 Subir, Extraer e Indexar en Servidor</button>
+              <button type="button" id="btn-server-manual-upload" class="btn btn-primary" style="width:100%; font-weight:700;" onclick="window.uploadManualFileToServerGlobal();">🚀 Subir, Extraer e Indexar en Servidor</button>
+              <div id="server-manual-upload-progress" style="display:none; margin-top:10px; padding:8px 10px; border-radius:8px; background:var(--bg-secondary); border:1px solid var(--border-color);">
+                <div style="display:flex; justify-content:space-between; font-size:0.76rem; font-weight:700; color:var(--text-main); margin-bottom:4px;">
+                  <span id="server-manual-upload-progress-label">Preparando lote...</span>
+                  <span id="server-manual-upload-progress-pct">0%</span>
+                </div>
+                <div style="width:100%; height:7px; border-radius:999px; background:rgba(148,163,184,0.25); overflow:hidden;">
+                  <div id="server-manual-upload-progress-bar" style="width:0%; height:100%; background:linear-gradient(90deg, #0284c7, #10b981); transition:width 0.2s ease;"></div>
+                </div>
+              </div>
               <div id="server-manual-upload-status" style="margin-top:10px; font-size:0.8rem;"></div>
             </div>
             <div class="card" style="padding:18px;">
@@ -1775,14 +1784,14 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/pptxgen.bundle.js" defer></script>
   <script src="js/topology-engine.js?v=550.0"></script>
   <script src="js/aud-official-catalog.js?v=609.0"></script>
-  <script src="js/kb-database.js?v=612.0"></script>
+  <script src="js/kb-database.js?v=613.0"></script>
   <script src="js/manuals-engine.js?v=612.0"></script>
   <script src="js/log-parser.js?v=608.0"></script>
   <script src="js/storage-engine.js?v=604.0"></script>
     <script src="js/threat-radar.js?v=611.0"></script>
   <script src="js/remediation-engine.js?v=550.0"></script>
   <script src="js/notes-engine.js?v=570.0"></script>
-  <script src="js/copilot-engine.js?v=612.0"></script>
+  <script src="js/copilot-engine.js?v=613.0"></script>
   <script src="js/compliance-auditor.js?v=550.0"></script>
   <script src="js/config-diff-engine.js?v=576.0"></script>
   <script src="js/siem-exporter.js?v=550.0"></script>
@@ -1792,7 +1801,7 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/user-trace-report.js?v=611.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
   <script src="js/pcap-analyzer.js?v=608.0"></script>
-  <script src="js/app.js?v=612.0"></script>
+  <script src="js/app.js?v=613.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

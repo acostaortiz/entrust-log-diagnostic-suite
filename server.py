@@ -474,19 +474,136 @@ def _build_pdf_sidecar_and_index(full_path, fname, rel_subpath=None, doc_version
 
     return sidecar, entries
 
+def _build_text_doc_sidecar_and_index(full_path, fname, rel_subpath=None, doc_version='General', force_rebuild=False):
+    """Build or load cached v2 sidecar & full-text index entries for .html/.htm/.md/.txt files."""
+    rel_subpath = rel_subpath or fname
+    rel_path = f"manuals/custom/{rel_subpath}"
+    fl = fname.lower()
+    is_html = fl.endswith(('.html', '.htm'))
+    read_sc_path, write_sc_path = _sidecar_path_for(rel_subpath, legacy_fname=fname)
+    try:
+        fsize = os.path.getsize(full_path)
+        fmtime = int(os.path.getmtime(full_path))
+    except Exception:
+        fsize, fmtime = 0, 0
+
+    sidecar = None
+    if not force_rebuild and os.path.isfile(read_sc_path):
+        try:
+            with open(read_sc_path, 'r', encoding='utf-8') as f:
+                cached_sc = json.load(f)
+            if (
+                isinstance(cached_sc, dict)
+                and cached_sc.get('extractorVersion') == 2
+                and cached_sc.get('fileSize') == fsize
+                and cached_sc.get('fileMtime') == fmtime
+                and isinstance(cached_sc.get('pages'), list)
+            ):
+                sidecar = cached_sc
+        except Exception:
+            sidecar = None
+
+    if sidecar is None:
+        if pdf_extractor is not None and hasattr(pdf_extractor, 'extract_html_or_text_document'):
+            doc_res = pdf_extractor.extract_html_or_text_document(full_path)
+            if doc_res.get('ok'):
+                pages = doc_res.get('pages') or []
+                codes = pdf_extractor.extract_entrust_codes_from_html_or_text(doc_res, fname, rel_path)
+                title = doc_res.get('title') or fname
+                engine = doc_res.get('engine') or ('html-parser' if is_html else 'text-parser')
+                section_count = int(doc_res.get('sectionCount') or len(pages) or 1)
+                total_chars = int(doc_res.get('totalChars') or 0)
+            else:
+                pages, codes, title, engine, section_count, total_chars = [], {}, fname, 'error', 0, 0
+        else:
+            try:
+                with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    raw = f.read(2000000)
+                if is_html:
+                    title, text = _clean_html_text(raw)
+                else:
+                    title, text = fname, re.sub(r'\s+', ' ', raw).strip()
+                pages = [{'page': 1, 'text': text[:10000], 'anchor': ''}] if text else []
+                codes = {}
+                engine = 'fallback-text'
+                section_count = len(pages)
+                total_chars = len(text)
+            except Exception:
+                pages, codes, title, engine, section_count, total_chars = [], {}, fname, 'error', 0, 0
+
+        for c_val in codes.values():
+            if isinstance(c_val, dict):
+                c_val['docVersion'] = doc_version
+
+        sidecar = {
+            'extractorVersion': 2,
+            'isPdf': False,
+            'filename': fname,
+            'relSubpath': rel_subpath,
+            'path': rel_path,
+            'version': doc_version,
+            'title': title or fname,
+            'fileSize': fsize,
+            'fileMtime': fmtime,
+            'ok': True,
+            'engine': engine,
+            'sectionCount': section_count,
+            'totalChars': total_chars,
+            'pages': pages,
+            'codes': codes
+        }
+        try:
+            _atomic_write_json(write_sc_path, sidecar)
+        except Exception:
+            pass
+    else:
+        sidecar['version'] = doc_version
+        sidecar['relSubpath'] = rel_subpath
+        sidecar['path'] = rel_path
+        for c_val in (sidecar.get('codes') or {}).values():
+            if isinstance(c_val, dict):
+                c_val['docVersion'] = doc_version
+                anc = str(c_val.get('anchor') or '').strip()
+                if not anc and '#' in str(c_val.get('manualFile') or ''):
+                    anc = str(c_val['manualFile']).split('#', 1)[1]
+                c_val['manualFile'] = f"{rel_path}#{anc}" if anc else rel_path
+
+    pages = sidecar.get('pages') or []
+    base_title = sidecar.get('title') or fname
+    idx_version = f"{doc_version} (HTML)" if is_html else f"{doc_version} (Doc)"
+    entries = []
+    for s in pages:
+        sec_num = int(s.get('page') or 1)
+        text_trimmed = str(s.get('text') or '')[:10000]
+        if len(text_trimmed) < 10:
+            continue
+        anchor = str(s.get('anchor') or '').strip()
+        entry_path = f"{rel_path}#{anchor}" if anchor else rel_path
+        entry_title = f"{base_title} (Secc. {sec_num})" if len(pages) > 1 else base_title
+        entries.append({
+            'path': entry_path,
+            'version': idx_version,
+            'title': entry_title,
+            'title_lower': entry_title.lower(),
+            'text': text_trimmed,
+            'text_lower': text_trimmed.lower()
+        })
+
+    return sidecar, entries
+
 def _scan_custom_manuals_and_rebuild_codes():
     custom_entries = []
     consolidated_codes = {}
     codes_by_version = {}
     version_entries_list = []
     versions_count = {}
-    pdf_files_count = 0
+    custom_files_count = 0
 
     for full_path, fname, rel_subpath, rel_path, doc_version in _iter_custom_manual_files():
         fl = fname.lower()
         versions_count[doc_version] = versions_count.get(doc_version, 0) + 1
         if fl.endswith('.pdf'):
-            pdf_files_count += 1
+            custom_files_count += 1
             sidecar, pdf_entries = _build_pdf_sidecar_and_index(full_path, fname, rel_subpath=rel_subpath, doc_version=doc_version)
             custom_entries.extend(pdf_entries)
             ver_map = codes_by_version.setdefault(doc_version, {})
@@ -501,32 +618,27 @@ def _scan_custom_manuals_and_rebuild_codes():
                 if code_k not in consolidated_codes:
                     consolidated_codes[code_k] = enriched
         elif fl.endswith(('.html', '.htm', '.md', '.txt')):
-            try:
-                with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
-                    raw = f.read(300000)
-                if fl.endswith(('.html', '.htm')):
-                    title, text = _clean_html_text(raw)
-                else:
-                    title = fname
-                    text = re.sub(r'\s+', ' ', raw).strip()
-                if len(text) >= 15:
-                    text_trimmed = text[:10000]
-                    custom_entries.append({
-                        'path': rel_path,
-                        'version': f"{doc_version} (Custom)",
-                        'title': title or fname,
-                        'title_lower': (title or fname).lower(),
-                        'text': text_trimmed,
-                        'text_lower': text_trimmed.lower()
-                    })
-            except Exception:
-                continue
+            custom_files_count += 1
+            sidecar, doc_entries = _build_text_doc_sidecar_and_index(full_path, fname, rel_subpath=rel_subpath, doc_version=doc_version)
+            custom_entries.extend(doc_entries)
+            ver_map = codes_by_version.setdefault(doc_version, {})
+            for code_k, code_v in (sidecar.get('codes') or {}).items():
+                if not isinstance(code_v, dict):
+                    continue
+                enriched = dict(code_v)
+                enriched['docVersion'] = doc_version
+                if code_k not in ver_map:
+                    ver_map[code_k] = enriched
+                    version_entries_list.append(enriched)
+                if code_k not in consolidated_codes:
+                    consolidated_codes[code_k] = enriched
 
     codes_payload = {
+        'extractorVersion': 2,
         'updatedAt': datetime.datetime.utcnow().isoformat() + 'Z',
         'totalCodes': len(consolidated_codes),
         'totalEntries': len(version_entries_list),
-        'filesCount': pdf_files_count,
+        'filesCount': custom_files_count,
         'versionsCount': versions_count,
         'codes': consolidated_codes,
         'codesByVersion': codes_by_version,
@@ -1931,7 +2043,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         elif path == '/api/notes':
             self.handle_get_notes(query)
         elif path == '/api/custom-manuals':
-            self.handle_list_custom_manuals()
+            self.handle_list_custom_manuals(query)
         elif path == '/api/custom-codes':
             self.handle_get_custom_codes()
         elif path == '/api/pcap-status':
@@ -2015,6 +2127,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             raw = self.rfile.read(length)
             ctype = (self.headers.get('Content-Type') or '').split(';')[0].strip().lower()
             is_binary_upload = ctype in ('application/pdf', 'application/octet-stream')
+            defer_reindex = str(self.headers.get('X-Defer-Reindex') or '').strip().lower() in ('1', 'true', 'yes')
             raw_ver = ''
 
             if is_binary_upload:
@@ -2026,6 +2139,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 payload = json.loads(raw.decode('utf-8'))
                 filename = os.path.basename(str(payload.get('filename') or '').strip())
                 raw_ver = str(payload.get('version') or '').strip()
+                if not defer_reindex:
+                    defer_reindex = bool(payload.get('deferReindex'))
                 encoding_mode = str(payload.get('encoding') or '').strip().lower()
                 content = str(payload.get('content') or '')
                 if encoding_mode == 'base64':
@@ -2106,7 +2221,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 meta[rel_subpath] = {'version': doc_version, 'uploadedAt': datetime.datetime.utcnow().isoformat() + 'Z'}
                 _save_custom_metadata(meta)
 
-                refresh_custom_manuals_index()
+                if not defer_reindex:
+                    refresh_custom_manuals_index()
 
                 sample_codes = list(codes.keys())[:15]
                 self.send_json({
@@ -2130,10 +2246,16 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
             _atomic_write_bytes(target_path, raw_bytes)
+            sidecar, _ = _build_text_doc_sidecar_and_index(
+                target_path, safe_name, rel_subpath=rel_subpath, doc_version=doc_version, force_rebuild=True
+            )
             meta = _load_custom_metadata()
             meta[rel_subpath] = {'version': doc_version, 'uploadedAt': datetime.datetime.utcnow().isoformat() + 'Z'}
             _save_custom_metadata(meta)
-            refresh_custom_manuals_index()
+            if not defer_reindex:
+                refresh_custom_manuals_index()
+            codes = sidecar.get('codes') or {}
+            sample_codes = list(codes.keys())[:15]
             self.send_json({
                 'success': True,
                 'path': rel_path,
@@ -2142,16 +2264,24 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'version': doc_version,
                 'versionSlug': ver_slug,
                 'isPdf': False,
-                'size': os.path.getsize(target_path)
+                'size': os.path.getsize(target_path),
+                'engine': sidecar.get('engine') or 'html-parser',
+                'sectionCount': int(sidecar.get('sectionCount') or 1),
+                'totalChars': int(sidecar.get('totalChars') or 0),
+                'extractedCodesCount': len(codes),
+                'extractedCodesSample': sample_codes
             })
         except Exception as e:
             self.send_json({'error': str(e)}, status=500)
 
-    def handle_list_custom_manuals(self):
+    def handle_list_custom_manuals(self, query=None):
         items = []
         versions_summary = {}
+        force_reindex = bool(query and str(query.get('reindex', ['0'])[0]).lower() in ('1', 'true', 'yes'))
+        need_index_refresh = force_reindex
         for fpath, fname, rel_subpath, rel_path, doc_version in _iter_custom_manual_files():
-            is_pdf = fname.lower().endswith('.pdf')
+            fl = fname.lower()
+            is_pdf = fl.endswith('.pdf')
             versions_summary[doc_version] = versions_summary.get(doc_version, 0) + 1
             entry = {
                 'filename': fname,
@@ -2177,7 +2307,45 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                         })
                     except Exception:
                         pass
+            elif fl.endswith(('.html', '.htm', '.md', '.txt')):
+                read_sc_path, _ = _sidecar_path_for(rel_subpath, legacy_fname=fname)
+                sc = None
+                try:
+                    fsize = os.path.getsize(fpath)
+                    fmtime = int(os.path.getmtime(fpath))
+                except Exception:
+                    fsize, fmtime = 0, 0
+                if os.path.isfile(read_sc_path):
+                    try:
+                        with open(read_sc_path, 'r', encoding='utf-8') as f:
+                            cached = json.load(f) or {}
+                        if (
+                            isinstance(cached, dict)
+                            and cached.get('extractorVersion') == 2
+                            and cached.get('fileSize') == fsize
+                            and cached.get('fileMtime') == fmtime
+                        ):
+                            sc = cached
+                    except Exception:
+                        sc = None
+                if sc is None:
+                    sc, _ = _build_text_doc_sidecar_and_index(
+                        fpath, fname, rel_subpath=rel_subpath, doc_version=doc_version
+                    )
+                    need_index_refresh = True
+                if isinstance(sc, dict):
+                    entry.update({
+                        'sectionCount': int(sc.get('sectionCount') or len(sc.get('pages') or []) or 1),
+                        'totalChars': int(sc.get('totalChars') or 0),
+                        'extractedCodesCount': len(sc.get('codes') or {}),
+                        'engine': sc.get('engine') or 'html-parser'
+                    })
             items.append(entry)
+        if need_index_refresh:
+            try:
+                refresh_custom_manuals_index()
+            except Exception:
+                pass
         self.send_json({'manuals': items, 'versionsSummary': versions_summary})
 
     def _resolve_custom_manual_target(self, payload):
@@ -2304,8 +2472,14 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     for c_val in (sc.get('codes') or {}).values():
                         if isinstance(c_val, dict):
                             c_val['docVersion'] = new_version
-                            pg = c_val.get('page') or 1
-                            c_val['manualFile'] = f"{new_rel_path}#page={pg}"
+                            if fname.lower().endswith('.pdf'):
+                                pg = c_val.get('page') or 1
+                                c_val['manualFile'] = f"{new_rel_path}#page={pg}"
+                            else:
+                                anc = str(c_val.get('anchor') or '').strip()
+                                if not anc and '#' in str(c_val.get('manualFile') or ''):
+                                    anc = str(c_val['manualFile']).split('#', 1)[1]
+                                c_val['manualFile'] = f"{new_rel_path}#{anc}" if anc else new_rel_path
                     _atomic_write_json(new_sc_write, sc)
                     for sc_old in {old_sc_read, old_sc_write}:
                         if sc_old != new_sc_write and os.path.isfile(sc_old):
@@ -2341,7 +2515,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 with open(codes_path, 'r', encoding='utf-8') as f:
                     parsed = json.load(f) or {}
-                if isinstance(parsed, dict) and 'codesByVersion' in parsed:
+                if isinstance(parsed, dict) and 'codesByVersion' in parsed and int(parsed.get('extractorVersion') or 0) >= 2:
                     data = parsed
             except Exception:
                 data = None

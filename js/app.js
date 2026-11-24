@@ -1498,12 +1498,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.11.0',
-    build: 612,
+    version: 'v3.11.1',
+    build: 613,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'MULTI-VERSION-DOCS-311',
+    gitCommit: 'HTML-CODES-BATCH-PROGRESS-3111',
     gitBranch: 'main',
-    buildDate: '2026-11-24 11:30',
+    buildDate: '2026-11-24 12:00',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -7038,7 +7038,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         { key: 'ALL', label: 'Todos' },
         { key: 'AUD', label: 'AUD Oficiales WebHelp' },
         { key: '520', label: 'Errores 520xxxx' },
-        { key: 'PDF', label: 'Extraídos de PDFs' },
+        { key: 'PDF', label: 'Extraídos de PDFs / HTML' },
         { key: 'TOMCAT', label: 'Tomcat / JVM' },
         { key: 'ORA', label: 'Oracle / JDBC' },
         { key: 'IDAAS', label: 'IDaaS / SSH / Otros' },
@@ -12711,7 +12711,8 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
         const verOptions = ['IG 13.0', 'IG 12.0', 'IG 11.0', 'IG 10.0', 'IG 9.0', 'IDaaS Cloud', 'General'];
         container.innerHTML = filteredItems.map(m => {
           const isPdf = !!m.isPdf || /\.pdf$/i.test(m.filename || '');
-          const icon = isPdf ? '📕' : '📄';
+          const isHtml = /\.(html|htm)$/i.test(m.filename || '');
+          const icon = isPdf ? '📕' : (isHtml ? '🌐' : '📄');
           const docVer = m.version || 'General';
           let metaBadge = '';
           if (isPdf) {
@@ -12721,7 +12722,13 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
               : `<span style="color:#10b981; font-weight:600;">${Number(m.extractedCodesCount || 0)} código(s) extraídos</span>`;
             metaBadge = `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">${pagesTxt}${m.engine ? ` • ${escapeHtml(m.engine)}` : ''} • ${codesTxt} • <code>${escapeHtml(m.relSubpath || m.filename)}</code></div>`;
           } else {
-            metaBadge = `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;"><code>${escapeHtml(m.relSubpath || m.filename)}</code></div>`;
+            const secTxt = m.sectionCount ? `${m.sectionCount} secc.` : 'Doc';
+            const engTxt = m.engine ? ` • ${escapeHtml(m.engine)}` : '';
+            const codesCnt = Number(m.extractedCodesCount || 0);
+            const codesTxt = codesCnt > 0
+              ? `<span style="color:#10b981; font-weight:600;">${codesCnt} código(s) extraídos</span>`
+              : `<span style="color:var(--text-muted);">0 códigos literales</span>`;
+            metaBadge = `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">${secTxt}${engTxt} • ${codesTxt} • <code>${escapeHtml(m.relSubpath || m.filename)}</code></div>`;
           }
           const selectHtml = verOptions.map(v => `<option value="${escapeHtml(v)}"${v === docVer ? ' selected' : ''}>${escapeHtml(v)}</option>`).join('');
           return `
@@ -12767,89 +12774,169 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     };
 
     window.uploadManualFileToServerGlobal = async function() {
+      if (window.__isUploadingServerManuals) return;
       const inputEl = document.getElementById('server-manual-upload-input');
       const verSelectEl = document.getElementById('server-manual-upload-version');
+      const btnEl = document.getElementById('btn-server-manual-upload');
+      const progWrapEl = document.getElementById('server-manual-upload-progress');
+      const progLabelEl = document.getElementById('server-manual-upload-progress-label');
+      const progPctEl = document.getElementById('server-manual-upload-progress-pct');
+      const progBarEl = document.getElementById('server-manual-upload-progress-bar');
       const statusEl = document.getElementById('server-manual-upload-status');
       const selectedVersion = verSelectEl?.value || 'auto';
-      const files = inputEl?.files;
-      if (!files || !files.length) {
+      const rawFiles = inputEl?.files ? Array.from(inputEl.files) : [];
+      if (!rawFiles.length) {
         if (statusEl) statusEl.innerHTML = '<span style="color:#d97706;">Selecciona al menos un archivo (.pdf, .html, .htm, .md, .txt).</span>';
         return;
       }
-      if (statusEl) statusEl.innerHTML = '<span style="color:#0284c7;">⏳ Subiendo, validando y extrayendo texto/códigos en el servidor...</span>';
 
       const maxBytes = 60 * 1024 * 1024;
       const reportLines = [];
-      let okCount = 0;
-
-      for (const file of Array.from(files)) {
-        const lowerName = (file.name || '').toLowerCase();
+      const validFiles = [];
+      for (const f of rawFiles) {
+        const lowerName = (f.name || '').toLowerCase();
         if (!/\.(pdf|html|htm|md|txt)$/i.test(lowerName)) {
-          reportLines.push(`<div style="color:#ef4444;">❌ <strong>${escapeHtml(file.name)}</strong>: formato no permitido (solo .pdf, .html, .htm, .md, .txt).</div>`);
+          reportLines.push(`<div style="color:#ef4444;">❌ <strong>${escapeHtml(f.name)}</strong>: formato no permitido (solo .pdf, .html, .htm, .md, .txt).</div>`);
           continue;
         }
-        if (file.size > maxBytes) {
-          reportLines.push(`<div style="color:#ef4444;">❌ <strong>${escapeHtml(file.name)}</strong>: excede el límite de 60 MB.</div>`);
+        if (f.size > maxBytes) {
+          reportLines.push(`<div style="color:#ef4444;">❌ <strong>${escapeHtml(f.name)}</strong>: excede el límite de 60 MB.</div>`);
           continue;
         }
-        try {
-          let resp;
-          if (/\.pdf$/i.test(lowerName)) {
+        validFiles.push(f);
+      }
+
+      if (!validFiles.length) {
+        if (statusEl) statusEl.innerHTML = reportLines.join('');
+        return;
+      }
+
+      window.__isUploadingServerManuals = true;
+      const origBtnTxt = btnEl ? btnEl.textContent : '';
+      if (btnEl) {
+        btnEl.disabled = true;
+        btnEl.textContent = '⏳ Procesando lote...';
+      }
+      if (inputEl) inputEl.disabled = true;
+
+      const updateProgress = (pct, labelTxt) => {
+        if (progWrapEl) progWrapEl.style.display = 'block';
+        const safePct = Math.max(0, Math.min(100, Math.round(pct)));
+        if (progLabelEl) progLabelEl.textContent = labelTxt;
+        if (progPctEl) progPctEl.textContent = `${safePct}%`;
+        if (progBarEl) progBarEl.style.width = `${safePct}%`;
+      };
+
+      const renderLiveStatus = (headerHtml = '') => {
+        if (!statusEl) return;
+        statusEl.innerHTML = headerHtml + reportLines.join('');
+      };
+
+      let okCount = 0;
+      let needsFinalReindex = false;
+      const totalFiles = validFiles.length;
+
+      try {
+        for (let idx = 0; idx < totalFiles; idx++) {
+          const file = validFiles[idx];
+          const lowerName = (file.name || '').toLowerCase();
+          const isPdf = /\.pdf$/i.test(lowerName);
+          const sizeLabel = file.size >= 1024 * 1024
+            ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
+            : `${Math.max(1, Math.round(file.size / 1024))} KB`;
+          const isLastFile = idx === totalFiles - 1;
+          const deferReindex = !isLastFile;
+
+          updateProgress(
+            (idx / totalFiles) * 100,
+            `Archivo ${idx + 1} de ${totalFiles}: ${file.name} (${sizeLabel})...`
+          );
+          renderLiveStatus(`<div style="color:#0284c7; margin-bottom:4px;">⏳ Subiendo y extrayendo <strong>${escapeHtml(file.name)}</strong> (${idx + 1}/${totalFiles}, ${sizeLabel})...</div>`);
+
+          const ctrl = new AbortController();
+          const timeoutId = setTimeout(() => ctrl.abort(), 180000);
+          try {
             const buf = await file.arrayBuffer();
-            resp = await fetch('/api/upload-manual', {
+            const resp = await fetch('/api/upload-manual', {
               method: 'POST',
               headers: {
-                'Content-Type': 'application/pdf',
+                'Content-Type': isPdf ? 'application/pdf' : 'application/octet-stream',
                 'X-File-Name': encodeURIComponent(file.name),
-                'X-Manual-Version': selectedVersion
+                'X-Manual-Version': selectedVersion,
+                'X-Defer-Reindex': deferReindex ? '1' : '0'
               },
-              body: buf
+              body: buf,
+              signal: ctrl.signal
             });
-          } else {
-            const content = await file.text();
-            resp = await fetch('/api/upload-manual', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ filename: file.name, content, version: selectedVersion })
-            });
-          }
 
-          const data = await resp.json().catch(() => ({}));
-          if (!resp.ok) {
-            reportLines.push(`<div style="color:#ef4444;">❌ <strong>${escapeHtml(file.name)}</strong>: ${escapeHtml(data.error || ('HTTP ' + resp.status))}</div>`);
-            continue;
-          }
-
-          okCount++;
-          const resVer = data.version || selectedVersion;
-          if (data.isPdf) {
-            if (data.isScannedOrEmpty) {
-              reportLines.push(`<div style="color:#d97706;">⚠️ <strong>[${escapeHtml(resVer)}] ${escapeHtml(data.filename)}</strong>: PDF guardado para el visor (${data.pageCount || 0} pág.), ${escapeHtml(data.warning || 'sin capa de texto seleccionable')}; 0 códigos inventados.</div>`);
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+              reportLines.push(`<div style="color:#ef4444;">❌ <strong>${escapeHtml(file.name)}</strong>: ${escapeHtml(data.error || ('HTTP ' + resp.status))}</div>`);
+              if (isLastFile && okCount > 0) needsFinalReindex = true;
             } else {
-              const sample = (data.extractedCodesSample && data.extractedCodesSample.length > 0)
-                ? ` (${data.extractedCodesSample.slice(0, 5).join(', ')}${data.extractedCodesCount > 5 ? '...' : ''})`
+              okCount++;
+              needsFinalReindex = deferReindex;
+              const resVer = data.version || selectedVersion;
+              const codesCnt = Number(data.extractedCodesCount || 0);
+              const sample = (Array.isArray(data.extractedCodesSample) && data.extractedCodesSample.length > 0)
+                ? ` (${data.extractedCodesSample.slice(0, 5).join(', ')}${codesCnt > 5 ? '...' : ''})`
                 : '';
-              reportLines.push(`<div style="color:#10b981; font-weight:600;">✅ <strong>[${escapeHtml(resVer)}] ${escapeHtml(data.filename)}</strong>: ${data.pageCount || 0} pág(s) (${escapeHtml(data.engine || 'stdlib-pdf')}), <strong>${data.extractedCodesCount || 0} código(s)</strong> extraídos e indexados${escapeHtml(sample)}.</div>`);
-            }
-          } else {
-            reportLines.push(`<div style="color:#10b981; font-weight:600;">✅ <strong>[${escapeHtml(resVer)}] ${escapeHtml(data.filename)}</strong>: guardado e indexado (${Math.max(1, Math.round((data.size || 0) / 1024))} KB).</div>`);
-          }
-        } catch (e) {
-          reportLines.push(`<div style="color:#ef4444;">❌ <strong>${escapeHtml(file.name)}</strong>: ${escapeHtml(e.message || e)}</div>`);
-        }
-      }
 
-      if (inputEl) inputEl.value = '';
-      if (statusEl) {
-        statusEl.innerHTML = reportLines.join('') || '<span style="color:#ef4444;">❌ Error al subir los documentos al servidor.</span>';
-      }
-      if (okCount > 0) {
-        window.copilotEngine?.manualsCache?.clear?.();
-        if (typeof window.loadCustomPdfCodesGlobal === 'function') {
-          await window.loadCustomPdfCodesGlobal();
+              if (data.isPdf) {
+                if (data.isScannedOrEmpty) {
+                  reportLines.push(`<div style="color:#d97706;">⚠️ <strong>[${escapeHtml(resVer)}] ${escapeHtml(data.filename)}</strong>: PDF guardado para el visor (${data.pageCount || 0} pág.), ${escapeHtml(data.warning || 'sin capa de texto seleccionable')}; 0 códigos inventados.</div>`);
+                } else {
+                  reportLines.push(`<div style="color:#10b981; font-weight:600;">✅ <strong>[${escapeHtml(resVer)}] ${escapeHtml(data.filename)}</strong>: ${data.pageCount || 0} pág(s) (${escapeHtml(data.engine || 'stdlib-pdf')}), <strong>${codesCnt} código(s)</strong> extraídos e indexados${escapeHtml(sample)}.</div>`);
+                }
+              } else {
+                const secTxt = data.sectionCount ? `${data.sectionCount} secc.` : `${Math.max(1, Math.round((data.size || 0) / 1024))} KB`;
+                const engTxt = data.engine ? ` (${escapeHtml(data.engine)})` : '';
+                reportLines.push(`<div style="color:#10b981; font-weight:600;">✅ <strong>[${escapeHtml(resVer)}] ${escapeHtml(data.filename)}</strong>: ${secTxt}${engTxt}, <strong>${codesCnt} código(s)</strong> extraídos e indexados${escapeHtml(sample)}.</div>`);
+              }
+
+              await window.refreshCustomServerManualsGlobal();
+            }
+          } catch (e) {
+            const errMsg = (e && e.name === 'AbortError') ? 'Tiempo de espera agotado (180s)' : (e?.message || e);
+            reportLines.push(`<div style="color:#ef4444;">❌ <strong>${escapeHtml(file.name)}</strong>: ${escapeHtml(errMsg)}</div>`);
+            if (isLastFile && okCount > 0) needsFinalReindex = true;
+          } finally {
+            clearTimeout(timeoutId);
+          }
+
+          updateProgress(
+            ((idx + 1) / totalFiles) * 100,
+            `Procesado ${idx + 1} de ${totalFiles}: ${file.name}`
+          );
+          renderLiveStatus('');
         }
+
+        if (needsFinalReindex) {
+          try {
+            await fetch('/api/custom-manuals?reindex=1');
+          } catch (e) {}
+        }
+
+        if (inputEl) inputEl.value = '';
+        const summaryBanner = `<div style="color:${okCount > 0 ? '#0284c7' : '#ef4444'}; font-weight:700; margin-bottom:6px;">${okCount > 0 ? '✅' : '⚠️'} Lote completado: ${okCount} de ${totalFiles} archivo(s) procesados e indexados.</div>`;
+        renderLiveStatus(summaryBanner);
+        updateProgress(100, `Lote completado: ${okCount}/${totalFiles} archivo(s) indexados`);
+
+        if (okCount > 0) {
+          window.copilotEngine?.manualsCache?.clear?.();
+          if (typeof window.loadCustomPdfCodesGlobal === 'function') {
+            await window.loadCustomPdfCodesGlobal();
+          }
+          await window.refreshCustomServerManualsGlobal();
+        }
+      } finally {
+        window.__isUploadingServerManuals = false;
+        if (btnEl) {
+          btnEl.disabled = false;
+          btnEl.textContent = origBtnTxt || '🚀 Subir, Extraer e Indexar en Servidor';
+        }
+        if (inputEl) inputEl.disabled = false;
       }
-      await window.refreshCustomServerManualsGlobal();
     };
 
     window.saveAiReplyAsNoteGlobal = function(queryText, answerText) {

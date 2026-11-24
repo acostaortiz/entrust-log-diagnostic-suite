@@ -9,6 +9,7 @@ Extraction tiers (first available non-empty result wins; honest reporting on sca
 """
 
 import base64
+from html.parser import HTMLParser
 import os
 import re
 import shutil
@@ -968,13 +969,30 @@ def extract_pdf_text(file_path, max_pages=800):
 # Verbatim Entrust / Oracle Error Code Extractor (Zero Hallucinations)
 # ==============================================================================
 
-_CODE_EXTRACT_RE = re.compile(r'\b(520\d{4}|AUD\d{2,4}|ORA-\d{5})\b', re.IGNORECASE)
+_CODE_EXTRACT_RE = re.compile(r'\b(52\d{5}|520\d{3}|AUD\d{2,4}|ORA-\d{5})\b', re.IGNORECASE)
+_TABLE_CELL_CODE_RE = re.compile(r'^[\[\(\s]*(5\d{5,7}|AUD\d{2,5}|ORA-\d{5})(?=[\]\)\s:\-–—]|$)', re.IGNORECASE)
 
 
-def extract_entrust_codes_from_pages(pages, filename, rel_path):
+def _classify_code_meta(code_upper, excerpt):
+    if code_upper.startswith(('5', 'ORA-')):
+        family = 'ORA' if code_upper.startswith('ORA-') else '520'
+        severity = 'ERROR'
+    else:
+        family = 'AUD'
+        low_ctx = excerpt.lower()
+        if any(w in low_ctx for w in ('fail', 'error', 'locked out', 'revoked', 'past expiry')):
+            severity = 'ERROR'
+        elif any(w in low_ctx for w in ('warn', 'near expiry', 'exhausted', '80 percent')):
+            severity = 'WARN'
+        else:
+            severity = 'INFO'
+    return family, severity
+
+
+def extract_entrust_codes_from_pages(pages, filename, rel_path, source_type='PDF_CUSTOM', line_anchors=None, use_page_fragment=True):
     """
-    Scan extracted PDF pages and collect verbatim context snippets for 520xxxx, AUDxxx, ORA-xxxxx.
-    Never invents causes or remediations not literally present in the PDF text.
+    Scan extracted PDF pages or document sections and collect verbatim context snippets for 52xxxxx, 520xxx, AUDxxx, ORA-xxxxx.
+    Never invents causes or remediations not literally present in the document text.
     """
     if not isinstance(pages, list) or not pages:
         return {}
@@ -989,6 +1007,7 @@ def extract_entrust_codes_from_pages(pages, filename, rel_path):
         text = str(p_obj.get('text') or '')
         if not text:
             continue
+        sec_anchor = str(p_obj.get('anchor') or '').strip()
 
         lines = [ln.strip() for ln in text.split('\n')]
         non_empty = [(idx, ln) for idx, ln in enumerate(lines) if ln]
@@ -1003,7 +1022,7 @@ def extract_entrust_codes_from_pages(pages, filename, rel_path):
 
                 # Score occurrence quality so actual definitions beat TOC mentions
                 score = 10
-                if re.match(r'^[\[\(\s]*' + re.escape(code_upper) + r'[\]\)\s:\-–—]+', line, re.IGNORECASE):
+                if re.match(r'^[\[\(\s]*' + re.escape(code_upper) + r'[\]\)\s:\-–—|]+', line, re.IGNORECASE):
                     score += 50
                 elif m.start() <= 20:
                     score += 25
@@ -1018,7 +1037,7 @@ def extract_entrust_codes_from_pages(pages, filename, rel_path):
 
                 # Clean title from the matched line verbatim
                 clean_title = re.sub(
-                    r'^[\[\(\s]*' + re.escape(code_upper) + r'[\]\)\s:\-–—]*',
+                    r'^[\[\(\s]*' + re.escape(code_upper) + r'[\]\)\s:\-–—|]*',
                     '',
                     line,
                     flags=re.IGNORECASE
@@ -1039,18 +1058,20 @@ def extract_entrust_codes_from_pages(pages, filename, rel_path):
                 if len(excerpt) > 450:
                     excerpt = excerpt[:447].rstrip() + '...'
 
-                if code_upper.startswith(('520', 'ORA-')):
-                    family = '520' if code_upper.startswith('520') else 'ORA'
-                    severity = 'ERROR'
+                family, severity = _classify_code_meta(code_upper, excerpt)
+
+                anchor = ''
+                if line_anchors and isinstance(line_anchors, dict):
+                    anchor = line_anchors.get((page_num, line)) or line_anchors.get(line) or ''
+                if not anchor and not use_page_fragment:
+                    anchor = sec_anchor
+
+                if use_page_fragment:
+                    manual_ref = f'{rel_path}#page={page_num}'
+                elif anchor:
+                    manual_ref = f'{rel_path}#{anchor}'
                 else:
-                    family = 'AUD'
-                    low_ctx = excerpt.lower()
-                    if any(w in low_ctx for w in ('fail', 'error', 'locked out', 'revoked', 'past expiry')):
-                        severity = 'ERROR'
-                    elif any(w in low_ctx for w in ('warn', 'near expiry', 'exhausted', '80 percent')):
-                        severity = 'WARN'
-                    else:
-                        severity = 'INFO'
+                    manual_ref = rel_path
 
                 best_by_code[code_upper] = {
                     '_score': score,
@@ -1059,10 +1080,11 @@ def extract_entrust_codes_from_pages(pages, filename, rel_path):
                     'excerpt': excerpt,
                     'sourceFile': filename,
                     'page': page_num,
-                    'manualFile': f'{rel_path}#page={page_num}',
+                    'manualFile': manual_ref,
+                    'anchor': anchor,
                     'family': family,
                     'severity': severity,
-                    'sourceType': 'PDF_CUSTOM'
+                    'sourceType': source_type
                 }
 
     out = {}
@@ -1071,3 +1093,358 @@ def extract_entrust_codes_from_pages(pages, filename, rel_path):
         cleaned.pop('_score', None)
         out[code] = cleaned
     return out
+
+
+# ==============================================================================
+# Structured HTML / Markdown / Text Document Extractor (Zero Truncation)
+# ==============================================================================
+
+_HTML_SKIP_TAGS = {'script', 'style', 'noscript', 'svg', 'template'}
+_HTML_BLOCK_TAGS = {'p', 'div', 'li', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'dt', 'dd', 'section', 'article', 'hr', 'blockquote', 'pre'}
+_HTML_ANCHOR_TAGS = {'tr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'section', 'article', 'p', 'dt'}
+
+
+class _StructuredHtmlDocParser(HTMLParser):
+    """Parse HTML manuals preserving table rows, block newlines, headings, and anchor IDs."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.skip_depth = 0
+        self.in_title = False
+        self.in_h1 = False
+        self.title_parts = []
+        self.h1_parts = []
+
+        self.in_row = False
+        self.in_cell = False
+        self.cell_buf = []
+        self.current_cells = []
+        self.row_anchor = ''
+
+        self.line_buf = []
+        self.active_anchor = ''
+
+        self.lines = []       # list of (line_text, anchor)
+        self.table_rows = []  # list of (cells_list, anchor, line_idx)
+
+    def _flush_cell(self):
+        if not self.cell_buf:
+            return ''
+        txt = re.sub(r'\s+', ' ', ''.join(self.cell_buf)).strip()
+        self.cell_buf.clear()
+        return txt
+
+    def _flush_line(self):
+        if not self.line_buf:
+            return
+        txt = re.sub(r'\s+', ' ', ''.join(self.line_buf)).strip()
+        self.line_buf.clear()
+        if txt:
+            self.lines.append((txt, self.active_anchor))
+
+    def _flush_row(self):
+        if self.in_cell:
+            cell_txt = self._flush_cell()
+            if cell_txt:
+                self.current_cells.append(cell_txt)
+            self.in_cell = False
+        if self.current_cells:
+            clean_cells = [c for c in self.current_cells if c]
+            if clean_cells:
+                joined = ' | '.join(clean_cells)
+                anchor = self.row_anchor or self.active_anchor
+                line_idx = len(self.lines)
+                self.lines.append((joined, anchor))
+                self.table_rows.append((clean_cells, anchor, line_idx))
+        self.current_cells = []
+        self.row_anchor = ''
+        self.in_row = False
+
+    def handle_starttag(self, tag, attrs):
+        t = tag.lower()
+        if t in _HTML_SKIP_TAGS:
+            self.skip_depth += 1
+            return
+        if self.skip_depth > 0:
+            return
+
+        attr_map = {}
+        for k, v in attrs:
+            if k and v is not None:
+                attr_map[k.lower()] = v.strip()
+
+        elem_id = attr_map.get('id') or (attr_map.get('name') if t == 'a' else '') or ''
+        if elem_id and (t in _HTML_ANCHOR_TAGS or t == 'a' or t in ('td', 'th')):
+            if self.in_row and not self.row_anchor:
+                self.row_anchor = elem_id
+            if t in _HTML_ANCHOR_TAGS:
+                self.active_anchor = elem_id
+            elif t == 'a' and not self.active_anchor:
+                self.active_anchor = elem_id
+
+        if t == 'title':
+            self.in_title = True
+        elif t == 'h1' and not self.h1_parts:
+            self.in_h1 = True
+
+        if t == 'tr':
+            if self.in_row:
+                self._flush_row()
+            self._flush_line()
+            self.in_row = True
+            self.current_cells = []
+            self.cell_buf = []
+            self.row_anchor = elem_id or ''
+        elif t in ('td', 'th'):
+            if self.in_row:
+                if self.in_cell:
+                    prev_txt = self._flush_cell()
+                    if prev_txt:
+                        self.current_cells.append(prev_txt)
+                self.in_cell = True
+                self.cell_buf = []
+        elif t == 'br':
+            if self.in_cell:
+                self.cell_buf.append(' ')
+            else:
+                self._flush_line()
+        elif t in _HTML_BLOCK_TAGS:
+            if not self.in_row:
+                self._flush_line()
+
+    def handle_endtag(self, tag):
+        t = tag.lower()
+        if t in _HTML_SKIP_TAGS:
+            if self.skip_depth > 0:
+                self.skip_depth -= 1
+            return
+        if self.skip_depth > 0:
+            return
+
+        if t == 'title':
+            self.in_title = False
+        elif t == 'h1':
+            self.in_h1 = False
+
+        if t in ('td', 'th') and self.in_row:
+            if self.in_cell:
+                cell_txt = self._flush_cell()
+                if cell_txt:
+                    self.current_cells.append(cell_txt)
+                self.in_cell = False
+        elif t == 'tr':
+            self._flush_row()
+        elif t in _HTML_BLOCK_TAGS:
+            if self.in_row and self.in_cell:
+                self.cell_buf.append(' ')
+            elif not self.in_row:
+                self._flush_line()
+
+    def handle_data(self, data):
+        if self.skip_depth > 0 or not data:
+            return
+        if self.in_title:
+            self.title_parts.append(data)
+            return
+        if self.in_h1:
+            self.h1_parts.append(data)
+        if self.in_row and self.in_cell:
+            self.cell_buf.append(data)
+        else:
+            self.line_buf.append(data)
+
+    def close(self):
+        try:
+            super().close()
+        except Exception:
+            pass
+        if self.in_row:
+            self._flush_row()
+        self._flush_line()
+
+
+def extract_html_or_text_document(file_path, max_bytes=60 * 1024 * 1024, chunk_chars=8000):
+    """Extract structured sections, table rows, anchors, and full text from .html/.htm/.md/.txt files."""
+    if not os.path.isfile(file_path):
+        return {'ok': False, 'error': 'Archivo no encontrado en disco.'}
+
+    try:
+        with open(file_path, 'rb') as f:
+            raw_bytes = f.read(max_bytes)
+    except Exception as e:
+        return {'ok': False, 'error': f'Error leyendo archivo: {e}'}
+
+    text = None
+    for enc in ('utf-8', 'utf-8-sig', 'cp1252', 'latin-1'):
+        try:
+            text = raw_bytes.decode(enc)
+            break
+        except Exception:
+            continue
+    if text is None:
+        text = raw_bytes.decode('utf-8', errors='ignore')
+
+    text = text.replace('\xa0', ' ').replace('\r\n', '\n').replace('\r', '\n').replace('\x00', '')
+    ext = os.path.splitext(file_path)[1].lower()
+    is_html = ext in ('.html', '.htm')
+
+    lines = []
+    table_rows = []
+    doc_title = ''
+
+    if is_html:
+        parser = _StructuredHtmlDocParser()
+        try:
+            parser.feed(text)
+            parser.close()
+        except Exception:
+            parser.close()
+        lines = parser.lines
+        table_rows = parser.table_rows
+        doc_title = re.sub(r'\s+', ' ', ''.join(parser.title_parts)).strip()
+        if not doc_title or doc_title.lower() in ('untitled', 'document'):
+            doc_title = re.sub(r'\s+', ' ', ''.join(parser.h1_parts)).strip()
+        if not lines and text.strip():
+            # Fallback regex tag strip
+            stripped = re.sub(r'(?is)<(script|style)[^>]*>.*?</\1>', ' ', text)
+            stripped = re.sub(r'<[^>]+>', '\n', stripped)
+            for ln in stripped.splitlines():
+                cl = re.sub(r'[ \t\f\v]+', ' ', ln).strip()
+                if cl:
+                    lines.append((cl, ''))
+    else:
+        for ln in text.splitlines():
+            cl = re.sub(r'[ \t\f\v]+', ' ', ln).strip()
+            if cl:
+                lines.append((cl, ''))
+                if not doc_title and ln.lstrip().startswith('#'):
+                    doc_title = ln.lstrip('#').strip()
+
+    doc_title = (doc_title or os.path.basename(file_path))[:180]
+
+    # Group lines into searchable sections of ~chunk_chars without losing a single character
+    sections = []
+    line_to_section = {}
+    line_anchors = {}
+    cur_lines = []
+    cur_len = 0
+    cur_anchor = ''
+    sec_num = 1
+
+    for idx, (ln_text, ln_anchor) in enumerate(lines):
+        if ln_anchor and not cur_anchor:
+            cur_anchor = ln_anchor
+        if cur_lines and (cur_len + len(ln_text) + 1 > chunk_chars):
+            sections.append({
+                'page': sec_num,
+                'text': '\n'.join(cur_lines),
+                'anchor': cur_anchor
+            })
+            sec_num += 1
+            cur_lines = []
+            cur_len = 0
+            cur_anchor = ln_anchor or ''
+
+        cur_lines.append(ln_text)
+        cur_len += len(ln_text) + 1
+        line_to_section[idx] = sec_num
+        if ln_anchor:
+            line_anchors[(sec_num, ln_text)] = ln_anchor
+            if ln_text not in line_anchors:
+                line_anchors[ln_text] = ln_anchor
+
+    if cur_lines:
+        sections.append({
+            'page': sec_num,
+            'text': '\n'.join(cur_lines),
+            'anchor': cur_anchor
+        })
+
+    if not sections:
+        sections = [{'page': 1, 'text': '', 'anchor': ''}]
+
+    total_chars = sum(len(s['text']) for s in sections)
+    annotated_rows = []
+    for cells, r_anchor, r_line_idx in table_rows:
+        annotated_rows.append((cells, r_anchor, line_to_section.get(r_line_idx, 1)))
+
+    return {
+        'ok': True,
+        'engine': 'html-parser' if is_html else 'text-parser',
+        'title': doc_title,
+        'sectionCount': len(sections),
+        'totalChars': total_chars,
+        'pages': sections,
+        'tableRows': annotated_rows,
+        'lineAnchors': line_anchors
+    }
+
+
+def extract_entrust_codes_from_html_or_text(doc_res, filename, rel_path):
+    """
+    Extract verbatim Entrust/Oracle error & audit codes from parsed HTML tables and full document sections.
+    """
+    if not isinstance(doc_res, dict) or not doc_res.get('ok'):
+        return {}
+
+    scored_by_code = {}
+
+    # 1. High-precision scan of structured HTML <table> rows
+    for cells, r_anchor, sec_num in (doc_res.get('tableRows') or []):
+        if not cells:
+            continue
+        first_cell = cells[0].strip()
+        m_cell = _TABLE_CELL_CODE_RE.match(first_cell)
+        if not m_cell:
+            continue
+        rest_cells = [c.strip() for c in cells[1:] if c and c.strip()]
+        rest_joined = ' | '.join(rest_cells)
+        if len(rest_joined) < 10:
+            # Skip index/TOC rows with no real description
+            inline_tail = first_cell[m_cell.end():].strip(' :-–—|[]()')
+            if len(inline_tail) < 10:
+                continue
+            rest_joined = inline_tail
+
+        code_upper = m_cell.group(1).upper()
+        title_raw = (rest_cells[0] if rest_cells else rest_joined).strip()
+        if len(title_raw) > 160:
+            title_raw = title_raw[:157].rstrip() + '...'
+        excerpt = ' | '.join(cells)
+        if len(excerpt) > 450:
+            excerpt = excerpt[:447].rstrip() + '...'
+
+        score = 100 + (15 if r_anchor else 0) + min(20, len(rest_cells) * 5)
+        prev = scored_by_code.get(code_upper)
+        if prev and prev[0] >= score:
+            continue
+
+        family, severity = _classify_code_meta(code_upper, excerpt)
+        manual_ref = f'{rel_path}#{r_anchor}' if r_anchor else rel_path
+        scored_by_code[code_upper] = (score, {
+            'code': code_upper,
+            'title': title_raw or code_upper,
+            'excerpt': excerpt,
+            'sourceFile': filename,
+            'page': int(sec_num or 1),
+            'manualFile': manual_ref,
+            'anchor': r_anchor or '',
+            'family': family,
+            'severity': severity,
+            'sourceType': 'DOC_CUSTOM'
+        })
+
+    # 2. Fallback / companion scan across all chunks (non-table headings, prose, .md/.txt)
+    prose_codes = extract_entrust_codes_from_pages(
+        doc_res.get('pages') or [],
+        filename,
+        rel_path,
+        source_type='DOC_CUSTOM',
+        line_anchors=doc_res.get('lineAnchors'),
+        use_page_fragment=False
+    )
+    for code_upper, entry in prose_codes.items():
+        if code_upper not in scored_by_code:
+            scored_by_code[code_upper] = (50, entry)
+
+    return {code: payload for code, (_, payload) in sorted(scored_by_code.items())}

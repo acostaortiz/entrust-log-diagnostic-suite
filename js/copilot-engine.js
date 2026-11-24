@@ -205,7 +205,7 @@ if (typeof escapeHtml === 'undefined') {
       const preferVersion = this._inferPreferVersion(qRaw, ctx);
 
       // Extraer códigos específicos mencionados en la pregunta
-      const mentionedCodes = qRaw.match(/(?:520\d{4}|AUD\d+|ORA-\d+|S3-404)/gi) || [];
+      const mentionedCodes = qRaw.match(/(?:52\d{4,5}|AUD\d+|ORA-\d+|S3-404)/gi) || [];
       const kbMatches = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.searchKnowledgeBase(qRaw, 4, preferVersion) : [];
       const manualResults = await this._searchManualsServer(qRaw, 4, preferVersion);
 
