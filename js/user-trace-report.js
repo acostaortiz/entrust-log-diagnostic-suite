@@ -1285,6 +1285,11 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           const data = await res.json();
           if (data && data.status === 'ready') {
             this.forensicMatrixData = data;
+            if (typeof window !== 'undefined' && window.threatRadarEngine && window.appState && (window.appState.logs || []).length > 0) {
+              const radarLogs = window.appState.filteredLogs || window.appState.logs;
+              window.threatRadarEngine.render('threat-radar-overview-container', radarLogs);
+              window.threatRadarEngine.render('threat-radar-main-container', radarLogs);
+            }
           } else if (data && data.status === 'empty') {
             this.forensicMatrixData = null;
           }

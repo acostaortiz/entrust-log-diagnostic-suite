@@ -100,12 +100,49 @@ window.escapeHtml = escapeHtml;
         }
       }
 
+      // Incorporar usuarios afectados del censo completo SQLite / cachedStats si hay sesión activa
+      if (targetLogs.length > 0 && typeof window !== 'undefined' && window.UserTraceReport) {
+        const matrixUsers = (window.UserTraceReport.forensicMatrixData && Array.isArray(window.UserTraceReport.forensicMatrixData.users))
+          ? window.UserTraceReport.forensicMatrixData.users
+          : [];
+        const cachedUsers = window.UserTraceReport.cachedStats
+          ? Object.values(window.UserTraceReport.cachedStats)
+          : [];
+        [...matrixUsers, ...cachedUsers].forEach(mu => {
+          if (!mu) return;
+          const uid = mu.username || mu.user;
+          const errs = Number(mu.errors || 0);
+          if (!uid || uid === 'unknown' || uid === 'system' || uid.length <= 2) return;
+          if (errs <= 0 && !mu.isLocked) return;
+          if (!userMap.has(uid)) {
+            userMap.set(uid, {
+              user: uid,
+              attempts: 0,
+              codes: new Set(),
+              lastSeen: mu.lastTimestamp || 'N/A',
+              isLocked: false
+            });
+          }
+          const uEntry = userMap.get(uid);
+          uEntry.attempts = Math.max(uEntry.attempts, errs);
+          if (mu.isLocked) uEntry.isLocked = true;
+          if (mu.lastTimestamp && uEntry.lastSeen === 'N/A') uEntry.lastSeen = mu.lastTimestamp;
+          if (mu.codes && typeof mu.codes === 'object') {
+            Object.keys(mu.codes).forEach(c => {
+              if (/^(520\d{4}|AUD6001|AUD6002|AUD4005|AUD2309|ORA-\d+|bulkidentityguard)/i.test(c)) {
+                uEntry.codes.add(c);
+              }
+            });
+          }
+        });
+      }
+
       const topTargetUsers = Array.from(userMap.values())
         .sort((a, b) => b.attempts - a.attempts)
         .slice(0, 10)
         .map(u => ({
           ...u,
-          codesList: Array.from(u.codes).join(', ') || 'bulkidentityguard.add.error',
+          codesList: Array.from(u.codes).join(', ') || 'Incidentes de Autenticación',
           riskLevel: u.attempts >= this.thresholdBruteForce ? 'CRITICAL (Fuerza Bruta)' : (u.attempts >= 5 ? 'HIGH' : 'MEDIUM')
         }));
 
@@ -114,10 +151,14 @@ window.escapeHtml = escapeHtml;
         .slice(0, 5)
         .map(([ip, count]) => ({ ip, count }));
 
-      const isUnderMassiveAttack = topTargetUsers.some(u => u.attempts >= this.thresholdBruteForce) || totalFailedAuth > 500;
+      const mergedFailedCount = Math.max(
+        totalFailedAuth,
+        Array.from(userMap.values()).reduce((sum, u) => sum + u.attempts, 0)
+      );
+      const isUnderMassiveAttack = topTargetUsers.some(u => u.attempts >= this.thresholdBruteForce) || mergedFailedCount > 500;
 
       return {
-        totalFailedAuth,
+        totalFailedAuth: mergedFailedCount,
         topTargetUsers: topTargetUsers,
         topAttackingIPs,
         isUnderMassiveAttack,
@@ -132,11 +173,28 @@ window.escapeHtml = escapeHtml;
       const report = this.analyzeThreats(logs);
 
       if (!report.topTargetUsers || report.topTargetUsers.length === 0) {
+        const hasLogs = Array.isArray(logs) && logs.length > 0;
+        const cm = (typeof window !== 'undefined' && typeof window.getConsolidatedMetricsGlobal === 'function')
+          ? window.getConsolidatedMetricsGlobal()
+          : null;
+        const loadedTotal = hasLogs ? Math.max(logs.length, cm ? Number(cm.totalLogs || 0) : 0) : 0;
+        const loadedErrors = hasLogs ? Math.max(report.totalFailedAuth || 0, cm ? Number(cm.totalErrors || 0) : 0) : 0;
+
+        let emptyTitle = 'Sesión Limpia — Sin incidentes de seguridad detectados';
+        let emptyDesc = 'Cargue un archivo de logs para auditar intentos fallidos de autenticación y patrones de fuerza bruta.';
+        if (loadedTotal > 0 && loadedErrors > 0) {
+          emptyTitle = 'Sin cuentas nominales bajo patrón de fuerza bruta';
+          emptyDesc = `Analizados ${loadedTotal.toLocaleString()} registros (${loadedErrors.toLocaleString()} fallos de sistema/infraestructura sin ataques de credenciales contra usuarios nominales; revise Top Códigos de Error y Analizador).`;
+        } else if (loadedTotal > 0) {
+          emptyTitle = 'Sesión Saludable — Sin intentos fallidos ni fuerza bruta';
+          emptyDesc = `Analizados ${loadedTotal.toLocaleString()} registros sin incidentes de seguridad.`;
+        }
+
         container.innerHTML = `
           <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
             <div style="font-size: 1.6rem; margin-bottom: 6px;">🛡️</div>
-            <strong style="color: var(--text-main); display: block; margin-bottom: 4px;">Sesión Limpia — Sin incidentes de seguridad detectados</strong>
-            <span>Cargue un archivo de logs para auditar intentos fallidos de autenticación y patrones de fuerza bruta.</span>
+            <strong style="color: var(--text-main); display: block; margin-bottom: 4px;">${emptyTitle}</strong>
+            <span>${emptyDesc}</span>
           </div>`;
         return;
       }

@@ -1498,12 +1498,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.10.1',
-    build: 610,
+    version: 'v3.10.2',
+    build: 611,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'PDF-MODAL-FIX-3101',
+    gitCommit: 'VERSION-SLIDER-RADAR-FIX-3102',
     gitBranch: 'main',
-    buildDate: '2026-11-24 10:50',
+    buildDate: '2026-11-24 11:00',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -1540,8 +1540,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!modal || !body) return;
 
     const currentClient = getActiveClientProfile();
-    const totalRules = window.knowledgeBase ? Object.keys(ENTRUST_EXACT_CATALOG || {}).length : 0;
-    const totalKBRules = (window.knowledgeBase && window.knowledgeBase.rules) ? window.knowledgeBase.rules.length : 0;
+    const kbEng = window.knowledgeBaseEngine || null;
+    const totalRules = kbEng
+      ? (typeof kbEng.getUnifiedCatalogEntries === 'function'
+          ? kbEng.getUnifiedCatalogEntries().length
+          : (typeof ENTRUST_EXACT_CATALOG !== 'undefined' ? Object.keys(ENTRUST_EXACT_CATALOG).length : 0))
+      : 0;
+    const totalKBRules = (kbEng && Array.isArray(kbEng.rules)) ? kbEng.rules.length : 0;
 
     body.innerHTML = `
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px;">
@@ -7781,6 +7786,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     updateTrendChart();
     updateSeverityChart();
     updateOverviewWidgets();
+    if (!state.activeTimeWindow?.active && typeof window.updateTimeSliderBounds === 'function') {
+      try { window.updateTimeSliderBounds(); } catch (e) {}
+    }
     if ((state.logs || []).length > 0) {
       setTimeout(() => {
         try {
@@ -12986,9 +12994,25 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
 
     let timeBounds = { min: 0, max: 0, hasValidTimes: false };
 
+    function parseSliderTimestamp(rawT) {
+      if (rawT === null || rawT === undefined) return NaN;
+      let s = String(rawT).trim();
+      if (!s) return NaN;
+      // Log4J comma ms: "2026-11-06 15:41:37,000" -> "2026-11-06T15:41:37.000"
+      s = s.replace(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}(?::\d{2})?)(?:,(\d{1,3}))?/, (_, d, t, ms) => {
+        const fullTime = t.length === 5 ? `${t}:00` : t;
+        return ms ? `${d}T${fullTime}.${ms}` : `${d}T${fullTime}`;
+      });
+      // Tomcat JULI dd-MMM-yyyy: "23-Nov-2026 15:41:37.000" -> "23 Nov 2026 15:41:37.000"
+      s = s.replace(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})\s+/, '$1 $2 $3 ');
+      const ms = new Date(s).getTime();
+      return (!isNaN(ms) && ms > 0) ? ms : NaN;
+    }
+
     function calculateTimeBounds() {
       const logs = state.logs || [];
-      if (!logs.length) {
+      const buckets = state.globalStreamMetrics?.timelineBuckets || [];
+      if (!logs.length && !buckets.length) {
         timeBounds = { min: 0, max: 0, hasValidTimes: false };
         return;
       }
@@ -12997,16 +13021,23 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       let maxTs = -Infinity;
 
       for (let i = 0; i < logs.length; i++) {
-        const rawT = logs[i].timestamp || logs[i].time;
-        if (!rawT) continue;
-        const d = new Date(rawT).getTime();
-        if (!isNaN(d) && d > 0) {
+        const d = parseSliderTimestamp(logs[i].timestamp || logs[i].time);
+        if (!isNaN(d)) {
           if (d < minTs) minTs = d;
           if (d > maxTs) maxTs = d;
         }
       }
 
-      if (minTs !== Infinity && maxTs !== -Infinity && maxTs > minTs) {
+      for (let i = 0; i < buckets.length; i++) {
+        const d = parseSliderTimestamp(buckets[i]?.bucket);
+        if (!isNaN(d)) {
+          if (d < minTs) minTs = d;
+          if (d > maxTs) maxTs = d;
+        }
+      }
+
+      if (minTs !== Infinity && maxTs !== -Infinity && maxTs >= minTs) {
+        if (maxTs === minTs) maxTs = minTs + 60000;
         timeBounds = { min: minTs, max: maxTs, hasValidTimes: true };
       } else {
         timeBounds = { min: 0, max: 0, hasValidTimes: false };
@@ -13017,6 +13048,10 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       if (!ts) return '--:--:--';
       const d = new Date(ts);
       if (isNaN(d.getTime())) return '--:--:--';
+      const pad2 = n => String(n).padStart(2, '0');
+      if ((timeBounds.max - timeBounds.min) > 86400000) {
+        return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+      }
       return d.toLocaleTimeString('es-ES', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' (' + (d.getMonth() + 1) + '/' + d.getDate() + ')';
     }
 
@@ -13032,7 +13067,11 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       if (startLabel) startLabel.textContent = formatSliderTime(timeBounds.min);
       if (endLabel) endLabel.textContent = formatSliderTime(timeBounds.max);
       if (badge) {
-        badge.textContent = `Ventana Completa (${state.logs.length.toLocaleString()} eventos)`;
+        const totalSql = Number(state.globalStreamMetrics?.totalLogs || 0);
+        const ramLen = (state.logs || []).length;
+        badge.textContent = totalSql > ramLen
+          ? `Ventana Completa (${totalSql.toLocaleString()} registros • ${ramLen.toLocaleString()} RAM)`
+          : `Ventana Completa (${ramLen.toLocaleString()} eventos)`;
       }
       if (minSlider) minSlider.value = 0;
       if (maxSlider) maxSlider.value = 100;
@@ -13074,7 +13113,7 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       const filtered = (state.logs || []).filter(l => {
         const rawT = l.timestamp || l.time;
         if (!rawT) return true;
-        const d = new Date(String(rawT).replace(',', '.')).getTime();
+        const d = parseSliderTimestamp(rawT);
         if (isNaN(d)) return true;
         return d >= tStart && d <= tEnd;
       });
