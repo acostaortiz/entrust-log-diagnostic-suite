@@ -124,14 +124,34 @@ if (typeof escapeHtml === 'undefined') {
       };
     }
 
-    async _searchManualsServer(query, limit = 4) {
-      const key = `${query}::${limit}`;
+    _inferPreferVersion(qRaw, ctx) {
+      const q = String(qRaw || '');
+      if (/\b(?:(?:ig|identityguard|entrust)\s*(?:v|ver|vers[ií]on|release)?\s*|(?:v|vers[ií]on|release)\s*)13(?:\.\d+)?\b|\b13\.0\b/i.test(q)) return 'IG 13.0';
+      if (/\b(?:(?:ig|identityguard|entrust)\s*(?:v|ver|vers[ií]on|release)?\s*|(?:v|vers[ií]on|release)\s*)12(?:\.\d+)?\b|\b12\.0\b/i.test(q)) return 'IG 12.0';
+      if (/\b(?:(?:ig|identityguard|entrust)\s*(?:v|ver|vers[ií]on|release)?\s*|(?:v|vers[ií]on|release)\s*)11(?:\.\d+)?\b|\b11\.0\b/i.test(q)) return 'IG 11.0';
+      if (/\b(?:(?:ig|identityguard|entrust)\s*(?:v|ver|vers[ií]on|release)?\s*|(?:v|vers[ií]on|release)\s*)10(?:\.\d+)?\b|\b10\.\d+\b/i.test(q)) return 'IG 10.0';
+      if (/\b(?:(?:ig|identityguard|entrust)\s*(?:v|ver|vers[ií]on|release)?\s*|(?:v|vers[ií]on|release)\s*)9(?:\.\d+)?\b|\b9\.\d+\b/i.test(q)) return 'IG 9.0';
+      if (/idaas|identity\s+as\s+a\s+service/i.test(q)) return 'IDaaS Cloud';
+
+      const cv = `${ctx?.client?.platform || ''} ${ctx?.client?.version || ''}`;
+      if (/idaas|cloud/i.test(cv)) return 'IDaaS Cloud';
+      if (/13/i.test(cv)) return 'IG 13.0';
+      if (/12/i.test(cv)) return 'IG 12.0';
+      if (/11/i.test(cv)) return 'IG 11.0';
+      if (/10/i.test(cv)) return 'IG 10.0';
+      if (/(?:^|[^\d])9(?:\.\d+)?(?:[^\d]|$)/i.test(cv)) return 'IG 9.0';
+      return 'IG 12.0';
+    }
+
+    async _searchManualsServer(query, limit = 4, preferVersion = '') {
+      const key = `${query}::${limit}::${preferVersion || ''}`;
       if (this.manualsCache.has(key)) return this.manualsCache.get(key);
       if (typeof window === 'undefined' || window.location.protocol === 'file:') return [];
       try {
         const ctrl = new AbortController();
         const timer = setTimeout(() => ctrl.abort(), 2200);
-        const res = await fetch(`/api/manuals-search?q=${encodeURIComponent(query)}&limit=${limit}`, { signal: ctrl.signal });
+        const verParam = preferVersion ? `&preferVersion=${encodeURIComponent(preferVersion)}` : '';
+        const res = await fetch(`/api/manuals-search?q=${encodeURIComponent(query)}&limit=${limit}${verParam}`, { signal: ctrl.signal });
         clearTimeout(timer);
         if (!res.ok) return [];
         const data = await res.json();
@@ -154,9 +174,13 @@ if (typeof escapeHtml === 'undefined') {
         const usersLine = (matrixEntry && matrixEntry.users && matrixEntry.users.length > 0)
           ? `\n• **Usuarios afectados en sesión:** ${matrixEntry.users.slice(0, 5).map(u => `\`${u.user}\` (${u.count}x)`).join(', ')}`
           : '';
+        const verSource = m.docVersion || m.manualVersion || '';
+        const sourceLine = (verSource || m.manualFile)
+          ? `\n• **Fuente / Versión:** ${verSource ? `\`${verSource}\`` : 'Documentación'}${m.manualFile ? ` — \`${m.manualFile}\`` : ''}`
+          : '';
         return (
           `### ${idx + 1}. \`[${m.code}]\` ${m.title}${occBadge}\n` +
-          `• **Categoría / Severidad:** ${m.category} (\`${m.severity}\`)\n` +
+          `• **Categoría / Severidad:** ${m.category} (\`${m.severity}\`)${sourceLine}\n` +
           `• **Significado Técnico:** ${m.meaning}\n` +
           `• **Causa Raíz:** ${m.rootCause}${usersLine}\n` +
           `• **Solución / Remediación:**\n${m.remediation}`
@@ -166,9 +190,11 @@ if (typeof escapeHtml === 'undefined') {
 
     _formatManualCitations(manualResults) {
       if (!manualResults || manualResults.length === 0) return '';
-      const lines = manualResults.slice(0, 3).map(r =>
-        `• **[${r.version}] ${r.title}**\n  _${r.snippet}_`
-      ).join('\n');
+      const lines = manualResults.slice(0, 3).map(r => {
+        const verTag = r.docVersion || r.version || 'Manual';
+        const srcTag = r.url ? ` — \`${r.url}\`` : '';
+        return `• **[${verTag}] ${r.title}**${srcTag}\n  _${r.snippet || ''}_`;
+      }).join('\n');
       return `\n\n---\n\n### 📚 Referencias en Manuales Oficiales\n${lines}`;
     }
 
@@ -176,11 +202,12 @@ if (typeof escapeHtml === 'undefined') {
       const qRaw = (query || '').trim();
       const q = qRaw.toLowerCase();
       const ctx = this._getLiveContext(appState);
+      const preferVersion = this._inferPreferVersion(qRaw, ctx);
 
       // Extraer códigos específicos mencionados en la pregunta
       const mentionedCodes = qRaw.match(/(?:520\d{4}|AUD\d+|ORA-\d+|S3-404)/gi) || [];
-      const kbMatches = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.searchKnowledgeBase(qRaw, 4) : [];
-      const manualResults = await this._searchManualsServer(qRaw, 4);
+      const kbMatches = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.searchKnowledgeBase(qRaw, 4, preferVersion) : [];
+      const manualResults = await this._searchManualsServer(qRaw, 4, preferVersion);
 
       let answer = '';
       let suggestedQueries = [];
@@ -394,11 +421,28 @@ if (typeof escapeHtml === 'undefined') {
         suggestedQueries = ['resumen operativo', 'top errores', 'nota tecnica'];
       }
 
+      const mergedManualResults = Array.isArray(manualResults) ? [...manualResults] : [];
+      kbMatches.forEach(km => {
+        if (!km || !km.manualFile) return;
+        const already = mergedManualResults.some(r => String(r.url || '').includes(km.manualFile) || km.manualFile.includes(String(r.url || '')));
+        if (!already) {
+          mergedManualResults.push({
+            version: km.docVersion || km.manualVersion || 'PDF Oficial',
+            docVersion: km.docVersion || km.manualVersion || 'PDF Oficial',
+            title: `${km.code} — ${km.title}`,
+            path: km.manualFile,
+            url: km.manualFile,
+            snippet: km.meaning || km.rootCause || ''
+          });
+        }
+      });
+
       const interaction = {
         query: qRaw,
         answer,
         kbMatches,
-        manualResults,
+        manualResults: mergedManualResults,
+        preferVersion,
         suggestedQueries,
         action,
         timestamp: new Date().toLocaleTimeString()

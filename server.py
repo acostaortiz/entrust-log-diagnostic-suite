@@ -110,6 +110,77 @@ def _custom_pdf_extracted_dir():
 def _custom_pdf_codes_path():
     return os.path.join(DATA_DIR, 'custom_pdf_codes.json')
 
+def _custom_metadata_path():
+    return os.path.join(_custom_manuals_dir(), '.metadata.json')
+
+CUSTOM_VERSION_SLUGS = {
+    'IG 13.0': 'ig_13_0',
+    'IG 12.0': 'ig_12_0',
+    'IG 11.0': 'ig_11_0',
+    'IG 10.0': 'ig_10_0',
+    'IG 9.0': 'ig_9_0',
+    'IDaaS Cloud': 'idaas',
+    'General': 'general',
+}
+SLUG_TO_CUSTOM_VERSION = {v: k for k, v in CUSTOM_VERSION_SLUGS.items()}
+CUSTOM_VERSION_ORDER = ['IG 13.0', 'IG 12.0', 'IG 11.0', 'IG 10.0', 'IG 9.0', 'IDaaS Cloud', 'General']
+
+def _normalize_doc_version(raw_ver='', fallback_filename=''):
+    rv = str(raw_ver or '').strip()
+    if rv and rv.lower() != 'auto':
+        if rv in CUSTOM_VERSION_SLUGS:
+            return rv
+        rl = rv.lower()
+        if rl in SLUG_TO_CUSTOM_VERSION:
+            return SLUG_TO_CUSTOM_VERSION[rl]
+        if 'idaas' in rl or 'intellitrust' in rl or 'trustedauth' in rl or 'cloud' in rl:
+            return 'IDaaS Cloud'
+        if re.search(r'(?:ig[_\-\s]*13\d*|v?13(?:\.\d+)?\b)', rl):
+            return 'IG 13.0'
+        if re.search(r'(?:ig[_\-\s]*12\d*|v?12(?:\.\d+)?\b)', rl):
+            return 'IG 12.0'
+        if re.search(r'(?:ig[_\-\s]*11\d*|v?11(?:\.\d+)?\b)', rl):
+            return 'IG 11.0'
+        if re.search(r'(?:ig[_\-\s]*10\d*|v?10(?:\.\d+)?\b)', rl):
+            return 'IG 10.0'
+        if re.search(r'(?:ig[_\-\s]*9\d*|v?9(?:\.\d+)?\b)', rl):
+            return 'IG 9.0'
+        if 'general' in rl:
+            return 'General'
+
+    fn = str(fallback_filename or '').lower()
+    if fn:
+        if 'idaas' in fn or 'intellitrust' in fn or 'trustedauth' in fn:
+            return 'IDaaS Cloud'
+        if re.search(r'(?:ig[_\-\s]*13\d*|identityguard[_\-\s]*13|\bv13(?:\.\d+)?\b|\b13\.\d+\b|(?:^|[_\-\s])130(?:[_\-\s\.]|$))', fn):
+            return 'IG 13.0'
+        if re.search(r'(?:ig[_\-\s]*12\d*|identityguard[_\-\s]*12|\bv12(?:\.\d+)?\b|\b12\.\d+\b|(?:^|[_\-\s])120(?:[_\-\s\.]|$))', fn):
+            return 'IG 12.0'
+        if re.search(r'(?:ig[_\-\s]*11\d*|identityguard[_\-\s]*11|\bv11(?:\.\d+)?\b|\b11\.\d+\b|(?:^|[_\-\s])110(?:[_\-\s\.]|$))', fn):
+            return 'IG 11.0'
+        if re.search(r'(?:ig[_\-\s]*10\d*|identityguard[_\-\s]*10|\bv10(?:\.\d+)?\b|\b10\.\d+\b|(?:^|[_\-\s])10[012](?:[_\-\s\.]|$))', fn):
+            return 'IG 10.0'
+        if re.search(r'(?:ig[_\-\s]*9\d*|identityguard[_\-\s]*9|\bv9(?:\.\d+)?\b|\b9\.\d+\b|(?:^|[_\-\s])9[0-3](?:[_\-\s\.]|$))', fn):
+            return 'IG 9.0'
+    return 'General'
+
+def _load_custom_metadata():
+    p = _custom_metadata_path()
+    if not os.path.isfile(p):
+        return {}
+    try:
+        with open(p, 'r', encoding='utf-8') as f:
+            data = json.load(f) or {}
+            return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+def _save_custom_metadata(meta_dict):
+    try:
+        _atomic_write_json(_custom_metadata_path(), meta_dict or {})
+    except Exception:
+        pass
+
 MANUALS_STOP_WORDS = {
     'de', 'la', 'el', 'los', 'las', 'un', 'una', 'unos', 'unas', 'en', 'y', 'o',
     'a', 'por', 'para', 'con', 'sin', 'sobre', 'que', 'como', 'cual', 'cuales',
@@ -122,15 +193,25 @@ MANUALS_STOP_WORDS = {
 def _detect_manual_version(rel_path):
     p = rel_path.lower().replace('\\', '/')
     if 'manuals/custom/' in p:
+        sub = p.split('manuals/custom/', 1)[1].split('#', 1)[0]
+        parts = [pt for pt in sub.split('/') if pt]
+        if len(parts) >= 2 and parts[0] in SLUG_TO_CUSTOM_VERSION:
+            ver = SLUG_TO_CUSTOM_VERSION[parts[0]]
+        else:
+            ver = _normalize_doc_version('auto', parts[-1] if parts else sub)
         if '.pdf' in p or '#page=' in p:
-            return 'PDF Oficial (Custom)'
-        return 'Manual Custom'
+            return f"{ver} (PDF)"
+        return f"{ver} (Custom)"
     if 'ig_130' in p or '130' in p:
         return 'IG 13.0'
     if 'ig_120' in p or '120' in p:
         return 'IG 12.0'
     if 'ig_110' in p or '110' in p:
         return 'IG 11.0'
+    if 'ig_100' in p or '100' in p:
+        return 'IG 10.0'
+    if 'ig_90' in p:
+        return 'IG 9.0'
     if 'idaas' in p:
         return 'IDaaS Cloud'
     return 'KB Errores'
@@ -218,11 +299,65 @@ def _load_base_manuals_cache():
             pass
     return None
 
-def _build_pdf_sidecar_and_index(full_path, fname):
-    """Return (sidecar_dict, index_entries_list) for a custom PDF in manuals/custom/."""
-    rel_path = f"manuals/custom/{fname}"
+def _sidecar_path_for(rel_subpath, legacy_fname=None):
     sidecar_dir = _custom_pdf_extracted_dir()
-    sidecar_path = os.path.join(sidecar_dir, f"{fname}.json")
+    primary = os.path.join(sidecar_dir, rel_subpath.replace('/', '__') + '.json')
+    if os.path.isfile(primary):
+        return primary, primary
+    if legacy_fname and '/' not in rel_subpath:
+        legacy = os.path.join(sidecar_dir, f"{legacy_fname}.json")
+        if os.path.isfile(legacy):
+            return legacy, primary
+    return primary, primary
+
+def _iter_custom_manual_files():
+    """Yield (full_path, fname, rel_subpath, rel_path, doc_version) across root and version subdirs."""
+    custom_dir = _custom_manuals_dir()
+    if not os.path.isdir(custom_dir):
+        return
+    meta = _load_custom_metadata()
+    seen_rel = set()
+
+    # 1. Root files (100% backward compatible with legacy uploads in manuals/custom/)
+    for fname in sorted(os.listdir(custom_dir)):
+        if fname.startswith('.'):
+            continue
+        fpath = os.path.join(custom_dir, fname)
+        if not os.path.isfile(fpath):
+            continue
+        rel_subpath = fname
+        rel_path = f"manuals/custom/{rel_subpath}"
+        raw_meta_ver = (meta.get(rel_subpath) or {}).get('version') if isinstance(meta.get(rel_subpath), dict) else None
+        doc_ver = _normalize_doc_version(raw_meta_ver or 'auto', fallback_filename=fname)
+        seen_rel.add(rel_subpath)
+        yield (fpath, fname, rel_subpath, rel_path, doc_ver)
+
+    # 2. Version subdirectories (ig_13_0, ig_12_0, ig_11_0, ig_10_0, ig_9_0, idaas, general)
+    for ver_label in CUSTOM_VERSION_ORDER:
+        slug = CUSTOM_VERSION_SLUGS[ver_label]
+        sub_dir = os.path.join(custom_dir, slug)
+        if not os.path.isdir(sub_dir):
+            continue
+        for fname in sorted(os.listdir(sub_dir)):
+            if fname.startswith('.'):
+                continue
+            fpath = os.path.join(sub_dir, fname)
+            if not os.path.isfile(fpath):
+                continue
+            rel_subpath = f"{slug}/{fname}"
+            if rel_subpath in seen_rel:
+                continue
+            rel_path = f"manuals/custom/{rel_subpath}"
+            raw_meta_ver = (meta.get(rel_subpath) or {}).get('version') if isinstance(meta.get(rel_subpath), dict) else None
+            doc_ver = _normalize_doc_version(raw_meta_ver or ver_label, fallback_filename=fname)
+            seen_rel.add(rel_subpath)
+            yield (fpath, fname, rel_subpath, rel_path, doc_ver)
+
+def _build_pdf_sidecar_and_index(full_path, fname, rel_subpath=None, doc_version='General'):
+    """Return (sidecar_dict, index_entries_list) for a custom PDF in manuals/custom/."""
+    rel_subpath = rel_subpath or fname
+    rel_path = f"manuals/custom/{rel_subpath}"
+    read_sc_path, write_sc_path = _sidecar_path_for(rel_subpath, legacy_fname=fname)
     try:
         fsize = os.path.getsize(full_path)
         fmtime = int(os.path.getmtime(full_path))
@@ -230,9 +365,9 @@ def _build_pdf_sidecar_and_index(full_path, fname):
         fsize, fmtime = 0, 0
 
     sidecar = None
-    if os.path.isfile(sidecar_path):
+    if os.path.isfile(read_sc_path):
         try:
-            with open(sidecar_path, 'r', encoding='utf-8') as f:
+            with open(read_sc_path, 'r', encoding='utf-8') as f:
                 cached_sc = json.load(f)
             if isinstance(cached_sc, dict) and cached_sc.get('fileSize') == fsize and cached_sc.get('fileMtime') == fmtime and isinstance(cached_sc.get('pages'), list):
                 sidecar = cached_sc
@@ -243,7 +378,9 @@ def _build_pdf_sidecar_and_index(full_path, fname):
         if pdf_extractor is None:
             sidecar = {
                 'filename': fname,
+                'relSubpath': rel_subpath,
                 'path': rel_path,
+                'version': doc_version,
                 'fileSize': fsize,
                 'fileMtime': fmtime,
                 'ok': False,
@@ -259,9 +396,14 @@ def _build_pdf_sidecar_and_index(full_path, fname):
             ext_res = pdf_extractor.extract_pdf_text(full_path)
             pages = ext_res.get('pages') or []
             codes = pdf_extractor.extract_entrust_codes_from_pages(pages, fname, rel_path)
+            for c_val in codes.values():
+                if isinstance(c_val, dict):
+                    c_val['docVersion'] = doc_version
             sidecar = {
                 'filename': fname,
+                'relSubpath': rel_subpath,
                 'path': rel_path,
+                'version': doc_version,
                 'fileSize': fsize,
                 'fileMtime': fmtime,
                 'ok': bool(ext_res.get('ok')),
@@ -275,12 +417,23 @@ def _build_pdf_sidecar_and_index(full_path, fname):
                 'codes': codes
             }
             try:
-                _atomic_write_json(sidecar_path, sidecar)
+                _atomic_write_json(write_sc_path, sidecar)
             except Exception:
                 pass
+    else:
+        # Ensure docVersion and path stay synced even on legacy/migrated sidecars
+        sidecar['version'] = doc_version
+        sidecar['relSubpath'] = rel_subpath
+        sidecar['path'] = rel_path
+        for c_val in (sidecar.get('codes') or {}).values():
+            if isinstance(c_val, dict):
+                c_val['docVersion'] = doc_version
+                pg = c_val.get('page') or 1
+                c_val['manualFile'] = f"{rel_path}#page={pg}"
 
     pages = sidecar.get('pages') or []
     entries = []
+    idx_version = f"{doc_version} (PDF)"
     if len(pages) > 200:
         for i in range(0, len(pages), 2):
             p1 = pages[i]
@@ -297,7 +450,7 @@ def _build_pdf_sidecar_and_index(full_path, fname):
                 continue
             entries.append({
                 'path': f"{rel_path}#page={p1_num}",
-                'version': 'PDF Oficial (Custom)',
+                'version': idx_version,
                 'title': title,
                 'title_lower': title.lower(),
                 'text': text_trimmed,
@@ -312,7 +465,7 @@ def _build_pdf_sidecar_and_index(full_path, fname):
             title = f"{fname} (Pág. {p_num})"
             entries.append({
                 'path': f"{rel_path}#page={p_num}",
-                'version': 'PDF Oficial (Custom)',
+                'version': idx_version,
                 'title': title,
                 'title_lower': title.lower(),
                 'text': text_trimmed,
@@ -322,54 +475,62 @@ def _build_pdf_sidecar_and_index(full_path, fname):
     return sidecar, entries
 
 def _scan_custom_manuals_and_rebuild_codes():
-    custom_dir = _custom_manuals_dir()
     custom_entries = []
     consolidated_codes = {}
+    codes_by_version = {}
+    version_entries_list = []
+    versions_count = {}
     pdf_files_count = 0
 
-    if os.path.isdir(custom_dir):
-        for fname in sorted(os.listdir(custom_dir)):
-            if fname.startswith('.'):
-                continue
-            full_path = os.path.join(custom_dir, fname)
-            if not os.path.isfile(full_path):
-                continue
-            fl = fname.lower()
-            rel_path = f"manuals/custom/{fname}"
-            if fl.endswith('.pdf'):
-                pdf_files_count += 1
-                sidecar, pdf_entries = _build_pdf_sidecar_and_index(full_path, fname)
-                custom_entries.extend(pdf_entries)
-                for code_k, code_v in (sidecar.get('codes') or {}).items():
-                    if code_k not in consolidated_codes:
-                        consolidated_codes[code_k] = code_v
-            elif fl.endswith(('.html', '.htm', '.md', '.txt')):
-                try:
-                    with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
-                        raw = f.read(300000)
-                    if fl.endswith(('.html', '.htm')):
-                        title, text = _clean_html_text(raw)
-                    else:
-                        title = fname
-                        text = re.sub(r'\s+', ' ', raw).strip()
-                    if len(text) >= 15:
-                        text_trimmed = text[:10000]
-                        custom_entries.append({
-                            'path': rel_path,
-                            'version': 'Manual Custom',
-                            'title': title or fname,
-                            'title_lower': (title or fname).lower(),
-                            'text': text_trimmed,
-                            'text_lower': text_trimmed.lower()
-                        })
-                except Exception:
+    for full_path, fname, rel_subpath, rel_path, doc_version in _iter_custom_manual_files():
+        fl = fname.lower()
+        versions_count[doc_version] = versions_count.get(doc_version, 0) + 1
+        if fl.endswith('.pdf'):
+            pdf_files_count += 1
+            sidecar, pdf_entries = _build_pdf_sidecar_and_index(full_path, fname, rel_subpath=rel_subpath, doc_version=doc_version)
+            custom_entries.extend(pdf_entries)
+            ver_map = codes_by_version.setdefault(doc_version, {})
+            for code_k, code_v in (sidecar.get('codes') or {}).items():
+                if not isinstance(code_v, dict):
                     continue
+                enriched = dict(code_v)
+                enriched['docVersion'] = doc_version
+                if code_k not in ver_map:
+                    ver_map[code_k] = enriched
+                    version_entries_list.append(enriched)
+                if code_k not in consolidated_codes:
+                    consolidated_codes[code_k] = enriched
+        elif fl.endswith(('.html', '.htm', '.md', '.txt')):
+            try:
+                with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    raw = f.read(300000)
+                if fl.endswith(('.html', '.htm')):
+                    title, text = _clean_html_text(raw)
+                else:
+                    title = fname
+                    text = re.sub(r'\s+', ' ', raw).strip()
+                if len(text) >= 15:
+                    text_trimmed = text[:10000]
+                    custom_entries.append({
+                        'path': rel_path,
+                        'version': f"{doc_version} (Custom)",
+                        'title': title or fname,
+                        'title_lower': (title or fname).lower(),
+                        'text': text_trimmed,
+                        'text_lower': text_trimmed.lower()
+                    })
+            except Exception:
+                continue
 
     codes_payload = {
         'updatedAt': datetime.datetime.utcnow().isoformat() + 'Z',
         'totalCodes': len(consolidated_codes),
+        'totalEntries': len(version_entries_list),
         'filesCount': pdf_files_count,
-        'codes': consolidated_codes
+        'versionsCount': versions_count,
+        'codes': consolidated_codes,
+        'codesByVersion': codes_by_version,
+        'entries': version_entries_list
     }
     try:
         _atomic_write_json(_custom_pdf_codes_path(), codes_payload)
@@ -473,7 +634,7 @@ def build_manuals_index():
             MANUALS_INDEX_BUILDING = False
         return 0
 
-def search_manuals(query_str, version_filter=None, limit=6):
+def search_manuals(query_str, version_filter=None, limit=6, prefer_version=None):
     if not MANUALS_INDEX_BUILT:
         if not MANUALS_INDEX_BUILDING:
             threading.Thread(target=build_manuals_index, daemon=True).start()
@@ -490,10 +651,16 @@ def search_manuals(query_str, version_filter=None, limit=6):
     if not tokens:
         tokens = raw_tokens[:4]
 
+    ver_filter_norm = _normalize_doc_version(version_filter) if version_filter else None
+    pref_norm = _normalize_doc_version(prefer_version) if prefer_version else None
+
     scored = []
     for doc in MANUALS_INDEX:
-        if version_filter and version_filter.lower() not in doc['version'].lower():
-            continue
+        doc_ver_low = str(doc.get('version') or '').lower()
+        if version_filter:
+            vf_low = version_filter.lower()
+            if vf_low not in doc_ver_low and (not ver_filter_norm or ver_filter_norm.lower() not in doc_ver_low):
+                continue
         score = 0
         t_low = doc['title_lower']
         b_low = doc['text_lower']
@@ -537,6 +704,10 @@ def search_manuals(query_str, version_filter=None, limit=6):
             continue
         if len(tokens) > 1 and matched_tokens >= len(tokens):
             score += 30
+        if pref_norm and pref_norm != 'General' and pref_norm.lower() in doc_ver_low:
+            score += 45
+        elif prefer_version and prefer_version.lower() in doc_ver_low:
+            score += 45
         if doc['version'] in ('IG 13.0', 'KB Errores', 'IDaaS Cloud'):
             score += 5
 
@@ -1703,6 +1874,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_upload_manual()
         elif path == '/api/custom-manuals/delete':
             self.handle_delete_custom_manual()
+        elif path == '/api/custom-manuals/set-version':
+            self.handle_set_custom_manual_version()
         elif path == '/api/pcap-upload':
             self.handle_pcap_upload()
         elif path == '/api/pcap-analyze-server-file':
@@ -1774,7 +1947,17 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         elif path == '/api/manuals-status':
             if not MANUALS_INDEX_BUILT and not MANUALS_INDEX_BUILDING:
                 threading.Thread(target=build_manuals_index, daemon=True).start()
-            self.send_json({'ready': MANUALS_INDEX_BUILT, 'building': MANUALS_INDEX_BUILDING, 'indexedPages': len(MANUALS_INDEX)})
+            custom_files = list(_iter_custom_manual_files())
+            custom_versions = sorted({dv for _, _, _, _, dv in custom_files}, key=lambda v: CUSTOM_VERSION_ORDER.index(v) if v in CUSTOM_VERSION_ORDER else 99)
+            custom_pages = sum(1 for d in MANUALS_INDEX if str(d.get('path') or '').startswith('manuals/custom/'))
+            self.send_json({
+                'ready': MANUALS_INDEX_BUILT,
+                'building': MANUALS_INDEX_BUILDING,
+                'indexedPages': len(MANUALS_INDEX),
+                'customFilesCount': len(custom_files),
+                'customPagesCount': custom_pages,
+                'customVersions': custom_versions
+            })
         else:
             super().do_GET()
 
@@ -1832,14 +2015,17 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             raw = self.rfile.read(length)
             ctype = (self.headers.get('Content-Type') or '').split(';')[0].strip().lower()
             is_binary_upload = ctype in ('application/pdf', 'application/octet-stream')
+            raw_ver = ''
 
             if is_binary_upload:
                 raw_fname = urllib.parse.unquote(self.headers.get('X-File-Name') or '').strip()
+                raw_ver = urllib.parse.unquote(self.headers.get('X-Manual-Version') or '').strip()
                 filename = os.path.basename(raw_fname)
                 raw_bytes = raw
             else:
                 payload = json.loads(raw.decode('utf-8'))
                 filename = os.path.basename(str(payload.get('filename') or '').strip())
+                raw_ver = str(payload.get('version') or '').strip()
                 encoding_mode = str(payload.get('encoding') or '').strip().lower()
                 content = str(payload.get('content') or '')
                 if encoding_mode == 'base64':
@@ -1860,10 +2046,15 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             if not safe_name or safe_name == ext or not safe_name.lower().endswith(ext):
                 safe_name = f"manual_{int(time.time())}{ext}"
 
+            doc_version = _normalize_doc_version(raw_ver, fallback_filename=safe_name)
+            ver_slug = CUSTOM_VERSION_SLUGS.get(doc_version, 'general')
+            rel_subpath = f"{ver_slug}/{safe_name}"
+            rel_path = f"manuals/custom/{rel_subpath}"
+
             custom_dir = _custom_manuals_dir()
-            os.makedirs(custom_dir, exist_ok=True)
-            target_path = os.path.join(custom_dir, safe_name)
-            rel_path = f"manuals/custom/{safe_name}"
+            ver_dir = os.path.join(custom_dir, ver_slug)
+            os.makedirs(ver_dir, exist_ok=True)
+            target_path = os.path.join(ver_dir, safe_name)
 
             if ext == '.pdf':
                 if pdf_extractor is None or not pdf_extractor.is_valid_pdf_bytes(raw_bytes):
@@ -1882,6 +2073,9 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 pages = ext_res.get('pages') or []
                 codes = pdf_extractor.extract_entrust_codes_from_pages(pages, safe_name, rel_path)
+                for c_val in codes.values():
+                    if isinstance(c_val, dict):
+                        c_val['docVersion'] = doc_version
                 try:
                     fsize = os.path.getsize(target_path)
                     fmtime = int(os.path.getmtime(target_path))
@@ -1890,7 +2084,9 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 sidecar = {
                     'filename': safe_name,
+                    'relSubpath': rel_subpath,
                     'path': rel_path,
+                    'version': doc_version,
                     'fileSize': fsize,
                     'fileMtime': fmtime,
                     'ok': True,
@@ -1903,14 +2099,23 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     'pages': pages,
                     'codes': codes
                 }
-                _atomic_write_json(os.path.join(_custom_pdf_extracted_dir(), f"{safe_name}.json"), sidecar)
+                _, write_sc_path = _sidecar_path_for(rel_subpath, legacy_fname=safe_name)
+                _atomic_write_json(write_sc_path, sidecar)
+
+                meta = _load_custom_metadata()
+                meta[rel_subpath] = {'version': doc_version, 'uploadedAt': datetime.datetime.utcnow().isoformat() + 'Z'}
+                _save_custom_metadata(meta)
+
                 refresh_custom_manuals_index()
 
                 sample_codes = list(codes.keys())[:15]
                 self.send_json({
                     'success': True,
                     'path': rel_path,
+                    'relSubpath': rel_subpath,
                     'filename': safe_name,
+                    'version': doc_version,
+                    'versionSlug': ver_slug,
                     'isPdf': True,
                     'size': fsize,
                     'engine': sidecar['engine'],
@@ -1925,11 +2130,17 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
             _atomic_write_bytes(target_path, raw_bytes)
+            meta = _load_custom_metadata()
+            meta[rel_subpath] = {'version': doc_version, 'uploadedAt': datetime.datetime.utcnow().isoformat() + 'Z'}
+            _save_custom_metadata(meta)
             refresh_custom_manuals_index()
             self.send_json({
                 'success': True,
                 'path': rel_path,
+                'relSubpath': rel_subpath,
                 'filename': safe_name,
+                'version': doc_version,
+                'versionSlug': ver_slug,
                 'isPdf': False,
                 'size': os.path.getsize(target_path)
             })
@@ -1937,95 +2148,231 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json({'error': str(e)}, status=500)
 
     def handle_list_custom_manuals(self):
-        custom_dir = _custom_manuals_dir()
-        sidecar_dir = _custom_pdf_extracted_dir()
         items = []
-        if os.path.isdir(custom_dir):
-            for fname in sorted(os.listdir(custom_dir)):
-                if fname.startswith('.'):
-                    continue
-                fpath = os.path.join(custom_dir, fname)
-                if not os.path.isfile(fpath):
-                    continue
-                is_pdf = fname.lower().endswith('.pdf')
-                entry = {
-                    'filename': fname,
-                    'path': f'manuals/custom/{fname}',
-                    'size': os.path.getsize(fpath),
-                    'isPdf': is_pdf
-                }
-                if is_pdf:
-                    sc_path = os.path.join(sidecar_dir, f"{fname}.json")
-                    if os.path.isfile(sc_path):
-                        try:
-                            with open(sc_path, 'r', encoding='utf-8') as f:
-                                sc = json.load(f) or {}
-                            entry.update({
-                                'pageCount': int(sc.get('pageCount') or 0),
-                                'totalChars': int(sc.get('totalChars') or 0),
-                                'extractedCodesCount': len(sc.get('codes') or {}),
-                                'isScannedOrEmpty': bool(sc.get('isScannedOrEmpty')),
-                                'engine': sc.get('engine') or 'stdlib-pdf',
-                                'warning': sc.get('warning') or ''
-                            })
-                        except Exception:
-                            pass
-                items.append(entry)
-        self.send_json({'manuals': items})
+        versions_summary = {}
+        for fpath, fname, rel_subpath, rel_path, doc_version in _iter_custom_manual_files():
+            is_pdf = fname.lower().endswith('.pdf')
+            versions_summary[doc_version] = versions_summary.get(doc_version, 0) + 1
+            entry = {
+                'filename': fname,
+                'relSubpath': rel_subpath,
+                'path': rel_path,
+                'version': doc_version,
+                'size': os.path.getsize(fpath),
+                'isPdf': is_pdf
+            }
+            if is_pdf:
+                read_sc_path, _ = _sidecar_path_for(rel_subpath, legacy_fname=fname)
+                if os.path.isfile(read_sc_path):
+                    try:
+                        with open(read_sc_path, 'r', encoding='utf-8') as f:
+                            sc = json.load(f) or {}
+                        entry.update({
+                            'pageCount': int(sc.get('pageCount') or 0),
+                            'totalChars': int(sc.get('totalChars') or 0),
+                            'extractedCodesCount': len(sc.get('codes') or {}),
+                            'isScannedOrEmpty': bool(sc.get('isScannedOrEmpty')),
+                            'engine': sc.get('engine') or 'stdlib-pdf',
+                            'warning': sc.get('warning') or ''
+                        })
+                    except Exception:
+                        pass
+            items.append(entry)
+        self.send_json({'manuals': items, 'versionsSummary': versions_summary})
+
+    def _resolve_custom_manual_target(self, payload):
+        custom_root = os.path.realpath(_custom_manuals_dir())
+
+        def check_sub(sub_cand):
+            s = str(sub_cand or '').strip().replace('\\', '/')
+            if not s or '\x00' in s or '..' in s:
+                return None
+            if s.lower().startswith('manuals/custom/'):
+                s = s[len('manuals/custom/'):]
+            s = s.lstrip('/')
+            if not s or s.startswith('.') or ':' in s:
+                return None
+            parts = [p for p in s.split('/') if p]
+            if not parts or any(p.startswith('.') for p in parts):
+                return None
+            target = os.path.realpath(os.path.join(custom_root, *parts))
+            if not (target.startswith(custom_root + os.sep) and os.path.isfile(target)):
+                return None
+            return target, '/'.join(parts), parts[-1]
+
+        for key in ('path', 'relSubpath'):
+            if payload.get(key):
+                res = check_sub(payload.get(key))
+                if res:
+                    return res
+
+        raw_name = str(payload.get('filename') or '').strip()
+        if raw_name and '..' not in raw_name and '/' not in raw_name and '\\' not in raw_name:
+            safe_base = os.path.basename(raw_name)
+            direct = check_sub(safe_base)
+            if direct:
+                return direct
+            for fpath, fname, rel_subpath, _, _ in _iter_custom_manual_files():
+                if fname == safe_base:
+                    return os.path.realpath(fpath), rel_subpath, fname
+        return None
 
     def handle_delete_custom_manual(self):
         try:
             length = int(self.headers.get('Content-Length', 0) or 0)
             raw = self.rfile.read(length) if length > 0 else b'{}'
             payload = json.loads(raw.decode('utf-8'))
-            raw_name = str(payload.get('filename') or '').strip()
-            safe_base = os.path.basename(raw_name)
-            custom_dir = os.path.realpath(_custom_manuals_dir())
-            target_path = os.path.realpath(os.path.join(custom_dir, safe_base))
-            if not safe_base or safe_base.startswith('.') or os.path.dirname(target_path) != custom_dir or not os.path.isfile(target_path):
+            resolved = self._resolve_custom_manual_target(payload)
+            if not resolved:
                 self.send_json({'error': 'Documento personalizado no encontrado'}, status=404)
                 return
 
+            target_path, rel_subpath, safe_base = resolved
             os.remove(target_path)
-            sc_path = os.path.join(_custom_pdf_extracted_dir(), f"{safe_base}.json")
-            if os.path.isfile(sc_path):
+
+            read_sc_path, write_sc_path = _sidecar_path_for(rel_subpath, legacy_fname=safe_base)
+            for sc_p in {read_sc_path, write_sc_path}:
+                if sc_p and os.path.isfile(sc_p):
+                    try:
+                        os.remove(sc_p)
+                    except Exception:
+                        pass
+
+            # Remove empty version subdirectory if left empty
+            custom_root = os.path.realpath(_custom_manuals_dir())
+            parent_dir = os.path.dirname(target_path)
+            if parent_dir != custom_root and os.path.isdir(parent_dir) and not os.listdir(parent_dir):
                 try:
-                    os.remove(sc_path)
+                    os.rmdir(parent_dir)
                 except Exception:
                     pass
+
+            meta = _load_custom_metadata()
+            if rel_subpath in meta:
+                meta.pop(rel_subpath, None)
+                _save_custom_metadata(meta)
+
             refresh_custom_manuals_index()
-            self.send_json({'success': True, 'filename': safe_base})
+            self.send_json({'success': True, 'filename': safe_base, 'relSubpath': rel_subpath})
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
+
+    def handle_set_custom_manual_version(self):
+        try:
+            length = int(self.headers.get('Content-Length', 0) or 0)
+            raw = self.rfile.read(length) if length > 0 else b'{}'
+            payload = json.loads(raw.decode('utf-8'))
+            resolved = self._resolve_custom_manual_target(payload)
+            if not resolved:
+                self.send_json({'error': 'Documento personalizado no encontrado'}, status=404)
+                return
+
+            old_target, old_rel_subpath, fname = resolved
+            new_version = _normalize_doc_version(payload.get('version'), fallback_filename=fname)
+            new_slug = CUSTOM_VERSION_SLUGS.get(new_version, 'general')
+            new_rel_subpath = f"{new_slug}/{fname}"
+            old_rel_path = f"manuals/custom/{old_rel_subpath}"
+            new_rel_path = f"manuals/custom/{new_rel_subpath}"
+
+            custom_dir = _custom_manuals_dir()
+            new_dir = os.path.join(custom_dir, new_slug)
+            os.makedirs(new_dir, exist_ok=True)
+            new_target = os.path.realpath(os.path.join(new_dir, fname))
+
+            if new_target != old_target:
+                if os.path.exists(new_target):
+                    self.send_json({'error': f'Ya existe otro archivo "{fname}" en {new_version}.'}, status=409)
+                    return
+                os.replace(old_target, new_target)
+                custom_root = os.path.realpath(custom_dir)
+                old_parent = os.path.dirname(old_target)
+                if old_parent != custom_root and os.path.isdir(old_parent) and not os.listdir(old_parent):
+                    try:
+                        os.rmdir(old_parent)
+                    except Exception:
+                        pass
+
+            old_sc_read, old_sc_write = _sidecar_path_for(old_rel_subpath, legacy_fname=fname)
+            _, new_sc_write = _sidecar_path_for(new_rel_subpath, legacy_fname=fname)
+            if os.path.isfile(old_sc_read):
+                try:
+                    with open(old_sc_read, 'r', encoding='utf-8') as f:
+                        sc = json.load(f) or {}
+                    sc['version'] = new_version
+                    sc['relSubpath'] = new_rel_subpath
+                    sc['path'] = new_rel_path
+                    for c_val in (sc.get('codes') or {}).values():
+                        if isinstance(c_val, dict):
+                            c_val['docVersion'] = new_version
+                            pg = c_val.get('page') or 1
+                            c_val['manualFile'] = f"{new_rel_path}#page={pg}"
+                    _atomic_write_json(new_sc_write, sc)
+                    for sc_old in {old_sc_read, old_sc_write}:
+                        if sc_old != new_sc_write and os.path.isfile(sc_old):
+                            try:
+                                os.remove(sc_old)
+                            except Exception:
+                                pass
+                except Exception:
+                    pass
+
+            meta = _load_custom_metadata()
+            meta.pop(old_rel_subpath, None)
+            meta[new_rel_subpath] = {'version': new_version, 'updatedAt': datetime.datetime.utcnow().isoformat() + 'Z'}
+            _save_custom_metadata(meta)
+
+            refresh_custom_manuals_index()
+            self.send_json({
+                'success': True,
+                'oldPath': old_rel_path,
+                'path': new_rel_path,
+                'relSubpath': new_rel_subpath,
+                'filename': fname,
+                'version': new_version
+            })
         except Exception as e:
             self.send_json({'error': str(e)}, status=500)
 
     def handle_get_custom_codes(self):
         codes_path = _custom_pdf_codes_path()
-        if not os.path.isfile(codes_path):
-            custom_dir = _custom_manuals_dir()
-            has_pdfs = os.path.isdir(custom_dir) and any(
-                f.lower().endswith('.pdf') and not f.startswith('.')
-                for f in os.listdir(custom_dir)
-                if os.path.isfile(os.path.join(custom_dir, f))
-            )
-            if has_pdfs:
+        has_any_custom = any(True for _ in _iter_custom_manual_files())
+        data = None
+        if os.path.isfile(codes_path):
+            try:
+                with open(codes_path, 'r', encoding='utf-8') as f:
+                    parsed = json.load(f) or {}
+                if isinstance(parsed, dict) and 'codesByVersion' in parsed:
+                    data = parsed
+            except Exception:
+                data = None
+
+        if data is None:
+            if has_any_custom:
                 _, payload = _scan_custom_manuals_and_rebuild_codes()
                 self.send_json(payload)
                 return
-            self.send_json({'updatedAt': None, 'totalCodes': 0, 'filesCount': 0, 'codes': {}})
-            return
-        try:
-            with open(codes_path, 'r', encoding='utf-8') as f:
-                data = json.load(f) or {}
-            if not isinstance(data, dict):
-                data = {'totalCodes': 0, 'filesCount': 0, 'codes': {}}
             self.send_json({
-                'updatedAt': data.get('updatedAt'),
-                'totalCodes': int(data.get('totalCodes') or len(data.get('codes') or {})),
-                'filesCount': int(data.get('filesCount') or 0),
-                'codes': data.get('codes') or {}
+                'updatedAt': None,
+                'totalCodes': 0,
+                'totalEntries': 0,
+                'filesCount': 0,
+                'versionsCount': {},
+                'codes': {},
+                'codesByVersion': {},
+                'entries': []
             })
-        except Exception as e:
-            self.send_json({'error': str(e)}, status=500)
+            return
+
+        self.send_json({
+            'updatedAt': data.get('updatedAt'),
+            'totalCodes': int(data.get('totalCodes') or len(data.get('codes') or {})),
+            'totalEntries': int(data.get('totalEntries') or len(data.get('entries') or [])),
+            'filesCount': int(data.get('filesCount') or 0),
+            'versionsCount': data.get('versionsCount') or {},
+            'codes': data.get('codes') or {},
+            'codesByVersion': data.get('codesByVersion') or {},
+            'entries': data.get('entries') or []
+        })
 
     def _load_notes_file(self):
         notes_file = os.path.join(DATA_DIR, 'technical_notes.json')
@@ -2125,11 +2472,12 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
     def handle_manuals_search(self, query):
         q = query.get('q', [''])[0]
         version = query.get('version', [None])[0]
+        prefer_version = query.get('preferVersion', [None])[0]
         try:
             limit = min(15, max(1, int(query.get('limit', ['6'])[0])))
         except Exception:
             limit = 6
-        results = search_manuals(q, version_filter=version, limit=limit)
+        results = search_manuals(q, version_filter=version, limit=limit, prefer_version=prefer_version)
         self.send_json({
             'query': q,
             'totalIndexedPages': len(MANUALS_INDEX),

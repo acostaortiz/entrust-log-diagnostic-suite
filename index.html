@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.10.2 (Build 611)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.11.0 (Build 612)</span>
           </div>
         </div>
       </div>
@@ -645,6 +645,16 @@
         <div id="kb-toolbar" style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px; padding:12px; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:10px;">
           <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
             <input type="text" id="kb-search-input" class="form-control" style="flex:1; min-width:260px;" placeholder="🔍 Buscar por código (ej. 5202013, AUD160, AUD6002, ORA-01555, Tomcat), nombre, fuente o texto...">
+            <select id="kb-version-filter" class="form-control" style="width:auto; min-width:190px; font-weight:600;" aria-label="Filtrar por versión">
+              <option value="ALL">📚 Todas las versiones</option>
+              <option value="IG 13.0">IG 13.0</option>
+              <option value="IG 12.0">IG 12.0</option>
+              <option value="IG 11.0">IG 11.0</option>
+              <option value="IG 10.0">IG 10.0</option>
+              <option value="IG 9.0">IG 9.0</option>
+              <option value="IDaaS Cloud">IDaaS Cloud</option>
+              <option value="General">General / Sin versión</option>
+            </select>
             <div id="kb-results-summary" style="font-size:0.8rem; font-weight:700; color:var(--text-muted); white-space:nowrap;">Cargando catálogo...</div>
           </div>
           <div id="kb-family-pills" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
@@ -694,6 +704,8 @@
             <button class="btn btn-secondary relnote-quick-btn" data-ver="v13_0_webhelp" style="font-size:0.76rem; padding:4px 10px;">WebHelp v13.0</button>
             <button class="btn btn-secondary relnote-quick-btn" data-ver="v12_0_webhelp" style="font-size:0.76rem; padding:4px 10px;">WebHelp v12.0</button>
             <button class="btn btn-secondary relnote-quick-btn" data-ver="v11_0_webhelp" style="font-size:0.76rem; padding:4px 10px;">WebHelp v11.0</button>
+            <button class="btn btn-secondary relnote-quick-btn" data-ver="v10_0_custom" style="font-size:0.76rem; padding:4px 10px;">IG 10.x (PDFs)</button>
+            <button class="btn btn-secondary relnote-quick-btn" data-ver="v9_0_custom" style="font-size:0.76rem; padding:4px 10px;">IG 9.x (PDFs)</button>
             <button class="btn btn-secondary relnote-quick-btn" data-ver="v13_0_relnotes" style="font-size:0.76rem; padding:4px 10px;">Release Notes v13</button>
             <button class="btn btn-secondary relnote-quick-btn" data-ver="v12_0_relnotes" style="font-size:0.76rem; padding:4px 10px;">Release Notes v12</button>
             <button class="btn btn-secondary relnote-quick-btn" data-ver="v11_0_relnotes" style="font-size:0.76rem; padding:4px 10px;">Release Notes v11</button>
@@ -729,6 +741,17 @@
               <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">
                 Soporta <strong>PDFs oficiales de Entrust</strong> (<code>.pdf</code>, hasta 60 MB) además de <code>.html</code>, <code>.htm</code>, <code>.md</code> y <code>.txt</code>. Los archivos se guardan en <code>manuals/custom/</code>, se abren en el visor integrado y se indexa su texto real más los códigos literales (<code>520xxxx</code>, <code>AUDxxx</code>, <code>ORA-xxxxx</code>) sin alucinaciones para la <strong>Base de Conocimientos</strong> y <strong>Entrust Forensics AI</strong>.
               </p>
+              <label for="server-manual-upload-version" style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-main); margin-bottom:4px;">Versión de Documentación Entrust:</label>
+              <select id="server-manual-upload-version" class="form-control" style="margin-bottom:10px;">
+                <option value="auto">Auto-detectar del nombre (ej. IG_120_... ➔ IG 12.0)</option>
+                <option value="IG 13.0">Entrust IdentityGuard 13.0</option>
+                <option value="IG 12.0">Entrust IdentityGuard 12.0</option>
+                <option value="IG 11.0">Entrust IdentityGuard 11.0</option>
+                <option value="IG 10.0">Entrust IdentityGuard 10.0</option>
+                <option value="IG 9.0">Entrust IdentityGuard 9.0</option>
+                <option value="IDaaS Cloud">Entrust IDaaS Cloud</option>
+                <option value="General">General / Independiente de Versión</option>
+              </select>
               <input type="file" id="server-manual-upload-input" class="form-control" accept=".pdf,.html,.htm,.md,.txt" multiple style="margin-bottom:12px;">
               <button type="button" class="btn btn-primary" style="width:100%; font-weight:700;" onclick="window.uploadManualFileToServerGlobal();">🚀 Subir, Extraer e Indexar en Servidor</button>
               <div id="server-manual-upload-status" style="margin-top:10px; font-size:0.8rem;"></div>
@@ -738,6 +761,7 @@
                 <h3 style="margin:0; font-size:1rem;">🗂️ Documentos Personalizados en Servidor</h3>
                 <button type="button" class="btn" style="padding:4px 10px; font-size:0.76rem; border:1px solid var(--border-color);" onclick="window.refreshCustomServerManualsGlobal();">🔄 Actualizar</button>
               </div>
+              <div id="server-custom-manuals-version-pills" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;"></div>
               <div id="server-custom-manuals-list" style="font-size:0.82rem; color:var(--text-muted);">Cargando lista...</div>
             </div>
           </div>
@@ -1237,7 +1261,18 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
       </p>
 
       <div class="mt-4">
-        <div class="diag-label">Versión / Identificador del Manual (ej. Entrust-v12.0, IDaaS-Cloud-Manual):</div>
+        <div class="diag-label">Versión Entrust (carpeta e indexación multi-versión):</div>
+        <select class="form-control" id="custom-manual-release" style="margin-bottom:10px;">
+          <option value="auto">Auto-detectar del nombre</option>
+          <option value="IG 13.0">IG 13.0</option>
+          <option value="IG 12.0">IG 12.0</option>
+          <option value="IG 11.0">IG 11.0</option>
+          <option value="IG 10.0">IG 10.0</option>
+          <option value="IG 9.0">IG 9.0</option>
+          <option value="IDaaS Cloud">IDaaS Cloud</option>
+          <option value="General">General</option>
+        </select>
+        <div class="diag-label">Identificador Corto (ej. Entrust-v12.0, IDaaS-Cloud-Manual):</div>
         <input type="text" class="form-control" id="custom-manual-ver" placeholder="Entrust-v12.0">
       </div>
 
@@ -1740,14 +1775,14 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/pptxgen.bundle.js" defer></script>
   <script src="js/topology-engine.js?v=550.0"></script>
   <script src="js/aud-official-catalog.js?v=609.0"></script>
-  <script src="js/kb-database.js?v=609.0"></script>
-  <script src="js/manuals-engine.js?v=550.0"></script>
+  <script src="js/kb-database.js?v=612.0"></script>
+  <script src="js/manuals-engine.js?v=612.0"></script>
   <script src="js/log-parser.js?v=608.0"></script>
   <script src="js/storage-engine.js?v=604.0"></script>
     <script src="js/threat-radar.js?v=611.0"></script>
   <script src="js/remediation-engine.js?v=550.0"></script>
   <script src="js/notes-engine.js?v=570.0"></script>
-  <script src="js/copilot-engine.js?v=583.0"></script>
+  <script src="js/copilot-engine.js?v=612.0"></script>
   <script src="js/compliance-auditor.js?v=550.0"></script>
   <script src="js/config-diff-engine.js?v=576.0"></script>
   <script src="js/siem-exporter.js?v=550.0"></script>
@@ -1757,7 +1792,7 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/user-trace-report.js?v=611.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
   <script src="js/pcap-analyzer.js?v=608.0"></script>
-  <script src="js/app.js?v=611.0"></script>
+  <script src="js/app.js?v=612.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

@@ -1384,11 +1384,38 @@ class KnowledgeBase {
     return importedCount;
   }
 
+  _normalizeDocVersionLabel(raw) {
+    const s = String(raw || '').trim();
+    if (!s) return 'General';
+    if (/^general$/i.test(s) || /^otro/i.test(s)) return 'General';
+    if (/idaas|cloud/i.test(s)) return 'IDaaS Cloud';
+    if (/(?:^|[^\d])13(?:\.0)?(?:[^\d]|$)/.test(s) || /v13/i.test(s)) return 'IG 13.0';
+    if (/(?:^|[^\d])12(?:\.0|\.4)?(?:[^\d]|$)/.test(s) || /v12/i.test(s)) return 'IG 12.0';
+    if (/(?:^|[^\d])11(?:\.0)?(?:[^\d]|$)/.test(s) || /v11/i.test(s)) return 'IG 11.0';
+    if (/(?:^|[^\d])10(?:\.0|\.2)?(?:[^\d]|$)/.test(s) || /v10/i.test(s)) return 'IG 10.0';
+    if (/(?:^|[^\d])9(?:\.0|\.3)?(?:[^\d]|$)/.test(s) || /\bv9\b|ig[_ -]?9/i.test(s)) return 'IG 9.0';
+    return 'General';
+  }
+
+  _detectActiveDocVersion() {
+    if (typeof window === 'undefined') return 'IG 12.0';
+    let client = null;
+    if (typeof window.getActiveClientProfileGlobal === 'function') {
+      client = window.getActiveClientProfileGlobal();
+    } else if (window.state && window.state.activeClientId) {
+      client = (window.state.clientProfiles || []).find(p => p.id === window.state.activeClientId);
+    }
+    if (!client) return 'IG 12.0';
+    const combined = `${client.platform || ''} ${client.version || ''}`.trim();
+    const detected = this._normalizeDocVersionLabel(combined);
+    return detected === 'General' ? 'IG 12.0' : detected;
+  }
+
   diagnoseLog(logText, targetCode) {
     if (!logText && !targetCode) return null;
     const searchText = logText || (targetCode ? `[${targetCode}]` : '');
 
-    // Determinar la versión activa de la plataforma del cliente en sesión (v12, v13, v11, IDaaS)
+    // Determinar la versión activa de la plataforma del cliente en sesión (v9, v10, v11, v12, v13, IDaaS)
     let activeVersionLabel = 'Entrust IdentityGuard (Admin Guide)';
     let activeVersionKey = 'v12_0_webhelp';
     if (typeof window !== 'undefined') {
@@ -1402,7 +1429,9 @@ class KnowledgeBase {
         const pVer = client.version || 'Release 12.0';
         const pPlat = client.platform || 'Entrust IdentityGuard OnPremise';
         activeVersionLabel = `${pPlat} (${pVer})`;
-        if (/11/i.test(pVer)) activeVersionKey = 'v11_0_webhelp';
+        if (/(?:^|[^\d])9(?:\.\d+)?(?:[^\d]|$)/i.test(pVer)) activeVersionKey = 'v9_0_custom';
+        else if (/10/i.test(pVer)) activeVersionKey = 'v10_0_custom';
+        else if (/11/i.test(pVer)) activeVersionKey = 'v11_0_webhelp';
         else if (/12/i.test(pVer)) activeVersionKey = 'v12_0_webhelp';
         else if (/13/i.test(pVer)) activeVersionKey = 'v13_0_webhelp';
         else if (/idaas|cloud/i.test(pVer) || /idaas|cloud/i.test(pPlat)) activeVersionKey = 'vIDaaS_docs';
@@ -1435,26 +1464,40 @@ class KnowledgeBase {
       };
     }
 
-    // 0.5 Búsqueda exacta en códigos extraídos literalmente de PDFs oficiales cargados en el servidor
+    // 0.5 Búsqueda exacta en códigos extraídos literalmente de PDFs oficiales cargados en el servidor (prioriza versión del cliente)
+    const activeDocVer = this._detectActiveDocVersion();
+    const customPdfByVer = (typeof window !== 'undefined' && window.ENTRUST_CUSTOM_PDF_CATALOG_BY_VERSION) ? window.ENTRUST_CUSTOM_PDF_CATALOG_BY_VERSION : {};
     const customPdfCatalog = (typeof window !== 'undefined' && window.ENTRUST_CUSTOM_PDF_CATALOG) ? window.ENTRUST_CUSTOM_PDF_CATALOG : {};
-    const pdfEntry = cleanCode ? (customPdfCatalog[cleanCode] || customPdfCatalog[cleanCode.toUpperCase()]) : null;
+    const cleanUp = cleanCode ? cleanCode.toUpperCase() : '';
+    let pdfEntry = null;
+    if (cleanCode) {
+      const verBucket = customPdfByVer[activeDocVer];
+      if (verBucket) {
+        pdfEntry = verBucket[cleanCode] || verBucket[cleanUp] || null;
+      }
+      if (!pdfEntry) {
+        pdfEntry = customPdfCatalog[cleanCode] || customPdfCatalog[cleanUp] || null;
+      }
+    }
     if (pdfEntry) {
+      const pdfVer = pdfEntry.docVersion || 'General';
       return {
         matched: true,
         ruleId: `KB-PDF-${pdfEntry.code}`,
         title: `[${pdfEntry.code}] ${pdfEntry.title}`,
-        category: `Documentación PDF Oficial (${pdfEntry.sourceFile})`,
+        category: `Documentación PDF ${pdfVer} (${pdfEntry.sourceFile})`,
         severity: pdfEntry.severity || 'ERROR',
-        meaning: `Extracto literal del PDF oficial "${pdfEntry.sourceFile}" (Pág. ${pdfEntry.page}): ${pdfEntry.excerpt}`,
-        rootCause: `Consulte el contexto completo en ${pdfEntry.sourceFile}, página ${pdfEntry.page}.`,
+        meaning: `Extracto literal del PDF oficial [${pdfVer}] "${pdfEntry.sourceFile}" (Pág. ${pdfEntry.page}): ${pdfEntry.excerpt}`,
+        rootCause: `Consulte el contexto completo en ${pdfEntry.sourceFile} (${pdfVer}), página ${pdfEntry.page}.`,
         governanceControl: `Abrir documento oficial: ${pdfEntry.manualFile}`,
-        remediation: `Abrir el manual oficial "${pdfEntry.sourceFile}" en la página ${pdfEntry.page} desde el visor integrado para aplicar el procedimiento del fabricante.`,
-        riskLevel: pdfEntry.severity === 'ERROR' ? 'Alto (Documentado en PDF)' : 'Informativo / Auditoría (PDF)',
-        manualVersion: `PDF Oficial: ${pdfEntry.sourceFile} (Pág. ${pdfEntry.page})`,
+        remediation: `Abrir el manual oficial "${pdfEntry.sourceFile}" (${pdfVer}) en la página ${pdfEntry.page} desde el visor integrado para aplicar el procedimiento del fabricante.`,
+        riskLevel: pdfEntry.severity === 'ERROR' ? `Alto (Documentado en PDF ${pdfVer})` : `Informativo / Auditoría (PDF ${pdfVer})`,
+        manualVersion: `PDF Oficial ${pdfVer}: ${pdfEntry.sourceFile} (Pág. ${pdfEntry.page})`,
         manualFile: pdfEntry.manualFile,
+        docVersion: pdfVer,
         sourceType: 'PDF_CUSTOM',
         sectionId: `sec-pdf-${pdfEntry.code.toLowerCase()}`,
-        sectionTitle: `PDF [${pdfEntry.code}]: ${pdfEntry.title}`
+        sectionTitle: `PDF ${pdfVer} [${pdfEntry.code}]: ${pdfEntry.title}`
       };
     }
 
@@ -2083,10 +2126,16 @@ journalctl -u wso2am -n 50 --no-pager`;
     };
   }
 
-  searchKnowledgeBase(query, limit = 6) {
+  searchKnowledgeBase(query, limit = 6, preferVersion = null) {
     const q = String(query || '').trim();
     if (!q) return [];
     const qLower = q.toLowerCase();
+    const qVerMatch = q.match(/\b(?:(?:ig|identityguard|entrust)\s*(?:v|ver|vers[ií]on|release)?\s*|(?:v|vers[ií]on|release)\s*)(13|12|11|10|9)(?:\.\d+)?\b/i)
+      || q.match(/\b(13\.0|12\.0|11\.0|10\.\d+|9\.\d+)\b/i)
+      || (/idaas/i.test(q) ? ['idaas', 'IDaaS Cloud'] : null);
+    const effectiveVersion = preferVersion
+      ? this._normalizeDocVersionLabel(preferVersion)
+      : (qVerMatch ? this._normalizeDocVersionLabel(qVerMatch[1]) : this._detectActiveDocVersion());
     const stopWords = new Set(['de', 'la', 'el', 'los', 'las', 'un', 'una', 'en', 'y', 'o', 'por', 'para', 'con', 'que', 'como', 'cual', 'es', 'son', 'the', 'and', 'for', 'how', 'what', 'error', 'errores', 'falla', 'fallo', 'solucion', 'resuelvo', 'resolver', 'significa']);
     const codes = qLower.match(/(?:520\d{4}|aud\d+|ora-\d+|s3-404|ssh-\w+|tomcat_\w+|jvm_oom|jdbc_sql_exception|sql_exception)/gi) || [];
     const tokens = (qLower.match(/[a-z0-9_.\-áéíóúñ]{3,}/gi) || []).filter(t => !stopWords.has(t));
@@ -2164,13 +2213,17 @@ journalctl -u wso2am -n 50 --no-pager`;
       }
     });
 
-    // 3. Buscar en códigos extraídos de PDFs oficiales cargados en el servidor
+    // 3. Buscar en códigos extraídos de PDFs oficiales cargados en el servidor (todas las versiones)
     const customPdfCatalog = (typeof window !== 'undefined' && window.ENTRUST_CUSTOM_PDF_CATALOG) ? window.ENTRUST_CUSTOM_PDF_CATALOG : {};
-    Object.values(customPdfCatalog).forEach(entry => {
+    const customPdfEntries = (typeof window !== 'undefined' && Array.isArray(window.ENTRUST_CUSTOM_PDF_ENTRIES) && window.ENTRUST_CUSTOM_PDF_ENTRIES.length > 0)
+      ? window.ENTRUST_CUSTOM_PDF_ENTRIES
+      : Object.values(customPdfCatalog);
+    customPdfEntries.forEach(entry => {
       if (!entry || !entry.code) return;
+      const entryVer = entry.docVersion || 'General';
       let score = 0;
       const cLower = String(entry.code).toLowerCase();
-      const hay = `${cLower} ${entry.title || ''} ${entry.excerpt || ''} ${entry.sourceFile || ''}`.toLowerCase();
+      const hay = `${cLower} ${entry.title || ''} ${entry.excerpt || ''} ${entry.sourceFile || ''} ${entryVer}`.toLowerCase();
       if (codes.some(c => c.toLowerCase() === cLower) || qLower.includes(cLower)) {
         score += 145;
       }
@@ -2180,18 +2233,22 @@ journalctl -u wso2am -n 50 --no-pager`;
         if (hay.includes(tok)) score += 12;
       });
       if (score > 0) {
+        if (effectiveVersion && entryVer === effectiveVersion) {
+          score += 15;
+        }
         results.push({
           source: 'PDF_CUSTOM',
           code: entry.code,
           title: entry.title || entry.code,
-          category: `PDF Oficial (${entry.sourceFile || 'custom'})`,
+          category: `PDF Oficial ${entryVer} (${entry.sourceFile || 'custom'})`,
           severity: entry.severity || 'ERROR',
           meaning: entry.excerpt || '',
-          rootCause: `Extracto literal del PDF "${entry.sourceFile || 'custom'}" (Pág. ${entry.page || 1}).`,
-          remediation: `Abrir documento oficial: ${entry.manualFile || ''}`,
-          manualVersion: `PDF Oficial: ${entry.sourceFile || 'custom'} (Pág. ${entry.page || 1})`,
+          rootCause: `Extracto literal del PDF [${entryVer}] "${entry.sourceFile || 'custom'}" (Pág. ${entry.page || 1}).`,
+          remediation: `Abrir documento oficial (${entryVer}): ${entry.manualFile || ''}`,
+          manualVersion: `PDF Oficial ${entryVer}: ${entry.sourceFile || 'custom'} (Pág. ${entry.page || 1})`,
           manualFile: entry.manualFile || null,
-          sectionTitle: `${entry.code} — ${entry.title || ''}`,
+          docVersion: entryVer,
+          sectionTitle: `${entry.code} (${entryVer}) — ${entry.title || ''}`,
           score
         });
       }
@@ -2281,6 +2338,8 @@ journalctl -u wso2am -n 50 --no-pager`;
           : `Consultar referencia oficial en ${normalizePath(aud.manualFile) || 'WebHelp Admin Guide'}.`,
         sourceLabel: '📘 WebHelp Oficial IG 11/12/13',
         sourceKind: 'WEBHELP_AUD',
+        docVersion: 'IG 11/12/13',
+        docVersions: ['IG 13.0', 'IG 12.0', 'IG 11.0'],
         manualPath: normalizePath(aud.manualFile),
         snmp: aud.snmp || ''
       });
@@ -2300,6 +2359,9 @@ journalctl -u wso2am -n 50 --no-pager`;
         } else if (mPath) {
           srcLabel = '📘 Catálogo Técnico (WebHelp)';
         }
+        const isIdaas = fam === 'IDAAS' && /idaas/i.test(`${code} ${mPath || ''} ${entry.category || ''}`);
+        const exactDocVer = isIdaas ? 'IDaaS Cloud' : (mPath && /IG_130/i.test(mPath) ? 'IG 13.0' : (mPath ? 'IG 11/12/13' : 'General'));
+        const exactDocVers = isIdaas ? ['IDaaS Cloud'] : (mPath ? ['IG 13.0', 'IG 12.0', 'IG 11.0'] : ['General']);
         entries.push({
           uid: `EXACT-${code}`,
           code,
@@ -2307,6 +2369,8 @@ journalctl -u wso2am -n 50 --no-pager`;
           category: entry.category || 'Catálogo Técnico',
           severity: entry.severity || 'ERROR',
           family: fam,
+          docVersion: exactDocVer,
+          docVersions: exactDocVers,
           meaning: entry.meaning || '',
           rootCause: entry.rootCause || '',
           remediation: entry.remediation || '',
@@ -2318,21 +2382,29 @@ journalctl -u wso2am -n 50 --no-pager`;
       });
     }
 
-    // C. Códigos extraídos literalmente de PDFs oficiales cargados por el usuario
+    // C. Códigos extraídos literalmente de PDFs oficiales cargados por el usuario (multiversión)
     const customPdfCatalog = (typeof window !== 'undefined' && window.ENTRUST_CUSTOM_PDF_CATALOG) ? window.ENTRUST_CUSTOM_PDF_CATALOG : {};
-    Object.values(customPdfCatalog).forEach(pdf => {
+    const customPdfEntries = (typeof window !== 'undefined' && Array.isArray(window.ENTRUST_CUSTOM_PDF_ENTRIES) && window.ENTRUST_CUSTOM_PDF_ENTRIES.length > 0)
+      ? window.ENTRUST_CUSTOM_PDF_ENTRIES
+      : Object.values(customPdfCatalog);
+    customPdfEntries.forEach(pdf => {
       if (!pdf || !pdf.code) return;
+      const pdfVer = pdf.docVersion || 'General';
+      const verSlug = pdfVer.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+      const fileSlug = String(pdf.sourceFile || 'doc').replace(/[^a-z0-9]/gi, '_').toLowerCase().slice(0, 24);
       entries.push({
-        uid: `PDF-${pdf.code}`,
+        uid: `PDF-${verSlug}-${pdf.code}-${fileSlug}`,
         code: pdf.code,
         title: pdf.title || pdf.code,
-        category: `PDF Oficial: ${pdf.sourceFile || 'Documento'} (Pág. ${pdf.page || 1})`,
+        category: `PDF [${pdfVer}]: ${pdf.sourceFile || 'Documento'} (Pág. ${pdf.page || 1})`,
         severity: pdf.severity || 'ERROR',
         family: 'PDF',
+        docVersion: pdfVer,
+        docVersions: [pdfVer],
         meaning: pdf.excerpt || '',
-        rootCause: `Contexto literal extraído de ${pdf.sourceFile || 'PDF'} (Pág. ${pdf.page || 1}).`,
-        remediation: `Abrir ${pdf.sourceFile || 'el manual PDF'} en la página ${pdf.page || 1} para revisar el detalle completo del fabricante.`,
-        sourceLabel: `📄 PDF Oficial: ${pdf.sourceFile || 'Custom'} (Pág. ${pdf.page || 1})`,
+        rootCause: `Contexto literal extraído de ${pdf.sourceFile || 'PDF'} (${pdfVer}, Pág. ${pdf.page || 1}).`,
+        remediation: `Abrir ${pdf.sourceFile || 'el manual PDF'} (${pdfVer}) en la página ${pdf.page || 1} para revisar el detalle completo del fabricante.`,
+        sourceLabel: `📄 PDF ${pdfVer}: ${pdf.sourceFile || 'Custom'} (Pág. ${pdf.page || 1})`,
         sourceKind: 'PDF_CUSTOM',
         manualPath: normalizePath(pdf.manualFile),
         snmp: ''
@@ -2363,6 +2435,8 @@ journalctl -u wso2am -n 50 --no-pager`;
         category: rule.category || 'Regla KB',
         severity: rule.severity || 'ERROR',
         family: fam,
+        docVersion: rule.docVersion || 'General',
+        docVersions: [rule.docVersion || 'General'],
         meaning: rule.meaning || '',
         rootCause: rule.rootCause || '',
         remediation: rule.remediation || '',

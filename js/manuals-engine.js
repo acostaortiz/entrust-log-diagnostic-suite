@@ -77,6 +77,18 @@ class ManualsEngine {
         paths: ['manuals/entrust_idaas_docs.html'],
         type: 'builtin'
       },
+      'v10_0_custom': {
+        title: '📚 Entrust IdentityGuard v10.0 - Manuales & PDFs Cargados (v10.x)',
+        paths: [],
+        type: 'custom-version',
+        docVersion: 'IG 10.0'
+      },
+      'v9_0_custom': {
+        title: '📚 Entrust IdentityGuard v9.0 - Manuales & PDFs Cargados (v9.x)',
+        paths: [],
+        type: 'custom-version',
+        docVersion: 'IG 9.0'
+      },
       'vIDaaS': {
         title: 'Entrust IDaaS Cloud - Troubleshooting Rápido SSO, SAML 2.0, OIDC & Push MFA',
         paths: ['manuals/entrust_idaas_errors.html'],
@@ -167,6 +179,23 @@ class ManualsEngine {
 
     if (manualMeta.type === 'custom' && manualMeta.content) {
       return manualMeta.content;
+    }
+
+    if (manualMeta.type === 'custom-version') {
+      const targetVer = manualMeta.docVersion || 'IG 10.0';
+      const allCustom = (typeof window !== 'undefined' && Array.isArray(window.ENTRUST_CUSTOM_MANUALS_LIST))
+        ? window.ENTRUST_CUSTOM_MANUALS_LIST.filter(m => (m.version || 'General') === targetVer)
+        : [];
+      const listHtml = allCustom.length > 0
+        ? `<ul style="line-height:1.8; padding-left:20px;">${allCustom.map(m =>
+            `<li><strong>📄 ${m.filename}</strong> — <code>${m.path}</code> (${Math.round((m.size || 0) / 1024)} KB${m.pageCount ? `, ${m.pageCount} págs` : ''}${m.extractedCodesCount ? `, ${m.extractedCodesCount} códigos` : ''})</li>`
+          ).join('')}</ul>`
+        : `<p style="color:#64748b;">Aún no hay manuales ni PDFs subidos para <strong>${targetVer}</strong>. Usa la sub-pestaña <strong>📤 Subir Documento al Servidor</strong> y selecciona la versión <strong>${targetVer}</strong> para indexarlos automáticamente aquí.</p>`;
+      return `<div style="padding:24px; font-family:'Segoe UI',sans-serif; color:#0f172a;">
+        <h2 style="color:#0a3d6d; margin-top:0;">${manualMeta.title}</h2>
+        <p style="font-size:0.9rem; color:#475569;">Selecciona un documento en el índice lateral izquierdo para abrirlo en el visor integrado, buscar texto completo y alimentar a <strong>Entrust Forensics AI</strong>.</p>
+        ${listHtml}
+      </div>`;
     }
 
     const paths = manualMeta.paths || [manualMeta.path];

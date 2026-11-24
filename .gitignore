@@ -16,4 +16,5 @@ data/uploads/
 Thumbs.db
 *.db
 manuals/custom/.extracted/
+manuals/custom/.metadata.json
 data/custom_pdf_codes.json
