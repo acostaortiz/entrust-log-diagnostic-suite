@@ -1540,12 +1540,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.13.0',
-    build: 615,
+    version: 'v3.14.0',
+    build: 616,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'CLEAN-SESSION-MULTIDATE-SQLITE-313',
+    gitCommit: 'SQLITE-FILE-DELETE-REASSIGN-314',
     gitBranch: 'main',
-    buildDate: '2026-11-24 21:15',
+    buildDate: '2026-11-24 21:50',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -8845,7 +8845,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const accent = colors[(nodeIndex >= 0 ? nodeIndex : gIdx) % colors.length];
       const isOpen = !!expandedMap[group.label];
       const totalMb = group.totalBytes > 0 ? `${(group.totalBytes / (1024 * 1024)).toFixed(1)} MB` : 'Muestra';
-      const safeLabelAttr = escapeHtml(group.label).replace(/'/g, "\\'");
+      const safeLabelAttr = escapeHtml(group.label).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      const rawServerTag = group.items[0]?.f?.serverTag || group.label.replace(/^(?:🖥️\s*|☁️\s*)/, '').trim();
+      const safeRawTagAttr = escapeHtml(rawServerTag.replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
 
       // Orden natural por nombre + rotación (.log, .log.1, .log.2...)
       const sortedItems = [...group.items].sort((a, b) =>
@@ -8860,7 +8862,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               <span style="font-size:0.74rem; background:rgba(2,132,199,0.12); color:${accent}; padding:2px 8px; border-radius:12px; font-weight:700;">${group.items.length} archivo(s)</span>
               <span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;">${totalMb} · ${group.totalLogs.toLocaleString()} registros</span>
             </div>
-            <span style="font-size:0.75rem; font-weight:700; color:${accent};">${isOpen ? '▲ Ocultar detalle' : '▼ Ver detalle y asignar'}</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" onclick="event.stopPropagation(); window.removeServerGroupFilesGlobal('${safeRawTagAttr}', ${group.items.length});" style="background:rgba(239,68,68,0.14); border:1px solid rgba(239,68,68,0.35); color:#ef4444; border-radius:5px; padding:2px 8px; cursor:pointer; font-weight:700; font-size:0.71rem;" title="Eliminar todos los archivos de este servidor de SQLite">🗑️ Quitar Servidor</button>
+              <span style="font-size:0.75rem; font-weight:700; color:${accent};">${isOpen ? '▲ Ocultar detalle' : '▼ Ver detalle y asignar'}</span>
+            </div>
           </div>`;
 
       if (isOpen) {
@@ -8873,7 +8878,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           return `
             <tr style="border-top:1px solid var(--border-color);">
               <td style="padding:5px 8px; width:28px; text-align:center;">
-                <input type="checkbox" class="file-select-chk" data-file-idx="${idx}" style="cursor:pointer; accent-color:${accent};">
+                <input type="checkbox" class="file-select-chk chk-grp-${gIdx}" data-group-idx="${gIdx}" data-file-idx="${idx}" data-file-id="${escapeHtml(f.fileId || '')}" style="cursor:pointer; accent-color:${accent};">
               </td>
               <td style="padding:5px 8px; font-family:monospace; font-size:0.77rem; color:var(--text-main); font-weight:600;">📄 ${escapeHtml(f.name)}${dateTag ? `<span style="margin-left:6px; font-size:0.68rem; background:rgba(2,132,199,0.12); color:#38bdf8; padding:1px 6px; border-radius:4px;">📅 ${escapeHtml(dateTag)}</span>` : ''}</td>
               <td style="padding:5px 8px; font-size:0.74rem; color:var(--text-muted); white-space:nowrap;">${sizeMb}</td>
@@ -8884,7 +8889,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
                 </select>
               </td>
               <td style="padding:5px 8px; text-align:right;">
-                <button type="button" onclick="window.removeLoadedFileGlobal('${escapeHtml(f.name)}')" style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); color:#ef4444; border-radius:4px; padding:2px 7px; cursor:pointer; font-weight:bold; font-size:0.72rem;" title="Eliminar archivo">✖</button>
+                <button type="button" onclick="window.removeLoadedFileGlobal(${idx})" style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); color:#ef4444; border-radius:4px; padding:2px 7px; cursor:pointer; font-weight:bold; font-size:0.72rem;" title="Eliminar este archivo de la sesión">✖</button>
               </td>
             </tr>`;
         }).join('');
@@ -8893,13 +8898,14 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           <div style="border-top:1px solid var(--border-color); background:var(--bg-primary); padding:10px 12px;">
             <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; align-items:center;">
               <span style="font-size:0.74rem; color:var(--text-muted); font-weight:700;">📌 Asignación Selectiva [${escapeHtml(client.name)}]:</span>
-              <button type="button" class="btn" onclick="document.querySelectorAll('.file-select-chk').forEach(c=>c.checked=true)" style="padding:2px 8px; font-size:0.72rem; border:1px solid var(--border-color);">☑ Todos</button>
-              <button type="button" class="btn" onclick="document.querySelectorAll('.file-select-chk').forEach(c=>c.checked=false)" style="padding:2px 8px; font-size:0.72rem; border:1px solid var(--border-color);">☐ Ninguno</button>
+              <button type="button" class="btn" onclick="document.querySelectorAll('.chk-grp-${gIdx}').forEach(c=>c.checked=true)" style="padding:2px 8px; font-size:0.72rem; border:1px solid var(--border-color);">☑ Todos</button>
+              <button type="button" class="btn" onclick="document.querySelectorAll('.chk-grp-${gIdx}').forEach(c=>c.checked=false)" style="padding:2px 8px; font-size:0.72rem; border:1px solid var(--border-color);">☐ Ninguno</button>
               <span style="font-size:0.73rem; color:var(--text-muted);">Mover marcados a:</span>
-              <select id="batch-assign-node-select" class="form-control" style="width:auto; min-width:155px; font-size:0.73rem; padding:3px 8px;">
+              <select id="batch-assign-node-select-${gIdx}" class="form-control" style="width:auto; min-width:155px; font-size:0.73rem; padding:3px 8px;">
                 ${batchNodeOptions}
               </select>
-              <button type="button" class="btn btn-primary" onclick="window.assignSelectedFilesToNodeGlobal()" style="padding:3px 10px; font-size:0.73rem; font-weight:700;">✅ Asignar Marcados</button>
+              <button type="button" class="btn btn-primary" onclick="window.assignSelectedFilesToNodeGlobal(${gIdx})" style="padding:3px 10px; font-size:0.73rem; font-weight:700;">✅ Asignar Marcados</button>
+              <button type="button" onclick="window.removeSelectedFilesGlobal(${gIdx})" style="background:rgba(239,68,68,0.14); border:1px solid rgba(239,68,68,0.35); color:#ef4444; border-radius:6px; padding:3px 10px; font-size:0.73rem; font-weight:700; cursor:pointer;" title="Eliminar de SQLite todos los archivos marcados con checkbox">🗑️ Quitar Marcados</button>
             </div>
             <div style="max-height:240px; overflow-y:auto; border:1px solid var(--border-color); border-radius:6px;">
               <table style="width:100%; border-collapse:collapse; text-align:left;">
@@ -8927,19 +8933,89 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     listContainer.innerHTML = html;
   }
 
-  window.changeFileNodeGlobal = function(fileRef, targetNodeKey) {
+  async function deleteSessionFilesFromServer({ fileIds = [], fileIndices = [], serverTag = '', label = '' }) {
+    const activeProfile = getActiveClientProfile();
+    const clientQuery = (activeProfile && activeProfile.name) ? activeProfile.name : (state.activeClientId || '');
+    showAnalysisStatus(
+      true,
+      '⏳ Eliminando de SQLite...',
+      label ? `Removiendo ${label} y recalculando métricas exactas...` : 'Actualizando base de datos...'
+    );
+    try {
+      const res = await fetch('/api/session-files/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ client: clientQuery, fileIds, fileIndices, serverTag })
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+      _consolidatedMetricsCache = null;
+      _consolidatedMetricsSig = '';
+      if (data.status === 'empty' || data.remainingFiles === 0) {
+        await resetSession(false);
+        showAnalysisStatus(false, '🧹 Archivo(s) eliminado(s) — Sesión SQLite vacía', 'No quedan archivos en esta sesión. Listo para cargar nuevos logs.');
+        return true;
+      }
+      await syncClientSessionWithServer(state.activeClientId);
+      if (window.UserTraceReport && typeof window.UserTraceReport.fetchForensicMatrix === 'function') {
+        window.UserTraceReport.fetchForensicMatrix(true);
+      }
+      showAnalysisStatus(
+        false,
+        `🗑️ Eliminado(s): ${label || ((data.deletedCount || 1) + ' archivo(s)')}`,
+        `Restantes: ${data.remainingFiles} archivo(s) · ${(data.totalLogs || 0).toLocaleString()} registros exactos en SQLite.`
+      );
+      return true;
+    } catch (err) {
+      console.error('Error eliminando archivos de SQLite:', err);
+      showAnalysisStatus(false, '❌ Error eliminando archivo(s) en servidor', err.message || 'Fallo en /api/session-files/delete');
+      return false;
+    }
+  }
+
+  async function persistServerFileReassignment(fileIndices, targetNodeKey, targetName, cleanTag) {
+    if (!state.isServerApi || !Array.isArray(fileIndices) || fileIndices.length === 0) return;
+    const activeProfile = getActiveClientProfile();
+    const clientQuery = (activeProfile && activeProfile.name) ? activeProfile.name : (state.activeClientId || '');
+    const fileIds = fileIndices
+      .map(i => state.loadedFiles?.[i]?.fileId)
+      .filter(Boolean);
+    try {
+      await fetch('/api/session-files/reassign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          client: clientQuery,
+          fileIds,
+          fileIndices,
+          nodeKey: targetNodeKey,
+          nodeName: targetName,
+          serverTag: cleanTag
+        })
+      });
+    } catch (err) {
+      console.warn('Error persistiendo reasignación de servidor:', err);
+    }
+  }
+
+  window.changeFileNodeGlobal = function(fileRef, targetNodeKey, skipPersist = false) {
     if (!state.customNodeAssignments) state.customNodeAssignments = {};
     const availNodes = getClientAvailableNodes();
     const matchFromAvail = availNodes.find(n => n.key === targetNodeKey);
     const matchFromFiles = (state.loadedFiles || []).find(f => f.nodeKey === targetNodeKey);
     const targetName = matchFromAvail ? matchFromAvail.name : (matchFromFiles ? matchFromFiles.nodeName : (targetNodeKey.startsWith('🖥️') ? targetNodeKey : `🖥️ ${targetNodeKey}`));
-    const cleanTag = targetName.replace(/^🖥️\s*/, '');
+    const cleanTag = targetName.replace(/^(?:🖥️\s*|☁️\s*)/, '').trim();
 
     let targetFile = null;
+    let resolvedIdx = -1;
     if (typeof fileRef === 'number' && state.loadedFiles && state.loadedFiles[fileRef]) {
+      resolvedIdx = fileRef;
       targetFile = state.loadedFiles[fileRef];
     } else if (state.loadedFiles) {
-      targetFile = state.loadedFiles.find(file => file.name === fileRef);
+      resolvedIdx = state.loadedFiles.findIndex(file => file.name === fileRef);
+      targetFile = resolvedIdx >= 0 ? state.loadedFiles[resolvedIdx] : null;
     }
 
     const oldServerTag = targetFile?.serverTag;
@@ -8959,23 +9035,42 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       });
     }
 
+    if (!skipPersist && resolvedIdx >= 0 && state.isServerApi) {
+      persistServerFileReassignment([resolvedIdx], targetNodeKey, targetName, cleanTag);
+    }
+
     if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
     renderLoadedFilesDrawer();
     updateNodeComparisonUI();
     renderTraceWaterfall();
   };
 
-  window.assignSelectedFilesToNodeGlobal = function() {
-    const targetNodeKey = document.getElementById('batch-assign-node-select')?.value;
-    const checked = Array.from(document.querySelectorAll('.file-select-chk:checked'));
+  window.assignSelectedFilesToNodeGlobal = async function(groupIdx) {
+    const selEl = (typeof groupIdx === 'number')
+      ? (document.getElementById(`batch-assign-node-select-${groupIdx}`) || document.getElementById('batch-assign-node-select'))
+      : document.getElementById('batch-assign-node-select');
+    const targetNodeKey = selEl?.value;
+    const selector = (typeof groupIdx === 'number') ? `.chk-grp-${groupIdx}:checked` : '.file-select-chk:checked';
+    const checked = Array.from(document.querySelectorAll(selector));
     if (!targetNodeKey || checked.length === 0) {
       alert('Marca al menos un archivo en la lista y selecciona el servidor destino.');
       return;
     }
-    checked.forEach(chk => {
-      const idx = parseInt(chk.getAttribute('data-file-idx'), 10);
-      if (!isNaN(idx)) window.changeFileNodeGlobal(idx, targetNodeKey);
-    });
+    const indices = checked
+      .map(chk => parseInt(chk.getAttribute('data-file-idx'), 10))
+      .filter(idx => !isNaN(idx) && state.loadedFiles && state.loadedFiles[idx]);
+    if (indices.length === 0) return;
+
+    const availNodes = getClientAvailableNodes();
+    const matchFromAvail = availNodes.find(n => n.key === targetNodeKey);
+    const matchFromFiles = (state.loadedFiles || []).find(f => f.nodeKey === targetNodeKey);
+    const targetName = matchFromAvail ? matchFromAvail.name : (matchFromFiles ? matchFromFiles.nodeName : (targetNodeKey.startsWith('🖥️') ? targetNodeKey : `🖥️ ${targetNodeKey}`));
+    const cleanTag = targetName.replace(/^(?:🖥️\s*|☁️\s*)/, '').trim();
+
+    indices.forEach(idx => window.changeFileNodeGlobal(idx, targetNodeKey, true));
+    if (state.isServerApi) {
+      await persistServerFileReassignment(indices, targetNodeKey, targetName, cleanTag);
+    }
   };
 
   window.assignAllFilesToNodeGlobal = function(targetNodeKey) {
@@ -9016,18 +9111,30 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
   };
 
-  window.removeLoadedFileGlobal = function(fileName) {
+  window.removeLoadedFileGlobal = async function(fileRef) {
+    if (!state.loadedFiles || state.loadedFiles.length === 0) return;
+    const idx = (typeof fileRef === 'number')
+      ? fileRef
+      : state.loadedFiles.findIndex(f => f.name === fileRef);
+    if (idx < 0 || !state.loadedFiles[idx]) return;
+    const targetFile = state.loadedFiles[idx];
+
     if (state.isServerApi) {
-      showAnalysisStatus(false, 'ℹ️ Eliminación individual no disponible en SQLite consolidado', 'Use "Limpiar Todo" para purgar la base SQLite y subir únicamente los archivos deseados.');
+      await deleteSessionFilesFromServer({
+        fileIds: targetFile.fileId ? [targetFile.fileId] : [],
+        fileIndices: [idx],
+        label: targetFile.name
+      });
       return;
     }
-    if (!state.loadedFiles) return;
-    const fileIndex = state.loadedFiles.findIndex(f => f.name === fileName);
-    if (fileIndex !== -1) {
-      state.loadedFiles.splice(fileIndex, 1);
-    }
 
-    state.logs = state.logs.filter(l => l.sourceFile !== fileName);
+    state.loadedFiles.splice(idx, 1);
+    const sameNameExists = state.loadedFiles.some(f => f.name === targetFile.name);
+    state.logs = state.logs.filter(l => {
+      if (l.sourceFile !== targetFile.name) return true;
+      if (sameNameExists && targetFile.serverTag && l.serverTag && l.serverTag !== targetFile.serverTag) return true;
+      return false;
+    });
     reindexLogs();
 
     renderLoadedFilesDrawer();
@@ -9036,7 +9143,87 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     updateNodeComparisonUI();
     renderTraceWaterfall();
 
-    showAnalysisStatus(false, `🗑️ Archivo Eliminado: ${fileName}`, `Logs restantes en sesión: ${state.logs.length.toLocaleString()}`);
+    showAnalysisStatus(false, `🗑️ Archivo Eliminado: ${targetFile.name}`, `Logs restantes en sesión: ${state.logs.length.toLocaleString()}`);
+  };
+
+  window.removeSelectedFilesGlobal = async function(groupIdx) {
+    const selector = (typeof groupIdx === 'number') ? `.chk-grp-${groupIdx}:checked` : '.file-select-chk:checked';
+    const checked = Array.from(document.querySelectorAll(selector));
+    if (checked.length === 0) {
+      alert('Marca al menos un archivo para eliminar.');
+      return;
+    }
+    const indices = checked
+      .map(chk => parseInt(chk.getAttribute('data-file-idx'), 10))
+      .filter(i => !isNaN(i) && state.loadedFiles && state.loadedFiles[i])
+      .sort((a, b) => b - a);
+    if (indices.length === 0) return;
+
+    const fileIds = indices
+      .map(i => state.loadedFiles[i]?.fileId)
+      .filter(Boolean);
+
+    if (state.isServerApi) {
+      await deleteSessionFilesFromServer({
+        fileIds,
+        fileIndices: indices,
+        label: `${indices.length} archivo(s) marcados`
+      });
+      return;
+    }
+
+    indices.forEach(i => {
+      const rem = state.loadedFiles[i];
+      state.loadedFiles.splice(i, 1);
+      if (rem) {
+        state.logs = state.logs.filter(l => l.sourceFile !== rem.name || (rem.serverTag && l.serverTag && l.serverTag !== rem.serverTag));
+      }
+    });
+    reindexLogs();
+    renderLoadedFilesDrawer();
+    populateClientSelector();
+    applyLogFilters();
+    updateNodeComparisonUI();
+    renderTraceWaterfall();
+    showAnalysisStatus(false, `🗑️ ${indices.length} archivo(s) eliminado(s)`, `Logs restantes en sesión: ${state.logs.length.toLocaleString()}`);
+  };
+
+  window.removeServerGroupFilesGlobal = async function(serverTag, count = 0) {
+    if (!state.loadedFiles || state.loadedFiles.length === 0) return;
+    const normTarget = String(serverTag || '').replace(/^(?:🖥️\s*|☁️\s*)/, '').trim().toLowerCase();
+    const indices = [];
+    const fileIds = [];
+    state.loadedFiles.forEach((f, idx) => {
+      const cand = String(f.serverTag || f.nodeName || '').replace(/^(?:🖥️\s*|☁️\s*)/, '').trim().toLowerCase();
+      if (cand === normTarget) {
+        indices.push(idx);
+        if (f.fileId) fileIds.push(f.fileId);
+      }
+    });
+    if (indices.length === 0 && !normTarget) return;
+
+    if (state.isServerApi) {
+      await deleteSessionFilesFromServer({
+        serverTag,
+        fileIndices: indices,
+        fileIds,
+        label: `servidor ${serverTag} (${count || indices.length} archivo(s))`
+      });
+      return;
+    }
+
+    indices.sort((a, b) => b - a).forEach(i => state.loadedFiles.splice(i, 1));
+    state.logs = state.logs.filter(l => {
+      const lc = String(l.serverTag || l.node || '').replace(/^(?:🖥️\s*|☁️\s*)/, '').trim().toLowerCase();
+      return lc !== normTarget;
+    });
+    reindexLogs();
+    renderLoadedFilesDrawer();
+    populateClientSelector();
+    applyLogFilters();
+    updateNodeComparisonUI();
+    renderTraceWaterfall();
+    showAnalysisStatus(false, `🗑️ Servidor eliminado: ${serverTag}`, `Logs restantes en sesión: ${state.logs.length.toLocaleString()}`);
   };
 
   function reindexLogs() {

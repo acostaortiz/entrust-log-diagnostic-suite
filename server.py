@@ -1390,7 +1390,7 @@ def parse_line_meta_for_db(line, line_num, last_seen_ts=''):
     # 2. Check Entrust Bracket format: [timestamp] [thread] [LEVEL] [Category] [520xxx/AUD] Message
     bracket_match = re.match(r'^\[+([^\]]+)\]\s*\[([^\]]*)\]\s*\[([A-Za-z]+)\s*\]\s*\[([^\]]*)\]\s*(.*)$', line)
     if bracket_match:
-        event_time = bracket_match.group(1)[:19]
+        event_time = re.sub(r'^(\d{4})[/.](\d{2})[/.](\d{2})', r'\1-\2-\3', bracket_match.group(1)[:19])
         meta['has_explicit_ts'] = bool(re.match(r'^\d{4}[-/.]\d{2}[-/.]\d{2}', event_time))
         level = bracket_match.group(3).upper()
         meta['base_level'] = level
@@ -1673,6 +1673,156 @@ def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all'):
     return result
 
 
+def _norm_srv_tag(s):
+    return re.sub(r'^(?:🖥️\s*|☁️\s*)', '', str(s or '').strip()).strip().lower()
+
+def _ensure_loaded_file_ranges(cur, loaded_files, fill_dates=False):
+    """Ensures every entry in loaded_files has fileId, startLine, endLine and optional dateSpan."""
+    if not isinstance(loaded_files, list) or len(loaded_files) == 0:
+        return False
+    changed = False
+    for idx, f in enumerate(loaded_files):
+        if isinstance(f, dict) and not f.get('fileId'):
+            f['fileId'] = f"legacy_{idx + 1}"
+            changed = True
+
+    needs_ranges = any(
+        isinstance(f, dict) and (
+            'startLine' not in f or 'endLine' not in f
+            or f.get('startLine') is None or f.get('endLine') is None
+        )
+        for f in loaded_files
+    )
+    if needs_ranges:
+        cur.execute('SELECT COALESCE(MAX(line_num), 0) FROM logs')
+        max_line = int((cur.fetchone() or [0])[0] or 0)
+        total_listed = sum(int(f.get('count', 0) or 0) for f in loaded_files if isinstance(f, dict))
+        cursor_line = max(0, max_line - total_listed) if (total_listed > 0 and total_listed < max_line) else 0
+        for f in loaded_files:
+            if not isinstance(f, dict):
+                continue
+            cnt = int(f.get('count', 0) or 0)
+            f['startLine'] = cursor_line + 1
+            f['endLine'] = (cursor_line + cnt) if cnt > 0 else cursor_line
+            cursor_line += cnt
+            changed = True
+
+    if fill_dates:
+        for f in loaded_files:
+            if not isinstance(f, dict):
+                continue
+            if (not f.get('dateSpan') or not f.get('firstTs')) and not f.get('_dateProbed'):
+                sl = int(f.get('startLine') or 0)
+                el = int(f.get('endLine') or 0)
+                if sl > 0 and el >= sl:
+                    cur.execute(
+                        "SELECT event_time FROM logs WHERE line_num BETWEEN ? AND ? "
+                        "AND event_time GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' "
+                        "ORDER BY line_num ASC LIMIT 1",
+                        (sl, el),
+                    )
+                    rmin = cur.fetchone()
+                    cur.execute(
+                        "SELECT event_time FROM logs WHERE line_num BETWEEN ? AND ? "
+                        "AND event_time GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' "
+                        "ORDER BY line_num DESC LIMIT 1",
+                        (sl, el),
+                    )
+                    rmax = cur.fetchone()
+                    if rmin and rmin[0]:
+                        t1 = str(rmin[0])
+                        t2 = str(rmax[0]) if (rmax and rmax[0]) else t1
+                        d1 = t1[:10]
+                        d2 = t2[:10]
+                        f['firstTs'] = t1
+                        f['lastTs'] = t2
+                        f['dateSpan'] = d1 if d1 == d2 else f"{d1} → {d2}"
+                f['_dateProbed'] = True
+                changed = True
+    return changed
+
+def recompute_sqlite_stats_obj(cur, target_db, client_name, loaded_files):
+    """Recomputes 100% exact cached statistics across all surviving SQLite rows."""
+    cur.execute('SELECT COUNT(1) FROM logs')
+    total_all = int((cur.fetchone() or [0])[0] or 0)
+
+    cur.execute("SELECT COUNT(1) FROM logs WHERE UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%'")
+    errors_all = int((cur.fetchone() or [0])[0] or 0)
+
+    cur.execute(
+        "SELECT COUNT(1) FROM logs WHERE NOT (UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%') "
+        "AND (UPPER(event_outcome) LIKE '%WARN%' OR UPPER(event_type) LIKE 'AUD%')"
+    )
+    warnings_all = int((cur.fetchone() or [0])[0] or 0)
+
+    exact_unique_users, exact_unique_codes, exact_unique_ips = compute_exact_sqlite_distinct_counts(cur)
+
+    cur.execute(
+        "SELECT event_type, COUNT(1) FROM logs WHERE event_type IS NOT NULL AND event_type != '' "
+        "GROUP BY event_type ORDER BY COUNT(1) DESC LIMIT 200"
+    )
+    event_types_list = [{'code': r[0], 'count': int(r[1] or 0)} for r in cur.fetchall()]
+    top_codes_list = list(event_types_list)
+
+    cur.execute(
+        "SELECT source_ip, COUNT(1) FROM logs WHERE source_ip IS NOT NULL AND source_ip != '' "
+        "AND source_ip != 'local' AND source_ip != '127.0.0.1' "
+        "GROUP BY source_ip ORDER BY COUNT(1) DESC LIMIT 50"
+    )
+    top_ips_list = [{'ip': r[0], 'count': int(r[1] or 0)} for r in cur.fetchall()]
+
+    cur.execute(
+        "SELECT SUBSTR(event_time, 1, 13) AS hb, COUNT(1) AS tot, "
+        "SUM(CASE WHEN UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%' THEN 1 ELSE 0 END) AS errs, "
+        "SUM(CASE WHEN UPPER(event_outcome) NOT LIKE '%FAIL%' AND UPPER(event_outcome) NOT LIKE '%ERR%' THEN 1 ELSE 0 END) AS inf "
+        "FROM logs "
+        "WHERE event_time GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' AND LENGTH(event_time) >= 13 "
+        "GROUP BY hb ORDER BY hb ASC LIMIT 2000"
+    )
+    timeline_buckets_list = [
+        {'bucket': r[0], 'total': int(r[1] or 0), 'errors': int(r[2] or 0), 'info': int(r[3] or 0)}
+        for r in cur.fetchall() if r[0]
+    ]
+
+    cur.execute(
+        "SELECT subject_name, COUNT(1) FROM logs "
+        "WHERE subject_name IS NOT NULL AND subject_name != '' AND subject_name != 'system' AND subject_name != 'unknown' "
+        "GROUP BY subject_name ORDER BY COUNT(1) DESC LIMIT 300"
+    )
+    top_users_list = [
+        {'user': r[0], 'count': int(r[1] or 0)}
+        for r in cur.fetchall() if r[0] and is_valid_user_candidate(r[0])
+    ][:200]
+
+    cur.execute("SELECT 1 FROM logs WHERE LOWER(event_type) LIKE '%bulkidentityguard%' LIMIT 1")
+    is_idaas = cur.fetchone() is not None
+
+    prev_raw_total = sum(int(f.get('rawLinesRead', f.get('count', 0)) or 0) for f in (loaded_files or []))
+    prev_folded_total = sum(int(f.get('foldedStackLines', 0) or 0) for f in (loaded_files or []))
+
+    return {
+        'status': 'ready',
+        'totalLogs': total_all,
+        'rawLinesRead': prev_raw_total or total_all,
+        'foldedStackLines': prev_folded_total,
+        'totalErrors': errors_all,
+        'totalWarnings': warnings_all,
+        'totalSuccess': max(0, total_all - errors_all),
+        'totalUniqueCodes': exact_unique_codes or len(top_codes_list),
+        'totalUniqueUsers': exact_unique_users,
+        'totalUniqueIps': exact_unique_ips or len(top_ips_list),
+        'eventTypes': event_types_list,
+        'topCodes': top_codes_list,
+        'topUsers': top_users_list,
+        'topIps': top_ips_list,
+        'timelineBuckets': timeline_buckets_list,
+        'detectedPlatform': 'Entrust IDaaS Cloud' if is_idaas else 'Entrust IdentityGuard OnPremise',
+        'activeDb': os.path.basename(target_db),
+        'client': client_name,
+        'loadedFiles': loaded_files or []
+    }
+
+
 def index_file_in_background(file_path, client_name='Entrust Client', append_mode=False, server_tag=''):
     global upload_state, ACTIVE_DB_PATH
     client_slug = get_client_slug(client_name)
@@ -1706,6 +1856,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
         is_idaas = False
 
         line_num = 0
+        file_start_line = 1
         prev_total = 0
         prev_errors = 0
         prev_warnings = 0
@@ -1717,6 +1868,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
                 cur_prev = conn_prev.cursor()
                 cur_prev.execute('SELECT COALESCE(MAX(line_num), 0) FROM logs')
                 line_num = int(cur_prev.fetchone()[0] or 0)
+                file_start_line = line_num + 1
                 cur_prev.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='server_stats'")
                 if cur_prev.fetchone():
                     cur_prev.execute("SELECT value FROM server_stats WHERE key='stats_json'")
@@ -1972,6 +2124,8 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             'name': os.path.basename(file_path),
             'size': file_size,
             'count': file_lines,
+            'startLine': file_start_line,
+            'endLine': line_num if file_lines > 0 else (file_start_line - 1),
             'sampleCount': file_lines,
             'rawLinesRead': raw_lines_read,
             'foldedStackLines': folded_stack_lines,
@@ -1985,52 +2139,18 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             'serverTag': clean_tag_plain,
             'client': client_name
         }
+        if existing_files:
+            _ensure_loaded_file_ranges(cur, existing_files, fill_dates=False)
         loaded_files = list(existing_files) + [file_entry]
 
-        # Compute exact 100% distinct counts across the full SQLite table (not capped by append merge)
-        exact_unique_users, exact_unique_codes, exact_unique_ips = compute_exact_sqlite_distinct_counts(cur)
-
-        prev_raw_total = sum(int(f.get('rawLinesRead', f.get('count', 0)) or 0) for f in loaded_files)
-        prev_folded_total = sum(int(f.get('foldedStackLines', 0) or 0) for f in loaded_files)
-
         if append_mode:
-            cur.execute(
-                "SELECT event_type, COUNT(1) FROM logs WHERE event_type IS NOT NULL AND event_type != '' "
-                "GROUP BY event_type ORDER BY COUNT(1) DESC LIMIT 200"
-            )
-            event_types_list = [{'code': r[0], 'count': int(r[1] or 0)} for r in cur.fetchall()]
-            top_codes_list = list(event_types_list)
-
-            cur.execute(
-                "SELECT source_ip, COUNT(1) FROM logs WHERE source_ip IS NOT NULL AND source_ip != '' "
-                "AND source_ip != 'local' AND source_ip != '127.0.0.1' "
-                "GROUP BY source_ip ORDER BY COUNT(1) DESC LIMIT 50"
-            )
-            top_ips_list = [{'ip': r[0], 'count': int(r[1] or 0)} for r in cur.fetchall()]
-
-            cur.execute(
-                "SELECT SUBSTR(event_time, 1, 13) AS hb, COUNT(1) AS tot, "
-                "SUM(CASE WHEN UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%' THEN 1 ELSE 0 END) AS errs, "
-                "SUM(CASE WHEN UPPER(event_outcome) NOT LIKE '%FAIL%' AND UPPER(event_outcome) NOT LIKE '%ERR%' THEN 1 ELSE 0 END) AS inf "
-                "FROM logs "
-                "WHERE event_time GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' AND LENGTH(event_time) >= 13 "
-                "GROUP BY hb ORDER BY hb ASC LIMIT 2000"
-            )
-            timeline_buckets_list = [
-                {'bucket': r[0], 'total': int(r[1] or 0), 'errors': int(r[2] or 0), 'info': int(r[3] or 0)}
-                for r in cur.fetchall() if r[0]
-            ]
-
-            cur.execute(
-                "SELECT subject_name, COUNT(1) FROM logs "
-                "WHERE subject_name IS NOT NULL AND subject_name != '' AND subject_name != 'system' AND subject_name != 'unknown' "
-                "GROUP BY subject_name ORDER BY COUNT(1) DESC LIMIT 300"
-            )
-            top_users_list = [
-                {'user': r[0], 'count': int(r[1] or 0)}
-                for r in cur.fetchall() if r[0] and is_valid_user_candidate(r[0])
-            ][:200]
+            stats_obj = recompute_sqlite_stats_obj(cur, target_db, client_name, loaded_files)
+            total_all = stats_obj['totalLogs']
+            errors_all = stats_obj['totalErrors']
         else:
+            exact_unique_users, exact_unique_codes, exact_unique_ips = compute_exact_sqlite_distinct_counts(cur)
+            prev_raw_total = sum(int(f.get('rawLinesRead', f.get('count', 0)) or 0) for f in loaded_files)
+            prev_folded_total = sum(int(f.get('foldedStackLines', 0) or 0) for f in loaded_files)
             event_types_list = [{'code': k, 'count': v} for k, v in type_counts.most_common(200)]
             top_codes_list = [{'code': k, 'count': v} for k, v in code_counts.most_common(200)]
             top_users_list = [
@@ -2042,29 +2162,27 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
                 {'bucket': k, 'total': v['total'], 'errors': v['errors'], 'info': v['info']}
                 for k, v in sorted(hour_counts.items())[:2000]
             ]
-
-        # Build instant cached stats object (< 0.1 ms)
-        stats_obj = {
-            'status': 'ready',
-            'totalLogs': total_all,
-            'rawLinesRead': prev_raw_total or raw_lines_read,
-            'foldedStackLines': prev_folded_total,
-            'totalErrors': errors_all,
-            'totalWarnings': warnings_all,
-            'totalSuccess': max(0, total_all - errors_all),
-            'totalUniqueCodes': exact_unique_codes or len(code_counts),
-            'totalUniqueUsers': exact_unique_users,
-            'totalUniqueIps': exact_unique_ips or len(ip_counts),
-            'eventTypes': event_types_list,
-            'topCodes': top_codes_list,
-            'topUsers': top_users_list,
-            'topIps': top_ips_list,
-            'timelineBuckets': timeline_buckets_list,
-            'detectedPlatform': 'Entrust IDaaS Cloud' if is_idaas else 'Entrust IdentityGuard OnPremise',
-            'activeDb': os.path.basename(target_db),
-            'client': client_name,
-            'loadedFiles': loaded_files
-        }
+            stats_obj = {
+                'status': 'ready',
+                'totalLogs': total_all,
+                'rawLinesRead': prev_raw_total or raw_lines_read,
+                'foldedStackLines': prev_folded_total,
+                'totalErrors': errors_all,
+                'totalWarnings': warnings_all,
+                'totalSuccess': max(0, total_all - errors_all),
+                'totalUniqueCodes': exact_unique_codes or len(code_counts),
+                'totalUniqueUsers': exact_unique_users,
+                'totalUniqueIps': exact_unique_ips or len(ip_counts),
+                'eventTypes': event_types_list,
+                'topCodes': top_codes_list,
+                'topUsers': top_users_list,
+                'topIps': top_ips_list,
+                'timelineBuckets': timeline_buckets_list,
+                'detectedPlatform': 'Entrust IDaaS Cloud' if is_idaas else 'Entrust IdentityGuard OnPremise',
+                'activeDb': os.path.basename(target_db),
+                'client': client_name,
+                'loadedFiles': loaded_files
+            }
         cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
         cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_obj, ensure_ascii=False)))
         cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4')")
@@ -2175,6 +2293,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_pcap_upload()
         elif path == '/api/pcap-analyze-server-file':
             self.handle_pcap_analyze_server_file()
+        elif path == '/api/session-files/delete':
+            self.handle_delete_session_files()
+        elif path == '/api/session-files/reassign':
+            self.handle_reassign_session_files()
         elif path == '/api/clear-session':
             post_query = urllib.parse.parse_qs(parsed_url.query)
             client_param = post_query.get('client', [None])[0]
@@ -3364,11 +3486,17 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     stats_cached = json.loads(row[0])
                     stats_cached['activeDb'] = os.path.basename(db)
                     stats_cached['client'] = client_param or os.path.basename(db).replace('_audit.db', '')
+                    stats_dirty = False
+                    if isinstance(stats_cached.get('loadedFiles'), list) and len(stats_cached['loadedFiles']) > 0:
+                        if _ensure_loaded_file_ranges(cur, stats_cached['loadedFiles'], fill_dates=True):
+                            stats_dirty = True
                     if (int(stats_cached.get('totalLogs', 0) or 0) > 200 and int(stats_cached.get('totalUniqueUsers', 0) or 0) <= 200) or 'totalUniqueUsers' not in stats_cached:
                         ex_u, ex_c, ex_ip = compute_exact_sqlite_distinct_counts(cur)
                         stats_cached['totalUniqueUsers'] = ex_u
                         stats_cached['totalUniqueCodes'] = ex_c
                         stats_cached['totalUniqueIps'] = ex_ip
+                        stats_dirty = True
+                    if stats_dirty:
                         try:
                             cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_cached, ensure_ascii=False)))
                             conn.commit()
@@ -3466,6 +3594,171 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             })
         except Exception as e:
             self.send_json({'error': str(e), 'totalLogs': 0, 'totalErrors': 0}, status=500)
+
+    def handle_delete_session_files(self):
+        global upload_state
+        try:
+            length = int(self.headers.get('Content-Length', 0) or 0)
+            raw = self.rfile.read(length).decode('utf-8', errors='ignore') if length > 0 else '{}'
+            payload = json.loads(raw) if raw.strip() else {}
+            client_param = (payload.get('client') or '').strip() or None
+            id_set = {str(x) for x in (payload.get('fileIds') or []) if x}
+            idx_set = set()
+            for x in (payload.get('fileIndices') or []):
+                try:
+                    idx_set.add(int(x))
+                except Exception:
+                    pass
+            norm_srv = _norm_srv_tag(payload.get('serverTag'))
+
+            db = resolve_client_db(client_param)
+            if not db or not os.path.exists(db):
+                self.send_json({'error': 'No existe base de datos SQLite activa para este cliente'}, status=404)
+                return
+
+            conn = sqlite3.connect(db, timeout=30.0)
+            cur = conn.cursor()
+            cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='server_stats'")
+            if not cur.fetchone():
+                conn.close()
+                self.send_json({'error': 'La sesión no contiene metadatos de archivos cargados'}, status=400)
+                return
+
+            cur.execute("SELECT value FROM server_stats WHERE key='stats_json'")
+            row = cur.fetchone()
+            if not row or not row[0]:
+                conn.close()
+                self.send_json({'error': 'No se encontraron estadísticas de archivos en server_stats'}, status=400)
+                return
+
+            stats_cached = json.loads(row[0]) or {}
+            loaded_files = list(stats_cached.get('loadedFiles') or [])
+            if not loaded_files:
+                conn.close()
+                self.send_json({'error': 'Lista de archivos vacía en esta sesión'}, status=400)
+                return
+
+            _ensure_loaded_file_ranges(cur, loaded_files, fill_dates=False)
+
+            to_remove = []
+            remaining = []
+            for idx, f in enumerate(loaded_files):
+                fid = str(f.get('fileId') or '')
+                f_srv = _norm_srv_tag(f.get('serverTag') or f.get('nodeName'))
+                matched = (fid and fid in id_set) or (idx in idx_set) or (bool(norm_srv) and f_srv == norm_srv)
+                if matched:
+                    to_remove.append(f)
+                else:
+                    remaining.append(f)
+
+            if not to_remove:
+                conn.close()
+                self.send_json({'error': 'Ningún archivo coincidente para eliminar'}, status=400)
+                return
+
+            if len(remaining) == 0:
+                conn.close()
+                clear_active_session(client_param=client_param, purge_db=True)
+                self.send_json({
+                    'success': True,
+                    'status': 'empty',
+                    'deletedCount': len(to_remove),
+                    'remainingFiles': 0,
+                    'totalLogs': 0,
+                    'totalErrors': 0
+                })
+                return
+
+            for f in to_remove:
+                sl = int(f.get('startLine') or 0)
+                el = int(f.get('endLine') or 0)
+                if sl > 0 and el >= sl:
+                    cur.execute('DELETE FROM logs WHERE line_num BETWEEN ? AND ?', (sl, el))
+            conn.commit()
+
+            client_display = stats_cached.get('client') or client_param or 'Entrust Client'
+            stats_obj = recompute_sqlite_stats_obj(cur, db, client_display, remaining)
+            cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_obj, ensure_ascii=False)))
+            cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4')")
+            conn.commit()
+            conn.close()
+
+            upload_state['linesProcessed'] = stats_obj['totalLogs']
+            upload_state['totalErrors'] = stats_obj['totalErrors']
+            upload_state['totalWarnings'] = stats_obj['totalWarnings']
+
+            self.send_json({
+                'success': True,
+                'status': 'ready',
+                'deletedCount': len(to_remove),
+                'remainingFiles': len(remaining),
+                'totalLogs': stats_obj['totalLogs'],
+                'totalErrors': stats_obj['totalErrors'],
+                'stats': stats_obj
+            })
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
+
+    def handle_reassign_session_files(self):
+        try:
+            length = int(self.headers.get('Content-Length', 0) or 0)
+            raw = self.rfile.read(length).decode('utf-8', errors='ignore') if length > 0 else '{}'
+            payload = json.loads(raw) if raw.strip() else {}
+            client_param = (payload.get('client') or '').strip() or None
+            id_set = {str(x) for x in (payload.get('fileIds') or []) if x}
+            idx_set = set()
+            for x in (payload.get('fileIndices') or []):
+                try:
+                    idx_set.add(int(x))
+                except Exception:
+                    pass
+            node_key = str(payload.get('nodeKey') or '').strip()
+            node_name = str(payload.get('nodeName') or '').strip()
+            server_tag = str(payload.get('serverTag') or '').strip()
+
+            db = resolve_client_db(client_param)
+            if not db or not os.path.exists(db):
+                self.send_json({'error': 'Base de datos SQLite no encontrada'}, status=404)
+                return
+
+            conn = sqlite3.connect(db, timeout=30.0)
+            cur = conn.cursor()
+            cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='server_stats'")
+            if not cur.fetchone():
+                conn.close()
+                self.send_json({'error': 'Tabla server_stats no existe'}, status=400)
+                return
+            cur.execute("SELECT value FROM server_stats WHERE key='stats_json'")
+            row = cur.fetchone()
+            if not row or not row[0]:
+                conn.close()
+                self.send_json({'error': 'Metadatos de sesión vacíos'}, status=400)
+                return
+
+            stats_cached = json.loads(row[0]) or {}
+            loaded_files = list(stats_cached.get('loadedFiles') or [])
+            _ensure_loaded_file_ranges(cur, loaded_files, fill_dates=False)
+
+            updated = 0
+            for idx, f in enumerate(loaded_files):
+                fid = str(f.get('fileId') or '')
+                if (fid and fid in id_set) or (idx in idx_set):
+                    if node_key:
+                        f['nodeKey'] = node_key
+                    if node_name:
+                        f['nodeName'] = node_name
+                    if server_tag:
+                        f['serverTag'] = server_tag
+                    updated += 1
+
+            if updated > 0:
+                stats_cached['loadedFiles'] = loaded_files
+                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_cached, ensure_ascii=False)))
+                conn.commit()
+            conn.close()
+            self.send_json({'success': True, 'updatedCount': updated, 'loadedFiles': loaded_files})
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
 
     def handle_api_logs(self, query):
         client_param = query.get('client', [None])[0]
