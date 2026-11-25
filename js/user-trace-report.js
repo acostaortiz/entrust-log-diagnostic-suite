@@ -1343,7 +1343,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         Object.entries(u.codesDetail || {}).forEach(([code, det]) => {
           if (!codeMap[code]) {
             let kind = 'SYSTEM_EVENT';
-            if (/^520\d{4}$/.test(code)) kind = 'ERROR_520';
+            if (/^5(?:2\d{4,5}|[013-9]\d{5})$/.test(code)) kind = 'ERROR_520';
             else if (/^AUD\d+/i.test(code) || /AUDIT/i.test(code)) kind = 'AUDIT_AUD';
             else if (/^ORA-/i.test(code) || /SQL|JDBC/i.test(code)) kind = 'DATABASE_ORA';
             else if (/^(?:TOMCAT_|JVM_)/i.test(code)) kind = 'TOMCAT_JVM';
@@ -1782,9 +1782,16 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
 
     renderCodesMatrixSubView(container, codeMatrix) {
       const fam = this.activeCodeFamilyFilter || 'ALL';
-      const filtered = fam === 'ALL' ? codeMatrix : codeMatrix.filter(c => c.kind === fam);
+      const isErrRow = (c) => Number(c.failCount || 0) > 0 || c.kind === 'ERROR_520' || c.kind === 'DATABASE_ORA';
+      const filtered = fam === 'ALL'
+        ? codeMatrix
+        : (fam === 'ERRORS_ALL' ? codeMatrix.filter(isErrRow) : codeMatrix.filter(c => c.kind === fam));
 
       const countByKind = (k) => codeMatrix.filter(c => c.kind === k).length;
+      const errCodeCount = codeMatrix.filter(isErrRow).length;
+      const totalInt = codeMatrix.reduce((a, c) => a + Number(c.totalInteractions || 0), 0);
+      const totalFails = codeMatrix.reduce((a, c) => a + Number(c.failCount || 0), 0);
+      const totalSucc = codeMatrix.reduce((a, c) => a + Number(c.successCount || 0), 0);
 
       let cardsHtml = '';
       if (filtered.length === 0) {
@@ -1793,7 +1800,15 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         filtered.forEach(item => {
           const diag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(item.code, item.code) : { title: item.code, meaning: '', remediation: '' };
           const isErr = item.failCount > 0 || item.kind === 'ERROR_520' || item.kind === 'DATABASE_ORA' || item.kind === 'IDAAS_MIGRATION';
-          const badgeColor = item.kind === 'ERROR_520' ? '#ef4444' : (item.kind === 'AUDIT_AUD' ? '#0284c7' : (item.kind === 'DATABASE_ORA' ? '#e11d48' : (item.kind === 'IDAAS_MIGRATION' ? '#f59e0b' : '#64748b')));
+          const badgeColor = item.kind === 'ERROR_520'
+            ? '#ef4444'
+            : (item.kind === 'AUDIT_AUD'
+              ? '#0284c7'
+              : (item.kind === 'DATABASE_ORA'
+                ? '#e11d48'
+                : (item.kind === 'TOMCAT_JVM'
+                  ? (item.failCount > 0 ? '#dc2626' : '#ea580c')
+                  : (item.kind === 'IDAAS_MIGRATION' ? '#f59e0b' : '#64748b'))));
 
           const allCodeUsers = item.users || [];
           const topCodeUsers = allCodeUsers.slice(0, 60);
@@ -1862,12 +1877,18 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       }
 
       container.innerHTML = `
+        <div id="codes-matrix-volumetry-banner" style="margin-bottom:10px; padding:10px 14px; border-radius:8px; background:rgba(2,132,199,0.08); border:1px solid rgba(2,132,199,0.28); font-size:0.78rem; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;">
+          <span style="font-weight:800; color:var(--text-main);">📊 Volumetría Completa (0 omitidos): <span style="color:#0284c7;">${codeMatrix.length.toLocaleString()}</span> códigos únicos • <span style="color:#ef4444;">${errCodeCount.toLocaleString()}</span> con fallos</span>
+          <span style="font-family:'JetBrains Mono', monospace; color:var(--text-muted);">⚡ ${totalInt.toLocaleString()} interacciones &nbsp;|&nbsp; <strong style="color:#ef4444;">🔴 ${totalFails.toLocaleString()} fallos</strong> &nbsp;|&nbsp; <strong style="color:#10b981;">🟢 ${totalSucc.toLocaleString()} éxitos</strong></span>
+        </div>
         <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;">
           <button onclick="window.UserTraceReport.filterCodesMatrixFamily('ALL')" style="padding:5px 11px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; border:1px solid var(--border-color); background:${fam === 'ALL' ? '#0284c7' : 'var(--bg-primary)'}; color:${fam === 'ALL' ? '#fff' : 'var(--text-main)'};">Todos (${codeMatrix.length})</button>
-          <button onclick="window.UserTraceReport.filterCodesMatrixFamily('ERROR_520')" style="padding:5px 11px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; border:1px solid #ef4444; background:${fam === 'ERROR_520' ? '#ef4444' : 'rgba(239,68,68,0.1)'}; color:${fam === 'ERROR_520' ? '#fff' : '#ef4444'};">🚨 Errores 520xxx (${countByKind('ERROR_520')})</button>
-          <button onclick="window.UserTraceReport.filterCodesMatrixFamily('AUDIT_AUD')" style="padding:5px 11px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; border:1px solid #0284c7; background:${fam === 'AUDIT_AUD' ? '#0284c7' : 'rgba(2,132,199,0.1)'}; color:${fam === 'AUDIT_AUD' ? '#fff' : '#0284c7'};">🛡️ Patrones de Auditoría AUD (${countByKind('AUDIT_AUD')})</button>
-          <button onclick="window.UserTraceReport.filterCodesMatrixFamily('SYSTEM_EVENT')" style="padding:5px 11px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; border:1px solid #10b981; background:${fam === 'SYSTEM_EVENT' ? '#10b981' : 'rgba(16,185,129,0.1)'}; color:${fam === 'SYSTEM_EVENT' ? '#fff' : '#10b981'};">🖥️ Sistema & SSH/OS (${countByKind('SYSTEM_EVENT')})</button>
+          <button onclick="window.UserTraceReport.filterCodesMatrixFamily('ERRORS_ALL')" style="padding:5px 11px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; border:1px solid #dc2626; background:${fam === 'ERRORS_ALL' ? '#dc2626' : 'rgba(220,38,38,0.1)'}; color:${fam === 'ERRORS_ALL' ? '#fff' : '#dc2626'};">🚨 Todos los Fallos (${errCodeCount})</button>
+          <button onclick="window.UserTraceReport.filterCodesMatrixFamily('ERROR_520')" style="padding:5px 11px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; border:1px solid #ef4444; background:${fam === 'ERROR_520' ? '#ef4444' : 'rgba(239,68,68,0.1)'}; color:${fam === 'ERROR_520' ? '#fff' : '#ef4444'};">🛡️ Errores 520xxx (${countByKind('ERROR_520')})</button>
+          <button onclick="window.UserTraceReport.filterCodesMatrixFamily('TOMCAT_JVM')" style="padding:5px 11px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; border:1px solid #ea580c; background:${fam === 'TOMCAT_JVM' ? '#ea580c' : 'rgba(234,88,12,0.1)'}; color:${fam === 'TOMCAT_JVM' ? '#fff' : '#ea580c'};">☕ Tomcat / JVM (${countByKind('TOMCAT_JVM')})</button>
           <button onclick="window.UserTraceReport.filterCodesMatrixFamily('DATABASE_ORA')" style="padding:5px 11px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; border:1px solid #e11d48; background:${fam === 'DATABASE_ORA' ? '#e11d48' : 'rgba(225,29,72,0.1)'}; color:${fam === 'DATABASE_ORA' ? '#fff' : '#e11d48'};">🗄️ Base de Datos ORA/SQL (${countByKind('DATABASE_ORA')})</button>
+          <button onclick="window.UserTraceReport.filterCodesMatrixFamily('AUDIT_AUD')" style="padding:5px 11px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; border:1px solid #0284c7; background:${fam === 'AUDIT_AUD' ? '#0284c7' : 'rgba(2,132,199,0.1)'}; color:${fam === 'AUDIT_AUD' ? '#fff' : '#0284c7'};">📋 Auditoría AUD (${countByKind('AUDIT_AUD')})</button>
+          <button onclick="window.UserTraceReport.filterCodesMatrixFamily('SYSTEM_EVENT')" style="padding:5px 11px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; border:1px solid #10b981; background:${fam === 'SYSTEM_EVENT' ? '#10b981' : 'rgba(16,185,129,0.1)'}; color:${fam === 'SYSTEM_EVENT' ? '#fff' : '#10b981'};">🖥️ Sistema & SSH/OS (${countByKind('SYSTEM_EVENT')})</button>
           ${countByKind('IDAAS_MIGRATION') > 0 ? `<button onclick="window.UserTraceReport.filterCodesMatrixFamily('IDAAS_MIGRATION')" style="padding:5px 11px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; border:1px solid #f59e0b; background:${fam === 'IDAAS_MIGRATION' ? '#f59e0b' : 'rgba(245,158,11,0.1)'}; color:${fam === 'IDAAS_MIGRATION' ? '#fff' : '#f59e0b'};">☁️ Migración (${countByKind('IDAAS_MIGRATION')})</button>` : ''}
         </div>
         ${cardsHtml}

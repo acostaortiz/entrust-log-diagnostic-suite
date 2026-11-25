@@ -140,8 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const raw = (l.raw || l.message || '');
         const code = String(l.entrustCode || '');
         if (/bulkidentityguard|idaas/i.test(code) || /IDaaS/i.test(l.service || '') || /IDaaS/i.test(l.type || '')) {
-          const m520 = raw.match(/\b(520\d{4})\b/);
-          const mAud = raw.match(/\b(AUD\d{3,4})\b/i);
+          const m520 = raw.match(/\[(5(?:2\d{4,5}|[013-9]\d{5}))\]/) || raw.match(/\b(520\d{4})\b/);
+          const mAud = raw.match(/\b(AUD\d{2,5})\b/i);
           if (m520) {
             l.entrustCode = m520[1];
             l.service = 'IG.SYSTEM';
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
             l.entrustCode = null;
             if (/IDaaS/i.test(l.service || '')) l.service = 'IG.SYSTEM';
             if (/IDaaS/i.test(l.type || '')) l.type = 'System Log';
-            if (!/\[(ERROR|FATAL|CRITICAL)\]|520\d{4}|exception|failed/i.test(raw) && l.level === 'ERROR') {
+            if (!/\[(ERROR|FATAL|CRITICAL)\]|5(?:2\d{4,5}|[013-9]\d{5})|exception|failed/i.test(raw) && l.level === 'ERROR') {
               l.level = 'INFO';
               remappedErrors++;
             }
@@ -1540,12 +1540,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.14.0',
-    build: 616,
+    version: 'v3.15.0',
+    build: 617,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'SQLITE-FILE-DELETE-REASSIGN-314',
+    gitCommit: 'ZERO-OMISSION-VOLUMETRY-315',
     gitBranch: 'main',
-    buildDate: '2026-11-24 21:50',
+    buildDate: '2026-11-24 23:00',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -3918,7 +3918,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const isGlobal = !!state.globalStreamMetrics || consolidated.fileCount > 0;
     const isCloud = isActualCloudSample();
 
-    const platformLabel = isCloud ? 'Entrust IDaaS Cloud' : `IdentityGuard OnPremise (${activeClient?.version || 'Release 13.0'})`;
+    const platformLabel = isCloud ? 'Entrust IDaaS Cloud' : `IdentityGuard OnPremise (${activeClient?.version || 'OnPremise'})`;
     const platformDisplay = isCloud ? '🛡️ Entrust IDaaS Cloud (Bulk Provisioning & SAML 2.0)' : `🛡️ ${escapeHtml(activeClient?.platform || 'Entrust IdentityGuard OnPremise')}`;
 
     const totalCount = consolidated.totalLogs;
@@ -3981,21 +3981,55 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       });
     }
 
-    if (state.globalStreamMetrics?.topCodes) {
-      state.globalStreamMetrics.topCodes.forEach(item => {
-        if (!isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(item.code)) return;
-        const diag = window.knowledgeBaseEngine.diagnoseLog(item.code, item.code);
-        allUniqueCodesMap.set(item.code, {
-          code: item.code,
-          count: item.count,
+    const numericEntrustRe = /^5(?:2\d{4,5}|[013-9]\d{5})$/;
+    const criticalTomcatRe = /^(?:JVM_OOM|TOMCAT_(?:SSL_TLS|LDAP_ERROR|NETWORK_ERROR|DEPLOY_ERROR|JAVA_EXCEPTION|SEVERE|THREAD_POOL))$/i;
+
+    if (fmData && Array.isArray(fmData.codeMatrix)) {
+      fmData.codeMatrix.forEach(cm => {
+        if (!cm || !cm.code) return;
+        const cStr = String(cm.code);
+        if (!isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(cStr)) return;
+        const diag = window.knowledgeBaseEngine.diagnoseLog(cStr, cStr);
+        const failCnt = Number(cm.failCount || 0);
+        const totCnt = Number(cm.totalInteractions || 0);
+        const isCrit = failCnt > 0 || cm.kind === 'ERROR_520' || cm.kind === 'DATABASE_ORA';
+        allUniqueCodesMap.set(cStr, {
+          code: cStr,
+          count: totCnt,
+          failCount: failCnt,
+          kind: cm.kind || '',
           diag,
-          level: (item.code.includes('error') || item.code.startsWith('520') || item.code.includes('ORA') || /AUD6001|AUD6002|SSH-FAIL/i.test(item.code)) ? 'CRITICAL' : 'INFO',
+          level: isCrit ? 'CRITICAL' : 'INFO',
           service: diag.category || 'Entrust IdentityGuard Service',
-          sampleRaw: isEn ? `[Audit Stream] Event recorded in dataset for code ${item.code}` : `[Audit Stream] Evento registrado en trazabilidad para código ${item.code}`,
-          sampleFile: (state.loadedFiles && state.loadedFiles[0]?.name) || 'Log Auditado',
+          sampleRaw: isEn ? `[SQLite Forensic Index] ${totCnt.toLocaleString()} events recorded for code ${cStr} (${failCnt.toLocaleString()} fail)` : `[SQLite Forense] ${totCnt.toLocaleString()} eventos registrados para código ${cStr} (${failCnt.toLocaleString()} fallos)`,
+          sampleFile: (state.loadedFiles && state.loadedFiles[0]?.name) || 'SQLite Consolidado',
           sampleTime: '-',
           sampleLine: 1
         });
+      });
+    }
+
+    if (state.globalStreamMetrics?.topCodes) {
+      state.globalStreamMetrics.topCodes.forEach(item => {
+        if (!item || !item.code) return;
+        const cStr = String(item.code);
+        if (!isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(cStr)) return;
+        if (!allUniqueCodesMap.has(cStr)) {
+          const diag = window.knowledgeBaseEngine.diagnoseLog(cStr, cStr);
+          const isCrit = cStr.includes('error') || numericEntrustRe.test(cStr) || /^(?:ORA-|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)/i.test(cStr) || criticalTomcatRe.test(cStr) || /^(?:AUD110|AUD125|AUD126|AUD127|AUD150|AUD153|AUD154|AUD2309|AUD4005|AUD6001|AUD6002|SSH-FAIL)$/i.test(cStr);
+          allUniqueCodesMap.set(cStr, {
+            code: cStr,
+            count: Number(item.count || 0),
+            failCount: isCrit ? Number(item.count || 0) : 0,
+            diag,
+            level: isCrit ? 'CRITICAL' : 'INFO',
+            service: diag.category || 'Entrust IdentityGuard Service',
+            sampleRaw: isEn ? `[Audit Stream] Event recorded in dataset for code ${cStr}` : `[Audit Stream] Evento registrado en trazabilidad para código ${cStr}`,
+            sampleFile: (state.loadedFiles && state.loadedFiles[0]?.name) || 'Log Auditado',
+            sampleTime: '-',
+            sampleLine: 1
+          });
+        }
       });
     }
 
@@ -4012,6 +4046,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         allUniqueCodesMap.set(code, {
           code,
           count: 1,
+          failCount: (log.level === 'ERROR' || log.level === 'CRITICAL') ? 1 : 0,
           diag,
           level: log.level || 'ERROR',
           service: diag.category || log.service || 'Entrust IdentityGuard Service',
@@ -4022,7 +4057,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         });
       } else {
         const entry = allUniqueCodesMap.get(code);
-        if (!state.globalStreamMetrics?.topCodes) {
+        if (!state.globalStreamMetrics?.topCodes && !(fmData && Array.isArray(fmData.codeMatrix) && fmData.codeMatrix.length > 0)) {
           entry.count += 1;
         }
         if (entry.sampleTime === '-' && log.timestamp) {
@@ -4036,7 +4071,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     sortedIncidents = Array.from(allUniqueCodesMap.values()).sort((a, b) => b.count - a.count);
     const diagMapSize = sortedIncidents.length;
-    const displayIncidents = sortedIncidents.slice(0, 40);
+    const displayIncidents = sortedIncidents.slice(0, 500);
 
     displayIncidents.forEach((item, idx) => {
       const idxNum = idx + 1;
@@ -4056,18 +4091,20 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       let familyBadge = i18n.fam520Title;
       let familyColor = '#dc2626';
       if (/^AUD\d+/i.test(code)) { familyBadge = i18n.famAudTitle; familyColor = '#d97706'; }
-      else if (/^ORA-\d+/i.test(code)) { familyBadge = i18n.famOraTitle; familyColor = '#7c3aed'; }
+      else if (/^ORA-\d+|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(code)) { familyBadge = i18n.famOraTitle; familyColor = '#7c3aed'; }
+      else if (/^(?:TOMCAT_|JVM_)/i.test(code)) { familyBadge = '☕ Tomcat / JVM'; familyColor = '#ea580c'; }
       else if (/AWS-S3|S3-404/i.test(code)) { familyBadge = '☁️ AWS S3 Cloud'; familyColor = '#e11d48'; }
-      else if (!isCloud || /SSH|OS|IG\.SYSTEM/i.test(code)) { familyBadge = '🖥️ Sistema & SSH/OS'; familyColor = '#0284c7'; }
+      else if (numericEntrustRe.test(code)) { familyBadge = i18n.fam520Title; familyColor = '#dc2626'; }
+      else if (!isCloud || /SSH|OS|IG\.SYSTEM|SYSTEM_LOG/i.test(code)) { familyBadge = '🖥️ Sistema & SSH/OS'; familyColor = '#0284c7'; }
       else if (/bulkidentityguard|\.assignedgrid|idaas/i.test(code)) { familyBadge = '☁️ IDaaS Cloud'; familyColor = '#0284c7'; }
 
       // Classification: True System Error vs Preexisting Data Collision vs Audit
       let typeBadge = '';
-      if (/AWS-S3|S3-404|ORA-|5201000|OutOfMemory|SQLException|Connection pool|EOF/i.test(code) || /The specified key does not exist|snapshot too old/i.test(sampleRaw)) {
+      if (/AWS-S3|S3-404|ORA-|JDBC_SQL_EXCEPTION|SQL_EXCEPTION|JVM_OOM|TOMCAT_(?:SSL_TLS|LDAP_ERROR|NETWORK_ERROR|DEPLOY_ERROR|JAVA_EXCEPTION|SEVERE)|5201000|OutOfMemory|SQLException|Connection pool|EOF/i.test(code) || /The specified key does not exist|snapshot too old/i.test(sampleRaw)) {
         typeBadge = isEn 
           ? `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">🔴 SYSTEM & INFRASTRUCTURE ERROR</span>`
           : `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">🔴 FALLO REAL DE SISTEMA / INFRAESTRUCTURA</span>`;
-      } else if (/^520\d{4}|AUD6001|AUD6002|SSH-FAIL/i.test(code)) {
+      } else if (numericEntrustRe.test(code) || /^AUD(?:110|125|126|127|150|153|154|2309|4005|6001|6002)$|^SSH-FAIL$/i.test(code)) {
         typeBadge = isEn
           ? `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">🚨 AUTHENTICATION / SECURITY FAILURE</span>`
           : `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">🚨 FALLO DE AUTENTICACIÓN / SEGURIDAD</span>`;
@@ -4162,8 +4199,8 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         </tr>`;
     });
 
-    if (sortedIncidents.length > 40) {
-      const extraCodes = sortedIncidents.length - 40;
+    if (sortedIncidents.length > 500) {
+      const extraCodes = sortedIncidents.length - 500;
       const extraMsg = isEn
         ? `+ ${extraCodes} additional low-frequency codes available in CSV export / Analyzer`
         : `+ ${extraCodes} códigos adicionales de menor frecuencia disponibles en CSV / Analizador`;
@@ -4308,29 +4345,30 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     `;
 
     // Construir Fases del Roadmap 100% determinísticas según lo detectado realmente
-    const count520Total = sortedIncidents.filter(i => /^520/i.test(i.code)).reduce((acc, i) => acc + i.count, 0);
+    const count520Total = sortedIncidents.filter(i => numericEntrustRe.test(i.code)).reduce((acc, i) => acc + i.count, 0);
     const countAudTotal = sortedIncidents.filter(i => /^AUD/i.test(i.code)).reduce((acc, i) => acc + i.count, 0);
-    const countOraTotal = sortedIncidents.filter(i => /^ORA/i.test(i.code)).reduce((acc, i) => acc + i.count, 0);
+    const countOraTotal = sortedIncidents.filter(i => /^ORA|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(i.code)).reduce((acc, i) => acc + i.count, 0);
+    const countTomcatErrTotal = sortedIncidents.filter(i => criticalTomcatRe.test(i.code) || (i.kind === 'TOMCAT_JVM' && Number(i.failCount || 0) > 0)).reduce((acc, i) => acc + (Number(i.failCount || 0) > 0 ? Number(i.failCount) : i.count), 0);
     const countSysOrIdaasTotal = isCloud
       ? sortedIncidents.filter(i => /bulkidentityguard|\.assignedgrid|idaas/i.test(i.code)).reduce((acc, i) => acc + i.count, 0)
-      : sortedIncidents.filter(i => !/^(520|AUD|ORA)/i.test(i.code)).reduce((acc, i) => acc + i.count, 0);
+      : sortedIncidents.filter(i => !numericEntrustRe.test(i.code) && !/^(?:AUD|ORA|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)/i.test(i.code)).reduce((acc, i) => acc + i.count, 0);
 
     const topFailedUsersNames = sortedForensicUsers.filter(u => u.errors > 0 || u.isLocked).slice(0, 5).map(u => `<code>${escapeHtml(u.username)}</code>`).join(', ');
-    const dynamicPhase1Html = (usersWithErrorsCount > 0 || count520Total > 0 || countAudTotal > 0)
-      ? `• Auditar y desbloquear las <strong>${usersWithErrorsCount}</strong> cuenta(s) con fallos registrados (${topFailedUsersNames || 'usuarios afectados'}).<br>• Revisar los <strong>${count520Total.toLocaleString()}</strong> errores <code>520xxxx</code> y <strong>${countAudTotal.toLocaleString()}</strong> eventos <code>AUDxxxx</code> detectados en la muestra.<br>• Validar accesos administrativos y sesiones SSH/OS (${countSysOrIdaasTotal.toLocaleString()} eventos).`
+    const dynamicPhase1Html = (usersWithErrorsCount > 0 || count520Total > 0 || countAudTotal > 0 || countTomcatErrTotal > 0)
+      ? `• Auditar y desbloquear las <strong>${usersWithErrorsCount}</strong> cuenta(s) con fallos registrados (${topFailedUsersNames || 'usuarios afectados'}).<br>• Revisar los <strong>${count520Total.toLocaleString()}</strong> errores <code>5xxxxx/520xxx</code>, <strong>${countTomcatErrTotal.toLocaleString()}</strong> fallos Tomcat/JVM y <strong>${countAudTotal.toLocaleString()}</strong> eventos <code>AUDxxx</code> detectados en la muestra.<br>• Validar accesos administrativos y sesiones SSH/OS (${countSysOrIdaasTotal.toLocaleString()} eventos).`
       : `• Operación inmediata sin bloqueos críticos activos (0 cuentas bloqueadas).<br>• Mantener monitoreo preventivo sobre servicios de autenticación Entrust IdentityGuard OnPremise.`;
 
     const dynamicPhase2Html = countOraTotal > 0 || dbHealthObj.totalDbIncidents > 0
-      ? `• Atender los <strong>${dbHealthObj.totalDbIncidents}</strong> incidentes de persistencia Oracle/JDBC detectados en la muestra.<br>• Ajustar parámetros de pool JDBC y retención UNDO según evidencia.<br>• Sincronizar identidades afectadas en repositorio LDAP/Active Directory.`
+      ? `• Atender los <strong>${Math.max(dbHealthObj.totalDbIncidents || 0, countOraTotal).toLocaleString()}</strong> incidentes de persistencia Oracle/JDBC detectados en la muestra.<br>• Ajustar parámetros de pool JDBC y retención UNDO según evidencia.<br>• Sincronizar identidades afectadas en repositorio LDAP/Active Directory.`
       : `• <strong>Base de Datos Saludable (0 errores ORA/JDBC):</strong> No se requiere intervención de emergencia sobre Oracle DB.<br>• Sincronizar y depurar en LDAP/AD las cuentas que registraron intentos fallidos de credencial o reto.<br>• Verificar vigencia de tokens/tarjetas Grid de los usuarios con fricción.`;
 
     const dynamicPhase3Html = `• Verificar boletines y parches aplicables a <strong>${escapeHtml(activeClient.platform)} (${escapeHtml(activeClient.version)})</strong> en <a href="https://trustedcare.entrust.com" target="_blank" style="color:#166534; text-decoration:underline; font-weight:bold;">trustedcare.entrust.com</a>.<br>• Mantener auditoría continua de secuencias por usuario (Solicitud 1 ➔ Solicitud N) y cumplimiento normativo SUDEBAN / ISO 27001.`;
 
     // Veredicto Ejecutivo: 100% derivado de contadores reales (sin texto de plantilla)
     const lockedUsersCount = sortedForensicUsers.filter(u => u.isLocked).length;
-    const dbIncidentsReal = (dbHealthObj.totalDbIncidents || 0) + countOraTotal;
+    const dbIncidentsReal = Math.max(dbHealthObj.totalDbIncidents || 0, countOraTotal);
     let verdictLevel = 'NOMINAL', verdictColor = '#16a34a', verdictBg = '#f0fdf4', verdictIcon = '✅';
-    if (dbIncidentsReal > 0) { verdictLevel = 'ALTO'; verdictColor = '#dc2626'; verdictBg = '#fef2f2'; verdictIcon = '🚨'; }
+    if (dbIncidentsReal > 0 || countTomcatErrTotal > 0) { verdictLevel = 'ALTO'; verdictColor = '#dc2626'; verdictBg = '#fef2f2'; verdictIcon = '🚨'; }
     else if (lockedUsersCount > 0 || count520Total > 0) { verdictLevel = 'MEDIO'; verdictColor = '#d97706'; verdictBg = '#fffbeb'; verdictIcon = '⚠️'; }
     const topThreeHtml = sortedIncidents.slice(0, 3).map((it, i) => `<div style="display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px dashed #cbd5e1; font-size:11px;"><span><strong>${i + 1}.</strong> <code>${escapeHtml(it.code)}</code></span><strong style="font-family:monospace;">${it.count.toLocaleString()} (${formatPctStr(it.count, totalCount)})</strong></div>`).join('') || `<div style="font-size:11px; color:#64748b;">Sin códigos de error en la muestra.</div>`;
     const priorityUsersHtml = sortedForensicUsers.filter(u => u.errors > 0 || u.isLocked).slice(0, 8).map(u => `<span style="display:inline-block; margin:2px 3px 0 0; padding:2px 7px; border-radius:10px; font-family:monospace; font-size:10px; font-weight:800; background:${u.isLocked ? '#ffe4e6' : '#fef3c7'}; color:${u.isLocked ? '#be123c' : '#92400e'}; border:1px solid ${u.isLocked ? '#fda4af' : '#fcd34d'};">${u.isLocked ? '🔒' : '⚠️'} ${escapeHtml(u.username)} (${u.errors})</span>`).join('') || '<span style="font-size:10.5px; color:#15803d; font-weight:700;">Ninguna: todos los usuarios sin fallas.</span>';
@@ -4460,7 +4498,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     enrichedAuditedFiles
       .sort((a, b) => (b.fErrors - a.fErrors) || (b.fLines - a.fLines))
-      .slice(0, 40)
+      .slice(0, 200)
       .forEach((item, fIdx) => {
         const { file, fName, fLower, fLayer, fBadgeBg, fBadgeColor, fLines, fErrors } = item;
         const fSizeStr = file.size ? `${(file.size / (1024 * 1024)).toFixed(2)} MB` : '-';
@@ -4499,10 +4537,10 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         `;
       });
 
-    if (auditedFiles.length > 40) {
+    if (auditedFiles.length > 200) {
       const extraFilesMsg = isEn
-        ? `+ ${auditedFiles.length - 40} additional files in consolidated session (Top 40 by errors/volume shown)`
-        : `+ ${auditedFiles.length - 40} archivos adicionales consolidados en la sesión (mostrando Top 40 por fallos/volumen)`;
+        ? `+ ${auditedFiles.length - 200} additional files in consolidated session (Top 200 by errors/volume shown)`
+        : `+ ${auditedFiles.length - 200} archivos adicionales consolidados en la sesión (mostrando Top 200 por fallos/volumen)`;
       filesTableRowsHtml += `<tr><td colspan="6" style="padding:8px 10px; border:1px solid #cbd5e1; background:#f1f5f9; color:#475569; font-size:10px; text-align:center; font-weight:600;">📁 ${extraFilesMsg}</td></tr>`;
     }
 
@@ -4551,11 +4589,26 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       </div>
     `;
 
-    // Construir Sección 3: Matriz Forense de Errores Críticos 520xxx del Motor Entrust
-    const incidents520 = sortedIncidents.filter(i => /^520/i.test(i.code)).slice(0, 40);
+    // Construir Sección 3: Matriz Forense Completa de Errores Críticos (520xxx / 5xxxxx / ORA-JDBC / Tomcat-JVM / AUD-Fail)
+    const isCriticalReportItem = (i) => (
+      numericEntrustRe.test(i.code)
+      || /^ORA-|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(i.code)
+      || criticalTomcatRe.test(i.code)
+      || /^(?:AUD110|AUD125|AUD126|AUD127|AUD150|AUD153|AUD154|AUD2309|AUD4005|AUD6002|SSH-FAIL)$/i.test(i.code)
+      || Number(i.failCount || 0) > 0
+      || i.level === 'CRITICAL'
+    );
+    const incidents520 = sortedIncidents.filter(isCriticalReportItem).sort((a, b) => (Number(b.failCount || b.count) - Number(a.failCount || a.count))).slice(0, 500);
+    const critSectionTotal = count520Total + countOraTotal + countTomcatErrTotal;
     let rows520Html = '';
     incidents520.forEach((item, idx) => {
-      const { code, diag, count, service } = item;
+      const { code, diag, service } = item;
+      const count = Number(item.failCount || 0) > 0 ? Number(item.failCount) : Number(item.count || 0);
+      const famTag = numericEntrustRe.test(code)
+        ? '🚨 520xxx Core'
+        : (/^ORA-|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(code)
+          ? '🗄️ ORA / JDBC'
+          : (/^(?:TOMCAT_|JVM_)/i.test(code) ? '☕ Tomcat / JVM' : '⚠️ AUD / Sistema Fallo'));
       const bDiag = getBilingualDiagnostic(diag, code, service, isEn);
       const pctStr = formatPctStr(count, totalCount);
       const codeUsersEntry520 = codeToUsersLookup[code] || codeToUsersLookup[String(code).toUpperCase()] || { users: [], uniqueUsersCount: 0 };
@@ -4569,7 +4622,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#fef2f2'};">
           <td style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center;">
             <code style="background:#fee2e2; color:#b91c1c; font-weight:900; font-size:11px; padding:2px 6px; border-radius:3px; border:1px solid #fca5a5;">${escapeHtml(code)}</code>
-            <div style="font-size:9px; color:#dc2626; font-weight:700; margin-top:3px;">🚨 Fallo Crítico de Motor</div>
+            <div style="font-size:9px; color:#dc2626; font-weight:700; margin-top:3px;">${famTag}</div>
           </td>
           <td style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center;">
             <div style="font-family:monospace; font-size:14px; font-weight:900; color:#b91c1c;">${count.toLocaleString()}</div>
@@ -4593,21 +4646,21 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const top520ErrorsSectionHtml = `
       <div style="margin-top:20px; margin-bottom:25px;">
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:10px; font-size:15px;">
-          3. Matriz Forense de Errores Críticos 520xxx del Motor Entrust IdentityGuard [${count520Total.toLocaleString()} Ocurrencias Reales]
+          3. Matriz Forense de Errores Críticos (520xxx / 5xxxxx / ORA / Tomcat-JVM / AUD) [${Math.max(criticalLogsCount, critSectionTotal).toLocaleString()} Fallos Reales]
         </h3>
-        <div style="background:${count520Total > 0 ? '#fef2f2' : '#f0fdf4'}; border:1px solid ${count520Total > 0 ? '#fecaca' : '#bbf7d0'}; border-left:5px solid ${count520Total > 0 ? '#dc2626' : '#16a34a'}; padding:12px 14px; border-radius:6px; margin-bottom:12px; font-size:11px;">
-          <strong style="color:${count520Total > 0 ? '#991b1b' : '#15803d'}; font-size:12px;">${count520Total > 0 ? '🚨 HALLAZGO CRÍTICO EN NÚCLEO DE AUTENTICACIÓN (520xxx):' : '✅ NÚCLEO DE AUTENTICACIÓN NOMINAL:'}</strong>
+        <div style="background:${incidents520.length > 0 ? '#fef2f2' : '#f0fdf4'}; border:1px solid ${incidents520.length > 0 ? '#fecaca' : '#bbf7d0'}; border-left:5px solid ${incidents520.length > 0 ? '#dc2626' : '#16a34a'}; padding:12px 14px; border-radius:6px; margin-bottom:12px; font-size:11px;">
+          <strong style="color:${incidents520.length > 0 ? '#991b1b' : '#15803d'}; font-size:12px;">${incidents520.length > 0 ? '🚨 HALLAZGO CRÍTICO CONSOLIDADO (CERO OMISIONES):' : '✅ NÚCLEO DE AUTENTICACIÓN NOMINAL:'}</strong>
           <div style="color:#334155; margin-top:4px; line-height:1.5;">
-            ${count520Total > 0
-              ? `Se identificaron <strong>${count520Total.toLocaleString()}</strong> eventos de código <code>520xxx</code> en los registros del motor IdentityGuard. A diferencia de eventos informativos o de auditoría, la familia 520xxx corresponde a <strong>excepciones de comunicación, desincronización de credenciales o rechazo de proxy de autenticación</strong> del kernel Entrust. Los detalles desglosados a continuación representan el 100% de los códigos 520xxx presentes en los archivos auditados.`
-              : `No se registraron fallos de la familia 520xxx en los archivos analizados. Todos los sockets y servicios del kernel operaron normalmente.`}
+            ${incidents520.length > 0
+              ? `Se identificaron <strong>${incidents520.length}</strong> códigos de error/fallo distintos (<code>520xxx/5xxxxx</code>: <strong>${count520Total.toLocaleString()}</strong> • <code>ORA/JDBC</code>: <strong>${countOraTotal.toLocaleString()}</strong> • <code>Tomcat/JVM</code>: <strong>${countTomcatErrTotal.toLocaleString()}</strong> • Total fallos críticos: <strong>${criticalLogsCount.toLocaleString()}</strong>). La tabla inferior muestra el 100% de las familias de error presentes en los archivos auditados.`
+              : `No se registraron fallos críticos en los archivos analizados. Todos los sockets y servicios del kernel operaron normalmente.`}
           </div>
         </div>
         ${incidents520.length > 0 ? `
           <table class="report-table" style="width:100%; border-collapse:collapse; font-size:10.5px; table-layout:fixed; word-wrap:break-word;">
             <thead>
               <tr style="background:#991b1b; color:#ffffff; text-align:left;">
-                <th style="padding:7px 6px; border:1px solid #991b1b; width:15%; text-align:center; color:#fff;">Código 520xxx</th>
+                <th style="padding:7px 6px; border:1px solid #991b1b; width:15%; text-align:center; color:#fff;">Código / Familia</th>
                 <th style="padding:7px 6px; border:1px solid #991b1b; width:12%; text-align:center; color:#fff;">Ocurrencias</th>
                 <th style="padding:7px 6px; border:1px solid #991b1b; width:28%; color:#fff;">Significado Técnico &amp; Usuarios</th>
                 <th style="padding:7px 6px; border:1px solid #991b1b; width:22%; color:#fff;">Causa Raíz Forense</th>
@@ -4620,7 +4673,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           </table>
         ` : `
           <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:12px 14px; border-radius:6px; color:#15803d; font-size:11.5px; font-weight:700;">
-            ✅ No se registraron incidentes críticos de la familia 520xxx en los archivos auditados.
+            ✅ No se registraron incidentes críticos en los archivos auditados.
           </div>
         `}
       </div>
@@ -5131,7 +5184,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const items = [];
     const isEn = state.reportLanguage === 'en';
     const isCloud = isActualCloudSample();
-    const platformTitle = isCloud ? 'Entrust IDaaS Cloud' : `Entrust IdentityGuard OnPremise (${activeClient?.version || 'Release 13.0'})`;
+    const platformTitle = isCloud ? 'Entrust IDaaS Cloud' : `Entrust IdentityGuard OnPremise (${activeClient?.version || 'OnPremise'})`;
     const consoleTitle = isCloud 
       ? (isEn ? 'Entrust IDaaS Cloud Console' : 'Consola Entrust IDaaS Cloud') 
       : (isEn ? 'Entrust IdentityGuard Administration Console' : 'Consola de Administración Entrust IdentityGuard OnPremise');
@@ -5141,7 +5194,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       targetLogs.forEach(l => {
         const msg = `${l.entrustCode || ''} ${l.message || ''}`;
         if (regex.test(msg)) {
-          const match = msg.match(/(?:\[|\b)(520\d{4}|AUD\d+|JDBC_SQL_EXCEPTION|JVM_OOM|TOMCAT_[A-Z_]+)(?:\]|\b)/i);
+          const match = msg.match(/(?:\[|\b)(5(?:2\d{4,5}|[013-9]\d{5})|AUD\d{2,5}|ORA-\d{4,5}|JDBC_SQL_EXCEPTION|JVM_OOM|TOMCAT_[A-Z_]+)(?:\]|\b)/i);
           if (match) set.add(match[1].toUpperCase());
         }
       });
@@ -5445,58 +5498,65 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         }
       });
 
-      if (state.sqliteStats && Array.isArray(state.sqliteStats.eventTypes)) {
-        state.sqliteStats.eventTypes.forEach(et => {
-          if (/^AUD\d+/i.test(et.code) && !codesMap.has(et.code.toUpperCase())) {
-            codesMap.set(et.code.toUpperCase(), {
-              code: et.code.toUpperCase(),
-              count: et.count,
-              sample: `[${et.code}] Evento de auditoría consolidado en SQLite`,
-              service: 'Audit Engine SQLite',
-              usersMap: new Map(),
-              actorsMap: new Map()
-            });
-          }
-        });
-      }
+      const gsmCodesAudit = (state.globalStreamMetrics && (state.globalStreamMetrics.eventTypes || state.globalStreamMetrics.topCodes)) || [];
+      gsmCodesAudit.forEach(et => {
+        if (et && /^AUD\d+/i.test(et.code) && !codesMap.has(String(et.code).toUpperCase())) {
+          codesMap.set(String(et.code).toUpperCase(), {
+            code: String(et.code).toUpperCase(),
+            count: Number(et.count || 0),
+            sample: `[${et.code}] Evento de auditoría consolidado en SQLite`,
+            service: 'Audit Engine SQLite',
+            usersMap: new Map(),
+            actorsMap: new Map()
+          });
+        }
+      });
 
       if (codesMap.size === 0) {
         codesMap.set('SIN-EVENTOS-AUD', { code: 'SIN-EVENTOS-AUD', count: 0, sample: 'No se detectaron códigos AUDxxx en los archivos cargados actualmente.', service: 'Motor de Auditoría', usersMap: new Map(), actorsMap: new Map() });
       }
 
     } else if (category === '520') {
-      catTitle = '🚨 Errores y Excepciones de Autenticación [520xxx]';
-      catSubtitle = `Códigos oficiales de error técnico, fallos de autenticación y desglose real por usuario afectado (${clientLabel} - ${clientVersion})`;
-      colHeader1 = 'Código Entrust';
+      catTitle = '🚨 Catálogo Completo de Errores & Fallos Críticos [520xxx / ORA / Tomcat / AUD]';
+      catSubtitle = `100% de errores técnicos, códigos 5xxxxx/520xxx, excepciones Oracle/JDBC, Tomcat/JVM y bloqueos críticos (${clientLabel} - ${clientVersion})`;
+      colHeader1 = 'Código / Familia';
       colHeader3 = 'Diagnóstico Técnico Oficial & Usuarios Afectados';
       colHeader4 = 'Causa Raíz Técnica';
       colHeader5 = 'Remediación Oficial Entrust';
 
+      const numeric520Re = /^5(?:2\d{4,5}|[013-9]\d{5})$/;
+      const critCodeSetRe = /^(?:5(?:2\d{4,5}|[013-9]\d{5})|ORA-\d{4,5}|JDBC_SQL_EXCEPTION|SQL_EXCEPTION|JVM_OOM|TOMCAT_(?:SSL_TLS|LDAP_ERROR|NETWORK_ERROR|DEPLOY_ERROR|JAVA_EXCEPTION|SEVERE|THREAD_POOL)|AUD(?:110|125|126|127|150|153|154|2309|4005|6002)|SSH-FAIL|AWS-S3-404-NOKEY|bulkidentityguard\.add\.error\.[A-Za-z0-9_.-]+)$/i;
+
       logs.forEach(l => {
         const cleanMsg = l.raw || l.message || '';
-        const match = cleanMsg.match(/520\d{4}/i);
-        if (match) {
-          registerCodeHit(match[0], l, cleanMsg, 'IdentityGuard Core');
+        const eCode = String(l.entrustCode || (window.knowledgeBaseEngine && window.knowledgeBaseEngine.extractErrorCodeFromText(cleanMsg)) || '').trim();
+        const isErrRow = (l.level === 'ERROR' || l.level === 'CRITICAL' || /FAIL|ERR/i.test(l.outcome || ''));
+        if (eCode && (critCodeSetRe.test(eCode) || isErrRow)) {
+          registerCodeHit(eCode, l, cleanMsg, l.service || 'IdentityGuard Core');
+        } else if (isErrRow) {
+          const hitC = eCode || l.type || l.service || 'SYSTEM_ERROR';
+          registerCodeHit(hitC, l, cleanMsg, l.service || 'IdentityGuard Core');
         }
       });
 
-      if (state.sqliteStats && Array.isArray(state.sqliteStats.topCodes)) {
-        state.sqliteStats.topCodes.forEach(tc => {
-          if (/^520\d{4}$/.test(tc.code) && !codesMap.has(tc.code)) {
-            codesMap.set(tc.code, {
-              code: tc.code,
-              count: tc.count,
-              sample: `[${tc.code}] Código de error consolidado en motor SQLite`,
-              service: 'IdentityGuard Core SQLite',
-              usersMap: new Map(),
-              actorsMap: new Map()
-            });
-          }
-        });
-      }
+      const gsmCodes520 = (state.globalStreamMetrics && (state.globalStreamMetrics.topCodes || state.globalStreamMetrics.eventTypes)) || [];
+      gsmCodes520.forEach(tc => {
+        const cStr = String((tc && tc.code) || '').trim();
+        if (!cStr) return;
+        if (critCodeSetRe.test(cStr) && !codesMap.has(cStr)) {
+          codesMap.set(cStr, {
+            code: cStr,
+            count: Number(tc.count || 0),
+            sample: `[${cStr}] Código de fallo crítico consolidado en motor SQLite`,
+            service: numeric520Re.test(cStr) ? 'IdentityGuard Core SQLite' : (/^ORA-|^JDBC|^SQL/i.test(cStr) ? 'Oracle / JDBC SQLite' : (/^(?:TOMCAT_|JVM_)/i.test(cStr) ? 'Tomcat / JVM SQLite' : 'Auditoría / Sistema SQLite')),
+            usersMap: new Map(),
+            actorsMap: new Map()
+          });
+        }
+      });
 
       if (codesMap.size === 0) {
-        codesMap.set('SIN-ERRORES-520', { code: 'SIN-ERRORES-520', count: 0, sample: 'No se detectaron códigos de error 520xxx en los archivos cargados actualmente.', service: 'Motor de Autenticación', usersMap: new Map(), actorsMap: new Map() });
+        codesMap.set('SIN-ERRORES-520', { code: 'SIN-ERRORES-520', count: 0, sample: 'No se detectaron códigos de error o fallos críticos en los archivos cargados actualmente.', service: 'Motor de Autenticación', usersMap: new Map(), actorsMap: new Map() });
       }
 
     } else if (category === 'idaas') {
@@ -5518,27 +5578,26 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           }
         });
 
-        if (state.sqliteStats && Array.isArray(state.sqliteStats.topCodes)) {
-          state.sqliteStats.topCodes.forEach(tc => {
-            if (/bulkidentityguard|\.assignedgrid|idaas/i.test(tc.code) && !codesMap.has(tc.code)) {
-              codesMap.set(tc.code, {
-                code: tc.code,
-                count: tc.count,
-                sample: `[${tc.code}] Incidente de migración consolidado en SQLite`,
-                service: 'IDaaS Bulk Provisioning',
-                usersMap: new Map(),
-                actorsMap: new Map()
-              });
-            }
-          });
-        }
+        const gsmIdaas = (state.globalStreamMetrics && (state.globalStreamMetrics.topCodes || state.globalStreamMetrics.eventTypes)) || [];
+        gsmIdaas.forEach(tc => {
+          if (tc && /bulkidentityguard|\.assignedgrid|idaas/i.test(tc.code) && !codesMap.has(tc.code)) {
+            codesMap.set(tc.code, {
+              code: tc.code,
+              count: Number(tc.count || 0),
+              sample: `[${tc.code}] Incidente de migración consolidado en SQLite`,
+              service: 'IDaaS Bulk Provisioning',
+              usersMap: new Map(),
+              actorsMap: new Map()
+            });
+          }
+        });
 
         if (codesMap.size === 0) {
           codesMap.set('SIN-EVENTOS-IDAAS', { code: 'SIN-EVENTOS-IDAAS', count: 0, sample: 'No se detectaron eventos de migración o aprovisionamiento IDaaS en la carga actual.', service: 'IDaaS Bulk Provisioning', usersMap: new Map(), actorsMap: new Map() });
         }
       } else {
-        catTitle = '🖥️ Eventos de Sistema, Accesos SSH/OS & Subsistema Core (OnPremise)';
-        catSubtitle = `Auditoría de conexiones administrativas SSH/OS, canales API y eventos de infraestructura (${clientLabel} - ${clientVersion})`;
+        catTitle = '🖥️ Eventos de Sistema, Tomcat/JVM & Accesos SSH/OS (OnPremise)';
+        catSubtitle = `Auditoría de contenedores Tomcat, conexiones SSH/OS, canales API y eventos de infraestructura (${clientLabel} - ${clientVersion})`;
         colHeader1 = 'Código / Subsistema';
         colHeader3 = 'Descripción del Evento & Cuentas Asociadas';
         colHeader4 = 'Origen / Impacto Operacional';
@@ -5547,9 +5606,24 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         logs.forEach(l => {
           const cleanMsg = l.raw || l.message || '';
           const code = l.entrustCode || '';
-          if (/^SSH|OS\.SSH/i.test(code) || /OS\.SSH|SYSLOG/i.test(l.service || '') || /Target:\s*\d+|sshd|pam_unix/i.test(cleanMsg) || (!/^520\d{4}|^AUD\d+/i.test(code) && code)) {
+          if (/^SSH|OS\.SSH|^TOMCAT_|^JVM_/i.test(code) || /OS\.SSH|SYSLOG|Tomcat/i.test(l.service || '') || /Target:\s*\d+|sshd|pam_unix/i.test(cleanMsg) || (!/^5(?:2\d{4,5}|[013-9]\d{5})$|^AUD\d+/i.test(code) && code)) {
             const hitCode = code || (/Target:\s*\d+|ssh/i.test(cleanMsg) ? 'SSH-AUTH' : (l.service || 'IG.SYSTEM'));
             registerCodeHit(hitCode, l, cleanMsg, l.service || 'OS.SSH / IG.SYSTEM');
+          }
+        });
+
+        const gsmSys = (state.globalStreamMetrics && (state.globalStreamMetrics.eventTypes || state.globalStreamMetrics.topCodes)) || [];
+        gsmSys.forEach(et => {
+          const c = String((et && et.code) || '');
+          if (c && !/^5(?:2\d{4,5}|[013-9]\d{5})$|^AUD\d+/i.test(c) && !/bulkidentityguard|\.assignedgrid|idaas/i.test(c) && !codesMap.has(c)) {
+            codesMap.set(c, {
+              code: c,
+              count: Number(et.count || 0),
+              sample: `[${c}] Evento de sistema / Tomcat consolidado en SQLite`,
+              service: /^(?:TOMCAT_|JVM_)/i.test(c) ? 'Tomcat Catalina SQLite' : 'IG.SYSTEM SQLite',
+              usersMap: new Map(),
+              actorsMap: new Map()
+            });
           }
         });
 
@@ -5580,13 +5654,12 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         registerCodeHit(srv, l, cleanMsg, srv);
       });
 
-      if (state.sqliteStats && Array.isArray(state.sqliteStats.eventTypes)) {
-        state.sqliteStats.eventTypes.forEach(et => {
-          if (!codesMap.has(et.code)) {
-            codesMap.set(et.code, { code: et.code, count: et.count, sample: `Operación consolidada en base de datos SQLite (${et.code})`, service: et.code, usersMap: new Map(), actorsMap: new Map() });
-          }
-        });
-      }
+      const gsmTraffic = (state.globalStreamMetrics && (state.globalStreamMetrics.eventTypes || state.globalStreamMetrics.topCodes)) || [];
+      gsmTraffic.forEach(et => {
+        if (et && et.code && !codesMap.has(et.code)) {
+          codesMap.set(et.code, { code: et.code, count: Number(et.count || 0), sample: `Operación consolidada en base de datos SQLite (${et.code})`, service: et.code, usersMap: new Map(), actorsMap: new Map() });
+        }
+      });
 
       if (codesMap.size === 0) {
         codesMap.set('SIN-TRAFICO-API', { code: 'SIN-TRAFICO-API', count: 0, sample: 'No hay transacciones cargadas en memoria ni base de datos activa.', service: 'Gateway API', usersMap: new Map(), actorsMap: new Map() });
@@ -5608,13 +5681,24 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     // Enriquecer con la matriz forense del backend SQLite si está disponible (100% de ocurrencias y población de usuarios)
     const fm = (state.isServerApi && window.UserTraceReport) ? window.UserTraceReport.forensicMatrixData : null;
     if (fm && Array.isArray(fm.codeMatrix)) {
+      const isCloudSample = isActualCloudSample();
       const matchesCategory = (cm) => {
         const c = String(cm.code || '');
         const k = String(cm.kind || '');
         if (category === 'audit') return k === 'AUDIT_AUD' || /^AUD\d+/i.test(c);
-        if (category === '520') return k === 'ERROR_520' || /^520\d{4}$/.test(c);
-        if (category === 'idaas') return k === 'IDAAS_MIGRATION' || /bulkidentityguard|\.assignedgrid|idaas/i.test(c);
-        if (category === 'system') return k === 'SYSTEM_EVENT' || k === 'DATABASE_ORA';
+        if (category === '520') {
+          return k === 'ERROR_520'
+            || k === 'DATABASE_ORA'
+            || Number(cm.failCount || 0) > 0
+            || /^5(?:2\d{4,5}|[013-9]\d{5})$/.test(c)
+            || /^ORA-\d+/i.test(c)
+            || /^(?:AUD110|AUD125|AUD126|AUD127|AUD150|AUD153|AUD154|AUD2309|AUD4005|AUD6002|SSH-FAIL|JVM_OOM|JDBC_SQL_EXCEPTION|SQL_EXCEPTION|AWS-S3-404-NOKEY)$/i.test(c);
+        }
+        if (category === 'idaas') {
+          if (isCloudSample) return k === 'IDAAS_MIGRATION' || /bulkidentityguard|\.assignedgrid|idaas/i.test(c);
+          return k === 'SYSTEM_EVENT' || k === 'TOMCAT_JVM' || k === 'DATABASE_ORA';
+        }
+        if (category === 'system') return k === 'SYSTEM_EVENT' || k === 'TOMCAT_JVM' || k === 'DATABASE_ORA';
         if (category === 'traffic') return true;
         return false;
       };
@@ -5628,19 +5712,27 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         const normKey = (category === 'audit' || /^AUD\d+/i.test(cm.code))
           ? String(cm.code).toUpperCase()
           : String(cm.code);
+        const failCnt = Number(cm.failCount || 0);
+        const totCnt = Number(cm.totalInteractions || 0);
+        const targetCount = (category === '520' && failCnt > 0) ? failCnt : totCnt;
         let entry = codesMap.get(normKey) || codesMap.get(cm.code);
         if (!entry) {
           entry = {
             code: normKey,
-            count: Number(cm.totalInteractions || 0),
-            sample: `[${normKey}] Evento indexado al 100% en SQLite (${Number(cm.totalInteractions || 0).toLocaleString()} ocurrencias)`,
-            service: category === 'audit' ? 'IG.AUDIT (SQLite)' : (category === '520' ? 'IdentityGuard Core (SQLite)' : 'SQLite Index'),
+            count: targetCount,
+            failCount: failCnt,
+            kind: cm.kind || '',
+            sample: `[${normKey}] Evento indexado al 100% en SQLite (${targetCount.toLocaleString()} ocurrencias)`,
+            service: cm.kind === 'AUDIT_AUD' ? 'IG.AUDIT (SQLite)' : (cm.kind === 'ERROR_520' ? 'IdentityGuard Core (SQLite)' : (cm.kind === 'DATABASE_ORA' ? 'Oracle / JDBC (SQLite)' : (cm.kind === 'TOMCAT_JVM' ? 'Tomcat / JVM (SQLite)' : 'SQLite Index'))),
             usersMap: new Map(),
             actorsMap: new Map()
           };
           codesMap.set(normKey, entry);
+        } else {
+          entry.count = (category === '520' && failCnt > 0) ? failCnt : Math.max(Number(entry.count || 0), targetCount);
+          entry.failCount = failCnt;
+          if (cm.kind) entry.kind = cm.kind;
         }
-        entry.count = Math.max(Number(entry.count || 0), Number(cm.totalInteractions || 0));
         entry.sqliteUniqueUsers = Number(cm.uniqueUsersCount ?? cm.uniqueUsers ?? 0);
         if (Array.isArray(cm.users) && cm.users.length > 0) {
           entry.usersMap.clear();
@@ -5665,9 +5757,11 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     dataArray.forEach(d => {
       if (d.usersMap) d.usersMap.forEach((_, u) => globalUniqueUsers.add(u));
     });
-    const exactGlobalUniqueUsers = (fm && fm.categoryUniqueUsers && typeof fm.categoryUniqueUsers[category] === 'number')
-      ? fm.categoryUniqueUsers[category]
-      : (fm && category === 'traffic' && typeof fm.uniqueValidUsers === 'number' ? fm.uniqueValidUsers : globalUniqueUsers.size);
+    const exactGlobalUniqueUsers = (category === '520' && fm && (typeof fm.usersWithErrors === 'number' || (fm.categoryUniqueUsers && typeof fm.categoryUniqueUsers.errorsAll === 'number')))
+      ? Number(fm.categoryUniqueUsers?.errorsAll ?? fm.usersWithErrors ?? 0)
+      : ((fm && fm.categoryUniqueUsers && typeof fm.categoryUniqueUsers[category] === 'number')
+        ? fm.categoryUniqueUsers[category]
+        : (fm && category === 'traffic' && typeof fm.uniqueValidUsers === 'number' ? fm.uniqueValidUsers : globalUniqueUsers.size));
 
     summaryBar.innerHTML = `
       <div><strong>Códigos Únicos:</strong> <span style="color:#38bdf8; font-family:monospace; font-weight:bold;">${dataArray.length}</span></div>
@@ -5677,11 +5771,19 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     `;
 
     let rowsHtml = '';
+    const errFamilyCounts = { 'all': dataArray.length, '520': 0, 'ora': 0, 'tomcat': 0, 'aud_sys': 0 };
     dataArray.forEach((item, idx) => {
       let diag = { title: item.code, meaning: 'Evento registrado en logs de transacciones', rootCause: 'Parámetros o política de autenticación', remediation: 'Verificar en manual administrativo Entrust' };
       if (window.knowledgeBaseEngine) {
         diag = window.knowledgeBaseEngine.diagnoseLog(item.sample, item.code);
       }
+
+      const codeU = String(item.code || '').toUpperCase();
+      let errFam = 'aud_sys';
+      if (/^5(?:2\d{4,5}|[013-9]\d{5})$/.test(codeU)) errFam = '520';
+      else if (/^ORA-|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/.test(codeU)) errFam = 'ora';
+      else if (/^(?:TOMCAT_|JVM_)/.test(codeU)) errFam = 'tomcat';
+      errFamilyCounts[errFam]++;
 
       const pct = totalOccurrences > 0 ? ((item.count / totalOccurrences) * 100).toFixed(1) : '0';
       const isAudit = category === 'audit' || (item.code && item.code.startsWith('AUD'));
@@ -5760,7 +5862,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         : '';
 
       rowsHtml += `
-        <tr style="border-bottom:1px solid var(--border-color); background:${idx % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.03)'};">
+        <tr class="kpi-inspector-row" data-err-family="${errFam}" style="border-bottom:1px solid var(--border-color); background:${idx % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.03)'};">
           <td style="padding:10px; font-family:'JetBrains Mono', monospace; font-weight:bold; color:${isAudit ? '#0d9488' : '#0284c7'}; white-space:nowrap; vertical-align:top;">
             ${escapeHtml(item.code)}
             <div style="font-size:0.68rem; color:#f59e0b; font-weight:600; margin-top:4px;">
@@ -5788,7 +5890,18 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       `;
     });
 
+    const filterPillsHtml = (category === '520') ? `
+      <div id="kpi-inspector-filter-bar" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
+        <button type="button" class="kpi-fam-pill active" data-fam="all" onclick="window.filterKpiInspectorFamily('all')" style="padding:4px 10px; border-radius:6px; font-size:0.74rem; font-weight:700; cursor:pointer; border:1px solid #0284c7; background:#0284c7; color:#fff;">Todos los Fallos (${errFamilyCounts.all})</button>
+        <button type="button" class="kpi-fam-pill" data-fam="520" onclick="window.filterKpiInspectorFamily('520')" style="padding:4px 10px; border-radius:6px; font-size:0.74rem; font-weight:700; cursor:pointer; border:1px solid #ef4444; background:rgba(239,68,68,0.1); color:#ef4444;">🛡️ 520xxx / 5xxxxx (${errFamilyCounts['520']})</button>
+        <button type="button" class="kpi-fam-pill" data-fam="ora" onclick="window.filterKpiInspectorFamily('ora')" style="padding:4px 10px; border-radius:6px; font-size:0.74rem; font-weight:700; cursor:pointer; border:1px solid #a78bfa; background:rgba(139,92,246,0.1); color:#a78bfa;">🗄️ ORA / JDBC (${errFamilyCounts.ora})</button>
+        <button type="button" class="kpi-fam-pill" data-fam="tomcat" onclick="window.filterKpiInspectorFamily('tomcat')" style="padding:4px 10px; border-radius:6px; font-size:0.74rem; font-weight:700; cursor:pointer; border:1px solid #ea580c; background:rgba(234,88,12,0.1); color:#ea580c;">☕ Tomcat / JVM (${errFamilyCounts.tomcat})</button>
+        <button type="button" class="kpi-fam-pill" data-fam="aud_sys" onclick="window.filterKpiInspectorFamily('aud_sys')" style="padding:4px 10px; border-radius:6px; font-size:0.74rem; font-weight:700; cursor:pointer; border:1px solid #f59e0b; background:rgba(245,158,11,0.1); color:#f59e0b;">⚠️ AUD / Sistema (${errFamilyCounts.aud_sys})</button>
+      </div>
+    ` : '';
+
     tableContainer.innerHTML = `
+      ${filterPillsHtml}
       <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.8rem;">
         <thead>
           <tr style="background:var(--bg-secondary); border-bottom:2px solid var(--border-color); color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">
@@ -5805,6 +5918,19 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       </table>
     `;
   }
+
+  window.filterKpiInspectorFamily = function(fam) {
+    document.querySelectorAll('#kpi-inspector-table-container .kpi-inspector-row').forEach(tr => {
+      tr.style.display = (fam === 'all' || tr.dataset.errFamily === fam) ? '' : 'none';
+    });
+    document.querySelectorAll('#kpi-inspector-filter-bar .kpi-fam-pill').forEach(btn => {
+      const active = btn.dataset.fam === fam;
+      btn.classList.toggle('active', active);
+      const borderCol = btn.style.borderColor || '#0284c7';
+      btn.style.background = active ? borderCol : 'transparent';
+      btn.style.color = active ? '#fff' : borderCol;
+    });
+  };
 
   function downloadKpiInspectorCsv() {
     if (!currentInspectorData || currentInspectorData.length === 0) {
@@ -7686,7 +7812,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const files = state.loadedFiles || [];
     const logsLen = (state.logs || []).length;
     const gsmTotal = state.globalStreamMetrics ? (state.globalStreamMetrics.totalLogs || 0) : 0;
-    const sig = `${files.length}|${logsLen}|${gsmTotal}|${state.isServerApi ? 1 : 0}|${files[0]?.name || ''}|${files[files.length - 1]?.name || ''}`;
+    const fmRef = (state.isServerApi && window.UserTraceReport) ? window.UserTraceReport.forensicMatrixData : null;
+    const fmLen = (fmRef && Array.isArray(fmRef.codeMatrix)) ? fmRef.codeMatrix.length : 0;
+    const sig = `${files.length}|${logsLen}|${gsmTotal}|${fmLen}|${state.isServerApi ? 1 : 0}|${files[0]?.name || ''}|${files[files.length - 1]?.name || ''}`;
     if (_consolidatedMetricsCache && _consolidatedMetricsSig === sig) {
       return _consolidatedMetricsCache;
     }
@@ -7725,45 +7853,66 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const codeMap520 = {};
     const codeMapAud = {};
     const codeMapOra = {};
+    const codeMapTomcat = {};
     const codeMapIdaas = {};
     const codeMapOther = {};
+    const numeric520Re = /^5(?:2\d{4,5}|[013-9]\d{5})$/;
 
     const isCloud = isActualCloudSample();
+    const classifyIntoMaps = (rawCode, cnt) => {
+      const c = String(rawCode || '').trim();
+      if (!c || !cnt) return;
+      if (numeric520Re.test(c)) codeMap520[c] = (codeMap520[c] || 0) + cnt;
+      else if (/^AUD\d+/i.test(c)) codeMapAud[c] = (codeMapAud[c] || 0) + cnt;
+      else if (/^ORA-\d+|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(c)) codeMapOra[c] = (codeMapOra[c] || 0) + cnt;
+      else if (/^(?:TOMCAT_|JVM_)/i.test(c)) codeMapTomcat[c] = (codeMapTomcat[c] || 0) + cnt;
+      else if (isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(c)) codeMapIdaas[c] = (codeMapIdaas[c] || 0) + cnt;
+      else if (!/bulkidentityguard|\.assignedgrid|idaas/i.test(c)) codeMapOther[c] = (codeMapOther[c] || 0) + cnt;
+    };
+
     const codeList = (state.globalStreamMetrics && (state.globalStreamMetrics.topCodes || state.globalStreamMetrics.eventTypes)) || [];
+    const seenFromGsm = new Set();
     codeList.forEach(item => {
       const c = String(item.code || '');
       const cnt = Number(item.count || 0);
-      if (/^520\d{4}/.test(c)) codeMap520[c] = (codeMap520[c] || 0) + cnt;
-      else if (/^AUD\d+/i.test(c)) codeMapAud[c] = (codeMapAud[c] || 0) + cnt;
-      else if (/^ORA-\d+/i.test(c)) codeMapOra[c] = (codeMapOra[c] || 0) + cnt;
-      else if (isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(c)) codeMapIdaas[c] = (codeMapIdaas[c] || 0) + cnt;
-      else if (!/bulkidentityguard|\.assignedgrid|idaas/i.test(c)) codeMapOther[c] = (codeMapOther[c] || 0) + cnt;
+      if (c) seenFromGsm.add(c);
+      classifyIntoMaps(c, cnt);
     });
 
-    // Solo escanear state.logs si globalStreamMetrics no aportó el mapa completo (evita doble conteo)
-    if (codeList.length === 0) {
-      (state.logs || []).forEach(l => {
-        const rawText = (l.message || '') + ' ' + (l.raw || '');
-        const code = l.entrustCode || (window.knowledgeBaseEngine && window.knowledgeBaseEngine.extractErrorCodeFromText(rawText));
-        if (code) {
-          if (/^520\d{4}/.test(code)) codeMap520[code] = (codeMap520[code] || 0) + 1;
-          else if (/^AUD\d+/i.test(code)) codeMapAud[code] = (codeMapAud[code] || 0) + 1;
-          else if (/^ORA-\d+/i.test(code)) codeMapOra[code] = (codeMapOra[code] || 0) + 1;
-          else if (isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(code)) codeMapIdaas[code] = (codeMapIdaas[code] || 0) + 1;
-          else if (!/bulkidentityguard|\.assignedgrid|idaas/i.test(code)) codeMapOther[code] = (codeMapOther[code] || 0) + 1;
+    if (fmRef && Array.isArray(fmRef.codeMatrix)) {
+      fmRef.codeMatrix.forEach(cm => {
+        const c = String((cm && cm.code) || '');
+        const cnt = Number((cm && cm.totalInteractions) || 0);
+        if (c && !seenFromGsm.has(c) && (codeList.length > 0 || cnt > 0)) {
+          classifyIntoMaps(c, cnt);
         }
       });
     }
 
+    // Solo escanear state.logs si globalStreamMetrics no aportó el mapa completo (evita doble conteo)
+    if (codeList.length === 0 && fmLen === 0) {
+      (state.logs || []).forEach(l => {
+        const rawText = (l.message || '') + ' ' + (l.raw || '');
+        const code = l.entrustCode || (window.knowledgeBaseEngine && window.knowledgeBaseEngine.extractErrorCodeFromText(rawText));
+        if (code) classifyIntoMaps(code, 1);
+      });
+    }
+
     // Consolidación estricta sin alucinaciones:
-    // Los códigos 520xxx, ORA y fallos proxy AUD150/154 son fallos críticos del motor.
-    // Los códigos AUD6001/AUD6002/AUD2309/AUD155 son alertas de seguridad y auditoría.
+    // Los códigos 5xxxxx/520xxx, ORA/JDBC, fallos Tomcat/JVM y fallos AUD son incidentes críticos del motor.
     const sum520 = Object.values(codeMap520).reduce((a, b) => a + b, 0);
     const sumOra = Object.values(codeMapOra).reduce((a, b) => a + b, 0);
-    const sumAudCritical = Object.entries(codeMapAud).filter(([k]) => /^AUD150|^AUD154/i.test(k)).reduce((a, [k, v]) => a + v, 0);
-    const sumAudWarnings = Object.entries(codeMapAud).filter(([k]) => /^AUD6001|^AUD6002|^AUD2309|^AUD155/i.test(k)).reduce((a, [k, v]) => a + v, 0);
+    const sumTomcatErrs = Object.entries(codeMapTomcat)
+      .filter(([k]) => !/^(?:TOMCAT_INFO|TOMCAT_LIFECYCLE|TOMCAT_CLIENT_ABORT|TOMCAT_WARN)$/i.test(k))
+      .reduce((a, [, v]) => a + v, 0);
+    const sumAudCritical = Object.entries(codeMapAud)
+      .filter(([k]) => /^AUD(?:110|125|126|127|150|153|154|2309|4005|6002)$/i.test(k))
+      .reduce((a, [, v]) => a + v, 0);
+    const sumAudWarnings = Object.entries(codeMapAud)
+      .filter(([k]) => /^AUD(?:151|155|6001)$/i.test(k))
+      .reduce((a, [, v]) => a + v, 0);
 
-    const realCriticalErrors = Math.max(totalErrors, sum520 + sumOra + sumAudCritical);
+    const realCriticalErrors = Math.max(totalErrors, sum520 + sumOra + sumTomcatErrs + sumAudCritical);
     const realWarnings = Math.max(totalWarnings, sumAudWarnings);
 
     totalErrors = realCriticalErrors;
@@ -7780,6 +7929,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       codeMap520,
       codeMapAud,
       codeMapOra,
+      codeMapTomcat,
       codeMapIdaas,
       codeMapOther
     };
@@ -7880,8 +8030,14 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       } else {
         const gsm = state.globalStreamMetrics || {};
         const srvCount = new Set((state.loadedFiles || []).map(f => f.serverTag || f.nodeName || 'Principal')).size || (fileCount > 0 ? 1 : 0);
-        const fallbackCodesCount = Object.keys(metrics.codeMap520 || {}).length + Object.keys(metrics.codeMapAud || {}).length + Object.keys(metrics.codeMapOra || {}).length + Object.keys(metrics.codeMapOther || {}).length;
-        const uCodes = gsm.totalUniqueCodes || fallbackCodesCount || 0;
+        const fallbackCodesCount =
+          Object.keys(metrics.codeMap520 || {}).length
+          + Object.keys(metrics.codeMapAud || {}).length
+          + Object.keys(metrics.codeMapOra || {}).length
+          + Object.keys(metrics.codeMapTomcat || {}).length
+          + Object.keys(metrics.codeMapOther || {}).length
+          + Object.keys(metrics.codeMapIdaas || {}).length;
+        const uCodes = Math.max(Number(gsm.totalUniqueCodes || 0), fallbackCodesCount) || 0;
         let uUsers = gsm.totalUniqueUsers || (window.UserTraceReport?.cachedStats ? Object.keys(window.UserTraceReport.cachedStats).length : 0) || (gsm.topUsers || []).length || 0;
         if (!uUsers && state.logs && state.logs.length) {
           const uSet = new Set();
@@ -7920,21 +8076,35 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const totalBadge = document.getElementById('total-logs-badge');
     if (totalBadge) totalBadge.textContent = fileCount > 1 ? `${fileCount} Archivos [Consolidado]` : (total > 0 ? `1 Base de Datos / Archivo` : `0 Archivos`);
 
-    // 2. Tarjeta Errores 520xxx (OnPremise)
+    // 2. Tarjeta Errores & Fallos Críticos (Reconciliada al 100% con Volumetría Global -> 0 omisiones)
     const count520 = Object.values(metrics.codeMap520 || {}).reduce((a, b) => a + b, 0);
-    const count520Final = count520 > 0 ? count520 : (criticalsCount > 0 ? criticalsCount : 0);
+    const totalCritCard = criticalsCount > 0 ? criticalsCount : count520;
+    const otherCritErrs = Math.max(0, totalCritCard - count520);
     const critEl = document.getElementById('critical-count') || dom.criticalCount;
-    if (critEl) critEl.textContent = count520Final.toLocaleString();
+    if (critEl) critEl.textContent = totalCritCard.toLocaleString();
     const critRateBadge = document.getElementById('critical-rate-badge');
     const critBar = document.getElementById('critical-progress-bar');
-    const critPct = total > 0 ? ((count520Final / total) * 100).toFixed(2) : '0';
+    const critSubEl = document.getElementById('critical-card-sub');
+    const critPct = total > 0 ? ((totalCritCard / total) * 100).toFixed(2) : '0';
     if (critRateBadge) critRateBadge.textContent = `${critPct}% Falla`;
     if (critBar) critBar.style.width = `${Math.min(100, Math.max(2, parseFloat(critPct) * 10))}%`;
+    if (critSubEl) {
+      if (count520 > 0 && otherCritErrs > 0) {
+        critSubEl.textContent = `520xxx: ${count520.toLocaleString()} • Otros: ${otherCritErrs.toLocaleString()}`;
+      } else if (count520 > 0) {
+        critSubEl.textContent = `Core 520xxx (${Object.keys(metrics.codeMap520 || {}).length} códigos)`;
+      } else if (totalCritCard > 0) {
+        critSubEl.textContent = 'ORA / Tomcat / AUD Fallos';
+      } else {
+        critSubEl.textContent = 'Core IdentityGuard';
+      }
+    }
 
-    // 3. Tarjeta Sistema / SSH-OS (OnPremise) o IDaaS Cloud (solo si archivo CSV Cloud)
+    // 3. Tarjeta Sistema / Tomcat / SSH-OS (OnPremise) o IDaaS Cloud (solo si archivo CSV Cloud)
     const isCloud = isActualCloudSample();
     const idaasCount = Object.values(metrics.codeMapIdaas || {}).reduce((a, b) => a + b, 0);
-    const otherSysCount = Object.values(metrics.codeMapOther || {}).reduce((a, b) => a + b, 0);
+    const tomcatCount = Object.values(metrics.codeMapTomcat || {}).reduce((a, b) => a + b, 0);
+    const otherSysCount = Object.values(metrics.codeMapOther || {}).reduce((a, b) => a + b, 0) + tomcatCount;
     const card4Count = isCloud ? idaasCount : otherSysCount;
     const idaasEl = document.getElementById('idaas-events-count');
     const idaasBadge = document.getElementById('idaas-rate-badge');
@@ -8443,7 +8613,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       for (let i = 0; i < target.length; i++) {
         const lvl = (target[i].level || 'INFO').toUpperCase();
         if (lvl === 'CRITICAL') critC++;
-        else if (lvl === 'ERROR' || /520\d{4}/.test(String(target[i].entrustCode || ''))) errC++;
+        else if (lvl === 'ERROR' || /^5(?:2\d{4,5}|[013-9]\d{5})$/.test(String(target[i].entrustCode || ''))) errC++;
         else if (lvl === 'WARN' || lvl === 'WARNING') warnC++;
         else if (lvl === 'DEBUG') dbgC++;
         else infoC++;
@@ -8470,20 +8640,24 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const metrics = getConsolidatedMetrics();
     const topContainer = document.getElementById('top-codes-overview-container');
     if (topContainer) {
-      // Agrupar códigos por familias
+      // Agrupar códigos por familias (Cero Omisiones)
       const sortCodes = (mapObj) => Object.entries(mapObj).sort((a, b) => b[1] - a[1]);
       const list520 = sortCodes(metrics.codeMap520);
       const listAud = sortCodes(metrics.codeMapAud);
       const listOra = sortCodes(metrics.codeMapOra);
+      const listTomcat = sortCodes(metrics.codeMapTomcat || {});
       const listIdaas = sortCodes(metrics.codeMapIdaas);
       const listOther = sortCodes(metrics.codeMapOther);
 
-      const allSorted = [...list520, ...listAud, ...listOra, ...listIdaas, ...listOther].sort((a, b) => b[1] - a[1]);
+      const allSorted = [...list520, ...listAud, ...listOra, ...listTomcat, ...listIdaas, ...listOther].sort((a, b) => b[1] - a[1]);
 
       if (allSorted.length === 0) {
-        topContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:15px;">✅ No se detectaron códigos de error críticos [520xxx / AUDxxx / SSH-OS / ORA] en la muestra.</div>';
+        topContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:15px;">✅ No se detectaron códigos de error críticos [520xxx / AUDxxx / SSH-OS / ORA / Tomcat] en la muestra.</div>';
       } else {
         const maxCnt = allSorted[0][1] || 1;
+        const tomcatPill = listTomcat.length > 0
+          ? `<span style="font-size:0.72rem; font-weight:700; background:rgba(234,88,12,0.15); color:#fb923c; border:1px solid rgba(234,88,12,0.3); padding:2px 6px; border-radius:4px;">☕ Tomcat/JVM: ${listTomcat.length} tipos</span>`
+          : '';
         const fourthPill = listIdaas.length > 0
           ? `<span style="font-size:0.72rem; font-weight:700; background:rgba(2,132,199,0.15); color:#38bdf8; border:1px solid rgba(2,132,199,0.3); padding:2px 6px; border-radius:4px;">☁️ IDaaS: ${listIdaas.length} tipos</span>`
           : `<span style="font-size:0.72rem; font-weight:700; background:rgba(2,132,199,0.15); color:#38bdf8; border:1px solid rgba(2,132,199,0.3); padding:2px 6px; border-radius:4px;">🖥️ Sistema/SSH: ${listOther.length} tipos</span>`;
@@ -8492,21 +8666,24 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
               <span style="font-size:0.72rem; font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); padding:2px 6px; border-radius:4px;">🛡️ 520xxx: ${list520.length} tipos</span>
               <span style="font-size:0.72rem; font-weight:700; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); padding:2px 6px; border-radius:4px;">📋 AUD: ${listAud.length} tipos</span>
-              <span style="font-size:0.72rem; font-weight:700; background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); padding:2px 6px; border-radius:4px;">🗄️ ORA: ${listOra.length} tipos</span>
+              <span style="font-size:0.72rem; font-weight:700; background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); padding:2px 6px; border-radius:4px;">🗄️ ORA/JDBC: ${listOra.length} tipos</span>
+              ${tomcatPill}
               ${fourthPill}
             </div>
-            <span style="font-size:0.7rem; font-weight:700; color:var(--text-dim); font-family:monospace;">Total: ${allSorted.length} códigos únicos</span>
+            <span style="font-size:0.7rem; font-weight:700; color:var(--text-dim); font-family:monospace;">Mostrando 100% (${allSorted.length} códigos únicos)</span>
           </div>
-          <div style="display:flex; flex-direction:column; gap:7px; max-height:250px; overflow-y:auto; padding-right:4px;">
+          <div style="display:flex; flex-direction:column; gap:7px; max-height:320px; overflow-y:auto; padding-right:4px;">
         `;
 
         allSorted.forEach(([code, cnt]) => {
           const pct = Math.min(100, Math.max(4, Math.round((cnt / maxCnt) * 100)));
           let color = '#ef4444';
           let badge = '520xxx';
-          if (/^520\d{4}/i.test(code)) { color = '#ef4444'; badge = '520xxx'; }
+          if (/^5(?:2\d{4,5}|[013-9]\d{5})$/i.test(code)) { color = '#ef4444'; badge = '520xxx'; }
           else if (/^AUD\d+/i.test(code)) { color = '#f59e0b'; badge = 'AUD'; }
-          else if (/^ORA-\d+/i.test(code)) { color = '#a78bfa'; badge = 'ORA'; }
+          else if (/^ORA-\d+|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(code)) { color = '#a78bfa'; badge = 'ORA/JDBC'; }
+          else if (/^(?:JVM_OOM|TOMCAT_(?:SSL_TLS|LDAP_ERROR|NETWORK_ERROR|DEPLOY_ERROR|JAVA_EXCEPTION|SEVERE|THREAD_POOL))$/i.test(code)) { color = '#f97316'; badge = 'TOMCAT ERR'; }
+          else if (/^TOMCAT_/i.test(code)) { color = '#38bdf8'; badge = 'TOMCAT'; }
           else if (/^SSH|OS/i.test(code)) { color = '#38bdf8'; badge = 'SSH/OS'; }
           else if (/bulkidentityguard|\.assignedgrid|idaas/i.test(code)) { color = '#38bdf8'; badge = 'IDaaS'; }
           else { color = '#38bdf8'; badge = 'IG.SYSTEM'; }

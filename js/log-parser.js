@@ -41,6 +41,30 @@ const LP_JAVA_STACK_PATTERNS = [
 ];
 const LP_AUD_FAIL_SET = new Set(['AUD110', 'AUD125', 'AUD126', 'AUD127', 'AUD150', 'AUD153', 'AUD2309', 'AUD4005', 'AUD6002']);
 const LP_AUD_WARN_SET = new Set(['AUD151', 'AUD154', 'AUD155', 'AUD6001']);
+const LP_ENTRUST_NUM_BRACKET_RE = /\[(5(?:2\d{4,5}|[013-9]\d{5}))\]/;
+const LP_ENTRUST_NUM_LABELED_RE = /(?:error\s*(?:code)?|err(?:or)?Code|faultCode|statusCode|rc|code)\s*[:=\[\(]\s*(5\d{5,6})\b/i;
+const LP_ENTRUST_USER_CTX_RE = /(?:user(?:name|id|_id)?|alias|serial|card|phone|tel|cedula|account|session|target|uid|subject)\s*[:=#]?\s*['"]?$/i;
+
+function lpIsEntrustNumericCode(code) {
+  return /^5(?:2\d{4,5}|[013-9]\d{5})$/.test(String(code || '').trim());
+}
+
+function lpExtractEntrustNumericCode(text) {
+  if (!text) return null;
+  const mb = text.match(LP_ENTRUST_NUM_BRACKET_RE);
+  if (mb) return mb[1];
+  const ml = text.match(LP_ENTRUST_NUM_LABELED_RE);
+  if (ml) return ml[1];
+  const bareRe = /(?:^|\D)(520\d{4})(?!\d)/g;
+  let bm;
+  while ((bm = bareRe.exec(text)) !== null) {
+    const idx = bm.index + bm[0].indexOf(bm[1]);
+    const prefix = text.slice(Math.max(0, idx - 28), idx);
+    if (LP_ENTRUST_USER_CTX_RE.test(prefix)) continue;
+    return bm[1];
+  }
+  return null;
+}
 
 class LogParser {
   constructor() {
@@ -115,10 +139,10 @@ class LogParser {
     if (baseU === 'GRAVE') baseU = 'SEVERE';
     else if (baseU === 'ADVERTENCIA') baseU = 'WARNING';
 
-    const c520 = txt.match(/(?:\b|\[)(520\d{4})(?:\b|\])/);
-    if (c520) return { code: c520[1], level: 'ERROR', service: 'IG.SYSTEM' };
+    const c520 = lpExtractEntrustNumericCode(txt);
+    if (c520) return { code: c520, level: 'ERROR', service: 'IG.SYSTEM' };
 
-    const aud = txt.match(/(?:\b|\[)(AUD\d{3,4})(?:\b|\])/i);
+    const aud = txt.match(/(?:\b|\[)(AUD\d{2,5})(?:\b|\])/i);
     if (aud) {
       const audCode = aud[1].toUpperCase();
       let lvl = 'INFO';
@@ -127,7 +151,7 @@ class LogParser {
       return { code: audCode, level: lvl, service: 'IG.AUDIT' };
     }
 
-    const ora = txt.match(/\b(ORA-\d{5})\b/i);
+    const ora = txt.match(/\b(ORA-\d{4,5})\b/i);
     if (ora) return { code: ora[1].toUpperCase(), level: 'CRITICAL', service: 'Oracle Database' };
 
     if (/(?:ClientAbortException|Broken pipe|Connection reset by peer)/i.test(txt)) {
@@ -188,7 +212,9 @@ class LogParser {
     if (!parsed || (!slot.stackFrames && slot.causes.length === 0)) return parsed;
     const combined = `${parsed.message || ''} ${slot.causes.join(' ')}`;
     const cls = this._classifyTomcatJavaEvent(combined, slot.baseLevel || parsed.level || 'INFO', true);
-    const oraCause = slot.causes.join(' ').match(/\b(ORA-\d{5})\b/i);
+    const causesTxt = slot.causes.join(' ');
+    const oraCause = causesTxt.match(/\b(ORA-\d{4,5})\b/i);
+    const entCause = lpExtractEntrustNumericCode(causesTxt);
     if (slot.lockedCode) {
       if (oraCause) {
         parsed.entrustCode = oraCause[1].toUpperCase();
@@ -199,6 +225,10 @@ class LogParser {
       parsed.entrustCode = cls.code;
       parsed.level = cls.level;
       parsed.service = cls.service;
+      if (entCause && !lpIsEntrustNumericCode(parsed.entrustCode) && !oraCause) {
+        parsed.entrustCode = entCause;
+        parsed.level = 'ERROR';
+      }
     }
     const extraParts = [];
     if (slot.causes.length > 0) {
@@ -229,7 +259,7 @@ class LogParser {
       if (!trimmed) continue;
 
       const prev = slots.length > 0 ? slots[slots.length - 1] : null;
-      if (/^\[520\d{4}\]/.test(trimmed) && prev) {
+      if (/^\[5(?:2\d{4,5}|[013-9]\d{5})\]/.test(trimmed) && prev) {
         prev.line = prev.line + ' \n ' + trimmed;
         prev.raw = (prev.raw + '\n' + trimmed).slice(0, 1600);
       } else if (prev && prev.isTomcatSimpleHdr && this._isTomcatSimpleLevelLine(rawLine)) {
@@ -240,8 +270,12 @@ class LogParser {
         prev.raw = (prev.raw + '\n' + trimmed).slice(0, 1600);
       } else if (prev && this._isJavaStackContinuation(rawLine)) {
         prev.stackFrames++;
-        if (/^(?:Caused by:|Suppressed:)|^(?:java|javax|jakarta|oracle|org\.apache|com\.entrust)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b/.test(trimmed)) {
-          if (prev.causes.length < 6) prev.causes.push(trimmed.slice(0, 220));
+        if (
+          /^(?:Caused by:|Suppressed:)|^(?:java|javax|jakarta|oracle|org\.apache|com\.entrust)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b/.test(trimmed) ||
+          Boolean(lpExtractEntrustNumericCode(trimmed)) ||
+          /\b(?:ORA-\d{4,5}|AUD\d{2,5})\b/i.test(trimmed)
+        ) {
+          if (prev.causes.length < 10) prev.causes.push(trimmed.slice(0, 220));
         }
         if (!prev.entrustFrame && trimmed.includes('com.entrust.')) {
           prev.entrustFrame = trimmed.replace(/^at\s+/, '').trim().slice(0, 140);
@@ -253,7 +287,7 @@ class LogParser {
           raw: trimmed,
           isTomcatSimpleHdr: LP_RE_JULI_SIMPLE.test(trimmed),
           baseLevel: 'INFO',
-          lockedCode: /^(?:520\d{4}|AUD\d+|ORA-)/i.test(trimmed),
+          lockedCode: /^(?:5(?:2\d{4,5}|[013-9]\d{5})|AUD\d+|ORA-)/i.test(trimmed),
           stackFrames: 0,
           causes: [],
           entrustFrame: ''
@@ -281,7 +315,7 @@ class LogParser {
       if (parsed.timestamp && /^\d{4}-\d{2}-\d{2}/.test(parsed.timestamp)) {
         lastSeenTs = parsed.timestamp;
       }
-      slot.lockedCode = Boolean(parsed.entrustCode && /^(?:520\d{4}|AUD\d+|ORA-|bulkidentityguard)/i.test(parsed.entrustCode));
+      slot.lockedCode = Boolean(parsed.entrustCode && (lpIsEntrustNumericCode(parsed.entrustCode) || /^(?:AUD\d+|ORA-|bulkidentityguard)/i.test(parsed.entrustCode)));
       this._applyFoldedStack(parsed, slot);
 
       // Enriquecer con el motor de Base de Conocimientos
@@ -319,7 +353,7 @@ class LogParser {
       if (!trimmed) continue;
 
       const prev = slots.length > 0 ? slots[slots.length - 1] : null;
-      if (/^\[520\d{4}\]/.test(trimmed) && prev) {
+      if (/^\[5(?:2\d{4,5}|[013-9]\d{5})\]/.test(trimmed) && prev) {
         prev.line = prev.line + ' \n ' + trimmed;
         prev.raw = (prev.raw + '\n' + trimmed).slice(0, 1600);
       } else if (prev && prev.isTomcatSimpleHdr && this._isTomcatSimpleLevelLine(rawLine)) {
@@ -330,8 +364,12 @@ class LogParser {
         prev.raw = (prev.raw + '\n' + trimmed).slice(0, 1600);
       } else if (prev && this._isJavaStackContinuation(rawLine)) {
         prev.stackFrames++;
-        if (/^(?:Caused by:|Suppressed:)|^(?:java|javax|jakarta|oracle|org\.apache|com\.entrust)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b/.test(trimmed)) {
-          if (prev.causes.length < 6) prev.causes.push(trimmed.slice(0, 220));
+        if (
+          /^(?:Caused by:|Suppressed:)|^(?:java|javax|jakarta|oracle|org\.apache|com\.entrust)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b/.test(trimmed) ||
+          Boolean(lpExtractEntrustNumericCode(trimmed)) ||
+          /\b(?:ORA-\d{4,5}|AUD\d{2,5})\b/i.test(trimmed)
+        ) {
+          if (prev.causes.length < 10) prev.causes.push(trimmed.slice(0, 220));
         }
         if (!prev.entrustFrame && trimmed.includes('com.entrust.')) {
           prev.entrustFrame = trimmed.replace(/^at\s+/, '').trim().slice(0, 140);
@@ -369,11 +407,11 @@ class LogParser {
       if (parsed.timestamp && /^\d{4}-\d{2}-\d{2}/.test(parsed.timestamp)) {
         lastSeenTs = parsed.timestamp;
       }
-      slot.lockedCode = Boolean(parsed.entrustCode && /^(?:520\d{4}|AUD\d+|ORA-|bulkidentityguard)/i.test(parsed.entrustCode));
+      slot.lockedCode = Boolean(parsed.entrustCode && (lpIsEntrustNumericCode(parsed.entrustCode) || /^(?:AUD\d+|ORA-|bulkidentityguard)/i.test(parsed.entrustCode)));
       this._applyFoldedStack(parsed, slot);
 
       // Fast-path: Diagnóstico profundo solo para eventos con indicadores de error o auditoría
-      const hasDiagKeyword = /(520\d{4}|AUD\d+|TOMCAT_|JVM_OOM|JDBC_SQL|ORA-|error|critical|fatal|warn|fail|exception|oom|kill|timeout|disconnect|broken|unauthorized|denied|fault|severe)/i.test((parsed.entrustCode || '') + ' ' + slot.line + ' ' + (parsed.message || ''));
+      const hasDiagKeyword = /(5(?:2\d{4,5}|[013-9]\d{5})|AUD\d+|TOMCAT_|JVM_OOM|JDBC_SQL|ORA-|error|critical|fatal|warn|fail|exception|oom|kill|timeout|disconnect|broken|unauthorized|denied|fault|severe)/i.test((parsed.entrustCode || '') + ' ' + slot.line + ' ' + (parsed.message || ''));
       if (hasDiagKeyword && window.knowledgeBaseEngine) {
         parsed.diagnostic = window.knowledgeBaseEngine.diagnoseLogWithCli 
           ? window.knowledgeBaseEngine.diagnoseLogWithCli(parsed.message || parsed.raw)
@@ -643,20 +681,18 @@ class LogParser {
       level = 'DEBUG';
     }
 
-    // Código 520xxx, AUDxxx o ORA-
-    let entrustCode = null;
-    const c520Idx = line.indexOf('520');
-    if (c520Idx !== -1 && /520\d{4}/.test(line.substring(c520Idx, c520Idx + 7))) {
-      entrustCode = line.substring(c520Idx, c520Idx + 7);
+    // Código 5xxxxx / 520xxx, AUDxxx o ORA-
+    let entrustCode = lpExtractEntrustNumericCode(line);
+    if (entrustCode) {
       level = 'ERROR';
     } else {
-      const audIdx = line.indexOf('AUD');
-      if (audIdx !== -1 && /AUD\d{3,4}/i.test(line.substring(audIdx, audIdx + 7))) {
-        entrustCode = line.substring(audIdx, audIdx + 7).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      const audM = line.match(/(?:\b|\[)(AUD\d{2,5})(?:\b|\])/i);
+      if (audM) {
+        entrustCode = audM[1].toUpperCase();
         if (LP_AUD_FAIL_SET.has(entrustCode)) level = 'ERROR';
         else if (LP_AUD_WARN_SET.has(entrustCode) && level === 'INFO') level = 'WARN';
       } else {
-        const oraM = line.match(/\b(ORA-\d{5})\b/i);
+        const oraM = line.match(/\b(ORA-\d{4,5})\b/i);
         if (oraM) {
           entrustCode = oraM[1].toUpperCase();
           level = 'CRITICAL';
@@ -740,12 +776,13 @@ class LogParser {
     const isSoapPattern = /(soapenv:|SOAPFault|wsse:|AuthenticationService|AdministrationService|IdentityRepositoryService|\/services\/[A-Za-z]+Service)/i.test(line);
     if (!isSoapPattern) return null;
 
-    const codeMatch = line.match(/(520\d{4}|AUD\d+|wsse:\w+|soapenv:\w+)/i);
+    const entrustNum = lpExtractEntrustNumericCode(line);
+    const codeMatch = line.match(/(AUD\d{2,5}|ORA-\d{4,5}|wsse:\w+|soapenv:\w+)/i);
     const dateMatch = line.match(/^\[?(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(?:,\d{3})?)\]?/) ||
                       line.match(/\[?(\d{2}-[A-Za-z]{3}-\d{4}\s+\d{2}:\d{2}:\d{2})/);
 
     let level = 'INFO';
-    if (/(Fault|Exception|FailedAuthentication|ERROR|CRITICAL|500)/i.test(line)) {
+    if (entrustNum || /(Fault|Exception|FailedAuthentication|ERROR|CRITICAL|500)/i.test(line)) {
       level = 'ERROR';
     }
 
@@ -765,7 +802,7 @@ class LogParser {
       service: serviceName,
       message: line,
       raw: line,
-      entrustCode: codeMatch ? codeMatch[1] : null
+      entrustCode: entrustNum || (codeMatch ? codeMatch[1] : null)
     };
   }
 
@@ -775,12 +812,12 @@ class LogParser {
   tryParseTomcatCatalina(line, lineNum, lastSeenTs = '') {
     if (!line || typeof line !== 'string') return null;
     const { ts, rest, fmt } = this._parseTomcatTimestamp(line);
-    const hasStackKeyword = this._isJavaStackContinuation(line) || /\b(ORA-\d{5}|SQLException|OutOfMemoryError|SSLHandshakeException|ClientAbortException)\b/.test(line);
+    const hasStackKeyword = this._isJavaStackContinuation(line) || /\b(ORA-\d{4,5}|SQLException|OutOfMemoryError|SSLHandshakeException|ClientAbortException)\b/.test(line);
     const isIsoTomcatJava = (fmt === 'iso') && (
       /\b(?:SEVERE|FATAL|ERROR|WARNING|WARN|INFO|DEBUG|GRAVE|ADVERTENCIA)\b/.test(rest) ||
-      /(?:catalina|org\.apache|com\.entrust|Exception|Error|Server startup|Starting ProtocolHandler|HikariPool|ORA-\d{5}|520\d{4}|AUD\d{3,4})/.test(line)
+      /(?:catalina|org\.apache|com\.entrust|Exception|Error|Server startup|Starting ProtocolHandler|HikariPool|ORA-\d{4,5}|5\d{5,6}|AUD\d{2,5})/.test(line)
     );
-    const isEntrustSyslog = (fmt === 'syslog') && (rest.startsWith('[') || rest.includes('520') || rest.includes('AUD'));
+    const isEntrustSyslog = (fmt === 'syslog') && (rest.startsWith('[') || rest.includes('520') || rest.includes('AUD') || Boolean(lpExtractEntrustNumericCode(rest)));
 
     if (!ts && !hasStackKeyword) return null;
     if (fmt === 'iso' && !isIsoTomcatJava) return null;
@@ -790,7 +827,7 @@ class LogParser {
     let msg = rest;
     if (fmt === 'syslog') {
       const lvlM = rest.match(/\[(ERROR|FATAL|SEVERE|CRIT|CRITICAL|WARN|WARNING|INFO|DEBUG)\s*\]/i);
-      baseLevel = lvlM ? lvlM[1].toUpperCase() : ((rest.includes('FAILED') || rest.includes('[520')) ? 'ERROR' : 'INFO');
+      baseLevel = lvlM ? lvlM[1].toUpperCase() : ((rest.includes('FAILED') || rest.includes('[520') || Boolean(lpExtractEntrustNumericCode(rest))) ? 'ERROR' : 'INFO');
     } else if (fmt === 'juli_oneline') {
       const mOne = rest.match(/^([A-ZÁÉÍÓÚÑ]+)\s+\[([^\]]*)\]\s+(.*)$/);
       if (mOne) {
@@ -895,7 +932,7 @@ class LogParser {
           timestamp = field;
         } else if (/^(CRITICAL|ERROR|SEVERE|FAIL|FAILED|WARN|WARNING|INFO|DEBUG)$/i.test(field)) {
           level = this.normalizeLevel(field);
-        } else if (/(520\d{4}|AUD\d+|SAML|MFA|OIDC|OAUTH)/i.test(field)) {
+        } else if (/(5(?:2\d{4,5}|[013-9]\d{5})|AUD\d+|SAML|MFA|OIDC|OAUTH)/i.test(field)) {
           entrustCode = field;
         } else if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(field)) {
           clientIp = field;
@@ -904,7 +941,7 @@ class LogParser {
         }
       });
 
-      const codeInLine = line.match(/(520\d{4}|AUD\d+|SAML_\w+|MFA_\w+|Authentication\w+Event)/i)?.[1];
+      const codeInLine = lpExtractEntrustNumericCode(line) || line.match(/(AUD\d{2,5}|ORA-\d{4,5}|SAML_\w+|MFA_\w+|Authentication\w+Event)/i)?.[1];
       if (codeInLine) entrustCode = codeInLine;
 
       if (/(fail|error|denied|invalid|expired|locked)/i.test(line) && level === 'INFO') {
@@ -934,14 +971,15 @@ class LogParser {
    */
   tryParseEntrustIdentityGuard(line, lineNum) {
     const sanitizedLine = line.replace(/(\?|&)[^=\s]+=[^&\s]*/g, '');
-    if (!line.includes('[IG.') && !/520\d{4}/.test(sanitizedLine) && !/AUD\d+/i.test(sanitizedLine) && !/\[\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}/.test(line)) {
+    const numericEntrust = lpExtractEntrustNumericCode(sanitizedLine);
+    if (!line.includes('[IG.') && !numericEntrust && !/AUD\d+/i.test(sanitizedLine) && !/\[\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}/.test(line)) {
       return null;
     }
 
     const dateMatch = line.match(/^\[?(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(?:,\d{3})?)\]?/);
     const levelMatch = line.match(/\[?(INFO|ERROR|WARN|WARNING|CRITICAL|FATAL|DEBUG)\]?/i);
-    const code520Match = sanitizedLine.match(/(?:\[|\b)(520\d{4})(?:\]|\b)/);
-    const audMatch = sanitizedLine.match(/(?:\[|\b)(AUD\d+)(?:\]|\b)/i);
+    const code520Match = numericEntrust ? [numericEntrust, numericEntrust] : null;
+    const audMatch = sanitizedLine.match(/(?:\[|\b)(AUD\d{2,5})(?:\]|\b)/i);
     const categoryMatch = line.match(/\[?(IG\.[A-Z0-9\._]+)\]?/i);
 
     if (!dateMatch && !code520Match && !audMatch && !categoryMatch) {
@@ -1396,7 +1434,7 @@ class LogParser {
       if (parsed.timestamp && /^\d{4}-\d{2}-\d{2}/.test(parsed.timestamp)) {
         lastSeenTs = parsed.timestamp;
       }
-      slot.lockedCode = Boolean(parsed.entrustCode && /^(?:520\d{4}|AUD\d+|ORA-|bulkidentityguard)/i.test(parsed.entrustCode));
+      slot.lockedCode = Boolean(parsed.entrustCode && (lpIsEntrustNumericCode(parsed.entrustCode) || /^(?:AUD\d+|ORA-|bulkidentityguard)/i.test(parsed.entrustCode)));
       this._applyFoldedStack(parsed, slot);
 
       if (clientId) parsed.client = clientId;

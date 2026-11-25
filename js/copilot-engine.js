@@ -56,7 +56,7 @@ if (typeof escapeHtml === 'undefined') {
       // Consolidar mapa real de códigos desde getConsolidatedMetricsGlobal() o globalStreamMetrics
       const codeCounts = new Map();
       if (cm) {
-        [cm.codeMap520, cm.codeMapAud, cm.codeMapOra, cm.codeMapIdaas, cm.codeMapOther].forEach(mapObj => {
+        [cm.codeMap520, cm.codeMapAud, cm.codeMapOra, cm.codeMapTomcat, cm.codeMapIdaas, cm.codeMapOther].forEach(mapObj => {
           if (!mapObj) return;
           Object.entries(mapObj).forEach(([k, v]) => {
             if (k) codeCounts.set(String(k), (codeCounts.get(String(k)) || 0) + Number(v || 0));
@@ -75,20 +75,22 @@ if (typeof escapeHtml === 'undefined') {
         });
       }
 
-      let sum520 = 0, sumOra = 0, sumAudCrit = 0, sumAudWarn = 0, sumAudAll = 0;
+      let sum520 = 0, sumOra = 0, sumTomcatCrit = 0, sumAudCrit = 0, sumAudWarn = 0, sumAudAll = 0;
       codeCounts.forEach((cnt, code) => {
-        if (/^520\d{4}/i.test(code)) sum520 += cnt;
-        else if (/^ORA-\d+/i.test(code)) sumOra += cnt;
-        else if (/^AUD/i.test(code)) {
+        const cu = String(code || '').toUpperCase();
+        if (/^5(?:2\d{4,5}|[013-9]\d{5})$/.test(cu)) sum520 += cnt;
+        else if (/^ORA-\d+/.test(cu) || cu === 'JDBC_SQL_EXCEPTION' || cu === 'SQL_EXCEPTION') sumOra += cnt;
+        else if (/^(?:JVM_OOM|TOMCAT_(?:SSL_TLS|LDAP_ERROR|NETWORK_ERROR|DEPLOY_ERROR|JAVA_EXCEPTION|SEVERE))$/.test(cu)) sumTomcatCrit += cnt;
+        else if (/^AUD/i.test(cu)) {
           sumAudAll += cnt;
-          if (/^AUD150|^AUD154/i.test(code)) sumAudCrit += cnt;
-          if (/^AUD6001|^AUD6002|^AUD2309|^AUD155/i.test(code)) sumAudWarn += cnt;
+          if (/^AUD(?:110|125|126|127|150|153|154|2309|4005|6002)$/.test(cu)) sumAudCrit += cnt;
+          if (/^AUD(?:151|155|6001)$/.test(cu)) sumAudWarn += cnt;
         }
       });
 
       const levelErrors = logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
       const levelWarnings = logs.filter(l => l.level === 'WARN').length;
-      totalErrors = Math.max(totalErrors, levelErrors, sum520 + sumOra + sumAudCrit);
+      totalErrors = Math.max(totalErrors, levelErrors, sum520 + sumOra + sumTomcatCrit + sumAudCrit);
       totalWarnings = Math.max(totalWarnings, levelWarnings, sumAudWarn);
 
       const healthPct = totalLogs > 0
@@ -360,15 +362,17 @@ if (typeof escapeHtml === 'undefined') {
       }
       // 6. Top errores / códigos frecuentes
       else if (q.includes('top error') || q.includes('codigo') || q.includes('error') || q.includes('falla') || q.includes('patron')) {
-        const criticalEntries = ctx.sortedCodes.filter(([c]) => /^520|^ORA|^AUD150|^AUD154|^AUD6001|^S3-404/i.test(c));
+        const critCodeRe = /^(?:5(?:2\d{4,5}|[013-9]\d{5})|ORA-|JDBC_SQL_EXCEPTION|SQL_EXCEPTION|JVM_OOM|TOMCAT_(?:SSL_TLS|LDAP_ERROR|NETWORK_ERROR|DEPLOY_ERROR|JAVA_EXCEPTION|SEVERE|THREAD_POOL)|AUD(?:110|125|126|127|150|153|154|2309|4005|6001|6002)|SSH-FAIL|S3-404)/i;
+        const criticalEntries = ctx.sortedCodes.filter(([c]) => critCodeRe.test(c));
         const listSource = criticalEntries.length > 0 ? criticalEntries : ctx.sortedCodes;
         if (listSource.length > 0) {
-          const list = listSource.slice(0, 6).map(([code, count], i) => {
+          const shownList = listSource.slice(0, 20);
+          const list = shownList.map(([code, count], i) => {
             const diag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(code, code) : {};
             const title = diag.title || 'Evento registrado';
             return `  ${i + 1}. \`${code}\` (**${count.toLocaleString()}** veces) — ${title}`;
           }).join('\n');
-          answer = `🚨 **Ranking Real de Códigos en la Muestra (${ctx.totalLogs.toLocaleString()} eventos)**:\n\n${list}\n\n` +
+          answer = `🚨 **Ranking Real de Códigos en la Muestra (${ctx.totalLogs.toLocaleString()} eventos • Mostrando ${shownList.length} de ${listSource.length} códigos):**\n\n${list}\n\n` +
                    `💡 Escribe cualquier código (ej: *"${listSource[0][0]}"*) para ver su **causa raíz exacta y pasos de solución**.`;
         } else {
           answer = `✅ No se han detectado códigos de error crítico en la muestra actual.`;
@@ -382,7 +386,8 @@ if (typeof escapeHtml === 'undefined') {
                    this._formatKbMatches(kbMatches, ctx) +
                    this._formatManualCitations(manualResults);
         } else {
-          const topCrit = ctx.sortedCodes.filter(([c]) => /^520|^ORA|^AUD150|^AUD154|^AUD6001/i.test(c)).slice(0, 3);
+          const critCodeRe = /^(?:5(?:2\d{4,5}|[013-9]\d{5})|ORA-|JDBC_SQL_EXCEPTION|SQL_EXCEPTION|JVM_OOM|TOMCAT_(?:SSL_TLS|LDAP_ERROR|NETWORK_ERROR|DEPLOY_ERROR|JAVA_EXCEPTION|SEVERE|THREAD_POOL)|AUD(?:110|125|126|127|150|153|154|2309|4005|6001|6002)|SSH-FAIL|S3-404)/i;
+          const topCrit = ctx.sortedCodes.filter(([c]) => critCodeRe.test(c)).slice(0, 5);
           const steps = topCrit.map(([code, cnt], idx) => {
             const d = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(code, code) : {};
             return `**${idx + 1}. Atender \`${code}\` (${cnt.toLocaleString()} eventos):**\n${d.remediation || 'Revisar trazas del subsistema afectado y validar conectividad con repositorio.'}`;

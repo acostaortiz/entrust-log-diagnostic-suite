@@ -1263,6 +1263,42 @@ def extract_non_version_ip(text):
         return ip
     return 'local'
 
+_ENTRUST_NUM_BRACKET_RE = re.compile(r'\[(52\d{4,5}|5[013-9]\d{5})\]')
+_ENTRUST_NUM_LABELED_RE = re.compile(
+    r'(?:error\s*(?:code)?|err(?:or)?Code|faultCode|statusCode|rc|code)\s*[:=\[\(]\s*(5\d{5,6})\b',
+    re.IGNORECASE
+)
+_ENTRUST_NUM_BARE_RE = re.compile(r'(?<!\d)(520\d{4})(?!\d)')
+_USER_CONTEXT_PREFIX_RE = re.compile(
+    r'(?:user(?:name|id|_id)?|alias|serial|card|phone|tel|cedula|account|session|target|uid|subject)\s*[:=#]?\s*[\'"]?$',
+    re.IGNORECASE
+)
+_AUD_CODE_RE = re.compile(r'(?:\b|\[)(AUD\d{2,5})(?:\b|\])', re.IGNORECASE)
+_ORA_CODE_RE = re.compile(r'\b(ORA-\d{4,5})\b', re.IGNORECASE)
+_ENTRUST_BRACKET_FAIL_AUDS = _AUD_FAIL_SET | {'AUD154'}
+
+
+def is_entrust_numeric_code(code):
+    return bool(re.match(r'^5(?:2\d{4,5}|[013-9]\d{5})$', str(code or '').strip()))
+
+
+def extract_entrust_numeric_code(text):
+    if not text:
+        return None
+    m = _ENTRUST_NUM_BRACKET_RE.search(text)
+    if m:
+        return m.group(1)
+    m = _ENTRUST_NUM_LABELED_RE.search(text)
+    if m:
+        return m.group(1)
+    for m in _ENTRUST_NUM_BARE_RE.finditer(text):
+        prefix = text[max(0, m.start() - 28):m.start()]
+        if _USER_CONTEXT_PREFIX_RE.search(prefix):
+            continue
+        return m.group(1)
+    return None
+
+
 def classify_tomcat_java_event(text, base_level='INFO', has_stack=False):
     txt = text or ''
     low = txt.lower()
@@ -1272,11 +1308,11 @@ def classify_tomcat_java_event(text, base_level='INFO', has_stack=False):
     elif base_u == 'ADVERTENCIA':
         base_u = 'WARNING'
 
-    c520 = re.search(r'(?:\b|\[)(520\d{4})(?:\b|\])', txt)
-    if c520:
-        return (c520.group(1), 'FAIL', None)
+    c_ent = extract_entrust_numeric_code(txt)
+    if c_ent:
+        return (c_ent, 'FAIL', None)
 
-    aud = re.search(r'(?:\b|\[)(AUD\d{3,4})(?:\b|\])', txt, re.I)
+    aud = _AUD_CODE_RE.search(txt)
     if aud:
         aud_code = aud.group(1).upper()
         if aud_code in _AUD_FAIL_SET or base_u in ('ERROR', 'SEVERE', 'FATAL', 'CRITICAL'):
@@ -1287,7 +1323,7 @@ def classify_tomcat_java_event(text, base_level='INFO', has_stack=False):
             out = 'SUCCESS'
         return (aud_code, out, None)
 
-    ora = re.search(r'\b(ORA-\d{5})\b', txt, re.I)
+    ora = _ORA_CODE_RE.search(txt)
     if ora:
         return (ora.group(1).upper(), 'FAIL', 'database')
 
@@ -1398,23 +1434,23 @@ def parse_line_meta_for_db(line, line_num, last_seen_ts=''):
         msg = bracket_match.group(5)
         outcome = 'FAIL' if any(k in level for k in ['ERR', 'CRIT', 'FATAL', 'SEVERE']) else ('DEBUG' if level == 'DEBUG' else ('WARN' if 'WARN' in level else 'SUCCESS'))
 
-        c520 = re.search(r'520\d{4}', msg) or re.search(r'520\d{4}', line)
-        aud = re.search(r'AUD\d{3,4}', msg) or re.search(r'AUD\d{3,4}', line)
-        ora = re.search(r'ORA-\d{5}', msg) or re.search(r'ORA-\d{5}', line)
+        c520 = extract_entrust_numeric_code(msg) or extract_entrust_numeric_code(line)
+        aud = _AUD_CODE_RE.search(msg) or _AUD_CODE_RE.search(line)
+        ora = _ORA_CODE_RE.search(msg) or _ORA_CODE_RE.search(line)
 
-        if c520 or ora or (aud and aud.group(0).upper() in ('AUD150', 'AUD154', 'AUD6002', 'AUD110', 'AUD125', 'AUD126', 'AUD127', 'AUD153', 'AUD4005')):
+        if c520 or ora or (aud and aud.group(1).upper() in _ENTRUST_BRACKET_FAIL_AUDS):
             outcome = 'FAIL'
-        elif aud and aud.group(0).upper() in ('AUD6001', 'AUD2309', 'AUD155', 'AUD151') and outcome != 'FAIL':
+        elif aud and aud.group(1).upper() in ('AUD6001', 'AUD2309', 'AUD155', 'AUD151') and outcome != 'FAIL':
             outcome = 'WARN'
 
         if c520:
-            event_type = c520.group(0)
+            event_type = c520
             meta['locked_code'] = True
         elif aud:
-            event_type = aud.group(0).upper()
+            event_type = aud.group(1).upper()
             meta['locked_code'] = True
         elif ora:
-            event_type = ora.group(0).upper()
+            event_type = ora.group(1).upper()
             meta['locked_code'] = True
         elif category:
             event_type = category.split('.')[-2] if '.' in category else category
@@ -1431,13 +1467,13 @@ def parse_line_meta_for_db(line, line_num, last_seen_ts=''):
     ts, rest, fmt = parse_tomcat_timestamp(line)
     if ts:
         meta['has_explicit_ts'] = True
-        if fmt == 'syslog' and (rest.startswith('[') or '520' in rest or 'AUD' in rest):
+        if fmt == 'syslog' and (rest.startswith('[') or '520' in rest or 'AUD' in rest or bool(extract_entrust_numeric_code(rest))):
             meta['is_tomcat'] = True
             lvl_m = re.search(r'\[(ERROR|FATAL|SEVERE|CRIT|CRITICAL|WARN|WARNING|INFO|DEBUG)\s*\]', rest, re.I)
-            base_level = lvl_m.group(1).upper() if lvl_m else ('ERROR' if 'FAILED' in rest or '[520' in rest else 'INFO')
+            base_level = lvl_m.group(1).upper() if lvl_m else ('ERROR' if 'FAILED' in rest or '[520' in rest or extract_entrust_numeric_code(rest) else 'INFO')
             meta['base_level'] = base_level
             event_type, outcome, ip_ov = classify_tomcat_java_event(line, base_level)
-            meta['locked_code'] = event_type.startswith('520') or event_type.startswith('AUD') or event_type.startswith('ORA-')
+            meta['locked_code'] = is_entrust_numeric_code(event_type) or event_type.startswith('AUD') or event_type.startswith('ORA-')
             msg = rest[:600]
             user = 'system' if is_tomcat_startup_banner(line) else extract_valid_user(line, msg)
             ip = ip_ov or extract_non_version_ip(msg)
@@ -1447,7 +1483,7 @@ def parse_line_meta_for_db(line, line_num, last_seen_ts=''):
             fmt == 'iso'
             and (
                 re.search(r'\b(?:SEVERE|FATAL|ERROR|WARNING|WARN|INFO|DEBUG|GRAVE|ADVERTENCIA)\b', rest)
-                or re.search(r'(?:catalina|org\.apache|com\.entrust|Exception|Error|Server startup|Starting ProtocolHandler|HikariPool|ORA-\d{5}|520\d{4}|AUD\d{3,4})', line)
+                or re.search(r'(?:catalina|org\.apache|com\.entrust|Exception|Error|Server startup|Starting ProtocolHandler|HikariPool|ORA-\d{4,5}|5\d{5,6}|AUD\d{2,5})', line)
             )
         )
         if fmt in ('juli_oneline', 'juli_simple') or is_iso_tomcat_java:
@@ -1481,20 +1517,21 @@ def parse_line_meta_for_db(line, line_num, last_seen_ts=''):
 
             meta['base_level'] = base_level
             event_type, outcome, ip_ov = classify_tomcat_java_event(line, base_level)
-            meta['locked_code'] = event_type.startswith('520') or event_type.startswith('AUD') or event_type.startswith('ORA-')
+            meta['locked_code'] = is_entrust_numeric_code(event_type) or event_type.startswith('AUD') or event_type.startswith('ORA-')
             user = 'system' if is_tomcat_startup_banner(line) else extract_valid_user(line, msg)
             ip = ip_ov or extract_non_version_ip(msg)
             return (line_num, ts, user, event_type, outcome, msg[:600], ip, line[:1200]), meta
 
     # 3. Orphan Java / Oracle exception or stack trace line (no timestamp in line)
-    if is_java_stack_continuation(line) or re.search(r'\b(ORA-\d{5}|SQLException|OutOfMemoryError|SSLHandshakeException|Exception|Error)\b', line):
+    if is_java_stack_continuation(line) or re.search(r'\b(ORA-\d{4,5}|SQLException|OutOfMemoryError|SSLHandshakeException|Exception|Error)\b', line):
         base_lvl = 'INFO' if re.search(r'(?:ClientAbortException|Broken pipe|Connection reset by peer)', line, re.I) else 'ERROR'
         event_type, outcome, ip_ov = classify_tomcat_java_event(line, base_lvl, has_stack=True)
+        meta['locked_code'] = is_entrust_numeric_code(event_type) or event_type.startswith('AUD') or event_type.startswith('ORA-')
         user = 'system' if is_tomcat_startup_banner(line) else extract_valid_user(line)
         ip = ip_ov or extract_non_version_ip(line)
         return (line_num, last_seen_ts or '', user, event_type, outcome, line.strip()[:600], ip, line[:1200]), meta
 
-    # 4. Fallback generic line
+    # 4. Fallback generic line — NEVER omit Entrust/ORA/AUD/SSH error codes in unstructured lines
     low_line = line.lower()
     if any(k in low_line for k in ['error', 'fail', 'crit', 'fatal', 'exception', 'severe']):
         level = 'FAIL'
@@ -1507,7 +1544,36 @@ def parse_line_meta_for_db(line, line_num, last_seen_ts=''):
         meta['has_explicit_ts'] = True
     user = 'system' if is_tomcat_startup_banner(line) else extract_valid_user(line)
     ip = extract_non_version_ip(line)
-    return (line_num, event_time, user, 'SYSTEM_LOG', level, line[:300], ip, line[:1200]), meta
+
+    fb_event_type = 'SYSTEM_LOG'
+    c_fb = extract_entrust_numeric_code(line)
+    ora_fb = _ORA_CODE_RE.search(line)
+    aud_fb = _AUD_CODE_RE.search(line)
+    if c_fb:
+        fb_event_type = c_fb
+        level = 'FAIL'
+        meta['locked_code'] = True
+    elif ora_fb:
+        fb_event_type = ora_fb.group(1).upper()
+        level = 'FAIL'
+        if ip == 'local':
+            ip = 'database'
+        meta['locked_code'] = True
+    elif aud_fb:
+        fb_event_type = aud_fb.group(1).upper()
+        meta['locked_code'] = True
+        if fb_event_type in _AUD_FAIL_SET:
+            level = 'FAIL'
+        elif fb_event_type in _AUD_WARN_SET and level != 'FAIL':
+            level = 'WARN'
+    elif re.search(r'\b(?:sshd|pam_unix|failed password|accepted publickey|accepted password)\b', low_line):
+        if level == 'FAIL' or 'failed' in low_line or 'invalid user' in low_line:
+            fb_event_type = 'SSH-FAIL'
+            level = 'FAIL'
+        else:
+            fb_event_type = 'SSH-AUTH'
+
+    return (line_num, event_time, user, fb_event_type, level, line[:300], ip, line[:1200]), meta
 
 def parse_line_for_db(line, line_num, last_seen_ts=''):
     parsed, _ = parse_line_meta_for_db(line, line_num, last_seen_ts=last_seen_ts)
@@ -1759,7 +1825,7 @@ def recompute_sqlite_stats_obj(cur, target_db, client_name, loaded_files):
 
     cur.execute(
         "SELECT event_type, COUNT(1) FROM logs WHERE event_type IS NOT NULL AND event_type != '' "
-        "GROUP BY event_type ORDER BY COUNT(1) DESC LIMIT 200"
+        "GROUP BY event_type ORDER BY COUNT(1) DESC LIMIT 1000"
     )
     event_types_list = [{'code': r[0], 'count': int(r[1] or 0)} for r in cur.fetchall()]
     top_codes_list = list(event_types_list)
@@ -1767,7 +1833,7 @@ def recompute_sqlite_stats_obj(cur, target_db, client_name, loaded_files):
     cur.execute(
         "SELECT source_ip, COUNT(1) FROM logs WHERE source_ip IS NOT NULL AND source_ip != '' "
         "AND source_ip != 'local' AND source_ip != '127.0.0.1' "
-        "GROUP BY source_ip ORDER BY COUNT(1) DESC LIMIT 50"
+        "GROUP BY source_ip ORDER BY COUNT(1) DESC LIMIT 150"
     )
     top_ips_list = [{'ip': r[0], 'count': int(r[1] or 0)} for r in cur.fetchall()]
 
@@ -1937,10 +2003,11 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
                 new_etype, new_out, new_ip = classify_tomcat_java_event(
                     combined_txt, pending['base_level'], has_stack=True
                 )
-                ora_cause = re.search(r'\b(ORA-\d{5})\b', ' '.join(pending['causes']), re.I)
+                ora_cause = _ORA_CODE_RE.search(' '.join(pending['causes']))
+                ent_cause = extract_entrust_numeric_code(' '.join(pending['causes']))
 
                 if pending['locked_code']:
-                    # Preserve explicit 520xxxx / AUDxxx in header unless cause brings a more specific ORA-xxxxx
+                    # Preserve explicit 5xxxxx / AUDxxx in header unless cause brings a more specific ORA-xxxxx
                     if ora_cause:
                         etype = ora_cause.group(1).upper()
                         outcome = 'FAIL'
@@ -1950,6 +2017,9 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
                     outcome = new_out
                     if new_ip:
                         ip = new_ip
+                    if ent_cause and not is_entrust_numeric_code(etype) and not ora_cause:
+                        etype = ent_cause
+                        outcome = 'FAIL'
 
                 parts_extra = []
                 if pending['causes']:
@@ -2051,7 +2121,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
                         ev_t, ev_o, ev_ip = classify_tomcat_java_event(merged_msg, lvl)
                         pending['event_type'] = ev_t
                         pending['outcome'] = ev_o
-                        pending['locked_code'] = ev_t.startswith('520') or ev_t.startswith('AUD') or ev_t.startswith('ORA-')
+                        pending['locked_code'] = is_entrust_numeric_code(ev_t) or ev_t.startswith('AUD') or ev_t.startswith('ORA-')
                         if ev_ip:
                             pending['ip'] = ev_ip
                     folded_stack_lines += 1
@@ -2064,8 +2134,11 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
                     line_str.startswith('Caused by:')
                     or line_str.startswith('Suppressed:')
                     or re.match(r'^(?:java|javax|jakarta|oracle|org\.apache|com\.entrust)\.[A-Za-z0-9_.$]*(?:Exception|Error|Throwable)\b', line_str)
+                    or bool(extract_entrust_numeric_code(line_str))
+                    or bool(_ORA_CODE_RE.search(line_str))
+                    or bool(_AUD_CODE_RE.search(line_str))
                 ):
-                    if len(pending['causes']) < 6:
+                    if len(pending['causes']) < 10:
                         pending['causes'].append(line_str[:220])
                 if not pending['entrust_frame'] and 'com.entrust.' in line_str:
                     pending['entrust_frame'] = line_str.lstrip('at ').strip()[:140]
@@ -2151,13 +2224,13 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             exact_unique_users, exact_unique_codes, exact_unique_ips = compute_exact_sqlite_distinct_counts(cur)
             prev_raw_total = sum(int(f.get('rawLinesRead', f.get('count', 0)) or 0) for f in loaded_files)
             prev_folded_total = sum(int(f.get('foldedStackLines', 0) or 0) for f in loaded_files)
-            event_types_list = [{'code': k, 'count': v} for k, v in type_counts.most_common(200)]
-            top_codes_list = [{'code': k, 'count': v} for k, v in code_counts.most_common(200)]
+            event_types_list = [{'code': k, 'count': v} for k, v in type_counts.most_common(1000)]
+            top_codes_list = [{'code': k, 'count': v} for k, v in code_counts.most_common(1000)]
             top_users_list = [
                 {'user': k, 'count': v}
                 for k, v in user_counts.most_common(300) if is_valid_user_candidate(k)
             ][:200]
-            top_ips_list = [{'ip': k, 'count': v} for k, v in ip_counts.most_common(50)]
+            top_ips_list = [{'ip': k, 'count': v} for k, v in ip_counts.most_common(150)]
             timeline_buckets_list = [
                 {'bucket': k, 'total': v['total'], 'errors': v['errors'], 'info': v['info']}
                 for k, v in sorted(hour_counts.items())[:2000]
@@ -2185,7 +2258,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             }
         cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
         cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_obj, ensure_ascii=False)))
-        cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4')")
+        cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4', 'forensic_matrix_v5')")
         conn.commit()
         conn.close()
 
@@ -3515,13 +3588,14 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             errors = cur.fetchone()[0]
 
             # 1. Agrupación precisa de tipos de eventos
-            cur.execute('SELECT event_type, COUNT(1) FROM logs GROUP BY event_type ORDER BY COUNT(1) DESC LIMIT 20')
+            cur.execute('SELECT event_type, COUNT(1) FROM logs GROUP BY event_type ORDER BY COUNT(1) DESC LIMIT 1000')
             types = [{'code': r[0], 'count': r[1]} for r in cur.fetchall()]
 
-            # 2. Agrupación forense de códigos de error exactos ([520xxx], bulkidentityguard.add.error.*, ORA-01555, etc.)
+            # 2. Agrupación forense de códigos de error exactos ([520xxx], [521xxx], bulkidentityguard.*, ORA-*, TOMCAT_*, etc.)
             cur.execute('''
-                SELECT 
-                    CASE 
+                SELECT
+                    CASE
+                        WHEN event_type != '' AND event_type != 'SYSTEM_LOG' AND event_type != 'ENTRUST_LOG' THEN event_type
                         WHEN message LIKE '%assignedgrid%' THEN 'bulkidentityguard.add.error.assignedgrid'
                         WHEN message LIKE '%bulkidentityguard.add.error.qa%' OR message LIKE '%qa_already_exists%' THEN 'bulkidentityguard.add.error.qa'
                         WHEN message LIKE '%bulkidentityguard.add.error.password%' OR message LIKE '%password_already_exists%' THEN 'bulkidentityguard.add.error.password'
@@ -3534,11 +3608,11 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                         ELSE event_type
                     END as err_code,
                     COUNT(1) as cnt
-                FROM logs 
+                FROM logs
                 WHERE event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%'
                 GROUP BY err_code
                 ORDER BY cnt DESC
-                LIMIT 20
+                LIMIT 1000
             ''')
             top_codes = [{'code': r[0], 'count': r[1]} for r in cur.fetchall()]
 
@@ -3679,7 +3753,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             client_display = stats_cached.get('client') or client_param or 'Entrust Client'
             stats_obj = recompute_sqlite_stats_obj(cur, db, client_display, remaining)
             cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_obj, ensure_ascii=False)))
-            cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4')")
+            cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4', 'forensic_matrix_v5')")
             conn.commit()
             conn.close()
 
@@ -3819,10 +3893,25 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             logs = []
             for r in rows:
                 etype = str(r[3] or '')
+                etype_u = etype.upper()
                 outcome_str = str(r[4] or '')
                 msg_str = str(r[5] or '')
-                is_err = ('FAIL' in outcome_str.upper() or 'ERR' in outcome_str.upper() or etype in ('AUD150', 'AUD154', 'AUD6002') or etype.startswith('520') or etype.startswith('ORA-'))
-                is_warn = (not is_err) and ('WARN' in outcome_str.upper() or etype in ('AUD6001', 'AUD2309', 'AUD155'))
+                is_err = (
+                    'FAIL' in outcome_str.upper()
+                    or 'ERR' in outcome_str.upper()
+                    or is_entrust_numeric_code(etype)
+                    or etype_u in _ENTRUST_BRACKET_FAIL_AUDS
+                    or etype_u.startswith('ORA-')
+                    or etype_u in (
+                        'JDBC_SQL_EXCEPTION', 'JVM_OOM', 'TOMCAT_SSL_TLS',
+                        'TOMCAT_LDAP_ERROR', 'TOMCAT_NETWORK_ERROR', 'TOMCAT_DEPLOY_ERROR',
+                        'TOMCAT_JAVA_EXCEPTION', 'TOMCAT_SEVERE', 'SSH-FAIL'
+                    )
+                )
+                is_warn = (not is_err) and (
+                    'WARN' in outcome_str.upper()
+                    or etype_u in ('AUD6001', 'AUD2309', 'AUD155', 'AUD151', 'TOMCAT_WARN', 'TOMCAT_THREAD_POOL')
+                )
                 level = 'ERROR' if is_err else ('WARN' if is_warn else 'INFO')
                 svc = 'IG.AUDIT' if etype.upper().startswith('AUD') else ('IDaaS Cloud' if 'bulkidentityguard' in etype.lower() else ('Tomcat Catalina' if etype.upper().startswith(('TOMCAT_', 'JVM_')) else ('Oracle / JDBC' if (etype.upper().startswith('ORA-') or etype == 'JDBC_SQL_EXCEPTION') else 'IG.SYSTEM')))
                 display_msg = msg_str if (f'[{etype}]' in msg_str or not etype) else f'[{etype}] {msg_str}'
@@ -3866,14 +3955,22 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         conn = sqlite3.connect(db, timeout=30.0)
         cur = conn.cursor()
         err_where = '''
-            WHERE event_outcome LIKE '%FAIL%'
-               OR event_outcome LIKE '%ERR%'
-               OR event_type LIKE '520%'
-               OR event_type IN ('AUD6001', 'AUD6002', 'AUD2309')
-               OR event_type LIKE 'ORA-%'
-               OR message LIKE '%failed%'
-               OR message LIKE '%locked%'
-               OR message LIKE '%error%'
+            WHERE UPPER(event_outcome) LIKE '%FAIL%'
+               OR UPPER(event_outcome) LIKE '%ERR%'
+               OR UPPER(event_outcome) LIKE '%WARN%'
+               OR event_type GLOB '5[0-9][0-9][0-9][0-9][0-9]*'
+               OR UPPER(event_type) IN (
+                   'AUD110', 'AUD125', 'AUD126', 'AUD127', 'AUD150', 'AUD151',
+                   'AUD153', 'AUD154', 'AUD155', 'AUD2309', 'AUD4005', 'AUD6001', 'AUD6002',
+                   'JDBC_SQL_EXCEPTION', 'SQL_EXCEPTION', 'JVM_OOM', 'TOMCAT_SSL_TLS',
+                   'TOMCAT_LDAP_ERROR', 'TOMCAT_NETWORK_ERROR', 'TOMCAT_DEPLOY_ERROR',
+                   'TOMCAT_JAVA_EXCEPTION', 'TOMCAT_SEVERE', 'TOMCAT_THREAD_POOL',
+                   'TOMCAT_WARN', 'SSH-FAIL'
+               )
+               OR UPPER(event_type) LIKE 'ORA-%'
+               OR LOWER(message) LIKE '%failed%'
+               OR LOWER(message) LIKE '%locked%'
+               OR LOWER(message) LIKE '%error%'
         '''
         cur.execute(f'SELECT COUNT(1) FROM logs {err_where}')
         err_count = cur.fetchone()[0] or 0
@@ -4142,7 +4239,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
             if not refresh:
-                cur.execute("SELECT value FROM server_stats WHERE key='forensic_matrix_v4'")
+                cur.execute("SELECT value FROM server_stats WHERE key='forensic_matrix_v5'")
                 cached_row = cur.fetchone()
                 if cached_row and cached_row[0]:
                     cached_payload = json.loads(cached_row[0])
@@ -4175,7 +4272,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 '520': set(),
                 'idaas': set(),
                 'system': set(),
-                'traffic': set()
+                'traffic': set(),
+                'errors_all': set()
             }
             filtered_noise_users = set()
             filtered_noise_events = 0
@@ -4187,7 +4285,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 if code not in code_map:
                     kind = 'SYSTEM_EVENT'
-                    if re.match(r'^520\d{4}$', code):
+                    if is_entrust_numeric_code(code):
                         kind = 'ERROR_520'
                     elif re.match(r'^AUD\d{2,5}$', code, re.IGNORECASE) or 'AUDIT' in code.upper():
                         kind = 'AUDIT_AUD'
@@ -4217,6 +4315,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 subj_str = (subj or '').strip()
                 if is_valid_user_candidate(subj_str):
                     cat_users['traffic'].add(subj_str)
+                    if is_err:
+                        cat_users['errors_all'].add(subj_str)
                     if c_entry['kind'] == 'AUDIT_AUD':
                         cat_users['audit'].add(subj_str)
                     elif c_entry['kind'] == 'ERROR_520':
@@ -4687,6 +4787,22 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 ]
             }
 
+            volumetry_by_kind = {}
+            for c_item in code_matrix:
+                ck = c_item.get('kind') or 'SYSTEM_EVENT'
+                if ck not in volumetry_by_kind:
+                    volumetry_by_kind[ck] = {'uniqueCodes': 0, 'totalInteractions': 0, 'failCount': 0, 'successCount': 0}
+                volumetry_by_kind[ck]['uniqueCodes'] += 1
+                volumetry_by_kind[ck]['totalInteractions'] += int(c_item.get('totalInteractions', 0) or 0)
+                volumetry_by_kind[ck]['failCount'] += int(c_item.get('failCount', 0) or 0)
+                volumetry_by_kind[ck]['successCount'] += int(c_item.get('successCount', 0) or 0)
+
+            volumetry_summary = {
+                'totalUniqueCodes': len(code_matrix),
+                'errorCodeTypes': sum(1 for c in code_matrix if c.get('failCount', 0) > 0 or c.get('kind') in ('ERROR_520', 'DATABASE_ORA')),
+                'byKind': volumetry_by_kind
+            }
+
             result_payload = {
                 'status': 'ready',
                 'activeDb': os.path.basename(db),
@@ -4703,8 +4819,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     'idaas': len(cat_users['idaas']),
                     'system': len(cat_users['system']),
                     'traffic': len(cat_users['traffic']),
+                    'errorsAll': len(cat_users['errors_all']),
                     'all': len(users_map)
                 },
+                'volumetrySummary': volumetry_summary,
                 'filteredNoiseUsers': len(filtered_noise_users),
                 'filteredNoiseEvents': filtered_noise_events,
                 'usersList': users_list_out,
@@ -4716,7 +4834,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             }
 
             try:
-                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('forensic_matrix_v4', json.dumps(result_payload, ensure_ascii=False)))
+                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('forensic_matrix_v5', json.dumps(result_payload, ensure_ascii=False)))
                 conn.commit()
             except Exception:
                 pass

@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.14.0 (Build 616)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.15.0 (Build 617)</span>
           </div>
         </div>
       </div>
@@ -281,19 +281,19 @@
           </div>
         </div>
 
-        <!-- Card 3: Errores 520xxx (OnPremise) -->
-        <div class="metric-card critical" id="card-entrust-errors" style="background:var(--bg-card); border:1px solid var(--border-color); border-top:4px solid #ef4444; padding:16px; border-radius:10px; cursor:pointer; position:relative; box-shadow:var(--shadow-sm);" title="Clic para inspeccionar catálogo y extraer errores 520xxx">
+        <!-- Card 3: Errores & Fallos Críticos (OnPremise / ORA / JVM) -->
+        <div class="metric-card critical" id="card-entrust-errors" style="background:var(--bg-card); border:1px solid var(--border-color); border-top:4px solid #ef4444; padding:16px; border-radius:10px; cursor:pointer; position:relative; box-shadow:var(--shadow-sm);" title="Clic para inspeccionar el 100% de errores críticos (520xxx, 5xxxxx, ORA, Tomcat/JVM y AUD)">
           <div class="flex-between" style="margin-bottom:6px;">
-            <span class="metric-label" style="font-size:0.78rem; font-weight:700; color:#ef4444; text-transform:uppercase;">Errores de Autenticación [520xxx]</span>
+            <span class="metric-label" style="font-size:0.78rem; font-weight:700; color:#ef4444; text-transform:uppercase;">Errores &amp; Fallos Críticos [520 / ORA / JVM]</span>
             <span id="critical-rate-badge" style="background:rgba(239, 68, 68, 0.15); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.3); font-weight:700; font-size:0.7rem; padding:1px 6px; border-radius:4px;">0% Falla</span>
           </div>
           <div class="metric-value text-danger" id="critical-count" style="font-size:2rem; font-weight:800; font-family:'JetBrains Mono', monospace; color:#ef4444; line-height:1.1; margin-bottom:6px;">0</div>
           <div style="height:4px; width:100%; background:rgba(255,255,255,0.08); border-radius:2px; margin-bottom:6px; overflow:hidden;">
             <div id="critical-progress-bar" style="width:0%; height:100%; background:#ef4444; border-radius:2px; transition:width 0.8s ease;"></div>
           </div>
-          <div class="metric-sub" style="font-size:0.75rem; color:var(--text-dim); display:flex; justify-content:space-between;">
-            <span>Core IdentityGuard</span>
-            <span style="color:#ef4444; font-weight:700;">Extraer 520 ➔</span>
+          <div class="metric-sub" style="font-size:0.75rem; color:var(--text-dim); display:flex; justify-content:space-between; gap:6px;">
+            <span id="critical-card-sub" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Core IdentityGuard</span>
+            <span style="color:#ef4444; font-weight:700; white-space:nowrap;">Extraer Fallos ➔</span>
           </div>
         </div>
 
@@ -1785,24 +1785,24 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/pptxgen.bundle.js" defer></script>
   <script src="js/topology-engine.js?v=550.0"></script>
   <script src="js/aud-official-catalog.js?v=609.0"></script>
-  <script src="js/kb-database.js?v=614.0"></script>
+  <script src="js/kb-database.js?v=617.0"></script>
   <script src="js/manuals-engine.js?v=612.0"></script>
-  <script src="js/log-parser.js?v=608.0"></script>
+  <script src="js/log-parser.js?v=617.0"></script>
   <script src="js/storage-engine.js?v=615.0"></script>
     <script src="js/threat-radar.js?v=611.0"></script>
   <script src="js/remediation-engine.js?v=550.0"></script>
   <script src="js/notes-engine.js?v=570.0"></script>
-  <script src="js/copilot-engine.js?v=614.0"></script>
+  <script src="js/copilot-engine.js?v=617.0"></script>
   <script src="js/compliance-auditor.js?v=550.0"></script>
   <script src="js/config-diff-engine.js?v=576.0"></script>
   <script src="js/siem-exporter.js?v=550.0"></script>
 
   <script src="js/cert-auditor.js?v=568.0"></script>
   <script src="js/syslog-collector.js?v=550.0"></script>
-  <script src="js/user-trace-report.js?v=611.0"></script>
+  <script src="js/user-trace-report.js?v=617.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
   <script src="js/pcap-analyzer.js?v=608.0"></script>
-  <script src="js/app.js?v=616.0"></script>
+  <script src="js/app.js?v=617.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

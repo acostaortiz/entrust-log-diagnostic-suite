@@ -1827,9 +1827,11 @@ class KnowledgeBase {
       };
     }
 
-    // 5. Diagnóstico Heurístico Entrust OnPremise 520xxx (Soporta con o sin corchetes y llamadas directas)
-    const regexToUse = targetCode ? new RegExp('\\[(' + targetCode + ')\\]\\s*(.*)', 'i') : /\[(520\d{4})\]\s*(.*)/;
-    const entrustMatch = searchText.match(regexToUse) || searchText.match(/\[(520\d{4})\]\s*(.*)/) || (cleanCode && /^520\d{4}$/.test(cleanCode) ? [cleanCode, cleanCode, searchText] : null);
+    // 5. Diagnóstico Heurístico Entrust OnPremise 5xxxxx / 520xxx (Soporta 6 y 7 dígitos, con o sin corchetes)
+    const numericEntrustRe = /\[(5(?:2\d{4,5}|[013-9]\d{5}))\]\s*(.*)/;
+    const isNumericEntrustCode = (c) => /^5(?:2\d{4,5}|[013-9]\d{5})$/.test(String(c || '').trim());
+    const regexToUse = targetCode ? new RegExp('\\[(' + targetCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')\\]\\s*(.*)', 'i') : numericEntrustRe;
+    const entrustMatch = searchText.match(regexToUse) || searchText.match(numericEntrustRe) || (cleanCode && isNumericEntrustCode(cleanCode) ? [cleanCode, cleanCode, searchText] : null);
     if (entrustMatch) {
       const code = (targetCode || entrustMatch[1]).trim();
       const detail = entrustMatch[2] ? entrustMatch[2].trim() : '';
@@ -2063,9 +2065,22 @@ journalctl -u wso2am -n 50 --no-pager`;
     if (/already has QA|QA in migration file will be ignored|bulkidentityguard\.add\.error\.qa/i.test(text)) {
       return 'bulkidentityguard.add.error.qa';
     }
-    const m = text.match(/\[(520\d{4}|AUD\d+|[A-Za-z0-9_\.-]+\.error\.[A-Za-z0-9_\.-]+|ORA-\d+|AWS-S3-404-NOKEY|JVM_OOM|TOMCAT_[A-Z_]+|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)\]/i) ||
-              text.match(/\b(520\d{4}|AUD\d+|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d+|AWS-S3-404-NOKEY|JVM_OOM|TOMCAT_[A-Z_]+|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)\b/i);
+    const bracketMatch = text.match(/\[(5(?:2\d{4,5}|[013-9]\d{5})|AUD\d{2,5}|[A-Za-z0-9_\.-]+\.error\.[A-Za-z0-9_\.-]+|ORA-\d{4,5}|AWS-S3-404-NOKEY|JVM_OOM|TOMCAT_[A-Z_]+|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)\]/i);
+    if (bracketMatch) return bracketMatch[1];
+    const labeledMatch = text.match(/(?:error\s*(?:code)?|err(?:or)?Code|faultCode|statusCode|rc|code)\s*[:=\[\(]\s*(5\d{5,6})\b/i);
+    if (labeledMatch) return labeledMatch[1];
+    const m = text.match(/\b(AUD\d{2,5}|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d{4,5}|AWS-S3-404-NOKEY|JVM_OOM|TOMCAT_[A-Z_]+|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)\b/i);
     if (m) return m[1];
+    const bareRe = /(?:^|[^\d])(520\d{4})(?![\d])/g;
+    let bm;
+    while ((bm = bareRe.exec(text)) !== null) {
+      const idx = bm.index + bm[0].indexOf(bm[1]);
+      const prefix = text.slice(Math.max(0, idx - 28), idx);
+      if (/(?:user(?:name|id|_id)?|alias|serial|card|phone|tel|cedula|account|session|target|uid|subject)\s*[:=#]?\s*['"]?$/i.test(prefix)) {
+        continue;
+      }
+      return bm[1];
+    }
     if (/(?:ClientAbortException|Broken pipe|Connection reset by peer)/i.test(text)) return 'TOMCAT_CLIENT_ABORT';
     if (/(?:OutOfMemoryError|Java heap space|GC overhead limit exceeded)/i.test(text)) return 'JVM_OOM';
     if (/(?:SSLHandshakeException|PKIX path building failed|SunCertPathBuilderException|KeyStoreException)/i.test(text)) return 'TOMCAT_SSL_TLS';

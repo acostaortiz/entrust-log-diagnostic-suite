@@ -969,8 +969,11 @@ def extract_pdf_text(file_path, max_pages=800):
 # Verbatim Entrust / Oracle Error Code Extractor (Zero Hallucinations)
 # ==============================================================================
 
-_CODE_EXTRACT_RE = re.compile(r'\b(52\d{5}|520\d{3}|AUD\d{2,4}|ORA-\d{5})\b', re.IGNORECASE)
-_TABLE_CELL_CODE_RE = re.compile(r'^[\[\(\s]*(5\d{5,7}|AUD\d{2,5}|ORA-\d{5})(?=[\]\)\s:\-–—]|$)', re.IGNORECASE)
+_CODE_EXTRACT_RE = re.compile(r'\b(52\d{5}|520\d{3}|AUD\d{2,5}|ORA-\d{4,5})\b', re.IGNORECASE)
+_TABLE_CELL_CODE_RE = re.compile(r'^[\[\(\s]*(5\d{5,7}|AUD\d{2,5}|ORA-\d{4,5})(?=[\]\)\s:\-–—]|$)', re.IGNORECASE)
+_TABLE_HEX_DEC_CODE_RE = re.compile(
+    r'(?:0x[0-9a-fA-F]+\s*[\(\[]\s*(5\d{5,7})\s*[\)\]]|\b(5\d{5,7})\s*[\(\[]\s*0x[0-9a-fA-F]+\s*[\)\]])'
+)
 
 
 def _classify_code_meta(code_upper, excerpt):
@@ -1389,24 +1392,41 @@ def extract_entrust_codes_from_html_or_text(doc_res, filename, rel_path):
 
     scored_by_code = {}
 
-    # 1. High-precision scan of structured HTML <table> rows
+    # 1. High-precision scan of structured HTML <table> rows (supports code in col 1 or col 2 + hex/dec notation)
+    def _match_table_cell_code(cell_text):
+        c = str(cell_text or '').strip()
+        if not c:
+            return None, ''
+        m_cell = _TABLE_CELL_CODE_RE.match(c)
+        if m_cell:
+            return m_cell.group(1).upper(), c[m_cell.end():].strip(' :-–—|[]()')
+        m_hex = _TABLE_HEX_DEC_CODE_RE.search(c)
+        if m_hex:
+            dec_code = (m_hex.group(1) or m_hex.group(2) or '').upper()
+            if dec_code:
+                tail = (c[:m_hex.start()] + ' ' + c[m_hex.end():]).strip(' :-–—|[]()')
+                return dec_code, tail
+        return None, ''
+
     for cells, r_anchor, sec_num in (doc_res.get('tableRows') or []):
         if not cells:
             continue
-        first_cell = cells[0].strip()
-        m_cell = _TABLE_CELL_CODE_RE.match(first_cell)
-        if not m_cell:
+        code_upper, inline_tail = _match_table_cell_code(cells[0])
+        code_col_idx = 0
+        if not code_upper and len(cells) >= 2:
+            code_upper, inline_tail = _match_table_cell_code(cells[1])
+            if code_upper:
+                code_col_idx = 1
+        if not code_upper:
             continue
-        rest_cells = [c.strip() for c in cells[1:] if c and c.strip()]
+
+        rest_cells = [c.strip() for i, c in enumerate(cells) if i != code_col_idx and c and c.strip()]
         rest_joined = ' | '.join(rest_cells)
-        if len(rest_joined) < 10:
-            # Skip index/TOC rows with no real description
-            inline_tail = first_cell[m_cell.end():].strip(' :-–—|[]()')
-            if len(inline_tail) < 10:
+        if len(rest_joined) < 4:
+            if len(inline_tail) < 4:
                 continue
             rest_joined = inline_tail
 
-        code_upper = m_cell.group(1).upper()
         title_raw = (rest_cells[0] if rest_cells else rest_joined).strip()
         if len(title_raw) > 160:
             title_raw = title_raw[:157].rstrip() + '...'
@@ -1414,7 +1434,7 @@ def extract_entrust_codes_from_html_or_text(doc_res, filename, rel_path):
         if len(excerpt) > 450:
             excerpt = excerpt[:447].rstrip() + '...'
 
-        score = 100 + (15 if r_anchor else 0) + min(20, len(rest_cells) * 5)
+        score = (100 if code_col_idx == 0 else 95) + (15 if r_anchor else 0) + min(20, len(rest_cells) * 5)
         prev = scored_by_code.get(code_upper)
         if prev and prev[0] >= score:
             continue
