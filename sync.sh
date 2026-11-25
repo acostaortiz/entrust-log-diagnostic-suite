@@ -124,12 +124,35 @@ sync_diagnostic() {
             if systemctl list-unit-files logdiagnostix.service 2>/dev/null | grep -q "logdiagnostix.service"; then
                 sudo systemctl restart logdiagnostix.service
                 sleep 2
+                # Verificar si un proceso manual previo sigue reteniendo el puerto o no respondió con backend nuevo
+                if ! curl -sf http://127.0.0.1:8085/api/version 2>/dev/null | grep -q "session-files-delete"; then
+                    printf "${YELLOW}   ⚠️ Puerto 8085 retenido por proceso previo o reinicio incompleto; forzando recarga limpia...${NC}\n"
+                    sudo systemctl stop logdiagnostix.service >/dev/null 2>&1 || true
+                    sudo kill -9 $(sudo lsof -t -i:8085 2>/dev/null) 2>/dev/null || true
+                    sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
+                    sleep 1
+                    sudo systemctl start logdiagnostix.service
+                    sleep 2
+                fi
             else
                 sudo kill -9 $(sudo lsof -t -i:8085 2>/dev/null) 2>/dev/null || true
                 sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
                 sleep 1
                 nohup python3 "$DIR_DIAGNOSTIC/server.py" > /tmp/server_8085.log 2>&1 &
                 sleep 2
+            fi
+
+            # Verificar endpoint en vivo tras el reinicio
+            local live_ver_json
+            live_ver_json=$(curl -sf http://127.0.0.1:8085/api/version 2>/dev/null || echo "")
+            if echo "$live_ver_json" | grep -q "session-files-delete"; then
+                printf "${GREEN}${BOLD}   ✓ Backend 8085 en vivo verificado (serverCodeVersion + session-files-delete activos).${NC}\n"
+            else
+                printf "${RED}${BOLD}   ✗ ADVERTENCIA: el backend en puerto 8085 NO reporta 'session-files-delete'. Revisa: sudo journalctl -u logdiagnostix.service -n 30${NC}\n"
+            fi
+
+            if [ -f "$HOME/sync.sh" ] && ! cmp -s "$HOME/sync.sh" "$DIR_DIAGNOSTIC/sync.sh"; then
+                printf "${YELLOW}   💡 Tip: ~/sync.sh difiere del repo. Ejecuta: cp %s/sync.sh ~/sync.sh && chmod +x ~/sync.sh${NC}\n" "$DIR_DIAGNOSTIC"
             fi
 
             local commit_msg=$(git log -1 --pretty=format:"%h - %s (%cr)")

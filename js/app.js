@@ -1540,12 +1540,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.15.0',
-    build: 617,
+    version: 'v3.15.1',
+    build: 618,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'ZERO-OMISSION-VOLUMETRY-315',
+    gitCommit: 'SAFE-DELETE-FALLBACK-3151',
     gitBranch: 'main',
-    buildDate: '2026-11-24 23:00',
+    buildDate: '2026-11-25 15:08',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -9113,6 +9113,19 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   async function deleteSessionFilesFromServer({ fileIds = [], fileIndices = [], serverTag = '', label = '' }) {
     const activeProfile = getActiveClientProfile();
     const clientQuery = (activeProfile && activeProfile.name) ? activeProfile.name : (state.activeClientId || '');
+    const loadedArr = Array.isArray(state.loadedFiles) ? state.loadedFiles : [];
+    const totalLoaded = loadedArr.length;
+    const normTag = String(serverTag || '').replace(/^(?:🖥️\s*|☁️\s*)/, '').trim().toLowerCase();
+    const allMatchServer = Boolean(normTag) && totalLoaded > 0 && loadedArr.every(f => {
+      const ft = String(f.serverTag || f.nodeName || '').replace(/^(?:🖥️\s*|☁️\s*)/, '').trim().toLowerCase();
+      return ft === normTag;
+    });
+    const isDeletingAll = totalLoaded > 0 && (
+      allMatchServer
+      || fileIndices.length >= totalLoaded
+      || (fileIds.length > 0 && fileIds.length >= totalLoaded)
+    );
+
     showAnalysisStatus(
       true,
       '⏳ Eliminando de SQLite...',
@@ -9124,7 +9137,27 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ client: clientQuery, fileIds, fileIndices, serverTag })
       });
-      const data = await res.json();
+      const rawText = await res.text();
+      let data = null;
+      try {
+        data = rawText ? JSON.parse(rawText) : {};
+      } catch (_) {
+        data = null;
+      }
+
+      if (!data || res.status === 404) {
+        if (isDeletingAll) {
+          await resetSession(true);
+          showAnalysisStatus(
+            false,
+            '🧹 Archivo(s) eliminado(s) — Sesión SQLite vacía',
+            'Sesión purgada vía respaldo /api/clear-session. Nota: reinicie logdiagnostix.service en el servidor para habilitar eliminación parcial.'
+          );
+          return true;
+        }
+        throw new Error('El backend server.py aún corre una versión anterior en memoria (HTTP 404). Reinicie el servicio en Ubuntu: sudo systemctl restart logdiagnostix.service');
+      }
+
       if (!res.ok || data.error) {
         throw new Error(data.error || `HTTP ${res.status}`);
       }
@@ -9160,7 +9193,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       .map(i => state.loadedFiles?.[i]?.fileId)
       .filter(Boolean);
     try {
-      await fetch('/api/session-files/reassign', {
+      const res = await fetch('/api/session-files/reassign', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -9172,6 +9205,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           serverTag: cleanTag
         })
       });
+      if (res.status === 404) {
+        console.warn('El backend server.py aún corre una versión anterior sin /api/session-files/reassign. Reinicie logdiagnostix.service en el servidor.');
+      }
     } catch (err) {
       console.warn('Error persistiendo reasignación de servidor:', err);
     }

@@ -33,6 +33,7 @@ UPLOADS_DIR = os.path.join(DATA_DIR, 'uploads')
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
+SERVER_CODE_VERSION = 'v3.15.1'
 SERVER_START_TIME = time.time()
 DEFAULT_DB_PATH = None
 ACTIVE_DB_PATH = None
@@ -2394,7 +2395,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'client': client_param
             })
         else:
-            self.send_error(404, 'Endpoint not found')
+            if path.startswith('/api/'):
+                self.send_json({'error': f'Endpoint POST no encontrado: {path}'}, status=404)
+            else:
+                self.send_error(404, 'Endpoint not found')
 
     def do_GET(self):
         if self.is_malicious_request(self.path):
@@ -2474,6 +2478,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'customPagesCount': custom_pages,
                 'customVersions': custom_versions
             })
+        elif path.startswith('/api/'):
+            self.send_json({'error': f'Endpoint GET no encontrado: {path}'}, status=404)
         else:
             super().do_GET()
 
@@ -3133,6 +3139,9 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             'releaseChannel': 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
             'engineer': 'Tomás Acosta',
             'organization': 'IT Servicios de Venezuela, S.A.',
+            'serverCodeVersion': SERVER_CODE_VERSION,
+            'serverPid': os.getpid(),
+            'capabilities': ['session-files-delete', 'session-files-reassign', 'zero-omission-315'],
             'serverUptimeSeconds': round(time.time() - SERVER_START_TIME, 1) if 'SERVER_START_TIME' in globals() else 0,
             'pythonVersion': sys.version.split()[0],
             'activeDb': os.path.basename(ACTIVE_DB_PATH) if ACTIVE_DB_PATH else 'Ninguna'
