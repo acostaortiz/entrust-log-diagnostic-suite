@@ -261,6 +261,10 @@ class StorageEngine {
     });
   }
 
+  async clearSession() {
+    return this.clearActiveSession();
+  }
+
   async saveClientProfiles(clientProfiles) {
     await this.initPromise;
     if (!this.db) return false;

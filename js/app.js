@@ -1540,12 +1540,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.12.0',
-    build: 614,
+    version: 'v3.13.0',
+    build: 615,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'STRICT-VERSION-HEALTH-TIMELINE-312',
+    gitCommit: 'CLEAN-SESSION-MULTIDATE-SQLITE-313',
     gitBranch: 'main',
-    buildDate: '2026-11-24 12:55',
+    buildDate: '2026-11-24 21:15',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -6165,7 +6165,10 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       if (matchedTop) {
         const total = state.globalStreamMetrics.totalLogs || state.logs.length;
         const pct = ((matchedTop.count / total) * 100).toFixed(2) + '%';
-        return { count: matchedTop.count, percent: pct, firstSeen: '2026-09-08 13:44', lastSeen: '2026-09-12 23:59' };
+        const buckets = Array.isArray(state.globalStreamMetrics.timelineBuckets) ? state.globalStreamMetrics.timelineBuckets : [];
+        const firstB = buckets.length > 0 ? `${buckets[0].bucket}:00` : (log.timestamp || 'N/A');
+        const lastB = buckets.length > 0 ? `${buckets[buckets.length - 1].bucket}:59` : (log.timestamp || 'N/A');
+        return { count: matchedTop.count, percent: pct, firstSeen: firstB, lastSeen: lastB };
       }
     }
 
@@ -6190,7 +6193,20 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
   function renderDiagnosticPanel(log) {
     if (!dom.diagnosticCard || !log) return;
 
-    const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message);
+    const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message || log.raw || '', log.entrustCode || null);
+    const docVerBadge = diag.docVersion || diag.manualVersion || 'Entrust';
+    const officialDocHtml = (diag.manualFile || diag.customDocRef) ? `
+      <div class="diag-field mb-3" style="background:rgba(2, 132, 199, 0.08); border:1px solid rgba(2, 132, 199, 0.28); border-radius:6px; padding:10px 12px;">
+        <div class="diag-label" style="font-weight:700; color:#38bdf8; margin-bottom:4px;">📚 FUENTE DOCUMENTAL ENTRUST (${escapeHtml(docVerBadge)})</div>
+        <div style="font-size:0.82rem; color:var(--text-main); font-family:monospace; word-break:break-all;">
+          ${diag.manualFile ? `<div>• Manual Oficial: <strong>${escapeHtml(diag.manualFile)}</strong></div>` : ''}
+          ${diag.customDocRef && diag.customDocRef !== diag.manualFile ? `<div>• Doc. Suministrado (errors.html / PDF): <strong>${escapeHtml(diag.customDocRef)}</strong></div>` : ''}
+        </div>
+        ${diag.customDocRef ? `
+        <div style="margin-top:8px;">
+          <button type="button" class="btn btn-outline" id="btn-open-custom-doc-ref" style="padding:3px 10px; font-size:0.75rem; border-color:#38bdf8; color:#38bdf8;">📄 Abrir Doc. Suministrado (${escapeHtml(docVerBadge)})</button>
+        </div>` : ''}
+      </div>` : '';
     const freq = countReincidences(log);
 
     let userDisplay = log.user || 'N/A';
@@ -6300,6 +6316,8 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         <div class="font-mono" id="cli-preview-nix" style="font-size:0.78rem; color:#86efac; white-space:pre-wrap; background:#0596691a; padding:8px; border-radius:4px; border:1px solid #05966933;">${escapeHtml(diag.cliCommands.nix)}</div>
       </div>` : ''}
 
+      ${officialDocHtml}
+
       <!-- Barra de Acciones y Procedimientos -->
       <div class="flex-between mt-4" style="padding-top:14px; border-top:1px solid var(--border-color); flex-wrap:wrap; gap:10px; align-items:center;">
         <div>
@@ -6311,20 +6329,31 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
             📋 Copiar Ticket ITIL
           </button>
           <button class="btn btn-primary" id="btn-jump-manual" data-version="${diag.manualVersion}" data-section="${diag.sectionId}">
-            📚 Ver Procedimiento en Manual (${diag.manualVersion})
+            📚 Ver Procedimiento en Manual (${escapeHtml(docVerBadge)})
           </button>
         </div>
       </div>`;
 
     window.copyCliGlobal = function(targetOs) {
-      if (!log.diagnostic || !log.diagnostic.cliCommands) return;
-      const textToCopy = targetOs === 'win' ? log.diagnostic.cliCommands.win : log.diagnostic.cliCommands.nix;
+      const cli = diag.cliCommands || log?.diagnostic?.cliCommands;
+      if (!cli) return;
+      const textToCopy = targetOs === 'win' ? cli.win : cli.nix;
       navigator.clipboard.writeText(textToCopy).then(() => {
         alert(`📋 ¡Comandos CLI para ${targetOs === 'win' ? 'Windows SACVWIG07' : 'Linux sadcluapi01'} copiados al portapapeles!`);
       });
     };
 
+    document.getElementById('btn-open-custom-doc-ref')?.addEventListener('click', () => {
+      if (diag.customDocRef && typeof window.openManualPathInViewer === 'function') {
+        window.openManualPathInViewer(diag.customDocRef, diag.sectionTitle || diag.title, docVerBadge);
+      }
+    });
+
     document.getElementById('btn-jump-manual')?.addEventListener('click', (e) => {
+      if (diag.manualFile && typeof window.openManualPathInViewer === 'function') {
+        window.openManualPathInViewer(diag.manualFile, diag.sectionTitle || diag.title, docVerBadge);
+        return;
+      }
       const ver = e.currentTarget.getAttribute('data-version');
       const sec = e.currentTarget.getAttribute('data-section');
       jumpToManualSection(ver, sec);
@@ -8559,7 +8588,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
   }
 
-    function resetSession(clearStorage = true) {
+  async function resetSession(clearStorage = true) {
     state.logs = [];
     state.filteredLogs = [];
     state.selectedLog = null;
@@ -8574,17 +8603,20 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     state.nodeBLogs = [];
     state.nodeCLogs = [];
     state.nodeDLogs = [];
+    state.customNodeAssignments = {};
+    state.expandedFileServers = {};
+    _consolidatedMetricsCache = null;
+    _consolidatedMetricsSig = '';
     window.__BANCO_MERCANTIL_10GB_BUNDLE__ = null;
     if (window.UserTraceReport) {
       window.UserTraceReport.forensicMatrixData = null;
-    }
-    if (clearStorage) {
-      try {
-        if (window.storageEngine && typeof window.storageEngine.clearSession === 'function') {
-          window.storageEngine.clearSession().catch(() => {});
-        }
-        fetch('/api/clear-session', { method: 'POST' }).catch(() => {});
-      } catch(e) {}
+      window.UserTraceReport.cachedStats = {};
+      window.UserTraceReport.sqliteUserEventsCache = {};
+      if (window.UserTraceReport.selectedUsers && typeof window.UserTraceReport.selectedUsers.clear === 'function') {
+        window.UserTraceReport.selectedUsers.clear();
+      } else {
+        window.UserTraceReport.selectedUsers = new Set();
+      }
     }
 
     if (dom.fileInput) dom.fileInput.value = '';
@@ -8594,9 +8626,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (dom.filterTypeSelect) dom.filterTypeSelect.value = 'ALL';
     if (dom.filterClientSelect) dom.filterClientSelect.value = 'ALL';
     if (dom.searchLogInput) dom.searchLogInput.value = '';
+    const srvSel = document.getElementById('filter-server-select');
+    if (srvSel) srvSel.innerHTML = '<option value="ALL">🖥️ Todos los Servidores</option>';
 
-    // Ocultar barra de estado y resetear panel de archivos cargados
+    // Ocultar barra de estado y resetear panel de archivos cargados y barra de volumetría
     if (dom.analysisStatusBar) dom.analysisStatusBar.style.display = 'none';
+    const volBarEl = document.getElementById('global-volumetry-metrics');
+    if (volBarEl) volBarEl.innerHTML = '<span>Esperando carga de logs...</span>';
     const listContainer = document.getElementById('loaded-files-list');
     if (listContainer) listContainer.innerHTML = '<span class="text-muted font-mono" style="font-size:0.78rem;">Ningún archivo cargado actualmente en la sesión.</span>';
     const badgeCount = document.getElementById('loaded-files-count-badge');
@@ -8622,10 +8658,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (critRateBadge) critRateBadge.textContent = '0% Falla';
     const critBar = document.getElementById('critical-progress-bar');
     if (critBar) critBar.style.width = '0%';
+    const idaasBadge = document.getElementById('idaas-rate-badge');
+    if (idaasBadge) idaasBadge.textContent = 'OnPremise Sys';
     const idaasBar = document.getElementById('idaas-progress-bar');
     if (idaasBar) idaasBar.style.width = '0%';
     const auditRateBadge = document.getElementById('audit-rate-badge');
-    if (auditRateBadge) auditRateBadge.textContent = '0 Auditoría';
+    if (auditRateBadge) auditRateBadge.textContent = '0% Auditoría';
     const warnBar = document.getElementById('warn-progress-bar');
     if (warnBar) warnBar.style.width = '0%';
     const healthBar = document.getElementById('health-progress-bar');
@@ -8637,8 +8675,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       healthBadge.style.background = 'rgba(16, 185, 129, 0.15)';
     }
 
-    // Resetear Tabla de Logs
-        state.sqlTotalMatching = 0;
+    // Resetear Tabla de Logs y Panel Diagnóstico
+    state.sqlTotalMatching = 0;
     state.sqlPage = 1;
     state.sqlTotalPages = 1;
     const pageBadge = document.getElementById('pagination-current-page');
@@ -8647,6 +8685,9 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (pageBadge) pageBadge.textContent = '1';
     if (totalPagesBadge) totalPagesBadge.textContent = '1';
     if (showingBadge) showingBadge.textContent = '0 - 0 de 0';
+    if (dom.diagnosticCard) {
+      dom.diagnosticCard.innerHTML = '<div style="padding:24px; text-align:center; color:var(--text-muted); font-size:0.88rem;">Seleccione un registro en la tabla para inspeccionar el diagnóstico oficial Entrust y la documentación vinculada.</div>';
+    }
 
     // Resetear Gráficos
     try {
@@ -8658,6 +8699,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         state.charts.trend.data.labels = ['Inicio'];
         state.charts.trend.data.datasets[0].data = [0];
         state.charts.trend.data.datasets[1].data = [0];
+        if (state.charts.trend.data.datasets[2]) state.charts.trend.data.datasets[2].data = [0];
         state.charts.trend.update();
       }
       state.activeTimeWindow = { active: false, tStart: null, tEnd: null };
@@ -8668,7 +8710,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }
     } catch(e) {}
 
-    // Limpiar Top Errores y Radar
+    // Limpiar Top Errores, Radar y Contenedores Secundarios
     const topCodesContainer = document.getElementById('top-codes-overview-container');
     if (topCodesContainer) topCodesContainer.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; padding:15px; text-align:center;">Sin errores en la sesión actual.</div>';
 
@@ -8681,6 +8723,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     const ipContainer = document.getElementById('ip-analytics-container');
     if (ipContainer) ipContainer.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:0.85rem;">Cargue un archivo de logs para analizar direcciones IP de origen.</div>';
 
+    const usersTabContainer = document.getElementById('tab-users-main-container');
+    if (usersTabContainer) usersTabContainer.innerHTML = '<div class="glass-card" style="padding:28px; text-align:center; color:var(--text-muted); font-size:0.9rem;">Cargue archivos de logs para construir el Censo &amp; Trazabilidad de Usuarios.</div>';
+
+    const compContainer = document.getElementById('compliance-auditor-main-container');
+    if (compContainer) compContainer.innerHTML = '<div class="glass-card" style="padding:24px; text-align:center; color:var(--text-muted); font-size:0.88rem;">Cargue archivos de logs para auditar controles de cumplimiento.</div>';
+
     if (window.threatRadarEngine) {
       window.threatRadarEngine.render('threat-radar-overview-container', []);
       window.threatRadarEngine.render('threat-radar-full-container', []);
@@ -8689,7 +8737,25 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     renderLogTable();
 
-    showAnalysisStatus(false, '🧹 Sesión Limpia', 'Se restablecieron todos los datos en memoria. Listo para cargar nuevos archivos de logs.');
+    if (clearStorage) {
+      const activeProfile = getActiveClientProfile();
+      const clientQuery = (activeProfile && activeProfile.name) ? activeProfile.name : (state.activeClientId || '');
+      try {
+        if (window.storageEngine && typeof window.storageEngine.clearActiveSession === 'function') {
+          await window.storageEngine.clearActiveSession().catch(() => {});
+        } else if (window.storageEngine && typeof window.storageEngine.clearSession === 'function') {
+          await window.storageEngine.clearSession().catch(() => {});
+        }
+        await fetch('/api/clear-session?client=' + encodeURIComponent(clientQuery), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ client: clientQuery })
+        }).catch(() => {});
+      } catch(e) {}
+      showAnalysisStatus(false, '🧹 Sesión y Base SQLite Limpias', `Se purgó la sesión de logs de ${clientQuery || 'la sesión activa'} (servidor + navegador). Manuales Entrust y configuración intactos. Listo para cargar nuevos archivos.`);
+    } else {
+      showAnalysisStatus(false, '🧹 Sesión Limpia', 'Se restablecieron todos los datos en memoria. Listo para cargar nuevos archivos de logs.');
+    }
   }
 
   window.resetAppSession = resetSession;
@@ -8800,6 +8866,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       if (isOpen) {
         const rowsHtml = sortedItems.map(({ f, idx }) => {
           const sizeMb = f.size > 0 ? (f.size / (1024 * 1024)).toFixed(1) + ' MB' : 'Muestra';
+          const dateTag = f.dateSpan || (f.firstTs ? String(f.firstTs).slice(0, 10) : '');
           const optionsHtml = availNodes.map(n =>
             `<option value="${escapeHtml(n.key)}" ${n.name === group.label ? 'selected' : ''}>${escapeHtml(n.name)}</option>`
           ).join('');
@@ -8808,7 +8875,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
               <td style="padding:5px 8px; width:28px; text-align:center;">
                 <input type="checkbox" class="file-select-chk" data-file-idx="${idx}" style="cursor:pointer; accent-color:${accent};">
               </td>
-              <td style="padding:5px 8px; font-family:monospace; font-size:0.77rem; color:var(--text-main); font-weight:600;">📄 ${escapeHtml(f.name)}</td>
+              <td style="padding:5px 8px; font-family:monospace; font-size:0.77rem; color:var(--text-main); font-weight:600;">📄 ${escapeHtml(f.name)}${dateTag ? `<span style="margin-left:6px; font-size:0.68rem; background:rgba(2,132,199,0.12); color:#38bdf8; padding:1px 6px; border-radius:4px;">📅 ${escapeHtml(dateTag)}</span>` : ''}</td>
               <td style="padding:5px 8px; font-size:0.74rem; color:var(--text-muted); white-space:nowrap;">${sizeMb}</td>
               <td style="padding:5px 8px; font-size:0.74rem; color:var(--text-muted); font-family:monospace; white-space:nowrap;">${(f.count || 0).toLocaleString()}</td>
               <td style="padding:5px 8px;">
@@ -8950,6 +9017,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   };
 
   window.removeLoadedFileGlobal = function(fileName) {
+    if (state.isServerApi) {
+      showAnalysisStatus(false, 'ℹ️ Eliminación individual no disponible en SQLite consolidado', 'Use "Limpiar Todo" para purgar la base SQLite y subir únicamente los archivos deseados.');
+      return;
+    }
     if (!state.loadedFiles) return;
     const fileIndex = state.loadedFiles.findIndex(f => f.name === fileName);
     if (fileIndex !== -1) {
@@ -10351,8 +10422,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   }
 
   function initEventListeners() {
-    dom.btnResetSession?.addEventListener('click', () => resetSession());
-    document.getElementById('btn-reset-session')?.addEventListener('click', () => resetSession());
+    (dom.btnResetSession || document.getElementById('btn-reset-session'))?.addEventListener('click', () => resetSession(true));
+    document.getElementById('btn-reset-session-overview')?.addEventListener('click', () => resetSession(true));
 
     // Paginación Híbrida: SQLite en Vivo o Memoria Local
     document.getElementById('btn-page-first')?.addEventListener('click', () => {
@@ -10611,9 +10682,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     });
 
     dom.fileInput?.addEventListener('change', async (e) => {
-      const files = Array.from(e.target.files);
+      const files = Array.from(e.target.files || []);
       if (files.length === 0) return;
 
+      try {
       const isPcapFile = (f) => /\.(pcapng|pcap|cap|dmp)(\.gz)?$/i.test((f.name || '').toLowerCase());
       const pcapFiles = files.filter(isPcapFile);
       const nonPcapFiles = files.filter(f => !isPcapFile(f));
@@ -10626,12 +10698,15 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       const isSupportedFile = (f) => {
         const fn = (f.name || '').toLowerCase();
-        return /\.(log|txt|csv|json|out|tsv)$/i.test(fn) || /\.(log|out)\.\d+$/i.test(fn) || /\.\d{4}-\d{2}-\d{2}$/.test(fn);
+        return /\.(log|txt|csv|json|out|tsv|gz|zip|tgz|bz2|tar)$/i.test(fn)
+          || /\.(log|out|txt)\.\d+$/i.test(fn)
+          || /\.\d{4}-\d{2}-\d{2}(\.\d+)?$/.test(fn)
+          || /[-_]\d{8}(\.\d+)?$/.test(fn);
       };
       const supportedFiles = nonPcapFiles.filter(isSupportedFile);
       const skippedFiles = nonPcapFiles.filter(f => !isSupportedFile(f));
       skippedFiles.forEach(sf => {
-        showAnalysisStatus(false, `⚠️ Archivo omitido: ${sf.name}`, 'Solo se procesan logs (.log, .log.N, .out, .txt, .csv, .json) o capturas PCAP (.pcap, .pcapng, .cap).');
+        showAnalysisStatus(false, `⚠️ Archivo omitido: ${sf.name}`, 'Solo se procesan logs (.log, .log.N, .gz, .zip, .out, .txt, .csv, .json) o capturas PCAP (.pcap, .pcapng, .cap).');
       });
       if (supportedFiles.length === 0) return;
 
@@ -10650,7 +10725,6 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
       if (!state.loadedFiles) state.loadedFiles = [];
 
-      const totalBatchBytes = supportedFiles.reduce((acc, f) => acc + (f.size || 0), 0);
       const activeProfile = getActiveClientProfile();
       const activeServerTag = (document.getElementById('upload-server-tag')?.value || '').trim() || 'Servidor 1 (Primario)';
       const activeClientName = (activeProfile && activeProfile.name)
@@ -10658,7 +10732,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         : (extractClientFromFilename(supportedFiles[0].name) || 'Entrust General');
 
       let serverAvailable = false;
-      if (totalBatchBytes > 5 * 1024 * 1024) {
+      if (typeof window !== 'undefined' && String(window.location.protocol || '').startsWith('http')) {
         try {
           const probeCtrl = new AbortController();
           const probeTimer = setTimeout(() => probeCtrl.abort(), 2500);
@@ -10690,8 +10764,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           }
         }
         if (!serverUploadFailed && uploadedToServer === supportedFiles.length) {
-          if (window.storageEngine && typeof window.storageEngine.clearSession === 'function') {
-            window.storageEngine.clearSession().catch(() => {});
+          if (window.storageEngine) {
+            if (typeof window.storageEngine.clearActiveSession === 'function') {
+              await window.storageEngine.clearActiveSession().catch(() => {});
+            } else if (typeof window.storageEngine.clearSession === 'function') {
+              await window.storageEngine.clearSession().catch(() => {});
+            }
           }
           state.isServerApi = true;
           await syncClientSessionWithServer(state.activeClientId);
@@ -10706,7 +10784,16 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       }
 
       if (!isAccumulate) {
-        fetch('/api/clear-session', { method: 'POST' }).catch(() => {});
+        try {
+          if (window.storageEngine && typeof window.storageEngine.clearActiveSession === 'function') {
+            await window.storageEngine.clearActiveSession().catch(() => {});
+          }
+          fetch('/api/clear-session?client=' + encodeURIComponent(activeClientName), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ client: activeClientName })
+          }).catch(() => {});
+        } catch (_) {}
       }
 
       let newLogs = [];
@@ -10980,6 +11067,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           window.UserTraceReport.fetchForensicMatrix(true);
         }
         switchTab('analyzer');
+      }
+      } finally {
+        try {
+          if (dom.fileInput) dom.fileInput.value = '';
+          else if (e && e.target) e.target.value = '';
+        } catch (_) {}
       }
     });
 

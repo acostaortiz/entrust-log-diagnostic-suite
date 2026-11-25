@@ -873,15 +873,107 @@ def search_manuals(query_str, version_filter=None, limit=6, prefer_version=None,
     scored.sort(key=lambda x: x['score'], reverse=True)
     return scored[:limit]
 
-def clear_active_session():
-    global ACTIVE_DB_PATH
-    ACTIVE_DB_PATH = None
+def purge_db_files(db_path):
+    """Safely removes a SQLite DB file and any -wal/-shm/-journal sidecars, falling back to row wipe if locked."""
+    purged = []
+    if not db_path:
+        return purged
+    for cand in (db_path, db_path + '-wal', db_path + '-shm', db_path + '-journal'):
+        if os.path.exists(cand):
+            removed = False
+            for _ in range(3):
+                try:
+                    os.remove(cand)
+                    removed = True
+                    purged.append(os.path.basename(cand))
+                    break
+                except Exception:
+                    time.sleep(0.05)
+            if not removed and cand == db_path and os.path.exists(db_path):
+                try:
+                    conn = sqlite3.connect(db_path, timeout=10.0)
+                    cur = conn.cursor()
+                    cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
+                    tables = {r[0] for r in cur.fetchall()}
+                    if 'logs' in tables:
+                        cur.execute('DELETE FROM logs')
+                    if 'server_stats' in tables:
+                        cur.execute('DELETE FROM server_stats')
+                    conn.commit()
+                    cur.execute('VACUUM')
+                    conn.close()
+                    purged.append(os.path.basename(db_path) + ' (emptied)')
+                except Exception:
+                    pass
+    return purged
+
+def clear_active_session(client_param=None, purge_db=True):
+    global ACTIVE_DB_PATH, upload_state
+    candidate_paths = []
+    norm_client = str(client_param).strip() if client_param is not None else ''
+    has_specific_client = bool(norm_client and norm_client.lower() not in ('all', 'none', ''))
+    target_slug_name = f"{get_client_slug(norm_client)}_audit.db" if has_specific_client else None
+
+    if has_specific_client:
+        candidate_paths.append(os.path.join(DATA_DIR, target_slug_name))
+
     sess_file = os.path.join(DATA_DIR, 'active_session.json')
+    saved_db = None
     if os.path.exists(sess_file):
         try:
-            os.remove(sess_file)
+            with open(sess_file, 'r', encoding='utf-8') as f:
+                sess = json.load(f) or {}
+                saved_db = sess.get('activeDbPath')
         except Exception:
-            pass
+            saved_db = None
+
+    if not has_specific_client:
+        if ACTIVE_DB_PATH:
+            candidate_paths.append(ACTIVE_DB_PATH)
+        if saved_db:
+            candidate_paths.append(saved_db)
+        ACTIVE_DB_PATH = None
+        if os.path.exists(sess_file):
+            try:
+                os.remove(sess_file)
+            except Exception:
+                pass
+    else:
+        if ACTIVE_DB_PATH and os.path.basename(ACTIVE_DB_PATH) == target_slug_name:
+            candidate_paths.append(ACTIVE_DB_PATH)
+            ACTIVE_DB_PATH = None
+        if saved_db and os.path.basename(saved_db) == target_slug_name:
+            candidate_paths.append(saved_db)
+            if os.path.exists(sess_file):
+                try:
+                    os.remove(sess_file)
+                except Exception:
+                    pass
+
+    seen_norm = set()
+    unique_paths = []
+    for p in candidate_paths:
+        ap = os.path.abspath(p)
+        if ap not in seen_norm:
+            seen_norm.add(ap)
+            unique_paths.append(ap)
+
+    purged = []
+    if purge_db:
+        for p in unique_paths:
+            purged.extend(purge_db_files(p))
+
+    upload_state['status'] = 'idle'
+    upload_state['fileName'] = ''
+    upload_state['fileSize'] = 0
+    upload_state['progress'] = 0
+    upload_state['linesProcessed'] = 0
+    upload_state['totalErrors'] = 0
+    upload_state['totalWarnings'] = 0
+    upload_state['dbPath'] = None
+    upload_state['error'] = None
+
+    return {'purgedFiles': purged, 'client': norm_client or None}
 
 def resolve_client_db(client_param=None):
     global ACTIVE_DB_PATH
@@ -1597,11 +1689,8 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
     upload_state['error'] = None
 
     try:
-        if not append_mode and os.path.exists(target_db):
-            try:
-                os.remove(target_db)
-            except Exception:
-                pass
+        if not append_mode:
+            purge_db_files(target_db)
 
         init_db(target_db)
 
@@ -1676,10 +1765,12 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
         folded_stack_lines = 0
         bytes_est = 0
         last_seen_ts = ''
+        file_min_ts = ''
+        file_max_ts = ''
         pending = None
 
         def flush_pending():
-            nonlocal batch, file_lines, file_errors, file_warnings, pending
+            nonlocal batch, file_lines, file_errors, file_warnings, pending, file_min_ts, file_max_ts
             if pending is None:
                 return
 
@@ -1765,6 +1856,10 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
 
             t_str = parsed_row[1]
             if t_str and len(t_str) >= 13 and re.match(r'^\d{4}-\d{2}-\d{2}', t_str):
+                if not file_min_ts or t_str < file_min_ts:
+                    file_min_ts = t_str
+                if not file_max_ts or t_str > file_max_ts:
+                    file_max_ts = t_str
                 h_bucket = t_str[:13]
                 hour_counts[h_bucket]['total'] += 1
                 if is_err:
@@ -1866,7 +1961,14 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
         node_key = 'srv_' + re.sub(r'[^a-z0-9]+', '_', clean_tag_plain.lower()).strip('_')
         node_name = clean_tag if clean_tag.startswith('🖥️') else f'🖥️ {clean_tag_plain}'
 
+        date_span = ''
+        if file_min_ts and file_max_ts:
+            d1 = file_min_ts[:10]
+            d2 = file_max_ts[:10]
+            date_span = d1 if d1 == d2 else f"{d1} → {d2}"
+
         file_entry = {
+            'fileId': f"{int(time.time() * 1000)}_{len(existing_files) + 1}",
             'name': os.path.basename(file_path),
             'size': file_size,
             'count': file_lines,
@@ -1875,22 +1977,71 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             'foldedStackLines': folded_stack_lines,
             'realErrors': file_errors,
             'realWarnings': file_warnings,
+            'firstTs': file_min_ts,
+            'lastTs': file_max_ts,
+            'dateSpan': date_span,
             'nodeKey': node_key,
             'nodeName': node_name,
             'serverTag': clean_tag_plain,
             'client': client_name
         }
-        loaded_files = [
-            f for f in existing_files
-            if not (f.get('name') == file_entry['name'] and (f.get('serverTag') or clean_tag_plain) == clean_tag_plain)
-        ]
-        loaded_files.append(file_entry)
+        loaded_files = list(existing_files) + [file_entry]
 
         # Compute exact 100% distinct counts across the full SQLite table (not capped by append merge)
         exact_unique_users, exact_unique_codes, exact_unique_ips = compute_exact_sqlite_distinct_counts(cur)
 
         prev_raw_total = sum(int(f.get('rawLinesRead', f.get('count', 0)) or 0) for f in loaded_files)
         prev_folded_total = sum(int(f.get('foldedStackLines', 0) or 0) for f in loaded_files)
+
+        if append_mode:
+            cur.execute(
+                "SELECT event_type, COUNT(1) FROM logs WHERE event_type IS NOT NULL AND event_type != '' "
+                "GROUP BY event_type ORDER BY COUNT(1) DESC LIMIT 200"
+            )
+            event_types_list = [{'code': r[0], 'count': int(r[1] or 0)} for r in cur.fetchall()]
+            top_codes_list = list(event_types_list)
+
+            cur.execute(
+                "SELECT source_ip, COUNT(1) FROM logs WHERE source_ip IS NOT NULL AND source_ip != '' "
+                "AND source_ip != 'local' AND source_ip != '127.0.0.1' "
+                "GROUP BY source_ip ORDER BY COUNT(1) DESC LIMIT 50"
+            )
+            top_ips_list = [{'ip': r[0], 'count': int(r[1] or 0)} for r in cur.fetchall()]
+
+            cur.execute(
+                "SELECT SUBSTR(event_time, 1, 13) AS hb, COUNT(1) AS tot, "
+                "SUM(CASE WHEN UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%' THEN 1 ELSE 0 END) AS errs, "
+                "SUM(CASE WHEN UPPER(event_outcome) NOT LIKE '%FAIL%' AND UPPER(event_outcome) NOT LIKE '%ERR%' THEN 1 ELSE 0 END) AS inf "
+                "FROM logs "
+                "WHERE event_time GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' AND LENGTH(event_time) >= 13 "
+                "GROUP BY hb ORDER BY hb ASC LIMIT 2000"
+            )
+            timeline_buckets_list = [
+                {'bucket': r[0], 'total': int(r[1] or 0), 'errors': int(r[2] or 0), 'info': int(r[3] or 0)}
+                for r in cur.fetchall() if r[0]
+            ]
+
+            cur.execute(
+                "SELECT subject_name, COUNT(1) FROM logs "
+                "WHERE subject_name IS NOT NULL AND subject_name != '' AND subject_name != 'system' AND subject_name != 'unknown' "
+                "GROUP BY subject_name ORDER BY COUNT(1) DESC LIMIT 300"
+            )
+            top_users_list = [
+                {'user': r[0], 'count': int(r[1] or 0)}
+                for r in cur.fetchall() if r[0] and is_valid_user_candidate(r[0])
+            ][:200]
+        else:
+            event_types_list = [{'code': k, 'count': v} for k, v in type_counts.most_common(200)]
+            top_codes_list = [{'code': k, 'count': v} for k, v in code_counts.most_common(200)]
+            top_users_list = [
+                {'user': k, 'count': v}
+                for k, v in user_counts.most_common(300) if is_valid_user_candidate(k)
+            ][:200]
+            top_ips_list = [{'ip': k, 'count': v} for k, v in ip_counts.most_common(50)]
+            timeline_buckets_list = [
+                {'bucket': k, 'total': v['total'], 'errors': v['errors'], 'info': v['info']}
+                for k, v in sorted(hour_counts.items())[:2000]
+            ]
 
         # Build instant cached stats object (< 0.1 ms)
         stats_obj = {
@@ -1904,11 +2055,11 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             'totalUniqueCodes': exact_unique_codes or len(code_counts),
             'totalUniqueUsers': exact_unique_users,
             'totalUniqueIps': exact_unique_ips or len(ip_counts),
-            'eventTypes': [{'code': k, 'count': v} for k, v in type_counts.most_common(100)],
-            'topCodes': [{'code': k, 'count': v} for k, v in code_counts.most_common(100)],
-            'topUsers': [{'user': k, 'count': v} for k, v in user_counts.most_common(200)],
-            'topIps': [{'ip': k, 'count': v} for k, v in ip_counts.most_common(50)],
-            'timelineBuckets': [{'bucket': k, 'total': v['total'], 'errors': v['errors'], 'info': v['info']} for k, v in sorted(hour_counts.items())[:200]],
+            'eventTypes': event_types_list,
+            'topCodes': top_codes_list,
+            'topUsers': top_users_list,
+            'topIps': top_ips_list,
+            'timelineBuckets': timeline_buckets_list,
             'detectedPlatform': 'Entrust IDaaS Cloud' if is_idaas else 'Entrust IdentityGuard OnPremise',
             'activeDb': os.path.basename(target_db),
             'client': client_name,
@@ -2025,8 +2176,28 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         elif path == '/api/pcap-analyze-server-file':
             self.handle_pcap_analyze_server_file()
         elif path == '/api/clear-session':
-            clear_active_session()
-            self.send_json({'success': True, 'activeDb': None})
+            post_query = urllib.parse.parse_qs(parsed_url.query)
+            client_param = post_query.get('client', [None])[0]
+            try:
+                content_length = int(self.headers.get('Content-Length', 0) or 0)
+            except Exception:
+                content_length = 0
+            if content_length > 0 and content_length < 65536:
+                try:
+                    raw_body = self.rfile.read(content_length).decode('utf-8', errors='ignore')
+                    if raw_body.strip():
+                        body_json = json.loads(raw_body)
+                        if isinstance(body_json, dict) and body_json.get('client'):
+                            client_param = client_param or str(body_json.get('client')).strip()
+                except Exception:
+                    pass
+            res = clear_active_session(client_param=client_param, purge_db=True)
+            self.send_json({
+                'success': True,
+                'activeDb': None,
+                'purgedFiles': res.get('purgedFiles', []),
+                'client': client_param
+            })
         else:
             self.send_error(404, 'Endpoint not found')
 
@@ -2044,8 +2215,14 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         elif path == '/api/stats':
             self.handle_api_stats(query)
         elif path == '/api/clear-session':
-            clear_active_session()
-            self.send_json({'success': True, 'activeDb': None})
+            client_param = query.get('client', [None])[0]
+            res = clear_active_session(client_param=client_param, purge_db=True)
+            self.send_json({
+                'success': True,
+                'activeDb': None,
+                'purgedFiles': res.get('purgedFiles', []),
+                'client': client_param
+            })
         elif path == '/api/clients':
             self.handle_get_clients()
         elif path == '/api/engineers':
@@ -2982,6 +3159,9 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 server_tag = urllib.parse.unquote(self.headers.get('X-Server-Tag', '')).strip()
                 upload_state['status'] = 'indexing'
                 upload_state['progress'] = 0
+                upload_state['linesProcessed'] = 0
+                upload_state['totalErrors'] = 0
+                upload_state['error'] = None
                 thread = threading.Thread(target=index_file_in_background, args=(temp_path, client_name, append_mode, server_tag))
                 thread.daemon = True
                 thread.start()
@@ -3254,7 +3434,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 WHERE event_time IS NOT NULL AND event_time != ''
                 GROUP BY hour_bucket
                 ORDER BY hour_bucket ASC
-                LIMIT 100
+                LIMIT 2000
             ''')
             timeline_buckets = [{'bucket': r[0], 'total': r[1], 'errors': r[2] or 0, 'info': r[3] or 0} for r in cur.fetchall()]
 
