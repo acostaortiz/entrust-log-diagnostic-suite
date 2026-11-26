@@ -35,7 +35,7 @@ UPLOADS_DIR = os.path.join(DATA_DIR, 'uploads')
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
-SERVER_CODE_VERSION = 'v3.16.1'
+SERVER_CODE_VERSION = 'v3.16.2'
 SERVER_START_TIME = time.time()
 DEFAULT_DB_PATH = None
 ACTIVE_DB_PATH = None
@@ -1008,6 +1008,7 @@ def resolve_client_db(client_param=None):
 def init_db(db_path):
     conn = sqlite3.connect(db_path, timeout=30.0)
     cur = conn.cursor()
+    cur.execute('PRAGMA busy_timeout = 30000;')
     cur.execute('PRAGMA journal_mode = WAL;')
     cur.execute('PRAGMA synchronous = OFF;')
     cur.execute('''
@@ -2152,6 +2153,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             try:
                 conn_prev = sqlite3.connect(target_db, timeout=30.0)
                 cur_prev = conn_prev.cursor()
+                cur_prev.execute('PRAGMA busy_timeout = 30000;')
                 cur_prev.execute('SELECT COALESCE(MAX(line_num), 0) FROM logs')
                 line_num = int(cur_prev.fetchone()[0] or 0)
                 file_start_line = line_num + 1
@@ -2191,6 +2193,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
 
         conn = sqlite3.connect(target_db, timeout=30.0)
         cur = conn.cursor()
+        cur.execute('PRAGMA busy_timeout = 30000;')
         cur.execute('PRAGMA synchronous = OFF;')
         cur.execute('PRAGMA journal_mode = WAL;')
 
@@ -3840,6 +3843,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         try:
             conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
+            cur.execute('PRAGMA busy_timeout = 30000;')
             
             # Fast Check: cached stats in server_stats table (< 0.5 ms)
             cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='server_stats'")
@@ -4141,6 +4145,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
+            cur.execute('PRAGMA busy_timeout = 30000;')
 
             intervals, starts = _load_session_file_intervals(cur)
             where_clause, params = _build_logs_filter_sql(query, intervals=intervals)
@@ -4214,6 +4219,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         try:
             conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
+            cur.execute('PRAGMA busy_timeout = 30000;')
             intervals, starts = _load_session_file_intervals(cur)
             where_clause, params = _build_logs_filter_sql(query, intervals=intervals, force_error_or_warn=True)
 
@@ -4293,6 +4299,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         try:
             conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
+            cur.execute('PRAGMA busy_timeout = 30000;')
             intervals, starts = _load_session_file_intervals(cur)
             where_clause, params = _build_logs_filter_sql(query, intervals=intervals, force_error_or_warn=False)
 
@@ -4535,6 +4542,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         try:
             conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
+            cur.execute('PRAGMA busy_timeout = 30000;')
             line_ranges = None
             if server_param and server_param.upper() != 'ALL':
                 intervals, _ = _load_session_file_intervals(cur)

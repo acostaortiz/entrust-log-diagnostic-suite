@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedLog: null,
     localPage: 1,
     localPageSize: 50,
+    isServerApi: false,
+    isServerIndexing: false,
     isStreaming: false,
     streamInterval: null,
     charts: {},
@@ -1540,12 +1542,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.16.1',
-    build: 620,
+    version: 'v3.16.2',
+    build: 621,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'DIAG-CARD-UX-3161',
+    gitCommit: 'SQLITE-LIVE-FILTER-3162',
     gitBranch: 'main',
-    buildDate: '2026-11-26 09:30',
+    buildDate: '2026-11-26 10:00',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -1576,7 +1578,7 @@ document.addEventListener('DOMContentLoaded', () => {
       state.serverCapabilities = Array.isArray(liveVerPayload.capabilities) ? liveVerPayload.capabilities : [];
     }
 
-    const expectedVer = 'v3.16.1';
+    const expectedVer = 'v3.16.2';
     const liveCaps = state.serverCapabilities || [];
     const backendMismatch = Boolean(liveVerPayload && (!liveVerPayload.serverCodeVersion || liveVerPayload.serverCodeVersion !== expectedVer || !liveCaps.includes('export-logs-csv-316')));
     state.backendOutdatedInMemory = backendMismatch;
@@ -6289,25 +6291,50 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     if (!dom.logScrollArea) return;
     dom.logScrollArea.innerHTML = '';
 
-    const hasSessionData = (state.sqlTotalMatching > 0) || (state.logs && state.logs.length > 0) || (state.loadedFiles && state.loadedFiles.length > 0);
+    const hasSessionData = (state.sqlTotalMatching > 0)
+      || (state.globalStreamMetrics && state.globalStreamMetrics.totalLogs > 0)
+      || (state.logs && state.logs.length > 0)
+      || (state.loadedFiles && state.loadedFiles.length > 0);
 
     if (state.filteredLogs.length === 0) {
-      if (hasSessionData) {
+      const showingBadgeEmpty = document.getElementById('pagination-showing-badge');
+      const pageBadgeEmpty = document.getElementById('pagination-current-page');
+      const totalPagesBadgeEmpty = document.getElementById('pagination-total-pages');
+      if (showingBadgeEmpty) {
+        showingBadgeEmpty.textContent = state.isServerIndexing
+          ? '0 - 0 de 0 (Indexando lote en SQLite...)'
+          : '0 - 0 de 0';
+      }
+      if (pageBadgeEmpty) pageBadgeEmpty.textContent = '1';
+      if (totalPagesBadgeEmpty) totalPagesBadgeEmpty.textContent = '1';
+
+      if (hasSessionData || state.isServerIndexing) {
+        const totalGlobal = (state.globalStreamMetrics && state.globalStreamMetrics.totalLogs) ? Number(state.globalStreamMetrics.totalLogs) : 0;
+        let detailMsg;
+        if (state.isServerApi) {
+          detailMsg = (state.isServerIndexing && totalGlobal === 0)
+            ? '⏳ Indexando lote en SQLite en tiempo real... Los registros estarán disponibles automáticamente al completar la indexación.'
+            : `Consulta SQLite ejecutada sobre ${totalGlobal.toLocaleString()} registros: ningún evento coincide con la combinación actual de servidor, severidad, tipo/código o búsqueda.${state.isServerIndexing ? ' (Indexación en segundo plano en curso).' : ''}`;
+        } else {
+          detailMsg = state.logs.length > 0
+            ? `Hay ${state.logs.length.toLocaleString()} registros cargados en memoria local, pero ninguno coincide con la combinación actual de servidor, origen, severidad o búsqueda.`
+            : 'Ningún registro coincide con la combinación actual de filtros. Ajuste los filtros de servidor, origen, severidad o búsqueda.';
+        }
         dom.logScrollArea.innerHTML = `
-          <div style="padding: 35px 20px; text-align: center; color: var(--text-muted);">
+          <div style="padding: 35px 20px; text-align: center; color: #cbd5e1;">
             <div style="font-size: 1.8rem; margin-bottom: 8px;">🔍</div>
-            <strong style="font-size: 0.95rem; color: var(--text-main); display: block; margin-bottom: 6px;">No hay registros que coincidan con los filtros actuales</strong>
-            <p style="margin-bottom:14px; font-size:0.82rem;">${state.logs.length > 0 ? `Hay ${state.logs.length.toLocaleString()} registros cargados en memoria, pero ninguno coincide con la combinación actual de servidor, origen, severidad o búsqueda.` : 'Ningún registro coincide con la combinación actual de filtros (o la indexación sigue en progreso). Ajuste los filtros de servidor, origen, severidad o búsqueda.'}</p>
+            <strong style="font-size: 0.95rem; color: #f8fafc; display: block; margin-bottom: 6px;">No hay registros que coincidan con los filtros actuales</strong>
+            <p style="margin-bottom:14px; font-size:0.82rem; color: #94a3b8; max-width: 720px; margin-left: auto; margin-right: auto;">${detailMsg}</p>
             <button type="button" class="btn btn-secondary" onclick="window.resetTableFiltersGlobal && window.resetTableFiltersGlobal();" style="font-size:0.82rem; padding:6px 16px; cursor:pointer;">
               ✖ Restablecer Filtros
             </button>
           </div>`;
       } else {
         dom.logScrollArea.innerHTML = `
-          <div style="padding: 40px 20px; text-align: center; color: var(--text-muted);">
+          <div style="padding: 40px 20px; text-align: center; color: #cbd5e1;">
             <div style="font-size: 2.2rem; margin-bottom: 8px;">📂</div>
-            <strong style="font-size: 1rem; color: var(--text-main); display: block; margin-bottom: 6px;">Consola Limpia y Lista para Análisis</strong>
-            <p style="margin-bottom:16px; font-size:0.85rem;">Arrastra aquí tus archivos de logs (<code>.log</code>, rotados <code>.log.1..N</code>, Tomcat <code>.out</code>, <code>.txt</code>, <code>.csv</code>, <code>.json</code>) o usa <strong>Cargar Archivos</strong> arriba.</p>
+            <strong style="font-size: 1rem; color: #f8fafc; display: block; margin-bottom: 6px;">Consola Limpia y Lista para Análisis</strong>
+            <p style="margin-bottom:16px; font-size:0.85rem; color: #94a3b8;">Arrastra aquí tus archivos de logs (<code style="background:rgba(148,163,184,0.18); color:#e2e8f0; padding:1px 5px; border-radius:4px;">.log</code>, rotados <code style="background:rgba(148,163,184,0.18); color:#e2e8f0; padding:1px 5px; border-radius:4px;">.log.1..N</code>, Tomcat <code style="background:rgba(148,163,184,0.18); color:#e2e8f0; padding:1px 5px; border-radius:4px;">.out</code>, <code style="background:rgba(148,163,184,0.18); color:#e2e8f0; padding:1px 5px; border-radius:4px;">.txt</code>, <code style="background:rgba(148,163,184,0.18); color:#e2e8f0; padding:1px 5px; border-radius:4px;">.csv</code>, <code style="background:rgba(148,163,184,0.18); color:#e2e8f0; padding:1px 5px; border-radius:4px;">.json</code>) o usa <strong style="color:#f8fafc;">Cargar Archivos</strong> arriba.</p>
             <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
               <button type="button" class="btn" onclick="window.openServerIngestModalGlobal && window.openServerIngestModalGlobal()" style="font-size:0.82rem; padding:8px 18px; background:#059669; color:#fff; border:1px solid #10b981; border-radius:6px; font-weight:bold; cursor:pointer;">
                 ⚡ Ingesta Servidor (&gt; 3 GB)
@@ -7756,6 +7783,39 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
     }
   }
 
+  function applyServerStatsSnapshot(statsData, cId, currentClient) {
+    state.isServerApi = true;
+    state.globalStreamMetrics = {
+      totalLogs: statsData.totalLogs || 0,
+      rawLinesRead: statsData.rawLinesRead || statsData.totalLogs || 0,
+      foldedStackLines: statsData.foldedStackLines || 0,
+      totalErrors: statsData.totalErrors || 0,
+      totalWarnings: statsData.totalWarnings || 0,
+      totalUniqueCodes: statsData.totalUniqueCodes || (statsData.topCodes || []).length || 0,
+      totalUniqueUsers: statsData.totalUniqueUsers || (statsData.topUsers || []).length || 0,
+      totalUniqueIps: statsData.totalUniqueIps || (statsData.topIps || []).length || 0,
+      topUsers: statsData.topUsers || [],
+      topIps: statsData.topIps || [],
+      topCodes: statsData.topCodes || (statsData.eventTypes || []).map(t => ({ code: t.code, count: t.count })),
+      eventTypes: statsData.eventTypes || [],
+      timelineBuckets: statsData.timelineBuckets || [],
+      detectedPlatform: statsData.detectedPlatform || 'Entrust IdentityGuard OnPremise'
+    };
+    state.loadedFiles = (Array.isArray(statsData.loadedFiles) && statsData.loadedFiles.length > 0)
+      ? statsData.loadedFiles
+      : [{
+          name: statsData.activeDb || `${cId}_audit.db`,
+          size: 0,
+          count: statsData.totalLogs,
+          sampleCount: 50,
+          realErrors: statsData.totalErrors,
+          realWarnings: statsData.totalWarnings || 0,
+          nodeKey: 'server_cluster',
+          nodeName: '🖥️ Servidor Core SQLite',
+          client: currentClient.name
+        }];
+  }
+
   async function syncClientSessionWithServer(clientId) {
     const cId = clientId || state.activeClientId || 'general';
     const currentClient = getActiveClientProfile();
@@ -7765,36 +7825,7 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
       if (!statsRes.ok) return false;
       const statsData = await statsRes.json();
       if (statsData.status === 'ready' && statsData.totalLogs > 0) {
-        state.isServerApi = true;
-        state.globalStreamMetrics = {
-          totalLogs: statsData.totalLogs || 0,
-          rawLinesRead: statsData.rawLinesRead || statsData.totalLogs || 0,
-          foldedStackLines: statsData.foldedStackLines || 0,
-          totalErrors: statsData.totalErrors || 0,
-          totalWarnings: statsData.totalWarnings || 0,
-          totalUniqueCodes: statsData.totalUniqueCodes || (statsData.topCodes || []).length || 0,
-          totalUniqueUsers: statsData.totalUniqueUsers || (statsData.topUsers || []).length || 0,
-          totalUniqueIps: statsData.totalUniqueIps || (statsData.topIps || []).length || 0,
-          topUsers: statsData.topUsers || [],
-          topIps: statsData.topIps || [],
-          topCodes: statsData.topCodes || (statsData.eventTypes || []).map(t => ({ code: t.code, count: t.count })),
-          eventTypes: statsData.eventTypes || [],
-          timelineBuckets: statsData.timelineBuckets || [],
-          detectedPlatform: statsData.detectedPlatform || 'Entrust IdentityGuard OnPremise'
-        };
-        state.loadedFiles = (Array.isArray(statsData.loadedFiles) && statsData.loadedFiles.length > 0)
-          ? statsData.loadedFiles
-          : [{
-              name: statsData.activeDb || `${cId}_audit.db`,
-              size: 0,
-              count: statsData.totalLogs,
-              sampleCount: 50,
-              realErrors: statsData.totalErrors,
-              realWarnings: statsData.totalWarnings || 0,
-              nodeKey: 'server_cluster',
-              nodeName: '🖥️ Servidor Core SQLite',
-              client: currentClient.name
-            }];
+        applyServerStatsSnapshot(statsData, cId, currentClient);
         if (window.UserTraceReport) {
           window.UserTraceReport.forensicMatrixData = null;
           window.UserTraceReport.sqliteUserEventsCache = {};
@@ -7843,6 +7874,28 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
   }
   window.syncClientSessionWithServer = syncClientSessionWithServer;
 
+  async function refreshServerSessionStatsOnly(clientId) {
+    const cId = clientId || state.activeClientId || 'general';
+    const currentClient = getActiveClientProfile();
+    const clientQuery = (currentClient && currentClient.name) ? currentClient.name : cId;
+    try {
+      const statsRes = await fetch(`/api/stats?client=${encodeURIComponent(clientQuery)}`);
+      if (!statsRes.ok) return false;
+      const statsData = await statsRes.json();
+      if (statsData.status === 'ready' && statsData.totalLogs > 0) {
+        applyServerStatsSnapshot(statsData, cId, currentClient);
+        if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
+        if (typeof populateTypeFilterSelector === 'function') populateTypeFilterSelector(true);
+        renderLoadedFilesDrawer();
+        return true;
+      }
+      return false;
+    } catch (err) {
+      return false;
+    }
+  }
+  window.refreshServerSessionStatsOnly = refreshServerSessionStatsOnly;
+
   function buildSqlFilterQueryParams() {
     const search = (dom.searchLogInput?.value || '').trim();
     const server = document.getElementById('filter-server-select')?.value || 'ALL';
@@ -7868,19 +7921,29 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
 
   async function fetchSqlLogs(targetPage = 1) {
     const { search, server, outcome, type, clientSlug } = buildSqlFilterQueryParams();
+    const url = `/api/logs?page=${targetPage}&limit=50&search=${encodeURIComponent(search)}&server=${encodeURIComponent(server)}&outcome=${encodeURIComponent(outcome)}&type=${encodeURIComponent(type)}&client=${encodeURIComponent(clientSlug)}`;
 
     try {
-      const url = `/api/logs?page=${targetPage}&limit=50&search=${encodeURIComponent(search)}&server=${encodeURIComponent(server)}&outcome=${encodeURIComponent(outcome)}&type=${encodeURIComponent(type)}&client=${encodeURIComponent(clientSlug)}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('API server.py no disponible, usando modo estático');
+      let res = await fetch(url);
+      if (!res.ok && state.isServerIndexing) {
+        await new Promise(r => setTimeout(r, 500));
+        res = await fetch(url);
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status} en /api/logs`);
       const data = await res.json();
 
-      if (!data || (!data.logs && data.status === 'empty')) {
+      if (!data || ((!data.logs || data.logs.length === 0) && data.status === 'empty')) {
         state.logs = [];
         state.filteredLogs = [];
         state.sqlPage = 1;
         state.sqlTotalPages = 1;
         state.sqlTotalMatching = 0;
+        const pageBadgeE = document.getElementById('pagination-current-page');
+        const totalPagesBadgeE = document.getElementById('pagination-total-pages');
+        const showingBadgeE = document.getElementById('pagination-showing-badge');
+        if (pageBadgeE) pageBadgeE.textContent = '1';
+        if (totalPagesBadgeE) totalPagesBadgeE.textContent = '1';
+        if (showingBadgeE) showingBadgeE.textContent = state.isServerIndexing ? '0 - 0 de 0 (Indexando lote en SQLite...)' : '0 - 0 de 0';
         renderLogTable();
         return true;
       }
@@ -7899,9 +7962,13 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
       if (pageBadge) pageBadge.textContent = (data.page || 1).toLocaleString();
       if (totalPagesBadge) totalPagesBadge.textContent = (data.totalPages || 1).toLocaleString();
       if (showingBadge) {
-        const start = (((data.page || 1) - 1) * 50) + (data.totalMatching > 0 ? 1 : 0);
-        const end = Math.min(data.totalMatching || 0, (data.page || 1) * 50);
-        showingBadge.textContent = `${start.toLocaleString()} - ${end.toLocaleString()} de ${(data.totalMatching || 0).toLocaleString()}`;
+        if ((data.totalMatching || 0) > 0) {
+          const start = (((data.page || 1) - 1) * 50) + 1;
+          const end = Math.min(data.totalMatching || 0, (data.page || 1) * 50);
+          showingBadge.textContent = `${start.toLocaleString()} - ${end.toLocaleString()} de ${(data.totalMatching || 0).toLocaleString()}`;
+        } else {
+          showingBadge.textContent = state.isServerIndexing ? '0 - 0 de 0 (Indexando lote en SQLite...)' : '0 - 0 de 0';
+        }
       }
 
       renderLogTable();
@@ -7910,7 +7977,11 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
       }
       return true;
     } catch (e) {
-      console.warn('fetchSqlLogs error / modo estático:', e);
+      console.warn('fetchSqlLogs error / reintento:', e);
+      if (state.isServerIndexing) {
+        const showingBadgeBusy = document.getElementById('pagination-showing-badge');
+        if (showingBadgeBusy) showingBadgeBusy.textContent = 'Indexación SQLite en progreso... reintente en unos segundos';
+      }
       return false;
     }
   }
@@ -9015,6 +9086,7 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
     state.loadedFiles = [];
     state.globalStreamMetrics = null;
     state.isServerApi = false;
+    state.isServerIndexing = false;
     state.sqlPage = 1;
     state.sqlTotalPages = 1;
     state.sqlTotalMatching = 0;
@@ -11464,7 +11536,6 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
       });
       if (supportedFiles.length === 0) return;
 
-      state.isServerApi = false;
       if (window.UserTraceReport) {
         window.UserTraceReport.forensicMatrixData = null;
       }
@@ -11499,23 +11570,36 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
       }
 
       if (serverAvailable) {
+        state.isServerApi = true;
+        state.isServerIndexing = true;
         let uploadedToServer = 0;
         let serverUploadFailed = false;
-        for (let fIdx = 0; fIdx < supportedFiles.length; fIdx++) {
-          const file = supportedFiles[fIdx];
-          const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-          const useAppend = isAccumulate || uploadedToServer > 0;
-          showAnalysisStatus(true, `🚀 Indexando en SQLite Servidor [${fIdx + 1}/${supportedFiles.length}]: ${file.name} (${sizeMb} MB)...`, 'Modo 100% paginable sin límite de 15,000 registros...');
-          try {
-            await uploadFileInChunksToServer(file, activeClientName, (current, total, msg) => {
-              showAnalysisStatus(true, `⚙️ [${fIdx + 1}/${supportedFiles.length}] ${file.name} (${sizeMb} MB)`, msg);
-            }, useAppend, activeServerTag);
-            uploadedToServer++;
-          } catch (serverErr) {
-            console.warn('Fallo en subida al servidor, intentando fallback local...', serverErr);
-            serverUploadFailed = true;
-            break;
+        let lastServerErr = null;
+        let failedFileName = '';
+        try {
+          for (let fIdx = 0; fIdx < supportedFiles.length; fIdx++) {
+            const file = supportedFiles[fIdx];
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+            const useAppend = isAccumulate || uploadedToServer > 0;
+            showAnalysisStatus(true, `🚀 Indexando en SQLite Servidor [${fIdx + 1}/${supportedFiles.length}]: ${file.name} (${sizeMb} MB)...`, 'Modo 100% paginable sin límite de 15,000 registros...');
+            try {
+              await uploadFileInChunksToServer(file, activeClientName, (current, total, msg) => {
+                showAnalysisStatus(true, `⚙️ [${fIdx + 1}/${supportedFiles.length}] ${file.name} (${sizeMb} MB)`, msg);
+              }, useAppend, activeServerTag);
+              uploadedToServer++;
+              if (supportedFiles.length > 1 && fIdx < supportedFiles.length - 1) {
+                await refreshServerSessionStatsOnly(state.activeClientId).catch(() => {});
+              }
+            } catch (serverErr) {
+              console.warn('Fallo en subida al servidor:', serverErr);
+              serverUploadFailed = true;
+              lastServerErr = serverErr;
+              failedFileName = file.name;
+              break;
+            }
           }
+        } finally {
+          state.isServerIndexing = false;
         }
         if (!serverUploadFailed && uploadedToServer === supportedFiles.length) {
           if (window.storageEngine) {
@@ -11535,7 +11619,25 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
           switchTab('analyzer');
           return;
         }
+        if (uploadedToServer > 0) {
+          state.isServerApi = true;
+          await syncClientSessionWithServer(state.activeClientId);
+          if (window.UserTraceReport && typeof window.UserTraceReport.fetchForensicMatrix === 'function') {
+            window.UserTraceReport.fetchForensicMatrix(true);
+          }
+          const srvMetrics = getConsolidatedMetrics();
+          showAnalysisStatus(
+            false,
+            `⚠️ Carga parcial en SQLite (${uploadedToServer}/${supportedFiles.length} archivos indexados — ${(srvMetrics.totalLogs || 0).toLocaleString()} registros)`,
+            `Falló en ${failedFileName || 'archivo siguiente'}: ${lastServerErr?.message || 'Error de conexión/indexación'}`
+          );
+          switchTab('analyzer');
+          return;
+        }
       }
+
+      state.isServerApi = false;
+      state.isServerIndexing = false;
 
       if (!isAccumulate) {
         try {
