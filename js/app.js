@@ -1540,12 +1540,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.16.0',
-    build: 619,
+    version: 'v3.16.1',
+    build: 620,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'FILTERS-CSV-FOLD-3160',
+    gitCommit: 'DIAG-CARD-UX-3161',
     gitBranch: 'main',
-    buildDate: '2026-11-25 17:50',
+    buildDate: '2026-11-26 09:30',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -1576,7 +1576,7 @@ document.addEventListener('DOMContentLoaded', () => {
       state.serverCapabilities = Array.isArray(liveVerPayload.capabilities) ? liveVerPayload.capabilities : [];
     }
 
-    const expectedVer = 'v3.16.0';
+    const expectedVer = 'v3.16.1';
     const liveCaps = state.serverCapabilities || [];
     const backendMismatch = Boolean(liveVerPayload && (!liveVerPayload.serverCodeVersion || liveVerPayload.serverCodeVersion !== expectedVer || !liveCaps.includes('export-logs-csv-316')));
     state.backendOutdatedInMemory = backendMismatch;
@@ -6419,41 +6419,90 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     return { count: Math.max(1, count), percent, firstSeen, lastSeen };
   }
 
+  function formatRemediationStepsHtml(rawText) {
+    const clean = String(rawText || '').trim();
+    if (!clean) return '<span class="text-muted">Sin pasos adicionales requeridos.</span>';
+    const lines = clean.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    const numbered = lines.length > 0 && lines.filter(l => /^\d+[\.)]\s+/.test(l)).length >= Math.max(1, Math.ceil(lines.length * 0.5));
+    if (numbered) {
+      let stepCounter = 0;
+      const itemsHtml = lines.map(l => {
+        const m = l.match(/^(\d+)[\.)]\s+(.*)$/);
+        if (m) {
+          stepCounter = Number(m[1]) || (stepCounter + 1);
+          return `<div class="diag-step-item"><span class="diag-step-num">${stepCounter}</span><div class="diag-step-text">${escapeHtml(m[2])}</div></div>`;
+        }
+        return `<div class="diag-step-text" style="padding-left:28px;">${escapeHtml(l)}</div>`;
+      }).join('');
+      return `<div class="diag-steps-list">${itemsHtml}</div>`;
+    }
+    return lines.map(l => `<div class="diag-step-text" style="margin-bottom:4px;">${escapeHtml(l)}</div>`).join('');
+  }
+
   function renderDiagnosticPanel(log) {
     if (!dom.diagnosticCard || !log) return;
 
     const diag = log.diagnostic || window.knowledgeBaseEngine.diagnoseLog(log.message || log.raw || '', log.entrustCode || null);
     const docVerBadge = diag.docVersion || diag.manualVersion || 'Entrust';
+    const sevUpper = String(diag.severity || log.level || 'INFO').toUpperCase();
+    const isCrit = sevUpper === 'CRITICAL' || sevUpper === 'FATAL';
+    const isErr = sevUpper === 'ERROR';
+    const isHigh = isCrit || isErr;
+    const isWarn = !isHigh && (sevUpper === 'WARN' || sevUpper === 'WARNING');
+
+    dom.diagnosticCard.classList.remove('diag-sev-critical', 'diag-sev-error', 'diag-sev-warn', 'diag-sev-info');
+    dom.diagnosticCard.classList.add(
+      isCrit ? 'diag-sev-critical' : (isErr ? 'diag-sev-error' : (isWarn ? 'diag-sev-warn' : 'diag-sev-info'))
+    );
+
     const officialDocHtml = (diag.manualFile || diag.customDocRef) ? `
-      <div class="diag-field mb-3" style="background:rgba(2, 132, 199, 0.08); border:1px solid rgba(2, 132, 199, 0.28); border-radius:6px; padding:10px 12px;">
-        <div class="diag-label" style="font-weight:700; color:#38bdf8; margin-bottom:4px;">📚 FUENTE DOCUMENTAL ENTRUST (${escapeHtml(docVerBadge)})</div>
-        <div style="font-size:0.82rem; color:var(--text-main); font-family:monospace; word-break:break-all;">
+      <div class="diag-callout diag-callout-info">
+        <div class="diag-callout-title">📚 Fuente Documental Entrust (${escapeHtml(docVerBadge)})</div>
+        <div style="font-size:0.8rem; font-family:'JetBrains Mono', monospace; word-break:break-all; line-height:1.45;">
           ${diag.manualFile ? `<div>• Manual Oficial: <strong>${escapeHtml(diag.manualFile)}</strong></div>` : ''}
-          ${diag.customDocRef && diag.customDocRef !== diag.manualFile ? `<div>• Doc. Suministrado (errors.html / PDF): <strong>${escapeHtml(diag.customDocRef)}</strong></div>` : ''}
+          ${diag.customDocRef && diag.customDocRef !== diag.manualFile ? `<div style="margin-top:3px;">• Doc. Suministrado: <strong>${escapeHtml(diag.customDocRef)}</strong></div>` : ''}
         </div>
         ${diag.customDocRef ? `
         <div style="margin-top:8px;">
-          <button type="button" class="btn btn-outline" id="btn-open-custom-doc-ref" style="padding:3px 10px; font-size:0.75rem; border-color:#38bdf8; color:#38bdf8;">📄 Abrir Doc. Suministrado (${escapeHtml(docVerBadge)})</button>
+          <button type="button" class="diag-mini-btn diag-mini-btn-ai" id="btn-open-custom-doc-ref">📄 Abrir Doc. Suministrado (${escapeHtml(docVerBadge)})</button>
         </div>` : ''}
       </div>` : '';
+
     const freq = countReincidences(log);
+    const countNum = Number(freq.count || 1);
+    const countFmt = Number.isFinite(countNum) ? countNum.toLocaleString() : String(freq.count || 1);
+    const countUnit = countNum === 1 ? 'ocurrencia' : 'ocurrencias';
+
+    const exactTs = log.timestamp || freq.firstSeen || 'Sin timestamp';
+    const windowRange = (freq.firstSeen && freq.lastSeen && freq.firstSeen !== freq.lastSeen)
+      ? `${freq.firstSeen} → ${freq.lastSeen}`
+      : (freq.firstSeen || exactTs);
+
+    const serverName = String(log.serverTag || log.node || 'Servidor Core').replace(/^(?:🖥️\s*|☁️\s*)/, '').trim() || 'Servidor Core';
+    const sourceFile = String(log.sourceFile || log.fileName || '').trim();
+    const lineLabel = log.lineNum ? `Línea #${Number(log.lineNum).toLocaleString()}` : '';
+    const codeLabel = String(log.entrustCode || log.code || log.type || '').trim();
+    const channelApp = log.service || 'Entrust Suite Component';
 
     let userDisplay = log.user || 'N/A';
     if (userDisplay === 'N/A') {
-      const matchUser = log.message.match(/user\s+['"]?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+|[a-zA-Z0-9._-]+)['"]?/i) ||
-                        log.message.match(/for\s+user\s+([a-zA-Z0-9._-]+)/i);
+      const msgTxt = String(log.message || '');
+      const matchUser = msgTxt.match(/user\s+['"]?([a-zA-Z0-9._%+\-\/@]+)['"]?/i) ||
+                        msgTxt.match(/for\s+user\s+([a-zA-Z0-9._\-\/@]+)/i);
       if (matchUser) {
         userDisplay = matchUser[1];
       } else {
-        const threadMatch = log.message.match(/\[(audit-thread-\d+|http-[^\]]+|main|supersh-exec-\d+)\]/);
+        const threadMatch = msgTxt.match(/\[(audit-thread-\d+|http-[^\]]+|main|supersh-exec-\d+)\]/);
         userDisplay = threadMatch ? `Sistema (${threadMatch[1]})` : 'Evento Interno del Sistema';
       }
     }
+    const isNominalUser = Boolean(userDisplay && !/^(system|unknown|n\/a|evento interno|sistema\s*\()/i.test(String(userDisplay).trim()));
 
     let ipOrHostDisplay = log.clientIp || 'N/A';
-    if (ipOrHostDisplay === 'N/A') {
-      const ipMatch = log.message.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/);
-      const hostMatch = log.message.match(/jdbc:[a-z:]+@([a-zA-Z0-9._:-]+)/i) || log.message.match(/URL\s+([a-zA-Z0-9._:-]+)/i);
+    if (ipOrHostDisplay === 'N/A' || ipOrHostDisplay === 'local') {
+      const msgTxt = String(log.message || '');
+      const ipMatch = msgTxt.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/);
+      const hostMatch = msgTxt.match(/jdbc:[a-z:]+@([a-zA-Z0-9._:-]+)/i) || msgTxt.match(/URL\s+([a-zA-Z0-9._:-]+)/i);
       if (ipMatch) {
         ipOrHostDisplay = ipMatch[1];
       } else if (hostMatch) {
@@ -6463,101 +6512,134 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       }
     }
 
-    const channelApp = log.service || 'Entrust Suite Component';
+    const rawText = String(log.raw || log.message || '');
+    const rawLinesCount = rawText ? rawText.split(/\r?\n/).length : 1;
+
+    const kpiCountAccent = isHigh ? 'accent-red' : (isWarn ? 'accent-amber' : 'accent-blue');
+    const kpiUserAccent = (isNominalUser && isHigh) ? 'accent-red' : (isNominalUser ? 'accent-blue' : 'accent-slate');
+    const causeCalloutCls = isHigh ? 'diag-callout-error' : (isWarn ? 'diag-callout-warn' : 'diag-callout-info');
+    const impactCalloutCls = isHigh ? 'diag-callout-error' : (isWarn ? 'diag-callout-warn' : 'diag-callout-info');
+    const riskPillCls = isHigh ? 'diag-risk-high' : (isWarn ? 'diag-risk-warn' : 'diag-risk-low');
+
+    const impactHtml = isHigh
+      ? `⚠️ <strong>Alto Riesgo de Interrupción:</strong> Afecta autenticaciones de clientes en <strong>Banca en Línea / App Móvil / Pago Móvil</strong>. Puede causar rechazos transaccionales o fallos en gateways WSO2.`
+      : (isWarn
+          ? `⚠️ <strong>Riesgo Moderado / Auditoría:</strong> Evento anómalo o advertencia de seguridad/rendimiento que requiere seguimiento para evitar degradación.`
+          : `ℹ️ <strong>Riesgo Bajo / Informativo:</strong> Sin impacto directo en disponibilidad de servicios de clientes. Monitoreo regular.`);
+
+    const remediationHtml = formatRemediationStepsHtml(diag.remediation);
 
     dom.diagnosticCard.innerHTML = `
-      <div class="diagnostic-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <div class="diagnostic-title" style="display:flex; align-items:center; gap:10px;">
-          <span style="font-size:1.1rem; font-weight:700;">🛡️ Diagnóstico de Seguridad & Auditoría (Entrust Suite)</span>
-          <span class="badge-sev ${diag.severity}">${diag.severity}</span>
+      <div class="diag-topbar">
+        <div class="diag-topbar-left">
+          <span style="font-size:1.08rem; font-weight:800; color:var(--text-main);">🛡️ Diagnóstico de Seguridad & Auditoría (Entrust Suite)</span>
+          <span class="badge-sev ${escapeHtml(sevUpper)}">${escapeHtml(sevUpper)}</span>
+          ${codeLabel ? `<span class="diag-code-chip">${escapeHtml(codeLabel)}</span>` : ''}
+          <span class="diag-svc-chip">${escapeHtml(channelApp)}</span>
         </div>
-        <span class="text-muted font-mono" style="font-size:0.8rem;">Firma KB: ${diag.ruleId}</span>
-      </div>
-
-      <!-- Resumen Ejecutivo de Frecuencia e Impacto -->
-      <div style="background:rgba(15, 23, 42, 0.4); border:1px solid rgba(226, 232, 240, 0.15); border-radius:8px; padding:12px 14px; margin-bottom:14px; display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
-        <div>
-          <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; font-weight:600;">🔁 Reincidencia Muestra</div>
-          <div style="font-size:1.05rem; font-weight:700; color:#38bdf8;" class="font-mono">${freq.count} vez/veces (${freq.percent})</div>
-        </div>
-        <div>
-          <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; font-weight:600;">🕒 Rango de Ocurrencia</div>
-          <div style="font-size:0.8rem; font-weight:600; color:#cbd5e1;" class="font-mono">${escapeHtml(freq.firstSeen)} → ${escapeHtml(freq.lastSeen)}</div>
-        </div>
-        <div>
-          <div style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; font-weight:600;">👤 Usuario / IP u Origen</div>
-          <div style="font-size:0.85rem; font-weight:600; color:#f43f5e;" class="font-mono">${escapeHtml(userDisplay)} @ ${escapeHtml(ipOrHostDisplay)}</div>
+        <div class="diag-topbar-right">
+          <span class="diag-kb-chip">Firma KB: ${escapeHtml(diag.ruleId || 'N/A')}</span>
+          ${codeLabel ? `<button type="button" class="diag-mini-btn" id="btn-diag-filter-code" title="Filtrar la tabla del Analizador por este código">🔍 Filtrar Código</button>` : ''}
+          <button type="button" class="diag-mini-btn diag-mini-btn-ai" id="btn-diag-ask-ai" title="Abrir Entrust Forensics AI y analizar este código">🤖 Consultar en Forensics AI</button>
         </div>
       </div>
 
-      <div class="diag-field mb-3">
-        <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">EVENTO U EXCEPCIÓN OBSERVADA</div>
-        <div class="diag-val font-mono text-cyan" style="font-weight:700; font-size:1.05rem;">${escapeHtml(diag.title)}</div>
-      </div>
-
-      <div class="diag-field mb-3">
-        <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">REGISTRO ORIGINAL DE LOG / TRAZAS</div>
-        <div class="diag-code" style="background:#0f172a; border-radius:6px; padding:10px; border:1px solid #334155; font-family:monospace; font-size:0.8rem; word-break:break-all;">${escapeHtml(log.raw)}</div>
-      </div>
-
-      <div class="diag-field mb-3">
-        <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">SIGNIFICADO DEL LOG (EXPLICACIÓN ENTRUST)</div>
-        <div class="diag-val" style="font-size:0.9rem; line-height:1.5;">${escapeHtml(diag.meaning)}</div>
-      </div>
-
-      ${diag.attribution ? `
-      <div class="diag-field mb-3">
-        <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">🎯 CAUSANTE / RESPONSABILIDAD DEL EVENTO</div>
-        <div class="diag-val font-mono" style="font-weight:700; font-size:0.95rem; color:#f43f5e; background:rgba(244, 63, 94, 0.1); border:1px solid rgba(244, 63, 94, 0.3); padding:8px 12px; border-radius:6px;">${escapeHtml(diag.attribution)}</div>
-      </div>` : ''}
-
-      <div class="diag-field mb-3">
-        <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">CAUSA RAÍZ PROBABLE</div>
-        <div class="diag-val text-warn font-mono" style="font-weight:600; font-size:0.9rem;">${escapeHtml(diag.rootCause)}</div>
-      </div>
-
-      <!-- Impacto al Negocio Bancario -->
-      <div class="diag-field mb-3" style="background:rgba(239, 68, 68, 0.08); border:1px solid rgba(239, 68, 68, 0.25); border-radius:6px; padding:10px 12px;">
-        <div class="diag-label" style="font-weight:700; color:#f87171; margin-bottom:4px;">⚖️ IMPACTO EN EL NEGOCIO BANCARIO & CANALES</div>
-        <div style="font-size:0.85rem; color:#fca5a5;">
-          ${diag.severity === 'CRITICAL' || diag.severity === 'ERROR' 
-            ? `⚠️ <strong>Alto Riesgo de Interrupción:</strong> Afecta autenticaciones de clientes en <strong>Banca en Línea / App Móvil / Pago Móvil</strong>. Puede causar rechazos transaccionales o fallos en gateways WSO2.`
-            : `ℹ️ <strong>Riesgo Bajo / Informativo:</strong> Sin impacto directo en disponibilidad de servicios de clientes. Monitoreo regular.`}
+      <div class="diag-kpi-grid">
+        <div class="diag-kpi-tile ${kpiCountAccent}">
+          <div class="diag-kpi-label">🔁 Reincidencia en Sesión</div>
+          <div class="diag-kpi-value" style="color:${isHigh ? '#dc2626' : (isWarn ? '#d97706' : 'var(--accent-cyan)')};">${escapeHtml(countFmt)} ${countUnit}</div>
+          <div class="diag-kpi-sub">${escapeHtml(freq.percent)} del total analizado</div>
+        </div>
+        <div class="diag-kpi-tile accent-indigo">
+          <div class="diag-kpi-label">🕒 Timestamp & Ventana</div>
+          <div class="diag-kpi-value">${escapeHtml(exactTs)}</div>
+          <div class="diag-kpi-sub">Ventana: ${escapeHtml(windowRange)}</div>
+        </div>
+        <div class="diag-kpi-tile accent-slate">
+          <div class="diag-kpi-label">🖥️ Servidor & Fuente</div>
+          <div class="diag-kpi-value">${escapeHtml(serverName)}</div>
+          <div class="diag-kpi-sub">${escapeHtml(sourceFile ? (lineLabel ? `${sourceFile} · ${lineLabel}` : sourceFile) : (lineLabel || channelApp))}</div>
+        </div>
+        <div class="diag-kpi-tile ${kpiUserAccent}">
+          <div class="diag-kpi-label">👤 Identidad & Origen Red</div>
+          <div class="diag-kpi-value" style="${isNominalUser ? (isHigh ? 'color:#dc2626;' : 'color:var(--accent-cyan);') : ''}">${escapeHtml(userDisplay)}</div>
+          <div class="diag-kpi-sub">🌐 ${escapeHtml(ipOrHostDisplay)}</div>
         </div>
       </div>
 
-      <div class="diag-field mb-3">
-        <div class="diag-label" style="font-weight:700; color:#cbd5e1; margin-bottom:4px;">RECOMENDACIÓN & PASOS DE SOLUCIÓN (FABRICANTE ENTRUST)</div>
-        <div class="diag-val" style="white-space: pre-line; background:rgba(6, 78, 59, 0.2); border:1px solid rgba(16, 185, 129, 0.3); border-radius:6px; padding:12px; font-size:0.88rem; line-height:1.5; color:#34d399;">${escapeHtml(diag.remediation)}</div>
+      <div class="diag-event-banner">
+        <div class="diag-label" style="margin-bottom:4px;">EVENTO U EXCEPCIÓN OBSERVADA</div>
+        <div class="diag-event-title">${escapeHtml(diag.title || codeLabel || 'Evento del Sistema')}</div>
       </div>
 
-      <!-- Comandos CLI Listos para Copiar (Windows / Linux) -->
-      ${diag.cliCommands ? `
-      <div class="diag-field mb-3" style="background:#0f172a; border:1px solid #334155; border-radius:6px; padding:12px;">
-        <div class="flex-between mb-2">
-          <span class="diag-label" style="font-weight:700; color:#38bdf8;">💻 COMANDOS DE REMEDIACIÓN CLI (COPY & PASTE EN CONSOLA)</span>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-outline" style="padding:2px 8px; font-size:0.75rem;" onclick="window.copyCliGlobal('win')">📋 Windows (SACVWIG07)</button>
-            <button class="btn btn-outline" style="padding:2px 8px; font-size:0.75rem;" onclick="window.copyCliGlobal('nix')">📋 Linux (WSO2 sadcluapi01)</button>
+      <div class="diag-trace-shell">
+        <div class="diag-trace-head">
+          <div class="diag-trace-head-left">
+            <span>🧾 REGISTRO ORIGINAL DE LOG / TRAZAS</span>
+            ${rawLinesCount > 1 ? `<span class="diag-multiline-pill">${rawLinesCount} líneas plegadas</span>` : ''}
+          </div>
+          <button type="button" class="diag-trace-copy-btn" id="btn-copy-raw-trace" title="Copiar registro crudo al portapapeles">📋 Copiar Traza</button>
+        </div>
+        <pre class="diag-trace-pre">${escapeHtml(rawText)}</pre>
+      </div>
+
+      <div class="diag-analysis-grid">
+        <div class="diag-card-section">
+          <div>
+            <div class="diag-label">📖 Significado del Log (Explicación Entrust)</div>
+            <div class="diag-val" style="line-height:1.55;">${escapeHtml(diag.meaning || 'Sin descripción adicional registrada.')}</div>
+          </div>
+
+          ${diag.attribution ? `
+          <div class="diag-callout diag-callout-error">
+            <div class="diag-callout-title">🎯 Causante / Responsabilidad del Evento</div>
+            <div style="font-family:'JetBrains Mono', monospace; font-weight:700;">${escapeHtml(diag.attribution)}</div>
+          </div>` : ''}
+
+          <div class="diag-callout ${causeCalloutCls}">
+            <div class="diag-callout-title">🔍 Causa Raíz Probable</div>
+            <div style="font-family:'JetBrains Mono', monospace; font-weight:600; font-size:0.84rem;">${escapeHtml(diag.rootCause || 'Operación estándar del servicio.')}</div>
+          </div>
+
+          <div class="diag-callout ${impactCalloutCls}">
+            <div class="diag-callout-title">⚖️ Impacto en el Negocio Bancario & Canales</div>
+            <div>${impactHtml}</div>
           </div>
         </div>
-        <div class="font-mono" id="cli-preview-win" style="font-size:0.78rem; color:#a5f3fc; white-space:pre-wrap; background:#0284c71a; padding:8px; border-radius:4px; border:1px solid #0284c733; margin-bottom:6px;">${escapeHtml(diag.cliCommands.win)}</div>
-        <div class="font-mono" id="cli-preview-nix" style="font-size:0.78rem; color:#86efac; white-space:pre-wrap; background:#0596691a; padding:8px; border-radius:4px; border:1px solid #05966933;">${escapeHtml(diag.cliCommands.nix)}</div>
-      </div>` : ''}
 
-      ${officialDocHtml}
+        <div class="diag-card-section">
+          <div class="diag-callout diag-callout-success">
+            <div class="diag-callout-title">✅ Recomendación & Pasos de Solución (Fabricante Entrust)</div>
+            ${remediationHtml}
+          </div>
 
-      <!-- Barra de Acciones y Procedimientos -->
-      <div class="flex-between mt-4" style="padding-top:14px; border-top:1px solid var(--border-color); flex-wrap:wrap; gap:10px; align-items:center;">
-        <div>
-          <span class="diag-label">Nivel de Riesgo Operativo:</span>
-          <span class="text-danger font-mono" style="font-weight:700; font-size:0.95rem;">${diag.riskLevel}</span>
+          ${diag.cliCommands ? `
+          <div style="background:#0f172a; border:1px solid #334155; border-radius:8px; padding:12px;">
+            <div class="flex-between mb-2" style="gap:8px; flex-wrap:wrap;">
+              <span class="diag-label" style="color:#38bdf8; margin-bottom:0;">💻 Comandos de Remediación CLI</span>
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="diag-trace-copy-btn" onclick="window.copyCliGlobal('win')">📋 Windows</button>
+                <button type="button" class="diag-trace-copy-btn" onclick="window.copyCliGlobal('nix')">📋 Linux</button>
+              </div>
+            </div>
+            <div class="font-mono" id="cli-preview-win" style="font-size:0.76rem; color:#a5f3fc; white-space:pre-wrap; background:rgba(2,132,199,0.14); padding:8px; border-radius:4px; border:1px solid rgba(56,189,248,0.28); margin-bottom:6px;">${escapeHtml(diag.cliCommands.win)}</div>
+            <div class="font-mono" id="cli-preview-nix" style="font-size:0.76rem; color:#86efac; white-space:pre-wrap; background:rgba(5,150,105,0.14); padding:8px; border-radius:4px; border:1px solid rgba(52,211,153,0.28);">${escapeHtml(diag.cliCommands.nix)}</div>
+          </div>` : ''}
+
+          ${officialDocHtml}
         </div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn btn-outline" id="btn-copy-ticket" title="Copiar diagnóstico estructurado para ticket de soporte">
+      </div>
+
+      <div class="diag-footer-bar">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span class="diag-label" style="margin-bottom:0;">Nivel de Riesgo Operativo:</span>
+          <span class="diag-risk-pill ${riskPillCls}">${escapeHtml(diag.riskLevel || (isHigh ? 'Alto / Crítico' : (isWarn ? 'Moderado' : 'Nominal / Auditoría')))}</span>
+        </div>
+        <div class="diag-footer-actions">
+          <button type="button" class="btn btn-outline" id="btn-copy-ticket" title="Copiar diagnóstico estructurado para ticket de soporte ITIL">
             📋 Copiar Ticket ITIL
           </button>
-          <button class="btn btn-primary" id="btn-jump-manual" data-version="${diag.manualVersion}" data-section="${diag.sectionId}">
+          <button type="button" class="btn btn-primary" id="btn-jump-manual" data-version="${escapeHtml(diag.manualVersion || '')}" data-section="${escapeHtml(diag.sectionId || '')}">
             📚 Ver Procedimiento en Manual (${escapeHtml(docVerBadge)})
           </button>
         </div>
@@ -6571,6 +6653,44 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         alert(`📋 ¡Comandos CLI para ${targetOs === 'win' ? 'Windows SACVWIG07' : 'Linux sadcluapi01'} copiados al portapapeles!`);
       });
     };
+
+    document.getElementById('btn-copy-raw-trace')?.addEventListener('click', (e) => {
+      const btn = e.currentTarget;
+      navigator.clipboard.writeText(rawText).then(() => {
+        const prevTxt = btn.textContent;
+        btn.textContent = '✅ Traza Copiada';
+        setTimeout(() => { btn.textContent = prevTxt; }, 1600);
+      }).catch(() => {});
+    });
+
+    document.getElementById('btn-diag-filter-code')?.addEventListener('click', () => {
+      if (!codeLabel) return;
+      state.activeFilterMode = null;
+      if (dom.activeFilterBanner) dom.activeFilterBanner.style.display = 'none';
+      const typeSel = dom.filterTypeSelect || document.getElementById('filter-type-select');
+      if (typeSel && Array.from(typeSel.options).some(o => o.value === codeLabel)) {
+        typeSel.value = codeLabel;
+        if (dom.searchLogInput) dom.searchLogInput.value = '';
+      } else if (dom.searchLogInput) {
+        if (typeSel) typeSel.value = 'ALL';
+        dom.searchLogInput.value = codeLabel;
+      }
+      const btnClr = document.getElementById('btn-clear-search');
+      if (btnClr && dom.searchLogInput) btnClr.style.display = dom.searchLogInput.value ? 'block' : 'none';
+      if (state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
+      document.querySelector('.log-toolbar')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    document.getElementById('btn-diag-ask-ai')?.addEventListener('click', () => {
+      if (typeof window.openCopilot === 'function') window.openCopilot();
+      const inp = document.getElementById('copilot-input-query');
+      const snd = document.getElementById('btn-send-copilot');
+      const q = codeLabel ? `Analizar código ${codeLabel}` : (diag.title || rawText.slice(0, 120));
+      if (inp && q) {
+        inp.value = q;
+        if (snd) snd.click();
+      }
+    });
 
     document.getElementById('btn-open-custom-doc-ref')?.addEventListener('click', () => {
       if (diag.customDocRef && typeof window.openManualPathInViewer === 'function') {
@@ -6588,22 +6708,28 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       jumpToManualSection(ver, sec);
     });
 
-    document.getElementById('btn-copy-ticket')?.addEventListener('click', () => {
+    document.getElementById('btn-copy-ticket')?.addEventListener('click', (e) => {
+      const btn = e.currentTarget;
       const ticketText = `[TICKET SOPORTE ITIL - DIAGNÓSTICO ENTRUST]
 Evento: ${diag.title}
-Firma KB: ${diag.ruleId}
-Severidad: ${diag.severity} | Riesgo: ${diag.riskLevel}
+Código: ${codeLabel || 'N/A'} | Firma KB: ${diag.ruleId}
+Severidad: ${sevUpper} | Riesgo: ${diag.riskLevel}
+Servidor / Fuente: ${serverName} | Archivo: ${sourceFile || 'N/A'} (${lineLabel || 'N/A'})
+Timestamp Evento: ${exactTs}
 Componente/Canal: ${channelApp}
-Reincidencias: ${freq.count} vez/veces en la muestra (${freq.percent})
-Rango: ${freq.firstSeen} -> ${freq.lastSeen}
+Reincidencias: ${countFmt} ${countUnit} en la muestra (${freq.percent})
+Ventana: ${windowRange}
 Usuario/Contexto: ${userDisplay} | Origen/Host: ${ipOrHostDisplay}
 Causante/Atribución: ${diag.attribution || 'N/A'}
 Causa Raíz: ${diag.rootCause}
 Remediación Oficial:
 ${diag.remediation}
-Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
+Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
 
       navigator.clipboard.writeText(ticketText).then(() => {
+        const prevTxt = btn.textContent;
+        btn.textContent = '✅ Ticket Copiado';
+        setTimeout(() => { btn.textContent = prevTxt; }, 1600);
         alert('📋 ¡Diagnóstico copiado al portapapeles en formato de ticket ITIL!');
       });
     });

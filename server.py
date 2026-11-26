@@ -35,7 +35,7 @@ UPLOADS_DIR = os.path.join(DATA_DIR, 'uploads')
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
-SERVER_CODE_VERSION = 'v3.16.0'
+SERVER_CODE_VERSION = 'v3.16.1'
 SERVER_START_TIME = time.time()
 DEFAULT_DB_PATH = None
 ACTIVE_DB_PATH = None
