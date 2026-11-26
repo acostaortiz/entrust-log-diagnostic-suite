@@ -1540,22 +1540,24 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.15.1',
-    build: 618,
+    version: 'v3.16.0',
+    build: 619,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'SAFE-DELETE-FALLBACK-3151',
+    gitCommit: 'FILTERS-CSV-FOLD-3160',
     gitBranch: 'main',
-    buildDate: '2026-11-25 15:08',
+    buildDate: '2026-11-25 17:50',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
 
   async function initAppVersionModule() {
+    let liveVerPayload = null;
     try {
       const res = await fetch('/api/version');
       if (res.ok) {
         const data = await res.json();
         if (data && data.version) {
+          liveVerPayload = data.version;
           systemVersionData = { ...systemVersionData, ...data.version };
         }
       }
@@ -1569,10 +1571,30 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch(e2) {}
     }
 
+    if (liveVerPayload) {
+      state.serverCodeVersion = liveVerPayload.serverCodeVersion || '';
+      state.serverCapabilities = Array.isArray(liveVerPayload.capabilities) ? liveVerPayload.capabilities : [];
+    }
+
+    const expectedVer = 'v3.16.0';
+    const liveCaps = state.serverCapabilities || [];
+    const backendMismatch = Boolean(liveVerPayload && (!liveVerPayload.serverCodeVersion || liveVerPayload.serverCodeVersion !== expectedVer || !liveCaps.includes('export-logs-csv-316')));
+    state.backendOutdatedInMemory = backendMismatch;
+
     const badge = document.getElementById('app-version-badge');
     if (badge) {
       badge.textContent = `${systemVersionData.version} (Build ${systemVersionData.build})`;
-      badge.title = `Versión: ${systemVersionData.version} | Build: ${systemVersionData.build} | Commit: ${systemVersionData.gitCommit || 'HEAD'} | Clic para ver detalles`;
+      badge.title = backendMismatch
+        ? `UI ${systemVersionData.version} | ⚠️ Backend server.py en memoria: ${liveVerPayload?.serverCodeVersion || 'pre-v3.15.1'} (reinicie logdiagnostix.service en Ubuntu)`
+        : `Versión: ${systemVersionData.version} | Build: ${systemVersionData.build} | Commit: ${systemVersionData.gitCommit || 'HEAD'} | Clic para ver detalles`;
+    }
+
+    if (backendMismatch && (!dom.analysisStatusBar || dom.analysisStatusBar.style.display === 'none')) {
+      showAnalysisStatus(
+        false,
+        `⚠️ Backend server.py desactualizado en memoria (${liveVerPayload?.serverCodeVersion || 'versión anterior'})`,
+        'Reinicie el servicio en Ubuntu (opción [2] de sync.sh o sudo systemctl restart logdiagnostix.service) y luego recargue F5.'
+      );
     }
   }
 
@@ -3679,43 +3701,68 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
     const dateStamp = new Date().toISOString().slice(0, 10);
     const isEn = state.reportLanguage === 'en';
+    const csvCell = (val) => `"${String(val ?? '').replace(/\s*[\r\n]+\s*/g, ' ').replace(/"/g, '""')}"`;
 
-    const logsToExport = (state.logs && state.logs.length > 0) ? state.logs : [];
-    
-    if (logsToExport.length === 0 && (!state.globalStreamMetrics || !state.globalStreamMetrics.topCodes)) {
+    const hasSqlSummary = Boolean(state.isServerApi && state.globalStreamMetrics && Array.isArray(state.globalStreamMetrics.topCodes) && state.globalStreamMetrics.topCodes.length > 0);
+    const logsToExport = (!hasSqlSummary && state.logs && state.logs.length > 0) ? state.logs : [];
+
+    if (logsToExport.length === 0 && !hasSqlSummary && (!state.globalStreamMetrics || !state.globalStreamMetrics.topCodes)) {
       alert(isEn ? '⚠️ No records loaded to export to CSV.' : '⚠️ No hay registros cargados para exportar a CSV.');
       return;
     }
 
-    let csvContent = isEn
-      ? '\uFEFFLine ID,File,Timestamp,Severity,Type,Service/API,Entrust Code,Log Message,Diagnosis,Root Cause,Remediation\n'
-      : '\uFEFFID Linea,Archivo,Timestamp,Severidad,Tipo,Servicio/API,Codigo Entrust,Mensaje Log,Diagnostico,Causa Raiz,Remediacion\n';
-
-    if (logsToExport.length > 0) {
-      logsToExport.forEach(l => {
-        const rawDiag = l.diagnostic || (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message, l.entrustCode) : {});
-        const code = (l.entrustCode || '').replace(/"/g, '""');
-        const bDiag = getBilingualDiagnostic(rawDiag, code, l.service, isEn);
-        const cleanFile = (l.fileName || l.file || '').replace(/"/g, '""');
-        const cleanMsg = (l.message || l.raw || '').replace(/"/g, '""');
-        const cleanDiag = (bDiag.title || '').replace(/"/g, '""');
-        const cleanCause = (bDiag.rootCause || '').replace(/"/g, '""');
-        const cleanRemediation = (bDiag.remediation || '').replace(/"/g, '""');
-        const cleanService = (bDiag.service || l.service || '').replace(/"/g, '""');
-
-        csvContent += `"${l.lineNum || ''}","${cleanFile}","${l.timestamp || ''}","${l.level || ''}","${l.type || ''}","${cleanService}","${code}","${cleanMsg}","${cleanDiag}","${cleanCause}","${cleanRemediation}"\n`;
-      });
-    } else if (state.globalStreamMetrics && state.globalStreamMetrics.topCodes) {
+    let csvContent = '';
+    if (hasSqlSummary) {
+      csvContent = isEn
+        ? '\uFEFFRank,Source,Timestamp_Window,Severity,Occurrences,Share_Pct,Service_API,Entrust_Code,Description,Diagnosis,Root_Cause,Remediation\n'
+        : '\uFEFFOrden,Fuente,Ventana_Temporal,Severidad,Ocurrencias,Porcentaje_Pct,Servicio_API,Codigo_Entrust,Descripcion,Diagnostico,Causa_Raiz,Remediacion\n';
+      const totalAll = Math.max(1, Number(consolidated.totalLogs || state.globalStreamMetrics.totalLogs || 1));
+      const tsWin = state.globalStreamMetrics.timelineBuckets && state.globalStreamMetrics.timelineBuckets.length > 0
+        ? `${state.globalStreamMetrics.timelineBuckets[0].bucket}..${state.globalStreamMetrics.timelineBuckets[state.globalStreamMetrics.timelineBuckets.length - 1].bucket}`
+        : '';
       state.globalStreamMetrics.topCodes.forEach((tc, idx) => {
         const rawDiag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(tc.code, tc.code) : {};
         const bDiag = getBilingualDiagnostic(rawDiag, tc.code, rawDiag.category, isEn);
-        const cleanDiag = (bDiag.title || tc.code).replace(/"/g, '""');
-        const cleanCause = (bDiag.rootCause || '').replace(/"/g, '""');
-        const cleanRemediation = (bDiag.remediation || '').replace(/"/g, '""');
-        const cleanService = (bDiag.service || 'IDaaS/520').replace(/"/g, '""');
-        const msgStr = isEn ? `Total Occurrences: ${tc.count}` : `Total Ocurrencias: ${tc.count}`;
-        const srcStr = isEn ? 'Indexed SQLite' : 'Indexado SQLite';
-        csvContent += `"${idx + 1}","${srcStr}","","ERROR","${cleanService}","${tc.code}","${tc.code}","${msgStr}","${cleanDiag}","${cleanCause}","${cleanRemediation}"\n`;
+        const cnt = Number(tc.count || 0);
+        const pct = ((cnt / totalAll) * 100).toFixed(3) + '%';
+        const sev = rawDiag.severity || (/^5\d{5,6}$|^ORA-|^JVM_OOM|^TOMCAT_SEVERE|^TOMCAT_SSL_TLS|^JDBC_SQL|^SSH-FAIL/i.test(tc.code) ? 'ERROR' : 'INFO');
+        const msgStr = isEn ? `Total Occurrences in SQLite: ${cnt}` : `Total Ocurrencias en SQLite: ${cnt}`;
+        csvContent += [
+          idx + 1,
+          csvCell(isEn ? 'Indexed SQLite (100%)' : 'Indexado SQLite (100%)'),
+          csvCell(tsWin),
+          csvCell(sev),
+          cnt,
+          csvCell(pct),
+          csvCell(bDiag.service || rawDiag.category || 'IG.SYSTEM'),
+          csvCell(tc.code),
+          csvCell(msgStr),
+          csvCell(bDiag.title || tc.code),
+          csvCell(bDiag.rootCause || ''),
+          csvCell(bDiag.remediation || '')
+        ].join(',') + '\n';
+      });
+    } else {
+      csvContent = isEn
+        ? '\uFEFFLine ID,File,Timestamp,Severity,Type,Service/API,Entrust Code,Log Message,Diagnosis,Root Cause,Remediation\n'
+        : '\uFEFFID Linea,Archivo,Timestamp,Severidad,Tipo,Servicio/API,Codigo Entrust,Mensaje Log,Diagnostico,Causa Raiz,Remediacion\n';
+      logsToExport.forEach(l => {
+        const rawDiag = l.diagnostic || (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message, l.entrustCode) : {});
+        const code = String(l.entrustCode || '');
+        const bDiag = getBilingualDiagnostic(rawDiag, code, l.service, isEn);
+        csvContent += [
+          csvCell(l.lineNum || ''),
+          csvCell(l.fileName || l.file || ''),
+          csvCell(l.timestamp || ''),
+          csvCell(l.level || ''),
+          csvCell(l.type || ''),
+          csvCell(bDiag.service || l.service || ''),
+          csvCell(code),
+          csvCell(l.message || l.raw || ''),
+          csvCell(bDiag.title || ''),
+          csvCell(bDiag.rootCause || ''),
+          csvCell(bDiag.remediation || '')
+        ].join(',') + '\n';
       });
     }
 
@@ -5941,6 +5988,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const activeClient = getActiveClientProfile();
     const clientName = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
     const dateStamp = new Date().toISOString().slice(0, 10);
+    const csvCell = (val) => `"${String(val ?? '').replace(/\s*[\r\n]+\s*/g, ' ').replace(/"/g, '""')}"`;
 
     let csv = 'Codigo_Patron,Frecuencia_Total,Usuarios_Unicos_Afectados,Detalle_Usuarios_E_Interacciones,Actor_API_Ejecutor,Servicio,Diagnostico,Causa_Raiz,Remediacion\n';
     currentInspectorData.forEach(item => {
@@ -5953,23 +6001,28 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       const sortedActors = item.actorsMap ? Array.from(item.actorsMap.entries()).sort((a, b) => b[1] - a[1]) : [];
       const actorsStr = sortedActors.map(([a, c]) => `${a} (${c})`).join(' | ');
 
-      const cCode = `"${(item.code || '').replace(/"/g, '""')}"`;
-      const cCount = item.count;
-      const cUniqueU = item.sqliteUniqueUsers || sortedUsers.length;
-      const cUsersList = `"${usersStr.replace(/"/g, '""')}"`;
-      const cActorsList = `"${actorsStr.replace(/"/g, '""')}"`;
-      const cSrv = `"${(item.service || '').replace(/"/g, '""')}"`;
-      const cDiag = `"${(diag.title || diag.meaning || '').replace(/"/g, '""')}"`;
-      const cCause = `"${(diag.rootCause || '').replace(/"/g, '""')}"`;
-      const cRemed = `"${(diag.remediation || '').replace(/"/g, '""')}"`;
-      csv += `${cCode},${cCount},${cUniqueU},${cUsersList},${cActorsList},${cSrv},${cDiag},${cCause},${cRemed}\n`;
+      csv += [
+        csvCell(item.code || ''),
+        item.count,
+        item.sqliteUniqueUsers || sortedUsers.length,
+        csvCell(usersStr),
+        csvCell(actorsStr),
+        csvCell(item.service || ''),
+        csvCell(diag.title || diag.meaning || ''),
+        csvCell(diag.rootCause || ''),
+        csvCell(diag.remediation || '')
+      ].join(',') + '\n';
     });
 
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
+    link.href = url;
     link.download = `Extraccion_Codigos_${currentInspectorCategory.toUpperCase()}_${clientName}_${dateStamp}.csv`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   }
 
   function copyKpiInspectorTable() {
@@ -6063,6 +6116,18 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     }
   }
 
+  window.resetTableFiltersGlobal = function() {
+    if (dom.searchLogInput) dom.searchLogInput.value = '';
+    const btnClr = document.getElementById('btn-clear-search');
+    if (btnClr) btnClr.style.display = 'none';
+    const srvSel = document.getElementById('filter-server-select');
+    if (srvSel) srvSel.value = 'ALL';
+    if (dom.filterClientSelect) dom.filterClientSelect.value = 'ALL';
+    if (dom.filterLevelSelect) dom.filterLevelSelect.value = 'ALL';
+    if (dom.filterTypeSelect) dom.filterTypeSelect.value = 'ALL';
+    clearFilterMode();
+  };
+
   function openEntrust520Modal() {
     if (!dom.entrustErrorsModal || !dom.entrustErrorsModalList) return;
 
@@ -6102,6 +6167,39 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
   /* ==========================================================================
      4. ANALIZADOR DE LOGS Y MUESTRA
      ========================================================================== */
+  function matchesLogTypeFilter(l, typeVal) {
+    if (!typeVal || typeVal === 'ALL') return true;
+    const code = String(l.entrustCode || l.code || l.type || '').trim();
+    const svc = String(l.service || '').trim();
+    const upperT = typeVal.toUpperCase();
+    if (upperT === 'CAT_ENTRUST_520' || upperT === 'ENTRUST IDENTITYGUARD') {
+      return /^5(?:2\d{4,5}|[013-9]\d{5})$/.test(code)
+        || /^(?:AUTHENTICATIONMANAGEMENT|USERMANAGEMENT|SYSTEMCONTEXT|ENTRUST_LOG)$/i.test(code)
+        || /identityguard|ig\.system/i.test(svc);
+    }
+    if (upperT === 'CAT_AUDIT' || upperT === 'AUDIT') {
+      return /^AUD\d+/i.test(code) || /audit/i.test(code) || /ig\.audit/i.test(svc);
+    }
+    if (upperT === 'CAT_ORACLE_JDBC') {
+      return /^ORA-\d+/i.test(code) || /jdbc|sql/i.test(code) || /oracle|jdbc/i.test(svc);
+    }
+    if (upperT === 'CAT_TOMCAT_JVM') {
+      return /^(?:TOMCAT_|JVM_)/i.test(code) || /tomcat|catalina|jvm/i.test(svc);
+    }
+    if (upperT === 'CAT_SYSTEM_SSH' || upperT === 'SYSTEM') {
+      return /^SSH/i.test(code) || /^(?:SYSTEM_LOG|SYSLOG|KERNEL)$/i.test(code) || /ssh|syslog/i.test(svc);
+    }
+    if (upperT === 'CAT_IDAAS') {
+      return /bulkidentityguard|idaas|idg_migration/i.test(code) || /idaas/i.test(svc);
+    }
+    if (upperT === 'CAT_WEB' || upperT === 'WEBACCESS') {
+      return /http|nginx|web/i.test(code) || /http|nginx|web/i.test(svc);
+    }
+    return code === typeVal
+      || String(l.type || '').trim() === typeVal
+      || svc.toLowerCase().includes(typeVal.toLowerCase());
+  }
+
   window.applyLogFiltersGlobal = applyLogFilters;
   function applyLogFilters() {
     if (state.isServerApi) {
@@ -6116,9 +6214,11 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       result = result.filter(l => l.level === 'WARN' || l.level === 'INFO' || /AUD/i.test(l.message));
     }
 
+    const normSrv = s => String(s || '').replace(/^(?:🖥️\s*|☁️\s*)/, '').trim().toLowerCase();
     const serverVal = document.getElementById('filter-server-select')?.value;
     if (serverVal && serverVal !== 'ALL') {
-      result = result.filter(l => (l.serverTag || 'Servidor 1 (Primario)') === serverVal);
+      const targetSrv = normSrv(serverVal);
+      result = result.filter(l => normSrv(l.serverTag || l.node || 'Servidor 1 (Primario)') === targetSrv);
     }
 
     const clientVal = dom.filterClientSelect?.value;
@@ -6129,11 +6229,14 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const searchVal = dom.searchLogInput?.value.toLowerCase().trim();
     if (searchVal) {
       result = result.filter(l =>
-        l.message.toLowerCase().includes(searchVal) ||
-        l.service.toLowerCase().includes(searchVal) ||
-        l.level.toLowerCase().includes(searchVal) ||
+        String(l.message || '').toLowerCase().includes(searchVal) ||
+        String(l.service || '').toLowerCase().includes(searchVal) ||
+        String(l.level || '').toLowerCase().includes(searchVal) ||
+        String(l.user || '').toLowerCase().includes(searchVal) ||
+        String(l.entrustCode || '').toLowerCase().includes(searchVal) ||
+        String(l.clientIp || '').toLowerCase().includes(searchVal) ||
         (l.client && l.client.toLowerCase().includes(searchVal)) ||
-        (l.diagnostic && l.diagnostic.title.toLowerCase().includes(searchVal))
+        (l.diagnostic && String(l.diagnostic.title || '').toLowerCase().includes(searchVal))
       );
     }
 
@@ -6144,7 +6247,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     const typeVal = dom.filterTypeSelect?.value;
     if (typeVal && typeVal !== 'ALL') {
-      result = result.filter(l => l.type === typeVal || l.service.toLowerCase().includes(typeVal.toLowerCase()));
+      result = result.filter(l => matchesLogTypeFilter(l, typeVal));
     }
 
     state.filteredLogs = result;
@@ -7539,6 +7642,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         state.isServerApi = true;
         state.globalStreamMetrics = {
           totalLogs: statsData.totalLogs || 0,
+          rawLinesRead: statsData.rawLinesRead || statsData.totalLogs || 0,
+          foldedStackLines: statsData.foldedStackLines || 0,
           totalErrors: statsData.totalErrors || 0,
           totalWarnings: statsData.totalWarnings || 0,
           totalUniqueCodes: statsData.totalUniqueCodes || (statsData.topCodes || []).length || 0,
@@ -7576,9 +7681,10 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
             }).catch(() => {});
           }
         }
+        if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
+        if (typeof populateTypeFilterSelector === 'function') populateTypeFilterSelector(true);
         await fetchSqlLogs(1);
         updateMetricsAndCharts();
-        if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
         renderLoadedFilesDrawer();
         renderUserAndIpAnalytics();
         updateOverviewWidgets();
@@ -7611,25 +7717,34 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
   }
   window.syncClientSessionWithServer = syncClientSessionWithServer;
 
-  async function fetchSqlLogs(targetPage = 1) {
-    const search = dom.searchLogInput?.value || '';
+  function buildSqlFilterQueryParams() {
+    const search = (dom.searchLogInput?.value || '').trim();
+    const server = document.getElementById('filter-server-select')?.value || 'ALL';
     const level = dom.filterLevelSelect?.value || 'ALL';
     const type = dom.filterTypeSelect?.value || 'ALL';
     const activeClient = getActiveClientProfile();
     const clientSlug = (activeClient && activeClient.name) ? activeClient.name : (state.activeClientId || 'general');
+
     let outcome = 'ALL';
-    if (state.activeFilterMode === '520_ONLY' || level === 'CRITICAL' || level === 'ERROR') {
-      outcome = 'FAIL';
+    if (level !== 'ALL') {
+      if (level === 'CRITICAL') outcome = 'CRITICAL';
+      else if (level === 'ERROR') outcome = 'ERROR';
+      else if (level === 'WARN' || level === 'WARNING') outcome = 'WARN';
+      else if (level === 'INFO') outcome = 'INFO';
+    } else if (state.activeFilterMode === '520_ONLY') {
+      outcome = 'ERROR';
     } else if (state.activeFilterMode === 'AUDIT_ONLY') {
       outcome = 'AUD';
-    } else if (level === 'WARN' || level === 'WARNING') {
-      outcome = 'WARN';
-    } else if (level === 'INFO') {
-      outcome = 'SUCCESS';
     }
 
+    return { search, server, level, outcome, type, clientSlug };
+  }
+
+  async function fetchSqlLogs(targetPage = 1) {
+    const { search, server, outcome, type, clientSlug } = buildSqlFilterQueryParams();
+
     try {
-      const url = `/api/logs?page=${targetPage}&limit=50&search=${encodeURIComponent(search)}&outcome=${outcome}&type=${encodeURIComponent(type)}&client=${encodeURIComponent(clientSlug)}`;
+      const url = `/api/logs?page=${targetPage}&limit=50&search=${encodeURIComponent(search)}&server=${encodeURIComponent(server)}&outcome=${encodeURIComponent(outcome)}&type=${encodeURIComponent(type)}&client=${encodeURIComponent(clientSlug)}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('API server.py no disponible, usando modo estático');
       const data = await res.json();
@@ -8167,6 +8282,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     updateTrendChart();
     updateSeverityChart();
     updateOverviewWidgets();
+    if (typeof populateTypeFilterSelector === 'function') populateTypeFilterSelector();
     if (!state.activeTimeWindow?.active && typeof window.updateTimeSliderBounds === 'function') {
       try { window.updateTimeSliderBounds(); } catch (e) {}
     }
@@ -8805,6 +8921,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     if (dom.searchLogInput) dom.searchLogInput.value = '';
     const srvSel = document.getElementById('filter-server-select');
     if (srvSel) srvSel.innerHTML = '<option value="ALL">🖥️ Todos los Servidores</option>';
+    if (typeof populateTypeFilterSelector === 'function') populateTypeFilterSelector(true);
 
     // Ocultar barra de estado y resetear panel de archivos cargados y barra de volumetría
     if (dom.analysisStatusBar) dom.analysisStatusBar.style.display = 'none';
@@ -9872,6 +9989,58 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     }
   }
 
+  let _lastTypeFilterSig = '';
+  function populateTypeFilterSelector(force = false) {
+    const sel = document.getElementById('filter-type-select');
+    if (!sel) return;
+
+    const gsm = state.globalStreamMetrics;
+    let codesList = [];
+    if (gsm && Array.isArray(gsm.topCodes) && gsm.topCodes.length > 0) {
+      codesList = gsm.topCodes
+        .slice(0, 120)
+        .map(item => ({ code: String(item.code || ''), count: Number(item.count || 0) }))
+        .filter(x => x.code);
+    } else if (Array.isArray(state.logs) && state.logs.length > 0) {
+      const counts = new Map();
+      for (let i = 0; i < state.logs.length; i++) {
+        const c = String(state.logs[i].entrustCode || state.logs[i].type || '').trim();
+        if (c) counts.set(c, (counts.get(c) || 0) + 1);
+      }
+      codesList = Array.from(counts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 120)
+        .map(([code, count]) => ({ code, count }));
+    }
+
+    const sig = codesList.map(x => `${x.code}:${x.count}`).join('|');
+    if (!force && sig === _lastTypeFilterSig && sel.options.length >= 7) return;
+    _lastTypeFilterSig = sig;
+
+    const prev = sel.value || 'ALL';
+    let html = `
+      <option value="ALL">Todos los Tipos / Códigos</option>
+      <optgroup label="Categorías">
+        <option value="CAT_ENTRUST_520">Entrust 520xxx / OnPremise</option>
+        <option value="CAT_AUDIT">Auditoría (AUDxxx)</option>
+        <option value="CAT_ORACLE_JDBC">Oracle / JDBC (ORA-)</option>
+        <option value="CAT_TOMCAT_JVM">Tomcat / JVM</option>
+        <option value="CAT_SYSTEM_SSH">Sistema Operativo / SSH</option>
+        <option value="CAT_IDAAS">IDaaS Cloud / Migración</option>
+      </optgroup>`;
+    if (codesList.length > 0) {
+      html += '<optgroup label="Códigos Detectados en Sesión">' +
+        codesList.map(c => `<option value="${escapeHtml(c.code)}">${escapeHtml(c.code)} (${c.count.toLocaleString()})</option>`).join('') +
+        '</optgroup>';
+    }
+    sel.innerHTML = html;
+    if (Array.from(sel.options).some(o => o.value === prev)) {
+      sel.value = prev;
+    } else {
+      sel.value = 'ALL';
+    }
+  }
+
   window.filterAnalyzerByServerGlobal = function(serverTag) {
     const sel = document.getElementById('filter-server-select');
     if (sel) sel.value = serverTag || 'ALL';
@@ -10837,27 +11006,52 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
 
     window.downloadErrorsCsvGlobal = async function() {
       const hasLocalLogs = !state.isServerApi && state.logs && state.logs.length > 0;
+      const { server, type, search, clientSlug } = buildSqlFilterQueryParams();
       if (!hasLocalLogs) {
         try {
-          const res = await fetch('/api/export-errors?client=' + encodeURIComponent(state.activeClientId || 'mercantil'));
-          if (res.ok) {
+          const url = `/api/export-errors?client=${encodeURIComponent(clientSlug)}&server=${encodeURIComponent(server)}&type=${encodeURIComponent(type)}&search=${encodeURIComponent(search)}`;
+          const res = await fetch(url);
+          const ctype = (res.headers.get('content-type') || '').toLowerCase();
+          if (res.ok && ctype.includes('csv')) {
+            const totalMatched = res.headers.get('X-Total-Matching');
             const blob = await res.blob();
-            if (blob.size > 80) {
-              const url = window.URL.createObjectURL(blob);
+            if (blob.size > 20) {
+              const dlUrl = window.URL.createObjectURL(blob);
               const a = document.createElement('a');
-              a.href = url;
-              a.download = `Errores_y_Alertas_Auditoría_${(state.activeClientId || 'Entrust').replace(/[^a-zA-Z0-9_-]/g, '_')}_${new Date().toISOString().slice(0, 10)}.csv`;
+              a.href = dlUrl;
+              const srvSlug = server !== 'ALL' ? `_${server.replace(/[^a-zA-Z0-9._-]+/g, '_')}` : '';
+              a.download = `Errores_y_Alertas_Auditoria_${(clientSlug || 'Entrust').replace(/[^a-zA-Z0-9_-]/g, '_')}${srvSlug}_${new Date().toISOString().slice(0, 10)}.csv`;
               document.body.appendChild(a);
               a.click();
               document.body.removeChild(a);
-              window.URL.revokeObjectURL(url);
+              window.URL.revokeObjectURL(dlUrl);
+              showAnalysisStatus(
+                false,
+                '📥 CSV de Errores y Alertas Descargado',
+                totalMatched !== null ? `Exportados ${Number(totalMatched).toLocaleString()} registros de error/alerta desde SQLite.` : 'Archivo CSV generado desde SQLite.'
+              );
               return;
             }
           }
-        } catch (e) {}
+          if (state.isServerApi) {
+            const errTxt = res.status === 404
+              ? 'No hay base de datos SQLite activa o /api/export-errors no está disponible.'
+              : `Error HTTP ${res.status} exportando CSV desde SQLite.`;
+            showAnalysisStatus(false, '❌ Error al exportar errores CSV', errTxt);
+            alert(errTxt);
+            return;
+          }
+        } catch (e) {
+          if (state.isServerApi) {
+            alert('Error de conexión al exportar CSV desde SQLite: ' + (e.message || e));
+            return;
+          }
+        }
       }
 
-      const pool = (state.logs && state.logs.length > 0) ? state.logs : (state.filteredLogs || []);
+      const pool = (state.filteredLogs && state.filteredLogs.length > 0 && server !== 'ALL')
+        ? state.filteredLogs
+        : ((state.logs && state.logs.length > 0) ? state.logs : (state.filteredLogs || []));
       let errorLogs = pool.filter(l => {
         const lvl = (l.level || '').toUpperCase();
         const code = String(l.entrustCode || l.code || '');
@@ -10877,7 +11071,8 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         return;
       }
 
-      let csvContent = '\uFEFFLinea,Fecha_Hora,Usuario,Codigo_Entrust,Nivel_Severidad,Mensaje_Evento,Significado_Oficial,Causa_Raiz,Recomendacion_Oficial,IP_Origen,Servicio\n';
+      const csvCell = (val) => `"${String(val ?? '').replace(/\s*[\r\n]+\s*/g, ' ').replace(/"/g, '""')}"`;
+      let csvContent = '\uFEFFLinea,Fecha_Hora,Servidor_Nodo,Usuario,Codigo_Entrust,Nivel_Severidad,Mensaje_Evento,Significado_Oficial,Causa_Raiz,Recomendacion_Oficial,IP_Origen,Servicio\n';
       errorLogs.slice(0, 25000).forEach(l => {
         const codeStr = l.entrustCode || l.type || '';
         const diag = (l.diagnostic && l.diagnostic.matched)
@@ -10885,16 +11080,17 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           : (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message || l.raw || '', codeStr) : {});
         const line = [
           l.lineNum || '',
-          `"${String(l.timestamp || '').replace(/"/g, '""')}"`,
-          `"${String(l.user || '').replace(/"/g, '""')}"`,
-          `"${String(codeStr).replace(/"/g, '""')}"`,
-          `"${String(l.outcome || l.level || '').replace(/"/g, '""')}"`,
-          `"${String(l.message || '').replace(/"/g, '""')}"`,
-          `"${String(diag.meaning || diag.title || '').replace(/"/g, '""')}"`,
-          `"${String(diag.rootCause || '').replace(/"/g, '""')}"`,
-          `"${String(diag.remediation || '').replace(/\r?\n/g, ' ').replace(/"/g, '""')}"`,
-          `"${String(l.clientIp || '').replace(/"/g, '""')}"`,
-          `"${String(l.service || '').replace(/"/g, '""')}"`
+          csvCell(l.timestamp || ''),
+          csvCell(l.serverTag || 'Servidor 1 (Primario)'),
+          csvCell(l.user || ''),
+          csvCell(codeStr),
+          csvCell(l.outcome || l.level || ''),
+          csvCell(l.message || ''),
+          csvCell(diag.meaning || diag.title || ''),
+          csvCell(diag.rootCause || ''),
+          csvCell(diag.remediation || ''),
+          csvCell(l.clientIp || ''),
+          csvCell(l.service || '')
         ].join(',');
         csvContent += line + '\n';
       });
@@ -10903,7 +11099,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Errores_y_Alertas_Auditoría_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `Errores_y_Alertas_Auditoria_${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -10911,11 +11107,12 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
     };
 
     window.downloadFilteredCsvGlobal = async function() {
-      const serverVal = document.getElementById('filter-server-select')?.value || 'ALL';
+      const { search, server, level, outcome, type, clientSlug } = buildSqlFilterQueryParams();
+      const serverVal = server;
       const clientVal = dom.filterClientSelect?.value || 'ALL';
-      const levelVal = dom.filterLevelSelect?.value || 'ALL';
-      const typeVal = dom.filterTypeSelect?.value || 'ALL';
-      const searchVal = (dom.searchLogInput?.value || '').trim();
+      const levelVal = level;
+      const typeVal = type;
+      const searchVal = search;
       const modeVal = state.activeFilterMode || 'ALL';
 
       const filterSummaryParts = [];
@@ -10927,26 +11124,60 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       if (searchVal) filterSummaryParts.push(`Busqueda=${searchVal}`);
       const filterSummary = filterSummaryParts.length > 0 ? filterSummaryParts.join(' | ') : 'Sin filtros (Todos)';
 
+      const slugParts = [
+        serverVal !== 'ALL' ? serverVal : null,
+        levelVal !== 'ALL' ? levelVal : null,
+        typeVal !== 'ALL' ? typeVal : null,
+        modeVal !== 'ALL' ? modeVal : null
+      ].filter(Boolean).join('_').replace(/[^a-zA-Z0-9._-]+/g, '_');
+
       let rows = [];
       if (state.isServerApi) {
         try {
-          let outcome = 'ALL';
-          if (modeVal === '520_ONLY' || levelVal === 'CRITICAL' || levelVal === 'ERROR') outcome = 'FAIL';
-          else if (modeVal === 'AUDIT_ONLY') outcome = 'AUD';
-          else if (levelVal === 'WARN' || levelVal === 'WARNING') outcome = 'WARN';
-          else if (levelVal === 'INFO') outcome = 'SUCCESS';
-          const activeCli = getActiveClientProfile();
-          const clientSlug = (activeCli && activeCli.name) ? activeCli.name : (state.activeClientId || 'general');
-          const url = `/api/logs?page=1&limit=25000&search=${encodeURIComponent(searchVal)}&outcome=${outcome}&type=${encodeURIComponent(typeVal)}&client=${encodeURIComponent(clientSlug)}`;
-          const res = await fetch(url);
-          if (res.ok) {
-            const data = await res.json();
-            rows = data.logs || [];
+          const exportUrl = `/api/export-logs-csv?client=${encodeURIComponent(clientSlug)}&server=${encodeURIComponent(serverVal)}&outcome=${encodeURIComponent(outcome)}&type=${encodeURIComponent(typeVal)}&search=${encodeURIComponent(searchVal)}`;
+          const res = await fetch(exportUrl);
+          const ctype = (res.headers.get('content-type') || '').toLowerCase();
+          if (res.ok && ctype.includes('csv')) {
+            const totalMatchHeader = res.headers.get('X-Total-Matching');
+            if (totalMatchHeader === '0') {
+              alert('No hay registros que coincidan con el filtro actual para exportar.');
+              return;
+            }
+            const blob = await res.blob();
+            const dlUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = dlUrl;
+            a.download = `Entrust_Trazas_Filtradas${slugParts ? '_' + slugParts : ''}_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(dlUrl);
+            showAnalysisStatus(
+              false,
+              '📥 CSV de Trazas Filtradas Descargado',
+              totalMatchHeader !== null
+                ? `Filtros [${filterSummary}] — ${Number(totalMatchHeader).toLocaleString()} registros coincidentes en SQLite.`
+                : `Exportación completada (${filterSummary}).`
+            );
+            return;
+          }
+          if (res.status === 404) {
+            const fallbackUrl = `/api/logs?page=1&limit=25000&search=${encodeURIComponent(searchVal)}&server=${encodeURIComponent(serverVal)}&outcome=${encodeURIComponent(outcome)}&type=${encodeURIComponent(typeVal)}&client=${encodeURIComponent(clientSlug)}`;
+            const fbRes = await fetch(fallbackUrl);
+            if (fbRes.ok) {
+              const data = await fbRes.json();
+              rows = data.logs || [];
+            }
+            showAnalysisStatus(
+              false,
+              '⚠️ Exportación limitada (backend server.py anterior en memoria)',
+              'Reinicie el servicio en Ubuntu (sync.sh [2] o sudo systemctl restart logdiagnostix.service) para habilitar streaming CSV de hasta 250,000+ trazas.'
+            );
           }
         } catch (e) {}
       }
 
-      if (!rows.length) {
+      if (!rows.length && !state.isServerApi) {
         rows = Array.isArray(state.filteredLogs) ? state.filteredLogs : [];
       }
 
@@ -10955,7 +11186,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         return;
       }
 
-      const csvCell = (val) => `"${String(val ?? '').replace(/\r?\n/g, ' ').replace(/"/g, '""')}"`;
+      const csvCell = (val) => `"${String(val ?? '').replace(/\s*[\r\n]+\s*/g, ' | ').replace(/"/g, '""')}"`;
       let csvContent = '\uFEFFLinea,Fecha_Hora,Servidor_Nodo,Archivo_Origen,Nivel_Severidad,Tipo_Evento,Codigo_Entrust,Usuario,IP_Origen,Servicio_API,Resultado,Mensaje_Evento,Significado_Oficial,Causa_Raiz,Recomendacion_Oficial,Filtros_Aplicados\n';
 
       rows.slice(0, 50000).forEach(l => {
@@ -10966,7 +11197,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         csvContent += [
           l.lineNum || '',
           csvCell(l.timestamp || ''),
-          csvCell(l.serverTag || serverVal !== 'ALL' ? (l.serverTag || serverVal) : 'Servidor 1 (Primario)'),
+          csvCell(l.serverTag || (serverVal !== 'ALL' ? serverVal : 'Servidor 1 (Primario)')),
           csvCell(l.sourceFile || l.client || ''),
           csvCell(l.level || ''),
           csvCell(l.type || ''),
@@ -10982,13 +11213,6 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
           csvCell(filterSummary)
         ].join(',') + '\n';
       });
-
-      const slugParts = [
-        serverVal !== 'ALL' ? serverVal : null,
-        levelVal !== 'ALL' ? levelVal : null,
-        typeVal !== 'ALL' ? typeVal : null,
-        modeVal !== 'ALL' ? modeVal : null
-      ].filter(Boolean).join('_').replace(/[^a-zA-Z0-9_-]/g, '_');
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
@@ -11054,9 +11278,13 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
       if (state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
     });
     dom.filterLevelSelect?.addEventListener('change', () => {
+      state.activeFilterMode = null;
+      if (dom.activeFilterBanner) dom.activeFilterBanner.style.display = 'none';
       if (state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
     });
     dom.filterTypeSelect?.addEventListener('change', () => {
+      state.activeFilterMode = null;
+      if (dom.activeFilterBanner) dom.activeFilterBanner.style.display = 'none';
       if (state.isServerApi) fetchSqlLogs(1); else applyLogFilters();
     });
 
@@ -11449,6 +11677,7 @@ Referencia Manual: ${diag.sectionTitle} (${diag.manualVersion})`;
         }, 160);
 
         if (typeof populateServerFilterSelector === 'function') populateServerFilterSelector();
+        if (typeof populateTypeFilterSelector === 'function') populateTypeFilterSelector(true);
         if (typeof updateNodeComparisonUI === 'function') updateNodeComparisonUI();
         const metrics = getConsolidatedMetrics();
         const targetLog = (state.logs || []).find(l => l.level === 'CRITICAL' || l.level === 'ERROR' || l.level === 'WARN') || (state.logs && state.logs[0]);
@@ -12023,8 +12252,9 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
       const isErr = item.level === 'CRITICAL' || item.level === 'ERROR' || /^520\d{4}|AUD6002/.test(item.entrustCode || '');
       const isWarn = item.level === 'WARN' || /^AUD6001|AUD2309/.test(item.entrustCode || '');
       const color = isErr ? '#f87171' : (isWarn ? '#fbbf24' : '#38bdf8');
-      const codeTag = item.entrustCode ? `[${item.entrustCode}] ` : '';
-      html += `<div style="color:${color}; margin-bottom:3px; border-bottom:1px dashed rgba(51,65,85,0.4); padding-bottom:2px;">[${escapeHtml(item.timestamp || '')}] [${escapeHtml(item.service || 'SYSLOG')}] ${escapeHtml(codeTag)}${escapeHtml(item.message || item.raw || '')}</div>`;
+      const msgBody = String(item.message || item.raw || '');
+      const codeTag = (item.entrustCode && !msgBody.includes(`[${item.entrustCode}]`)) ? `[${item.entrustCode}] ` : '';
+      html += `<div style="color:${color}; margin-bottom:3px; border-bottom:1px dashed rgba(51,65,85,0.4); padding-bottom:2px;">[${escapeHtml(item.timestamp || '')}] [${escapeHtml(item.service || 'SYSLOG')}] ${escapeHtml(codeTag)}${escapeHtml(msgBody)}</div>`;
     });
 
     terminal.innerHTML = html;
@@ -13161,7 +13391,8 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
               if (typeof window.setReportViewMode === 'function') window.setReportViewMode(res.action.view || 'full');
               generateExecutiveReport(!!res.action.onlyCatalog);
             } else if (res.action.type === 'export_errors_csv') {
-              document.getElementById('btn-export-errors-csv')?.click();
+              if (typeof window.downloadErrorsCsvGlobal === 'function') window.downloadErrorsCsvGlobal();
+              else document.getElementById('btn-export-all-errors-csv')?.click();
             }
           }, 120);
         }

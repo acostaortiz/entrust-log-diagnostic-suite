@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.15.1 (Build 618)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.16.0 (Build 619)</span>
           </div>
         </div>
       </div>
@@ -530,13 +530,17 @@
             </select>
           </div>
 
-          <div style="width: 170px;">
+          <div style="width: 195px;">
             <select class="form-control" id="filter-type-select">
-              <option value="ALL">Todos los Tipos</option>
-              <option value="Entrust IdentityGuard">Entrust OnPremise</option>
-              <option value="Audit">Auditoría Kernel/System</option>
-              <option value="System">Sistema Operativo</option>
-              <option value="WebAccess">Nginx Web WAF</option>
+              <option value="ALL">Todos los Tipos / Códigos</option>
+              <optgroup label="Categorías">
+                <option value="CAT_ENTRUST_520">Entrust 520xxx / OnPremise</option>
+                <option value="CAT_AUDIT">Auditoría (AUDxxx)</option>
+                <option value="CAT_ORACLE_JDBC">Oracle / JDBC (ORA-)</option>
+                <option value="CAT_TOMCAT_JVM">Tomcat / JVM</option>
+                <option value="CAT_SYSTEM_SSH">Sistema Operativo / SSH</option>
+                <option value="CAT_IDAAS">IDaaS Cloud / Migración</option>
+              </optgroup>
             </select>
           </div>
         </div>
@@ -1799,10 +1803,10 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
 
   <script src="js/cert-auditor.js?v=568.0"></script>
   <script src="js/syslog-collector.js?v=550.0"></script>
-  <script src="js/user-trace-report.js?v=617.0"></script>
+  <script src="js/user-trace-report.js?v=619.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
   <script src="js/pcap-analyzer.js?v=608.0"></script>
-  <script src="js/app.js?v=618.0"></script>
+  <script src="js/app.js?v=619.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->
@@ -1878,8 +1882,11 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
           <button class="btn" id="btn-trace-export-docx" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px; cursor:pointer;" title="Descargar Documento Word">
             📝 Word (.DOC)
           </button>
-          <button class="btn" id="btn-trace-export-csv" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px; cursor:pointer;" title="Descargar Tabla CSV">
-            📊 CSV
+          <button class="btn" id="btn-trace-export-csv" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px; cursor:pointer;" title="Descargar Tabla CSV del Censo Resumen por Usuario">
+            📊 CSV (Censo)
+          </button>
+          <button class="btn" id="btn-trace-export-traces-csv" style="background:#059669; border:none; color:#fff; font-size:0.78rem; padding:6px 10px; font-weight:700; border-radius:6px; cursor:pointer;" title="Descargar Trazas Cronológicas Línea por Línea de los Usuarios Seleccionados (.CSV)">
+            📥 Trazas (.CSV)
           </button>
           <button class="btn" id="btn-trace-print" style="background:var(--bg-primary); border:1px solid var(--border-color); color:var(--text-main); font-size:0.78rem; padding:6px 10px; border-radius:6px; cursor:pointer;" title="Imprimir Informe">
             🖨️ Imprimir

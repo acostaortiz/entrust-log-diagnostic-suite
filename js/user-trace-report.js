@@ -153,6 +153,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       const btnCsv = document.getElementById('btn-trace-export-csv');
       if (btnCsv) btnCsv.addEventListener('click', () => this.downloadCsv());
 
+      const btnTracesCsv = document.getElementById('btn-trace-export-traces-csv');
+      if (btnTracesCsv) btnTracesCsv.addEventListener('click', () => this.downloadUserTracesCsv());
+
       const btnPrint = document.getElementById('btn-trace-print');
       if (btnPrint) btnPrint.addEventListener('click', () => window.print());
 
@@ -379,8 +382,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         const msg = log.raw || log.message || '';
 
         // Si el log contiene explícitamente "for user <cliente>", priorizar al cliente final sobre cuentas actoras (ej. bmapiuser8)
-        if (msg && (msg.includes('for user ') || msg.includes('for user\t') || msg.includes('User '))) {
-          const explicitTarget = msg.match(/\bfor\s+user\s+['"]?([A-Za-z0-9_\-\.\/@]+)['"]?/i) ||
+        if (msg && (msg.includes('for user ') || msg.includes('for user\t') || msg.includes('User ') || msg.includes('user name'))) {
+          const explicitTarget = msg.match(/\b(?:user\s+name\s+or\s+alias|user\s+name)\s+(?:(?:=|:|\bis\b)\s*)?['"]?([A-Za-z0-9_\-\.\/@]+)['"]?/i) ||
+                                 msg.match(/\bfor\s+user\s+['"]?([A-Za-z0-9_\-\.\/@]+)['"]?/i) ||
                                  msg.match(/\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|deleted|authenticated|locked|disabled|migrated)/i);
           if (explicitTarget && isValidCached(explicitTarget[1])) {
             user = explicitTarget[1];
@@ -388,7 +392,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         }
 
         if (!isValidCached(user) && msg) {
-          const kvMatch = msg.match(/(?:for\s+user|User:|user\s+name\s+or\s+alias|username|userId|user_id|subjectName)[\s:=]+['"]?([a-zA-Z0-9_\.\@\/\-]+)['"]?/i);
+          const kvMatch = msg.match(/(?:user\s+name\s+or\s+alias|user\s+name|for\s+user|User:|username|userId|user_id|subjectName)[\s:=]+['"]?([a-zA-Z0-9_\.\@\/\-]+)['"]?/i);
           const audBracket = msg.includes('[') ? msg.match(/\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([^\]]+)\]/i) : null;
           if (kvMatch && isValidCached(kvMatch[1])) {
             user = kvMatch[1];
@@ -1189,27 +1193,46 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       document.body.removeChild(a);
     },
 
-    downloadCsv() {
+    async downloadCsv() {
       const activeClient = this.getClientProfile();
       const st = window.appState || window.state;
       const isServerMode = !!(st && st.isServerApi);
+      const csvCell = (val) => `"${String(val ?? '').replace(/\s*[\r\n]+\s*/g, ' ').replace(/"/g, '""')}"`;
 
       // Si SQLite está activo en el servidor y no hay selección manual en modal, descargar el 100% real (sin tope de 600)
       if (isServerMode && this.selectedUsers.size === 0) {
         const searchEl = document.getElementById('tab-user-search-input');
         const qVal = searchEl ? (searchEl.value || '').trim() : '';
         const fltVal = this.activeTabFilter || 'all';
-        const exportUrl = `/api/users-export?client=${encodeURIComponent(activeClient?.name || '')}&filter=${encodeURIComponent(fltVal)}&q=${encodeURIComponent(qVal)}`;
-        const a = document.createElement('a');
-        a.href = exportUrl;
-        a.download = `Censo_Completo_100pct_${(activeClient?.name || 'Entrust').replace(/\s+/g, '_')}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        const serverVal = document.getElementById('filter-server-select')?.value || 'ALL';
+        const exportUrl = `/api/users-export?client=${encodeURIComponent(activeClient?.name || '')}&filter=${encodeURIComponent(fltVal)}&q=${encodeURIComponent(qVal)}&server=${encodeURIComponent(serverVal)}`;
+        try {
+          const res = await fetch(exportUrl);
+          const ctype = (res.headers.get('content-type') || '').toLowerCase();
+          if (!res.ok || !ctype.includes('csv')) {
+            alert(
+              res.status === 404
+                ? '⚠️ No hay base de datos SQLite activa o el backend requiere reinicio para exportar CSV.'
+                : `⚠️ Error HTTP ${res.status} exportando el censo CSV desde SQLite.`
+            );
+            return;
+          }
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Censo_Completo_100pct_${(activeClient?.name || 'Entrust').replace(/[^a-zA-Z0-9_-]+/g, '_')}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          alert('⚠️ Error descargando el Censo CSV desde el servidor: ' + (err.message || err));
+        }
         return;
       }
 
-      const filename = `Censo_Usuarios_Trazabilidad_${(activeClient.name || 'Entrust').replace(/\s+/g, '_')}_${Date.now()}.csv`;
+      const filename = `Censo_Usuarios_Trazabilidad_${(activeClient?.name || 'Entrust').replace(/[^a-zA-Z0-9_-]+/g, '_')}_${Date.now()}.csv`;
 
       // Exportar todos los usuarios seleccionados o el censo completo si no hay filtro
       const userKeys = this.selectedUsers.size > 0 ? Array.from(this.selectedUsers) : Object.keys(this.cachedStats);
@@ -1219,23 +1242,38 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       }
 
       let csv = 'Usuario,Total_Interacciones,Exitos,Fallas,Porcentaje_Falla,Estado_Seguridad,Patron_Comportamiento,Secuencia_Solicitudes,Primera_Actividad,Ultima_Actividad,IPs,Nodos,Codigos_e_Interacciones,Causa_Raiz_Forense\n';
-      
+
       userKeys.forEach(key => {
         const u = this.cachedStats[key];
         if (!u) return;
         const errPct = u.totalEvents > 0 ? ((u.errors / u.totalEvents) * 100).toFixed(1) : '0';
         const stateStr = u.isLocked ? 'BLOQUEADO' : (u.errors > 0 ? 'CON_FALLAS' : 'EXITOSO');
-        const patCat = (u.patternCategory || 'Operación Nominal').replace(/"/g, '""');
-        const patSeq = (u.compressedPattern || 'N/A').replace(/"/g, '""');
+        const patCat = u.patternCategory || 'Operación Nominal';
+        const patSeq = u.compressedPattern || 'N/A';
         const ipsStr = Array.from(u.ips || []).join('; ');
         const nodesStr = Array.from(u.nodes || []).join('; ');
         const codesStr = Object.entries(u.codes || {}).map(([c, n]) => `${c}(${n})`).join('; ');
-        
+
         let rootCauseDesc = u.rootCause || 'Operación Nominal';
         if (u.isLocked && !u.rootCause) rootCauseDesc = 'Superado umbral de intentos fallidos / Bloqueo preventivo';
         else if (u.errors > 0 && !u.rootCause) rootCauseDesc = 'Rechazo de credenciales o conflicto de autenticación';
 
-        csv += `"${u.username}",${u.totalEvents},${u.successes},${u.errors},${errPct}%,"${stateStr}","${patCat}","${patSeq}","${u.firstTimestamp || ''}","${u.lastTimestamp || ''}","${ipsStr}","${nodesStr}","${codesStr}","${rootCauseDesc.replace(/"/g, '""')}"\n`;
+        csv += [
+          csvCell(u.username),
+          u.totalEvents,
+          u.successes,
+          u.errors,
+          `${errPct}%`,
+          csvCell(stateStr),
+          csvCell(patCat),
+          csvCell(patSeq),
+          csvCell(u.firstTimestamp || ''),
+          csvCell(u.lastTimestamp || ''),
+          csvCell(ipsStr),
+          csvCell(nodesStr),
+          csvCell(codesStr),
+          csvCell(rootCauseDesc)
+        ].join(',') + '\n';
       });
 
       const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -1243,6 +1281,156 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       const a = document.createElement('a');
       a.href = url;
       a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    },
+
+    async downloadUserTracesCsv(targetUsers = null) {
+      const activeClient = this.getClientProfile();
+      const st = window.appState || window.state;
+      const isServerMode = !!(st && st.isServerApi);
+      const clientName = activeClient?.name || 'Entrust';
+      const clientSlug = clientName.replace(/[^a-zA-Z0-9_-]+/g, '_');
+      const serverVal = document.getElementById('filter-server-select')?.value || 'ALL';
+      const dateStamp = new Date().toISOString().slice(0, 10);
+
+      let usersArr = [];
+      if (typeof targetUsers === 'string' && targetUsers.trim()) {
+        usersArr = [targetUsers.trim()];
+      } else if (Array.isArray(targetUsers)) {
+        usersArr = targetUsers.map(u => String(u || '').trim()).filter(Boolean);
+      } else if (this.selectedUsers && this.selectedUsers.size > 0) {
+        usersArr = Array.from(this.selectedUsers);
+      } else if (this.activeTabSelectedUser) {
+        usersArr = [this.activeTabSelectedUser];
+      }
+
+      if (isServerMode) {
+        const params = new URLSearchParams();
+        params.set('client', clientName);
+        if (serverVal && serverVal !== 'ALL') params.set('server', serverVal);
+        if (usersArr.length === 1) {
+          params.set('user', usersArr[0]);
+        } else if (usersArr.length > 1 && usersArr.length <= 150) {
+          params.set('users', usersArr.join(','));
+        } else if (this.activeTabFilter === 'errors') {
+          params.set('outcome', 'ERROR');
+        } else if (this.activeTabFilter === 'success') {
+          params.set('outcome', 'INFO');
+        }
+
+        const safeUserSlug = usersArr.length === 1
+          ? usersArr[0].replace(/[^a-zA-Z0-9_.-]+/g, '_').slice(0, 48)
+          : '';
+        const outFilename = safeUserSlug
+          ? `Trazas_Usuario_${safeUserSlug}_${dateStamp}.csv`
+          : `Trazas_Usuarios_${clientSlug}_${dateStamp}.csv`;
+
+        try {
+          const res = await fetch(`/api/export-logs-csv?${params.toString()}`);
+          const ctype = (res.headers.get('content-type') || '').toLowerCase();
+          if (res.ok && ctype.includes('csv')) {
+            if (res.headers.get('X-Total-Matching') === '0') {
+              alert('⚠️ No se encontraron trazas cronológicas en SQLite para la selección actual.');
+              return;
+            }
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = outFilename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            return;
+          }
+
+          // Fallback solo si el backend aún es versión previa (404) y ya tenemos caché del usuario puntual
+          if (res.status === 404 && usersArr.length === 1 && Array.isArray(this.sqliteUserEventsCache[usersArr[0]]) && this.sqliteUserEventsCache[usersArr[0]].length > 0) {
+            const csvCell = (val) => `"${String(val ?? '').replace(/\s*[\r\n]+\s*/g, ' | ').replace(/"/g, '""')}"`;
+            let fbCsv = '\uFEFFLinea,Fecha_Hora,Servidor_Nodo,Nivel_Severidad,Codigo_Tipo,Resultado,Usuario,IP_Origen,Mensaje_Evento,Linea_Cruda\n';
+            this.sqliteUserEventsCache[usersArr[0]].forEach(ev => {
+              fbCsv += [
+                ev.lineNum || '',
+                csvCell(ev.timestamp || ''),
+                csvCell(serverVal !== 'ALL' ? serverVal : 'Servidor Core SQLite'),
+                csvCell(ev.level || ''),
+                csvCell(ev.code || ''),
+                csvCell(ev.outcome || ''),
+                csvCell(ev.user || usersArr[0]),
+                csvCell(ev.ip || ''),
+                csvCell(ev.message || ''),
+                csvCell(ev.raw || '')
+              ].join(',') + '\n';
+            });
+            const blob = new Blob([fbCsv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = outFilename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            return;
+          }
+
+          alert(
+            res.status === 404
+              ? '⚠️ El backend server.py aún corre una versión anterior sin /api/export-logs-csv. Reinicie el servicio en Ubuntu (sync.sh [2] o sudo systemctl restart logdiagnostix.service) y recargue F5.'
+              : `⚠️ Error HTTP ${res.status} exportando trazas CSV.`
+          );
+          return;
+        } catch (err) {
+          alert('⚠️ Error de red exportando trazas CSV: ' + (err.message || err));
+          return;
+        }
+      }
+
+      // Modo en memoria local
+      const allLogs = this.getAllLogs();
+      const targetSet = new Set(usersArr.map(u => u.toLowerCase()));
+      const matchedLogs = usersArr.length > 0
+        ? allLogs.filter(l => {
+            const lu = String(l.user || l.usuario || l.username || '').trim().toLowerCase();
+            return lu && targetSet.has(lu);
+          })
+        : allLogs;
+
+      if (matchedLogs.length === 0) {
+        alert('⚠️ No hay trazas en memoria para exportar.');
+        return;
+      }
+
+      const csvCell = (val) => `"${String(val ?? '').replace(/\s*[\r\n]+\s*/g, ' | ').replace(/"/g, '""')}"`;
+      let csv = '\uFEFFLinea,Fecha_Hora,Servidor_Nodo,Archivo_Origen,Nivel_Severidad,Codigo_Tipo,Resultado,Usuario,IP_Origen,Servicio,Mensaje_Evento\n';
+      matchedLogs.slice(0, 100000).forEach(l => {
+        csv += [
+          l.lineNum || '',
+          csvCell(l.timestamp || ''),
+          csvCell(l.serverTag || l.node || 'Servidor 1 (Primario)'),
+          csvCell(l.sourceFile || ''),
+          csvCell(l.level || 'INFO'),
+          csvCell(l.entrustCode || l.code || l.type || ''),
+          csvCell(l.outcome || ''),
+          csvCell(l.user || l.usuario || l.username || ''),
+          csvCell(l.clientIp || l.ip || ''),
+          csvCell(l.service || ''),
+          csvCell(l.message || l.raw || '')
+        ].join(',') + '\n';
+      });
+
+      const safeUserSlug = usersArr.length === 1
+        ? usersArr[0].replace(/[^a-zA-Z0-9_.-]+/g, '_').slice(0, 48)
+        : '';
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = safeUserSlug ? `Trazas_Usuario_${safeUserSlug}_${dateStamp}.csv` : `Trazas_Usuarios_${clientSlug}_${dateStamp}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -2483,9 +2671,14 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
 
         <!-- Cascada Cronológica de Transacciones del Usuario -->
         <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
-          <div class="flex-between mb-2">
+          <div class="flex-between mb-2" style="flex-wrap:wrap; gap:8px;">
             <span style="font-weight:700; color:var(--text-main); font-size:0.85rem;">⏱️ Historial Cronológico Completo de Solicitudes del Usuario:</span>
-            <span style="font-size:0.72rem; color:var(--text-muted);">${userLogs.length} solicitudes vinculadas</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:0.72rem; color:var(--text-muted);">${userLogs.length} solicitudes vinculadas</span>
+              <button type="button" class="btn" data-trace-user="${escapeHtml(username)}" onclick="window.UserTraceReport.downloadUserTracesCsv(this.getAttribute('data-trace-user'))" style="background:#059669; border:none; color:#fff; font-size:0.72rem; padding:4px 10px; font-weight:700; border-radius:5px; cursor:pointer;" title="Descargar trazas cronológicas completas de este usuario (.CSV)">
+                📥 Exportar Trazas (.CSV)
+              </button>
+            </div>
           </div>
           <div style="max-height:320px; overflow-y:auto; overflow-x:auto;">
             <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">

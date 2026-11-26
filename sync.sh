@@ -120,39 +120,58 @@ sync_diagnostic() {
         if [ $? -eq 0 ]; then
             sudo chmod -R 775 "$DIR_DIAGNOSTIC" >/dev/null 2>&1 || true
 
-            # Reiniciar servicio en puerto 8085 usando systemd si existe logdiagnostix.service
-            if systemctl list-unit-files logdiagnostix.service 2>/dev/null | grep -q "logdiagnostix.service"; then
-                sudo systemctl restart logdiagnostix.service
-                sleep 2
-                # Verificar si un proceso manual previo sigue reteniendo el puerto o no respondió con backend nuevo
-                if ! curl -sf http://127.0.0.1:8085/api/version 2>/dev/null | grep -q "session-files-delete"; then
-                    printf "${YELLOW}   ⚠️ Puerto 8085 retenido por proceso previo o reinicio incompleto; forzando recarga limpia...${NC}\n"
-                    sudo systemctl stop logdiagnostix.service >/dev/null 2>&1 || true
-                    sudo kill -9 $(sudo lsof -t -i:8085 2>/dev/null) 2>/dev/null || true
-                    sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
-                    sleep 1
-                    sudo systemctl start logdiagnostix.service
-                    sleep 2
-                fi
-            else
-                sudo kill -9 $(sudo lsof -t -i:8085 2>/dev/null) 2>/dev/null || true
-                sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
-                sleep 1
-                nohup python3 "$DIR_DIAGNOSTIC/server.py" > /tmp/server_8085.log 2>&1 &
-                sleep 2
+            # Detectar unidad systemd activa o instalada para puerto 8085
+            local UNIT_NAME
+            UNIT_NAME=$(systemctl list-unit-files --type=service --no-legend 2>/dev/null | awk '/logdiag|entrust.*diag/ {print $1; exit}')
+            if [ -z "$UNIT_NAME" ] && systemctl list-unit-files logdiagnostix.service 2>/dev/null | grep -q "logdiagnostix.service"; then
+                UNIT_NAME="logdiagnostix.service"
             fi
 
-            # Verificar endpoint en vivo tras el reinicio
-            local live_ver_json
-            live_ver_json=$(curl -sf http://127.0.0.1:8085/api/version 2>/dev/null || echo "")
-            if echo "$live_ver_json" | grep -q "session-files-delete"; then
-                printf "${GREEN}${BOLD}   ✓ Backend 8085 en vivo verificado (serverCodeVersion + session-files-delete activos).${NC}\n"
+            # Detener unidad systemd (si existe) y purgar cualquier proceso server.py o socket previo en 8085
+            if [ -n "$UNIT_NAME" ]; then
+                printf "${CYAN}   ↻ Reiniciando unidad systemd (%s) y purgando procesos previos en :8085...${NC}\n" "$UNIT_NAME"
+                sudo systemctl stop "$UNIT_NAME" >/dev/null 2>&1 || true
             else
-                printf "${RED}${BOLD}   ✗ ADVERTENCIA: el backend en puerto 8085 NO reporta 'session-files-delete'. Revisa: sudo journalctl -u logdiagnostix.service -n 30${NC}\n"
+                printf "${CYAN}   ↻ Purgando procesos server.py previos en :8085...${NC}\n"
+            fi
+
+            sudo pkill -9 -f "$DIR_DIAGNOSTIC/server.py" 2>/dev/null || true
+            local PIDS_8085
+            PIDS_8085=$(sudo lsof -t -i:8085 2>/dev/null || true)
+            if [ -n "$PIDS_8085" ]; then
+                sudo kill -9 $PIDS_8085 2>/dev/null || true
+            fi
+            sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
+            sleep 1
+
+            if [ -n "$UNIT_NAME" ]; then
+                sudo systemctl start "$UNIT_NAME"
+            else
+                nohup python3 "$DIR_DIAGNOSTIC/server.py" > /tmp/server_8085.log 2>&1 &
+            fi
+
+            # Verificar endpoint /api/version en vivo hasta 6s
+            local live_ver_json=""
+            for _ in 1 2 3 4 5 6; do
+                live_ver_json=$(curl -sf http://127.0.0.1:8085/api/version 2>/dev/null || echo "")
+                if echo "$live_ver_json" | grep -q "export-logs-csv-316"; then
+                    break
+                fi
+                sleep 1
+            done
+
+            if echo "$live_ver_json" | grep -q "export-logs-csv-316"; then
+                local live_srv_ver live_srv_pid
+                live_srv_ver=$(echo "$live_ver_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('version',{}).get('serverCodeVersion',''))" 2>/dev/null || echo "ok")
+                live_srv_pid=$(echo "$live_ver_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('version',{}).get('serverPid',''))" 2>/dev/null || echo "?")
+                printf "${GREEN}${BOLD}   ✓ Backend 8085 en vivo verificado (serverCodeVersion=%s, PID=%s, capacidades v3.16 activas).${NC}\n" "$live_srv_ver" "$live_srv_pid"
+            else
+                printf "${RED}${BOLD}   ✗ ADVERTENCIA: el backend en puerto 8085 NO reporta 'export-logs-csv-316'. Revisa procesos con: sudo ss -tlnp | grep 8085${NC}\n"
             fi
 
             if [ -f "$HOME/sync.sh" ] && ! cmp -s "$HOME/sync.sh" "$DIR_DIAGNOSTIC/sync.sh"; then
-                printf "${YELLOW}   💡 Tip: ~/sync.sh difiere del repo. Ejecuta: cp %s/sync.sh ~/sync.sh && chmod +x ~/sync.sh${NC}\n" "$DIR_DIAGNOSTIC"
+                cp "$DIR_DIAGNOSTIC/sync.sh" "$HOME/sync.sh.tmp" && chmod +x "$HOME/sync.sh.tmp" && mv -f "$HOME/sync.sh.tmp" "$HOME/sync.sh"
+                printf "${GREEN}   ✓ ~/sync.sh actualizado automáticamente con reemplazo atómico seguro.${NC}\n"
             fi
 
             local commit_msg=$(git log -1 --pretty=format:"%h - %s (%cr)")
@@ -218,13 +237,19 @@ start_server_8085() {
         cd "$DIR_DIAGNOSTIC" || return
         sudo chown -R $(whoami):$(whoami) "$DIR_DIAGNOSTIC" 2>/dev/null || true
         sudo chmod -R 775 "$DIR_DIAGNOSTIC" 2>/dev/null || true
-        if systemctl list-unit-files logdiagnostix.service 2>/dev/null | grep -q "logdiagnostix.service"; then
-            sudo systemctl restart logdiagnostix.service
+        local UNIT_NAME
+        UNIT_NAME=$(systemctl list-unit-files --type=service --no-legend 2>/dev/null | awk '/logdiag|entrust.*diag/ {print $1; exit}')
+        if [ -z "$UNIT_NAME" ] && systemctl list-unit-files logdiagnostix.service 2>/dev/null | grep -q "logdiagnostix.service"; then
+            UNIT_NAME="logdiagnostix.service"
+        fi
+        sudo pkill -9 -f "$DIR_DIAGNOSTIC/server.py" 2>/dev/null || true
+        sudo kill -9 $(sudo lsof -t -i:8085 2>/dev/null) 2>/dev/null || true
+        sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
+        sleep 1
+        if [ -n "$UNIT_NAME" ]; then
+            sudo systemctl restart "$UNIT_NAME"
             sleep 2
         else
-            sudo kill -9 $(sudo lsof -t -i:8085 2>/dev/null) 2>/dev/null || true
-            sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
-            sleep 1
             if [ -f "server.py" ]; then
                 nohup python3 server.py > /tmp/server_8085.log 2>&1 &
             else

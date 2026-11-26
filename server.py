@@ -1,4 +1,6 @@
 import http.server
+import bisect
+import csv
 import json
 import os
 import re
@@ -33,7 +35,7 @@ UPLOADS_DIR = os.path.join(DATA_DIR, 'uploads')
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
-SERVER_CODE_VERSION = 'v3.15.1'
+SERVER_CODE_VERSION = 'v3.16.0'
 SERVER_START_TIME = time.time()
 DEFAULT_DB_PATH = None
 ACTIVE_DB_PATH = None
@@ -1101,8 +1103,9 @@ def is_valid_user_candidate(cand):
 
 def extract_valid_user(line, msg=''):
     text = msg if msg else line
-    # 1. Prioritize explicit target user ("for user X", "User X failed/created/...", "username=X") over API actor bracket
+    # 1. Prioritize explicit target user ("for user X", "for user name or alias X", "User X failed/created/...", "username=X") over API actor bracket
     priority_patterns = [
+        r'\b(?:user\s+name\s+or\s+alias|user\s+name)\s+(?:(?:=|:|\bis\b)\s*)?[\'"]?([A-Za-z0-9_\-\.\/@]+)[\'"]?',
         r'\bfor\s+user\s+[\'"]?([A-Za-z0-9_\-\.\/@]+)[\'"]?',
         r'(?:user\s+name\s+or\s+alias|user\s+name|username|userid|user_id|subjectName|subject|User)\s*(?:=|:)\s*[\'"]?([A-Za-z0-9_\-\.\/@]+)[\'"]?',
         r'(?:user\s+name\s+or\s+alias|user\s+name|username|userid|user_id|subjectName|subject)\s*(?:=|:|\bis\b)?\s*[\'"]([A-Za-z0-9_\-\.\/@]+)[\'"]',
@@ -1277,6 +1280,9 @@ _USER_CONTEXT_PREFIX_RE = re.compile(
 _AUD_CODE_RE = re.compile(r'(?:\b|\[)(AUD\d{2,5})(?:\b|\])', re.IGNORECASE)
 _ORA_CODE_RE = re.compile(r'\b(ORA-\d{4,5})\b', re.IGNORECASE)
 _ENTRUST_BRACKET_FAIL_AUDS = _AUD_FAIL_SET | {'AUD154'}
+_ENTRUST_CONT_CODE_RE = re.compile(r'^\[(52\d{4,5}|5[013-9]\d{5})\]')
+_ENTRUST_CONT_AUD_RE = re.compile(r'^\[(AUD\d{2,5})\]', re.IGNORECASE)
+_ENTRUST_CONT_REF_RE = re.compile(r'^\(Ref:\s*\d+\)', re.IGNORECASE)
 
 
 def is_entrust_numeric_code(code):
@@ -1642,20 +1648,31 @@ def compute_exact_sqlite_distinct_counts(cur):
     return unique_users, unique_codes, unique_ips
 
 
-def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all'):
+def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all', line_ranges=None):
     """Aggregates 100% of valid nominal users directly from indexed SQLite logs without artificial truncation."""
     q_low = (q_filter or '').strip().lower()
     flt = (outcome_filter or 'all').strip().lower()
+    if line_ranges is not None and len(line_ranges) == 0:
+        return []
+
+    range_sql = ''
+    range_params = []
+    if line_ranges:
+        range_sql = ' AND (' + ' OR '.join('(line_num BETWEEN ? AND ?)' for _ in line_ranges) + ')'
+        for sl, el in line_ranges:
+            range_params.extend([sl, el])
+
     matched_set = None
 
     if q_low:
         like_q = f'%{q_low}%'
-        cur.execute('''
+        cur.execute(f'''
             SELECT DISTINCT subject_name
             FROM logs
             WHERE subject_name IS NOT NULL AND subject_name != '' AND subject_name != 'system' AND subject_name != 'unknown'
               AND (LOWER(subject_name) LIKE ? OR LOWER(event_type) LIKE ?)
-        ''', (like_q, like_q))
+              {range_sql}
+        ''', [like_q, like_q] + range_params)
         matched_set = {r[0].strip() for r in cur.fetchall() if r[0] and is_valid_user_candidate(r[0].strip())}
         if not matched_set:
             return []
@@ -1667,16 +1684,18 @@ def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all'):
                    MIN(event_time) as first_t, MAX(event_time) as last_t, MAX(source_ip) as sample_ip
             FROM logs
             WHERE subject_name IN ({placeholders})
+              {range_sql}
             GROUP BY subject_name, event_type, event_outcome
-        ''', list(matched_set))
+        ''', list(matched_set) + range_params)
     else:
-        cur.execute('''
+        cur.execute(f'''
             SELECT subject_name, event_type, event_outcome, COUNT(1) as cnt,
                    MIN(event_time) as first_t, MAX(event_time) as last_t, MAX(source_ip) as sample_ip
             FROM logs
             WHERE subject_name IS NOT NULL AND subject_name != '' AND subject_name != 'system' AND subject_name != 'unknown'
+              {range_sql}
             GROUP BY subject_name, event_type, event_outcome
-        ''')
+        ''', range_params)
 
     users_map = {}
     lock_re = re.compile(r'5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002', re.IGNORECASE)
@@ -1742,6 +1761,206 @@ def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all'):
 
 def _norm_srv_tag(s):
     return re.sub(r'^(?:🖥️\s*|☁️\s*)', '', str(s or '').strip()).strip().lower()
+
+
+def _load_session_file_intervals(cur):
+    """Loads sorted (startLine, endLine, serverTag, fileName) intervals from server_stats."""
+    intervals = []
+    try:
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='server_stats'")
+        if not cur.fetchone():
+            return intervals, []
+        cur.execute("SELECT value FROM server_stats WHERE key='stats_json'")
+        row = cur.fetchone()
+        if not row or not row[0]:
+            return intervals, []
+        stats_cached = json.loads(row[0]) or {}
+        loaded_files = list(stats_cached.get('loadedFiles') or [])
+        if not loaded_files:
+            return intervals, []
+        _ensure_loaded_file_ranges(cur, loaded_files, fill_dates=False)
+        for f in loaded_files:
+            if not isinstance(f, dict):
+                continue
+            sl = int(f.get('startLine') or 0)
+            el = int(f.get('endLine') or 0)
+            if sl <= 0 or el < sl:
+                continue
+            srv = str(f.get('serverTag') or '').strip()
+            if not srv:
+                srv = re.sub(r'^(?:🖥️\s*|☁️\s*)', '', str(f.get('nodeName') or '').strip()).strip() or 'Servidor Core SQLite'
+            fname = str(f.get('name') or '').strip()
+            intervals.append((sl, el, srv, fname))
+        intervals.sort(key=lambda iv: iv[0])
+    except Exception:
+        return [], []
+    return intervals, [iv[0] for iv in intervals]
+
+
+def _resolve_line_source(line_num, intervals, starts):
+    if not intervals or not starts:
+        return 'Servidor Core SQLite', ''
+    idx = bisect.bisect_right(starts, line_num) - 1
+    if 0 <= idx < len(intervals):
+        sl, el, srv, fname = intervals[idx]
+        if sl <= line_num <= el:
+            return srv, fname
+    return 'Servidor Core SQLite', ''
+
+
+def _match_server_ranges(server_param, intervals):
+    norm_target = _norm_srv_tag(server_param)
+    if not norm_target:
+        return []
+    matched = [(sl, el) for (sl, el, srv, _) in intervals if _norm_srv_tag(srv) == norm_target]
+    if not matched and len(norm_target) >= 4:
+        matched = [
+            (sl, el) for (sl, el, srv, _) in intervals
+            if norm_target in _norm_srv_tag(srv) or _norm_srv_tag(srv) in norm_target
+        ]
+    if not matched:
+        return []
+    matched.sort()
+    coalesced = [matched[0]]
+    for sl, el in matched[1:]:
+        prev_sl, prev_el = coalesced[-1]
+        if sl <= prev_el + 1:
+            coalesced[-1] = (prev_sl, max(prev_el, el))
+        else:
+            coalesced.append((sl, el))
+    return coalesced
+
+
+_SQL_ERR_PREDICATE = (
+    "(UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%' "
+    "OR event_type GLOB '5[0-9][0-9][0-9][0-9][0-9]*' "
+    "OR UPPER(event_type) LIKE 'ORA-%' "
+    "OR UPPER(event_type) IN ("
+    "'AUD110','AUD125','AUD126','AUD127','AUD150','AUD153','AUD154','AUD2309','AUD4005','AUD6002',"
+    "'JDBC_SQL_EXCEPTION','SQL_EXCEPTION','JVM_OOM','TOMCAT_SSL_TLS','TOMCAT_LDAP_ERROR',"
+    "'TOMCAT_NETWORK_ERROR','TOMCAT_DEPLOY_ERROR','TOMCAT_JAVA_EXCEPTION','TOMCAT_SEVERE','SSH-FAIL'))"
+)
+_SQL_WARN_PREDICATE = (
+    "(UPPER(event_outcome) LIKE '%WARN%' "
+    "OR UPPER(event_type) IN ('AUD6001','AUD155','AUD151','TOMCAT_WARN','TOMCAT_THREAD_POOL'))"
+)
+_SQL_CRIT_PREDICATE = (
+    "(UPPER(event_outcome) LIKE '%CRIT%' OR UPPER(event_outcome) LIKE '%FATAL%' OR UPPER(event_outcome) LIKE '%SEVERE%' "
+    "OR UPPER(event_type) LIKE 'ORA-%' "
+    "OR UPPER(event_type) IN ('JVM_OOM','TOMCAT_SEVERE','TOMCAT_SSL_TLS','JDBC_SQL_EXCEPTION',"
+    "'5205079','5205080','5201053','5203016','5202002','AUD007','AUD6002') "
+    "OR event_type GLOB '5[0-9][0-9][0-9][0-9][0-9]*')"
+)
+_TYPE_CATEGORY_SQL = {
+    'CAT_ENTRUST_520': "(event_type GLOB '5[0-9][0-9][0-9][0-9][0-9]*' OR UPPER(event_type) IN ('AUTHENTICATIONMANAGEMENT','USERMANAGEMENT','SYSTEMCONTEXT','ENTRUST_LOG'))",
+    'ENTRUST IDENTITYGUARD': "(event_type GLOB '5[0-9][0-9][0-9][0-9][0-9]*' OR UPPER(event_type) IN ('AUTHENTICATIONMANAGEMENT','USERMANAGEMENT','SYSTEMCONTEXT','ENTRUST_LOG'))",
+    'CAT_AUDIT': "(UPPER(event_type) LIKE 'AUD%' OR UPPER(event_type) LIKE '%AUDIT%')",
+    'AUDIT': "(UPPER(event_type) LIKE 'AUD%' OR UPPER(event_type) LIKE '%AUDIT%')",
+    'CAT_ORACLE_JDBC': "(UPPER(event_type) LIKE 'ORA-%' OR UPPER(event_type) LIKE '%JDBC%' OR UPPER(event_type) LIKE '%SQL%')",
+    'CAT_TOMCAT_JVM': "(UPPER(event_type) LIKE 'TOMCAT_%' OR UPPER(event_type) LIKE 'JVM_%')",
+    'CAT_SYSTEM_SSH': "(UPPER(event_type) LIKE 'SSH%' OR UPPER(event_type) IN ('SYSTEM_LOG','SYSLOG','KERNEL'))",
+    'SYSTEM': "(UPPER(event_type) LIKE 'SSH%' OR UPPER(event_type) IN ('SYSTEM_LOG','SYSLOG','KERNEL'))",
+    'CAT_IDAAS': "(LOWER(event_type) LIKE '%bulkidentityguard%' OR LOWER(event_type) LIKE '%idaas%' OR UPPER(event_type) = 'IDG_MIGRATION_EVENT')",
+    'CAT_WEB': "(UPPER(event_type) LIKE '%HTTP%' OR UPPER(event_type) LIKE '%NGINX%' OR UPPER(event_type) LIKE '%WEB%')",
+    'WEBACCESS': "(UPPER(event_type) LIKE '%HTTP%' OR UPPER(event_type) LIKE '%NGINX%' OR UPPER(event_type) LIKE '%WEB%')"
+}
+
+
+def _classify_log_row_meta(etype, outcome_str):
+    etype_s = str(etype or '')
+    etype_u = etype_s.upper()
+    out_u = str(outcome_str or '').upper()
+    is_err = (
+        'FAIL' in out_u
+        or 'ERR' in out_u
+        or is_entrust_numeric_code(etype_s)
+        or etype_u in _ENTRUST_BRACKET_FAIL_AUDS
+        or etype_u.startswith('ORA-')
+        or etype_u in (
+            'JDBC_SQL_EXCEPTION', 'SQL_EXCEPTION', 'JVM_OOM', 'TOMCAT_SSL_TLS',
+            'TOMCAT_LDAP_ERROR', 'TOMCAT_NETWORK_ERROR', 'TOMCAT_DEPLOY_ERROR',
+            'TOMCAT_JAVA_EXCEPTION', 'TOMCAT_SEVERE', 'SSH-FAIL'
+        )
+    )
+    is_warn = (not is_err) and (
+        'WARN' in out_u
+        or etype_u in ('AUD6001', 'AUD2309', 'AUD155', 'AUD151', 'TOMCAT_WARN', 'TOMCAT_THREAD_POOL')
+    )
+    level = 'ERROR' if is_err else ('WARN' if is_warn else 'INFO')
+    if etype_u.startswith('AUD'):
+        svc = 'IG.AUDIT'
+    elif 'bulkidentityguard' in etype_s.lower():
+        svc = 'IDaaS Cloud'
+    elif etype_u.startswith(('TOMCAT_', 'JVM_')):
+        svc = 'Tomcat Catalina'
+    elif etype_u.startswith('ORA-') or etype_u in ('JDBC_SQL_EXCEPTION', 'SQL_EXCEPTION'):
+        svc = 'Oracle / JDBC'
+    elif etype_u.startswith('SSH-'):
+        svc = 'SSH / OS'
+    else:
+        svc = 'IG.SYSTEM'
+    return level, svc
+
+
+def _build_logs_filter_sql(query, intervals=None, force_error_or_warn=False):
+    conditions = []
+    params = []
+
+    server_param = (query.get('server', ['ALL'])[0] or '').strip()
+    if server_param and server_param.upper() != 'ALL':
+        matched = _match_server_ranges(server_param, intervals or [])
+        if matched:
+            conditions.append('(' + ' OR '.join('(line_num BETWEEN ? AND ?)' for _ in matched) + ')')
+            for sl, el in matched:
+                params.extend([sl, el])
+        else:
+            conditions.append('1 = 0')
+
+    outcome = (query.get('outcome', ['ALL'])[0] or 'ALL').strip().upper()
+    if force_error_or_warn and outcome == 'ALL':
+        conditions.append(
+            f"({_SQL_ERR_PREDICATE} OR {_SQL_WARN_PREDICATE} "
+            "OR LOWER(message) LIKE '%failed%' OR LOWER(message) LIKE '%locked%' OR LOWER(message) LIKE '%error%')"
+        )
+    elif outcome in ('FAIL', 'ERROR'):
+        conditions.append(_SQL_ERR_PREDICATE)
+    elif outcome in ('CRITICAL', 'CRIT', 'FATAL', 'SEVERE'):
+        conditions.append(_SQL_CRIT_PREDICATE)
+    elif outcome in ('WARN', 'WARNING'):
+        conditions.append(f"(NOT {_SQL_ERR_PREDICATE} AND {_SQL_WARN_PREDICATE})")
+    elif outcome == 'AUD':
+        conditions.append("UPPER(event_type) LIKE 'AUD%'")
+    elif outcome in ('SUCCESS', 'INFO'):
+        conditions.append(f"(NOT {_SQL_ERR_PREDICATE} AND NOT {_SQL_WARN_PREDICATE})")
+
+    event_type = (query.get('type', ['ALL'])[0] or 'ALL').strip()
+    if event_type and event_type.upper() != 'ALL':
+        cat_sql = _TYPE_CATEGORY_SQL.get(event_type.upper())
+        if cat_sql:
+            conditions.append(cat_sql)
+        else:
+            conditions.append('event_type = ?')
+            params.append(event_type)
+
+    single_user = (query.get('user', [''])[0] or '').strip()
+    users_csv = (query.get('users', [''])[0] or '').strip()
+    if single_user:
+        conditions.append('subject_name = ?')
+        params.append(single_user)
+    elif users_csv:
+        u_list = [u.strip() for u in users_csv.split(',') if u.strip()][:200]
+        if u_list:
+            conditions.append('subject_name IN (' + ','.join(['?'] * len(u_list)) + ')')
+            params.extend(u_list)
+
+    search = (query.get('search', [''])[0] or '').strip()
+    if search:
+        conditions.append('(message LIKE ? OR subject_name LIKE ? OR source_ip LIKE ? OR event_type LIKE ? OR raw LIKE ?)')
+        term = f'%{search}%'
+        params.extend([term, term, term, term, term])
+
+    where_clause = ('WHERE ' + ' AND '.join(conditions)) if conditions else ''
+    return where_clause, params
 
 def _ensure_loaded_file_ranges(cur, loaded_files, fill_dates=False):
     """Ensures every entry in loaded_files has fileId, startLine, endLine and optional dateSpan."""
@@ -2108,6 +2327,60 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             raw_lines_read += 1
             bytes_est += len(raw_line)
 
+            if pending is not None and not pending['locked_code']:
+                m_ent_cont = _ENTRUST_CONT_CODE_RE.match(line_str)
+                if m_ent_cont:
+                    c_ent = m_ent_cont.group(1)
+                    pending['event_type'] = c_ent
+                    pending['outcome'] = 'FAIL'
+                    pending['base_level'] = 'ERROR'
+                    pending['locked_code'] = True
+                    pending['message'] = (f"{pending['message']} — {line_str}" if pending['message'] else line_str)[:600]
+                    if len(pending['raw']) < 1600:
+                        pending['raw'] = (pending['raw'] + '\n' + line_str)[:1600]
+                    if pending['user'] in ('system', 'unknown', ''):
+                        u_cont = extract_valid_user(line_str, line_str)
+                        if u_cont not in ('system', 'unknown', ''):
+                            pending['user'] = u_cont
+                    if pending['ip'] in ('local', ''):
+                        ip_cont = extract_non_version_ip(line_str)
+                        if ip_cont != 'local':
+                            pending['ip'] = ip_cont
+                    folded_stack_lines += 1
+                    continue
+
+                m_aud_cont = _ENTRUST_CONT_AUD_RE.match(line_str)
+                if m_aud_cont:
+                    aud_code = m_aud_cont.group(1).upper()
+                    pending['event_type'] = aud_code
+                    pending['locked_code'] = True
+                    if aud_code in _ENTRUST_BRACKET_FAIL_AUDS:
+                        pending['outcome'] = 'FAIL'
+                        pending['base_level'] = 'ERROR'
+                    elif aud_code in _AUD_WARN_SET and pending['outcome'] != 'FAIL':
+                        pending['outcome'] = 'WARN'
+                        pending['base_level'] = 'WARN'
+                    pending['message'] = (f"{pending['message']} — {line_str}" if pending['message'] else line_str)[:600]
+                    if len(pending['raw']) < 1600:
+                        pending['raw'] = (pending['raw'] + '\n' + line_str)[:1600]
+                    if pending['user'] in ('system', 'unknown', ''):
+                        u_cont = extract_valid_user(line_str, line_str)
+                        if u_cont not in ('system', 'unknown', ''):
+                            pending['user'] = u_cont
+                    if pending['ip'] in ('local', ''):
+                        ip_cont = extract_non_version_ip(line_str)
+                        if ip_cont != 'local':
+                            pending['ip'] = ip_cont
+                    folded_stack_lines += 1
+                    continue
+
+            if pending is not None and _ENTRUST_CONT_REF_RE.match(line_str):
+                pending['message'] = f"{pending['message']} {line_str}".strip()[:600]
+                if len(pending['raw']) < 1600:
+                    pending['raw'] = (pending['raw'] + '\n' + line_str)[:1600]
+                folded_stack_lines += 1
+                continue
+
             if pending is not None and pending['is_tomcat_simple_hdr']:
                 lvl_pair = is_tomcat_simple_level_line(raw_no_nl)
                 if lvl_pair:
@@ -2436,6 +2709,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_activate_db(query)
         elif path == '/api/export-errors':
             self.handle_export_errors(query)
+        elif path == '/api/export-logs-csv':
+            self.handle_export_logs_csv(query)
         elif path == '/api/forensic-matrix':
             self.handle_forensic_matrix(query)
         elif path == '/api/user-pattern-detail':
@@ -3141,7 +3416,14 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             'organization': 'IT Servicios de Venezuela, S.A.',
             'serverCodeVersion': SERVER_CODE_VERSION,
             'serverPid': os.getpid(),
-            'capabilities': ['session-files-delete', 'session-files-reassign', 'zero-omission-315'],
+            'capabilities': [
+                'session-files-delete',
+                'session-files-reassign',
+                'zero-omission-315',
+                'multiline-fold-316',
+                'server-filter-316',
+                'export-logs-csv-316'
+            ],
             'serverUptimeSeconds': round(time.time() - SERVER_START_TIME, 1) if 'SERVER_START_TIME' in globals() else 0,
             'pythonVersion': sys.version.split()[0],
             'activeDb': os.path.basename(ACTIVE_DB_PATH) if ACTIVE_DB_PATH else 'Ninguna'
@@ -3846,83 +4128,43 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
     def handle_api_logs(self, query):
         client_param = query.get('client', [None])[0]
         db = resolve_client_db(client_param)
-        
+
         if not db or not os.path.exists(db):
             self.send_json({'status': 'empty', 'logs': [], 'totalMatching': 0, 'totalPages': 0, 'page': 1, 'limit': 50}, status=200)
             return
 
+        conn = None
         try:
             page = max(1, int(query.get('page', ['1'])[0]))
             limit = min(25000, max(10, int(query.get('limit', ['50'])[0])))
             offset = (page - 1) * limit
-            search = query.get('search', [''])[0].strip()
-            outcome = query.get('outcome', ['ALL'])[0].strip().upper()
-            event_type = query.get('type', ['ALL'])[0].strip()
-
-            conditions = []
-            params = []
-
-            if outcome in ['FAIL', 'ERROR']:
-                conditions.append('(event_outcome LIKE ? OR event_outcome LIKE ?)')
-                params.extend(['%FAIL%', '%ERR%'])
-            elif outcome in ['WARN', 'WARNING']:
-                conditions.append("(event_outcome LIKE ? OR event_type IN ('AUD6001', 'AUD2309', 'AUD155'))")
-                params.append('%WARN%')
-            elif outcome == 'AUD':
-                conditions.append('event_type LIKE ?')
-                params.append('AUD%')
-            elif outcome in ['SUCCESS', 'INFO']:
-                conditions.append('event_outcome = ?')
-                params.append('SUCCESS')
-
-            if event_type and event_type != 'ALL':
-                conditions.append('event_type = ?')
-                params.append(event_type)
-
-            if search:
-                conditions.append('(message LIKE ? OR subject_name LIKE ? OR source_ip LIKE ? OR event_type LIKE ? OR raw LIKE ?)')
-                term = f'%{search}%'
-                params.extend([term, term, term, term, term])
-
-            where_clause = ('WHERE ' + ' AND '.join(conditions)) if conditions else ''
 
             conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
 
+            intervals, starts = _load_session_file_intervals(cur)
+            where_clause, params = _build_logs_filter_sql(query, intervals=intervals)
+
             cur.execute(f'SELECT COUNT(1) FROM logs {where_clause}', params)
-            total_matching = cur.fetchone()[0]
+            total_matching = int((cur.fetchone() or [0])[0] or 0)
 
-            query_sql = f'SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw FROM logs {where_clause} ORDER BY line_num ASC LIMIT ? OFFSET ?'
+            query_sql = (
+                f'SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw '
+                f'FROM logs {where_clause} ORDER BY line_num ASC LIMIT ? OFFSET ?'
+            )
             cur.execute(query_sql, params + [limit, offset])
-
             rows = cur.fetchall()
             conn.close()
+            conn = None
 
             resolved_client_name = client_param or os.path.basename(db).replace('_audit.db', '').replace('_', ' ').title()
             logs = []
             for r in rows:
                 etype = str(r[3] or '')
-                etype_u = etype.upper()
                 outcome_str = str(r[4] or '')
                 msg_str = str(r[5] or '')
-                is_err = (
-                    'FAIL' in outcome_str.upper()
-                    or 'ERR' in outcome_str.upper()
-                    or is_entrust_numeric_code(etype)
-                    or etype_u in _ENTRUST_BRACKET_FAIL_AUDS
-                    or etype_u.startswith('ORA-')
-                    or etype_u in (
-                        'JDBC_SQL_EXCEPTION', 'JVM_OOM', 'TOMCAT_SSL_TLS',
-                        'TOMCAT_LDAP_ERROR', 'TOMCAT_NETWORK_ERROR', 'TOMCAT_DEPLOY_ERROR',
-                        'TOMCAT_JAVA_EXCEPTION', 'TOMCAT_SEVERE', 'SSH-FAIL'
-                    )
-                )
-                is_warn = (not is_err) and (
-                    'WARN' in outcome_str.upper()
-                    or etype_u in ('AUD6001', 'AUD2309', 'AUD155', 'AUD151', 'TOMCAT_WARN', 'TOMCAT_THREAD_POOL')
-                )
-                level = 'ERROR' if is_err else ('WARN' if is_warn else 'INFO')
-                svc = 'IG.AUDIT' if etype.upper().startswith('AUD') else ('IDaaS Cloud' if 'bulkidentityguard' in etype.lower() else ('Tomcat Catalina' if etype.upper().startswith(('TOMCAT_', 'JVM_')) else ('Oracle / JDBC' if (etype.upper().startswith('ORA-') or etype == 'JDBC_SQL_EXCEPTION') else 'IG.SYSTEM')))
+                level, svc = _classify_log_row_meta(etype, outcome_str)
+                srv_tag, src_file = _resolve_line_source(r[0], intervals, starts)
                 display_msg = msg_str if (f'[{etype}]' in msg_str or not etype) else f'[{etype}] {msg_str}'
                 logs.append({
                     'id': f'log-{r[0]}',
@@ -3938,7 +4180,9 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     'clientIp': r[6],
                     'raw': r[7],
                     'client': resolved_client_name,
-                    'node': '🖥️ Servidor Core SQLite'
+                    'serverTag': srv_tag,
+                    'sourceFile': src_file,
+                    'node': f'🖥️ {srv_tag}'
                 })
 
             total_pages = max(1, (total_matching + limit - 1) // limit)
@@ -3951,64 +4195,176 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'logs': logs
             })
         except Exception as e:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
             self.send_json({'error': str(e), 'logs': [], 'totalMatching': 0, 'totalPages': 0}, status=500)
 
     def handle_export_errors(self, query):
         client_param = query.get('client', [None])[0]
         db = resolve_client_db(client_param)
-        
+
         if not db or not os.path.exists(db):
-            self.send_error(404, 'No hay base de datos indexada para este cliente')
+            self.send_json({'error': 'No hay base de datos indexada para este cliente'}, status=404)
             return
 
-        conn = sqlite3.connect(db, timeout=30.0)
-        cur = conn.cursor()
-        err_where = '''
-            WHERE UPPER(event_outcome) LIKE '%FAIL%'
-               OR UPPER(event_outcome) LIKE '%ERR%'
-               OR UPPER(event_outcome) LIKE '%WARN%'
-               OR event_type GLOB '5[0-9][0-9][0-9][0-9][0-9]*'
-               OR UPPER(event_type) IN (
-                   'AUD110', 'AUD125', 'AUD126', 'AUD127', 'AUD150', 'AUD151',
-                   'AUD153', 'AUD154', 'AUD155', 'AUD2309', 'AUD4005', 'AUD6001', 'AUD6002',
-                   'JDBC_SQL_EXCEPTION', 'SQL_EXCEPTION', 'JVM_OOM', 'TOMCAT_SSL_TLS',
-                   'TOMCAT_LDAP_ERROR', 'TOMCAT_NETWORK_ERROR', 'TOMCAT_DEPLOY_ERROR',
-                   'TOMCAT_JAVA_EXCEPTION', 'TOMCAT_SEVERE', 'TOMCAT_THREAD_POOL',
-                   'TOMCAT_WARN', 'SSH-FAIL'
-               )
-               OR UPPER(event_type) LIKE 'ORA-%'
-               OR LOWER(message) LIKE '%failed%'
-               OR LOWER(message) LIKE '%locked%'
-               OR LOWER(message) LIKE '%error%'
-        '''
-        cur.execute(f'SELECT COUNT(1) FROM logs {err_where}')
-        err_count = cur.fetchone()[0] or 0
+        conn = None
+        try:
+            conn = sqlite3.connect(db, timeout=30.0)
+            cur = conn.cursor()
+            intervals, starts = _load_session_file_intervals(cur)
+            where_clause, params = _build_logs_filter_sql(query, intervals=intervals, force_error_or_warn=True)
 
-        self.send_response(200)
-        self.send_header('Content-Type', 'text/csv; charset=utf-8')
-        self.send_header('Content-Disposition', 'attachment; filename="Errores_y_Alertas_AuditEvents_Export.csv"')
-        self.end_headers()
+            try:
+                raw_lim = int(query.get('limit', ['250000'])[0])
+            except Exception:
+                raw_lim = 250000
+            max_rows = 1000000 if raw_lim <= 0 else min(1000000, max(1, raw_lim))
 
-        header = '\ufefflineNum,eventTime,user,eventType,outcome,message,ip,raw\n'
-        self.wfile.write(header.encode('utf-8'))
+            cur.execute(f'SELECT COUNT(1) FROM logs {where_clause}', params)
+            err_count = int((cur.fetchone() or [0])[0] or 0)
 
-        if err_count > 0:
-            cur.execute(f'SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw FROM logs {err_where} ORDER BY line_num ASC')
-        else:
-            cur.execute('SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw FROM logs ORDER BY line_num ASC LIMIT 10000')
+            if err_count > 0:
+                cur.execute(
+                    f'SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw '
+                    f'FROM logs {where_clause} ORDER BY line_num ASC LIMIT ?',
+                    params + [max_rows]
+                )
+            else:
+                base_where, base_params = _build_logs_filter_sql(
+                    {'server': query.get('server', ['ALL'])}, intervals=intervals, force_error_or_warn=False
+                )
+                cur.execute(
+                    f'SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw '
+                    f'FROM logs {base_where} ORDER BY line_num ASC LIMIT ?',
+                    base_params + [min(10000, max_rows)]
+                )
 
-        while True:
-            batch = cur.fetchmany(5000)
-            if not batch:
-                break
-            lines = []
-            for r in batch:
-                clean_msg = (r[5] or '').replace('"', '""')
-                clean_raw = (r[7] or '').replace('"', '""')
-                lines.append(f'{r[0]},"{r[1]}","{r[2]}","{r[3]}","{r[4]}","{clean_msg}","{r[6]}","{clean_raw}"\n')
-            self.wfile.write(''.join(lines).encode('utf-8'))
+            self.close_connection = True
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/csv; charset=utf-8')
+            self.send_header('Content-Disposition', 'attachment; filename="Errores_y_Alertas_AuditEvents_Export.csv"')
+            self.send_header('X-Total-Matching', str(err_count))
+            self.end_headers()
 
-        conn.close()
+            self.wfile.write('\ufeff'.encode('utf-8'))
+            buf = io.StringIO()
+            writer = csv.writer(buf)
+            writer.writerow(['lineNum', 'eventTime', 'user', 'eventType', 'outcome', 'message', 'ip', 'raw', 'serverTag', 'sourceFile'])
+            self.wfile.write(buf.getvalue().encode('utf-8'))
+
+            while True:
+                batch = cur.fetchmany(5000)
+                if not batch:
+                    break
+                buf = io.StringIO()
+                writer = csv.writer(buf)
+                for r in batch:
+                    srv_tag, src_file = _resolve_line_source(r[0], intervals, starts)
+                    clean_msg = re.sub(r'\s*[\r\n]+\s*', ' | ', str(r[5] or ''))
+                    clean_raw = re.sub(r'\s*[\r\n]+\s*', ' | ', str(r[7] or ''))
+                    writer.writerow([
+                        r[0], r[1] or '', r[2] or '', r[3] or '', r[4] or '',
+                        clean_msg, r[6] or '', clean_raw, srv_tag, src_file
+                    ])
+                self.wfile.write(buf.getvalue().encode('utf-8'))
+        except (BrokenPipeError, ConnectionResetError):
+            pass
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
+        finally:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+
+    def handle_export_logs_csv(self, query):
+        client_param = query.get('client', [None])[0]
+        db = resolve_client_db(client_param)
+
+        if not db or not os.path.exists(db):
+            self.send_json({'error': 'No hay base de datos indexada para este cliente'}, status=404)
+            return
+
+        conn = None
+        try:
+            conn = sqlite3.connect(db, timeout=30.0)
+            cur = conn.cursor()
+            intervals, starts = _load_session_file_intervals(cur)
+            where_clause, params = _build_logs_filter_sql(query, intervals=intervals, force_error_or_warn=False)
+
+            try:
+                raw_lim = int(query.get('limit', ['250000'])[0])
+            except Exception:
+                raw_lim = 250000
+            max_rows = 1000000 if raw_lim <= 0 else min(1000000, max(1, raw_lim))
+
+            cur.execute(f'SELECT COUNT(1) FROM logs {where_clause}', params)
+            total_matching = int((cur.fetchone() or [0])[0] or 0)
+
+            cur.execute(
+                f'SELECT line_num, event_time, subject_name, event_type, event_outcome, message, source_ip, raw '
+                f'FROM logs {where_clause} ORDER BY line_num ASC LIMIT ?',
+                params + [max_rows]
+            )
+
+            slug = get_client_slug(client_param or os.path.basename(db).replace('_audit.db', ''))
+            single_user = (query.get('user', [''])[0] or '').strip()
+            if single_user:
+                safe_user = re.sub(r'[^A-Za-z0-9_.\-@]+', '_', single_user)[:48]
+                fname = f'Trazas_Usuario_{safe_user}_{slug}.csv'
+            else:
+                fname = f'Trazas_Entrust_{slug}.csv'
+
+            self.close_connection = True
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/csv; charset=utf-8')
+            self.send_header('Content-Disposition', f'attachment; filename="{fname}"')
+            self.send_header('X-Total-Matching', str(total_matching))
+            self.end_headers()
+
+            self.wfile.write('\ufeff'.encode('utf-8'))
+            buf = io.StringIO()
+            writer = csv.writer(buf)
+            writer.writerow([
+                'Linea', 'Fecha_Hora', 'Servidor_Nodo', 'Archivo_Origen',
+                'Nivel_Severidad', 'Codigo_Tipo', 'Resultado',
+                'Usuario', 'IP_Origen', 'Servicio', 'Mensaje_Evento', 'Linea_Cruda'
+            ])
+            self.wfile.write(buf.getvalue().encode('utf-8'))
+
+            while True:
+                batch = cur.fetchmany(5000)
+                if not batch:
+                    break
+                buf = io.StringIO()
+                writer = csv.writer(buf)
+                for r in batch:
+                    etype = str(r[3] or '')
+                    outcome_str = str(r[4] or '')
+                    level, svc = _classify_log_row_meta(etype, outcome_str)
+                    srv_tag, src_file = _resolve_line_source(r[0], intervals, starts)
+                    clean_msg = re.sub(r'\s*[\r\n]+\s*', ' | ', str(r[5] or ''))
+                    clean_raw = re.sub(r'\s*[\r\n]+\s*', ' | ', str(r[7] or ''))
+                    writer.writerow([
+                        r[0], r[1] or '', srv_tag, src_file,
+                        level, etype, outcome_str,
+                        r[2] or '', r[6] or '', svc, clean_msg, clean_raw
+                    ])
+                self.wfile.write(buf.getvalue().encode('utf-8'))
+        except (BrokenPipeError, ConnectionResetError):
+            pass
+        except Exception as e:
+            self.send_json({'error': str(e)}, status=500)
+        finally:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
 
     def handle_user_pattern_detail(self, query):
         client_param = query.get('client', [None])[0]
@@ -4165,62 +4521,80 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json({'error': str(e), 'status': 'error', 'totalMatching': 0, 'users': []}, status=500)
 
     def handle_api_users_export(self, query):
-        import csv
         client_param = query.get('client', [None])[0]
         q_filter = query.get('q', [''])[0].strip()
         outcome_filter = query.get('filter', ['all'])[0].strip().lower()
+        server_param = (query.get('server', ['ALL'])[0] or 'ALL').strip()
         db = resolve_client_db(client_param)
 
         if not db or not os.path.exists(db):
             self.send_json({'error': 'Base de datos SQLite no encontrada'}, status=404)
             return
 
+        conn = None
         try:
             conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
-            users_all = aggregate_sqlite_users(cur, q_filter=q_filter, outcome_filter=outcome_filter)
+            line_ranges = None
+            if server_param and server_param.upper() != 'ALL':
+                intervals, _ = _load_session_file_intervals(cur)
+                line_ranges = _match_server_ranges(server_param, intervals)
+            users_all = aggregate_sqlite_users(cur, q_filter=q_filter, outcome_filter=outcome_filter, line_ranges=line_ranges)
             conn.close()
+            conn = None
 
             slug = get_client_slug(client_param or os.path.basename(db).replace('_audit.db', ''))
+            self.close_connection = True
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/csv; charset=utf-8')
+            self.send_header('Content-Disposition', f'attachment; filename="Censo_Completo_100pct_{slug}.csv"')
+            self.end_headers()
+
+            self.wfile.write('\ufeff'.encode('utf-8'))
             buf = io.StringIO()
-            buf.write('\ufeff')
             writer = csv.writer(buf)
             writer.writerow([
                 'Usuario', 'Total_Interacciones', 'Exitos', 'Fallas',
                 'Porcentaje_Falla', 'Estado_Seguridad', 'Primera_Actividad',
                 'Ultima_Actividad', 'IPs', 'Codigos_e_Interacciones'
             ])
-            for u in users_all:
-                err_pct = f"{round((u['errors'] / max(1, u['total'])) * 100, 1)}%"
-                state_str = 'BLOQUEADO' if u['isLocked'] else ('CON_FALLAS' if u['errors'] > 0 else 'EXITOSO')
-                ips_str = '; '.join(sorted(u['ips']))
-                codes_str = '; '.join(
-                    f"{k}({v['total']})"
-                    for k, v in sorted(u['codes'].items(), key=lambda x: x[1]['total'], reverse=True)
-                )
-                writer.writerow([
-                    u['user'],
-                    u['total'],
-                    u['success'],
-                    u['errors'],
-                    err_pct,
-                    state_str,
-                    u['firstSeen'],
-                    u['lastSeen'],
-                    ips_str,
-                    codes_str
-                ])
+            self.wfile.write(buf.getvalue().encode('utf-8'))
 
-            csv_bytes = buf.getvalue().encode('utf-8')
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/csv; charset=utf-8')
-            self.send_header('Content-Disposition', f'attachment; filename="Censo_Completo_100pct_{slug}.csv"')
-            self.send_header('Content-Length', str(len(csv_bytes)))
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.end_headers()
-            self.wfile.write(csv_bytes)
+            chunk_size = 2000
+            for start in range(0, len(users_all), chunk_size):
+                buf = io.StringIO()
+                writer = csv.writer(buf)
+                for u in users_all[start:start + chunk_size]:
+                    err_pct = f"{round((u['errors'] / max(1, u['total'])) * 100, 1)}%"
+                    state_str = 'BLOQUEADO' if u['isLocked'] else ('CON_FALLAS' if u['errors'] > 0 else 'EXITOSO')
+                    ips_str = '; '.join(sorted(u['ips']))
+                    codes_str = '; '.join(
+                        f"{k}({v['total']})"
+                        for k, v in sorted(u['codes'].items(), key=lambda x: x[1]['total'], reverse=True)
+                    )
+                    writer.writerow([
+                        re.sub(r'\s*[\r\n]+\s*', ' ', str(u['user'] or '')),
+                        u['total'],
+                        u['success'],
+                        u['errors'],
+                        err_pct,
+                        state_str,
+                        u['firstSeen'],
+                        u['lastSeen'],
+                        re.sub(r'\s*[\r\n]+\s*', ' ', ips_str),
+                        re.sub(r'\s*[\r\n]+\s*', ' ', codes_str)
+                    ])
+                self.wfile.write(buf.getvalue().encode('utf-8'))
+        except (BrokenPipeError, ConnectionResetError):
+            pass
         except Exception as e:
             self.send_json({'error': str(e), 'status': 'error'}, status=500)
+        finally:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
 
     def handle_forensic_matrix(self, query):
         client_param = query.get('client', [None])[0]
