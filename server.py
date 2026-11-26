@@ -35,7 +35,7 @@ UPLOADS_DIR = os.path.join(DATA_DIR, 'uploads')
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
-SERVER_CODE_VERSION = 'v3.16.2'
+SERVER_CODE_VERSION = 'v3.16.3'
 SERVER_START_TIME = time.time()
 DEFAULT_DB_PATH = None
 ACTIVE_DB_PATH = None
@@ -1033,7 +1033,7 @@ def init_db(db_path):
 INVALID_USER_STOPWORDS = {
     'unknown', 'system', 'null', 'none', 'undefined', 'n/a', 'na', 'local', 'database',
     'default', 'true', 'false', 'error', 'errors', 'fail', 'failed', 'failure', 'success',
-    'successful', 'info', 'warn', 'warning', 'debug', 'critical', 'fatal', 'decode',
+    'successful', 'successfully', 'unsuccessfully', 'info', 'warn', 'warning', 'debug', 'critical', 'fatal', 'decode',
     'encode', 'decoding', 'encoding', 'password', 'passwords', 'passcode', 'pin', 'puk',
     'otp', 'token', 'tokens', 'grid', 'grids', 'card', 'cards', 'qa', 'challenge',
     'challenges', 'response', 'responses', 'request', 'requests', 'authentication',
@@ -1110,7 +1110,7 @@ def extract_valid_user(line, msg=''):
         r'\bfor\s+user\s+[\'"]?([A-Za-z0-9_\-\.\/@]+)[\'"]?',
         r'(?:user\s+name\s+or\s+alias|user\s+name|username|userid|user_id|subjectName|subject|User)\s*(?:=|:)\s*[\'"]?([A-Za-z0-9_\-\.\/@]+)[\'"]?',
         r'(?:user\s+name\s+or\s+alias|user\s+name|username|userid|user_id|subjectName|subject)\s*(?:=|:|\bis\b)?\s*[\'"]([A-Za-z0-9_\-\.\/@]+)[\'"]',
-        r'\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|authenticated|locked|disabled|deleted|modified|migrated)'
+        r'\bUser\s+([A-Za-z0-9_\-\.\/@]+)\s+(?:currently\s+has|has\s+a\s+grid|already\s+has|created|failed|logged|assigned|updated|(?:successfully\s+|unsuccessfully\s+)?authenticated|locked|disabled|deleted|modified|migrated)'
     ]
     for pat in priority_patterns:
         for m in re.finditer(pat, text, re.I):
@@ -1124,11 +1124,11 @@ def extract_valid_user(line, msg=''):
                     return cand
 
     # 2. Check [AUDxxx] [username] or [IG.AUDIT] [username]
-    m_aud = re.search(r'\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([^\]]+)\]', line)
-    if m_aud:
-        cand = m_aud.group(1).strip()
-        if is_valid_user_candidate(cand):
-            return cand
+    for pat_aud in (r'\[AUD\d+\]\s*\[([^\]]+)\]', r'\[IG\.AUDIT\]\s*\[([^\]]+)\]'):
+        for m_aud in re.finditer(pat_aud, line):
+            cand = m_aud.group(1).strip()
+            if is_valid_user_candidate(cand):
+                return cand
 
     # 3. Fallback general user mention
     fallback_patterns = [
@@ -1649,6 +1649,24 @@ def compute_exact_sqlite_distinct_counts(cur):
     return unique_users, unique_codes, unique_ips
 
 
+_LOCK_CODE_RE = re.compile(r'5205079|5205080|5201053|5202002|5202014|AUD007|AUD6002', re.IGNORECASE)
+
+
+def _compute_lock_recovery_state(has_lock_code, success_count, last_lock_line=0, last_success_line=0, last_lock_time='', last_success_time=''):
+    """Returns (is_actively_locked, had_historical_lock) distinguishing active lockouts from recovered users."""
+    if not has_lock_code:
+        return False, False
+    recovered = False
+    if int(success_count or 0) > 0:
+        if last_success_line and last_lock_line and int(last_success_line) != int(last_lock_line):
+            recovered = int(last_success_line) > int(last_lock_line)
+        elif last_success_time:
+            recovered = (not last_lock_time) or (str(last_success_time) >= str(last_lock_time))
+        else:
+            recovered = True
+    return (not recovered), recovered
+
+
 def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all', line_ranges=None):
     """Aggregates 100% of valid nominal users directly from indexed SQLite logs without artificial truncation."""
     q_low = (q_filter or '').strip().lower()
@@ -1682,7 +1700,8 @@ def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all', line_ranges=N
         placeholders = ','.join(['?'] * len(matched_set))
         cur.execute(f'''
             SELECT subject_name, event_type, event_outcome, COUNT(1) as cnt,
-                   MIN(event_time) as first_t, MAX(event_time) as last_t, MAX(source_ip) as sample_ip
+                   MIN(event_time) as first_t, MAX(event_time) as last_t, MAX(source_ip) as sample_ip,
+                   MAX(line_num) as max_ln
             FROM logs
             WHERE subject_name IN ({placeholders})
               {range_sql}
@@ -1691,7 +1710,8 @@ def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all', line_ranges=N
     else:
         cur.execute(f'''
             SELECT subject_name, event_type, event_outcome, COUNT(1) as cnt,
-                   MIN(event_time) as first_t, MAX(event_time) as last_t, MAX(source_ip) as sample_ip
+                   MIN(event_time) as first_t, MAX(event_time) as last_t, MAX(source_ip) as sample_ip,
+                   MAX(line_num) as max_ln
             FROM logs
             WHERE subject_name IS NOT NULL AND subject_name != '' AND subject_name != 'system' AND subject_name != 'unknown'
               {range_sql}
@@ -1699,9 +1719,8 @@ def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all', line_ranges=N
         ''', range_params)
 
     users_map = {}
-    lock_re = re.compile(r'5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002', re.IGNORECASE)
 
-    for subj, etype, outcome, cnt, first_t, last_t, sample_ip in cur.fetchall():
+    for subj, etype, outcome, cnt, first_t, last_t, sample_ip, max_ln in cur.fetchall():
         subj_str = (subj or '').strip()
         if not subj_str or not is_valid_user_candidate(subj_str):
             continue
@@ -1711,6 +1730,7 @@ def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all', line_ranges=N
         code = (etype or 'SYSTEM_LOG').strip()
         out_str = (outcome or 'SUCCESS').upper()
         is_err = ('FAIL' in out_str) or ('ERR' in out_str)
+        ln_val = int(max_ln or 0)
 
         if subj_str not in users_map:
             users_map[subj_str] = {
@@ -1719,6 +1739,12 @@ def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all', line_ranges=N
                 'errors': 0,
                 'success': 0,
                 'isLocked': False,
+                'hadHistoricalLock': False,
+                'hasLockCode': False,
+                'lastLockLine': 0,
+                'lastSuccessLine': 0,
+                'lastLockTime': '',
+                'lastSuccessTime': '',
                 'firstSeen': first_t or '',
                 'lastSeen': last_t or '',
                 'ips': set(),
@@ -1730,8 +1756,16 @@ def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all', line_ranges=N
             u_entry['errors'] += cnt
         else:
             u_entry['success'] += cnt
-        if lock_re.search(code):
-            u_entry['isLocked'] = True
+            if ln_val > u_entry['lastSuccessLine']:
+                u_entry['lastSuccessLine'] = ln_val
+            if last_t and (not u_entry['lastSuccessTime'] or last_t > u_entry['lastSuccessTime']):
+                u_entry['lastSuccessTime'] = last_t
+        if _LOCK_CODE_RE.search(code):
+            u_entry['hasLockCode'] = True
+            if ln_val > u_entry['lastLockLine']:
+                u_entry['lastLockLine'] = ln_val
+            if last_t and (not u_entry['lastLockTime'] or last_t > u_entry['lastLockTime']):
+                u_entry['lastLockTime'] = last_t
         if first_t and (not u_entry['firstSeen'] or first_t < u_entry['firstSeen']):
             u_entry['firstSeen'] = first_t
         if last_t and (not u_entry['lastSeen'] or last_t > u_entry['lastSeen']):
@@ -1747,14 +1781,26 @@ def aggregate_sqlite_users(cur, q_filter='', outcome_filter='all', line_ranges=N
         else:
             u_entry['codes'][code]['success'] += cnt
 
+    for u_entry in users_map.values():
+        locked_now, recovered_prev = _compute_lock_recovery_state(
+            u_entry['hasLockCode'],
+            u_entry['success'],
+            u_entry['lastLockLine'],
+            u_entry['lastSuccessLine'],
+            u_entry['lastLockTime'],
+            u_entry['lastSuccessTime'],
+        )
+        u_entry['isLocked'] = locked_now
+        u_entry['hadHistoricalLock'] = recovered_prev
+
     result = list(users_map.values())
     if flt == 'errors':
-        result = [u for u in result if u['errors'] > 0 or u['isLocked']]
+        result = [u for u in result if u['errors'] > 0 or u['isLocked'] or u['hadHistoricalLock']]
     elif flt == 'success':
-        result = [u for u in result if u['errors'] == 0 and not u['isLocked']]
+        result = [u for u in result if u['errors'] == 0 and not u['isLocked'] and not u['hadHistoricalLock']]
 
     result.sort(
-        key=lambda u: (1 if u['isLocked'] else 0, 1 if u['errors'] > 0 else 0, u['errors'], u['total']),
+        key=lambda u: (2 if u['isLocked'] else (1 if u['hadHistoricalLock'] else 0), 1 if u['errors'] > 0 else 0, u['errors'], u['total']),
         reverse=True
     )
     return result
@@ -2535,7 +2581,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             }
         cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
         cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_obj, ensure_ascii=False)))
-        cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4', 'forensic_matrix_v5')")
+        cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4', 'forensic_matrix_v5', 'forensic_matrix_v6')")
         conn.commit()
         conn.close()
 
@@ -4048,7 +4094,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             client_display = stats_cached.get('client') or client_param or 'Entrust Client'
             stats_obj = recompute_sqlite_stats_obj(cur, db, client_display, remaining)
             cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_obj, ensure_ascii=False)))
-            cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4', 'forensic_matrix_v5')")
+            cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4', 'forensic_matrix_v5', 'forensic_matrix_v6')")
             conn.commit()
             conn.close()
 
@@ -4387,7 +4433,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             # Aggregate 100% summary across all rows for target_user (not truncated by 1,000-event preview cap)
             cur.execute('''
-                SELECT event_type, event_outcome, COUNT(1), MIN(event_time), MAX(event_time), MAX(source_ip)
+                SELECT event_type, event_outcome, COUNT(1), MIN(event_time), MAX(event_time), MAX(source_ip), MAX(line_num)
                 FROM logs
                 WHERE subject_name = ?
                 GROUP BY event_type, event_outcome
@@ -4402,21 +4448,33 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             ips_set = set()
             codes_simple = {}
             codes_detail = {}
-            is_locked = False
-            lock_re = re.compile(r'5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002', re.IGNORECASE)
+            has_lock_code = False
+            last_lock_line = 0
+            last_success_line = 0
+            last_lock_time = ''
+            last_success_time = ''
 
-            for r_code, r_out, r_cnt, r_first, r_last, r_ip in agg_summary_rows:
+            for r_code, r_out, r_cnt, r_first, r_last, r_ip, r_max_ln in agg_summary_rows:
                 code_lbl = (r_code or 'SYSTEM_LOG').strip()
                 out_up = (r_out or 'SUCCESS').upper()
                 is_err = ('FAIL' in out_up) or ('ERR' in out_up)
                 cnt_int = int(r_cnt or 0)
+                ln_val = int(r_max_ln or 0)
                 sum_total += cnt_int
                 if is_err:
                     sum_errors += cnt_int
                 else:
                     sum_success += cnt_int
-                if lock_re.search(code_lbl):
-                    is_locked = True
+                    if ln_val > last_success_line:
+                        last_success_line = ln_val
+                    if r_last and (not last_success_time or r_last > last_success_time):
+                        last_success_time = r_last
+                if _LOCK_CODE_RE.search(code_lbl):
+                    has_lock_code = True
+                    if ln_val > last_lock_line:
+                        last_lock_line = ln_val
+                    if r_last and (not last_lock_time or r_last > last_lock_time):
+                        last_lock_time = r_last
                 if r_first and (not first_seen or r_first < first_seen):
                     first_seen = r_first
                 if r_last and (not last_seen or r_last > last_seen):
@@ -4458,12 +4516,21 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     'raw': r[7] or ''
                 })
 
+            is_locked, had_historical_lock = _compute_lock_recovery_state(
+                has_lock_code, sum_success, last_lock_line, last_success_line, last_lock_time, last_success_time
+            )
+            if has_lock_code and len(rows) > 0 and len(rows) < 1000:
+                recovered_evt = (events[-1]['outcome'] == 'SUCCESS')
+                is_locked = not recovered_evt
+                had_historical_lock = recovered_evt
+
             summary = {
                 'user': target_user,
                 'total': sum_total,
                 'errors': sum_errors,
                 'success': sum_success,
                 'isLocked': is_locked,
+                'hadHistoricalLock': had_historical_lock,
                 'firstSeen': first_seen,
                 'lastSeen': last_seen,
                 'ips': sorted(ips_set)[:10],
@@ -4574,7 +4641,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 writer = csv.writer(buf)
                 for u in users_all[start:start + chunk_size]:
                     err_pct = f"{round((u['errors'] / max(1, u['total'])) * 100, 1)}%"
-                    state_str = 'BLOQUEADO' if u['isLocked'] else ('CON_FALLAS' if u['errors'] > 0 else 'EXITOSO')
+                    state_str = 'BLOQUEADO' if u['isLocked'] else ('BLOQUEO_PREVIO_RECUPERADO' if u.get('hadHistoricalLock') else ('CON_FALLAS' if u['errors'] > 0 else 'EXITOSO'))
                     ips_str = '; '.join(sorted(u['ips']))
                     codes_str = '; '.join(
                         f"{k}({v['total']})"
@@ -4630,7 +4697,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
             if not refresh:
-                cur.execute("SELECT value FROM server_stats WHERE key='forensic_matrix_v5'")
+                cur.execute("SELECT value FROM server_stats WHERE key='forensic_matrix_v6'")
                 cached_row = cur.fetchone()
                 if cached_row and cached_row[0]:
                     cached_payload = json.loads(cached_row[0])
@@ -4649,7 +4716,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             # 1. Aggregated (subject_name, event_type, event_outcome) across the DB
             cur.execute('''
                 SELECT subject_name, event_type, event_outcome, COUNT(1) as cnt,
-                       MIN(event_time) as first_t, MAX(event_time) as last_t, MAX(source_ip) as sample_ip
+                       MIN(event_time) as first_t, MAX(event_time) as last_t, MAX(source_ip) as sample_ip,
+                       MAX(line_num) as max_ln
                 FROM logs
                 GROUP BY subject_name, event_type, event_outcome
             ''')
@@ -4669,10 +4737,11 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             filtered_noise_users = set()
             filtered_noise_events = 0
 
-            for subj, etype, outcome, cnt, first_t, last_t, sample_ip in agg_rows:
+            for subj, etype, outcome, cnt, first_t, last_t, sample_ip, max_ln in agg_rows:
                 code = (etype or 'SYSTEM_LOG').strip()
                 out_str = (outcome or 'SUCCESS').upper()
                 is_err = ('FAIL' in out_str) or ('ERR' in out_str)
+                ln_val = int(max_ln or 0)
 
                 if code not in code_map:
                     kind = 'SYSTEM_EVENT'
@@ -4723,6 +4792,12 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                             'total': 0,
                             'errors': 0,
                             'success': 0,
+                            'hasLockCode': False,
+                            'lastLockLine': 0,
+                            'lastFailLine': 0,
+                            'lastSuccessLine': 0,
+                            'lastLockTime': '',
+                            'lastSuccessTime': '',
                             'firstSeen': first_t or '',
                             'lastSeen': last_t or '',
                             'ips': set(),
@@ -4732,8 +4807,20 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     u_entry['total'] += cnt
                     if is_err:
                         u_entry['errors'] += cnt
+                        if ln_val > u_entry['lastFailLine']:
+                            u_entry['lastFailLine'] = ln_val
                     else:
                         u_entry['success'] += cnt
+                        if ln_val > u_entry['lastSuccessLine']:
+                            u_entry['lastSuccessLine'] = ln_val
+                        if last_t and (not u_entry['lastSuccessTime'] or last_t > u_entry['lastSuccessTime']):
+                            u_entry['lastSuccessTime'] = last_t
+                    if _LOCK_CODE_RE.search(code):
+                        u_entry['hasLockCode'] = True
+                        if ln_val > u_entry['lastLockLine']:
+                            u_entry['lastLockLine'] = ln_val
+                        if last_t and (not u_entry['lastLockTime'] or last_t > u_entry['lastLockTime']):
+                            u_entry['lastLockTime'] = last_t
                     if first_t and (not u_entry['firstSeen'] or first_t < u_entry['firstSeen']):
                         u_entry['firstSeen'] = first_t
                     if last_t and (not u_entry['lastSeen'] or last_t > u_entry['lastSeen']):
@@ -4850,7 +4937,10 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     pattern_category = '☁️ Colisión de Migración IDaaS (Grid / Password / QA)'
                     pattern_root_cause = 'El usuario ya posee un autenticador activo (Grid Card, Password o Q&A) en el destino o la política del grupo restringe la sobreescritura durante la migración masiva.'
                 elif u['errors'] > 0 and u['success'] > 0:
-                    last_outcome = seq[-1]['outcome'] if seq else 'FAIL'
+                    if u.get('lastSuccessLine') or u.get('lastFailLine'):
+                        last_outcome = 'SUCCESS' if u.get('lastSuccessLine', 0) > u.get('lastFailLine', 0) else 'FAIL'
+                    else:
+                        last_outcome = seq[-1]['outcome'] if seq else 'FAIL'
                     if last_outcome == 'SUCCESS':
                         pattern_category = '🔁 Auto-Recuperación (Fallo ➔ Éxito)'
                         pattern_root_cause = 'El usuario experimentó fricción inicial de autenticación (OTP/Password vencido o mal digitado) pero logró autenticarse exitosamente en un intento posterior.'
@@ -4869,6 +4959,16 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     pattern_category = '✅ Operación Nominal Limpia (100% Éxito)'
                     pattern_root_cause = 'Todas las solicitudes registradas para este usuario finalizaron con estado SUCCESS.'
+
+                has_lock_code = bool(u.get('hasLockCode')) or any(_LOCK_CODE_RE.search(ck) for ck in u['codes'].keys())
+                is_actively_locked, had_historical_lock = _compute_lock_recovery_state(
+                    has_lock_code,
+                    u['success'],
+                    u.get('lastLockLine', 0),
+                    u.get('lastSuccessLine', 0),
+                    u.get('lastLockTime', ''),
+                    u.get('lastSuccessTime', ''),
+                )
 
                 cluster_key = f"{pattern_category}||{normalized_sig}"
                 if cluster_key not in pattern_clusters_map:
@@ -4898,6 +4998,9 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     'total': u['total'],
                     'errors': u['errors'],
                     'success': u['success'],
+                    'isLocked': is_actively_locked,
+                    'hadHistoricalLock': had_historical_lock,
+                    'hasLockCode': has_lock_code,
                     'firstSeen': u['firstSeen'],
                     'lastSeen': u['lastSeen'],
                     'ips': list(u['ips'])[:5],
@@ -5225,7 +5328,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             }
 
             try:
-                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('forensic_matrix_v5', json.dumps(result_payload, ensure_ascii=False)))
+                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('forensic_matrix_v6', json.dumps(result_payload, ensure_ascii=False)))
                 conn.commit()
             except Exception:
                 pass

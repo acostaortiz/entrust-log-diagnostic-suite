@@ -48,16 +48,63 @@ const ENTRUST_EXACT_CATALOG = {
   '5202404': { title: 'Recurso o Conexión No Encontrada en Repositorio', category: 'Repositorio de Identidad', severity: 'ERROR', meaning: 'El servidor no pudo localizar el registro de identidad en el repositorio de datos.', rootCause: 'Problemas de indexación o desconexión temporal con la base de datos.', remediation: 'Comprobar la conectividad JDBC y reindexar las tablas de usuarios en el repositorio.' },
 
   // 5203xxx: Gestión de Usuarios y Políticas
-  '5203000': { title: 'Usuario No Encontrado en Directorio (User Not Found)', category: 'Directorio de Identidades', severity: 'ERROR', meaning: 'El usuario especificado no existe en la base de datos de Entrust ni en el repositorio LDAP.', rootCause: 'El usuario fue eliminado del directorio o el identificador fue tipeado erróneamente.', remediation: 'Ejecutar sincronización con Active Directory para importar los usuarios faltantes.' },
+  '5203000': {
+    title: 'Respuesta Inválida a Desafío de Autenticación (Invalid Response to Challenge)',
+    category: 'Autenticación & Desafíos (QA / OTP / Grid / Token)',
+    severity: 'ERROR',
+    meaning: 'Autenticación fallida del usuario debido a una respuesta incorrecta al desafío emitido (Preguntas Secretas Q&A, OTP, celdas de Tarjeta Grid o Token). Indica la cantidad de intentos restantes antes del bloqueo.',
+    rootCause: 'Respuesta incorrecta ingresada por el usuario al desafío Q&A/OTP/Grid/Token o desfase de sincronización del token.',
+    remediation: '1. Validar los intentos restantes y orientar al usuario en el ingreso correcto del desafío (Q&A, OTP o Tarjeta Grid).\n2. Si involucra token OTP/Soft Token, verificar sincronización horaria (NTP) o resincronizar el token en IdentityGuard Admin.'
+  },
   '5203016': { title: 'El Usuario No Posee Contraseña Configurada', category: 'Autenticación & Credenciales', severity: 'ERROR', meaning: 'El usuario intentó autenticarse con contraseña pero su perfil no tiene una contraseña asignada.', rootCause: 'Perfil de usuario incompleto o recién creado sin enrolamiento de contraseña.', remediation: 'Establecer una contraseña inicial para el usuario o enrolarlo en el portal de autoservicio.' },
   '5203019': { title: 'La Contraseña Ha Expirado', category: 'Políticas de Seguridad', severity: 'WARN', meaning: 'La contraseña del usuario superó el tiempo máximo de vigencia permitido por la política.', rootCause: 'Expiración natural de vigencia de contraseña según la directiva bancaria.', remediation: 'Solicitar al usuario la renovación de su contraseña mediante el portal de autoservicio.' },
   '5203020': { title: 'La Contraseña Debe Ser Cambiada en el Primer Inicio', category: 'Políticas de Seguridad', severity: 'INFO', meaning: 'El usuario debe cambiar su contraseña temporal por una definitiva.', rootCause: 'Nueva cuenta o contraseña restablecida por un administrador.', remediation: 'Guiar al usuario a través del flujo de cambio de clave inicial.' },
+  '5203112': {
+    title: 'Contraseña Expirada o Cambio Obligatorio Requerido',
+    category: 'Políticas de Contraseñas',
+    severity: 'ERROR',
+    meaning: 'La autenticación por contraseña falló porque la clave del usuario expiró o está marcada para cambio obligatorio.',
+    rootCause: 'Vigencia de contraseña vencida en IdentityGuard/LDAP o indicador de cambio obligatorio activo.',
+    remediation: '1. Guiar al usuario para renovar su contraseña en el portal de autoservicio.\n2. Si corresponde a una cuenta de servicio/API, verificar la política de expiración aplicable.'
+  },
+  '5203113': {
+    title: 'Fallo de Autenticación de Contraseña (Bad User ID or Password)',
+    category: 'Autenticación & Credenciales',
+    severity: 'ERROR',
+    meaning: 'La validación de contraseña falló para el usuario indicado por contraseña incorrecta o identificador inválido en directorio.',
+    rootCause: 'Contraseña digitada erróneamente, credencial desactualizada en aplicación cliente o identificador no coincidente en LDAP/AD.',
+    remediation: '1. Validar si el fallo proviene de tecleo incorrecto o credencial desactualizada en caché.\n2. Monitorear reintentos repetidos para prevenir bloqueo automático (AUD6002).'
+  },
 
   // 5205xxx: Validación de Credenciales & Bloqueos
+  '5205003': {
+    title: 'Usuario o Alias No Encontrado en Directorio / Grupo',
+    category: 'Directorio de Identidades',
+    severity: 'ERROR',
+    meaning: 'IdentityGuard no pudo localizar el usuario o alias solicitado dentro del repositorio o grupo de búsqueda configurado.',
+    rootCause: 'El usuario fue dado de baja, pertenece a otro searchbase/grupo LDAP o aún no ha sido sincronizado.',
+    remediation: '1. Verificar el searchbase/grupo LDAP de la cuenta en IdentityGuard Admin.\n2. Ejecutar sincronización con Active Directory / directorio de identidades.'
+  },
   '5205079': { title: 'Cuenta Bloqueada por Intentos Fallidos Consecutivos', category: 'Políticas de Seguridad', severity: 'CRITICAL', meaning: 'La cuenta del usuario fue suspendida temporalmente tras superar el límite de intentos fallidos.', rootCause: 'Posible ataque de fuerza bruta o usuario ingresando credenciales desactualizadas repetidamente.', remediation: 'Desbloquear la cuenta en la consola de Entrust IdentityGuard y restablecer el contador de intentos fallidos.' },
   '5205080': { title: 'Cuenta Deshabilitada por Administración', category: 'Gestión de Cuentas', severity: 'ERROR', meaning: 'La cuenta se encuentra en estado inactivo o deshabilitada por decisión administrativa.', rootCause: 'Suspensión manual por parte de un oficial de seguridad o baja en nómina/LDAP.', remediation: 'Verificar el estado del usuario en el Directorio Activo y reactivar en la consola de administración si corresponde.' },
-  '5205139': { title: 'Alias de Usuario Duplicado o No Válido', category: 'Gestión de Identidades', severity: 'ERROR', meaning: 'El alias o identificador secundario de usuario colisiona con otro registro.', rootCause: 'Asignación duplicada de alias en el proceso de carga o sincronización.', remediation: 'Depurar el alias en la consola de administración para garantizar unicidad.' },
+  '5205139': { title: 'Usuario o Alias No Encontrado (Unable to Find User or Alias)', category: 'Directorio de Identidades', severity: 'ERROR', meaning: 'No se pudo localizar ningún usuario para el nombre de usuario o alias suministrado en la operación.', rootCause: 'Identificador inexistente en la base de datos o desfase en la sincronización de alias con el directorio.', remediation: 'Verificar la existencia de la cuenta/alias en la Consola de Administración de IdentityGuard y resincronizar el directorio.' },
+  '5205145': {
+    title: 'Error de Librería / Operación de Token',
+    category: 'Tokens de Software / Hardware',
+    severity: 'ERROR',
+    meaning: 'La librería o servicio de validación de tokens reportó un error procesando el serial o credencial del token.',
+    rootCause: 'Estado inconsistente del token, archivo de semillas/definición desactualizado o falla temporal en el proveedor de tokens.',
+    remediation: '1. Validar el estado y asignación del token afectado en IdentityGuard Admin.\n2. Revisar la configuración y versión del proveedor/librería de tokens.'
+  },
   '5205150': { title: 'Método de Autenticación No Permitido por la Política', category: 'Políticas de Acceso', severity: 'ERROR', meaning: 'El usuario intentó autenticarse con un método que no está habilitado en su grupo de políticas.', rootCause: 'El grupo de usuarios no tiene asignada la directiva de tarjetas Grid o tokens.', remediation: 'Editar la política del grupo de usuarios en la consola de Entrust y habilitar el método requerido.' },
+  '5205255': {
+    title: 'Respuesta o Serial de Token Inválido',
+    category: 'Tokens de Software / Hardware',
+    severity: 'ERROR',
+    meaning: 'La respuesta recibida o el número de serial del token enviado no es válido o no coincide con el asignado al usuario.',
+    rootCause: 'Token desincronizado, código OTP expirado/erróneo o discrepancia entre el serial ingresado y el serial enrolado.',
+    remediation: '1. Resincronizar el token en IdentityGuard Admin y validar la hora NTP.\n2. Confirmar que el serial del soft token coincida con el asignado al usuario.'
+  },
 
   // AUDxxx: Auditoría Administrativa & Eventos Nominales (Alineado 100% a Manuales Oficiales IG 11/12/13)
   'AUD100': { title: 'Inicialización por Primera Vez (First Time Initialization)', category: 'System Initialization audit messages', severity: 'INFO', meaning: 'Entrust IdentityGuard completó la inicialización por primera vez con número de serie inicial, límite de usuarios de licencia y fecha de expiración (Manual oficial IG 13.0: First time initialization performed).', rootCause: 'Instalación o inicialización inicial de la instancia/base de datos IdentityGuard.', remediation: 'Registro de auditoría nominal de arranque inicial.' },
@@ -1028,17 +1075,17 @@ class KnowledgeBase {
       },
       {
         id: 'KB-ENTRUST-5203016',
-        title: 'Entrust IdentityGuard: Cuenta de Usuario Bloqueada (Too Many Failed Attempts)',
-        category: 'Entrust OnPremise / Control de Acceso',
+        title: 'Entrust IdentityGuard [5203016]: El Usuario No Posee Contraseña Configurada',
+        category: 'Entrust OnPremise / Autenticación & Credenciales',
         severity: 'ERROR',
-        pattern: /(5203016)/i,
-        meaning: 'La cuenta del usuario fue bloqueada automáticamente por exceder el número máximo de reintentos fallidos de autenticación permitidos.',
-        rootCause: 'Múltiples reintentos fallidos consecutivos de contraseña, PIN o tarjetas Grid por parte del usuario o un ataque de fuerza bruta.',
-        remediation: '1. Desbloquee la cuenta del usuario desde la Consola de Administración de IdentityGuard.\n2. Verifique la causa de los reintentos y, si es necesario, proceda al blanqueo o restablecimiento de su credencial.',
-        riskLevel: 'Alto (Cuenta Bloqueada por Reintentos Fallidos)',
+        pattern: /(5203016|does not have a password)/i,
+        meaning: 'El usuario intentó autenticarse con contraseña pero su perfil aún no tiene una contraseña configurada.',
+        rootCause: 'Perfil de usuario incompleto o recién creado sin enrolamiento previo de contraseña.',
+        remediation: '1. Establecer una contraseña inicial para el usuario desde la Consola de Administración de IdentityGuard.\n2. Orientar al usuario para completar su enrolamiento en el portal de autoservicio.',
+        riskLevel: 'Medio (Credencial Pendiente de Enrolamiento)',
         manualVersion: 'vEntrust',
         sectionId: 'sec-5203016',
-        sectionTitle: 'Código [5203016]: User Account Locked'
+        sectionTitle: 'Código [5203016]: User Has No Password Configured'
       },
       {
         id: 'KB-ENTRUST-5202340',

@@ -358,14 +358,19 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       uStat.rootCause = rootCause;
     },
 
+    _isLockCode(code) {
+      return /5205079|5205080|5201053|5202002|5202014|AUD007|AUD6002/i.test(String(code || ''));
+    },
+
     buildUserStats(forceRebuild = false) {
       const logs = this.getAllLogs();
-      const sig = `${logs.length}|${logs[0]?.timestamp || ''}|${logs[logs.length - 1]?.timestamp || ''}`;
+      const st = window.appState || window.state;
+      const fmLen = (this.forensicMatrixData && Array.isArray(this.forensicMatrixData.usersList)) ? this.forensicMatrixData.usersList.length : 0;
+      const sig = `${logs.length}|${logs[0]?.timestamp || ''}|${logs[logs.length - 1]?.timestamp || ''}|${st && st.isServerApi ? 1 : 0}|${fmLen}`;
       if (!forceRebuild && this._lastStatsSig === sig && this.cachedStats && Object.keys(this.cachedStats).length > 0) {
         return this.cachedStats;
       }
       const stats = {};
-      const st = window.appState || window.state;
       const validUserCache = new Map();
       const isValidCached = (cand) => {
         if (!cand) return false;
@@ -415,6 +420,8 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             warnings: 0,
             successes: 0,
             isLocked: false,
+            hadHistoricalLock: false,
+            hasLockCode: false,
             ips: new Set(),
             nodes: new Set(),
             codes: {},
@@ -455,8 +462,8 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           uStat.successes++;
         }
 
-        if (/5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002|locked|bloquead/i.test(code) || /locked|bloquead/i.test(msg)) {
-          uStat.isLocked = true;
+        if (this._isLockCode(code) || /\b(?:locked out|account.*locked|cuenta.*bloqueada)\b/i.test(msg)) {
+          uStat.hasLockCode = true;
         }
 
         if (log.ip || log.clientIp) uStat.ips.add(log.ip || log.clientIp);
@@ -501,8 +508,10 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           Object.entries(su.codes || {}).forEach(([k, v]) => {
             codesSimple[k] = typeof v === 'object' ? (v.total || 0) : v;
           });
-          const isLocked = Object.keys(codesSimple).some(c => /5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002/i.test(c)) ||
-                           /Bloqueo|Fuerza Bruta/i.test(su.patternCategory || '');
+          const hasLockCode = Boolean(su.hasLockCode) || Object.keys(codesSimple).some(c => this._isLockCode(c));
+          const recoveredPat = /Auto-Recuperaci/i.test(su.patternCategory || '');
+          const isLocked = (typeof su.isLocked === 'boolean') ? su.isLocked : (hasLockCode && !recoveredPat);
+          const hadHistoricalLock = (typeof su.hadHistoricalLock === 'boolean') ? su.hadHistoricalLock : (hasLockCode && recoveredPat);
           const existingSamples = stats[su.user]?.sampleLogs || [];
           stats[su.user] = {
             username: su.user,
@@ -512,6 +521,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             warnings: 0,
             successes: su.success || 0,
             isLocked,
+            hadHistoricalLock,
+            hasLockCode,
+            _fromForensicMatrix: true,
             ips: new Set(su.ips || []),
             nodes: new Set(['🖥️ Motor Core SQLite']),
             codes: codesSimple,
@@ -545,7 +557,8 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
             const isCError = /^520\d{4}|AUD6001|AUD6002|ORA-|error/i.test(cKey);
             tuCodesDetail[cKey] = { total: cVal, errors: isCError ? cVal : 0, success: isCError ? 0 : cVal };
           });
-          const isTuLocked = Object.keys(tuCodes).some(c => /5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002/i.test(c));
+          const hasTuLockCode = Object.keys(tuCodes).some(c => this._isLockCode(c));
+          const tuRecovered = Boolean(hasTuLockCode && (tu.count || 1) > (tu.errors || 0) && /AUD6000|AUTH_SUCCESS/i.test(Object.keys(tuCodes).join(' ')));
           if (!stats[uName]) {
             stats[uName] = {
               username: uName,
@@ -554,7 +567,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
               criticals: tu.errors || 0,
               warnings: 0,
               successes: Math.max(0, (tu.count || 1) - (tu.errors || 0)),
-              isLocked: isTuLocked,
+              isLocked: hasTuLockCode && !tuRecovered,
+              hadHistoricalLock: hasTuLockCode && tuRecovered,
+              hasLockCode: hasTuLockCode,
               ips: new Set(),
               nodes: new Set(['⚡ Stream Worker']),
               codes: tuCodes,
@@ -580,7 +595,10 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
               stats[uName].errors = tu.errors;
             }
             stats[uName].successes = Math.max(0, stats[uName].totalEvents - stats[uName].errors);
-            if (isTuLocked) stats[uName].isLocked = true;
+            if (!stats[uName]._fromForensicMatrix && hasTuLockCode) {
+              stats[uName].hasLockCode = true;
+              if (!tuRecovered) stats[uName].isLocked = true;
+            }
             if (tu.codes) {
               Object.entries(tu.codes).forEach(([cKey, cVal]) => {
                 if (!stats[uName].codes[cKey] || cVal > stats[uName].codes[cKey]) {
@@ -595,6 +613,13 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       Object.values(stats).forEach(uStat => {
         if (!uStat.compressedPattern) {
           this.classifyUserSequence(uStat);
+        }
+        if (!uStat._fromForensicMatrix) {
+          const hasLock = Boolean(uStat.hasLockCode) || Object.keys(uStat.codes || {}).some(c => this._isLockCode(c));
+          const recovered = /Auto-Recuperaci/i.test(uStat.patternCategory || '');
+          uStat.hasLockCode = hasLock;
+          uStat.isLocked = hasLock && !recovered;
+          uStat.hadHistoricalLock = hasLock && recovered;
         }
       });
 
@@ -643,6 +668,8 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         let errorBadge = '';
         if (u.isLocked) {
           errorBadge = `<span style="background:rgba(225,29,72,0.15); color:#e11d48; border:1px solid rgba(225,29,72,0.3); font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:10px;">🔒 BLOQUEADO</span>`;
+        } else if (u.hadHistoricalLock) {
+          errorBadge = `<span style="background:rgba(245,158,11,0.15); color:#d97706; border:1px solid rgba(245,158,11,0.35); font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:10px;">🔄 RECUPERADO</span>`;
         } else if (u.errors > 0) {
           errorBadge = `<span style="background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:10px;">${u.errors} fallas</span>`;
         } else {
@@ -830,24 +857,26 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
 
       // 1. Filas del Censo de Usuarios (top 300 en vista imprimible para máxima fluidez PDF/DOCX; 100% en CSV)
       let userRowsHtml = '';
-      const sortedUsers = targetUsers.map(u => this.cachedStats[u] || { username: u, totalEvents: 0, errors: 0, successes: 0, isLocked: false, codes: {}, ips: new Set(), lastTimestamp: '-' })
-                                     .sort((a, b) => (b.isLocked ? 1 : 0) - (a.isLocked ? 1 : 0) || b.errors - a.errors || b.totalEvents - a.totalEvents);
+      const sortedUsers = targetUsers.map(u => this.cachedStats[u] || { username: u, totalEvents: 0, errors: 0, successes: 0, isLocked: false, hadHistoricalLock: false, codes: {}, ips: new Set(), lastTimestamp: '-' })
+                                     .sort((a, b) => (b.isLocked ? 2 : (b.hadHistoricalLock ? 1 : 0)) - (a.isLocked ? 2 : (a.hadHistoricalLock ? 1 : 0)) || b.errors - a.errors || b.totalEvents - a.totalEvents);
 
       const printableUsers = sortedUsers.slice(0, 300);
       printableUsers.forEach((u, idx) => {
         const errPct = u.totalEvents > 0 ? ((u.errors / u.totalEvents) * 100).toFixed(1) : '0';
         let statusBadge = '';
         if (u.isLocked) {
-          statusBadge = '<span style="background:#ffe4e6; color:#e11d48; border:1px solid #fda4af; padding:2px 8px; border-radius:12px; font-weight:800; font-size:0.7rem;">🚨 BLOQUEADO</span>';
+          statusBadge = '<span style="display:inline-block; line-height:1.35; background:#ffe4e6; color:#e11d48; border:1px solid #fda4af; padding:2px 8px; border-radius:12px; font-weight:800; font-size:0.7rem;">🚨 BLOQUEADO</span>';
+        } else if (u.hadHistoricalLock) {
+          statusBadge = `<span style="display:inline-block; line-height:1.35; background:#fef3c7; color:#92400e; border:1px solid #fcd34d; padding:2px 8px; border-radius:12px; font-weight:700; font-size:0.7rem;">🔄 RECUPERADO (${errPct}%)</span>`;
         } else if (u.errors > 0) {
-          statusBadge = `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 8px; border-radius:12px; font-weight:700; font-size:0.7rem;">⚠️ CON FALLAS (${errPct}%)</span>`;
+          statusBadge = `<span style="display:inline-block; line-height:1.35; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 8px; border-radius:12px; font-weight:700; font-size:0.7rem;">⚠️ CON FALLAS (${errPct}%)</span>`;
         } else {
-          statusBadge = '<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:2px 8px; border-radius:12px; font-weight:700; font-size:0.7rem;">✅ 100% EXITOSO</span>';
+          statusBadge = '<span style="display:inline-block; line-height:1.35; background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:2px 8px; border-radius:12px; font-weight:700; font-size:0.7rem;">✅ 100% EXITOSO</span>';
         }
 
-        const topCodes = Object.entries(u.codes).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([c, n]) => `<span style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; padding:1px 5px; border-radius:4px; font-family:monospace; font-size:0.68rem;">${escapeHtml(c)} (${n})</span>`).join(' ');
+        const topCodes = Object.entries(u.codes).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([c, n]) => `<span style="display:inline-block; background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; padding:1px 5px; border-radius:4px; font-family:monospace; font-size:0.68rem;">${escapeHtml(c)} (${n})</span>`).join(' ');
         const ipsStr = Array.from(u.ips).join(', ') || 'Red Interna';
-        const seqSummary = u.compressedPattern || (u.sequence || []).slice(0, 5).map(s => `#${s.step}:${s.code}(${s.outcome})`).join(' ➔ ') || 'Operación Única';
+        const seqSummary = String(u.compressedPattern || (u.sequence || []).slice(0, 5).map(s => `#${s.step}:${s.code}(${s.outcome})`).join(' -> ') || 'Operación Única').replace(/\s*➔\s*/g, ' -> ');
 
         userRowsHtml += `
           <tr style="border-bottom:1px solid #e2e8f0; background:${idx % 2 === 0 ? '#fff' : '#f8fafc'};">
@@ -1247,7 +1276,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         const u = this.cachedStats[key];
         if (!u) return;
         const errPct = u.totalEvents > 0 ? ((u.errors / u.totalEvents) * 100).toFixed(1) : '0';
-        const stateStr = u.isLocked ? 'BLOQUEADO' : (u.errors > 0 ? 'CON_FALLAS' : 'EXITOSO');
+        const stateStr = u.isLocked ? 'BLOQUEADO' : (u.hadHistoricalLock ? 'BLOQUEO_PREVIO_RECUPERADO' : (u.errors > 0 ? 'CON_FALLAS' : 'EXITOSO'));
         const patCat = u.patternCategory || 'Operación Nominal';
         const patSeq = u.compressedPattern || 'N/A';
         const ipsStr = Array.from(u.ips || []).join('; ');
@@ -2274,7 +2303,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
       Object.entries(su.codes || {}).forEach(([k, v]) => {
         codesSimple[k] = typeof v === 'object' ? (v.total || 0) : Number(v || 0);
       });
-      const isLocked = Boolean(su.isLocked) || Object.keys(codesSimple).some(c => /5205079|5205080|5201053|5203016|5202002|AUD007|AUD6002/i.test(c));
+      const hasLockCode = Boolean(su.hasLockCode) || Object.keys(codesSimple).some(c => this._isLockCode(c));
       const seq = (eventsList || []).slice(0, 40).map((ev, idx) => ({
         step: idx + 1,
         code: ev.code || 'EVENT',
@@ -2291,7 +2320,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         criticals: Number(su.errors || 0),
         warnings: 0,
         successes: Number(su.success ?? Math.max(0, (su.total || 0) - (su.errors || 0))),
-        isLocked,
+        isLocked: false,
+        hadHistoricalLock: false,
+        hasLockCode,
         ips: new Set(su.ips || []),
         nodes: new Set(['🖥️ Motor Core SQLite']),
         codes: codesSimple,
@@ -2302,6 +2333,14 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         lastTimestamp: su.lastSeen || ''
       };
       this.classifyUserSequence(uStat);
+      if (typeof su.isLocked === 'boolean') {
+        uStat.isLocked = su.isLocked;
+        uStat.hadHistoricalLock = Boolean(su.hadHistoricalLock);
+      } else {
+        const rec = /Auto-Recuperaci/i.test(uStat.patternCategory || '');
+        uStat.isLocked = hasLockCode && !rec;
+        uStat.hadHistoricalLock = hasLockCode && rec;
+      }
       this.cachedStats[uname] = uStat;
       return uStat;
     },
@@ -2319,6 +2358,8 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         let badge = '<span style="background:rgba(16,185,129,0.15); color:#10b981; font-size:0.68rem; font-weight:700; padding:1px 6px; border-radius:4px;">✅ OK</span>';
         if (u.isLocked) {
           badge = '<span style="background:rgba(225,29,72,0.15); color:#e11d48; font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:4px;">🔒 LOCK</span>';
+        } else if (u.hadHistoricalLock) {
+          badge = '<span style="background:rgba(245,158,11,0.15); color:#d97706; font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:4px;">🔄 RECUP</span>';
         } else if (u.errors > 0) {
           badge = `<span style="background:rgba(239,68,68,0.15); color:#ef4444; font-size:0.68rem; font-weight:800; padding:1px 6px; border-radius:4px;">${u.errors} fallas</span>`;
         }
@@ -2605,7 +2646,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
               </div>
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
-              ${u.isLocked ? '<span style="background:#ef4444; color:#fff; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:6px;">🔴 CUENTA BLOQUEADA</span>' : (u.errors > 0 ? '<span style="background:#f59e0b; color:#fff; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:6px;">🟡 CON INCIDENCIAS</span>' : '<span style="background:#10b981; color:#fff; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:6px;">🟢 CUENTA ACTIVA / OK</span>')}
+              ${u.isLocked ? '<span style="background:#ef4444; color:#fff; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:6px;">🔴 CUENTA BLOQUEADA</span>' : (u.hadHistoricalLock ? '<span style="background:#d97706; color:#fff; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:6px;">🔄 BLOQUEO PREVIO RECUPERADO</span>' : (u.errors > 0 ? '<span style="background:#f59e0b; color:#fff; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:6px;">🟡 CON INCIDENCIAS</span>' : '<span style="background:#10b981; color:#fff; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:6px;">🟢 CUENTA ACTIVA / OK</span>'))}
             </div>
           </div>
 

@@ -1542,12 +1542,12 @@ document.addEventListener('DOMContentLoaded', () => {
      ========================================================================== */
   let systemVersionData = {
     appName: 'IT SERVICIOS — Suite de Diagnóstico Entrust IdentityGuard OnPremise',
-    version: 'v3.16.2',
-    build: 621,
+    version: 'v3.16.3',
+    build: 622,
     releaseChannel: 'Enterprise LTS (Bilingüe / ISO 27001 & SUDEBAN)',
-    gitCommit: 'SQLITE-LIVE-FILTER-3162',
+    gitCommit: 'EXEC-PDF-QA-3163',
     gitBranch: 'main',
-    buildDate: '2026-11-26 10:00',
+    buildDate: '2026-11-26 14:55',
     engineer: 'Tomás Acosta',
     organization: 'IT Servicios de Venezuela, S.A.'
   };
@@ -1578,7 +1578,7 @@ document.addEventListener('DOMContentLoaded', () => {
       state.serverCapabilities = Array.isArray(liveVerPayload.capabilities) ? liveVerPayload.capabilities : [];
     }
 
-    const expectedVer = 'v3.16.2';
+    const expectedVer = 'v3.16.3';
     const liveCaps = state.serverCapabilities || [];
     const backendMismatch = Boolean(liveVerPayload && (!liveVerPayload.serverCodeVersion || liveVerPayload.serverCodeVersion !== expectedVer || !liveCaps.includes('export-logs-csv-316')));
     state.backendOutdatedInMemory = backendMismatch;
@@ -3286,7 +3286,7 @@ document.addEventListener('DOMContentLoaded', () => {
         blockTarget.appendChild(block);
 
         const bh = Math.max(1, renderHost.scrollHeight);
-        const safeScale = bh > 3500 ? 1 : 1.5;
+        const safeScale = bh > 3500 ? 1.25 : 1.75;
 
         const canvas = await window.html2canvas(renderHost, {
           scale: safeScale,
@@ -3320,7 +3320,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pageIdx++;
             cursorY = marginTopNext;
           }
-          const imgData = canvas.toDataURL('image/jpeg', 0.86);
+          const imgData = canvas.toDataURL('image/jpeg', 0.92);
           pdf.addImage(imgData, 'JPEG', marginX, cursorY, usableW, imgH, undefined, 'FAST');
           cursorY += imgH + 2.2;
         } else {
@@ -3342,7 +3342,7 @@ document.addEventListener('DOMContentLoaded', () => {
               cursorY = marginTopNext;
             }
             const sliceMmH = (sh * usableW) / canvas.width;
-            pdf.addImage(tempCanvas.toDataURL('image/jpeg', 0.86), 'JPEG', marginX, cursorY, usableW, sliceMmH, undefined, 'FAST');
+            pdf.addImage(tempCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', marginX, cursorY, usableW, sliceMmH, undefined, 'FAST');
             cursorY += sliceMmH + 2.2;
             sy += sh;
           }
@@ -4132,7 +4132,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       const affectedUsersArr = Array.isArray(codeUsersEntry) ? codeUsersEntry : (codeUsersEntry.users || []);
       const affectedUsersTotalCount = Array.isArray(codeUsersEntry) ? codeUsersEntry.length : Math.max(affectedUsersArr.length, Number(codeUsersEntry.uniqueUsersCount || 0));
       const affectedUsersBadges = affectedUsersArr.length > 0
-        ? affectedUsersArr.slice(0, 8).map(u => `<span style="display:inline-block; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:1px 5px; border-radius:4px; font-family:monospace; font-size:9px; font-weight:700; margin:1px;">👤 ${escapeHtml(u.user)} (${u.count}x)</span>`).join(' ') + (affectedUsersTotalCount > 8 ? ` <span style="font-size:9px; color:#64748b; font-weight:bold;">+${(affectedUsersTotalCount - 8).toLocaleString()} más (${affectedUsersTotalCount.toLocaleString()} totales)</span>` : '')
+        ? affectedUsersArr.slice(0, 8).map(u => `<span style="display:inline-block; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; padding:2px 5px; border-radius:4px; font-family:monospace; font-size:9px; font-weight:700; line-height:1.35; max-width:100%; overflow-wrap:anywhere; word-break:break-word; margin:1px;">👤 ${escapeHtml(u.user)} (${u.count}x)</span>`).join(' ') + (affectedUsersTotalCount > 8 ? ` <span style="font-size:9px; color:#64748b; font-weight:bold;">+${(affectedUsersTotalCount - 8).toLocaleString()} más (${affectedUsersTotalCount.toLocaleString()} totales)</span>` : '')
         : `<span style="font-size:9px; color:#64748b; font-family:monospace;">⚙️ Evento de Sistema / Sin usuario nominal</span>`;
 
       const evidenceMetaHtml = `<div style="margin-top:4px; padding:4px 6px; background:#f1f5f9; border-left:2px solid #0284c7; border-radius:3px; font-family:monospace; font-size:9px; color:#334155;">📄 <strong>Evidencia:</strong> ${escapeHtml(sampleFile || 'Log')} (Línea #${sampleLine || 1} • ${escapeHtml(sampleTime || '-')})<br><span style="color:#0f172a;">${escapeHtml((sampleRaw || '').slice(0, 140))}</span></div>`;
@@ -4261,8 +4261,8 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       topCodesHtml += `<tr><td colspan="4" style="padding:8px 10px; border:1px solid #cbd5e1; background:#f1f5f9; color:#475569; font-size:10px; text-align:center; font-weight:600;">📋 ${extraMsg}</td></tr>`;
     }
 
-    // Construir Sección III: Censo Nominal de Usuarios y Secuencia de Solicitudes (Solicitud 1 ➔ Solicitud N)
-    const sortedForensicUsers = [...forensicUsersList].sort((a, b) => (b.isLocked ? 1 : 0) - (a.isLocked ? 1 : 0) || (b.errors - a.errors) || (b.totalEvents - a.totalEvents));
+    // Construir Sección III: Censo Nominal de Usuarios y Secuencia de Solicitudes (Solicitud 1 -> Solicitud N)
+    const sortedForensicUsers = [...forensicUsersList].sort((a, b) => (b.isLocked ? 2 : (b.hadHistoricalLock ? 1 : 0)) - (a.isLocked ? 2 : (a.hadHistoricalLock ? 1 : 0)) || (b.errors - a.errors) || (b.totalEvents - a.totalEvents));
     const totalValidUsersCount = fmData
       ? Number(fmData.uniqueValidUsers ?? sortedForensicUsers.length)
       : Math.max(sortedForensicUsers.length, state.globalStreamMetrics?.totalUniqueUsers || 0);
@@ -4275,13 +4275,20 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     let userCensusReportRowsHtml = '';
     sortedForensicUsers.slice(0, 40).forEach((u, uIdx) => {
+      const isAutoRecovered = /Auto-Recuperaci/i.test(u.patternCategory || '');
       const uStatusBadge = u.isLocked
-        ? `<span style="background:#ffe4e6; color:#e11d48; border:1px solid #fda4af; padding:2px 6px; border-radius:4px; font-weight:800; font-size:9px;">🔒 BLOQUEADO</span>`
-        : (u.errors > 0
-          ? `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 6px; border-radius:4px; font-weight:800; font-size:9px;">⚠️ ${u.errors} FALLAS</span>`
-          : `<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:2px 6px; border-radius:4px; font-weight:800; font-size:9px;">✅ 100% EXITOSO</span>`);
-      const uCodesBadges = Object.entries(u.codes || {}).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([c, n]) => `<code style="background:#f1f5f9; border:1px solid #cbd5e1; padding:1px 4px; border-radius:3px; font-size:9px;">${escapeHtml(c)}(${n})</code>`).join(' ');
-      const uSeqStr = u.compressedPattern || (u.sequence || []).slice(0, 6).map(s => `Solicitud #${s.step}: [${s.code}] (${s.outcome})`).join(' ➔ ') || 'Operación Única';
+        ? `<span style="display:inline-block; line-height:1.35; max-width:100%; background:#ffe4e6; color:#e11d48; border:1px solid #fda4af; padding:2px 6px; border-radius:4px; font-weight:800; font-size:9px;">🔒 BLOQUEADO</span>`
+        : (u.hadHistoricalLock
+          ? `<span style="display:inline-block; line-height:1.35; max-width:100%; background:#fef3c7; color:#92400e; border:1px solid #fcd34d; padding:2px 6px; border-radius:4px; font-weight:800; font-size:9px;">🔄 RECUPERADO<br><span style="font-size:8px; font-weight:700;">(Bloqueo Previo)</span></span>`
+          : (u.errors > 0 && isAutoRecovered
+            ? `<span style="display:inline-block; line-height:1.35; max-width:100%; background:#fef3c7; color:#92400e; border:1px solid #fcd34d; padding:2px 6px; border-radius:4px; font-weight:800; font-size:9px;">⚠️ ${u.errors} FALLAS<br><span style="font-size:8px; font-weight:700;">(Recuperado)</span></span>`
+            : (u.errors > 0
+              ? `<span style="display:inline-block; line-height:1.35; max-width:100%; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 6px; border-radius:4px; font-weight:800; font-size:9px;">⚠️ ${u.errors} FALLAS</span>`
+              : `<span style="display:inline-block; line-height:1.35; max-width:100%; background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:2px 6px; border-radius:4px; font-weight:800; font-size:9px;">✅ 100% EXITOSO</span>`)));
+      const uCodesBadges = Object.entries(u.codes || {}).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([c, n]) => `<code style="display:inline-block; margin:1px 2px 1px 0; line-height:1.3; background:#f1f5f9; border:1px solid #cbd5e1; padding:1px 4px; border-radius:3px; font-size:9px;">${escapeHtml(c)}(${n})</code>`).join(' ');
+      const rawSeqStr = u.compressedPattern || (u.sequence || []).slice(0, 6).map(s => `Solicitud #${s.step}: [${s.code}] (${s.outcome})`).join(' -> ') || 'Operación Única';
+      const uSeqStr = String(rawSeqStr).replace(/\s*➔\s*/g, ' -> ');
+      const uPatCatStr = String(u.patternCategory || 'Operación Nominal').replace(/\s*➔\s*/g, ' -> ');
       userCensusReportRowsHtml += `
         <tr style="background:${uIdx % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside:avoid; break-inside:avoid;">
           <td style="padding:7px 6px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#0a3d6d; font-size:10px;">
@@ -4294,8 +4301,8 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           </td>
           <td style="padding:7px 6px; border:1px solid #cbd5e1; text-align:center;">${uStatusBadge}</td>
           <td style="padding:7px 6px; border:1px solid #cbd5e1; font-size:9.5px;">
-            <strong style="color:#0f172a;">${escapeHtml(u.patternCategory || 'Operación Nominal')}</strong><br>
-            <span style="font-family:monospace; font-size:9px; color:#0284c7;">${escapeHtml(uSeqStr)}</span>
+            <strong style="color:#0f172a;">${escapeHtml(uPatCatStr)}</strong>
+            <span class="rpt-seq-code" style="display:block; font-family:Consolas, monospace; font-size:9.5px; line-height:1.45; color:#0369a1; overflow-wrap:anywhere; word-break:break-word; margin-top:2px;">${escapeHtml(uSeqStr)}</span>
           </td>
           <td style="padding:7px 6px; border:1px solid #cbd5e1; font-size:9.5px; color:#334155;">
             ${uCodesBadges}<br>
@@ -4402,25 +4409,33 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       ? sortedIncidents.filter(i => /bulkidentityguard|\.assignedgrid|idaas/i.test(i.code)).reduce((acc, i) => acc + i.count, 0)
       : sortedIncidents.filter(i => !numericEntrustRe.test(i.code) && !/^(?:AUD|ORA|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)/i.test(i.code)).reduce((acc, i) => acc + i.count, 0);
 
-    const topFailedUsersNames = sortedForensicUsers.filter(u => u.errors > 0 || u.isLocked).slice(0, 5).map(u => `<code>${escapeHtml(u.username)}</code>`).join(', ');
+    const topFailedUsersPills = sortedForensicUsers
+      .filter(u => u.errors > 0 || u.isLocked || u.hadHistoricalLock)
+      .slice(0, 5)
+      .map(u => `<span class="rpt-user-pill" style="display:inline-block; max-width:100%; background:#ffffff; color:#991b1b; border:1px solid #fecaca; border-radius:4px; padding:2px 6px; font-family:Consolas, monospace; font-size:9.5px; font-weight:700; line-height:1.35; overflow-wrap:anywhere; word-break:break-word;">${u.isLocked ? '🔒 ' : ''}${escapeHtml(u.username)} (${u.errors})</span>`)
+      .join('');
+    const topUsersChipsBlock = topFailedUsersPills
+      ? `<div class="rpt-user-pill-list" style="display:flex; flex-wrap:wrap; gap:4px; margin:6px 0 8px 0;">${topFailedUsersPills}</div>`
+      : '';
+    const lockedUsersCount = sortedForensicUsers.filter(u => u.isLocked).length;
+    const recoveredLockCount = sortedForensicUsers.filter(u => u.hadHistoricalLock && !u.isLocked).length;
     const dynamicPhase1Html = (usersWithErrorsCount > 0 || count520Total > 0 || countAudTotal > 0 || countTomcatErrTotal > 0)
-      ? `• Auditar y desbloquear las <strong>${usersWithErrorsCount}</strong> cuenta(s) con fallos registrados (${topFailedUsersNames || 'usuarios afectados'}).<br>• Revisar los <strong>${count520Total.toLocaleString()}</strong> errores <code>5xxxxx/520xxx</code>, <strong>${countTomcatErrTotal.toLocaleString()}</strong> fallos Tomcat/JVM y <strong>${countAudTotal.toLocaleString()}</strong> eventos <code>AUDxxx</code> detectados en la muestra.<br>• Validar accesos administrativos y sesiones SSH/OS (${countSysOrIdaasTotal.toLocaleString()} eventos).`
+      ? `<div style="margin-bottom:6px;">• Auditar ${lockedUsersCount > 0 ? `<strong>${lockedUsersCount}</strong> cuenta(s) bloqueada(s) activa(s) y ` : ''}<strong>${usersWithErrorsCount}</strong> cuenta(s) con fallos registrados:</div>${topUsersChipsBlock}<div style="margin-bottom:6px;">• Revisar <strong>${count520Total.toLocaleString()}</strong> errores <code>5xxxxx/520xxx</code>, <strong>${countTomcatErrTotal.toLocaleString()}</strong> fallos Tomcat/JVM y <strong>${countAudTotal.toLocaleString()}</strong> eventos <code>AUDxxx</code>.</div><div>• Validar accesos administrativos y sesiones SSH/OS (${countSysOrIdaasTotal.toLocaleString()} eventos).</div>`
       : `• Operación inmediata sin bloqueos críticos activos (0 cuentas bloqueadas).<br>• Mantener monitoreo preventivo sobre servicios de autenticación Entrust IdentityGuard OnPremise.`;
 
     const dynamicPhase2Html = countOraTotal > 0 || dbHealthObj.totalDbIncidents > 0
       ? `• Atender los <strong>${Math.max(dbHealthObj.totalDbIncidents || 0, countOraTotal).toLocaleString()}</strong> incidentes de persistencia Oracle/JDBC detectados en la muestra.<br>• Ajustar parámetros de pool JDBC y retención UNDO según evidencia.<br>• Sincronizar identidades afectadas en repositorio LDAP/Active Directory.`
       : `• <strong>Base de Datos Saludable (0 errores ORA/JDBC):</strong> No se requiere intervención de emergencia sobre Oracle DB.<br>• Sincronizar y depurar en LDAP/AD las cuentas que registraron intentos fallidos de credencial o reto.<br>• Verificar vigencia de tokens/tarjetas Grid de los usuarios con fricción.`;
 
-    const dynamicPhase3Html = `• Verificar boletines y parches aplicables a <strong>${escapeHtml(activeClient.platform)} (${escapeHtml(activeClient.version)})</strong> en <a href="https://trustedcare.entrust.com" target="_blank" style="color:#166534; text-decoration:underline; font-weight:bold;">trustedcare.entrust.com</a>.<br>• Mantener auditoría continua de secuencias por usuario (Solicitud 1 ➔ Solicitud N) y cumplimiento normativo SUDEBAN / ISO 27001.`;
+    const dynamicPhase3Html = `• Verificar boletines y parches aplicables a <strong>${escapeHtml(activeClient.platform)} (${escapeHtml(activeClient.version)})</strong> en <a href="https://trustedcare.entrust.com" target="_blank" style="color:#166534; text-decoration:underline; font-weight:bold;">trustedcare.entrust.com</a>.<br>• Mantener auditoría continua de secuencias por usuario (Solicitud 1 -> Solicitud N) y cumplimiento normativo SUDEBAN / ISO 27001.`;
 
     // Veredicto Ejecutivo: 100% derivado de contadores reales (sin texto de plantilla)
-    const lockedUsersCount = sortedForensicUsers.filter(u => u.isLocked).length;
     const dbIncidentsReal = Math.max(dbHealthObj.totalDbIncidents || 0, countOraTotal);
     let verdictLevel = 'NOMINAL', verdictColor = '#16a34a', verdictBg = '#f0fdf4', verdictIcon = '✅';
     if (dbIncidentsReal > 0 || countTomcatErrTotal > 0) { verdictLevel = 'ALTO'; verdictColor = '#dc2626'; verdictBg = '#fef2f2'; verdictIcon = '🚨'; }
-    else if (lockedUsersCount > 0 || count520Total > 0) { verdictLevel = 'MEDIO'; verdictColor = '#d97706'; verdictBg = '#fffbeb'; verdictIcon = '⚠️'; }
+    else if (lockedUsersCount > 0 || recoveredLockCount > 0 || count520Total > 0) { verdictLevel = 'MEDIO'; verdictColor = '#d97706'; verdictBg = '#fffbeb'; verdictIcon = '⚠️'; }
     const topThreeHtml = sortedIncidents.slice(0, 3).map((it, i) => `<div style="display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px dashed #cbd5e1; font-size:11px;"><span><strong>${i + 1}.</strong> <code>${escapeHtml(it.code)}</code></span><strong style="font-family:monospace;">${it.count.toLocaleString()} (${formatPctStr(it.count, totalCount)})</strong></div>`).join('') || `<div style="font-size:11px; color:#64748b;">Sin códigos de error en la muestra.</div>`;
-    const priorityUsersHtml = sortedForensicUsers.filter(u => u.errors > 0 || u.isLocked).slice(0, 8).map(u => `<span style="display:inline-block; margin:2px 3px 0 0; padding:2px 7px; border-radius:10px; font-family:monospace; font-size:10px; font-weight:800; background:${u.isLocked ? '#ffe4e6' : '#fef3c7'}; color:${u.isLocked ? '#be123c' : '#92400e'}; border:1px solid ${u.isLocked ? '#fda4af' : '#fcd34d'};">${u.isLocked ? '🔒' : '⚠️'} ${escapeHtml(u.username)} (${u.errors})</span>`).join('') || '<span style="font-size:10.5px; color:#15803d; font-weight:700;">Ninguna: todos los usuarios sin fallas.</span>';
+    const priorityUsersHtml = sortedForensicUsers.filter(u => u.errors > 0 || u.isLocked || u.hadHistoricalLock).slice(0, 8).map(u => `<span style="display:inline-block; line-height:1.35; max-width:100%; overflow-wrap:anywhere; word-break:break-word; margin:2px 3px 0 0; padding:2px 7px; border-radius:10px; font-family:monospace; font-size:10px; font-weight:800; background:${u.isLocked ? '#ffe4e6' : '#fef3c7'}; color:${u.isLocked ? '#be123c' : '#92400e'}; border:1px solid ${u.isLocked ? '#fda4af' : '#fcd34d'};">${u.isLocked ? '🔒' : (u.hadHistoricalLock ? '🔄' : '⚠️')} ${escapeHtml(u.username)} (${u.errors})</span>`).join('') || '<span style="font-size:10.5px; color:#15803d; font-weight:700;">Ninguna: todos los usuarios sin fallas.</span>';
     const executiveVerdictHtml = `
       <div style="background:${verdictBg}; border:1.5px solid ${verdictColor}; border-left:8px solid ${verdictColor}; border-radius:8px; padding:16px 18px; margin-bottom:22px; page-break-inside:avoid; break-inside:avoid;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
@@ -4429,7 +4444,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         </div>
         <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:16px;">
           <div style="font-size:11.5px; color:#1e293b; line-height:1.55;">
-            <div>• <strong>${usersWithErrorsCount}</strong> de <strong>${totalValidUsersCount}</strong> usuarios presentan fallas; <strong>${lockedUsersCount}</strong> con bloqueo de cuenta.</div>
+            <div>• <strong>${usersWithErrorsCount}</strong> de <strong>${totalValidUsersCount}</strong> usuarios presentan fallas; <strong>${lockedUsersCount}</strong> con bloqueo activo${recoveredLockCount > 0 ? ` (<strong>${recoveredLockCount}</strong> con bloqueo previo recuperado)` : ''}.</div>
             <div>• Errores <code>520xxxx</code>: <strong>${count520Total.toLocaleString()}</strong> • Auditoría <code>AUDxxx</code>: <strong>${countAudTotal.toLocaleString()}</strong> • Oracle <code>ORA</code>: <strong>${countOraTotal.toLocaleString()}</strong>.</div>
             <div>• Base de datos: <strong>${dbIncidentsReal === 0 ? 'SALUDABLE (0 errores ORA/JDBC)' : dbIncidentsReal + ' incidentes de persistencia'}</strong>.</div>
             <div>• Índice de salud de la muestra: <strong>${healthValStr}</strong>.</div>
@@ -4555,11 +4570,11 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
         let statusBadge = '';
         if (fErrors > 0) {
-          statusBadge = `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 8px; border-radius:12px; font-weight:800; font-size:10px;">🚨 ${fErrors.toLocaleString()} Fallos Críticos</span>`;
+          statusBadge = `<span style="display:inline-block; line-height:1.35; max-width:100%; white-space:normal; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:2px 8px; border-radius:12px; font-weight:800; font-size:10px;">🚨 ${fErrors.toLocaleString()} Fallos Críticos</span>`;
         } else if (fLower.includes('audit')) {
-          statusBadge = `<span style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">📋 Trazabilidad Audit</span>`;
+          statusBadge = `<span style="display:inline-block; line-height:1.35; max-width:100%; white-space:normal; background:#fef3c7; color:#92400e; border:1px solid #fde68a; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">📋 Trazabilidad Audit</span>`;
         } else {
-          statusBadge = `<span style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">✅ Nominal (0 Fallas)</span>`;
+          statusBadge = `<span style="display:inline-block; line-height:1.35; max-width:100%; white-space:normal; background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:2px 8px; border-radius:12px; font-weight:700; font-size:10px;">✅ Nominal (0 Fallas)</span>`;
         }
 
         filesTableRowsHtml += `
@@ -4664,7 +4679,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       const affectedUsersArr = Array.isArray(codeUsersEntry520) ? codeUsersEntry520 : (codeUsersEntry520.users || []);
       const affectedUsersTotal520 = Array.isArray(codeUsersEntry520) ? codeUsersEntry520.length : Math.max(affectedUsersArr.length, Number(codeUsersEntry520.uniqueUsersCount || 0));
       const userPills = affectedUsersArr.length > 0
-        ? affectedUsersArr.slice(0, 5).map(u => `<span style="background:#e0f2fe; color:#0369a1; padding:1px 5px; border-radius:3px; font-family:monospace; font-size:9px; font-weight:700; margin:1px;">👤 ${escapeHtml(u.user)} (${u.count}x)</span>`).join(' ') + (affectedUsersTotal520 > 5 ? ` <span style="font-size:9px; color:#64748b;">+${(affectedUsersTotal520 - 5).toLocaleString()} (${affectedUsersTotal520.toLocaleString()} totales)</span>` : '')
+        ? affectedUsersArr.slice(0, 5).map(u => `<span style="display:inline-block; line-height:1.35; max-width:100%; overflow-wrap:anywhere; word-break:break-word; background:#e0f2fe; color:#0369a1; padding:1px 5px; border-radius:3px; font-family:monospace; font-size:9px; font-weight:700; margin:1px;">👤 ${escapeHtml(u.user)} (${u.count}x)</span>`).join(' ') + (affectedUsersTotal520 > 5 ? ` <span style="font-size:9px; color:#64748b;">+${(affectedUsersTotal520 - 5).toLocaleString()} (${affectedUsersTotal520.toLocaleString()} totales)</span>` : '')
         : '<span style="font-size:9px; color:#64748b; font-family:monospace;">Sin usuario nominal / Error de socket de motor</span>';
 
       rows520Html += `
@@ -4675,7 +4690,9 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           </td>
           <td style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center;">
             <div style="font-family:monospace; font-size:14px; font-weight:900; color:#b91c1c;">${count.toLocaleString()}</div>
-            <div style="font-size:9.5px; color:#64748b; font-weight:600;">(${pctStr})</div>
+            ${Number(item.failCount || 0) > 0 && Number(item.count || 0) > Number(item.failCount || 0)
+              ? `<div style="font-size:9px; color:#64748b; font-weight:700; line-height:1.3;">fallos / ${Number(item.count).toLocaleString()} totales (${pctStr})</div>`
+              : `<div style="font-size:9.5px; color:#64748b; font-weight:600;">(${pctStr})</div>`}
           </td>
           <td style="padding:8px 6px; border:1px solid #cbd5e1; font-size:10.5px; color:#0f172a; line-height:1.45;">
             <strong style="color:#0a3d6d;">${escapeHtml(bDiag.title || code)}:</strong> ${escapeHtml(bDiag.meaning || '')}
@@ -4900,22 +4917,22 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
             8. ${i18n.sec3Title.replace(/^3\.\s*/, '').replace(/^5\.\s*/, '')}
           </h3>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px;">
-            <div style="background:#fef2f2; border:1px solid #f87171; border-top:4px solid #dc2626; border-radius:6px; padding:12px; font-size:11px;">
+          <div class="rpt-phase-grid" style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px; margin-bottom:16px;">
+            <div class="rpt-phase-card" style="min-width:0; overflow-wrap:anywhere; word-break:break-word; box-sizing:border-box; background:#fef2f2; border:1px solid #f87171; border-top:4px solid #dc2626; border-radius:6px; padding:12px; font-size:11px;">
               <div style="font-weight:900; color:#991b1b; font-size:11.5px; margin-bottom:6px;">${i18n.phase1Title}</div>
-              <div style="color:#334155; line-height:1.4;">
+              <div style="color:#334155; line-height:1.45;">
                 ${dynamicPhase1Html}
               </div>
             </div>
-            <div style="background:#fffbeb; border:1px solid #fcd34d; border-top:4px solid #d97706; border-radius:6px; padding:12px; font-size:11px;">
+            <div class="rpt-phase-card" style="min-width:0; overflow-wrap:anywhere; word-break:break-word; box-sizing:border-box; background:#fffbeb; border:1px solid #fcd34d; border-top:4px solid #d97706; border-radius:6px; padding:12px; font-size:11px;">
               <div style="font-weight:900; color:#92400e; font-size:11.5px; margin-bottom:6px;">${i18n.phase2Title}</div>
-              <div style="color:#334155; line-height:1.4;">
+              <div style="color:#334155; line-height:1.45;">
                 ${dynamicPhase2Html}
               </div>
             </div>
-            <div style="background:#f0fdf4; border:1px solid #86efac; border-top:4px solid #16a34a; border-radius:6px; padding:12px; font-size:11px;">
+            <div class="rpt-phase-card" style="min-width:0; overflow-wrap:anywhere; word-break:break-word; box-sizing:border-box; background:#f0fdf4; border:1px solid #86efac; border-top:4px solid #16a34a; border-radius:6px; padding:12px; font-size:11px;">
               <div style="font-weight:900; color:#166534; font-size:11.5px; margin-bottom:6px;">${i18n.phase3Title}</div>
-              <div style="color:#334155; line-height:1.4;">
+              <div style="color:#334155; line-height:1.45;">
                 ${dynamicPhase3Html}
               </div>
             </div>
@@ -4966,7 +4983,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
             if (!matched.length) return '';
             return `
               <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:6px; padding:14px; margin-bottom:20px; font-size:11px; page-break-inside:avoid;">
-                <h3 style="color:#0369a1; margin:0 0 8px 0; font-size:13.5px;">11. Notas Técnicas &amp; Runbooks Internos Aplicables</h3>
+                <h3 style="color:#0369a1; margin:0 0 8px 0; font-size:13.5px;">10. Notas Técnicas &amp; Runbooks Internos Aplicables</h3>
                 ${matched.map(n => `<div style="margin-bottom:6px;"><strong>📌 [${escapeHtml(n.category)}] ${escapeHtml(n.title)}</strong> (${escapeHtml((n.tags || []).join(', '))}): ${escapeHtml((n.content || '').slice(0, 260))}</div>`).join('')}
               </div>`;
           })()}
@@ -5238,31 +5255,64 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       ? (isEn ? 'Entrust IDaaS Cloud Console' : 'Consola Entrust IDaaS Cloud') 
       : (isEn ? 'Entrust IdentityGuard Administration Console' : 'Consola de Administración Entrust IdentityGuard OnPremise');
 
-    function getDetectedCodes(regex) {
+    const NON_FAILURE_REC_CODES = new Set([
+      'TOMCAT_INFO', 'TOMCAT_LIFECYCLE', 'TOMCAT_CLIENT_ABORT',
+      'SYSTEM_LOG', 'ENTRUST_LOG', 'JDBC',
+      'AUD4003', 'AUD4004', 'AUD6000', 'AUD1000', 'AUD2000', 'AUD3004', 'SSH-AUTH'
+    ]);
+
+    function getDetectedCodes(codeRegex, msgRegex = null, allowTomcat = false) {
       const set = new Set();
-      targetLogs.forEach(l => {
-        const msg = `${l.entrustCode || ''} ${l.message || ''}`;
-        if (regex.test(msg)) {
-          const match = msg.match(/(?:\[|\b)(5(?:2\d{4,5}|[013-9]\d{5})|AUD\d{2,5}|ORA-\d{4,5}|JDBC_SQL_EXCEPTION|JVM_OOM|TOMCAT_[A-Z_]+)(?:\]|\b)/i);
-          if (match) set.add(match[1].toUpperCase());
-        }
-      });
+      const acceptCode = (rawCode) => {
+        const up = String(rawCode || '').trim().toUpperCase();
+        if (!up || NON_FAILURE_REC_CODES.has(up)) return;
+        if (!allowTomcat && /^(?:TOMCAT_|JVM_)/i.test(up)) return;
+        if (codeRegex.test(up)) set.add(up);
+      };
       (state.globalStreamMetrics?.topCodes || []).forEach(c => {
-        if (c && c.code && regex.test(c.code)) set.add(String(c.code).toUpperCase());
+        if (c && c.code) acceptCode(c.code);
       });
       (window.UserTraceReport?.forensicMatrixData?.codeMatrix || []).forEach(cm => {
-        if (cm && cm.code && regex.test(cm.code)) set.add(String(cm.code).toUpperCase());
+        if (cm && cm.code) acceptCode(cm.code);
+      });
+      targetLogs.forEach(l => {
+        const rawCode = String(l.entrustCode || l.type || '').trim();
+        const up = rawCode.toUpperCase();
+        if (up && !NON_FAILURE_REC_CODES.has(up)) {
+          acceptCode(up);
+        }
+        const lvlU = String(l.level || '').toUpperCase();
+        const isErrOrWarn = lvlU === 'CRITICAL' || lvlU === 'ERROR' || lvlU === 'WARN' || lvlU === 'WARNING';
+        if (isErrOrWarn && msgRegex && (!up || allowTomcat || !/^(?:TOMCAT_|JVM_)/i.test(up))) {
+          const msg = `${l.message || ''} ${l.raw || ''}`;
+          if (msgRegex.test(msg)) {
+            const match = msg.match(/(?:\[|\b)(5(?:2\d{4,5}|[013-9]\d{5})|AUD\d{2,5}|ORA-\d{4,5}|JDBC_SQL_EXCEPTION|JVM_OOM|TOMCAT_[A-Z_]+)(?:\]|\b)/i);
+            if (match) acceptCode(match[1]);
+          }
+        }
       });
       return Array.from(set);
     }
 
-    const authCodes = getDetectedCodes(/(5202013|5205079|5203016|5203113|5205150|5203019|5203020|5205080|AUD6001|AUD6002|Invalid user ID|password|does not have a password|one-time password|failed authentication|locked out)/i);
-    const notFoundCodes = getDetectedCodes(/(5205139|5203004|Unable to find a user|User.*not found)/i);
-    const gridPinCodes = getDetectedCodes(/(5201006|5201007|5201008|5201010|5203000|5203007|5203033|5202057|5202050|Card does not match|PIN|Challenge|Grid)/i);
-    const apiCodes = getDetectedCodes(/(5202340|Authorization Failure)/i);
-    const dbCodes = getDetectedCodes(/(AUD154|AUD155|AUD150|5201000|5202404|JDBC_SQL_EXCEPTION|SQL_EXCEPTION|Connection pool|exhaustion|SQLException)/i);
-    const pushCodes = getDetectedCodes(/(AUD2309|5209525|Failed delivery|Push)/i);
-    const samlCodes = getDetectedCodes(/(SAML|OIDC|OAuth2|Assertion|X509|Certificate)/i);
+    const authCodes = getDetectedCodes(
+      /^(?:5202013|5202014|5205079|5205080|5201053|5203016|5203112|5203113|5205150|5203019|5203020|AUD6001|AUD6002)$/,
+      /\b(?:Invalid user ID or password|does not have a password|password authentication failed|failed authentication|locked out)\b/i
+    );
+    const notFoundCodes = getDetectedCodes(
+      /^(?:5205003|5205139|5203004)$/,
+      /\b(?:Unable to find a user for user name or alias|User .* not found)\b/i
+    );
+    const gridPinCodes = getDetectedCodes(
+      /^(?:5201006|5201007|5201008|5201010|5203000|5203007|5203033|5202057|5202050|5205145|5205255)$/,
+      /\b(?:Invalid response to a challenge|Card does not match|token library error|invalid token response)\b/i
+    );
+    const apiCodes = getDetectedCodes(/^(?:5202340)$/, /\bAuthorization Failure\b/i);
+    const dbCodes = getDetectedCodes(
+      /^(?:AUD154|AUD155|AUD150|5201000|5202404|ORA-\d+|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)$/,
+      /\b(?:Connection pool|SQLException|JdbcCardRepository|BlobAccess)\b/i
+    );
+    const pushCodes = getDetectedCodes(/^(?:AUD2309|5209525|AUD5106)$/, /\b(?:Failed delivery|Transaction Verification)\b/i);
+    const samlCodes = getDetectedCodes(/(?:SAML|OIDC|OAuth2|AUD160)/i, /\b(?:Assertion|X\.?509)\b/i);
 
     const hasMetricCode = (re) => (
       targetLogs.some(l => re.test(`${l.entrustCode || ''} ${l.message || ''}`)) ||
@@ -5274,6 +5324,8 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const hasTomcatSsl = hasMetricCode(/\bTOMCAT_SSL_TLS\b|SSLHandshakeException|PKIX path building failed|KeyStoreException/i);
     const hasTomcatLdap = hasMetricCode(/\bTOMCAT_LDAP_ERROR\b|LDAPException|javax\.naming\.CommunicationException/i);
     const hasTomcatDeploy = hasMetricCode(/\bTOMCAT_DEPLOY_ERROR\b|LifecycleException|Error listenerStart|ClassNotFoundException/i);
+    const hasTomcatPool = hasMetricCode(/\bTOMCAT_THREAD_POOL\b|StuckThreadDetectionValve/i);
+    const hasTomcatJavaExc = hasMetricCode(/\bTOMCAT_JAVA_EXCEPTION\b|\bTOMCAT_SEVERE\b/i);
 
     const isMigration = isCloud && (targetLogs.some(l => /bulkidentityguard|\.assignedgrid/i.test(l.message || '') || /bulkidentityguard|\.assignedgrid/i.test(l.raw || '')) || (state.globalStreamMetrics?.topCodes || []).some(c => c.code.includes('bulkidentityguard')));
 
@@ -5312,9 +5364,9 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     if (gridPinCodes.length > 0 && !isMigration) {
       const codeStr = gridPinCodes.join(' / ');
       if (isEn) {
-        items.push(`<li><strong>Grid Card / PIN Reassignment & Audit:</strong> Challenge-response discrepancies recorded (code(s) ${codeStr}). Validate active Grid serial sequences assigned to users. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} Security Guide: Section 5.4 - Challenge-Response & Grid Management)</em></li>`);
+        items.push(`<li><strong>MFA Challenge Validation (Q&amp;A / OTP / Grid Cards / Tokens):</strong> Challenge-response discrepancies, token sync issues, or invalid card/serial responses recorded (code(s) ${codeStr}). Validate active Grid/Token assignments, NTP clock sync, and remaining challenge attempts. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} Security Guide: Challenge-Response, Tokens &amp; Grid Management)</em></li>`);
       } else {
-        items.push(`<li><strong>Reasignación y Auditoría de Tarjetas Grid / PIN:</strong> Se registraron incoherencias entre los desafíos y las respuestas enviadas (código(s) ${codeStr}). Se recomienda validar las series de tarjetas Grid activas asignadas a los usuarios y capacitar en el ingreso de celdas. <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad ${platformTitle}: Sección 5.4 - Challenge-Response & Grid Management)</em></li>`);
+        items.push(`<li><strong>Validación de Desafíos MFA (Q&amp;A / OTP / Tarjetas Grid / Tokens):</strong> Se registraron rechazos de desafío de autenticación, desfase de OTP o errores de serial/librería de tokens (código(s) ${codeStr}). Se recomienda revisar la asignación/sincronización de tokens y orientar a los usuarios en las respuestas de desafío (Q&amp;A / OTP / Grid). <em style="color:#64748b; font-size:11px;">(Ref. Guía de Seguridad ${platformTitle}: Challenge-Response, Tokens &amp; Grid Management)</em></li>`);
       }
     }
 
@@ -5354,7 +5406,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       }
     }
 
-    if (hasTomcatOom || hasTomcatSsl || hasTomcatLdap || hasTomcatDeploy) {
+    if (hasTomcatOom || hasTomcatSsl || hasTomcatLdap || hasTomcatDeploy || hasTomcatPool || hasTomcatJavaExc) {
       const repDocVer = (window.knowledgeBaseEngine && typeof window.knowledgeBaseEngine._normalizeDocVersionLabel === 'function')
         ? window.knowledgeBaseEngine._normalizeDocVersionLabel(`${activeClient?.platform || ''} ${activeClient?.version || ''}`)
         : (/12/i.test(activeClient?.version || '') ? 'IG 12.0' : (/11/i.test(activeClient?.version || '') ? 'IG 11.0' : 'IG 13.0'));
@@ -5416,6 +5468,22 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           items.push(`<li><strong>Tomcat Component Startup &amp; Driver JAR Placement:</strong> Detected <code>TOMCAT_DEPLOY_ERROR</code>. Confirm required JDBC JARs exist in both <code>$IG_HOME/lib/db</code> and <code>$CATALINA_HOME/lib</code>, and ensure <code>$IG_HOME/etc/keystore</code> keeps at least one trusted certificate.${refHtml}</li>`);
         } else {
           items.push(`<li><strong>Arranque de Componentes Tomcat y Drivers JAR:</strong> Se detectaron errores <code>TOMCAT_DEPLOY_ERROR</code>. Validar que los drivers JAR estén en <code>$IG_HOME/lib/db</code> y <code>$CATALINA_HOME/lib</code>, y confirmar que <code>$IG_HOME/etc/keystore</code> mantenga al menos un certificado confiable.${refHtml}</li>`);
+        }
+      }
+
+      if (hasTomcatPool) {
+        if (isEn) {
+          items.push(`<li><strong>Tomcat Thread Pool &amp; StuckThread Remediation:</strong> Detected <code>TOMCAT_THREAD_POOL</code> (blocked/slow worker threads in <code>catalina.out</code>). Correlate stuck thread timestamps against external LDAP/DB latency, tune <code>maxThreads</code> / <code>interruptThreadThreshold</code> in Tomcat <code>server.xml</code>, and enforce downstream connection/read timeouts. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} &amp; Tomcat Catalina Thread Tuning)</em></li>`);
+        } else {
+          items.push(`<li><strong>Contención de Hilos en Tomcat (<code>TOMCAT_THREAD_POOL</code> / <code>StuckThreadDetectionValve</code>):</strong> Se detectaron hilos bloqueados o en espera prolongada de dependencias externas (BD/LDAP). Correlacionar las horas exactas de atasco en <code>catalina.out</code>, ajustar <code>maxThreads</code> y timeouts hacia LDAP/Oracle DB para evitar saturación en nodos con alta concentración de fallos. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} &amp; Afinamiento de Contenedor Tomcat Catalina)</em></li>`);
+        }
+      }
+
+      if (hasTomcatJavaExc) {
+        if (isEn) {
+          items.push(`<li><strong>Application / Servlet Exception Containment (<code>TOMCAT_JAVA_EXCEPTION</code>):</strong> Unhandled Java/Tomcat exceptions detected in <code>catalina.out</code>. Inspect root stack frames and affected endpoints on overloaded nodes to remediate recurring runtime faults. <em style="color:#64748b; font-size:11px;">(Ref. ${platformTitle} Catalina Diagnostics)</em></li>`);
+        } else {
+          items.push(`<li><strong>Depuración de Excepciones Java en Catalina (<code>TOMCAT_JAVA_EXCEPTION / TOMCAT_SEVERE</code>):</strong> Revisar los <em>root stack frames</em> concentrados en <code>catalina.out</code> y validar el balanceo/estado de servicios en el nodo con mayor densidad de excepciones para eliminar la causa recurrente en la capa de aplicación. <em style="color:#64748b; font-size:11px;">(Ref. Diagnóstico de Contenedor ${platformTitle})</em></li>`);
         }
       }
     }
