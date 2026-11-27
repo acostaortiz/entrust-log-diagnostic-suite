@@ -31,6 +31,7 @@ if (typeof escapeHtml === 'undefined') {
      */
     generateCef(logs = [], activeClient = null) {
       const clientName = activeClient ? activeClient.name : 'Entrust';
+      const clientVer = (activeClient && activeClient.version) ? activeClient.version : '12.0';
       let cefContent = '';
 
       logs.forEach(l => {
@@ -39,9 +40,9 @@ if (typeof escapeHtml === 'undefined') {
         const code = l.entrustCode || 'GENERIC';
         const msg = (l.message || '').replace(/\|/g, '\\|');
         const user = l.user || l.userId || 'unknown';
-        const ip = l.ip || '10.16.13.175';
+        const ip = l.clientIp || l.ip || 'local';
 
-        cefContent += `CEF:0|Entrust|IdentityGuard|13.0|${code}|${code}|${sev}|src=${ip} suser=${user} cs1Label=Client cs1=${clientName} msg=${msg} rt=${dateStr}\n`;
+        cefContent += `CEF:0|Entrust|IdentityGuard|${clientVer}|${code}|${code}|${sev}|src=${ip} suser=${user} cs1Label=Client cs1=${clientName} msg=${msg} rt=${dateStr}\n`;
       });
 
       return cefContent;
@@ -52,6 +53,7 @@ if (typeof escapeHtml === 'undefined') {
      */
     generateEcsJson(logs = [], activeClient = null) {
       const clientName = activeClient ? activeClient.name : 'Entrust';
+      const clientVer = (activeClient && activeClient.version) ? activeClient.version : '12.0';
       const ecsEvents = logs.map((l, idx) => ({
         '@timestamp': l.timestamp || new Date().toISOString(),
         'ecs.version': '8.11.0',
@@ -64,13 +66,13 @@ if (typeof escapeHtml === 'undefined') {
         },
         'service': {
           'name': 'Entrust IdentityGuard',
-          'version': activeClient ? activeClient.version : '13.0'
+          'version': clientVer
         },
         'user': {
           'name': l.user || l.userId || 'system'
         },
         'source': {
-          'ip': l.ip || '10.16.13.175'
+          'ip': l.clientIp || l.ip || 'local'
         },
         'organization': {
           'name': clientName

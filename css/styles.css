@@ -997,38 +997,31 @@ body.dark-theme .text-cyan { color: #38bdf8; }
 
 /* Reglas generales para el Contenedor del Informe Ejecutivo en Pantalla */
 #exec-report-container {
-  background: #ffffff !important;
-  color: #0f172a !important;
+  background: #ffffff;
+  color: #0f172a;
   padding: 18px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.15);
 }
 
-#exec-report-container * {
-  color: #0f172a;
-}
-
 #exec-report-container h1,
-#exec-report-container h2,
-#exec-report-container h3,
-#exec-report-container h4 {
-  color: #0a3d6d !important;
+#exec-report-container h2 {
+  color: #0a3d6d;
 }
 
-#exec-report-container table th {
-  background: #0a3d6d !important;
-  color: #ffffff !important;
+#exec-report-container table thead tr:not([style*="background"]) th {
+  background: #0a3d6d;
+  color: #ffffff;
 }
 
 #exec-report-container table td {
-  color: #0f172a !important;
+  color: #0f172a;
 }
 
 #exec-report-container .raw-box,
-#exec-report-container pre,
-#exec-report-container code {
-  color: #a5f3fc !important;
-  background: #0f172a !important;
+#exec-report-container pre {
+  color: #a5f3fc;
+  background: #0f172a;
 }
 
 /* Animaciones y estilos de la Topología Transaccional */
@@ -1251,16 +1244,16 @@ body.dark-theme .nav-btn.active {
 #exec-report-document code,
 .report-table code,
 .glass-card code {
-  background: #f1f5f9 !important;
-  color: #0369a1 !important;
-  border: 1px solid #cbd5e1 !important;
-  padding: 2px 6px !important;
-  border-radius: 4px !important;
-  font-family: 'JetBrains Mono', Consolas, monospace !important;
-  font-size: 0.84em !important;
-  font-weight: 600 !important;
-  white-space: normal !important;
-  display: inline !important;
+  background: #f1f5f9;
+  color: #0369a1;
+  border: 1px solid #cbd5e1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.84em;
+  font-weight: 600;
+  white-space: normal;
+  display: inline;
 }
 
 #exec-report-document a {
@@ -1323,16 +1316,16 @@ body.dark-theme .nav-btn.active {
 #exec-report-document code,
 .report-table code,
 .glass-card code {
-  padding: 1px 5px !important;
-  margin: 1px 0 !important;
-  line-height: 1.35 !important;
-  max-width: 100% !important;
-  white-space: normal !important;
-  overflow-wrap: anywhere !important;
-  word-break: break-word !important;
-  vertical-align: baseline !important;
-  box-sizing: border-box !important;
-  display: inline-block !important;
+  padding: 1px 5px;
+  margin: 1px 0;
+  line-height: 1.35;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  vertical-align: baseline;
+  box-sizing: border-box;
+  display: inline-block;
 }
 
 .report-table th,

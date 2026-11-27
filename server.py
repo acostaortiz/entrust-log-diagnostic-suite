@@ -35,7 +35,7 @@ UPLOADS_DIR = os.path.join(DATA_DIR, 'uploads')
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
-SERVER_CODE_VERSION = 'v3.16.3'
+SERVER_CODE_VERSION = 'v3.17.0'
 SERVER_START_TIME = time.time()
 DEFAULT_DB_PATH = None
 ACTIVE_DB_PATH = None
@@ -2107,13 +2107,20 @@ def recompute_sqlite_stats_obj(cur, target_db, client_name, loaded_files):
     cur.execute(
         "SELECT SUBSTR(event_time, 1, 13) AS hb, COUNT(1) AS tot, "
         "SUM(CASE WHEN UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%' THEN 1 ELSE 0 END) AS errs, "
-        "SUM(CASE WHEN UPPER(event_outcome) NOT LIKE '%FAIL%' AND UPPER(event_outcome) NOT LIKE '%ERR%' THEN 1 ELSE 0 END) AS inf "
+        "SUM(CASE WHEN NOT (UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%') "
+        "AND (UPPER(event_outcome) LIKE '%WARN%' OR UPPER(event_type) LIKE 'AUD%') THEN 1 ELSE 0 END) AS warns "
         "FROM logs "
         "WHERE event_time GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*' AND LENGTH(event_time) >= 13 "
         "GROUP BY hb ORDER BY hb ASC LIMIT 2000"
     )
     timeline_buckets_list = [
-        {'bucket': r[0], 'total': int(r[1] or 0), 'errors': int(r[2] or 0), 'info': int(r[3] or 0)}
+        {
+            'bucket': r[0],
+            'total': int(r[1] or 0),
+            'errors': int(r[2] or 0),
+            'warnings': int(r[3] or 0),
+            'info': max(0, int(r[1] or 0) - int(r[2] or 0) - int(r[3] or 0))
+        }
         for r in cur.fetchall() if r[0]
     ]
 
@@ -2185,7 +2192,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
         ip_counts = collections.Counter()
         code_counts = collections.Counter()
         type_counts = collections.Counter()
-        hour_counts = collections.defaultdict(lambda: {'total': 0, 'errors': 0, 'info': 0})
+        hour_counts = collections.defaultdict(lambda: {'total': 0, 'errors': 0, 'warnings': 0, 'info': 0})
         is_idaas = False
 
         line_num = 0
@@ -2230,9 +2237,14 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
                         for b in (existing_stats.get('timelineBuckets') or []):
                             bk = b.get('bucket')
                             if bk:
-                                hour_counts[bk]['total'] += int(b.get('total', 0) or 0)
-                                hour_counts[bk]['errors'] += int(b.get('errors', 0) or 0)
-                                hour_counts[bk]['info'] += int(b.get('info', 0) or 0)
+                                b_tot = int(b.get('total', 0) or 0)
+                                b_err = int(b.get('errors', 0) or 0)
+                                b_warn = int(b.get('warnings', 0) or 0)
+                                b_info = int(b['info']) if 'info' in b and 'warnings' in b else max(0, b_tot - b_err - b_warn)
+                                hour_counts[bk]['total'] += b_tot
+                                hour_counts[bk]['errors'] += b_err
+                                hour_counts[bk]['warnings'] += b_warn
+                                hour_counts[bk]['info'] += b_info
                 conn_prev.close()
             except Exception as merge_err:
                 print(f"Aviso leyendo stats previos para merge: {merge_err}")
@@ -2355,6 +2367,8 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
                 hour_counts[h_bucket]['total'] += 1
                 if is_err:
                     hour_counts[h_bucket]['errors'] += 1
+                elif is_warn:
+                    hour_counts[h_bucket]['warnings'] += 1
                 else:
                     hour_counts[h_bucket]['info'] += 1
 
@@ -2555,7 +2569,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             ][:200]
             top_ips_list = [{'ip': k, 'count': v} for k, v in ip_counts.most_common(150)]
             timeline_buckets_list = [
-                {'bucket': k, 'total': v['total'], 'errors': v['errors'], 'info': v['info']}
+                {'bucket': k, 'total': v['total'], 'errors': v['errors'], 'warnings': v['warnings'], 'info': v['info']}
                 for k, v in sorted(hour_counts.items())[:2000]
             ]
             stats_obj = {
@@ -2581,7 +2595,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             }
         cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
         cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_obj, ensure_ascii=False)))
-        cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4', 'forensic_matrix_v5', 'forensic_matrix_v6')")
+        cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4', 'forensic_matrix_v5', 'forensic_matrix_v6', 'forensic_matrix_v7')")
         conn.commit()
         conn.close()
 
@@ -3437,7 +3451,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             cur = conn.cursor()
             cur.execute('SELECT COUNT(1) FROM logs')
             records = cur.fetchone()[0]
-            cur.execute('SELECT COUNT(1) FROM logs WHERE event_outcome LIKE ?', ('%FAIL%',))
+            cur.execute("SELECT COUNT(1) FROM logs WHERE UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%'")
             errors = cur.fetchone()[0]
             conn.close()
         except Exception:
@@ -3471,7 +3485,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'zero-omission-315',
                 'multiline-fold-316',
                 'server-filter-316',
-                'export-logs-csv-316'
+                'export-logs-csv-316',
+                'full-audit-317'
             ],
             'serverUptimeSeconds': round(time.time() - SERVER_START_TIME, 1) if 'SERVER_START_TIME' in globals() else 0,
             'pythonVersion': sys.version.split()[0],
@@ -3491,7 +3506,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             rev_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=BASE_DIR, stderr=subprocess.DEVNULL).decode('utf-8').strip()
             rev_date = subprocess.check_output(['git', 'log', '-1', '--format=%cd', '--date=format:%Y-%m-%d %H:%M'], cwd=BASE_DIR, stderr=subprocess.DEVNULL).decode('utf-8').strip()
             if rev_cnt:
-                version_data['build'] = int(rev_cnt) + 350
+                version_data['build'] = max(int(version_data.get('build') or 0), int(rev_cnt) + 350)
                 version_data['gitCommit'] = rev_hash
                 version_data['buildDate'] = rev_date
         except Exception:
@@ -3616,7 +3631,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                             cur = conn.cursor()
                             cur.execute('SELECT COUNT(1) FROM logs')
                             records = cur.fetchone()[0]
-                            cur.execute('SELECT COUNT(1) FROM logs WHERE event_outcome LIKE ?', ('%FAIL%',))
+                            cur.execute("SELECT COUNT(1) FROM logs WHERE UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%'")
                             errors = cur.fetchone()[0]
                             conn.close()
                         except Exception:
@@ -3750,7 +3765,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     cur = conn.cursor()
                     cur.execute('SELECT COUNT(1) FROM logs')
                     records = cur.fetchone()[0]
-                    cur.execute('SELECT COUNT(1) FROM logs WHERE event_outcome LIKE ?', ('%FAIL%',))
+                    cur.execute("SELECT COUNT(1) FROM logs WHERE UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%'")
                     errors = cur.fetchone()[0]
                     conn.close()
                     
@@ -3925,8 +3940,14 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             cur.execute('SELECT COUNT(1) FROM logs')
             total = cur.fetchone()[0]
 
-            cur.execute('SELECT COUNT(1) FROM logs WHERE event_outcome LIKE ?', ('%FAIL%',))
+            cur.execute("SELECT COUNT(1) FROM logs WHERE UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%'")
             errors = cur.fetchone()[0]
+
+            cur.execute(
+                "SELECT COUNT(1) FROM logs WHERE NOT (UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%') "
+                "AND (UPPER(event_outcome) LIKE '%WARN%' OR UPPER(event_type) LIKE 'AUD%')"
+            )
+            warnings = cur.fetchone()[0]
 
             # 1. Agrupación precisa de tipos de eventos
             cur.execute('SELECT event_type, COUNT(1) FROM logs GROUP BY event_type ORDER BY COUNT(1) DESC LIMIT 1000')
@@ -3971,15 +3992,25 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 SELECT 
                     SUBSTR(event_time, 1, 13) as hour_bucket,
                     COUNT(1) as total_events,
-                    SUM(CASE WHEN event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%' THEN 1 ELSE 0 END) as error_events,
-                    SUM(CASE WHEN event_outcome = 'SUCCESS' OR event_outcome = 'INFO' THEN 1 ELSE 0 END) as info_events
+                    SUM(CASE WHEN UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%' THEN 1 ELSE 0 END) as error_events,
+                    SUM(CASE WHEN NOT (UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%')
+                        AND (UPPER(event_outcome) LIKE '%WARN%' OR UPPER(event_type) LIKE 'AUD%') THEN 1 ELSE 0 END) as warn_events
                 FROM logs
                 WHERE event_time IS NOT NULL AND event_time != ''
                 GROUP BY hour_bucket
                 ORDER BY hour_bucket ASC
                 LIMIT 2000
             ''')
-            timeline_buckets = [{'bucket': r[0], 'total': r[1], 'errors': r[2] or 0, 'info': r[3] or 0} for r in cur.fetchall()]
+            timeline_buckets = [
+                {
+                    'bucket': r[0],
+                    'total': int(r[1] or 0),
+                    'errors': int(r[2] or 0),
+                    'warnings': int(r[3] or 0),
+                    'info': max(0, int(r[1] or 0) - int(r[2] or 0) - int(r[3] or 0))
+                }
+                for r in cur.fetchall()
+            ]
 
             # 6. Detección automática de entorno (IDaaS Cloud vs OnPremise)
             cur.execute("SELECT 1 FROM logs WHERE event_type LIKE '%Bulkidentityguard%' OR message LIKE '%bulkidentityguard%' LIMIT 1")
@@ -3993,7 +4024,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'status': 'ready',
                 'totalLogs': total,
                 'totalErrors': errors,
-                'totalWarnings': 0,
+                'totalWarnings': warnings,
                 'totalSuccess': total - errors,
                 'totalUniqueCodes': exact_c,
                 'totalUniqueUsers': exact_u,
@@ -4094,7 +4125,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             client_display = stats_cached.get('client') or client_param or 'Entrust Client'
             stats_obj = recompute_sqlite_stats_obj(cur, db, client_display, remaining)
             cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_obj, ensure_ascii=False)))
-            cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4', 'forensic_matrix_v5', 'forensic_matrix_v6')")
+            cur.execute("DELETE FROM server_stats WHERE key IN ('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4', 'forensic_matrix_v5', 'forensic_matrix_v6', 'forensic_matrix_v7')")
             conn.commit()
             conn.close()
 
@@ -4552,6 +4583,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         client_param = query.get('client', [None])[0]
         q_filter = query.get('q', [''])[0].strip()
         outcome_filter = query.get('filter', ['all'])[0].strip().lower()
+        server_param = (query.get('server', ['ALL'])[0] or 'ALL').strip()
         page = max(1, int(query.get('page', ['1'])[0]))
         limit = min(500, max(10, int(query.get('limit', ['100'])[0])))
         db = resolve_client_db(client_param)
@@ -4563,7 +4595,12 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
         try:
             conn = sqlite3.connect(db, timeout=30.0)
             cur = conn.cursor()
-            users_all = aggregate_sqlite_users(cur, q_filter=q_filter, outcome_filter=outcome_filter)
+            cur.execute('PRAGMA busy_timeout = 30000;')
+            line_ranges = None
+            if server_param and server_param.upper() != 'ALL':
+                intervals, _ = _load_session_file_intervals(cur)
+                line_ranges = _match_server_ranges(server_param, intervals)
+            users_all = aggregate_sqlite_users(cur, q_filter=q_filter, outcome_filter=outcome_filter, line_ranges=line_ranges)
             conn.close()
 
             total_matching = len(users_all)
@@ -4577,6 +4614,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     'errors': u['errors'],
                     'success': u['success'],
                     'isLocked': u['isLocked'],
+                    'hadHistoricalLock': bool(u.get('hadHistoricalLock')),
                     'firstSeen': u['firstSeen'],
                     'lastSeen': u['lastSeen'],
                     'ips': sorted(u['ips'])[:5],
@@ -4697,7 +4735,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
 
             cur.execute('CREATE TABLE IF NOT EXISTS server_stats (key TEXT PRIMARY KEY, value TEXT)')
             if not refresh:
-                cur.execute("SELECT value FROM server_stats WHERE key='forensic_matrix_v6'")
+                cur.execute("SELECT value FROM server_stats WHERE key='forensic_matrix_v7'")
                 cached_row = cur.fetchone()
                 if cached_row and cached_row[0]:
                     cached_payload = json.loads(cached_row[0])
@@ -4710,7 +4748,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             cur.execute('SELECT COUNT(1) FROM logs')
             total_logs = cur.fetchone()[0] or 0
 
-            cur.execute("SELECT COUNT(1) FROM logs WHERE event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%'")
+            cur.execute("SELECT COUNT(1) FROM logs WHERE UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%'")
             total_errors = cur.fetchone()[0] or 0
 
             # 1. Aggregated (subject_name, event_type, event_outcome) across the DB
@@ -4749,7 +4787,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                         kind = 'ERROR_520'
                     elif re.match(r'^AUD\d{2,5}$', code, re.IGNORECASE) or 'AUDIT' in code.upper():
                         kind = 'AUDIT_AUD'
-                    elif code.startswith('ORA-') or 'SQL' in code.upper() or 'JDBC' in code.upper():
+                    elif code.upper().startswith('ORA-') or code.upper() in ('JDBC_SQL_EXCEPTION', 'SQL_EXCEPTION'):
                         kind = 'DATABASE_ORA'
                     elif code.startswith('TOMCAT_') or code.startswith('JVM_'):
                         kind = 'TOMCAT_JVM'
@@ -4851,10 +4889,35 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                         filtered_noise_users.add(subj_str)
                         filtered_noise_events += cnt
 
-            # 2. Sort top 600 valid users (prioritizing users with errors or high interaction volume)
+            # 2. Compute lock recovery across ALL valid users BEFORE slicing top 600
+            active_locked_total = 0
+            recovered_locked_total = 0
+            for u_obj in users_map.values():
+                has_lc = bool(u_obj.get('hasLockCode')) or any(_LOCK_CODE_RE.search(ck) for ck in u_obj['codes'].keys())
+                act_lock, rec_lock = _compute_lock_recovery_state(
+                    has_lc,
+                    u_obj['success'],
+                    u_obj.get('lastLockLine', 0),
+                    u_obj.get('lastSuccessLine', 0),
+                    u_obj.get('lastLockTime', ''),
+                    u_obj.get('lastSuccessTime', ''),
+                )
+                u_obj['_hasLockCode'] = has_lc
+                u_obj['_isLocked'] = act_lock
+                u_obj['_hadHistoricalLock'] = rec_lock
+                if act_lock:
+                    active_locked_total += 1
+                elif rec_lock:
+                    recovered_locked_total += 1
+
             sorted_users = sorted(
                 users_map.values(),
-                key=lambda u: (1 if u['errors'] > 0 else 0, u['errors'], u['total']),
+                key=lambda u: (
+                    2 if u.get('_isLocked') else (1 if u.get('_hadHistoricalLock') else 0),
+                    1 if u['errors'] > 0 else 0,
+                    u['errors'],
+                    u['total']
+                ),
                 reverse=True
             )
             top_users_subset = sorted_users[:600]
@@ -4960,15 +5023,18 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                     pattern_category = '✅ Operación Nominal Limpia (100% Éxito)'
                     pattern_root_cause = 'Todas las solicitudes registradas para este usuario finalizaron con estado SUCCESS.'
 
-                has_lock_code = bool(u.get('hasLockCode')) or any(_LOCK_CODE_RE.search(ck) for ck in u['codes'].keys())
-                is_actively_locked, had_historical_lock = _compute_lock_recovery_state(
-                    has_lock_code,
-                    u['success'],
-                    u.get('lastLockLine', 0),
-                    u.get('lastSuccessLine', 0),
-                    u.get('lastLockTime', ''),
-                    u.get('lastSuccessTime', ''),
-                )
+                has_lock_code = bool(u.get('_hasLockCode')) if '_hasLockCode' in u else (bool(u.get('hasLockCode')) or any(_LOCK_CODE_RE.search(ck) for ck in u['codes'].keys()))
+                is_actively_locked = bool(u.get('_isLocked')) if '_isLocked' in u else False
+                had_historical_lock = bool(u.get('_hadHistoricalLock')) if '_hadHistoricalLock' in u else False
+                if '_isLocked' not in u:
+                    is_actively_locked, had_historical_lock = _compute_lock_recovery_state(
+                        has_lock_code,
+                        u['success'],
+                        u.get('lastLockLine', 0),
+                        u.get('lastSuccessLine', 0),
+                        u.get('lastLockTime', ''),
+                        u.get('lastSuccessTime', ''),
+                    )
 
                 cluster_key = f"{pattern_category}||{normalized_sig}"
                 if cluster_key not in pattern_clusters_map:
@@ -5038,19 +5104,32 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 })
             code_matrix.sort(key=lambda x: (1 if x['failCount'] > 0 else 0, x['totalInteractions']), reverse=True)
 
-            # 6. Database Health & Oracle/JDBC/SQLite Diagnostic
+            # 6. Database Health & Oracle/JDBC/SQLite Diagnostic (mutually exclusive per row -> 0 double-counting)
             cur.execute('''
                 SELECT
-                    SUM(CASE WHEN event_type = 'ORA-01555' OR message LIKE '%ORA-01555%' OR message LIKE '%snapshot too old%' THEN 1 ELSE 0 END) as ora_01555,
-                    SUM(CASE WHEN event_type = 'ORA-00001' OR message LIKE '%ORA-00001%' OR message LIKE '%unique constraint%' THEN 1 ELSE 0 END) as ora_00001,
-                    SUM(CASE WHEN event_type IN ('ORA-01000', 'ORA-02391') OR message LIKE '%ORA-01000%' OR message LIKE '%open cursors%' THEN 1 ELSE 0 END) as ora_01000,
-                    SUM(CASE WHEN event_type IN ('ORA-03113', 'ORA-03114', 'ORA-12170', 'ORA-12514', 'ORA-12541') OR message LIKE '%ORA-03113%' OR message LIKE '%ORA-12170%' THEN 1 ELSE 0 END) as ora_net,
-                    SUM(CASE WHEN event_type IN ('ORA-00060', 'ORA-00054') OR message LIKE '%ORA-00060%' OR message LIKE '%deadlock%' THEN 1 ELSE 0 END) as ora_lock,
-                    SUM(CASE WHEN message LIKE '%JdbcCardRepository%' OR message LIKE '%BlobAccess%' THEN 1 ELSE 0 END) as jdbc_blob,
-                    SUM(CASE WHEN event_type IN ('SQL_EXCEPTION', 'JDBC_SQL_EXCEPTION') OR message LIKE '%SQLException%' OR message LIKE '%HikariPool%' OR message LIKE '%Connection timed out%' THEN 1 ELSE 0 END) as sql_exc,
-                    SUM(CASE WHEN message LIKE '%TransactionQueue%' THEN 1 ELSE 0 END) as tx_queue
-                FROM logs
-                WHERE event_outcome LIKE '%FAIL%' OR event_outcome LIKE '%ERR%'
+                    COALESCE(SUM(CASE WHEN db_cat = 'ora_01555' THEN 1 ELSE 0 END), 0) as ora_01555,
+                    COALESCE(SUM(CASE WHEN db_cat = 'ora_00001' THEN 1 ELSE 0 END), 0) as ora_00001,
+                    COALESCE(SUM(CASE WHEN db_cat = 'ora_01000' THEN 1 ELSE 0 END), 0) as ora_01000,
+                    COALESCE(SUM(CASE WHEN db_cat = 'ora_net' THEN 1 ELSE 0 END), 0) as ora_net,
+                    COALESCE(SUM(CASE WHEN db_cat = 'ora_lock' THEN 1 ELSE 0 END), 0) as ora_lock,
+                    COALESCE(SUM(CASE WHEN db_cat = 'jdbc_blob' THEN 1 ELSE 0 END), 0) as jdbc_blob,
+                    COALESCE(SUM(CASE WHEN db_cat = 'sql_exc' THEN 1 ELSE 0 END), 0) as sql_exc,
+                    COALESCE(SUM(CASE WHEN db_cat = 'tx_queue' THEN 1 ELSE 0 END), 0) as tx_queue
+                FROM (
+                    SELECT CASE
+                        WHEN event_type = 'ORA-01555' OR message LIKE '%ORA-01555%' OR message LIKE '%snapshot too old%' THEN 'ora_01555'
+                        WHEN event_type = 'ORA-00001' OR message LIKE '%ORA-00001%' OR message LIKE '%unique constraint%' THEN 'ora_00001'
+                        WHEN event_type IN ('ORA-01000', 'ORA-02391') OR message LIKE '%ORA-01000%' OR message LIKE '%open cursors%' THEN 'ora_01000'
+                        WHEN event_type IN ('ORA-03113', 'ORA-03114', 'ORA-12170', 'ORA-12514', 'ORA-12541') OR message LIKE '%ORA-03113%' OR message LIKE '%ORA-12170%' THEN 'ora_net'
+                        WHEN event_type IN ('ORA-00060', 'ORA-00054') OR message LIKE '%ORA-00060%' OR message LIKE '%deadlock%' THEN 'ora_lock'
+                        WHEN message LIKE '%JdbcCardRepository%' OR message LIKE '%BlobAccess%' THEN 'jdbc_blob'
+                        WHEN event_type IN ('SQL_EXCEPTION', 'JDBC_SQL_EXCEPTION') OR message LIKE '%SQLException%' OR message LIKE '%HikariPool%' OR message LIKE '%Connection timed out%' THEN 'sql_exc'
+                        WHEN message LIKE '%TransactionQueue%' THEN 'tx_queue'
+                        ELSE NULL
+                    END AS db_cat
+                    FROM logs
+                    WHERE UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%'
+                )
             ''')
             db_row = cur.fetchone() or (0, 0, 0, 0, 0, 0, 0, 0)
             ora_01555, ora_00001, ora_01000, ora_net, ora_lock, jdbc_blob, sql_exc, tx_queue = [int(x or 0) for x in db_row]
@@ -5169,10 +5248,21 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 tc_oom, tc_ssl, tc_ldap, tc_deploy, tc_net,
                 tc_pool, tc_abort, tc_java, tc_severe, tc_warn, tc_lifecycle
             ) = [int(x or 0) for x in tc_row]
-            total_tomcat_errors = tc_oom + tc_ssl + tc_ldap + tc_deploy + tc_net + tc_java + tc_severe + (
-                sum(c['failCount'] for c in code_matrix if c['code'] == 'TOMCAT_THREAD_POOL')
+            cm_fail_map = {c['code']: int(c.get('failCount', 0) or 0) for c in code_matrix}
+            tc_oom_f = cm_fail_map.get('JVM_OOM', 0)
+            tc_ssl_f = cm_fail_map.get('TOMCAT_SSL_TLS', 0)
+            tc_ldap_f = cm_fail_map.get('TOMCAT_LDAP_ERROR', 0)
+            tc_deploy_f = cm_fail_map.get('TOMCAT_DEPLOY_ERROR', 0)
+            tc_net_f = cm_fail_map.get('TOMCAT_NETWORK_ERROR', 0)
+            tc_pool_f = cm_fail_map.get('TOMCAT_THREAD_POOL', 0)
+            tc_java_f = cm_fail_map.get('TOMCAT_JAVA_EXCEPTION', 0)
+            tc_severe_f = cm_fail_map.get('TOMCAT_SEVERE', 0)
+            total_tomcat_errors = (
+                tc_oom_f + tc_ssl_f + tc_ldap_f + tc_deploy_f
+                + tc_net_f + tc_pool_f + tc_java_f + tc_severe_f
             )
-            total_tomcat_incidents = total_tomcat_errors + tc_warn + tc_abort + tc_lifecycle
+            total_tomcat_warnings = tc_warn + max(0, tc_pool - tc_pool_f)
+            total_tomcat_incidents = total_tomcat_errors + total_tomcat_warnings + tc_abort + tc_lifecycle
 
             cur.execute('''
                 SELECT line_num, event_time, event_type, event_outcome, SUBSTR(message, 1, 240)
@@ -5191,22 +5281,89 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             ]
 
             tomcat_health = {
-                'status': 'CRITICAL' if (tc_oom + tc_ssl + tc_deploy + tc_net + tc_ldap) > 0 else ('WARNING' if (total_tomcat_errors + tc_warn) > 0 else 'HEALTHY'),
+                'status': 'CRITICAL' if (tc_oom_f + tc_ssl_f + tc_deploy_f + tc_net_f + tc_ldap_f + tc_java_f + tc_severe_f + tc_pool_f) > 0 else ('WARNING' if total_tomcat_warnings > 0 else 'HEALTHY'),
                 'totalTomcatIncidents': total_tomcat_incidents,
                 'totalTomcatErrors': total_tomcat_errors,
+                'totalTomcatWarnings': total_tomcat_warnings,
                 'clientAbortsIgnored': tc_abort,
                 'indicators': [
-                    {'code': 'JVM_OOM (Heap / Metaspace / GC)', 'count': tc_oom, 'severity': 'CRÍTICO' if tc_oom > 0 else 'OK'},
-                    {'code': 'TOMCAT_SSL_TLS (Keystore / PKIX / Handshake)', 'count': tc_ssl, 'severity': 'CRÍTICO' if tc_ssl > 0 else 'OK'},
-                    {'code': 'TOMCAT_LDAP_ERROR (Directorio JNDI / LDAPS)', 'count': tc_ldap, 'severity': 'ALTO' if tc_ldap > 0 else 'OK'},
-                    {'code': 'TOMCAT_DEPLOY_ERROR (Lifecycle / listenerStart / JARs)', 'count': tc_deploy, 'severity': 'CRÍTICO' if tc_deploy > 0 else 'OK'},
-                    {'code': 'TOMCAT_NETWORK_ERROR (Bind / SocketTimeout / Connect)', 'count': tc_net, 'severity': 'ALTO' if tc_net > 0 else 'OK'},
-                    {'code': 'TOMCAT_THREAD_POOL (StuckThread / maxThreads)', 'count': tc_pool, 'severity': 'ADVERTENCIA' if tc_pool > 0 else 'OK'},
-                    {'code': 'TOMCAT_JAVA_EXCEPTION (Excepciones Java)', 'count': tc_java, 'severity': 'ALTO' if tc_java > 0 else 'OK'},
-                    {'code': 'TOMCAT_SEVERE (Otros errores SEVERE)', 'count': tc_severe, 'severity': 'ALTO' if tc_severe > 0 else 'OK'},
-                    {'code': 'TOMCAT_WARN (Advertencias Catalina)', 'count': tc_warn, 'severity': 'ADVERTENCIA' if tc_warn > 0 else 'OK'},
-                    {'code': 'TOMCAT_CLIENT_ABORT (Cierre cliente HTTP, no error servidor)', 'count': tc_abort, 'severity': 'INFO'},
-                    {'code': 'TOMCAT_LIFECYCLE (Arranque / Parada servidor)', 'count': tc_lifecycle, 'severity': 'INFO'}
+                    {
+                        'code': 'JVM_OOM (Heap / Metaspace / GC)',
+                        'count': tc_oom,
+                        'failCount': tc_oom_f,
+                        'severity': 'CRÍTICO' if tc_oom_f > 0 else 'OK',
+                        'diagnosis': f'Agotamiento de memoria JVM detectado ({tc_oom_f} fallo(s) OOM).' if tc_oom_f > 0 else 'Sin errores de memoria Heap/Metaspace JVM.'
+                    },
+                    {
+                        'code': 'TOMCAT_SSL_TLS (Keystore / PKIX / Handshake)',
+                        'count': tc_ssl,
+                        'failCount': tc_ssl_f,
+                        'severity': 'CRÍTICO' if tc_ssl_f > 0 else 'OK',
+                        'diagnosis': f'Errores de keystore/TLS PKIX en conectores Tomcat ({tc_ssl_f} fallo(s)).' if tc_ssl_f > 0 else 'Negociación SSL/TLS y keystores Tomcat sin errores.'
+                    },
+                    {
+                        'code': 'TOMCAT_LDAP_ERROR (Directorio JNDI / LDAPS)',
+                        'count': tc_ldap,
+                        'failCount': tc_ldap_f,
+                        'severity': 'CRÍTICO' if tc_ldap_f > 0 else 'OK',
+                        'diagnosis': f'Fallos de conexión JNDI/LDAP en el contenedor Tomcat ({tc_ldap_f}).' if tc_ldap_f > 0 else 'Conectividad JNDI / LDAPS desde Tomcat estable.'
+                    },
+                    {
+                        'code': 'TOMCAT_DEPLOY_ERROR (Lifecycle / listenerStart / JARs)',
+                        'count': tc_deploy,
+                        'failCount': tc_deploy_f,
+                        'severity': 'CRÍTICO' if tc_deploy_f > 0 else 'OK',
+                        'diagnosis': f'Fallos de despliegue o listenerStart en Tomcat ({tc_deploy_f}).' if tc_deploy_f > 0 else 'Contextos web y despliegue de artefactos Tomcat nominal.'
+                    },
+                    {
+                        'code': 'TOMCAT_NETWORK_ERROR (Bind / SocketTimeout / Connect)',
+                        'count': tc_net,
+                        'failCount': tc_net_f,
+                        'severity': 'CRÍTICO' if tc_net_f > 0 else 'OK',
+                        'diagnosis': f'Errores de red/sockets o BindException en conectores ({tc_net_f}).' if tc_net_f > 0 else 'Conectores HTTP/AJP de Tomcat sin timeouts de socket.'
+                    },
+                    {
+                        'code': 'TOMCAT_THREAD_POOL (StuckThread / maxThreads)',
+                        'count': tc_pool,
+                        'failCount': tc_pool_f,
+                        'severity': 'CRÍTICO' if tc_pool_f > 0 else ('ADVERTENCIA' if tc_pool > 0 else 'OK'),
+                        'diagnosis': f'Detección de hilos bloqueados (StuckThreadDetectionValve) / saturación de pool: {tc_pool_f} fallo(s) crítico(s) y {max(0, tc_pool - tc_pool_f)} advertencia(s).' if tc_pool > 0 else 'Pool de hilos Tomcat operando sin hilos atascados ni saturación.'
+                    },
+                    {
+                        'code': 'TOMCAT_JAVA_EXCEPTION (Excepciones Java)',
+                        'count': tc_java,
+                        'failCount': tc_java_f,
+                        'severity': 'CRÍTICO' if tc_java_f > 0 else ('ADVERTENCIA' if tc_java > 0 else 'OK'),
+                        'diagnosis': f'Excepciones Java no controladas capturadas en catalina.out ({tc_java_f} fallo(s) sobre {tc_java} eventos).' if tc_java > 0 else 'Sin stack traces ni excepciones Java no controladas en catalina.out.'
+                    },
+                    {
+                        'code': 'TOMCAT_SEVERE (Otros errores SEVERE)',
+                        'count': tc_severe,
+                        'failCount': tc_severe_f,
+                        'severity': 'CRÍTICO' if tc_severe_f > 0 else 'OK',
+                        'diagnosis': f'Otros eventos de severidad SEVERE registrados en Catalina ({tc_severe_f}).' if tc_severe_f > 0 else 'Sin mensajes SEVERE adicionales en Catalina.'
+                    },
+                    {
+                        'code': 'TOMCAT_WARN (Advertencias Catalina)',
+                        'count': tc_warn,
+                        'failCount': 0,
+                        'severity': 'ADVERTENCIA' if tc_warn > 0 else 'OK',
+                        'diagnosis': f'Advertencias de configuración u operación en Catalina ({tc_warn}).' if tc_warn > 0 else 'Sin advertencias operativas en Catalina.'
+                    },
+                    {
+                        'code': 'TOMCAT_CLIENT_ABORT (Cierre cliente HTTP, no error servidor)',
+                        'count': tc_abort,
+                        'failCount': 0,
+                        'severity': 'INFO',
+                        'diagnosis': f'{tc_abort} cierre(s) de cliente HTTP remoto (ClientAbortException; no impacta salud del servidor).' if tc_abort > 0 else 'Sin cierres abruptos de clientes HTTP registrados.'
+                    },
+                    {
+                        'code': 'TOMCAT_LIFECYCLE (Arranque / Parada servidor)',
+                        'count': tc_lifecycle,
+                        'failCount': 0,
+                        'severity': 'INFO',
+                        'diagnosis': f'{tc_lifecycle} traza(s) informativa(s) de arranque/parada del contenedor Catalina.' if tc_lifecycle > 0 else 'Sin eventos de ciclo de vida en la muestra.'
+                    }
                 ],
                 'evidenceSamples': tc_samples
             }
@@ -5230,9 +5387,12 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             ''')
             peak_hours = [{'hour': r[0], 'errors': r[1]} for r in cur.fetchall()]
 
+            db_code_errors = sum(c['failCount'] for c in code_matrix if c['kind'] == 'DATABASE_ORA')
+            audit_crit_errors = sum(c['failCount'] for c in code_matrix if c['kind'] == 'AUDIT_AUD')
             migration_errors = sum(c['failCount'] for c in code_matrix if c['kind'] == 'IDAAS_MIGRATION')
             auth_520_errors = sum(c['failCount'] for c in code_matrix if c['kind'] == 'ERROR_520')
             tomcat_jvm_errors = sum(c['failCount'] for c in code_matrix if c['kind'] == 'TOMCAT_JVM')
+            other_sys_errors = max(0, total_errors - (db_code_errors + migration_errors + auth_520_errors + tomcat_jvm_errors + audit_crit_errors))
 
             if tomcat_jvm_errors > max(total_db_incidents, migration_errors, auth_520_errors) and tomcat_jvm_errors > 0:
                 primary_vector = 'SERVIDOR DE APLICACIONES TOMCAT / JVM (catalina.out)'
@@ -5262,10 +5422,12 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'executiveVerdict': executive_verdict,
                 'breakdown': {
                     'databaseIncidents': total_db_incidents,
+                    'databaseCodeErrors': db_code_errors,
                     'tomcatJvmErrors': tomcat_jvm_errors,
+                    'auditCriticalErrors': audit_crit_errors,
                     'migrationCollisions': migration_errors,
                     'authentication520Errors': auth_520_errors,
-                    'otherSystemErrors': max(0, total_errors - (total_db_incidents + migration_errors + auth_520_errors + tomcat_jvm_errors))
+                    'otherSystemErrors': other_sys_errors
                 },
                 'officialPortals': [
                     {
@@ -5307,6 +5469,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'uniqueValidUsers': len(users_map),
                 'usersWithErrors': sum(1 for u in users_map.values() if u['errors'] > 0),
                 'usersClean': sum(1 for u in users_map.values() if u['errors'] == 0),
+                'activeLockedUsers': active_locked_total,
+                'recoveredLockedUsers': recovered_locked_total,
                 'categoryUniqueUsers': {
                     'audit': len(cat_users['audit']),
                     '520': len(cat_users['520']),
@@ -5328,7 +5492,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             }
 
             try:
-                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('forensic_matrix_v6', json.dumps(result_payload, ensure_ascii=False)))
+                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('forensic_matrix_v7', json.dumps(result_payload, ensure_ascii=False)))
                 conn.commit()
             except Exception:
                 pass

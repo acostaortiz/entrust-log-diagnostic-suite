@@ -42,17 +42,19 @@ class CertAuditorEngine {
   extractTlsFindingsFromLogs(logs = []) {
     const tlsErrors = [];
     const seen = new Set();
-    const reTls = /(5202020|SSLHandshakeException|PKIX path|CertPathBuilderException|certificate.*expired|unable to find valid certification|javax\.net\.ssl|LDAPS)/i;
+    const reTls = /(5202020|AUD160|AUD161|TOMCAT_SSL_TLS|SSLHandshakeException|PKIX path|CertPathBuilderException|certificate.*expired|unable to find valid certification|javax\.net\.ssl|LDAPS)/i;
     for (let i = 0; i < logs.length && tlsErrors.length < 15; i++) {
       const l = logs[i];
       const msg = String(l.raw || l.message || '');
-      const m = msg.match(reTls);
+      const code = String(l.entrustCode || '');
+      const m = msg.match(reTls) || code.match(/^(5202020|AUD160|AUD161|TOMCAT_SSL_TLS)$/i);
       if (m) {
-        const key = `${m[1]}|${l.sourceFile || ''}`;
+        const pat = m[1].toUpperCase();
+        const key = `${pat}|${l.sourceFile || ''}`;
         if (!seen.has(key)) {
           seen.add(key);
           tlsErrors.push({
-            pattern: m[1],
+            pattern: pat,
             file: l.sourceFile || 'Log activo',
             timestamp: l.timestamp || '-',
             sample: msg.slice(0, 180)
@@ -60,6 +62,33 @@ class CertAuditorEngine {
         }
       }
     }
+
+    const tlsCodeDesc = {
+      AUD160: 'AUD160: Alerta de certificado X.509 próximo a expirar en Entrust IdentityGuard.',
+      AUD161: 'AUD161: Certificado X.509 expirado o inválido detectado en el almacén Entrust.',
+      TOMCAT_SSL_TLS: 'TOMCAT_SSL_TLS: Error de handshake SSL/TLS o keystore en contenedor Apache Tomcat.',
+      '5202020': '5202020: Error de validación de certificado o canal TLS/LDAPS en motor Entrust.'
+    };
+    const isTlsCode = (c) => /^(?:AUD160|AUD161|TOMCAT_SSL_TLS|5202020)$/i.test(String(c || '').trim());
+    const fmCodes = (typeof window !== 'undefined' && window.UserTraceReport?.forensicMatrixData?.codeMatrix) || [];
+    const gsmCodes = (typeof window !== 'undefined' && window.appState?.globalStreamMetrics?.topCodes) || [];
+    const seenSqlPatterns = new Set(tlsErrors.map(e => String(e.pattern || '').toUpperCase()));
+
+    [...fmCodes, ...gsmCodes].forEach(entry => {
+      if (!entry || tlsErrors.length >= 20) return;
+      const c = String(entry.code || '').trim().toUpperCase();
+      if (!isTlsCode(c) || seenSqlPatterns.has(c)) return;
+      const cnt = Number(entry.totalInteractions ?? entry.count ?? 0);
+      if (cnt <= 0) return;
+      seenSqlPatterns.add(c);
+      tlsErrors.push({
+        pattern: c,
+        file: 'Índice Consolidado SQLite',
+        timestamp: `${cnt.toLocaleString()} evento(s)`,
+        sample: tlsCodeDesc[c] || `Patrón TLS/Certificado ${c} detectado en base de datos consolidada (${cnt.toLocaleString()}x).`
+      });
+    });
+
     return tlsErrors;
   }
 

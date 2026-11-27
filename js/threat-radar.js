@@ -31,9 +31,15 @@ window.escapeHtml = escapeHtml;
      */
     analyzeThreats(logs = []) {
       const targetLogs = Array.isArray(logs) ? logs : [];
+      const fmDataRef = (typeof window !== 'undefined' && window.UserTraceReport) ? window.UserTraceReport.forensicMatrixData : null;
+      const matrixUsers = (fmDataRef && Array.isArray(fmDataRef.usersList)) ? fmDataRef.usersList : [];
+      const cachedUsers = (typeof window !== 'undefined' && window.UserTraceReport && window.UserTraceReport.cachedStats)
+        ? Object.values(window.UserTraceReport.cachedStats)
+        : [];
+      const isServerApi = !!(typeof window !== 'undefined' && window.appState && window.appState.isServerApi);
 
-      // Si no hay logs en la sesión actual, retornar estado 100% limpio
-      if (!targetLogs || targetLogs.length === 0) {
+      // Si no hay logs ni usuarios indexados en la sesión actual, retornar estado 100% limpio
+      if (targetLogs.length === 0 && matrixUsers.length === 0 && cachedUsers.length === 0) {
         return {
           totalFailedAuth: 0,
           topTargetUsers: [],
@@ -47,17 +53,6 @@ window.escapeHtml = escapeHtml;
       const ipMap = new Map();
       let totalFailedAuth = 0;
 
-      // Si no hay logs en la sesión actual, retornar estado limpio
-      if (!targetLogs || targetLogs.length === 0) {
-        return {
-          totalFailedAuth: 0,
-          topTargetUsers: [],
-          topAttackingIPs: [],
-          isUnderMassiveAttack: false,
-          detectedVictimsCount: 0
-        };
-      }
-
       const step = targetLogs.length > 15000 ? Math.max(1, Math.floor(targetLogs.length / 15000)) : 1;
       for (let i = 0; i < targetLogs.length; i += step) {
         const l = targetLogs[i];
@@ -68,68 +63,70 @@ window.escapeHtml = escapeHtml;
         if (!isAuthFail) continue;
         totalFailedAuth++;
 
-        // Extraer usuario
-        let user = l.user || l.userId || null;
-        if (!user || user === 'unknown' || user === 'system') {
-          const userMatch = msg.match(/(?:user|usuario|userId|principal|account)\s*[:=\[]?\s*["']?([a-zA-Z0-9_\-\.\@\/]+)["']?/i) ||
-                            msg.match(/\[([VvEeJjGgPp]\-?\d{6,10}|usr_[a-zA-Z0-9_]+|[a-zA-Z0-9_\.\-]+@[a-zA-Z0-9\.\-]+)\]/);
-          if (userMatch) user = userMatch[1];
-        }
-
-        if (user && user !== 'unknown' && user !== 'system' && user.length > 2) {
-          if (!userMap.has(user)) {
-            userMap.set(user, {
-              user: user,
-              attempts: 0,
-              codes: new Set(),
-              lastSeen: l.timestamp || l.time || 'N/A',
-              isLocked: false
-            });
+        // Extraer usuario (evitar sobrescribir desde RAM cuando SQLite ya tiene el censo autoritativo)
+        if (!(isServerApi && matrixUsers.length > 0)) {
+          let user = l.user || l.userId || null;
+          if (!user || user === 'unknown' || user === 'system') {
+            const userMatch = msg.match(/(?:user|usuario|userId|principal|account)\s*[:=\[]?\s*["']?([a-zA-Z0-9_\-\.\@\/]+)["']?/i) ||
+                              msg.match(/\[([VvEeJjGgPp]\-?\d{6,10}|usr_[a-zA-Z0-9_]+|[a-zA-Z0-9_\.\-]+@[a-zA-Z0-9\.\-]+)\]/);
+            if (userMatch) user = userMatch[1];
           }
-          const uEntry = userMap.get(user);
-          uEntry.attempts++;
-          if (l.entrustCode) uEntry.codes.add(l.entrustCode);
-          if (/5205079|locked|bloquead|error\.password/i.test(msg)) uEntry.isLocked = true;
-          uEntry.lastSeen = l.timestamp || l.time || uEntry.lastSeen;
+
+          if (user && user !== 'unknown' && user !== 'system' && user.length > 2) {
+            if (!userMap.has(user)) {
+              userMap.set(user, {
+                user: user,
+                attempts: 0,
+                codes: new Set(),
+                lastSeen: l.timestamp || l.time || 'N/A',
+                isLocked: false,
+                hadHistoricalLock: false
+              });
+            }
+            const uEntry = userMap.get(user);
+            uEntry.attempts++;
+            if (l.entrustCode) uEntry.codes.add(l.entrustCode);
+            if (/5205079|locked|bloquead|error\.password/i.test(msg)) uEntry.isLocked = true;
+            uEntry.lastSeen = l.timestamp || l.time || uEntry.lastSeen;
+          }
         }
 
         // Extraer IP
         const ip = l.clientIp || l.ip || null;
-        if (ip && ip !== '127.0.0.1') {
+        if (ip && ip !== '127.0.0.1' && ip !== 'local') {
           ipMap.set(ip, (ipMap.get(ip) || 0) + 1);
         }
       }
 
       // Incorporar usuarios afectados del censo completo SQLite / cachedStats si hay sesión activa
-      if (targetLogs.length > 0 && typeof window !== 'undefined' && window.UserTraceReport) {
-        const matrixUsers = (window.UserTraceReport.forensicMatrixData && Array.isArray(window.UserTraceReport.forensicMatrixData.users))
-          ? window.UserTraceReport.forensicMatrixData.users
-          : [];
-        const cachedUsers = window.UserTraceReport.cachedStats
-          ? Object.values(window.UserTraceReport.cachedStats)
-          : [];
-        [...matrixUsers, ...cachedUsers].forEach(mu => {
+      if (matrixUsers.length > 0 || cachedUsers.length > 0) {
+        const authoritativeList = (isServerApi && matrixUsers.length > 0)
+          ? matrixUsers
+          : [...matrixUsers, ...cachedUsers];
+        authoritativeList.forEach(mu => {
           if (!mu) return;
           const uid = mu.username || mu.user;
           const errs = Number(mu.errors || 0);
           if (!uid || uid === 'unknown' || uid === 'system' || uid.length <= 2) return;
-          if (errs <= 0 && !mu.isLocked) return;
+          if (errs <= 0 && !mu.isLocked && !mu.hadHistoricalLock) return;
           if (!userMap.has(uid)) {
             userMap.set(uid, {
               user: uid,
               attempts: 0,
               codes: new Set(),
               lastSeen: mu.lastTimestamp || 'N/A',
-              isLocked: false
+              isLocked: false,
+              hadHistoricalLock: false
             });
           }
           const uEntry = userMap.get(uid);
-          uEntry.attempts = Math.max(uEntry.attempts, errs);
+          uEntry.attempts = (isServerApi && matrixUsers.length > 0) ? errs : Math.max(uEntry.attempts, errs);
           if (mu.isLocked) uEntry.isLocked = true;
+          if (mu.hadHistoricalLock) uEntry.hadHistoricalLock = true;
           if (mu.lastTimestamp && uEntry.lastSeen === 'N/A') uEntry.lastSeen = mu.lastTimestamp;
           if (mu.codes && typeof mu.codes === 'object') {
             Object.keys(mu.codes).forEach(c => {
-              if (/^(520\d{4}|AUD6001|AUD6002|AUD4005|AUD2309|ORA-\d+|bulkidentityguard)/i.test(c)) {
+              if (/^(5\d{5,6}|AUD\d+|ORA-\d+|JDBC_SQL_EXCEPTION|SQL_EXCEPTION|bulkidentityguard)/i.test(c)) {
                 uEntry.codes.add(c);
               }
             });
@@ -208,10 +205,10 @@ window.escapeHtml = escapeHtml;
         rowsHtml += `
           <tr style="border-bottom:1px solid var(--border-color); background:${idx % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.02)'};">
             <td style="padding:10px; font-weight:700; color:var(--text-main); font-family:'JetBrains Mono', monospace; font-size:0.82rem;">
-              <span style="cursor:pointer; color:#0284c7; text-decoration:underline;" onclick="window.UserTraceReport ? window.UserTraceReport.openModal('${escapeHtml(u.user)}') : null" title="Haga clic para ver el Informe de Trazabilidad y Seguridad de este usuario">
+              <span style="cursor:pointer; color:#0284c7; text-decoration:underline;" data-user="${escapeHtml(u.user)}" onclick="window.UserTraceReport ? window.UserTraceReport.openModal(this.getAttribute('data-user')) : null" title="Haga clic para ver el Informe de Trazabilidad y Seguridad de este usuario">
                 👤 ${escapeHtml(u.user)}
               </span>
-              ${u.isLocked ? '<span style="color:#ef4444; font-size:10px; font-weight:800; background:rgba(239,68,68,0.15); padding:1px 6px; border-radius:3px; margin-left:4px;">BLOQUEADO</span>' : ''}
+              ${u.isLocked ? '<span style="color:#ef4444; font-size:10px; font-weight:800; background:rgba(239,68,68,0.15); padding:1px 6px; border-radius:3px; margin-left:4px;">BLOQUEADO</span>' : (u.hadHistoricalLock ? '<span style="color:#d97706; font-size:10px; font-weight:800; background:rgba(245,158,11,0.15); padding:1px 6px; border-radius:3px; margin-left:4px;">RECUPERADO</span>' : '')}
             </td>
             <td style="padding:10px; text-align:center; font-weight:900; color:#ef4444; font-family:'JetBrains Mono', monospace; font-size:0.85rem;">
               ${u.attempts.toLocaleString()}
@@ -316,11 +313,6 @@ window.escapeHtml = escapeHtml;
       document.body.removeChild(link);
       URL.revokeObjectURL(link.href);
     }
-  }
-
-  function escapeHtml(text) {
-    if (!text) return '';
-    return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
   window.ThreatRadarEngine = ThreatRadarEngine;

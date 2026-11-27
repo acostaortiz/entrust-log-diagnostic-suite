@@ -17,7 +17,7 @@
   <script src="js/html2pdf.bundle.min.js" defer></script>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/styles.css?v=622.0">
+  <link rel="stylesheet" href="css/styles.css?v=623.0">
 </head>
 <body>
 
@@ -38,7 +38,7 @@
         <div>
           <div class="brand-subtitle" style="display:flex; align-items:center; gap:8px;">
             <span>Suite de Diagnóstico — Entrust IdentityGuard OnPremise</span>
-            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.16.3 (Build 622)</span>
+            <span id="app-version-badge" style="background:rgba(2, 132, 199, 0.15); color:#0284c7; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:10px; border:1px solid rgba(2, 132, 199, 0.3); cursor:pointer; transition:all 0.2s;" onclick="if(window.openVersionModalGlobal) window.openVersionModalGlobal();" title="Clic para ver detalles de compilación, build y estado del sistema">v3.17.0 (Build 623)</span>
           </div>
         </div>
       </div>
@@ -158,8 +158,8 @@
             </button>
             <button class="header-dropdown-item" id="btn-export-excel">
               <div>
-                <div style="font-weight:700;">Libro Excel Integral (.XLSX)</div>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Resumen, Errores 520, IDaaS y Auditoría</div>
+                <div style="font-weight:700;">Libro Excel Integral (.XLS)</div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Resumen, Errores 520, Threat Radar y Servidores</div>
               </div>
             </button>
             <button class="header-dropdown-item" id="btn-export-pptx">
@@ -1215,8 +1215,8 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
             <button class="btn" id="btn-download-docx-exec-report" style="background:rgba(2, 132, 199, 0.1); border:1px solid rgba(2, 132, 199, 0.3); color:#0284c7; font-weight:700; font-size:0.78rem; padding:6px 10px; border-radius:4px; cursor:pointer;" title="Exportar Documento Oficial a Microsoft Word (.docx)">
               📝 Word (.docx)
             </button>
-            <button class="btn" id="btn-download-excel-exec-report" style="background:rgba(16, 185, 129, 0.1); border:1px solid rgba(16, 185, 129, 0.3); color:#10b981; font-weight:700; font-size:0.78rem; padding:6px 10px; border-radius:4px; cursor:pointer;" title="Descargar Matriz y Resumen en Excel Multitabla (.xlsx)">
-              📗 Excel (.xlsx)
+            <button class="btn" id="btn-download-excel-exec-report" style="background:rgba(16, 185, 129, 0.1); border:1px solid rgba(16, 185, 129, 0.3); color:#10b981; font-weight:700; font-size:0.78rem; padding:6px 10px; border-radius:4px; cursor:pointer;" title="Descargar Matriz y Resumen en Excel Multitabla (.xls)">
+              📗 Excel (.xls)
             </button>
             <button class="btn" id="btn-download-html-exec-report" style="background:transparent; border:none; color:var(--text-main); font-size:0.78rem; padding:6px 8px; border-radius:4px; cursor:pointer;" title="Exportar HTML Autónomo">🌐 HTML</button>
             <button class="btn" id="btn-download-csv-exec-report" style="background:transparent; border:none; color:var(--text-main); font-size:0.78rem; padding:6px 8px; border-radius:4px; cursor:pointer;" title="Exportar Excel CSV">📊 CSV</button>
@@ -1789,24 +1789,24 @@ REM Seleccione un certificado de la tabla superior para ver los comandos de reno
   <script src="js/pptxgen.bundle.js" defer></script>
   <script src="js/topology-engine.js?v=550.0"></script>
   <script src="js/aud-official-catalog.js?v=609.0"></script>
-  <script src="js/kb-database.js?v=622.0"></script>
+  <script src="js/kb-database.js?v=623.0"></script>
   <script src="js/manuals-engine.js?v=612.0"></script>
   <script src="js/log-parser.js?v=617.0"></script>
   <script src="js/storage-engine.js?v=615.0"></script>
-    <script src="js/threat-radar.js?v=611.0"></script>
-  <script src="js/remediation-engine.js?v=550.0"></script>
-  <script src="js/notes-engine.js?v=570.0"></script>
+    <script src="js/threat-radar.js?v=623.0"></script>
+  <script src="js/remediation-engine.js?v=623.0"></script>
+  <script src="js/notes-engine.js?v=623.0"></script>
   <script src="js/copilot-engine.js?v=617.0"></script>
   <script src="js/compliance-auditor.js?v=550.0"></script>
   <script src="js/config-diff-engine.js?v=576.0"></script>
-  <script src="js/siem-exporter.js?v=550.0"></script>
+  <script src="js/siem-exporter.js?v=623.0"></script>
 
-  <script src="js/cert-auditor.js?v=568.0"></script>
+  <script src="js/cert-auditor.js?v=623.0"></script>
   <script src="js/syslog-collector.js?v=550.0"></script>
-  <script src="js/user-trace-report.js?v=622.0"></script>
+  <script src="js/user-trace-report.js?v=623.0"></script>
   <script src="js/crypto-auditor.js?v=550.0"></script>
   <script src="js/pcap-analyzer.js?v=608.0"></script>
-  <script src="js/app.js?v=622.0"></script>
+  <script src="js/app.js?v=623.0"></script>
 
 
   <!-- MODAL UNIVERSAL: INSPECTOR FORENSE DE CÓDIGOS, PATRONES Y EXTRACCIÓN DIRECTA -->

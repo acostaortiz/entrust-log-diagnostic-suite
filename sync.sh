@@ -2,7 +2,7 @@
 # ==============================================================================
 #  IT SERVICIOS DE VENEZUELA, S.A.
 #  GESTOR Y SINCRONIZADOR ENTERPRISE DE PROYECTOS GITHUB
-#  Desarrollado por: Ing. TomÃ¡s Acosta â€” Ciberseguridad & TI
+#  Desarrollado por: Ing. Tomás Acosta — Ciberseguridad & TI
 #  Plataforma: Ubuntu 22.04 LTS
 # ==============================================================================
 
@@ -34,7 +34,7 @@ log_event() {
 check_git_status() {
     local dir="$1"
     if [ ! -d "$dir/.git" ] && [ ! -d "$dir" ]; then
-        printf "${RED}?? (Directorio no encontrado)${NC}\n"
+        printf "${RED}⚠️ (Directorio no encontrado)${NC}\n"
         return
     fi
 
@@ -48,16 +48,16 @@ check_git_status() {
 
     local behind=$(git rev-list --count HEAD..origin/$branch 2>/dev/null || echo 0)
     if [ "$behind" -gt 0 ]; then
-        printf "${RED}${BOLD}?? Â¡%s nuevo(s) cambio(s) en GitHub!${NC}\n" "$behind"
+        printf "${RED}${BOLD}🚨 ¡%s nuevo(s) cambio(s) en GitHub!${NC}\n" "$behind"
     else
-        printf "${GREEN}?? Al dÃ­a con GitHub${NC}\n"
+        printf "${GREEN}✅ Al día con GitHub${NC}\n"
     fi
 }
 
 print_header() {
     clear
     printf "${BLUE}${BOLD}================================================================================${NC}\n"
-    printf "${CYAN}${BOLD}   ?? IT SERVICIOS DE VENEZUELA, S.A. | GESTOR ENTERPRISE DE PROYECTOS GITHUB${NC}\n"
+    printf "${CYAN}${BOLD}   🚀 IT SERVICIOS DE VENEZUELA, S.A. | GESTOR ENTERPRISE DE PROYECTOS GITHUB${NC}\n"
     printf "${YELLOW}   Servidor: Ubuntu 22.04 LTS  |  IP Oficial: ${WHITE}${BOLD}%s${NC}\n" "$SERVER_IP"
     printf "${BLUE}${BOLD}================================================================================${NC}\n"
 }
@@ -67,7 +67,7 @@ print_line() {
 }
 
 sync_portal() {
-    printf "\n${CYAN}${BOLD}?? Sincronizando: entrust-admin-portal...${NC}\n"
+    printf "\n${CYAN}${BOLD}🔄 Sincronizando: entrust-admin-portal...${NC}\n"
     print_line
     if [ -d "$DIR_PORTAL" ]; then
         cd "$DIR_PORTAL" || return
@@ -94,18 +94,18 @@ EOF
             sudo chmod -R 775 storage bootstrap/cache >/dev/null 2>&1 || true
 
             local commit_msg=$(git log -1 --pretty=format:"%h - %s (%cr)")
-            printf "${GREEN}${BOLD}? entrust-admin-portal actualizado con Ã©xito.${NC}\n"
+            printf "${GREEN}${BOLD}✅ entrust-admin-portal actualizado con éxito.${NC}\n"
             printf "${WHITE}   Commit Desplegado: %s${NC}\n" "$commit_msg"
-            printf "${YELLOW}   ?? Apache: http://%s/entrust-admin-portal/public/banking-simulator${NC}\n" "$SERVER_IP"
+            printf "${YELLOW}   🌐 Apache: http://%s/entrust-admin-portal/public/banking-simulator${NC}\n" "$SERVER_IP"
             log_event "SUCCESS: Portal actualizado -> $commit_msg"
         fi
     else
-        printf "${RED}? No se encontrÃ³ $DIR_PORTAL${NC}\n"
+        printf "${RED}❌ No se encontró $DIR_PORTAL${NC}\n"
     fi
 }
 
 sync_diagnostic() {
-    printf "\n${CYAN}${BOLD}??? Sincronizando: entrust-log-diagnostic-suite...${NC}\n"
+    printf "\n${CYAN}${BOLD}🔄 Sincronizando: entrust-log-diagnostic-suite...${NC}\n"
     print_line
     if [ -d "$DIR_DIAGNOSTIC" ]; then
         cd "$DIR_DIAGNOSTIC" || return
@@ -154,19 +154,19 @@ sync_diagnostic() {
             local live_ver_json=""
             for _ in 1 2 3 4 5 6; do
                 live_ver_json=$(curl -sf http://127.0.0.1:8085/api/version 2>/dev/null || echo "")
-                if echo "$live_ver_json" | grep -q "export-logs-csv-316"; then
+                if echo "$live_ver_json" | grep -q "full-audit-317"; then
                     break
                 fi
                 sleep 1
             done
 
-            if echo "$live_ver_json" | grep -q "export-logs-csv-316"; then
+            if echo "$live_ver_json" | grep -q "full-audit-317"; then
                 local live_srv_ver live_srv_pid
                 live_srv_ver=$(echo "$live_ver_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('version',{}).get('serverCodeVersion',''))" 2>/dev/null || echo "ok")
                 live_srv_pid=$(echo "$live_ver_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('version',{}).get('serverPid',''))" 2>/dev/null || echo "?")
-                printf "${GREEN}${BOLD}   ✓ Backend 8085 en vivo verificado (serverCodeVersion=%s, PID=%s, capacidades v3.16 activas).${NC}\n" "$live_srv_ver" "$live_srv_pid"
+                printf "${GREEN}${BOLD}   ✓ Backend 8085 en vivo verificado (serverCodeVersion=%s, PID=%s, capacidades v3.17 activas).${NC}\n" "$live_srv_ver" "$live_srv_pid"
             else
-                printf "${RED}${BOLD}   ✗ ADVERTENCIA: el backend en puerto 8085 NO reporta 'export-logs-csv-316'. Revisa procesos con: sudo ss -tlnp | grep 8085${NC}\n"
+                printf "${RED}${BOLD}   ✗ ADVERTENCIA: el backend en puerto 8085 NO reporta 'full-audit-317'. Revisa procesos con: sudo ss -tlnp | grep 8085${NC}\n"
             fi
 
             if [ -f "$HOME/sync.sh" ] && ! cmp -s "$HOME/sync.sh" "$DIR_DIAGNOSTIC/sync.sh"; then
@@ -175,17 +175,17 @@ sync_diagnostic() {
             fi
 
             local commit_msg=$(git log -1 --pretty=format:"%h - %s (%cr)")
-            printf "${GREEN}${BOLD}? entrust-log-diagnostic-suite actualizado y servicio 8085 reiniciado con éxito.${NC}\n"
+            printf "${GREEN}${BOLD}✅ entrust-log-diagnostic-suite actualizado y servicio 8085 reiniciado con éxito.${NC}\n"
             printf "${WHITE}   Commit Desplegado: %s${NC}\n" "$commit_msg"
             log_event "SUCCESS: Suite de Diagnostico actualizada -> $commit_msg"
         fi
     else
-        printf "${RED}? No se encontrÃ³ $DIR_DIAGNOSTIC${NC}\n"
+        printf "${RED}❌ No se encontró $DIR_DIAGNOSTIC${NC}\n"
     fi
 }
 
 start_portal_8000() {
-    printf "\n${CYAN}${BOLD}? Levantando Portal Laravel en Puerto 8000...${NC}\n"
+    printf "\n${CYAN}${BOLD}⚡ Levantando Portal Laravel en Puerto 8000...${NC}\n"
     print_line
     sudo ufw allow 8000/tcp >/dev/null 2>&1 || true
     sudo fuser -k 8000/tcp >/dev/null 2>&1 || true
@@ -194,12 +194,12 @@ start_portal_8000() {
         cd "$DIR_PORTAL" || return
         nohup php artisan serve --host=0.0.0.0 --port=8000 >/dev/null 2>&1 &
         sleep 1
-        printf "${GREEN}${BOLD}? Portal Laravel ACTIVO en el puerto 8000.${NC}\n\n"
-        printf "${WHITE}   ?? Simulador Bancario: ${CYAN}http://%s:8000/banking-simulator${NC}\n" "$SERVER_IP"
-        printf "${WHITE}   ?? GestiÃ³n de Usuarios: ${CYAN}http://%s:8000/users${NC}\n" "$SERVER_IP"
-        printf "${WHITE}   ?? Laboratorio Accesos: ${CYAN}http://%s:8000/login-test${NC}\n" "$SERVER_IP"
+        printf "${GREEN}${BOLD}✅ Portal Laravel ACTIVO en el puerto 8000.${NC}\n\n"
+        printf "${WHITE}   🌐 Simulador Bancario: ${CYAN}http://%s:8000/banking-simulator${NC}\n" "$SERVER_IP"
+        printf "${WHITE}   👤 Gestión de Usuarios: ${CYAN}http://%s:8000/users${NC}\n" "$SERVER_IP"
+        printf "${WHITE}   🔐 Laboratorio Accesos: ${CYAN}http://%s:8000/login-test${NC}\n" "$SERVER_IP"
     else
-        printf "${RED}? No se encontrÃ³ la carpeta $DIR_PORTAL.${NC}\n"
+        printf "${RED}❌ No se encontró la carpeta $DIR_PORTAL.${NC}\n"
     fi
 }
 
@@ -228,7 +228,7 @@ run_audit() {
 }
 
 start_server_8085() {
-    printf "\n${CYAN}${BOLD}? Levantando Suite de DiagnÃ³stico en Puerto 8085...${NC}\n"
+    printf "\n${CYAN}${BOLD}⚡ Levantando Suite de Diagnóstico en Puerto 8085...${NC}\n"
     print_line
     sudo ufw allow 8085/tcp >/dev/null 2>&1 || true
     sudo fuser -k 8085/tcp >/dev/null 2>&1 || true
@@ -273,22 +273,22 @@ start_server_8085() {
 
 while true; do
     print_header
-    printf "${WHITE}${BOLD}Estado de SincronizaciÃ³n en Tiempo Real con GitHub:${NC}\n"
+    printf "${WHITE}${BOLD}Estado de Sincronización en Tiempo Real con GitHub:${NC}\n"
     print_line
 
-    printf "  â€¢ ${BOLD}entrust-admin-portal${NC}:        "
+    printf "  • ${BOLD}entrust-admin-portal${NC}:        "
     check_git_status "$DIR_PORTAL"
 
-    printf "  â€¢ ${BOLD}entrust-log-diagnostic-suite${NC}: "
+    printf "  • ${BOLD}entrust-log-diagnostic-suite${NC}: "
     check_git_status "$DIR_DIAGNOSTIC"
 
     print_line
     printf "${WHITE}${BOLD}Opciones Disponibles:${NC}\n\n"
-    printf "  ${CYAN}[1]${NC} ?? Sincronizar: ${BOLD}entrust-admin-portal${NC}\n"
-    printf "  ${CYAN}[2]${NC} ??? Sincronizar: ${BOLD}entrust-log-diagnostic-suite${NC}\n"
-    printf "  ${CYAN}[3]${NC} ?? Sincronizar AMBOS Proyectos\n"
-    printf "  ${CYAN}[4]${NC} ?? Activar Portal Laravel en ${BOLD}Puerto 8000${NC}\n"
-    printf "  ${CYAN}[5]${NC} ? Activar Suite DiagnÃ³stico en ${BOLD}Puerto 8085${NC}\n"
+    printf "  ${CYAN}[1]${NC} 🔄 Sincronizar: ${BOLD}entrust-admin-portal${NC}\n"
+    printf "  ${CYAN}[2]${NC} 🛠️ Sincronizar: ${BOLD}entrust-log-diagnostic-suite${NC}\n"
+    printf "  ${CYAN}[3]${NC} 🚀 Sincronizar AMBOS Proyectos\n"
+    printf "  ${CYAN}[4]${NC} 🌐 Activar Portal Laravel en ${BOLD}Puerto 8000${NC}\n"
+    printf "  ${CYAN}[5]${NC} ⚡ Activar Suite Diagnóstico en ${BOLD}Puerto 8085${NC}\n"
     printf "  ${CYAN}[6]${NC} 🛡️ Ejecutar Hardening Integral del Servidor\n"
     printf "  ${CYAN}[7]${NC} 🔍 Auditoría de Postura de Seguridad\n"
     printf "  ${CYAN}[8]${NC} 📜 Ver Historial de Sincronizaciones\n"

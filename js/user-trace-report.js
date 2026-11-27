@@ -285,7 +285,8 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
         'type', 'user', 'users', 'admin_console', 'user_3238', 'user_8912', 'user_1042',
         'client', 'server', 'node', 'host', 'ip', 'port', 'url', 'uri', 'http', 'https',
         'api', 'soap', 'rest', 'xml', 'json', 'csv', 'data', 'value', 'values', 'key', 'keys',
-        'code', 'codes', 'result', 'results', 'reason', 'details', 'detail', 'description'
+        'code', 'codes', 'result', 'results', 'reason', 'details', 'detail', 'description',
+        'successfully', 'unsuccessfully', 'catalina', 'tomcat', 'jvm', 'servlet', 'valve'
       ]);
       if (stopWords.has(low)) return false;
       if (/^[-.=/\\:;,]/.test(clean)) return false;
@@ -398,7 +399,7 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
 
         if (!isValidCached(user) && msg) {
           const kvMatch = msg.match(/(?:user\s+name\s+or\s+alias|user\s+name|for\s+user|User:|username|userId|user_id|subjectName)[\s:=]+['"]?([a-zA-Z0-9_\.\@\/\-]+)['"]?/i);
-          const audBracket = msg.includes('[') ? msg.match(/\[(?:AUD\d+|IG\.AUDIT)\]\s*\[([^\]]+)\]/i) : null;
+          const audBracket = msg.includes('[') ? (msg.match(/\[AUD\d+\]\s*\[([^\]]+)\]/i) || msg.match(/\[IG\.AUDIT\]\s*\[([^\]]+)\]/i)) : null;
           if (kvMatch && isValidCached(kvMatch[1])) {
             user = kvMatch[1];
           } else if (audBracket && isValidCached(audBracket[1])) {
@@ -2366,10 +2367,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
 
         const patShort = u.patternCategory || 'Operación Nominal';
         const codesSearch = Object.keys(u.codes || {}).join(' ');
-        const jsU = escapeHtml(u.username.replace(/'/g, "\\'"));
 
         html += `
-          <div class="tab-user-list-item" data-username="${escapeHtml(u.username)}" data-pattern="${escapeHtml(patShort + ' ' + codesSearch)}" onclick="window.UserTraceReport.renderTabUserDetail('${jsU}')" style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:6px; cursor:pointer; background:${isSelected ? 'rgba(2,132,199,0.18)' : 'var(--bg-secondary)'}; border:1px solid ${isSelected ? '#0284c7' : 'var(--border-color)'}; margin-bottom:2px; transition:all 0.15s ease;">
+          <div class="tab-user-list-item" data-username="${escapeHtml(u.username)}" data-pattern="${escapeHtml(patShort + ' ' + codesSearch)}" onclick="window.UserTraceReport.renderTabUserDetail(this.getAttribute('data-username'))" style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:6px; cursor:pointer; background:${isSelected ? 'rgba(2,132,199,0.18)' : 'var(--bg-secondary)'}; border:1px solid ${isSelected ? '#0284c7' : 'var(--border-color)'}; margin-bottom:2px; transition:all 0.15s ease;">
             <div style="overflow:hidden; padding-right:6px;">
               <div style="font-weight:700; color:var(--text-main); font-size:0.82rem; font-family:'JetBrains Mono', monospace; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(u.username)}</div>
               <div style="font-size:0.69rem; color:var(--text-muted); margin-top:2px;">${u.totalEvents.toLocaleString()} solicitudes • ${escapeHtml(patShort.slice(0, 28))}</div>
@@ -2430,7 +2430,9 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
           try {
             const activeClient = this.getClientProfile();
             const cParam = encodeURIComponent(activeClient?.name || '');
-            const url = `/api/users-search?client=${cParam}&q=${encodeURIComponent(q)}&filter=${encodeURIComponent(this.activeTabFilter || 'all')}&limit=150`;
+            const srvVal = (st && st.activeServerFilter) || document.getElementById('filter-server-select')?.value || '';
+            const sParam = (srvVal && srvVal !== 'ALL') ? `&server=${encodeURIComponent(srvVal)}` : '';
+            const url = `/api/users-search?client=${cParam}&q=${encodeURIComponent(q)}&filter=${encodeURIComponent(this.activeTabFilter || 'all')}${sParam}&limit=150`;
             const res = await fetch(url);
             if (!res.ok || seqToken !== this._userSearchSeq) return;
             const data = await res.json();
@@ -2456,12 +2458,15 @@ if (typeof window !== 'undefined' && !window.escapeHtml) {
 
       let list = Object.values(this.cachedStats);
       if (this.activeTabFilter === 'errors') {
-        list = list.filter(u => u.errors > 0 || u.isLocked);
+        list = list.filter(u => u.errors > 0 || u.isLocked || u.hadHistoricalLock);
       } else if (this.activeTabFilter === 'success') {
-        list = list.filter(u => u.errors === 0 && !u.isLocked);
+        list = list.filter(u => u.errors === 0 && !u.isLocked && !u.hadHistoricalLock);
       }
 
       list.sort((a, b) => {
+        const lockA = a.isLocked ? 2 : (a.hadHistoricalLock ? 1 : 0);
+        const lockB = b.isLocked ? 2 : (b.hadHistoricalLock ? 1 : 0);
+        if (lockB !== lockA) return lockB - lockA;
         if (b.errors !== a.errors) return b.errors - a.errors;
         return b.totalEvents - a.totalEvents;
       });

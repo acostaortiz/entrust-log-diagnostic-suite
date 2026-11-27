@@ -2277,79 +2277,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function renderNodeComparison() {
-    const nodeASelect = document.getElementById('node-a-select');
-    const nodeBSelect = document.getElementById('node-b-select');
-    const tableContainer = document.getElementById('node-comparison-table-container');
-    const asymmetryLabel = document.getElementById('node-asymmetry-label');
-    const barA = document.getElementById('node-asymmetry-bar-a');
-    const barB = document.getElementById('node-asymmetry-bar-b');
-
-    if (!nodeASelect || !nodeBSelect || !tableContainer) return;
-
-    const nodeAVal = nodeASelect.value;
-    const nodeBVal = nodeBSelect.value;
-
-    const logsA = state.logs.filter(l => (l.clientIp && l.clientIp.includes(nodeAVal)) || (l.raw && l.raw.includes(nodeAVal)));
-    const logsB = state.logs.filter(l => (l.clientIp && l.clientIp.includes(nodeBVal)) || (l.raw && l.raw.includes(nodeBVal)));
-
-    const countA = logsA.length || (state.logs.length ? Math.round(state.logs.length * 0.62) : 0);
-    const countB = logsB.length || (state.logs.length ? Math.round(state.logs.length * 0.38) : 0);
-    const totalBoth = (countA + countB) || 1;
-
-    const pctA = Math.round((countA / totalBoth) * 100);
-    const pctB = Math.round((countB / totalBoth) * 100);
-
-    if (asymmetryLabel) asymmetryLabel.textContent = `Asimetría: ${pctA}% (${nodeAVal}) / ${pctB}% (${nodeBVal})`;
-    if (barA) barA.style.width = `${pctA}%`;
-    if (barB) barB.style.width = `${pctB}%`;
-
-    const errA = logsA.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
-    const errB = logsB.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length;
-
-    tableContainer.innerHTML = `
-      <table class="report-table" style="width:100%; border-collapse:collapse; font-size:12px; margin-top:10px;">
-        <thead>
-          <tr style="background:var(--bg-primary); color:var(--text-primary);">
-            <th style="padding:10px; border:1px solid var(--border-color); text-align:left;">Métrica Comparativa de Servidor / Nodo</th>
-            <th style="padding:10px; border:1px solid var(--border-color); text-align:center; color:var(--it-blue);">🖥️ Nodo A (${escapeHtml(nodeAVal)})</th>
-            <th style="padding:10px; border:1px solid var(--border-color); text-align:center; color:var(--text-cyan);">🖥️ Nodo B (${escapeHtml(nodeBVal)})</th>
-            <th style="padding:10px; border:1px solid var(--border-color); text-align:center;">Estado & Evaluación de Salud</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="padding:10px; border:1px solid var(--border-color); font-weight:600;">Total Peticiones Processadas en Muestra</td>
-            <td style="padding:10px; border:1px solid var(--border-color); text-align:center; font-family:monospace; font-weight:bold;">${countA} logs</td>
-            <td style="padding:10px; border:1px solid var(--border-color); text-align:center; font-family:monospace; font-weight:bold;">${countB} logs</td>
-            <td style="padding:10px; border:1px solid var(--border-color); text-align:center;">${Math.abs(pctA - pctB) > 30 ? '⚠️ Desbalanceo Severo de Carga' : '✅ Balanceo Normal de Carga'}</td>
-          </tr>
-          <tr>
-            <td style="padding:10px; border:1px solid var(--border-color); font-weight:600;">Incidentes Críticos & Excepciones</td>
-            <td style="padding:10px; border:1px solid var(--border-color); text-align:center; font-family:monospace; color:#f43f5e; font-weight:bold;">${errA} errores</td>
-            <td style="padding:10px; border:1px solid var(--border-color); text-align:center; font-family:monospace; color:#f43f5e; font-weight:bold;">${errB} errores</td>
-            <td style="padding:10px; border:1px solid var(--border-color); text-align:center;">${errA > errB ? '⚠️ Mayor Impacto en Nodo A' : (errB > errA ? '⚠️ Mayor Impacto en Nodo B' : '✅ Salud Igualada en Ambos Nodos')}</td>
-          </tr>
-          <tr>
-            <td style="padding:10px; border:1px solid var(--border-color); font-weight:600;">Recomendación Operativa HA</td>
-            <td colspan="3" style="padding:10px; border:1px solid var(--border-color); font-size:11px; color:var(--text-muted);">
-              ${Math.abs(pctA - pctB) > 30 ? 'Se recomienda revisar las políticas de Balanceo Round-Robin / Least Connections en F5/Nginx para distribuir equitativamente el tráfico de autenticación Entrust.' : 'La arquitectura de Alta Disponibilidad mantiene un reparto de carga simétrico entre los dos nodos.'}
-            </td>
-          </tr>
-        </tbody>
-      </table>`;
-  }
-
-  function initNodeComparisonModule() {
-    const btnRefresh = document.getElementById('btn-refresh-node-comparison');
-    const selectA = document.getElementById('node-a-select');
-    const selectB = document.getElementById('node-b-select');
-
-    btnRefresh?.addEventListener('click', renderNodeComparison);
-    selectA?.addEventListener('change', renderNodeComparison);
-    selectB?.addEventListener('change', renderNodeComparison);
-  }
-
   /* ==========================================================================
      2. GENERADOR DE INFORMES DE DIAGNÓSTICO PRELIMINAR (EXECUTIVE REPORT)
      ========================================================================== */
@@ -2479,7 +2406,7 @@ document.addEventListener('DOMContentLoaded', () => {
       suiteLabel: 'Suite de Diagnóstico',
       confidentialUse: 'Confidencial — Para uso exclusivo de <strong>{client}</strong>.',
       digitalSeal: '🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD & AUDITORÍA SHA-256:</strong>',
-      validatedBy: 'Validado por IT SERVICIOS Suite Enterprise v230.0',
+      validatedBy: 'Validado por IT SERVICIOS Suite Enterprise v3.17.0',
       onePageTitle: 'DICTAMEN EJECUTIVO DIRECTIVO — AUDITORÍA FORENSE ENTRUST',
       onePageHealth: 'Salud Operativa Clúster',
       onePageTraces: 'Trazas Procesadas',
@@ -2574,7 +2501,7 @@ document.addEventListener('DOMContentLoaded', () => {
       suiteLabel: 'Diagnostic Suite',
       confidentialUse: 'Confidential — For the exclusive use of <strong>{client}</strong>.',
       digitalSeal: '🔒 <strong>SHA-256 DIGITAL AUDIT & AUTHENTICITY SEAL:</strong>',
-      validatedBy: 'Validated by IT SERVICIOS Suite Enterprise v230.0',
+      validatedBy: 'Validated by IT SERVICIOS Suite Enterprise v3.17.0',
       onePageTitle: 'EXECUTIVE BOARD BRIEFING — ENTRUST FORENSIC AUDIT',
       onePageHealth: 'Cluster Health Index',
       onePageTraces: 'Processed Logs',
@@ -3384,52 +3311,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   window.generateAndSavePdfGlobal = generateAndSavePdf;
 
-  function downloadExecutiveReportDocx() {
-    const container = document.getElementById('exec-report-container');
-    if (!container) {
-      alert('⚠️ No hay informe generado para exportar a Word.');
-      return;
-    }
-
-    const activeClient = getActiveClientProfile();
-    const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
-    const dateStamp = new Date().toISOString().slice(0, 10);
-
-    const docContent = `
-      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-      <head>
-        <meta charset='utf-8'>
-        <title>Informe Dictamen Forense Entrust - ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}</title>
-        <style>
-          body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #0f172a; }
-          h1 { color: #0a3d6d; font-size: 18pt; margin-bottom: 4pt; }
-          h2 { color: #0a3d6d; font-size: 14pt; margin-top: 12pt; }
-          h3 { color: #0a3d6d; font-size: 12pt; margin-top: 10pt; }
-          table { width: 100%; border-collapse: collapse; margin-bottom: 12pt; }
-          th, td { border: 1px solid #cbd5e1; padding: 6pt; font-size: 9.5pt; text-align: left; }
-          th { background: #0a3d6d; color: #ffffff; font-weight: bold; }
-          tr:nth-child(even) { background: #f8fafc; }
-          .badge { font-weight: bold; padding: 2pt 4pt; }
-        </style>
-      </head>
-      <body>
-        ${container.innerHTML}
-      </body>
-      </html>
-    `;
-
-    const blob = new Blob(['\uFEFF' + docContent], {
-      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'
-    });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `Dictamen_Forense_Entrust_${clientSanitized}_${dateStamp}.doc`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-  }
-
   async function downloadOnePageExecutivePdf() {
     const btn = document.getElementById('btn-download-onepage-exec-report');
     const origHtml = btn ? btn.innerHTML : '';
@@ -3539,27 +3420,44 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div style="font-size:10.5px; color:#334155; line-height:1.4;">
           ${(() => {
-            const topCodesStr = Object.entries(consolidated.codeMap520 || {})
-              .concat(Object.entries(consolidated.codeMapAud || {}))
-              .concat(Object.entries(consolidated.codeMapOra || {}))
-              .concat(Object.entries(consolidated.codeMapOther || {}))
+            const fmOne = (state.isServerApi && window.UserTraceReport) ? window.UserTraceReport.forensicMatrixData : null;
+            const critPairs = (fmOne && Array.isArray(fmOne.codeMatrix) && fmOne.codeMatrix.length > 0)
+              ? fmOne.codeMatrix
+                  .filter(cm => cm && cm.code && (Number(cm.failCount || 0) > 0 || /^5(?:2\d{4,5}|[013-9]\d{5})$|^ORA-|^JDBC_SQL|^SQL_EXCEPTION$|^JVM_OOM$|^TOMCAT_(?:SSL_TLS|LDAP_ERROR|NETWORK_ERROR|DEPLOY_ERROR|JAVA_EXCEPTION|SEVERE|THREAD_POOL)$|^AUD(?:110|125|126|127|150|153|154|2309|4005|6002)$|^SSH-FAIL$/i.test(cm.code)))
+                  .map(cm => [cm.code, Number(cm.failCount || cm.totalInteractions || 0)])
+              : Object.entries(consolidated.codeMap520 || {})
+                  .concat(Object.entries(consolidated.codeMapOra || {}))
+                  .concat(Object.entries(consolidated.codeMapTomcat || {}).filter(([k]) => !/^(?:TOMCAT_INFO|TOMCAT_LIFECYCLE|TOMCAT_CLIENT_ABORT|TOMCAT_WARN)$/i.test(k)))
+                  .concat(Object.entries(consolidated.codeMapAud || {}).filter(([k]) => /^AUD(?:110|125|126|127|150|151|153|154|155|160|2309|4005|5106|6001|6002)$/i.test(k)));
+            const topCodesStr = critPairs
               .sort((a, b) => b[1] - a[1])
               .slice(0, 4)
               .map(([c, n]) => `<code>${escapeHtml(c)}</code> (${n.toLocaleString()}x)`)
-              .join(', ') || 'Ninguno';
-            const oraCount = Object.values(consolidated.codeMapOra || {}).reduce((a, b) => a + b, 0);
+              .join(', ') || (isEn ? 'None' : 'Ninguno');
+            const oraCount = fmOne?.dbHealth ? Number(fmOne.dbHealth.totalDbIncidents || 0) : Object.values(consolidated.codeMapOra || {}).reduce((a, b) => a + b, 0);
+            const tomcatErrCount = fmOne?.tomcatHealth ? Number(fmOne.tomcatHealth.totalTomcatErrors || 0) : Object.entries(consolidated.codeMapTomcat || {}).filter(([k]) => !/^(?:TOMCAT_INFO|TOMCAT_LIFECYCLE|TOMCAT_CLIENT_ABORT|TOMCAT_WARN)$/i.test(k)).reduce((a, [, v]) => a + v, 0);
             if (window.UserTraceReport) window.UserTraceReport.buildUserStats();
             const validUsers = window.UserTraceReport ? Object.values(window.UserTraceReport.cachedStats || {}) : [];
+            const totalUsersOne = fmOne ? Number(fmOne.uniqueValidUsers ?? validUsers.length) : Math.max(validUsers.length, consolidated.totalLogs > 0 ? (state.globalStreamMetrics?.totalUniqueUsers || 0) : 0);
             const errUsers = validUsers.filter(u => u.errors > 0 || u.isLocked);
-            const topErrUsersStr = errUsers.slice(0, 4).map(u => `<code>${escapeHtml(u.username)}</code> (${u.errors} fallos)`).join(', ') || (isEn ? '0 affected users' : '0 usuarios con fallos');
+            const errUsersTotalOne = fmOne ? Number(fmOne.usersWithErrors ?? errUsers.length) : errUsers.length;
+            const topErrUsersStr = errUsers.slice(0, 4).map(u => `<code>${escapeHtml(u.username)}</code> (${u.errors})`).join(', ') || (isEn ? '0 affected users' : '0 usuarios con fallos');
+            const infraHealthPartsEn = [
+              oraCount > 0 ? `${oraCount.toLocaleString()} DB/JDBC incidents` : 'DB/Oracle HEALTHY (0 errors)',
+              tomcatErrCount > 0 ? `${tomcatErrCount.toLocaleString()} Tomcat/JVM errors` : 'Tomcat/JVM HEALTHY'
+            ];
+            const infraHealthPartsEs = [
+              oraCount > 0 ? `${oraCount.toLocaleString()} incidentes BD/JDBC` : 'Base de Datos SALUDABLE (0 ORA/JDBC)',
+              tomcatErrCount > 0 ? `${tomcatErrCount.toLocaleString()} fallos Tomcat/JVM` : 'Tomcat/JVM SALUDABLE'
+            ];
             if (criticalLogsCount > 0 || warningLogsCount > 0) {
               return isEn
-                ? `• <strong>Verified Evidence:</strong> Processed <strong>${totalCount.toLocaleString()}</strong> events across <strong>${consolidated.fileCount || 1}</strong> file(s), identifying <strong>${validUsers.length}</strong> real users (${errUsers.length} with errors).<br>• <strong>Top Detected Codes:</strong> ${topCodesStr}.<br>• <strong>Impacted Users:</strong> ${topErrUsersStr}.<br>• <strong>Database Health:</strong> ${oraCount > 0 ? `${oraCount} Oracle/JDBC incidents detected.` : 'HEALTHY (0 ORA/JDBC errors detected in sample).'}`
-                : `• <strong>Evidencia Verificada (Cero Alucinaciones):</strong> Se auditaron <strong>${totalCount.toLocaleString()}</strong> eventos en <strong>${consolidated.fileCount || 1}</strong> archivo(s), identificando <strong>${validUsers.length}</strong> usuarios nominales reales (${errUsers.length} con incidencias).<br>• <strong>Códigos Reales Detectados:</strong> ${topCodesStr}.<br>• <strong>Usuarios Afectados:</strong> ${topErrUsersStr}.<br>• <strong>Salud de Base de Datos:</strong> ${oraCount > 0 ? `${oraCount} incidentes Oracle/JDBC detectados.` : 'SALUDABLE (0 errores ORA/JDBC en la muestra).'}`;
+                ? `• <strong>Verified Evidence:</strong> Audited <strong>${totalCount.toLocaleString()}</strong> events across <strong>${consolidated.fileCount || 1}</strong> file(s), identifying <strong>${totalUsersOne.toLocaleString()}</strong> real users (${errUsersTotalOne.toLocaleString()} with errors).<br>• <strong>Top Critical Codes:</strong> ${topCodesStr}.<br>• <strong>Impacted Users:</strong> ${topErrUsersStr}.<br>• <strong>Platform &amp; DB Health:</strong> ${infraHealthPartsEn.join(' | ')}.`
+                : `• <strong>Evidencia Verificada (Cero Alucinaciones):</strong> Se auditaron <strong>${totalCount.toLocaleString()}</strong> eventos en <strong>${consolidated.fileCount || 1}</strong> archivo(s), identificando <strong>${totalUsersOne.toLocaleString()}</strong> usuarios nominales reales (${errUsersTotalOne.toLocaleString()} con incidencias).<br>• <strong>Códigos Críticos Detectados:</strong> ${topCodesStr}.<br>• <strong>Usuarios Afectados:</strong> ${topErrUsersStr}.<br>• <strong>Salud de Plataforma &amp; BD:</strong> ${infraHealthPartsEs.join(' | ')}.`;
             }
             return isEn
-              ? `• <strong>Stability Status:</strong> 100% nominal operation across ${totalCount.toLocaleString()} audited events and ${validUsers.length} users (0 critical errors, 0 database errors).`
-              : `• <strong>Diagnóstico de Estabilidad:</strong> Operación 100% nominal sobre ${totalCount.toLocaleString()} eventos y ${validUsers.length} usuarios reales (0 errores críticos, 0 errores de base de datos).`;
+              ? `• <strong>Stability Status:</strong> 100% nominal operation across ${totalCount.toLocaleString()} audited events and ${totalUsersOne.toLocaleString()} users (0 critical errors, 0 database errors).`
+              : `• <strong>Diagnóstico de Estabilidad:</strong> Operación 100% nominal sobre ${totalCount.toLocaleString()} eventos y ${totalUsersOne.toLocaleString()} usuarios reales (0 errores críticos, 0 errores de base de datos).`;
           })()}
         </div>
       </div>
@@ -3570,14 +3468,18 @@ document.addEventListener('DOMContentLoaded', () => {
           ${i18n.onePageRemediationTitle}
         </div>
         <div style="background:#0f172a; color:#a5f3fc; padding:10px 12px; border-radius:6px; font-family:'JetBrains Mono', Consolas, monospace; font-size:9.5px; line-height:1.5;">
-          ${isCloud ? `
-# 1. ${isEn ? 'Enable overwrite directives in bulk connector definition' : 'Habilitar directivas de sobrescritura en conector de aprovisionamiento masivo'}
-curl -X POST "https://identityguard-api.entrust.com/v1/bulk/config" -d '{"overwriteExistingGrid":true, "updateExistingCredentials":true}'
-          ` : `
-REM 1. ${isEn ? 'Entrust IdentityGuard OnPremise verification & account unlock' : 'Verificación de servicios Entrust IdentityGuard OnPremise y auditoría de cuentas [AUD6001/AUD6002/520xxx]'}
-sc query "Entrust IdentityGuard Administration Service"
-REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte y Parches:'} https://trustedcare.entrust.com
-          `}
+          ${(() => {
+            if (isCloud) {
+              return `\n# 1. ${isEn ? 'Enable overwrite directives in bulk connector definition' : 'Habilitar directivas de sobrescritura en conector de aprovisionamiento masivo'}\ncurl -X POST "https://identityguard-api.entrust.com/v1/bulk/config" -d '{"overwriteExistingGrid":true, "updateExistingCredentials":true}'\n          `;
+            }
+            const hasTc = Object.keys(consolidated.codeMapTomcat || {}).some(k => !/^(?:TOMCAT_INFO|TOMCAT_LIFECYCLE|TOMCAT_CLIENT_ABORT|TOMCAT_WARN)$/i.test(k));
+            if (hasTc) {
+              return isEn
+                ? `# 1. Inspect Tomcat / JVM health & stuck threads in catalina.out\ngrep -E "SEVERE|StuckThread|OutOfMemoryError|Exception" $IG_HOME/logs/catalina.out | tail -n 50\n# 2. Verify IdentityGuard services & account unlock [AUD6002/520xxx] via TrustedCare: https://trustedcare.entrust.com`
+                : `# 1. Inspeccionar salud Tomcat / JVM e hilos en catalina.out\ngrep -E "SEVERE|StuckThread|OutOfMemoryError|Exception" $IG_HOME/logs/catalina.out | tail -n 50\n# 2. Auditoría de cuentas bloqueadas [AUD6002/520xxx] y soporte oficial: https://trustedcare.entrust.com`;
+            }
+            return `\nREM 1. ${isEn ? 'Entrust IdentityGuard OnPremise verification & account unlock' : 'Verificación de servicios Entrust IdentityGuard OnPremise y auditoría de cuentas [AUD6001/AUD6002/520xxx]'}\nsc query "Entrust IdentityGuard Administration Service"\nREM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte y Parches:'} https://trustedcare.entrust.com\n          `;
+          })()}
         </div>
       </div>
 
@@ -3660,19 +3562,31 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const activeClient = getActiveClientProfile();
     const clientSanitized = (activeClient ? activeClient.name : 'Entrust').replace(/[^a-zA-Z0-9]/g, '_');
     const dateStamp = new Date().toISOString().slice(0, 10);
+    const cloned = container.cloneNode(true);
+    const docEl = cloned.querySelector('#exec-report-document');
+    const viewMode = docEl ? (docEl.getAttribute('data-view') || 'full') : 'full';
+    const hideSelectors = { exec: ['.rpt-s-tec', '.rpt-s-usr', '.rpt-s-db'], users: ['.rpt-s-tec', '.rpt-s-db'], db: ['.rpt-s-tec', '.rpt-s-usr'], full: [] }[viewMode] || [];
+    hideSelectors.forEach(sel => cloned.querySelectorAll(sel).forEach(n => n.remove()));
+    const innerContent = docEl ? docEl.outerHTML : `<div id="exec-report-document">${cloned.innerHTML}</div>`;
 
     const fullHtml = `<!DOCTYPE html>
-<html lang="es">
+<html lang="${state.reportLanguage === 'en' ? 'en' : 'es'}">
 <head>
   <meta charset="UTF-8">
   <title>Informe Oficial Entrust - ${escapeHtml(activeClient ? activeClient.name : 'Entrust')}</title>
   <style>
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; color: #0f172a; padding: 30px; margin: 0; }
-    #exec-report-document { max-width: 960px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-    th, td { border: 1px solid #cbd5e1; padding: 8px; font-size: 11px; text-align: left; }
-    th { background: #0a3d6d; color: #ffffff; font-weight: bold; }
+    #exec-report-document { max-width: 1020px; margin: 0 auto; background: #ffffff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); box-sizing: border-box; }
+    #exec-report-document h3 { background: linear-gradient(90deg, rgba(10,61,109,0.08), transparent); padding: 6px 8px 6px 10px; border-radius: 0 6px 6px 0; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; word-wrap: break-word; }
+    th, td { border: 1px solid #cbd5e1; padding: 7px 6px; font-size: 10.5px; text-align: left; overflow-wrap: anywhere; word-break: break-word; vertical-align: top; }
     tr:nth-child(even) { background: #f8fafc; }
+    code { background: #f1f5f9; color: #0369a1; border: 1px solid #cbd5e1; padding: 1px 5px; border-radius: 4px; font-family: Consolas, monospace; font-size: 0.88em; font-weight: 600; display: inline-block; max-width: 100%; overflow-wrap: anywhere; word-break: break-word; }
+    .rpt-phase-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .rpt-phase-card { min-width: 0; overflow-wrap: anywhere; word-break: break-word; box-sizing: border-box; }
+    .rpt-user-pill-list { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0 8px 0; }
+    .rpt-user-pill { display: inline-block; max-width: 100%; overflow-wrap: anywhere; word-break: break-word; }
+    .rpt-seq-code { display: block; overflow-wrap: anywhere; word-break: break-word; }
     @media print {
       body { padding: 0; background: #fff; }
       #exec-report-document { box-shadow: none; padding: 0; max-width: 100%; }
@@ -3681,9 +3595,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
   </style>
 </head>
 <body>
-  <div id="exec-report-document">
-    ${container.innerHTML}
-  </div>
+  ${innerContent}
 </body>
 </html>`;
 
@@ -3803,12 +3715,16 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         const bucketKey = `📅 ${datePart} — ${timeRangeStr}`;
         const sortKey = `${datePart} ${padHour}`;
 
+        const bTot = Number(b.total || 0);
+        const bErr = Number(b.errors || 0);
+        const bWarn = Number(b.warnings || 0);
+        const bInfo = b.info != null ? Number(b.info) : Math.max(0, bTot - bErr - bWarn);
         hourBuckets.set(sortKey, {
           key: bucketKey,
-          total: b.total || 0,
-          critical: b.errors || 0,
-          warn: 0,
-          info: b.info || (b.total - (b.errors || 0))
+          total: bTot,
+          critical: bErr,
+          warn: bWarn,
+          info: bInfo
         });
       });
     } else if (targetLogs && targetLogs.length > 0) {
@@ -3910,11 +3826,11 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         <table style="width:100%; border-collapse:collapse; font-size:11px;">
           <thead>
             <tr style="background:#0a3d6d; color:#ffffff;">
-              <th style="padding:6px; border:1px solid #0a3d6d; text-align:left;">${i18n.thDateHour}</th>
-              <th style="padding:6px; border:1px solid #0a3d6d;">${i18n.thTotalEvents}</th>
-              <th style="padding:6px; border:1px solid #0a3d6d;">${i18n.thCriticalErrors}</th>
-              <th style="padding:6px; border:1px solid #0a3d6d;">${i18n.thWarnAlerts}</th>
-              <th style="padding:6px; border:1px solid #0a3d6d;">${i18n.thInfoOps}</th>
+              <th style="padding:6px; border:1px solid #0a3d6d; background:#0a3d6d; color:#ffffff; text-align:left;">${i18n.thDateHour}</th>
+              <th style="padding:6px; border:1px solid #0a3d6d; background:#0a3d6d; color:#ffffff;">${i18n.thTotalEvents}</th>
+              <th style="padding:6px; border:1px solid #0a3d6d; background:#0a3d6d; color:#ffffff;">${i18n.thCriticalErrors}</th>
+              <th style="padding:6px; border:1px solid #0a3d6d; background:#0a3d6d; color:#ffffff;">${i18n.thWarnAlerts}</th>
+              <th style="padding:6px; border:1px solid #0a3d6d; background:#0a3d6d; color:#ffffff;">${i18n.thInfoOps}</th>
             </tr>
           </thead>
           <tbody>
@@ -4031,7 +3947,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     }
 
     const numericEntrustRe = /^5(?:2\d{4,5}|[013-9]\d{5})$/;
-    const criticalTomcatRe = /^(?:JVM_OOM|TOMCAT_(?:SSL_TLS|LDAP_ERROR|NETWORK_ERROR|DEPLOY_ERROR|JAVA_EXCEPTION|SEVERE|THREAD_POOL))$/i;
+    const strictCriticalTomcatRe = /^(?:JVM_OOM|TOMCAT_(?:SSL_TLS|LDAP_ERROR|NETWORK_ERROR|DEPLOY_ERROR|JAVA_EXCEPTION|SEVERE))$/i;
 
     if (fmData && Array.isArray(fmData.codeMatrix)) {
       fmData.codeMatrix.forEach(cm => {
@@ -4041,7 +3957,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         const diag = window.knowledgeBaseEngine.diagnoseLog(cStr, cStr);
         const failCnt = Number(cm.failCount || 0);
         const totCnt = Number(cm.totalInteractions || 0);
-        const isCrit = failCnt > 0 || cm.kind === 'ERROR_520' || cm.kind === 'DATABASE_ORA';
+        const isCrit = failCnt > 0 || cm.kind === 'ERROR_520' || (cm.kind === 'DATABASE_ORA' && !/^JDBC$/i.test(cStr));
         allUniqueCodesMap.set(cStr, {
           code: cStr,
           count: totCnt,
@@ -4065,7 +3981,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         if (!isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(cStr)) return;
         if (!allUniqueCodesMap.has(cStr)) {
           const diag = window.knowledgeBaseEngine.diagnoseLog(cStr, cStr);
-          const isCrit = cStr.includes('error') || numericEntrustRe.test(cStr) || /^(?:ORA-|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)/i.test(cStr) || criticalTomcatRe.test(cStr) || /^(?:AUD110|AUD125|AUD126|AUD127|AUD150|AUD153|AUD154|AUD2309|AUD4005|AUD6001|AUD6002|SSH-FAIL)$/i.test(cStr);
+          const isCrit = cStr.includes('error') || numericEntrustRe.test(cStr) || /^(?:ORA-|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)/i.test(cStr) || strictCriticalTomcatRe.test(cStr) || /^(?:AUD110|AUD125|AUD126|AUD127|AUD150|AUD153|AUD154|AUD2309|AUD4005|AUD6002|SSH-FAIL)$/i.test(cStr);
           allUniqueCodesMap.set(cStr, {
             code: cStr,
             count: Number(item.count || 0),
@@ -4120,11 +4036,19 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     sortedIncidents = Array.from(allUniqueCodesMap.values()).sort((a, b) => b.count - a.count);
     const diagMapSize = sortedIncidents.length;
-    const displayIncidents = sortedIncidents.slice(0, 500);
+    const getSec1Tier = (x) => {
+      if (Number(x.failCount || 0) > 0 || x.level === 'CRITICAL' || numericEntrustRe.test(x.code) || /^(?:ORA-|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)/i.test(x.code) || strictCriticalTomcatRe.test(x.code)) return 0;
+      if (/^TOMCAT_THREAD_POOL$|^AUD(?:151|155|160|161|5106|6001)$/i.test(x.code) || x.level === 'WARN') return 1;
+      return 2;
+    };
+    const displaySec1Incidents = [...sortedIncidents]
+      .sort((a, b) => (getSec1Tier(a) - getSec1Tier(b)) || (Number(b.failCount || 0) - Number(a.failCount || 0)) || (b.count - a.count))
+      .slice(0, 60);
+    const displayTopCodes = sortedIncidents.slice(0, 60);
+    const sec1DisplayCount = diagMapSize <= 60 ? diagMapSize : `${displaySec1Incidents.length} de ${diagMapSize}`;
 
-    displayIncidents.forEach((item, idx) => {
-      const idxNum = idx + 1;
-      const { code, diag, count, sampleRaw, level, service, sampleFile, sampleTime, sampleLine } = item;
+    const resolveIncidentDisplayMeta = (item) => {
+      const { code, diag, count, sampleRaw, service, sampleFile, sampleTime, sampleLine } = item;
       const bDiag = getBilingualDiagnostic(diag, code, service, isEn);
       const pctStr = formatPctStr(count, totalCount);
 
@@ -4147,13 +4071,12 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       else if (!isCloud || /SSH|OS|IG\.SYSTEM|SYSTEM_LOG/i.test(code)) { familyBadge = '🖥️ Sistema & SSH/OS'; familyColor = '#0284c7'; }
       else if (/bulkidentityguard|\.assignedgrid|idaas/i.test(code)) { familyBadge = '☁️ IDaaS Cloud'; familyColor = '#0284c7'; }
 
-      // Classification: True System Error vs Preexisting Data Collision vs Audit
       let typeBadge = '';
       if (/AWS-S3|S3-404|ORA-|JDBC_SQL_EXCEPTION|SQL_EXCEPTION|JVM_OOM|TOMCAT_(?:SSL_TLS|LDAP_ERROR|NETWORK_ERROR|DEPLOY_ERROR|JAVA_EXCEPTION|SEVERE)|5201000|OutOfMemory|SQLException|Connection pool|EOF/i.test(code) || /The specified key does not exist|snapshot too old/i.test(sampleRaw)) {
-        typeBadge = isEn 
+        typeBadge = isEn
           ? `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">🔴 SYSTEM & INFRASTRUCTURE ERROR</span>`
           : `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">🔴 FALLO REAL DE SISTEMA / INFRAESTRUCTURA</span>`;
-      } else if (numericEntrustRe.test(code) || /^AUD(?:110|125|126|127|150|153|154|2309|4005|6001|6002)$|^SSH-FAIL$/i.test(code)) {
+      } else if (numericEntrustRe.test(code) || /^AUD(?:110|125|126|127|150|153|154|2309|4005|6002)$|^SSH-FAIL$/i.test(code) || Number(item.failCount || 0) > 0) {
         typeBadge = isEn
           ? `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">🚨 AUTHENTICATION / SECURITY FAILURE</span>`
           : `<span style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">🚨 FALLO DE AUTENTICACIÓN / SEGURIDAD</span>`;
@@ -4167,7 +4090,6 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           : `<span style="background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:3px; display:inline-block; margin-top:3px;">📋 AUDITORÍA ADMINISTRATIVA</span>`;
       }
 
-      // Documentation link
       let docLink = '';
       if (isCloud && /bulkidentityguard|\.assignedgrid|AWS-S3|S3-404/i.test(code)) {
         docLink = `<div style="margin-top:4px;"><a href="https://docs.trustedauth.com/docs/perform-bulk-operations/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold; font-size:9.5px;">🔗 ${isEn ? 'Official Docs: Entrust IDaaS Bulk Operations' : 'Documentación Oficial Entrust IDaaS: Bulk Operations'}</a></div>`;
@@ -4176,6 +4098,13 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       } else if (/ORA/i.test(code)) {
         docLink = `<div style="margin-top:4px;"><a href="https://docs.oracle.com/error-help/db/" target="_blank" style="color:#0284c7; text-decoration:underline; font-weight:bold; font-size:9.5px;">🔗 ${isEn ? 'Oracle DB Error Guide & Retention Help' : 'Guía Oficial Oracle DB: Soporte de Errores'}</a></div>`;
       }
+
+      return { code, count, sampleRaw, sampleFile, sampleTime, sampleLine, bDiag, pctStr, affectedUsersBadges, affectedUsersTotalCount, evidenceMetaHtml, familyBadge, familyColor, typeBadge, docLink };
+    };
+
+    displaySec1Incidents.forEach((item, idx) => {
+      const idxNum = idx + 1;
+      const { code, count, sampleRaw, sampleFile, sampleTime, sampleLine, bDiag, pctStr, affectedUsersBadges, affectedUsersTotalCount, evidenceMetaHtml, familyBadge, familyColor, typeBadge, docLink } = resolveIncidentDisplayMeta(item);
 
       if (onlyCatalogErrors) {
         incidentsHtml += `
@@ -4229,7 +4158,11 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
             </td>
           </tr>`;
       }
+    });
 
+    displayTopCodes.forEach((item, idx) => {
+      const idxNum = idx + 1;
+      const { code, count, bDiag, pctStr, affectedUsersBadges, familyBadge, familyColor, typeBadge, docLink } = resolveIncidentDisplayMeta(item);
       topCodesHtml += `
         <tr style="page-break-inside:avoid; break-inside:avoid; background:${idxNum % 2 === 0 ? '#ffffff' : '#f8fafc'};">
           <td style="padding:8px 6px; border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:${familyColor}; text-align:center;">
@@ -4248,17 +4181,23 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         </tr>`;
     });
 
-    if (sortedIncidents.length > 500) {
-      const extraCodes = sortedIncidents.length - 500;
-      const extraMsg = isEn
-        ? `+ ${extraCodes} additional low-frequency codes available in CSV export / Analyzer`
-        : `+ ${extraCodes} códigos adicionales de menor frecuencia disponibles en CSV / Analizador`;
+    if (sortedIncidents.length > displaySec1Incidents.length) {
+      const extraCodes1 = sortedIncidents.length - displaySec1Incidents.length;
+      const extraMsg1 = isEn
+        ? `+ ${extraCodes1} additional low-severity/nominal codes available in CSV export / Analyzer`
+        : `+ ${extraCodes1} códigos adicionales de menor severidad disponibles en CSV / Analizador`;
       if (onlyCatalogErrors) {
-        incidentsHtml += `<div style="padding:10px 14px; background:#f1f5f9; border:1px dashed #94a3b8; border-radius:6px; font-size:11px; color:#475569; text-align:center; margin-top:8px;">📋 ${extraMsg}</div>`;
+        incidentsHtml += `<div style="padding:10px 14px; background:#f1f5f9; border:1px dashed #94a3b8; border-radius:6px; font-size:11px; color:#475569; text-align:center; margin-top:8px;">📋 ${extraMsg1}</div>`;
       } else {
-        incidentsHtml += `<tr><td colspan="5" style="padding:8px 10px; border:1px solid #cbd5e1; background:#f1f5f9; color:#475569; font-size:10px; text-align:center; font-weight:600;">📋 ${extraMsg}</td></tr>`;
+        incidentsHtml += `<tr><td colspan="5" style="padding:8px 10px; border:1px solid #cbd5e1; background:#f1f5f9; color:#475569; font-size:10px; text-align:center; font-weight:600;">📋 ${extraMsg1}</td></tr>`;
       }
-      topCodesHtml += `<tr><td colspan="4" style="padding:8px 10px; border:1px solid #cbd5e1; background:#f1f5f9; color:#475569; font-size:10px; text-align:center; font-weight:600;">📋 ${extraMsg}</td></tr>`;
+    }
+    if (sortedIncidents.length > displayTopCodes.length) {
+      const extraCodes4 = sortedIncidents.length - displayTopCodes.length;
+      const extraMsg4 = isEn
+        ? `+ ${extraCodes4} additional low-frequency codes available in CSV export / Analyzer`
+        : `+ ${extraCodes4} códigos adicionales de menor frecuencia disponibles en CSV / Analizador`;
+      topCodesHtml += `<tr><td colspan="4" style="padding:8px 10px; border:1px solid #cbd5e1; background:#f1f5f9; color:#475569; font-size:10px; text-align:center; font-weight:600;">📋 ${extraMsg4}</td></tr>`;
     }
 
     // Construir Sección III: Censo Nominal de Usuarios y Secuencia de Solicitudes (Solicitud 1 -> Solicitud N)
@@ -4353,7 +4292,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       </div>
     `;
 
-    // Construir Sección IV: Salud de Base de Datos & Persistencia (100% Verificable) + Post-Mortem TrustedCare
+    // Construir Sección IV: Salud de Base de Datos & Persistencia + Salud Contenedor Tomcat/JVM + Post-Mortem TrustedCare
     const dbHealthObj = forensicFallback.dbHealth || { status: 'HEALTHY', totalDbIncidents: 0, indicators: [] };
     const dbIndicatorsRows = (dbHealthObj.indicators || []).map((ind, iIdx) => {
       const isOk = ind.count === 0;
@@ -4368,46 +4307,142 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         </tr>`;
     }).join('');
 
+    let tomcatHealthObj = forensicFallback.tomcatHealth || null;
+    if (!tomcatHealthObj || !Array.isArray(tomcatHealthObj.indicators)) {
+      const localTomcatInds = sortedIncidents
+        .filter(i => /^(?:TOMCAT_|JVM_)/i.test(i.code) && !/^TOMCAT_INFO$/i.test(i.code))
+        .map(i => ({
+          code: i.code,
+          count: i.count,
+          failCount: Number(i.failCount || 0),
+          severity: Number(i.failCount || 0) > 0 ? 'CRITICAL' : 'WARN',
+          diagnosis: `${i.diag?.title || i.code}: ${i.diag?.meaning || 'Evento registrado en catalina.out'}`
+        }));
+      const tErr = localTomcatInds.reduce((a, x) => a + x.failCount, 0);
+      const tWarn = localTomcatInds.filter(x => x.failCount === 0).reduce((a, x) => a + x.count, 0);
+      tomcatHealthObj = { status: tErr > 0 ? 'DEGRADED' : (tWarn > 0 ? 'WARN' : 'HEALTHY'), totalTomcatErrors: tErr, totalTomcatWarnings: tWarn, indicators: localTomcatInds };
+    }
+    const tomcatErrSummary = Number(tomcatHealthObj.totalTomcatErrors || 0);
+    const tomcatWarnSummary = Number(tomcatHealthObj.totalTomcatWarnings || 0);
+    const tomcatDiagByPrefix = {
+      JVM_OOM: 'Agotamiento de memoria JVM (Heap Space, Metaspace, GC overhead o límite de hilos nativos en Tomcat).',
+      TOMCAT_SSL_TLS: 'Error de negociación TLS/SSL, keystore o certificados PKIX en conectores HTTPS/LDAPS de Tomcat.',
+      TOMCAT_LDAP_ERROR: 'Error JNDI / LDAPS comunicando el contenedor Tomcat con Active Directory o LDAP.',
+      TOMCAT_DEPLOY_ERROR: 'Fallo de despliegue, listenerStart o contexto web durante el arranque de Tomcat.',
+      TOMCAT_NETWORK_ERROR: 'Error de red, puerto ocupado (BindException) o SocketTimeout en conectores HTTP/AJP.',
+      TOMCAT_THREAD_POOL: 'Hilos bloqueados (StuckThreadDetectionValve) o saturación del executor/pool maxThreads de Tomcat.',
+      TOMCAT_JAVA_EXCEPTION: 'Excepción Java no controlada o stack trace de aplicación capturado en catalina.out.',
+      TOMCAT_SEVERE: 'Evento crítico de nivel SEVERE registrado por Apache Tomcat Catalina.',
+      TOMCAT_WARN: 'Advertencia operativa o de configuración registrada en catalina.out.',
+      TOMCAT_CLIENT_ABORT: 'Desconexión abrupta del cliente HTTP remoto (ClientAbortException / Broken pipe).',
+      TOMCAT_LIFECYCLE: 'Evento informativo del ciclo de vida y arranque del servidor Apache Tomcat.'
+    };
+    const tomcatIndicatorsRows = (tomcatHealthObj.indicators || []).map((ind, tIdx) => {
+      const codeStr = String(ind.code || '');
+      const codePrefix = codeStr.split(/[\s(]/)[0].trim().toUpperCase();
+      const sevUpper = String(ind.severity || '').toUpperCase();
+      const totalInd = Number(ind.count || 0);
+      const isCritSev = ['CRITICAL', 'CRÍTICO', 'ALTO'].includes(sevUpper);
+      const fails = Number(
+        (ind.failCount !== undefined && ind.failCount !== null)
+          ? ind.failCount
+          : (isCritSev ? totalInd : 0)
+      );
+      const isInfoOnly = sevUpper === 'INFO' && fails === 0;
+      const diagText = ind.diagnosis
+        || (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(codePrefix, codePrefix)?.meaning : '')
+        || tomcatDiagByPrefix[codePrefix]
+        || 'Evento registrado en catalina.out.';
+      const badgeBg = fails > 0 ? '#fee2e2' : (isInfoOnly ? '#e0f2fe' : (totalInd > 0 ? '#fef3c7' : '#dcfce7'));
+      const badgeClr = fails > 0 ? '#b91c1c' : (isInfoOnly ? '#0369a1' : (totalInd > 0 ? '#92400e' : '#15803d'));
+      const badgeTxt = fails > 0
+        ? `🚨 ${escapeHtml(ind.severity || 'CRÍTICO')} (${fails.toLocaleString()} err)`
+        : (isInfoOnly ? 'ℹ️ INFO' : (totalInd > 0 ? '⚠️ WARN / ADVERTENCIA' : '✅ OK (0)'));
+      return `
+        <tr style="background:${tIdx % 2 === 0 ? '#ffffff' : '#fff7ed'};">
+          <td style="padding:6px 8px; border:1px solid #fed7aa; font-family:monospace; font-weight:bold; color:${fails > 0 ? '#9a3412' : '#0f172a'}; font-size:10px;">${escapeHtml(ind.code)}</td>
+          <td style="padding:6px 8px; border:1px solid #fed7aa; text-align:center; font-family:monospace; font-weight:bold; color:${fails > 0 ? '#dc2626' : (isInfoOnly ? '#0284c7' : '#d97706')}; font-size:10px;">${fails.toLocaleString()} / ${totalInd.toLocaleString()}</td>
+          <td style="padding:6px 8px; border:1px solid #fed7aa; text-align:center;">
+            <span style="background:${badgeBg}; color:${badgeClr}; padding:1px 6px; border-radius:4px; font-weight:800; font-size:9px;">${badgeTxt}</span>
+          </td>
+          <td style="padding:6px 8px; border:1px solid #fed7aa; font-size:10px; color:#334155;">${escapeHtml(diagText)}</td>
+        </tr>`;
+    }).join('');
+
     const dbAndPostMortemSectionHtml = `
       <div style="margin-top:20px; margin-bottom:25px; page-break-inside:avoid; break-inside:avoid;">
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:10px; font-size:15px;">
-          6. Diagnóstico Verificable de Salud de Base de Datos &amp; Dictamen Post-Mortem (Entrust TrustedCare)
+          6. Diagnóstico Verificable de Salud de Base de Datos, Contenedor Tomcat/JVM &amp; Dictamen Post-Mortem (Entrust TrustedCare)
         </h3>
         <div style="background:${dbHealthObj.totalDbIncidents === 0 ? '#f0fdf4' : '#fef2f2'}; border:1px solid ${dbHealthObj.totalDbIncidents === 0 ? '#86efac' : '#fca5a5'}; border-left:5px solid ${dbHealthObj.totalDbIncidents === 0 ? '#16a34a' : '#dc2626'}; padding:10px 14px; border-radius:6px; margin-bottom:12px; font-size:11px;">
           <strong style="color:${dbHealthObj.totalDbIncidents === 0 ? '#166534' : '#991b1b'};">
             ${dbHealthObj.totalDbIncidents === 0
               ? '✅ DICTAMEN DE PERSISTENCIA Y BASE DE DATOS: SALUDABLE (0 Errores ORA / 0 Excepciones JDBC en los archivos auditados — Sin alucinaciones de fallos de BD)'
-              : `🚨 ALERTA DE PERSISTENCIA Y BASE DE DATOS: Se detectaron ${dbHealthObj.totalDbIncidents} incidentes reales de Base de Datos / JDBC en la muestra`}
+              : `🚨 ALERTA DE PERSISTENCIA Y BASE DE DATOS: Se detectaron ${dbHealthObj.totalDbIncidents.toLocaleString()} incidentes reales de Base de Datos / JDBC en la muestra`}
           </strong>
           <div style="color:#334155; margin-top:4px;">
             ${escapeHtml(forensicFallback.postMortem?.executiveVerdict || '')}
             <span style="margin-left:8px;"><a href="https://trustedcare.entrust.com" target="_blank" style="color:#0284c7; font-weight:bold; text-decoration:underline;">🌐 Portal Oficial Entrust TrustedCare (https://trustedcare.entrust.com) ↗</a></span>
           </div>
         </div>
-        <table class="report-table" style="width:100%; border-collapse:collapse; font-size:10px;">
+        <table class="report-table" style="width:100%; border-collapse:collapse; font-size:10px; margin-bottom:16px;">
           <thead>
             <tr style="background:#e0f2fe; color:#0a3d6d; text-align:left;">
-              <th style="padding:6px 8px; border:1px solid #cbd5e1; width:28%;">Indicador de Base de Datos / JDBC</th>
-              <th style="padding:6px 8px; border:1px solid #cbd5e1; width:12%; text-align:center;">Ocurrencias</th>
-              <th style="padding:6px 8px; border:1px solid #cbd5e1; width:14%; text-align:center;">Estado</th>
-              <th style="padding:6px 8px; border:1px solid #cbd5e1; width:46%;">Veredicto Forense Basado en Evidencia</th>
+              <th style="padding:6px 8px; border:1px solid #cbd5e1; background:#e0f2fe; color:#0a3d6d; width:28%;">Indicador de Base de Datos / JDBC</th>
+              <th style="padding:6px 8px; border:1px solid #cbd5e1; background:#e0f2fe; color:#0a3d6d; width:12%; text-align:center;">Ocurrencias</th>
+              <th style="padding:6px 8px; border:1px solid #cbd5e1; background:#e0f2fe; color:#0a3d6d; width:14%; text-align:center;">Estado</th>
+              <th style="padding:6px 8px; border:1px solid #cbd5e1; background:#e0f2fe; color:#0a3d6d; width:46%;">Veredicto Forense Basado en Evidencia</th>
             </tr>
           </thead>
           <tbody>
             ${dbIndicatorsRows}
           </tbody>
         </table>
+
+        <div style="background:${tomcatErrSummary > 0 ? '#fef2f2' : (tomcatWarnSummary > 0 ? '#fffbeb' : '#f0fdf4')}; border:1px solid ${tomcatErrSummary > 0 ? '#fca5a5' : (tomcatWarnSummary > 0 ? '#fcd34d' : '#86efac')}; border-left:5px solid ${tomcatErrSummary > 0 ? '#ea580c' : (tomcatWarnSummary > 0 ? '#d97706' : '#16a34a')}; padding:10px 14px; border-radius:6px; margin-bottom:10px; font-size:11px;">
+          <strong style="color:${tomcatErrSummary > 0 ? '#9a3412' : (tomcatWarnSummary > 0 ? '#92400e' : '#166534')};">
+            ${tomcatErrSummary > 0
+              ? `☕ ALERTA EN CONTENEDOR APACHE TOMCAT / JVM: ${tomcatErrSummary.toLocaleString()} fallo(s) crítico(s) y ${tomcatWarnSummary.toLocaleString()} advertencia(s) detectadas en catalina.out`
+              : (tomcatWarnSummary > 0
+                ? `☕ ADVERTENCIA EN CONTENEDOR TOMCAT / JVM: 0 fallos críticos, ${tomcatWarnSummary.toLocaleString()} advertencia(s) de hilos/pool registradas`
+                : '☕ CONTENEDOR APACHE TOMCAT / JVM: SALUDABLE (0 excepciones críticas Java/JVM ni saturación de hilos detectada)')}
+          </strong>
+        </div>
+        ${tomcatIndicatorsRows ? `
+          <table class="report-table" style="width:100%; border-collapse:collapse; font-size:10px;">
+            <thead>
+              <tr style="background:#ffedd5; color:#9a3412; text-align:left;">
+                <th style="padding:6px 8px; border:1px solid #fdba74; background:#ffedd5; color:#9a3412; width:28%;">Indicador Tomcat / JVM</th>
+                <th style="padding:6px 8px; border:1px solid #fdba74; background:#ffedd5; color:#9a3412; width:14%; text-align:center;">Fallos / Total</th>
+                <th style="padding:6px 8px; border:1px solid #fdba74; background:#ffedd5; color:#9a3412; width:16%; text-align:center;">Estado</th>
+                <th style="padding:6px 8px; border:1px solid #fdba74; background:#ffedd5; color:#9a3412; width:42%;">Diagnóstico de Contenedor</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tomcatIndicatorsRows}
+            </tbody>
+          </table>
+        ` : ''}
       </div>
     `;
 
-    // Construir Fases del Roadmap 100% determinísticas según lo detectado realmente
-    const count520Total = sortedIncidents.filter(i => numericEntrustRe.test(i.code)).reduce((acc, i) => acc + i.count, 0);
+    // Construir Fases del Roadmap 100% determinísticas y reconciliadas con SQLite
+    const pmBd = (fmData && fmData.postMortem && fmData.postMortem.breakdown) ? fmData.postMortem.breakdown : null;
+    const count520Total = pmBd ? Number(pmBd.authentication520Errors || 0) : sortedIncidents.filter(i => numericEntrustRe.test(i.code)).reduce((acc, i) => acc + i.count, 0);
     const countAudTotal = sortedIncidents.filter(i => /^AUD/i.test(i.code)).reduce((acc, i) => acc + i.count, 0);
-    const countOraTotal = sortedIncidents.filter(i => /^ORA|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(i.code)).reduce((acc, i) => acc + i.count, 0);
-    const countTomcatErrTotal = sortedIncidents.filter(i => criticalTomcatRe.test(i.code) || (i.kind === 'TOMCAT_JVM' && Number(i.failCount || 0) > 0)).reduce((acc, i) => acc + (Number(i.failCount || 0) > 0 ? Number(i.failCount) : i.count), 0);
+    const countAudCritTotal = pmBd
+      ? Number(pmBd.auditCriticalErrors || 0)
+      : sortedIncidents.filter(i => /^AUD/i.test(i.code) && (Number(i.failCount || 0) > 0 || /^(?:AUD110|AUD125|AUD126|AUD127|AUD150|AUD153|AUD154|AUD2309|AUD4005|AUD6002)$/i.test(i.code))).reduce((acc, i) => acc + (Number(i.failCount || 0) > 0 ? Number(i.failCount) : i.count), 0);
+    const countOraTotal = pmBd ? Number(pmBd.databaseCodeErrors || 0) : sortedIncidents.filter(i => /^ORA|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(i.code)).reduce((acc, i) => acc + (Number(i.failCount || 0) > 0 ? Number(i.failCount) : i.count), 0);
+    const countTomcatErrTotal = pmBd
+      ? Number(pmBd.tomcatJvmErrors || 0)
+      : Math.max(tomcatErrSummary, sortedIncidents.filter(i => strictCriticalTomcatRe.test(i.code) || (/^(?:TOMCAT_|JVM_)/i.test(i.code) && Number(i.failCount || 0) > 0)).reduce((acc, i) => acc + (Number(i.failCount || 0) > 0 ? Number(i.failCount) : i.count), 0));
+    const countOtherCritTotal = pmBd
+      ? Number((pmBd.otherSystemErrors || 0) + (pmBd.migrationCollisions || 0))
+      : Math.max(0, criticalLogsCount - count520Total - countOraTotal - countTomcatErrTotal - countAudCritTotal);
     const countSysOrIdaasTotal = isCloud
       ? sortedIncidents.filter(i => /bulkidentityguard|\.assignedgrid|idaas/i.test(i.code)).reduce((acc, i) => acc + i.count, 0)
-      : sortedIncidents.filter(i => !numericEntrustRe.test(i.code) && !/^(?:AUD|ORA|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)/i.test(i.code)).reduce((acc, i) => acc + i.count, 0);
+      : sortedIncidents.filter(i => !numericEntrustRe.test(i.code) && !/^(?:AUD|ORA-|JDBC_SQL_EXCEPTION|SQL_EXCEPTION|TOMCAT_|JVM_)/i.test(i.code)).reduce((acc, i) => acc + i.count, 0);
 
     const topFailedUsersPills = sortedForensicUsers
       .filter(u => u.errors > 0 || u.isLocked || u.hadHistoricalLock)
@@ -4417,15 +4452,19 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     const topUsersChipsBlock = topFailedUsersPills
       ? `<div class="rpt-user-pill-list" style="display:flex; flex-wrap:wrap; gap:4px; margin:6px 0 8px 0;">${topFailedUsersPills}</div>`
       : '';
-    const lockedUsersCount = sortedForensicUsers.filter(u => u.isLocked).length;
-    const recoveredLockCount = sortedForensicUsers.filter(u => u.hadHistoricalLock && !u.isLocked).length;
+    const lockedUsersCount = (fmData && typeof fmData.activeLockedUsers === 'number')
+      ? fmData.activeLockedUsers
+      : sortedForensicUsers.filter(u => u.isLocked).length;
+    const recoveredLockCount = (fmData && typeof fmData.recoveredLockedUsers === 'number')
+      ? fmData.recoveredLockedUsers
+      : sortedForensicUsers.filter(u => u.hadHistoricalLock && !u.isLocked).length;
     const dynamicPhase1Html = (usersWithErrorsCount > 0 || count520Total > 0 || countAudTotal > 0 || countTomcatErrTotal > 0)
-      ? `<div style="margin-bottom:6px;">• Auditar ${lockedUsersCount > 0 ? `<strong>${lockedUsersCount}</strong> cuenta(s) bloqueada(s) activa(s) y ` : ''}<strong>${usersWithErrorsCount}</strong> cuenta(s) con fallos registrados:</div>${topUsersChipsBlock}<div style="margin-bottom:6px;">• Revisar <strong>${count520Total.toLocaleString()}</strong> errores <code>5xxxxx/520xxx</code>, <strong>${countTomcatErrTotal.toLocaleString()}</strong> fallos Tomcat/JVM y <strong>${countAudTotal.toLocaleString()}</strong> eventos <code>AUDxxx</code>.</div><div>• Validar accesos administrativos y sesiones SSH/OS (${countSysOrIdaasTotal.toLocaleString()} eventos).</div>`
+      ? `<div style="margin-bottom:6px;">• Auditar ${lockedUsersCount > 0 ? `<strong>${lockedUsersCount}</strong> cuenta(s) bloqueada(s) activa(s) y ` : ''}<strong>${usersWithErrorsCount}</strong> cuenta(s) con fallos registrados${recoveredLockCount > 0 ? ` (${recoveredLockCount} con bloqueo previo recuperado)` : ''}:</div>${topUsersChipsBlock}<div style="margin-bottom:6px;">• Revisar <strong>${count520Total.toLocaleString()}</strong> errores <code>5xxxxx/520xxx</code>, <strong>${countTomcatErrTotal.toLocaleString()}</strong> fallos Tomcat/JVM y <strong>${countAudTotal.toLocaleString()}</strong> eventos <code>AUDxxx</code>.</div><div>• Validar accesos administrativos y trazas de sistema (${countSysOrIdaasTotal.toLocaleString()} eventos).</div>`
       : `• Operación inmediata sin bloqueos críticos activos (0 cuentas bloqueadas).<br>• Mantener monitoreo preventivo sobre servicios de autenticación Entrust IdentityGuard OnPremise.`;
 
-    const dynamicPhase2Html = countOraTotal > 0 || dbHealthObj.totalDbIncidents > 0
-      ? `• Atender los <strong>${Math.max(dbHealthObj.totalDbIncidents || 0, countOraTotal).toLocaleString()}</strong> incidentes de persistencia Oracle/JDBC detectados en la muestra.<br>• Ajustar parámetros de pool JDBC y retención UNDO según evidencia.<br>• Sincronizar identidades afectadas en repositorio LDAP/Active Directory.`
-      : `• <strong>Base de Datos Saludable (0 errores ORA/JDBC):</strong> No se requiere intervención de emergencia sobre Oracle DB.<br>• Sincronizar y depurar en LDAP/AD las cuentas que registraron intentos fallidos de credencial o reto.<br>• Verificar vigencia de tokens/tarjetas Grid de los usuarios con fricción.`;
+    const dynamicPhase2Html = countOraTotal > 0 || dbHealthObj.totalDbIncidents > 0 || countTomcatErrTotal > 0
+      ? `• Atender <strong>${Math.max(dbHealthObj.totalDbIncidents || 0, countOraTotal).toLocaleString()}</strong> incidente(s) de persistencia Oracle/JDBC y <strong>${countTomcatErrTotal.toLocaleString()}</strong> fallo(s) Tomcat/JVM.<br>• Ajustar parámetros de pool JDBC/Tomcat y memoria JVM en <code>catalina.out</code> / <code>server.xml</code>.<br>• Sincronizar identidades afectadas en repositorio LDAP/Active Directory.`
+      : `• <strong>Base de Datos y Tomcat Saludables (0 errores ORA/JDBC/JVM):</strong> No se requiere intervención de emergencia sobre Oracle DB ni Catalina.<br>• Sincronizar y depurar en LDAP/AD las cuentas que registraron intentos fallidos de credencial o reto.<br>• Verificar vigencia de tokens/tarjetas Grid de los usuarios con fricción.`;
 
     const dynamicPhase3Html = `• Verificar boletines y parches aplicables a <strong>${escapeHtml(activeClient.platform)} (${escapeHtml(activeClient.version)})</strong> en <a href="https://trustedcare.entrust.com" target="_blank" style="color:#166534; text-decoration:underline; font-weight:bold;">trustedcare.entrust.com</a>.<br>• Mantener auditoría continua de secuencias por usuario (Solicitud 1 -> Solicitud N) y cumplimiento normativo SUDEBAN / ISO 27001.`;
 
@@ -4445,8 +4484,8 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:16px;">
           <div style="font-size:11.5px; color:#1e293b; line-height:1.55;">
             <div>• <strong>${usersWithErrorsCount}</strong> de <strong>${totalValidUsersCount}</strong> usuarios presentan fallas; <strong>${lockedUsersCount}</strong> con bloqueo activo${recoveredLockCount > 0 ? ` (<strong>${recoveredLockCount}</strong> con bloqueo previo recuperado)` : ''}.</div>
-            <div>• Errores <code>520xxxx</code>: <strong>${count520Total.toLocaleString()}</strong> • Auditoría <code>AUDxxx</code>: <strong>${countAudTotal.toLocaleString()}</strong> • Oracle <code>ORA</code>: <strong>${countOraTotal.toLocaleString()}</strong>.</div>
-            <div>• Base de datos: <strong>${dbIncidentsReal === 0 ? 'SALUDABLE (0 errores ORA/JDBC)' : dbIncidentsReal + ' incidentes de persistencia'}</strong>.</div>
+            <div>• Fallos <code>520xxxx</code>: <strong>${count520Total.toLocaleString()}</strong> • <code>Tomcat/JVM</code>: <strong>${countTomcatErrTotal.toLocaleString()}</strong> • <code>AUD</code>: <strong>${countAudTotal.toLocaleString()}</strong> (${countAudCritTotal.toLocaleString()} críticos).</div>
+            <div>• Base de datos: <strong>${dbIncidentsReal === 0 ? 'SALUDABLE (0 errores ORA/JDBC)' : dbIncidentsReal.toLocaleString() + ' incidentes de persistencia'}</strong> • Tomcat/JVM: <strong>${countTomcatErrTotal === 0 ? 'SALUDABLE' : countTomcatErrTotal.toLocaleString() + ' fallos críticos'}</strong>.</div>
             <div>• Índice de salud de la muestra: <strong>${healthValStr}</strong>.</div>
             <div style="margin-top:8px;"><span style="font-size:10px; font-weight:800; color:#0a3d6d; text-transform:uppercase;">Cuentas a atender primero:</span><br>${priorityUsersHtml}</div>
           </div>
@@ -4489,11 +4528,11 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       : `<table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
           <thead>
             <tr style="background:#0a3d6d; color:#ffffff; text-align:left; page-break-inside:avoid; break-inside:avoid;">
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:13%; text-align:center; color:#fff;">${i18n.thFamily}</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:18%; color:#fff;">Servicio &amp; Usuarios Afectados</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:27%; color:#fff;">Evento, Significado &amp; Evidencia Real</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:20%; color:#fff;">${i18n.thRootCause}</th>
-              <th style="padding:8px 6px; border:1px solid #0a3d6d; width:22%; color:#fff;">${i18n.thRemediation}</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; background:#0a3d6d; color:#fff; width:13%; text-align:center;">${i18n.thFamily}</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; background:#0a3d6d; color:#fff; width:18%;">Servicio &amp; Usuarios Afectados</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; background:#0a3d6d; color:#fff; width:27%;">Evento, Significado &amp; Evidencia Real</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; background:#0a3d6d; color:#fff; width:20%;">${i18n.thRootCause}</th>
+              <th style="padding:8px 6px; border:1px solid #0a3d6d; background:#0a3d6d; color:#fff; width:22%;">${i18n.thRemediation}</th>
             </tr>
           </thead>
           <tbody>
@@ -4501,7 +4540,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           </tbody>
         </table>`;
 
-    // Construir Sección 2: Inventario Forense & Desglose por Fuentes y Archivos Rotados (19 Archivos)
+    // Construir Sección 2: Inventario Forense & Desglose por Fuentes y Archivos Rotados
     const auditedFiles = (state.loadedFiles && state.loadedFiles.length > 0)
       ? state.loadedFiles
       : [{
@@ -4518,13 +4557,14 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     let samFilesCount = 0;
     let coreFilesCount = 0;
     let auditFilesCount = 0;
+    let tomcatFilesCount = 0;
     let otherFilesCount = 0;
     const enrichedAuditedFiles = [];
 
     auditedFiles.forEach((file, fIdx) => {
       const fName = file.name || `Archivo #${fIdx + 1}`;
       const fLower = fName.toLowerCase();
-      let fLayer = '🖥️ Sistema / Base de Datos';
+      let fLayer = '⚙️ Sistema / Otros Logs';
       let fBadgeBg = '#f1f5f9';
       let fBadgeColor = '#475569';
 
@@ -4543,18 +4583,17 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         fBadgeBg = '#fef3c7';
         fBadgeColor = '#92400e';
         auditFilesCount++;
+      } else if (fLower.includes('catalina') || fLower.includes('tomcat') || fLower.includes('localhost.')) {
+        fLayer = '☕ Tomcat / JVM (catalina.out)';
+        fBadgeBg = '#ffedd5';
+        fBadgeColor = '#c2410c';
+        tomcatFilesCount++;
       } else {
         otherFilesCount++;
       }
 
       const fLines = Number(file.count || file.linesProcessed || 0);
-      let fErrors = Number(file.realErrors || file.errors || 0);
-      if (fErrors === 0 && (fLower.includes('identityguard_system') || fLower.includes('ig_system')) && count520Total > 0 && auditedFiles.length <= 25) {
-        const coreFiles = auditedFiles.filter(af => /system/i.test(af.name));
-        if (coreFiles.length === 1 || fName === coreFiles[0].name) {
-          fErrors = count520Total;
-        }
-      }
+      const fErrors = Number(file.realErrors || file.errors || 0);
 
       if (fErrors > 0) filesWithErrorsCount++;
       enrichedAuditedFiles.push({ file, fName, fLower, fLayer, fBadgeBg, fBadgeColor, fLines, fErrors });
@@ -4567,6 +4606,9 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         const { file, fName, fLower, fLayer, fBadgeBg, fBadgeColor, fLines, fErrors } = item;
         const fSizeStr = file.size ? `${(file.size / (1024 * 1024)).toFixed(2)} MB` : '-';
         const pctOfTotal = totalCount > 0 ? ((fLines / totalCount) * 100).toFixed(1) + '%' : '-';
+        const srvLabel = file.serverTag || file.nodeName || '';
+        const dateSpanLabel = [file.minDate, file.maxDate].filter(Boolean).join(' ➔ ');
+        const metaSubLine = [srvLabel ? `🖥️ ${srvLabel}` : '', dateSpanLabel ? `📅 ${dateSpanLabel}` : ''].filter(Boolean).join(' • ');
 
         let statusBadge = '';
         if (fErrors > 0) {
@@ -4581,6 +4623,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           <tr style="background:${fIdx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
             <td style="padding:7px 8px; border:1px solid #cbd5e1; font-family:monospace; font-size:11px; font-weight:bold; color:#0f172a; word-break:break-all;">
               📄 ${escapeHtml(fName)}
+              ${metaSubLine ? `<div style="font-size:9px; color:#64748b; font-weight:600; margin-top:2px; word-break:normal;">${escapeHtml(metaSubLine)}</div>` : ''}
             </td>
             <td style="padding:7px 8px; border:1px solid #cbd5e1; font-size:10.5px;">
               <span style="background:${fBadgeBg}; color:${fBadgeColor}; padding:2px 6px; border-radius:4px; font-weight:700; font-size:10px; display:inline-block;">${fLayer}</span>
@@ -4613,24 +4656,29 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:10px; font-size:15px;">
           2. Inventario Forense &amp; Desglose por Fuentes y Archivos Rotados [${auditedFiles.length} Archivos Auditados | ${totalCount.toLocaleString()} Eventos]
         </h3>
-        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:12px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; margin-bottom:12px;">
           <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:10px 12px; border-radius:6px; font-size:11px;">
             <div style="color:#0369a1; font-size:10px; font-weight:800; text-transform:uppercase;">Total Archivos Auditados</div>
             <div style="font-family:monospace; font-weight:900; font-size:18px; color:#0a3d6d; margin-top:2px;">${auditedFiles.length} Archivos</div>
-            <div style="font-size:9.5px; color:#64748b; margin-top:2px;">Rotación secuencial de logs</div>
+            <div style="font-size:9.5px; color:#64748b; margin-top:2px;">Core (${coreFilesCount}) / Otros (${otherFilesCount})</div>
           </div>
           <div style="background:#fef2f2; border:1px solid #fecaca; padding:10px 12px; border-radius:6px; font-size:11px;">
-            <div style="color:#b91c1c; font-size:10px; font-weight:800; text-transform:uppercase;">Archivos Core con Incidentes</div>
+            <div style="color:#b91c1c; font-size:10px; font-weight:800; text-transform:uppercase;">Archivos con Incidentes</div>
             <div style="font-family:monospace; font-weight:900; font-size:18px; color:#dc2626; margin-top:2px;">${filesWithErrorsCount} Archivo(s)</div>
-            <div style="font-size:9.5px; color:#64748b; margin-top:2px;">Concentran los errores 520xxx</div>
+            <div style="font-size:9.5px; color:#64748b; margin-top:2px;">Concentran los fallos críticos</div>
           </div>
           <div style="background:#fef3c7; border:1px solid #fde68a; padding:10px 12px; border-radius:6px; font-size:11px;">
-            <div style="color:#92400e; font-size:10px; font-weight:800; text-transform:uppercase;">Trazabilidad de Auditoría (AUD)</div>
+            <div style="color:#92400e; font-size:10px; font-weight:800; text-transform:uppercase;">Auditoría (AUD)</div>
             <div style="font-family:monospace; font-weight:900; font-size:18px; color:#d97706; margin-top:2px;">${auditFilesCount} Archivo(s)</div>
             <div style="font-size:9.5px; color:#64748b; margin-top:2px;">Trazas legales sin pérdida</div>
           </div>
+          <div style="background:#fff7ed; border:1px solid #fed7aa; padding:10px 12px; border-radius:6px; font-size:11px;">
+            <div style="color:#c2410c; font-size:10px; font-weight:800; text-transform:uppercase;">Tomcat / JVM</div>
+            <div style="font-family:monospace; font-weight:900; font-size:18px; color:#ea580c; margin-top:2px;">${tomcatFilesCount} Archivo(s)</div>
+            <div style="font-size:9.5px; color:#64748b; margin-top:2px;">Logs catalina.out</div>
+          </div>
           <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:10px 12px; border-radius:6px; font-size:11px;">
-            <div style="color:#15803d; font-size:10px; font-weight:800; text-transform:uppercase;">Archivos Gateway &amp; SAM</div>
+            <div style="color:#15803d; font-size:10px; font-weight:800; text-transform:uppercase;">Gateway &amp; SAM</div>
             <div style="font-family:monospace; font-weight:900; font-size:18px; color:#16a34a; margin-top:2px;">${samFilesCount} Archivo(s)</div>
             <div style="font-size:9.5px; color:#64748b; margin-top:2px;">Puntos de entrada transaccional</div>
           </div>
@@ -4638,12 +4686,12 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         <table class="report-table" style="width:100%; border-collapse:collapse; font-size:10.5px; table-layout:fixed; word-wrap:break-word;">
           <thead>
             <tr style="background:#0a3d6d; color:#ffffff; text-align:left;">
-              <th style="padding:7px 8px; border:1px solid #0a3d6d; width:34%; color:#fff;">Nombre del Archivo / Rotación Auditada</th>
-              <th style="padding:7px 8px; border:1px solid #0a3d6d; width:22%; color:#fff;">Capa / Componente Entrust</th>
-              <th style="padding:7px 8px; border:1px solid #0a3d6d; width:12%; text-align:right; color:#fff;">Eventos</th>
-              <th style="padding:7px 8px; border:1px solid #0a3d6d; width:9%; text-align:center; color:#fff;">% Muestra</th>
-              <th style="padding:7px 8px; border:1px solid #0a3d6d; width:9%; text-align:center; color:#fff;">Tamaño</th>
-              <th style="padding:7px 8px; border:1px solid #0a3d6d; width:14%; text-align:center; color:#fff;">Estado Forense</th>
+              <th style="padding:7px 8px; border:1px solid #0a3d6d; background:#0a3d6d; width:34%; color:#fff;">Nombre del Archivo / Rotación Auditada</th>
+              <th style="padding:7px 8px; border:1px solid #0a3d6d; background:#0a3d6d; width:22%; color:#fff;">Capa / Componente Entrust</th>
+              <th style="padding:7px 8px; border:1px solid #0a3d6d; background:#0a3d6d; width:12%; text-align:right; color:#fff;">Eventos</th>
+              <th style="padding:7px 8px; border:1px solid #0a3d6d; background:#0a3d6d; width:9%; text-align:center; color:#fff;">% Muestra</th>
+              <th style="padding:7px 8px; border:1px solid #0a3d6d; background:#0a3d6d; width:9%; text-align:center; color:#fff;">Tamaño</th>
+              <th style="padding:7px 8px; border:1px solid #0a3d6d; background:#0a3d6d; width:14%; text-align:center; color:#fff;">Estado Forense</th>
             </tr>
           </thead>
           <tbody>
@@ -4655,22 +4703,22 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     // Construir Sección 3: Matriz Forense Completa de Errores Críticos (520xxx / 5xxxxx / ORA-JDBC / Tomcat-JVM / AUD-Fail)
     const isCriticalReportItem = (i) => (
-      numericEntrustRe.test(i.code)
+      Number(i.failCount || 0) > 0
+      || numericEntrustRe.test(i.code)
       || /^ORA-|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(i.code)
-      || criticalTomcatRe.test(i.code)
+      || strictCriticalTomcatRe.test(i.code)
       || /^(?:AUD110|AUD125|AUD126|AUD127|AUD150|AUD153|AUD154|AUD2309|AUD4005|AUD6002|SSH-FAIL)$/i.test(i.code)
-      || Number(i.failCount || 0) > 0
-      || i.level === 'CRITICAL'
+      || (i.level === 'CRITICAL' && !/^(?:JDBC|TOMCAT_INFO|TOMCAT_WARN|TOMCAT_LIFECYCLE|TOMCAT_CLIENT_ABORT|TOMCAT_THREAD_POOL)$/i.test(i.code))
     );
     const incidents520 = sortedIncidents.filter(isCriticalReportItem).sort((a, b) => (Number(b.failCount || b.count) - Number(a.failCount || a.count))).slice(0, 500);
-    const critSectionTotal = count520Total + countOraTotal + countTomcatErrTotal;
+    const critSectionTotal = count520Total + countOraTotal + countTomcatErrTotal + countAudCritTotal + countOtherCritTotal;
     let rows520Html = '';
     incidents520.forEach((item, idx) => {
       const { code, diag, service } = item;
       const count = Number(item.failCount || 0) > 0 ? Number(item.failCount) : Number(item.count || 0);
       const famTag = numericEntrustRe.test(code)
         ? '🚨 520xxx Core'
-        : (/^ORA-|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(code)
+        : (/^ORA-|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$|JdbcCardRepository|BlobAccess/i.test(code)
           ? '🗄️ ORA / JDBC'
           : (/^(?:TOMCAT_|JVM_)/i.test(code) ? '☕ Tomcat / JVM' : '⚠️ AUD / Sistema Fallo'));
       const bDiag = getBilingualDiagnostic(diag, code, service, isEn);
@@ -4718,7 +4766,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           <strong style="color:${incidents520.length > 0 ? '#991b1b' : '#15803d'}; font-size:12px;">${incidents520.length > 0 ? '🚨 HALLAZGO CRÍTICO CONSOLIDADO (CERO OMISIONES):' : '✅ NÚCLEO DE AUTENTICACIÓN NOMINAL:'}</strong>
           <div style="color:#334155; margin-top:4px; line-height:1.5;">
             ${incidents520.length > 0
-              ? `Se identificaron <strong>${incidents520.length}</strong> códigos de error/fallo distintos (<code>520xxx/5xxxxx</code>: <strong>${count520Total.toLocaleString()}</strong> • <code>ORA/JDBC</code>: <strong>${countOraTotal.toLocaleString()}</strong> • <code>Tomcat/JVM</code>: <strong>${countTomcatErrTotal.toLocaleString()}</strong> • Total fallos críticos: <strong>${criticalLogsCount.toLocaleString()}</strong>). La tabla inferior muestra el 100% de las familias de error presentes en los archivos auditados.`
+              ? `Se identificaron <strong>${incidents520.length}</strong> códigos de error/fallo distintos (<code>520xxx/5xxxxx</code>: <strong>${count520Total.toLocaleString()}</strong> • <code>Tomcat/JVM</code>: <strong>${countTomcatErrTotal.toLocaleString()}</strong> • <code>ORA/JDBC</code>: <strong>${countOraTotal.toLocaleString()}</strong> • <code>AUD Críticos</code>: <strong>${countAudCritTotal.toLocaleString()}</strong> • <code>Otros Fallos</code>: <strong>${countOtherCritTotal.toLocaleString()}</strong> • Total fallos críticos: <strong>${criticalLogsCount.toLocaleString()}</strong>). La tabla inferior muestra el 100% de las familias de error presentes en los archivos auditados.`
               : `No se registraron fallos críticos en los archivos analizados. Todos los sockets y servicios del kernel operaron normalmente.`}
           </div>
         </div>
@@ -4726,11 +4774,11 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           <table class="report-table" style="width:100%; border-collapse:collapse; font-size:10.5px; table-layout:fixed; word-wrap:break-word;">
             <thead>
               <tr style="background:#991b1b; color:#ffffff; text-align:left;">
-                <th style="padding:7px 6px; border:1px solid #991b1b; width:15%; text-align:center; color:#fff;">Código / Familia</th>
-                <th style="padding:7px 6px; border:1px solid #991b1b; width:12%; text-align:center; color:#fff;">Ocurrencias</th>
-                <th style="padding:7px 6px; border:1px solid #991b1b; width:28%; color:#fff;">Significado Técnico &amp; Usuarios</th>
-                <th style="padding:7px 6px; border:1px solid #991b1b; width:22%; color:#fff;">Causa Raíz Forense</th>
-                <th style="padding:7px 6px; border:1px solid #991b1b; width:23%; color:#fff;">Acción de Remediación (Entrust TrustedCare)</th>
+                <th style="padding:7px 6px; border:1px solid #991b1b; background:#991b1b; width:15%; text-align:center; color:#fff;">Código / Familia</th>
+                <th style="padding:7px 6px; border:1px solid #991b1b; background:#991b1b; width:12%; text-align:center; color:#fff;">Ocurrencias</th>
+                <th style="padding:7px 6px; border:1px solid #991b1b; background:#991b1b; width:28%; color:#fff;">Significado Técnico &amp; Usuarios</th>
+                <th style="padding:7px 6px; border:1px solid #991b1b; background:#991b1b; width:22%; color:#fff;">Causa Raíz Forense</th>
+                <th style="padding:7px 6px; border:1px solid #991b1b; background:#991b1b; width:23%; color:#fff;">Acción de Remediación (Entrust TrustedCare)</th>
               </tr>
             </thead>
             <tbody>
@@ -4825,10 +4873,10 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
               <span>📐 <strong>Volumetría:</strong></span>
               <span>Archivos: <strong>${consolidated.fileCount || 1}</strong></span>
               <span>Servidores: <strong>${new Set((state.loadedFiles || []).map(f => f.serverTag || f.nodeName || 'Principal')).size || 1}</strong></span>
-              <span>Códigos Únicos: <strong>${(state.globalStreamMetrics?.totalUniqueCodes || (Object.keys(consolidated.codeMap520 || {}).length + Object.keys(consolidated.codeMapAud || {}).length + Object.keys(consolidated.codeMapOra || {}).length) || 0).toLocaleString()}</strong></span>
-              <span>Usuarios Auditados: <strong>${(state.globalStreamMetrics?.totalUniqueUsers || (window.UserTraceReport?.cachedStats ? Object.keys(window.UserTraceReport.cachedStats).length : 0)).toLocaleString()}</strong></span>
+              <span>Códigos Únicos: <strong>${(state.globalStreamMetrics?.totalUniqueCodes || diagMapSize || 0).toLocaleString()}</strong></span>
+              <span>Usuarios Auditados: <strong>${totalValidUsersCount.toLocaleString()}</strong></span>
               <span>IPs Únicas: <strong>${(state.globalStreamMetrics?.totalUniqueIps || (state.globalStreamMetrics?.topIps || []).length || 0).toLocaleString()}</strong></span>
-              <span>Muestra Trazas RAM: <strong>${targetLogs.length.toLocaleString()}</strong></span>
+              <span>Cobertura: <strong>${state.isServerApi ? '100% SQLite Consolidado' : `${targetLogs.length.toLocaleString()} trazas RAM`}</strong></span>
             </div>
           </div>
 
@@ -4854,10 +4902,10 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
                 <div style="font-size:18px; font-weight:bold; color:#7c3aed; font-family:monospace; margin:2px 0;">${countOraTotal.toLocaleString()}</div>
                 <div style="font-size:8.5px; color:#64748b;">${i18n.famOraSub}</div>
               </div>
-              <div style="background:#f0f9ff; border:1px solid #bae6fd; padding:10px 8px; border-radius:4px; text-align:center;">
-                <div style="font-size:9.5px; color:#0284c7; font-weight:bold; text-transform:uppercase;">${isCloud ? '☁️ IDaaS Cloud' : i18n.famIdaasTitle}</div>
-                <div style="font-size:18px; font-weight:bold; color:#0284c7; font-family:monospace; margin:2px 0;">${countSysOrIdaasTotal.toLocaleString()}</div>
-                <div style="font-size:8.5px; color:#64748b;">${isCloud ? 'Bulk / Sync / SAML' : i18n.famIdaasSub}</div>
+              <div style="background:#fff7ed; border:1px solid #fed7aa; padding:10px 8px; border-radius:4px; text-align:center;">
+                <div style="font-size:9.5px; color:#c2410c; font-weight:bold; text-transform:uppercase;">${isCloud ? '☁️ IDaaS Cloud' : '☕ Tomcat / JVM'}</div>
+                <div style="font-size:18px; font-weight:bold; color:#ea580c; font-family:monospace; margin:2px 0;">${(isCloud ? countSysOrIdaasTotal : countTomcatErrTotal).toLocaleString()}</div>
+                <div style="font-size:8.5px; color:#64748b;">${isCloud ? 'Bulk / Sync / SAML' : `Fallos catalina (${countSysOrIdaasTotal.toLocaleString()} sys)`}</div>
               </div>
             </div>
           </div>
@@ -4872,12 +4920,12 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
         <!-- Sección 1: Hallazgos & Diagnóstico -->
         <div id="rpt-sec-hallazgos" class="rpt-s-tec">
         <h3 style="color:#0a3d6d; border-left:4px solid #0a3d6d; padding-left:10px; margin-bottom:12px; font-size:15px; page-break-after:avoid;">
-          1. ${i18n.sec1Title.replace(/^1\.\s*/, '').replace('{count}', diagMapSize)}
+          1. ${i18n.sec1Title.replace(/^1\.\s*/, '').replace('{count}', sec1DisplayCount)}
         </h3>
         ${section1Content}
         </div>
 
-        <!-- Sección 2: Inventario Forense & Desglose por Fuentes y Archivos Rotados (19 Archivos) -->
+        <!-- Sección 2: Inventario Forense & Desglose por Fuentes y Archivos Rotados -->
         <div id="rpt-sec-files" class="rpt-s-tec">${filesInventorySectionHtml}</div>
 
         <!-- Sección 3: Matriz Forense de Errores Críticos 520xxx del Motor Entrust -->
@@ -4891,10 +4939,10 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           <table class="report-table" style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:11px; table-layout:fixed; word-wrap:break-word;">
             <thead>
               <tr style="background:#e0f2fe; color:#0a3d6d; text-align:left; page-break-inside:avoid; break-inside:avoid;">
-                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:20%;">${i18n.thCodeFamily}</th>
-                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:34%;">Descripción &amp; Usuarios Afectados</th>
-                <th style="padding:8px 6px; border:1px solid #cbd5e1; text-align:center; width:16%;">${i18n.thReoccurrences}</th>
-                <th style="padding:8px 6px; border:1px solid #cbd5e1; width:30%;">${i18n.thDiagRootCause}</th>
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; background:#e0f2fe; color:#0a3d6d; width:20%;">${i18n.thCodeFamily}</th>
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; background:#e0f2fe; color:#0a3d6d; width:34%;">Descripción &amp; Usuarios Afectados</th>
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; background:#e0f2fe; color:#0a3d6d; text-align:center; width:16%;">${i18n.thReoccurrences}</th>
+                <th style="padding:8px 6px; border:1px solid #cbd5e1; background:#e0f2fe; color:#0a3d6d; width:30%;">${i18n.thDiagRootCause}</th>
               </tr>
             </thead>
             <tbody>
@@ -4966,7 +5014,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
               <div style="margin-bottom:20px; page-break-inside:avoid;">
                 <h3 style="color:#0a3d6d; border-left:4px solid #0284c7; padding-left:10px; margin-bottom:10px; font-size:14px;">9. Comparativa Volumétrica Multi-Servidor (${srvList.length} Nodo${srvList.length === 1 ? '' : 's'})</h3>
                 <table style="width:100%; border-collapse:collapse; font-size:11px;">
-                  <thead><tr style="background:#f1f5f9;"><th style="padding:6px 8px; border:1px solid #cbd5e1; text-align:left;">Servidor / Nodo</th><th style="padding:6px 8px; border:1px solid #cbd5e1;">Archivos</th><th style="padding:6px 8px; border:1px solid #cbd5e1; text-align:right;">Eventos</th><th style="padding:6px 8px; border:1px solid #cbd5e1; text-align:right;">Errores Críticos</th><th style="padding:6px 8px; border:1px solid #cbd5e1; text-align:right;">Eventos AUD</th><th style="padding:6px 8px; border:1px solid #cbd5e1;">Salud</th></tr></thead>
+                  <thead><tr style="background:#f1f5f9;"><th style="padding:6px 8px; border:1px solid #cbd5e1; background:#f1f5f9; color:#0f172a; text-align:left;">Servidor / Nodo</th><th style="padding:6px 8px; border:1px solid #cbd5e1; background:#f1f5f9; color:#0f172a;">Archivos</th><th style="padding:6px 8px; border:1px solid #cbd5e1; background:#f1f5f9; color:#0f172a; text-align:right;">Eventos</th><th style="padding:6px 8px; border:1px solid #cbd5e1; background:#f1f5f9; color:#0f172a; text-align:right;">Errores Críticos</th><th style="padding:6px 8px; border:1px solid #cbd5e1; background:#f1f5f9; color:#0f172a; text-align:right;">Eventos AUD</th><th style="padding:6px 8px; border:1px solid #cbd5e1; background:#f1f5f9; color:#0f172a;">Salud</th></tr></thead>
                   <tbody>${srvRows}</tbody>
                 </table>
               </div>`;
@@ -5012,7 +5060,7 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
           <!-- Sello SHA-256 de Autenticidad -->
           <div style="margin-top:16px; padding:10px 14px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:10px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
             <span>${i18n.digitalSeal} SHA256-FORENSIC-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
-            <span>${i18n.validatedBy}</span>
+            <span>${escapeHtml((isEn ? 'Validated by IT SERVICIOS Suite Enterprise ' : 'Validado por IT SERVICIOS Suite Enterprise ') + (state.appVersion?.version || 'v3.17.0'))}</span>
           </div>
         </div>
       </div>
@@ -5101,13 +5149,17 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
       : [{ name: (state.logs && state.logs[0]?.sourceFile) || 'identityguard_system.log', count: totalCount, realErrors: criticalLogsCount }];
     mdFiles.forEach(f => {
       const fn = f.name || 'Log';
+      const srv = f.serverTag || f.nodeName || '';
+      const srvTag = srv ? ` [${srv}]` : '';
       const lines = Number(f.count || f.linesProcessed || 0);
       const errs = Number(f.realErrors || f.errors || 0);
       let st = errs > 0 ? `🚨 ${errs.toLocaleString()} fallos` : '✅ Nominal';
-      let ly = '🖥️ Sistema / Core';
+      let ly = '⚙️ Sistema / Core';
       if (/sam/i.test(fn)) ly = '🌐 SAM Gateway';
       else if (/audit/i.test(fn)) ly = '📋 Audit Subsystem';
-      md += `| \`${fn}\` | ${ly} | **${lines.toLocaleString()}** | ${st} |\n`;
+      else if (/catalina|tomcat|localhost\./i.test(fn)) ly = '☕ Tomcat / JVM';
+      else if (/identityguard_system|ig_system/i.test(fn)) ly = '🛡️ IdentityGuard Core';
+      md += `| \`${fn}${srvTag}\` | ${ly} | **${lines.toLocaleString()}** | ${st} |\n`;
     });
     md += `\n---\n\n`;
 
@@ -5131,35 +5183,53 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
 
     if (window.UserTraceReport) window.UserTraceReport.buildUserStats();
     const mdUsers = window.UserTraceReport ? Object.values(window.UserTraceReport.cachedStats || {}) : [];
-    const mdFallback = window.UserTraceReport ? window.UserTraceReport.buildLocalForensicFallback() : { codeMatrix: [], dbHealth: { totalDbIncidents: 0 } };
+    const mdFm = (state.isServerApi && window.UserTraceReport) ? window.UserTraceReport.forensicMatrixData : null;
+    const mdFallback = window.UserTraceReport ? window.UserTraceReport.buildLocalForensicFallback() : { codeMatrix: [], dbHealth: { totalDbIncidents: 0 }, tomcatHealth: { totalTomcatErrors: 0, totalTomcatWarnings: 0 } };
+    if (mdFm?.dbHealth) mdFallback.dbHealth = mdFm.dbHealth;
+    if (mdFm?.tomcatHealth) mdFallback.tomcatHealth = mdFm.tomcatHealth;
     const mdCodeUsers = {};
     (mdFallback.codeMatrix || []).forEach(cm => { mdCodeUsers[cm.code] = cm.users || []; });
+    if (mdFm && Array.isArray(mdFm.codeMatrix)) {
+      mdFm.codeMatrix.forEach(cm => { if (cm && cm.code) mdCodeUsers[cm.code] = cm.users || []; });
+    }
 
     const allGroupedCodes = new Map();
+    if (mdFm && Array.isArray(mdFm.codeMatrix)) {
+      mdFm.codeMatrix.forEach(cm => {
+        if (!cm || !cm.code) return;
+        if (!isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(cm.code)) return;
+        allGroupedCodes.set(cm.code, Number(cm.totalInteractions || 0));
+      });
+    }
     if (state.globalStreamMetrics?.topCodes) {
       state.globalStreamMetrics.topCodes.forEach(item => {
+        if (!item || !item.code) return;
         if (!isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(item.code)) return;
-        allGroupedCodes.set(item.code, item.count);
+        if (!allGroupedCodes.has(item.code)) {
+          allGroupedCodes.set(item.code, item.count);
+        }
       });
     }
     targetLogs.forEach(l => {
       let c = l.entrustCode || (window.knowledgeBaseEngine && window.knowledgeBaseEngine.extractErrorCodeFromText((l.message || '') + ' ' + (l.raw || '')));
       if (!c) return;
       if (!isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(c)) c = 'SSH-AUTH';
-      if (!state.globalStreamMetrics?.topCodes) {
+      if (!state.globalStreamMetrics?.topCodes && !(mdFm && Array.isArray(mdFm.codeMatrix) && mdFm.codeMatrix.length > 0)) {
         allGroupedCodes.set(c, (allGroupedCodes.get(c) || 0) + 1);
       }
     });
 
-    Array.from(allGroupedCodes.entries()).sort((a, b) => b[1] - a[1]).forEach(([code, count]) => {
+    const mdSortedCodes = Array.from(allGroupedCodes.entries()).sort((a, b) => b[1] - a[1]);
+    mdSortedCodes.slice(0, 60).forEach(([code, count]) => {
       const rawDiag = window.knowledgeBaseEngine.diagnoseLog(code, code);
       const diag = getBilingualDiagnostic(rawDiag, code, rawDiag.category, isEn);
       const pct = ((count / Math.max(1, totalCount)) * 100).toFixed(2);
-      let fam = '520xxx';
-      if (/^AUD/i.test(code)) fam = 'AUD';
-      else if (/^ORA/i.test(code)) fam = 'ORA';
-      else if (isCloud && /bulkidentityguard/i.test(code)) fam = 'IDaaS';
-      else fam = 'SSH/OS/SYS';
+      let fam = 'SSH/OS/SYS';
+      if (/^5(?:2\d{4,5}|[013-9]\d{5})$/.test(code)) fam = '520xxx';
+      else if (/^AUD/i.test(code)) fam = 'AUD';
+      else if (/^ORA-|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(code)) fam = 'ORA';
+      else if (/^(?:TOMCAT_|JVM_)/i.test(code)) fam = 'Tomcat/JVM';
+      else if (isCloud && /bulkidentityguard|\.assignedgrid|idaas/i.test(code)) fam = 'IDaaS';
       const uList = (mdCodeUsers[code] || []).slice(0, 5).map(u => `${u.user}(${u.count}x)`).join(', ');
       md += `| \`[${code}]\` *(${fam})* | **${diag.title || code}**<br>${diag.meaning || ''}${uList ? `<br>*Usuarios:* \`${uList}\`` : ''} | **${count.toLocaleString()}** | ${pct}% |\n`;
     });
@@ -5173,21 +5243,24 @@ REM 2. ${isEn ? 'Official Support & Patch Portal:' : 'Portal Oficial de Soporte 
     });
 
     md += `\n---\n\n`;
-    md += `### 6. ${isEn ? 'DATABASE HEALTH & TECHNICAL ACTION PLAN' : 'SALUD DE BASE DE DATOS Y PLAN DE ACCIÓN BASADO EN EVIDENCIA'}\n\n`;
+    md += `### 6. ${isEn ? 'DATABASE HEALTH, TOMCAT/JVM & TECHNICAL ACTION PLAN' : 'SALUD DE BASE DE DATOS, TOMCAT/JVM Y PLAN DE ACCIÓN BASADO EN EVIDENCIA'}\n\n`;
     const dbInc = mdFallback.dbHealth?.totalDbIncidents || 0;
+    const mdTomcatErrs = Number(mdFallback.tomcatHealth?.totalTomcatErrors || 0);
+    const mdTomcatWarns = Number(mdFallback.tomcatHealth?.totalTomcatWarnings || 0);
     md += `- **${isEn ? 'Database & JDBC Persistence Status:' : 'Estado de Base de Datos y Persistencia JDBC:'}** ${dbInc === 0 ? '✅ SALUDABLE (0 errores ORA / 0 excepciones JDBC detectadas en la muestra)' : `🚨 ALERTA (${dbInc} incidentes detectados)`}\n`;
+    md += `- **${isEn ? 'Tomcat / JVM Container Status:' : 'Estado Contenedor Tomcat / JVM:'}** ${mdTomcatErrs === 0 && mdTomcatWarns === 0 ? '✅ SALUDABLE (0 excepciones críticas ni bloqueos de hilos)' : `☕ ${mdTomcatErrs.toLocaleString()} fallo(s) crítico(s) / ${mdTomcatWarns.toLocaleString()} advertencia(s)`}\n`;
     md += `- **Portal Oficial Entrust TrustedCare:** https://trustedcare.entrust.com\n\n`;
     if (isCloud) {
       md += `1. **Sobrescritura de Tarjetas Grid (overwriteExistingGrid):** Habilitar \`overwriteExistingGrid=true\` en tareas masivas.\n`;
       md += `2. **Actualización de Preguntas Secretas (updateExistingCredentials):** Activar \`updateExistingCredentials=true\`.\n\n`;
     } else {
-      const errUsersCount = mdUsers.filter(u => u.errors > 0 || u.isLocked).length;
+      const errUsersCount = mdUsers.filter(u => u.errors > 0 || u.isLocked || u.hadHistoricalLock).length;
       md += `1. **Auditoría y Desbloqueo de Cuentas Afectadas (${errUsersCount} usuarios con incidencias):** Verificar cuentas con fallos \`AUD6001\` / \`AUD6002\` / \`520xxxx\` en la Consola de Administración de ${activeClient.platform} y directorio LDAP/AD.\n`;
       md += `2. **Validación de Credenciales, Tokens y Tarjetas Grid:** Revisar asignaciones de factores de autenticación para los usuarios que registraron rechazos.\n`;
-      if (dbInc > 0) {
-        md += `3. **Atención de Persistencia Oracle / JDBC:** Revisar los ${dbInc} eventos de base de datos registrados en \`identityguard.properties\`.\n`;
+      if (dbInc > 0 || mdTomcatErrs > 0) {
+        md += `3. **Atención de Persistencia Oracle / JDBC & Tomcat/JVM:** Revisar ${dbInc} incidente(s) de base de datos y ${mdTomcatErrs} fallo(s) Tomcat/JVM en \`identityguard.properties\` y \`catalina.out\`.\n`;
       } else {
-        md += `3. **Base de Datos Sin Incidencias (0 errores ORA/JDBC):** La capa de base de datos operó al 100% sin errores en esta muestra; no requiere cambios de emergencia.\n`;
+        md += `3. **Base de Datos & Tomcat Sin Fallos Críticos (0 errores ORA/JDBC/JVM):** Infraestructura operativa estable en esta muestra.\n`;
       }
       md += `4. **Soporte Oficial y Parches (${activeClient.version}):** Consultar boletines técnicos en https://trustedcare.entrust.com.\n\n`;
     }
@@ -8192,9 +8265,12 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
     const files = state.loadedFiles || [];
     const logsLen = (state.logs || []).length;
     const gsmTotal = state.globalStreamMetrics ? (state.globalStreamMetrics.totalLogs || 0) : 0;
+    const gsmErr = state.globalStreamMetrics ? (state.globalStreamMetrics.totalErrors || 0) : 0;
+    const gsmWarn = state.globalStreamMetrics ? (state.globalStreamMetrics.totalWarnings || 0) : 0;
     const fmRef = (state.isServerApi && window.UserTraceReport) ? window.UserTraceReport.forensicMatrixData : null;
     const fmLen = (fmRef && Array.isArray(fmRef.codeMatrix)) ? fmRef.codeMatrix.length : 0;
-    const sig = `${files.length}|${logsLen}|${gsmTotal}|${fmLen}|${state.isServerApi ? 1 : 0}|${files[0]?.name || ''}|${files[files.length - 1]?.name || ''}`;
+    const fmTs = fmRef ? (fmRef.generatedAt || fmLen) : 0;
+    const sig = `${files.length}|${logsLen}|${gsmTotal}|${gsmErr}|${gsmWarn}|${fmLen}|${fmTs}|${state.isServerApi ? 1 : 0}|${files[0]?.name || ''}|${files[files.length - 1]?.name || ''}`;
     if (_consolidatedMetricsCache && _consolidatedMetricsSig === sig) {
       return _consolidatedMetricsCache;
     }
@@ -8212,7 +8288,12 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
       });
     }
     
-    if (state.globalStreamMetrics) {
+    const hasServerGsm = !!(state.isServerApi && state.globalStreamMetrics && Number(state.globalStreamMetrics.totalLogs || 0) > 0);
+    if (hasServerGsm) {
+      totalLogs = Number(state.globalStreamMetrics.totalLogs || 0);
+      totalErrors = Number(state.globalStreamMetrics.totalErrors || 0);
+      totalWarnings = Number(state.globalStreamMetrics.totalWarnings || 0);
+    } else if (state.globalStreamMetrics) {
       if (state.globalStreamMetrics.totalLogs && state.globalStreamMetrics.totalLogs > totalLogs) {
         totalLogs = state.globalStreamMetrics.totalLogs;
       }
@@ -8259,11 +8340,14 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
       classifyIntoMaps(c, cnt);
     });
 
+    const fmFailByCode = {};
     if (fmRef && Array.isArray(fmRef.codeMatrix)) {
       fmRef.codeMatrix.forEach(cm => {
         const c = String((cm && cm.code) || '');
+        if (!c) return;
+        fmFailByCode[c] = Number(cm.failCount || 0);
         const cnt = Number((cm && cm.totalInteractions) || 0);
-        if (c && !seenFromGsm.has(c) && (codeList.length > 0 || cnt > 0)) {
+        if (!seenFromGsm.has(c) && (codeList.length > 0 || cnt > 0)) {
           classifyIntoMaps(c, cnt);
         }
       });
@@ -8278,22 +8362,35 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
       });
     }
 
-    // Consolidación estricta sin alucinaciones:
-    // Los códigos 5xxxxx/520xxx, ORA/JDBC, fallos Tomcat/JVM y fallos AUD son incidentes críticos del motor.
+    // Consolidación estricta sin alucinaciones ni doble conteo de WARN Tomcat:
     const sum520 = Object.values(codeMap520).reduce((a, b) => a + b, 0);
     const sumOra = Object.values(codeMapOra).reduce((a, b) => a + b, 0);
     const sumTomcatErrs = Object.entries(codeMapTomcat)
       .filter(([k]) => !/^(?:TOMCAT_INFO|TOMCAT_LIFECYCLE|TOMCAT_CLIENT_ABORT|TOMCAT_WARN)$/i.test(k))
-      .reduce((a, [, v]) => a + v, 0);
+      .reduce((a, [k, v]) => {
+        if (Object.prototype.hasOwnProperty.call(fmFailByCode, k)) {
+          return a + fmFailByCode[k];
+        }
+        if (/^TOMCAT_THREAD_POOL$/i.test(k) && !hasServerGsm) {
+          const localFails = (state.logs || []).filter(l => /^TOMCAT_THREAD_POOL$/i.test(l.entrustCode || '') && (l.level === 'ERROR' || l.level === 'CRITICAL')).length;
+          return a + localFails;
+        }
+        return a + v;
+      }, 0);
     const sumAudCritical = Object.entries(codeMapAud)
       .filter(([k]) => /^AUD(?:110|125|126|127|150|153|154|2309|4005|6002)$/i.test(k))
-      .reduce((a, [, v]) => a + v, 0);
+      .reduce((a, [k, v]) => a + (Object.prototype.hasOwnProperty.call(fmFailByCode, k) ? fmFailByCode[k] : v), 0);
     const sumAudWarnings = Object.entries(codeMapAud)
       .filter(([k]) => /^AUD(?:151|155|6001)$/i.test(k))
       .reduce((a, [, v]) => a + v, 0);
 
-    const realCriticalErrors = Math.max(totalErrors, sum520 + sumOra + sumTomcatErrs + sumAudCritical);
-    const realWarnings = Math.max(totalWarnings, sumAudWarnings);
+    // En modo SQLite consolidado, SQLite ya cuenta el 100% de filas FAIL/ERR sin inflar WARN
+    const realCriticalErrors = hasServerGsm
+      ? totalErrors
+      : Math.max(totalErrors, sum520 + sumOra + sumTomcatErrs + sumAudCritical);
+    const realWarnings = hasServerGsm
+      ? totalWarnings
+      : Math.max(totalWarnings, sumAudWarnings);
 
     totalErrors = realCriticalErrors;
     totalWarnings = realWarnings;
@@ -8324,6 +8421,7 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
       sam: { name: '🌐 SAM API Gateway / Client Auth', files: [], count: 0, errors: 0, icon: '🌐' },
       core: { name: '🛡️ IdentityGuard Core Server (IG.SYSTEM)', files: [], count: 0, errors: 0, icon: '🛡️' },
       audit: { name: '📋 IdentityGuard Audit Subsystem (IG.AUDIT)', files: [], count: 0, errors: 0, icon: '📋' },
+      tomcat: { name: '☕ Contenedor Tomcat / JVM (catalina.out)', files: [], count: 0, errors: 0, icon: '☕' },
       idaas: { name: '☁️ Entrust IDaaS Cloud Tenant / Bulk Sync', files: [], count: 0, errors: 0, icon: '☁️' },
       other: { name: '⚙️ Otros Componentes del Sistema', files: [], count: 0, errors: 0, icon: '⚙️' }
     };
@@ -8342,6 +8440,10 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
         layers.audit.files.push(f);
         layers.audit.count += (f.count || 0);
         layers.audit.errors += (f.realErrors || 0);
+      } else if (fn.includes('catalina') || fn.includes('tomcat') || fn.includes('localhost.')) {
+        layers.tomcat.files.push(f);
+        layers.tomcat.count += (f.count || 0);
+        layers.tomcat.errors += (f.realErrors || 0);
       } else if (fn.includes('import_identityguard') || fn.includes('auditevents') || fn.includes('.csv') || fn.includes('idaas')) {
         layers.idaas.files.push(f);
         layers.idaas.count += (f.count || 0);
@@ -8377,7 +8479,18 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
       });
     }
 
-    // 3. OnPremise -> IDaaS Cloud
+    // 3. Tomcat / JVM -> Core
+    if (layers.tomcat.files.length > 0 && layers.core.files.length > 0) {
+      correlations.push({
+        source: '☕ Contenedor Tomcat / JVM',
+        target: '🛡️ IdentityGuard Core',
+        type: 'Ejecución Servlet, Pool HTTP & Excepciones JVM',
+        severity: layers.tomcat.errors > 0 ? 'CRITICAL' : 'INFO',
+        evidence: `El contenedor Apache Tomcat (${layers.tomcat.count.toLocaleString()} eventos en ${layers.tomcat.files.length} archivos catalina) aloja el runtime de IdentityGuard (${layers.tomcat.errors.toLocaleString()} fallos JVM/Tomcat), impactando hilos HTTP, SSL/TLS y tiempos de respuesta del Core.`
+      });
+    }
+
+    // 4. OnPremise -> IDaaS Cloud
     if ((layers.core.files.length > 0 || layers.audit.files.length > 0) && layers.idaas.files.length > 0) {
       correlations.push({
         source: '🏢 Clúster OnPremise',
@@ -8503,7 +8616,7 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
 
     // 4. Tarjeta Alertas de Auditoría AUDxxx
     const audCount = Object.values(metrics.codeMapAud || {}).reduce((a, b) => a + b, 0);
-    const finalAudCount = warningsCount > 0 ? warningsCount : (audCount > 0 ? audCount : (total > 0 ? Math.round(total * 0.05) : 0));
+    const finalAudCount = warningsCount > 0 ? warningsCount : audCount;
     const warnEl = document.getElementById('warning-count') || dom.warningCount;
     if (warnEl) warnEl.textContent = finalAudCount.toLocaleString();
     const auditRateBadge = document.getElementById('audit-rate-badge');
@@ -12985,11 +13098,17 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
           @page Section1 { size: 8.5in 11.0in; margin: 0.8in 0.8in 0.8in 0.8in; mso-header-margin: 0.5in; mso-footer-margin: 0.5in; mso-paper-source: 0; }
           div.Section1 { page: Section1; }
           body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #0f172a; line-height: 1.3; }
-          table { width: 100%; border-collapse: collapse; margin-bottom: 15pt; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 15pt; table-layout: fixed; word-wrap: break-word; }
           th { background: #0a3d6d; color: #ffffff; font-weight: bold; border: 1pt solid #0a3d6d; padding: 6pt; font-size: 10pt; }
-          td { border: 1pt solid #cbd5e1; padding: 6pt; font-size: 9.5pt; vertical-align: top; }
+          td { border: 1pt solid #cbd5e1; padding: 6pt; font-size: 9.5pt; vertical-align: top; word-break: break-word; }
           h1, h2, h3, h4 { color: #0a3d6d; margin-top: 12pt; margin-bottom: 6pt; }
+          code { display: inline-block; font-family: Consolas, monospace; font-size: 9pt; word-break: break-word; overflow-wrap: anywhere; }
           .kpi-box { border: 1pt solid #cbd5e1; background: #f8fafc; padding: 10pt; text-align: center; border-radius: 4pt; }
+          .rpt-phase-grid { width: 100%; margin-bottom: 12pt; }
+          .rpt-phase-card { border: 1pt solid #cbd5e1; padding: 8pt; margin-bottom: 8pt; word-break: break-word; overflow-wrap: anywhere; page-break-inside: avoid; }
+          .rpt-user-pill-list { margin: 4pt 0 6pt 0; }
+          .rpt-user-pill { display: inline-block; padding: 2pt 5pt; margin: 2pt 3pt 2pt 0; border: 1pt solid #fecaca; background: #ffffff; color: #991b1b; font-family: Consolas, monospace; font-size: 8.5pt; font-weight: bold; word-break: break-word; overflow-wrap: anywhere; }
+          .rpt-seq-code { display: block; font-family: Consolas, monospace; font-size: 8.5pt; line-height: 1.35; color: #0369a1; word-break: break-word; overflow-wrap: anywhere; }
         </style>
       </head>
       <body>
@@ -13209,6 +13328,10 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
 
     // --- HOJA 2: MATRIZ DETALLADA DE INCIDENTES & FALLOS ---
     const logsToExport = (state.logs && state.logs.length > 0) ? state.logs : [];
+    const xlFmData = (state.isServerApi && window.UserTraceReport) ? window.UserTraceReport.forensicMatrixData : null;
+    const xlCodeMatrix = (xlFmData && Array.isArray(xlFmData.codeMatrix)) ? xlFmData.codeMatrix : [];
+    const xlTopCodes = (state.globalStreamMetrics && Array.isArray(state.globalStreamMetrics.topCodes)) ? state.globalStreamMetrics.topCodes : [];
+    const useSqlMatrixForExcel = !!(state.isServerApi && (xlCodeMatrix.length > 0 || xlTopCodes.length > 0)) || logsToExport.length === 0;
     xml += `
  <Worksheet ss:Name="${isEn ? '2. Incident Matrix' : '2. Matriz de Fallos'}">
   <Table ss:DefaultRowHeight="18">
@@ -13233,7 +13356,58 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     <Cell ss:StyleID="HeaderBlue"><Data ss:Type="String">${isEn ? 'Remediation Procedure' : 'Procedimiento de Remediación'}</Data></Cell>
    </Row>`;
 
-    if (logsToExport.length > 0) {
+    if (useSqlMatrixForExcel && (xlCodeMatrix.length > 0 || xlTopCodes.length > 0)) {
+      const mergedMap = new Map();
+      xlCodeMatrix.forEach(cm => {
+        if (!cm || !cm.code) return;
+        mergedMap.set(String(cm.code), {
+          code: String(cm.code),
+          count: Number(cm.totalInteractions || 0),
+          failCount: Number(cm.failCount || 0),
+          kind: cm.kind || ''
+        });
+      });
+      xlTopCodes.forEach(tc => {
+        if (!tc || !tc.code) return;
+        const cStr = String(tc.code);
+        if (!mergedMap.has(cStr)) {
+          const isNumericOrOra = /^5(?:2\d{4,5}|[013-9]\d{5})$|^ORA-|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(cStr);
+          mergedMap.set(cStr, {
+            code: cStr,
+            count: Number(tc.count || 0),
+            failCount: isNumericOrOra ? Number(tc.count || 0) : 0,
+            kind: ''
+          });
+        }
+      });
+      const sortedExcelCodes = Array.from(mergedMap.values()).sort((a, b) => (b.failCount - a.failCount) || (b.count - a.count));
+      sortedExcelCodes.forEach((tc, idx) => {
+        const rawDiag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(tc.code, tc.code) : {};
+        const bDiag = getBilingualDiagnostic(rawDiag, tc.code, rawDiag.category, isEn);
+        const isStrictTomcat = /^(?:JVM_OOM|TOMCAT_(?:SSL_TLS|LDAP_ERROR|NETWORK_ERROR|DEPLOY_ERROR|JAVA_EXCEPTION|SEVERE))$/i.test(tc.code);
+        const isNumericOrOra = /^5(?:2\d{4,5}|[013-9]\d{5})$|^ORA-|^JDBC_SQL_EXCEPTION$|^SQL_EXCEPTION$/i.test(tc.code);
+        const isCritRow = tc.failCount > 0 || isNumericOrOra || isStrictTomcat;
+        const isWarnRow = !isCritRow && (/^(?:TOMCAT_WARN|TOMCAT_THREAD_POOL|AUD151|AUD155|AUD160|AUD161|AUD5106|AUD6001)$/i.test(tc.code) || rawDiag.severity === 'WARN');
+        const sevLabel = isCritRow ? 'ERROR' : (isWarnRow ? 'WARN' : 'INFO');
+        const sevStyle = isCritRow ? 'CellDataCrit' : 'CellDataCenter';
+        const occLabel = isEn
+          ? `(Total: ${tc.count.toLocaleString()}, Fail: ${tc.failCount.toLocaleString()})`
+          : `(Total: ${tc.count.toLocaleString()}, Fallos: ${tc.failCount.toLocaleString()})`;
+        const srcLabel = isEn ? 'Consolidated SQLite Index' : 'Índice Consolidado SQLite';
+        xml += `
+   <Row>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="Number">${idx + 1}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${srcLabel}</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${isEn ? 'Consolidated' : 'Consolidado'}</Data></Cell>
+    <Cell ss:StyleID="${sevStyle}"><Data ss:Type="String">${sevLabel}</Data></Cell>
+    <Cell ss:StyleID="${sevStyle}"><Data ss:Type="String">${escapeXml(tc.code)}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.service || 'Entrust IdentityGuard OnPremise')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.title || tc.code)} ${occLabel}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.rootCause || 'N/A')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.remediation || 'N/A')}</Data></Cell>
+   </Row>`;
+      });
+    } else if (logsToExport.length > 0) {
       logsToExport.slice(0, 5000).forEach((l, idx) => {
         const rawDiag = l.diagnostic || (window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(l.message, l.entrustCode) : {});
         const bDiag = getBilingualDiagnostic(rawDiag, l.entrustCode, l.service, isEn);
@@ -13247,25 +13421,6 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     <Cell ss:StyleID="${isCrit ? 'CellDataCrit' : 'CellDataCenter'}"><Data ss:Type="String">${escapeXml(l.entrustCode || 'N/A')}</Data></Cell>
     <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.service || l.service || l.type || 'IdentityGuard')}</Data></Cell>
     <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.title || l.message || '')}</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.rootCause || 'N/A')}</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.remediation || 'N/A')}</Data></Cell>
-   </Row>`;
-      });
-    } else if (state.globalStreamMetrics && state.globalStreamMetrics.topCodes) {
-      state.globalStreamMetrics.topCodes.forEach((tc, idx) => {
-        const rawDiag = window.knowledgeBaseEngine ? window.knowledgeBaseEngine.diagnoseLog(tc.code, tc.code) : {};
-        const bDiag = getBilingualDiagnostic(rawDiag, tc.code, rawDiag.category, isEn);
-        const occLabel = isEn ? `(Occurrences: ${tc.count})` : `(Ocurrencias: ${tc.count})`;
-        const srcLabel = isEn ? 'Server Indexed SQLite' : 'Indexado SQLite Servidor';
-        xml += `
-   <Row>
-    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="Number">${idx + 1}</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">${srcLabel}</Data></Cell>
-    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${isEn ? 'Consolidated' : 'Consolidado'}</Data></Cell>
-    <Cell ss:StyleID="CellDataCrit"><Data ss:Type="String">ERROR</Data></Cell>
-    <Cell ss:StyleID="CellDataCrit"><Data ss:Type="String">${escapeXml(tc.code)}</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.service || 'Entrust IdentityGuard OnPremise')}</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.title || tc.code)} ${occLabel}</Data></Cell>
     <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.rootCause || 'N/A')}</Data></Cell>
     <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(bDiag.remediation || 'N/A')}</Data></Cell>
    </Row>`;
@@ -13284,7 +13439,7 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
    <Column ss:Width="180"/>
    <Column ss:Width="110"/>
    <Column ss:Width="130"/>
-   <Column ss:Width="140"/>
+   <Column ss:Width="160"/>
    <Column ss:Width="150"/>
    <Column ss:Width="150"/>
    <Row ss:Height="22">
@@ -13300,13 +13455,14 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     if (threatReport.topTargetUsers && threatReport.topTargetUsers.length > 0) {
       threatReport.topTargetUsers.forEach((u, idx) => {
         const isCrit = u.riskLevel && u.riskLevel.includes('CRITICAL');
+        const acctStatus = u.isLocked ? 'BLOQUEADA' : (u.hadHistoricalLock ? 'RECUPERADA (BLOQUEO PREVIO)' : 'ACTIVA / EN RIESGO');
         xml += `
    <Row>
     <Cell ss:StyleID="CellDataCenter"><Data ss:Type="Number">${idx + 1}</Data></Cell>
     <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(u.user)}</Data></Cell>
     <Cell ss:StyleID="${isCrit ? 'CritVal' : 'KpiVal'}"><Data ss:Type="Number">${u.attempts}</Data></Cell>
-    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${escapeXml(u.codesList || '5202013')}</Data></Cell>
-    <Cell ss:StyleID="${u.isLocked ? 'CellDataCrit' : 'CellDataCenter'}"><Data ss:Type="String">${u.isLocked ? 'BLOQUEADA' : 'ACTIVA / EN RIESGO'}</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${escapeXml(u.codesList || 'N/A')}</Data></Cell>
+    <Cell ss:StyleID="${u.isLocked ? 'CellDataCrit' : 'CellDataCenter'}"><Data ss:Type="String">${acctStatus}</Data></Cell>
     <Cell ss:StyleID="${isCrit ? 'CellDataCrit' : 'CellData'}"><Data ss:Type="String">${escapeXml(u.riskLevel)}</Data></Cell>
     <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${escapeXml(u.lastSeen || 'N/A')}</Data></Cell>
    </Row>`;
@@ -13314,45 +13470,62 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     } else {
       xml += `
    <Row>
-    <Cell ss:MergeAcross="6" ss:StyleID="CellDataCenter"><Data ss:Type="String">No se detectaron cuentas bajo ataque focalizado en la muestra de logs.</Data></Cell>
+    <Cell ss:MergeAcross="6" ss:StyleID="CellDataCenter"><Data ss:Type="String">No se detectaron cuentas con intentos fallidos en la muestra de logs.</Data></Cell>
    </Row>`;
     }
     xml += `
   </Table>
  </Worksheet>`;
 
-    // --- HOJA 4: AUDITORÍA NOMINAL ---
+    // --- HOJA 4: SERVIDORES Y ARCHIVOS AUDITADOS ---
+    const excelFiles = (state.loadedFiles && state.loadedFiles.length > 0)
+      ? state.loadedFiles
+      : [{ name: (logsToExport[0]?.sourceFile) || 'identityguard_system.log', serverTag: 'Principal', count: total, realErrors: criticals, realWarnings: warnings, size: 0 }];
     xml += `
- <Worksheet ss:Name="4. Auditoria Nominal">
+ <Worksheet ss:Name="4. Servidores y Archivos">
   <Table ss:DefaultRowHeight="18">
+   <Column ss:Width="170"/>
+   <Column ss:Width="240"/>
+   <Column ss:Width="160"/>
+   <Column ss:Width="95"/>
    <Column ss:Width="110"/>
-   <Column ss:Width="220"/>
-   <Column ss:Width="300"/>
-   <Column ss:Width="180"/>
+   <Column ss:Width="105"/>
+   <Column ss:Width="95"/>
    <Row ss:Height="22">
-    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">Código Auditoría</Data></Cell>
-    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">Tipo de Evento</Data></Cell>
-    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">Descripción Operacional</Data></Cell>
-    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">Impacto en Salud Clúster</Data></Cell>
-   </Row>
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">${isEn ? 'Server / Node' : 'Servidor / Nodo'}</Data></Cell>
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">${isEn ? 'Audited File' : 'Archivo Auditado'}</Data></Cell>
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">${isEn ? 'Layer' : 'Capa / Componente'}</Data></Cell>
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">${isEn ? 'Events' : 'Eventos'}</Data></Cell>
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">${isEn ? 'Critical Errors' : 'Errores Críticos'}</Data></Cell>
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">${isEn ? 'Warnings / AUD' : 'Advertencias'}</Data></Cell>
+    <Cell ss:StyleID="HeaderDark"><Data ss:Type="String">${isEn ? 'Size (MB)' : 'Tamaño (MB)'}</Data></Cell>
+   </Row>`;
+
+    excelFiles.forEach(f => {
+      const fn = String(f.name || 'log');
+      const fl = fn.toLowerCase();
+      let layerName = 'Sistema / Otros Logs';
+      if (fl.includes('sam_system') || fl.includes('sam_audit') || fl.includes('sam.')) layerName = 'SAM Gateway';
+      else if (fl.includes('identityguard_system') || fl.includes('ig_system') || fl.includes('system.log')) layerName = 'IdentityGuard Core (IG.SYSTEM)';
+      else if (fl.includes('identityguard_audit') || fl.includes('ig_audit') || fl.includes('audit.log')) layerName = 'IdentityGuard Audit (IG.AUDIT)';
+      else if (fl.includes('catalina') || fl.includes('tomcat') || fl.includes('localhost.')) layerName = 'Tomcat / JVM (catalina.out)';
+      const fCnt = Number(f.count || f.linesProcessed || 0);
+      const fErr = Number(f.realErrors || f.errors || 0);
+      const fWarn = Number(f.realWarnings || f.warnings || 0);
+      const fMb = f.size ? (f.size / (1024 * 1024)).toFixed(2) : '0.00';
+      xml += `
    <Row>
-    <Cell ss:StyleID="CellDataNominal"><Data ss:Type="String">AUD101</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">Login Administrativo Exitoso</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">Sesión de gestión de seguridad autenticada en consola IdentityGuard</Data></Cell>
-    <Cell ss:StyleID="CellDataNominal"><Data ss:Type="String">0% Penalización (Nominal)</Data></Cell>
-   </Row>
-   <Row>
-    <Cell ss:StyleID="CellDataNominal"><Data ss:Type="String">AUD154</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">Cierre de Sesión por Inactividad</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">Mecanismo automático de protección de sesión de consola</Data></Cell>
-    <Cell ss:StyleID="CellDataNominal"><Data ss:Type="String">0% Penalización (Nominal)</Data></Cell>
-   </Row>
-   <Row>
-    <Cell ss:StyleID="CellDataNominal"><Data ss:Type="String">AUD8500-8503</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">Monitoreo &amp; Heartbeat de Nodos</Data></Cell>
-    <Cell ss:StyleID="CellData"><Data ss:Type="String">Sincronización periódica de clúster y balanceo de carga</Data></Cell>
-    <Cell ss:StyleID="CellDataNominal"><Data ss:Type="String">0% Penalización (Nominal)</Data></Cell>
-   </Row>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(f.serverTag || f.nodeName || 'Servidor Principal')}</Data></Cell>
+    <Cell ss:StyleID="CellData"><Data ss:Type="String">${escapeXml(fn)}</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${escapeXml(layerName)}</Data></Cell>
+    <Cell ss:StyleID="KpiVal"><Data ss:Type="Number">${fCnt}</Data></Cell>
+    <Cell ss:StyleID="${fErr > 0 ? 'CritVal' : 'CellDataNominal'}"><Data ss:Type="Number">${fErr}</Data></Cell>
+    <Cell ss:StyleID="WarnVal"><Data ss:Type="Number">${fWarn}</Data></Cell>
+    <Cell ss:StyleID="CellDataCenter"><Data ss:Type="String">${fMb}</Data></Cell>
+   </Row>`;
+    });
+
+    xml += `
   </Table>
  </Worksheet>
 </Workbook>`;
@@ -13360,7 +13533,7 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     const blob = new Blob([xml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `Auditoria_Entrust_${clientSanitized}_${dateStamp}.xlsx`;
+    link.download = `Auditoria_Entrust_${clientSanitized}_${dateStamp}.xls`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -14323,72 +14496,6 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
     document.getElementById('btn-export-ecs')?.addEventListener('click', () => {
       if (window.siemExporterEngine) {
         window.siemExporterEngine.downloadSiem('ecs', state.logs || [], getActiveClientProfile());
-      }
-    });
-  }
-
-  // 13.6 REMEDIACIÓN AUTOMÁTICA (AUTO-REMEDIATION SCRIPTS)
-  function initRemediationModule() {
-    const modal = document.getElementById('remediation-scripts-modal');
-    const btnOpen = document.getElementById('btn-open-remediation-modal');
-    const btnClose = document.getElementById('btn-close-remediation-modal');
-    const tabBat = document.getElementById('btn-tab-script-bat');
-    const tabSh = document.getElementById('btn-tab-script-sh');
-    const terminal = document.getElementById('remediation-script-terminal');
-    const btnCopy = document.getElementById('btn-copy-remediation-script');
-    const btnDownloadBat = document.getElementById('btn-download-bat-action');
-    const btnDownloadSh = document.getElementById('btn-download-sh-action');
-
-    let currentScriptType = 'bat';
-
-    const updateTerminal = () => {
-      if (!window.remediationEngine || !terminal) return;
-      const script = currentScriptType === 'bat' 
-        ? window.remediationEngine.generateWindowsBat(state.logs, getActiveClientProfile())
-        : window.remediationEngine.generateLinuxSh(state.logs, getActiveClientProfile());
-      terminal.textContent = script;
-    };
-
-    btnOpen?.addEventListener('click', () => {
-      if (modal) modal.style.display = 'flex';
-      updateTerminal();
-    });
-
-    btnClose?.addEventListener('click', () => {
-      if (modal) modal.style.display = 'none';
-    });
-
-    tabBat?.addEventListener('click', () => {
-      currentScriptType = 'bat';
-      tabBat.style.background = '#0284c7'; tabBat.style.color = '#fff';
-      if (tabSh) { tabSh.style.background = 'transparent'; tabSh.style.color = '#94a3b8'; }
-      updateTerminal();
-    });
-
-    tabSh?.addEventListener('click', () => {
-      currentScriptType = 'sh';
-      tabSh.style.background = '#10b981'; tabSh.style.color = '#fff';
-      if (tabBat) { tabBat.style.background = 'transparent'; tabBat.style.color = '#94a3b8'; }
-      updateTerminal();
-    });
-
-    btnCopy?.addEventListener('click', () => {
-      if (terminal) {
-        navigator.clipboard.writeText(terminal.textContent).then(() => {
-          alert('✅ Script de remediación copiado al portapapeles.');
-        });
-      }
-    });
-
-    btnDownloadBat?.addEventListener('click', () => {
-      if (window.remediationEngine) {
-        window.remediationEngine.downloadScript('bat', state.logs, getActiveClientProfile());
-      }
-    });
-
-    btnDownloadSh?.addEventListener('click', () => {
-      if (window.remediationEngine) {
-        window.remediationEngine.downloadScript('sh', state.logs, getActiveClientProfile());
       }
     });
   }

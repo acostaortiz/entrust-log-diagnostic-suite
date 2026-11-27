@@ -27,30 +27,53 @@ if (typeof escapeHtml === 'undefined') {
     constructor() {}
 
     /**
+     * Genera resumen telemétrico real de fallos para contextualizar los scripts
+     */
+    _collectTelemetrySummary(logs = []) {
+      const m = (typeof window !== 'undefined' && typeof window.getConsolidatedMetricsGlobal === 'function')
+        ? window.getConsolidatedMetricsGlobal()
+        : null;
+      const totalEvents = m ? Number(m.totalLogs || 0) : (logs ? logs.length : 0);
+      const totalErrors = m ? Number(m.totalErrors || 0) : (logs ? logs.filter(l => l.level === 'CRITICAL' || l.level === 'ERROR').length : 0);
+      const count520 = m ? Object.values(m.codeMap520 || {}).reduce((a, b) => a + b, 0) : 0;
+      const countTomcat = m ? Object.values(m.codeMapTomcat || {}).reduce((a, b) => a + b, 0) : 0;
+      const countOra = m ? Object.values(m.codeMapOra || {}).reduce((a, b) => a + b, 0) : 0;
+      const countIdaas = m ? Object.values(m.codeMapIdaas || {}).reduce((a, b) => a + b, 0) : 0;
+      return { totalEvents, totalErrors, count520, countTomcat, countOra, countIdaas };
+    }
+
+    /**
      * Genera el script de remediación en formato Batch para Windows Server
      */
     generateWindowsBat(logs = [], activeClient = null) {
       const clientName = activeClient ? activeClient.name : 'Entrust General';
+      const clientPlatform = activeClient ? (activeClient.platform || 'Entrust IdentityGuard OnPremise') : 'Entrust IdentityGuard OnPremise';
+      const clientVer = activeClient ? (activeClient.version || 'Release 12.0') : 'Release 12.0';
+      const stats = this._collectTelemetrySummary(logs);
       const dateStr = new Date().toISOString().slice(0, 10);
 
       let bat = `@echo off\n`;
       bat += `REM ====================================================================\n`;
-      bat += `REM IT SERVICIOS DE VENEZUELA, S.A. | SCRIPT DE AUTO-REMEDIACIÓN ENTRUST\n`;
-      bat += `REM Cliente: ${clientName}\n`;
-      bat += `REM Fecha de Generación: ${dateStr}\n`;
+      bat += `REM IT SERVICIOS DE VENEZUELA, S.A. | SCRIPT DE AUTO-REMEDIACION ENTRUST\n`;
+      bat += `REM Cliente: ${clientName} | Plataforma: ${clientPlatform} (${clientVer})\n`;
+      bat += `REM Muestra Auditada: ${stats.totalEvents.toLocaleString()} eventos | Fallos: ${stats.totalErrors.toLocaleString()} (520xxx=${stats.count520.toLocaleString()}, Tomcat=${stats.countTomcat.toLocaleString()}, ORA=${stats.countOra.toLocaleString()})\n`;
+      bat += `REM Fecha de Generacion: ${dateStr}\n`;
       bat += `REM ====================================================================\n\n`;
 
       bat += `echo [1/4] Verificando estado de los servicios Entrust IdentityGuard...\n`;
       bat += `sc query "Entrust IdentityGuard Administration Service"\n`;
       bat += `sc query "Entrust IdentityGuard Authentication Service"\n\n`;
 
-      bat += `echo [2/4] Verificando almacén de certificados identityguard.keystore...\n`;
+      bat += `echo [2/4] Verificando almacen de certificados keystore...\n`;
       bat += `keytool -list -v -keystore "C:\\Program Files\\Entrust\\IdentityGuardServer\\identityguard.keystore" -storepass changeit\n\n`;
 
-      bat += `echo [3/4] Comprobando conectividad y puertos locales 8443 / 8080...\n`;
-      bat += `netstat -ano | findstr "8443"\n\n`;
+      bat += `echo [3/4] Comprobando conectividad y puertos locales 8443 / 8445...\n`;
+      bat += `netstat -ano | findstr /R ":8443 :8445"\n\n`;
 
-      bat += `echo [4/4] Saneamiento de cola y reinicio controlado de servicios...\n`;
+      bat += `echo [4/4] Diagnostico preventivo y reinicio controlado de servicios...\n`;
+      if (stats.countTomcat > 0) {
+        bat += `echo [!] Se detectaron ${stats.countTomcat.toLocaleString()} eventos Tomcat/JVM; revise catalina.out antes de reiniciar.\n`;
+      }
       bat += `echo Desea reiniciar los servicios ahora? (Presione Ctrl+C para cancelar)\n`;
       bat += `pause\n`;
       bat += `net stop "Entrust IdentityGuard Administration Service"\n`;
@@ -68,28 +91,32 @@ if (typeof escapeHtml === 'undefined') {
      */
     generateLinuxSh(logs = [], activeClient = null) {
       const clientName = activeClient ? activeClient.name : 'Entrust General';
+      const clientPlatform = activeClient ? (activeClient.platform || 'Entrust IdentityGuard OnPremise') : 'Entrust IdentityGuard OnPremise';
+      const clientVer = activeClient ? (activeClient.version || 'Release 12.0') : 'Release 12.0';
+      const stats = this._collectTelemetrySummary(logs);
       const dateStr = new Date().toISOString().slice(0, 10);
 
       let sh = `#!/bin/bash\n`;
       sh += `# ====================================================================\n`;
-      sh += `# IT SERVICIOS DE VENEZUELA, S.A. | SCRIPT DE AUTO-REMEDIACIÓN ENTRUST\n`;
-      sh += `# Cliente: ${clientName}\n`;
-      sh += `# Fecha de Generación: ${dateStr}\n`;
+      sh += `# IT SERVICIOS DE VENEZUELA, S.A. | SCRIPT DE AUTO-REMEDIACION ENTRUST\n`;
+      sh += `# Cliente: ${clientName} | Plataforma: ${clientPlatform} (${clientVer})\n`;
+      sh += `# Muestra Auditada: ${stats.totalEvents.toLocaleString()} eventos | Fallos: ${stats.totalErrors.toLocaleString()} (520xxx=${stats.count520.toLocaleString()}, Tomcat=${stats.countTomcat.toLocaleString()}, ORA=${stats.countOra.toLocaleString()})\n`;
+      sh += `# Fecha de Generacion: ${dateStr}\n`;
       sh += `# ====================================================================\n\n`;
 
       sh += `echo "=== [1/4] Inspeccionando estado de servicios Entrust / Tomcat ==="\n`;
-      sh += `systemctl status entrust-identityguard-admin --no-pager || systemctl status tomcat9 --no-pager\n\n`;
+      sh += `systemctl status entrust-identityguard-admin --no-pager || systemctl status tomcat9 --no-pager || ps -ef | grep -i identityguard\n\n`;
 
-      sh += `echo "=== [2/4] Verificando memoria JVM y flags Heap ==="\n`;
-      sh += `ps aux | grep -i identityguard | grep -E "Xms|Xmx"\n\n`;
+      sh += `echo "=== [2/4] Verificando memoria JVM, flags Heap y pool Tomcat ==="\n`;
+      sh += `ps aux | grep -iE "identityguard|catalina" | grep -E "Xms|Xmx|java" || true\n\n`;
 
-      sh += `echo "=== [3/4] Habilitando flags de contingencia para aprovisionamiento IDaaS ==="\n`;
-      sh += `curl -s -X POST "http://localhost:8085/api/config" -H "Content-Type: application/json" -d '{"overwriteExistingGrid":true, "updateExistingCredentials":true}' || true\n\n`;
+      sh += `echo "=== [3/4] Inspeccionando logs recientes de Core / Tomcat (catalina.out) ==="\n`;
+      sh += `tail -n 50 /opt/entrust/ig/*/logs/catalina.out 2>/dev/null || echo "Ajuste ruta catalina.out del nodo"\n\n`;
 
-      sh += `echo "=== [4/4] Verificando puertos activos 8443 / UDP 514 ==="\n`;
-      sh += `netstat -tuln | grep -E "8443|514"\n\n`;
+      sh += `echo "=== [4/4] Verificando puertos activos 8443 / 8445 / LDAP 636 ==="\n`;
+      sh += `ss -tuln 2>/dev/null | grep -E "8443|8445|636|1521" || netstat -tuln | grep -E "8443|8445|636|1521"\n\n`;
 
-      sh += `echo "=== [OK] Diagnóstico y remediación ejecutada satisfactoriamente ==="\n`;
+      sh += `echo "=== [OK] Diagnostico y verificacion completados satisfactoriamente ==="\n`;
 
       return sh;
     }

@@ -171,7 +171,11 @@
     }
 
     _getActiveAuthor() {
-      const sel = document.getElementById('engineer-selector');
+      if (typeof window !== 'undefined' && typeof window.getActiveEngineerGlobal === 'function') {
+        const eng = window.getActiveEngineerGlobal();
+        if (eng && eng.name) return String(eng.name).trim();
+      }
+      const sel = document.getElementById('active-engineer-session-select') || document.getElementById('engineer-selector');
       if (sel && sel.options && sel.selectedIndex >= 0) {
         return sel.options[sel.selectedIndex].textContent.trim();
       }
@@ -179,7 +183,13 @@
     }
 
     _getActiveClientMeta() {
-      const sel = document.getElementById('client-selector');
+      const prof = (typeof window !== 'undefined' && typeof window.getActiveClientProfileGlobal === 'function')
+        ? window.getActiveClientProfileGlobal()
+        : null;
+      if (prof && prof.name) {
+        return { id: prof.id || 'global', name: prof.name };
+      }
+      const sel = document.getElementById('active-client-session-select') || document.getElementById('client-selector');
       const id = sel ? sel.value : 'global';
       const name = (sel && sel.options && sel.selectedIndex >= 0)
         ? sel.options[sel.selectedIndex].textContent.trim()
