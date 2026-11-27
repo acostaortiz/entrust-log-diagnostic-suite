@@ -2125,15 +2125,21 @@ journalctl -u wso2am -n 50 --no-pager`;
     if (labeledMatch) return labeledMatch[1];
     const m = text.match(/\b(AUD\d{2,5}|bulkidentityguard\.add\.error\.[A-Za-z0-9_\.-]+|ORA-\d{4,5}|AWS-S3-404-NOKEY|JVM_OOM|TOMCAT_[A-Z_]+|JDBC_SQL_EXCEPTION|SQL_EXCEPTION)\b/i);
     if (m) return m[1];
-    const bareRe = /(?:^|[^\d])(520\d{4})(?![\d])/g;
+    const stripped = text.trim();
+    const hasErrCtx = /(?:error|fail(?:ed|ure)?|exception|fault|invalid|denied|locked|expired|reject(?:ed)?|cannot|unable|entrust|identityguard|severe|critical|fatal)/i.test(text);
+    const bareRe = /(?:^|[^A-Za-z0-9_\/@\\.-])(520\d{4})(?![A-Za-z0-9_\/@\\.-])/g;
     let bm;
     while ((bm = bareRe.exec(text)) !== null) {
-      const idx = bm.index + bm[0].indexOf(bm[1]);
-      const prefix = text.slice(Math.max(0, idx - 28), idx);
-      if (/(?:user(?:name|id|_id)?|alias|serial|card|phone|tel|cedula|account|session|target|uid|subject)\s*[:=#]?\s*['"]?$/i.test(prefix)) {
-        continue;
+      const code = bm[1];
+      if (stripped !== code) {
+        if (!hasErrCtx) continue;
+        const idx = bm.index + bm[0].indexOf(code);
+        const prefix = text.slice(Math.max(0, idx - 40), idx);
+        if (/(?:user(?:name|id|_id)?|for\s+user(?:\s+[^\s]+)?|alias|serial(?:\s*number)?|token|grid|card|phone|tel|cedula|rif|dni|account|session|target|uid|subject|group|ref(?:erence)?|tx(?:id|n)?|trace|req(?:uest)?id|corr(?:elation)?|pid|tid|port|thread|dn|cn|ou)\s*[:=#\/\s(]*['"]?$/i.test(prefix)) {
+          continue;
+        }
       }
-      return bm[1];
+      return code;
     }
     if (/(?:ClientAbortException|Broken pipe|Connection reset by peer)/i.test(text)) return 'TOMCAT_CLIENT_ABORT';
     if (/(?:OutOfMemoryError|Java heap space|GC overhead limit exceeded)/i.test(text)) return 'JVM_OOM';

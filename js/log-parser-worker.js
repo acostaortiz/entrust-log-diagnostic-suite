@@ -46,6 +46,33 @@ const JAVA_STACK_PATTERNS = [
 ];
 const AUD_FAIL_SET = new Set(['AUD110', 'AUD125', 'AUD126', 'AUD127', 'AUD150', 'AUD153', 'AUD2309', 'AUD4005', 'AUD6002']);
 const AUD_WARN_SET = new Set(['AUD151', 'AUD154', 'AUD155', 'AUD6001']);
+const WORKER_ENTRUST_NUM_BRACKET_RE = /\[(5(?:2\d{4,5}|[013-9]\d{5}))\]/;
+const WORKER_ENTRUST_NUM_LABELED_RE = /(?:error\s*(?:code)?|err(?:or)?Code|faultCode|statusCode|rc|code)\s*[:=\[\(]\s*(5\d{5,6})\b/i;
+const WORKER_ENTRUST_USER_CTX_RE = /(?:user(?:name|id|_id)?|for\s+user(?:\s+[^\s]+)?|alias|serial(?:\s*number)?|token|grid|card|phone|tel|cedula|rif|dni|account|session|target|uid|subject|group|ref(?:erence)?|tx(?:id|n)?|trace|req(?:uest)?id|corr(?:elation)?|pid|tid|port|thread|dn|cn|ou)\s*[:=#\/\s(]*['"]?$/i;
+const WORKER_ENTRUST_BARE_ERROR_CTX_RE = /(?:error|fail(?:ed|ure)?|exception|fault|invalid|denied|locked|expired|reject(?:ed)?|cannot|unable|entrust|identityguard|severe|critical|fatal)/i;
+
+function workerExtractEntrustNumericCode(text) {
+  if (!text) return null;
+  const mb = text.match(WORKER_ENTRUST_NUM_BRACKET_RE);
+  if (mb) return mb[1];
+  const ml = text.match(WORKER_ENTRUST_NUM_LABELED_RE);
+  if (ml) return ml[1];
+  const stripped = text.trim();
+  const hasErrCtx = WORKER_ENTRUST_BARE_ERROR_CTX_RE.test(text);
+  const bareRe = /(?:^|[^A-Za-z0-9_\/@\\.-])(520\d{4})(?![A-Za-z0-9_\/@\\.-])/g;
+  let bm;
+  while ((bm = bareRe.exec(text)) !== null) {
+    const code = bm[1];
+    if (stripped !== code) {
+      if (!hasErrCtx) continue;
+      const idx = bm.index + bm[0].indexOf(code);
+      const prefix = text.slice(Math.max(0, idx - 40), idx);
+      if (WORKER_ENTRUST_USER_CTX_RE.test(prefix)) continue;
+    }
+    return code;
+  }
+  return null;
+}
 
 function isTomcatStartupBanner(text) {
   return Boolean(text && RE_TOMCAT_BANNER.test(text));
@@ -129,8 +156,8 @@ function classifyTomcatJavaEvent(text, baseLevel = 'INFO', hasStack = false) {
   if (baseU === 'GRAVE') baseU = 'SEVERE';
   else if (baseU === 'ADVERTENCIA') baseU = 'WARNING';
 
-  const c520 = txt.match(/(?:\b|\[)(520\d{4})(?:\b|\])/);
-  if (c520) return { code: c520[1], level: 'ERROR', service: 'IG.SYSTEM' };
+  const c520 = workerExtractEntrustNumericCode(txt);
+  if (c520) return { code: c520, level: 'ERROR', service: 'IG.SYSTEM' };
 
   const aud = txt.match(/(?:\b|\[)(AUD\d{3,4})(?:\b|\])/i);
   if (aud) {
@@ -614,9 +641,9 @@ function parseSingleLineFast(line, lineNum, lastSeenTs = '') {
 
       let entrustCode = null;
       let lockedCode = false;
-      const c520Idx = line.indexOf('520');
-      if (c520Idx !== -1 && /520\d{4}/.test(line.substring(c520Idx, c520Idx + 7))) {
-        entrustCode = line.substring(c520Idx, c520Idx + 7);
+      const c520 = workerExtractEntrustNumericCode(line);
+      if (c520) {
+        entrustCode = c520;
         level = 'ERROR';
         lockedCode = true;
       } else {
@@ -759,9 +786,9 @@ function parseSingleLineFast(line, lineNum, lastSeenTs = '') {
   // 2.5 Entrust Linux Syslog + Apache Tomcat JULI / Catalina
   const { ts, rest, fmt } = parseTomcatTimestamp(line);
   if (ts) {
-    if (fmt === 'syslog' && (rest.startsWith('[') || rest.includes('520') || rest.includes('AUD'))) {
+    if (fmt === 'syslog' && (rest.startsWith('[') || rest.includes('[520') || rest.includes('AUD') || Boolean(workerExtractEntrustNumericCode(rest)))) {
       const lvlM = rest.match(/\[(ERROR|FATAL|SEVERE|CRIT|CRITICAL|WARN|WARNING|INFO|DEBUG)\s*\]/i);
-      const baseLvl = lvlM ? lvlM[1].toUpperCase() : ((rest.includes('FAILED') || rest.includes('[520')) ? 'ERROR' : 'INFO');
+      const baseLvl = lvlM ? lvlM[1].toUpperCase() : ((rest.includes('FAILED') || rest.includes('[520') || Boolean(workerExtractEntrustNumericCode(rest))) ? 'ERROR' : 'INFO');
       const cls = classifyTomcatJavaEvent(line, baseLvl);
       const lockedCode = /^(?:520\d{4}|AUD\d+|ORA-)/i.test(cls.code);
       return {
@@ -865,13 +892,13 @@ function parseSingleLineFast(line, lineNum, lastSeenTs = '') {
   let typeLabel = 'Entrust IdentityGuard';
   let hostLabel = 'localhost';
 
-  const c520 = line.match(/520\d{4}/);
+  const c520 = workerExtractEntrustNumericCode(line);
   const aud = line.match(/AUD\d{3,4}/i);
   const ora = line.match(/ORA-\d{5}/);
   const sshTarget = line.match(/Target:\s*([^\s]+\:ssh)/i);
 
   if (c520) {
-    entrustCode = c520[0];
+    entrustCode = c520;
     service = 'IG.SYSTEM';
     level = 'ERROR';
   } else if (aud) {

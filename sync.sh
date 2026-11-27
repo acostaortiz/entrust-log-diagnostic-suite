@@ -154,19 +154,19 @@ sync_diagnostic() {
             local live_ver_json=""
             for _ in 1 2 3 4 5 6; do
                 live_ver_json=$(curl -sf http://127.0.0.1:8085/api/version 2>/dev/null || echo "")
-                if echo "$live_ver_json" | grep -q "full-audit-317"; then
+                if echo "$live_ver_json" | grep -q "hardened-520-3171"; then
                     break
                 fi
                 sleep 1
             done
 
-            if echo "$live_ver_json" | grep -q "full-audit-317"; then
+            if echo "$live_ver_json" | grep -q "hardened-520-3171"; then
                 local live_srv_ver live_srv_pid
                 live_srv_ver=$(echo "$live_ver_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('version',{}).get('serverCodeVersion',''))" 2>/dev/null || echo "ok")
                 live_srv_pid=$(echo "$live_ver_json" | python3 -c "import sys,json; print(json.load(sys.stdin).get('version',{}).get('serverPid',''))" 2>/dev/null || echo "?")
-                printf "${GREEN}${BOLD}   ✓ Backend 8085 en vivo verificado (serverCodeVersion=%s, PID=%s, capacidades v3.17 activas).${NC}\n" "$live_srv_ver" "$live_srv_pid"
+                printf "${GREEN}${BOLD}   ✓ Backend 8085 en vivo verificado (serverCodeVersion=%s, PID=%s, capacidades v3.17.1 activas).${NC}\n" "$live_srv_ver" "$live_srv_pid"
             else
-                printf "${RED}${BOLD}   ✗ ADVERTENCIA: el backend en puerto 8085 NO reporta 'full-audit-317'. Revisa procesos con: sudo ss -tlnp | grep 8085${NC}\n"
+                printf "${RED}${BOLD}   ✗ ADVERTENCIA: el backend en puerto 8085 NO reporta 'hardened-520-3171'. Revisa procesos con: sudo ss -tlnp | grep 8085${NC}\n"
             fi
 
             if [ -f "$HOME/sync.sh" ] && ! cmp -s "$HOME/sync.sh" "$DIR_DIAGNOSTIC/sync.sh"; then

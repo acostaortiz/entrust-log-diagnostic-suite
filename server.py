@@ -35,7 +35,9 @@ UPLOADS_DIR = os.path.join(DATA_DIR, 'uploads')
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
-SERVER_CODE_VERSION = 'v3.17.0'
+SERVER_CODE_VERSION = 'v3.17.1'
+STATS_SCHEMA_VERSION = 'v3.17.1'
+STATS_MIGRATION_LOCK = threading.Lock()
 SERVER_START_TIME = time.time()
 DEFAULT_DB_PATH = None
 ACTIVE_DB_PATH = None
@@ -1273,9 +1275,13 @@ _ENTRUST_NUM_LABELED_RE = re.compile(
     r'(?:error\s*(?:code)?|err(?:or)?Code|faultCode|statusCode|rc|code)\s*[:=\[\(]\s*(5\d{5,6})\b',
     re.IGNORECASE
 )
-_ENTRUST_NUM_BARE_RE = re.compile(r'(?<!\d)(520\d{4})(?!\d)')
+_ENTRUST_NUM_BARE_RE = re.compile(r'(?<![A-Za-z0-9_/@\\.\-])(520\d{4})(?![A-Za-z0-9_/@\\.\-])')
 _USER_CONTEXT_PREFIX_RE = re.compile(
-    r'(?:user(?:name|id|_id)?|alias|serial|card|phone|tel|cedula|account|session|target|uid|subject)\s*[:=#]?\s*[\'"]?$',
+    r'(?:user(?:name|id|_id)?|for\s+user(?:\s+[^\s]+)?|alias|serial(?:\s*number)?|token|grid|card|phone|tel|cedula|rif|dni|account|session|target|uid|subject|group|ref(?:erence)?|tx(?:id|n)?|trace|req(?:uest)?id|corr(?:elation)?|pid|tid|port|thread|dn|cn|ou)\s*[:=#/\(\s]*[\'"]?$',
+    re.IGNORECASE
+)
+_ENTRUST_BARE_ERROR_CTX_RE = re.compile(
+    r'(?:error|fail(?:ed|ure)?|exception|fault|invalid|denied|locked|expired|reject(?:ed)?|cannot|unable|entrust|identityguard|severe|critical|fatal)',
     re.IGNORECASE
 )
 _AUD_CODE_RE = re.compile(r'(?:\b|\[)(AUD\d{2,5})(?:\b|\])', re.IGNORECASE)
@@ -1299,11 +1305,17 @@ def extract_entrust_numeric_code(text):
     m = _ENTRUST_NUM_LABELED_RE.search(text)
     if m:
         return m.group(1)
+    stripped = text.strip()
+    has_err_ctx = bool(_ENTRUST_BARE_ERROR_CTX_RE.search(text))
     for m in _ENTRUST_NUM_BARE_RE.finditer(text):
-        prefix = text[max(0, m.start() - 28):m.start()]
-        if _USER_CONTEXT_PREFIX_RE.search(prefix):
-            continue
-        return m.group(1)
+        code = m.group(1)
+        if stripped != code:
+            if not has_err_ctx:
+                continue
+            prefix = text[max(0, m.start() - 40):m.start()]
+            if _USER_CONTEXT_PREFIX_RE.search(prefix):
+                continue
+        return code
     return None
 
 
@@ -1475,7 +1487,7 @@ def parse_line_meta_for_db(line, line_num, last_seen_ts=''):
     ts, rest, fmt = parse_tomcat_timestamp(line)
     if ts:
         meta['has_explicit_ts'] = True
-        if fmt == 'syslog' and (rest.startswith('[') or '520' in rest or 'AUD' in rest or bool(extract_entrust_numeric_code(rest))):
+        if fmt == 'syslog' and (rest.startswith('[') or '[520' in rest or 'AUD' in rest or bool(extract_entrust_numeric_code(rest))):
             meta['is_tomcat'] = True
             lvl_m = re.search(r'\[(ERROR|FATAL|SEVERE|CRIT|CRITICAL|WARN|WARNING|INFO|DEBUG)\s*\]', rest, re.I)
             base_level = lvl_m.group(1).upper() if lvl_m else ('ERROR' if 'FAILED' in rest or '[520' in rest or extract_entrust_numeric_code(rest) else 'INFO')
@@ -2074,6 +2086,52 @@ def _ensure_loaded_file_ranges(cur, loaded_files, fill_dates=False):
                 changed = True
     return changed
 
+
+def _migrate_legacy_sqlite_rows(cur):
+    """Repairs legacy TOMCAT_WARN FAIL rows and false-positive 520xxxx rows (e.g. Cédulas/Refs) in SQLite."""
+    repaired_count = 0
+    cur.execute(
+        "UPDATE logs SET event_outcome = 'WARN' "
+        "WHERE event_type = 'TOMCAT_WARN' AND UPPER(event_outcome) IN ('FAIL', 'FAILURE', 'ERROR')"
+    )
+    if cur.rowcount and cur.rowcount > 0:
+        repaired_count += int(cur.rowcount)
+
+    cur.execute(
+        "SELECT line_num, raw, event_type, event_outcome, subject_name, message, source_ip "
+        "FROM logs "
+        "WHERE event_type >= '5200000' AND event_type <= '5209999' AND LENGTH(event_type) = 7 "
+        "AND raw IS NOT NULL AND raw != '' "
+        "AND INSTR(raw, '[' || event_type || ']') = 0"
+    )
+    legacy_rows = cur.fetchall()
+    updates = []
+    for ln, raw_txt, old_type, old_out, old_subj, old_msg, old_ip in legacy_rows:
+        raw_s = str(raw_txt or '')
+        if extract_entrust_numeric_code(raw_s) == old_type:
+            continue
+        lines = raw_s.splitlines()
+        first_line = lines[0] if lines else raw_s
+        parsed, _ = parse_line_meta_for_db(first_line, ln, last_seen_ts='')
+        if not parsed:
+            continue
+        new_subj = parsed[2] or old_subj
+        new_type = parsed[3] or old_type
+        new_out = parsed[4] or old_out
+        new_msg = old_msg if '\n' in raw_s else (parsed[5] or old_msg)
+        new_ip = parsed[6] or old_ip
+        if new_type != old_type or new_out != old_out:
+            updates.append((new_subj, new_type, new_out, new_msg, new_ip, ln))
+    if updates:
+        cur.executemany(
+            'UPDATE logs SET subject_name = ?, event_type = ?, event_outcome = ?, message = ?, source_ip = ? WHERE line_num = ?',
+            updates,
+        )
+        repaired_count += len(updates)
+
+    return repaired_count
+
+
 def recompute_sqlite_stats_obj(cur, target_db, client_name, loaded_files):
     """Recomputes 100% exact cached statistics across all surviving SQLite rows."""
     cur.execute('SELECT COUNT(1) FROM logs')
@@ -2142,6 +2200,7 @@ def recompute_sqlite_stats_obj(cur, target_db, client_name, loaded_files):
 
     return {
         'status': 'ready',
+        'statsSchemaVersion': STATS_SCHEMA_VERSION,
         'totalLogs': total_all,
         'rawLinesRead': prev_raw_total or total_all,
         'foldedStackLines': prev_folded_total,
@@ -2574,6 +2633,7 @@ def index_file_in_background(file_path, client_name='Entrust Client', append_mod
             ]
             stats_obj = {
                 'status': 'ready',
+                'statsSchemaVersion': STATS_SCHEMA_VERSION,
                 'totalLogs': total_all,
                 'rawLinesRead': prev_raw_total or raw_lines_read,
                 'foldedStackLines': prev_folded_total,
@@ -3486,7 +3546,8 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'multiline-fold-316',
                 'server-filter-316',
                 'export-logs-csv-316',
-                'full-audit-317'
+                'full-audit-317',
+                'hardened-520-3171'
             ],
             'serverUptimeSeconds': round(time.time() - SERVER_START_TIME, 1) if 'SERVER_START_TIME' in globals() else 0,
             'pythonVersion': sys.version.split()[0],
@@ -3906,31 +3967,84 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             cur = conn.cursor()
             cur.execute('PRAGMA busy_timeout = 30000;')
             
-            # Fast Check: cached stats in server_stats table (< 0.5 ms)
+            # Fast Check: cached stats in server_stats table (< 0.5 ms) with auto-migration on schema upgrade
             cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='server_stats'")
             if cur.fetchone():
                 cur.execute("SELECT value FROM server_stats WHERE key='stats_json'")
                 row = cur.fetchone()
                 if row and row[0]:
                     stats_cached = json.loads(row[0])
+                    client_display = client_param or os.path.basename(db).replace('_audit.db', '')
                     stats_cached['activeDb'] = os.path.basename(db)
-                    stats_cached['client'] = client_param or os.path.basename(db).replace('_audit.db', '')
-                    stats_dirty = False
-                    if isinstance(stats_cached.get('loadedFiles'), list) and len(stats_cached['loadedFiles']) > 0:
-                        if _ensure_loaded_file_ranges(cur, stats_cached['loadedFiles'], fill_dates=True):
+                    stats_cached['client'] = client_display
+
+                    if stats_cached.get('statsSchemaVersion') != STATS_SCHEMA_VERSION:
+                        with STATS_MIGRATION_LOCK:
+                            cur.execute("SELECT value FROM server_stats WHERE key='stats_json'")
+                            fresh_row = cur.fetchone()
+                            fresh_cached = json.loads(fresh_row[0]) if (fresh_row and fresh_row[0]) else stats_cached
+                            if fresh_cached.get('statsSchemaVersion') != STATS_SCHEMA_VERSION:
+                                loaded_files = list(fresh_cached.get('loadedFiles') or [])
+                                _ensure_loaded_file_ranges(cur, loaded_files, fill_dates=True)
+                                repaired = _migrate_legacy_sqlite_rows(cur)
+                                if repaired > 0 and loaded_files:
+                                    for f in loaded_files:
+                                        if not isinstance(f, dict):
+                                            continue
+                                        sl = int(f.get('startLine') or 0)
+                                        el = int(f.get('endLine') or 0)
+                                        if sl > 0 and el >= sl:
+                                            cur.execute(
+                                                "SELECT COUNT(1) FROM logs WHERE line_num BETWEEN ? AND ? "
+                                                "AND (UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%')",
+                                                (sl, el),
+                                            )
+                                            err_c = int((cur.fetchone() or [0])[0] or 0)
+                                            f['realErrors'] = err_c
+                                            if 'errorCount' in f:
+                                                f['errorCount'] = err_c
+                                            cur.execute(
+                                                "SELECT COUNT(1) FROM logs WHERE line_num BETWEEN ? AND ? "
+                                                "AND NOT (UPPER(event_outcome) LIKE '%FAIL%' OR UPPER(event_outcome) LIKE '%ERR%') "
+                                                "AND (UPPER(event_outcome) LIKE '%WARN%' OR UPPER(event_type) LIKE 'AUD%')",
+                                                (sl, el),
+                                            )
+                                            f['realWarnings'] = int((cur.fetchone() or [0])[0] or 0)
+                                stats_cached = recompute_sqlite_stats_obj(
+                                    cur, db, fresh_cached.get('client') or client_display, loaded_files
+                                )
+                                stats_cached['client'] = client_display
+                                cur.execute(
+                                    'INSERT OR REPLACE INTO server_stats VALUES (?, ?)',
+                                    ('stats_json', json.dumps(stats_cached, ensure_ascii=False)),
+                                )
+                                cur.execute(
+                                    "DELETE FROM server_stats WHERE key IN "
+                                    "('forensic_matrix_v2', 'forensic_matrix_v3', 'forensic_matrix_v4', 'forensic_matrix_v5', 'forensic_matrix_v6', 'forensic_matrix_v7', 'forensic_matrix_v8')"
+                                )
+                                conn.commit()
+                            else:
+                                stats_cached = fresh_cached
+                                stats_cached['activeDb'] = os.path.basename(db)
+                                stats_cached['client'] = client_display
+                    else:
+                        stats_dirty = False
+                        if isinstance(stats_cached.get('loadedFiles'), list) and len(stats_cached['loadedFiles']) > 0:
+                            if _ensure_loaded_file_ranges(cur, stats_cached['loadedFiles'], fill_dates=True):
+                                stats_dirty = True
+                        if (int(stats_cached.get('totalLogs', 0) or 0) > 200 and int(stats_cached.get('totalUniqueUsers', 0) or 0) <= 200) or 'totalUniqueUsers' not in stats_cached:
+                            ex_u, ex_c, ex_ip = compute_exact_sqlite_distinct_counts(cur)
+                            stats_cached['totalUniqueUsers'] = ex_u
+                            stats_cached['totalUniqueCodes'] = ex_c
+                            stats_cached['totalUniqueIps'] = ex_ip
                             stats_dirty = True
-                    if (int(stats_cached.get('totalLogs', 0) or 0) > 200 and int(stats_cached.get('totalUniqueUsers', 0) or 0) <= 200) or 'totalUniqueUsers' not in stats_cached:
-                        ex_u, ex_c, ex_ip = compute_exact_sqlite_distinct_counts(cur)
-                        stats_cached['totalUniqueUsers'] = ex_u
-                        stats_cached['totalUniqueCodes'] = ex_c
-                        stats_cached['totalUniqueIps'] = ex_ip
-                        stats_dirty = True
-                    if stats_dirty:
-                        try:
-                            cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_cached, ensure_ascii=False)))
-                            conn.commit()
-                        except Exception:
-                            pass
+                        if stats_dirty:
+                            try:
+                                cur.execute('INSERT OR REPLACE INTO server_stats VALUES (?, ?)', ('stats_json', json.dumps(stats_cached, ensure_ascii=False)))
+                                conn.commit()
+                            except Exception:
+                                pass
+
                     if 'topUsers' in stats_cached and isinstance(stats_cached['topUsers'], list):
                         stats_cached['topUsers'] = [u for u in stats_cached['topUsers'] if is_valid_user_candidate(u.get('user', ''))]
                     conn.close()
@@ -3963,7 +4077,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
                         WHEN message LIKE '%bulkidentityguard.add.error.password%' OR message LIKE '%password_already_exists%' THEN 'bulkidentityguard.add.error.password'
                         WHEN message LIKE '%ORA-01555%' OR message LIKE '%snapshot too old%' THEN 'ORA-01555'
                         WHEN message LIKE '%ORA-%' THEN SUBSTR(message, INSTR(message, 'ORA-'), 9)
-                        WHEN message LIKE '%520%' THEN SUBSTR(message, INSTR(message, '520'), 7)
+                        WHEN message LIKE '%[520%' THEN SUBSTR(message, INSTR(message, '[520') + 1, 7)
                         WHEN message LIKE '%AUD%' THEN SUBSTR(message, INSTR(message, 'AUD'), 7)
                         WHEN message LIKE '%TransactionQueue%' THEN 'TransactionQueue.API'
                         WHEN message != '' THEN SUBSTR(message, 1, 60)
@@ -4022,6 +4136,7 @@ class DiagnosticRequestHandler(http.server.SimpleHTTPRequestHandler):
             conn.close()
             self.send_json({
                 'status': 'ready',
+                'statsSchemaVersion': STATS_SCHEMA_VERSION,
                 'totalLogs': total,
                 'totalErrors': errors,
                 'totalWarnings': warnings,

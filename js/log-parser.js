@@ -43,7 +43,8 @@ const LP_AUD_FAIL_SET = new Set(['AUD110', 'AUD125', 'AUD126', 'AUD127', 'AUD150
 const LP_AUD_WARN_SET = new Set(['AUD151', 'AUD154', 'AUD155', 'AUD6001']);
 const LP_ENTRUST_NUM_BRACKET_RE = /\[(5(?:2\d{4,5}|[013-9]\d{5}))\]/;
 const LP_ENTRUST_NUM_LABELED_RE = /(?:error\s*(?:code)?|err(?:or)?Code|faultCode|statusCode|rc|code)\s*[:=\[\(]\s*(5\d{5,6})\b/i;
-const LP_ENTRUST_USER_CTX_RE = /(?:user(?:name|id|_id)?|alias|serial|card|phone|tel|cedula|account|session|target|uid|subject)\s*[:=#]?\s*['"]?$/i;
+const LP_ENTRUST_USER_CTX_RE = /(?:user(?:name|id|_id)?|for\s+user(?:\s+[^\s]+)?|alias|serial(?:\s*number)?|token|grid|card|phone|tel|cedula|rif|dni|account|session|target|uid|subject|group|ref(?:erence)?|tx(?:id|n)?|trace|req(?:uest)?id|corr(?:elation)?|pid|tid|port|thread|dn|cn|ou)\s*[:=#\/\s(]*['"]?$/i;
+const LP_ENTRUST_BARE_ERROR_CTX_RE = /(?:error|fail(?:ed|ure)?|exception|fault|invalid|denied|locked|expired|reject(?:ed)?|cannot|unable|entrust|identityguard|severe|critical|fatal)/i;
 
 function lpIsEntrustNumericCode(code) {
   return /^5(?:2\d{4,5}|[013-9]\d{5})$/.test(String(code || '').trim());
@@ -55,13 +56,19 @@ function lpExtractEntrustNumericCode(text) {
   if (mb) return mb[1];
   const ml = text.match(LP_ENTRUST_NUM_LABELED_RE);
   if (ml) return ml[1];
-  const bareRe = /(?:^|\D)(520\d{4})(?!\d)/g;
+  const stripped = text.trim();
+  const hasErrCtx = LP_ENTRUST_BARE_ERROR_CTX_RE.test(text);
+  const bareRe = /(?:^|[^A-Za-z0-9_\/@\\.-])(520\d{4})(?![A-Za-z0-9_\/@\\.-])/g;
   let bm;
   while ((bm = bareRe.exec(text)) !== null) {
-    const idx = bm.index + bm[0].indexOf(bm[1]);
-    const prefix = text.slice(Math.max(0, idx - 28), idx);
-    if (LP_ENTRUST_USER_CTX_RE.test(prefix)) continue;
-    return bm[1];
+    const code = bm[1];
+    if (stripped !== code) {
+      if (!hasErrCtx) continue;
+      const idx = bm.index + bm[0].indexOf(code);
+      const prefix = text.slice(Math.max(0, idx - 40), idx);
+      if (LP_ENTRUST_USER_CTX_RE.test(prefix)) continue;
+    }
+    return code;
   }
   return null;
 }
@@ -460,7 +467,7 @@ class LogParser {
     if (window.Worker) {
       return new Promise((resolve) => {
         try {
-          const worker = new Worker('js/log-parser-worker.js?v=608.0');
+          const worker = new Worker('js/log-parser-worker.js?v=624.0');
           worker.postMessage({ rawContent, clientId });
 
           worker.onmessage = (e) => {
@@ -495,7 +502,7 @@ class LogParser {
     if (window.Worker) {
       return new Promise((resolve) => {
         try {
-          const worker = new Worker('js/log-parser-worker.js?v=608.0');
+          const worker = new Worker('js/log-parser-worker.js?v=624.0');
           worker.postMessage({ file: file, clientId: clientId, mode: 'fileBlob' });
 
           worker.onmessage = (e) => {
@@ -1205,13 +1212,13 @@ class LogParser {
     let typeLabel = 'Entrust IdentityGuard';
     let hostLabel = 'localhost';
 
-    const c520 = line.match(/520\d{4}/);
+    const c520 = lpExtractEntrustNumericCode(line);
     const aud = line.match(/AUD\d{3,4}/i);
     const ora = line.match(/ORA-\d{5}/);
     const sshTarget = line.match(/Target:\s*([^\s]+\:ssh)/i);
 
     if (c520) {
-      entrustCode = c520[0];
+      entrustCode = c520;
       service = 'IG.SYSTEM';
       level = 'ERROR';
     } else if (aud) {

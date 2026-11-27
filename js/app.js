@@ -13,6 +13,85 @@ function escapeHtml(text) {
 window.escapeHtml = escapeHtml;
 
 /**
+ * Hash Criptográfico SHA-256 Estándar FIPS 180-4 (Puro JS; seguro en HTTP sin crypto.subtle)
+ */
+function computeSha256Hex(message) {
+  const str = String(message ?? '');
+  let bytes;
+  if (typeof TextEncoder !== 'undefined') {
+    bytes = new TextEncoder().encode(str);
+  } else {
+    const utf8 = unescape(encodeURIComponent(str));
+    bytes = new Uint8Array(utf8.length);
+    for (let i = 0; i < utf8.length; i++) bytes[i] = utf8.charCodeAt(i) & 0xff;
+  }
+  const K = [
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+  ];
+  let H0 = 0x6a09e667, H1 = 0xbb67ae85, H2 = 0x3c6ef372, H3 = 0xa54ff53a;
+  let H4 = 0x510e527f, H5 = 0x9b05688c, H6 = 0x1f83d9ab, H7 = 0x5be0cd19;
+
+  const l = bytes.length;
+  const totalLen = Math.ceil((l + 9) / 64) * 64;
+  const padded = new Uint8Array(totalLen);
+  padded.set(bytes);
+  padded[l] = 0x80;
+  const bitLenHi = Math.floor((l * 8) / 0x100000000);
+  const bitLenLo = (l * 8) >>> 0;
+  const view = new DataView(padded.buffer);
+  view.setUint32(totalLen - 8, bitLenHi, false);
+  view.setUint32(totalLen - 4, bitLenLo, false);
+
+  const W = new Int32Array(64);
+  const rotr = (n, x) => (x >>> n) | (x << (32 - n));
+
+  for (let offset = 0; offset < totalLen; offset += 64) {
+    for (let i = 0; i < 16; i++) {
+      W[i] = view.getUint32(offset + i * 4, false) | 0;
+    }
+    for (let i = 16; i < 64; i++) {
+      const x0 = W[i - 15], x1 = W[i - 2];
+      const s0 = rotr(7, x0) ^ rotr(18, x0) ^ (x0 >>> 3);
+      const s1 = rotr(17, x1) ^ rotr(19, x1) ^ (x1 >>> 10);
+      W[i] = (W[i - 16] + s0 + W[i - 7] + s1) | 0;
+    }
+    let a = H0, b = H1, c = H2, d = H3, e = H4, f = H5, g = H6, h = H7;
+    for (let i = 0; i < 64; i++) {
+      const S1 = rotr(6, e) ^ rotr(11, e) ^ rotr(25, e);
+      const ch = (e & f) ^ (~e & g);
+      const temp1 = (h + S1 + ch + K[i] + W[i]) | 0;
+      const S0 = rotr(2, a) ^ rotr(13, a) ^ rotr(22, a);
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const temp2 = (S0 + maj) | 0;
+      h = g; g = f; f = e; e = (d + temp1) | 0;
+      d = c; c = b; b = a; a = (temp1 + temp2) | 0;
+    }
+    H0 = (H0 + a) | 0; H1 = (H1 + b) | 0; H2 = (H2 + c) | 0; H3 = (H3 + d) | 0;
+    H4 = (H4 + e) | 0; H5 = (H5 + f) | 0; H6 = (H6 + g) | 0; H7 = (H7 + h) | 0;
+  }
+
+  const toHex = (n) => (n >>> 0).toString(16).padStart(8, '0');
+  return toHex(H0) + toHex(H1) + toHex(H2) + toHex(H3) + toHex(H4) + toHex(H5) + toHex(H6) + toHex(H7);
+}
+window.computeSha256HexGlobal = computeSha256Hex;
+
+function buildForensicSealHex(scope, payloadObj) {
+  const canonical = JSON.stringify({
+    scope: String(scope || 'FORENSIC'),
+    suiteVersion: (typeof window !== 'undefined' && window.appState?.appVersion?.version) ? window.appState.appVersion.version : 'v3.17.1',
+    ...(payloadObj && typeof payloadObj === 'object' ? payloadObj : {})
+  });
+  return computeSha256Hex(canonical);
+}
+
+/**
  * APP.JS: Controlador Principal del Dashboard de Diagnóstico de Logs, Auditoría y Manuales
  * Soporta Modo Claro Corporativo / Oscuro, Entrust OnPremise y IDaaS Cloud.
  */
@@ -142,10 +221,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const raw = (l.raw || l.message || '');
         const code = String(l.entrustCode || '');
         if (/bulkidentityguard|idaas/i.test(code) || /IDaaS/i.test(l.service || '') || /IDaaS/i.test(l.type || '')) {
-          const m520 = raw.match(/\[(5(?:2\d{4,5}|[013-9]\d{5}))\]/) || raw.match(/\b(520\d{4})\b/);
+          const extractedKbCode = window.knowledgeBaseEngine?.extractErrorCodeFromText?.(raw);
+          const m520Str = (extractedKbCode && /^5(?:2\d{4,5}|[013-9]\d{5})$/.test(extractedKbCode))
+            ? extractedKbCode
+            : (raw.match(/\[(5(?:2\d{4,5}|[013-9]\d{5}))\]/)?.[1] || null);
           const mAud = raw.match(/\b(AUD\d{2,5})\b/i);
-          if (m520) {
-            l.entrustCode = m520[1];
+          if (m520Str) {
+            l.entrustCode = m520Str;
             l.service = 'IG.SYSTEM';
             l.type = 'Entrust Error 520';
           } else if (mAud) {
@@ -2406,7 +2488,7 @@ document.addEventListener('DOMContentLoaded', () => {
       suiteLabel: 'Suite de Diagnóstico',
       confidentialUse: 'Confidencial — Para uso exclusivo de <strong>{client}</strong>.',
       digitalSeal: '🔒 <strong>SELLO DIGITAL DE AUTENTICIDAD & AUDITORÍA SHA-256:</strong>',
-      validatedBy: 'Validado por IT SERVICIOS Suite Enterprise v3.17.0',
+      validatedBy: 'Validado por IT SERVICIOS Suite Enterprise v3.17.1',
       onePageTitle: 'DICTAMEN EJECUTIVO DIRECTIVO — AUDITORÍA FORENSE ENTRUST',
       onePageHealth: 'Salud Operativa Clúster',
       onePageTraces: 'Trazas Procesadas',
@@ -2501,7 +2583,7 @@ document.addEventListener('DOMContentLoaded', () => {
       suiteLabel: 'Diagnostic Suite',
       confidentialUse: 'Confidential — For the exclusive use of <strong>{client}</strong>.',
       digitalSeal: '🔒 <strong>SHA-256 DIGITAL AUDIT & AUTHENTICITY SEAL:</strong>',
-      validatedBy: 'Validated by IT SERVICIOS Suite Enterprise v3.17.0',
+      validatedBy: 'Validated by IT SERVICIOS Suite Enterprise v3.17.1',
       onePageTitle: 'EXECUTIVE BOARD BRIEFING — ENTRUST FORENSIC AUDIT',
       onePageHealth: 'Cluster Health Index',
       onePageTraces: 'Processed Logs',
@@ -3484,13 +3566,13 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <!-- SELLO CRIPTOGRÁFICO Y DICTAMEN PERICIAL -->
-      <div style="border-top:1.5px solid #0a3d6d; padding-top:8px; display:flex; justify-content:space-between; align-items:center; font-size:9px; color:#475569;">
+      <div style="border-top:1.5px solid #0a3d6d; padding-top:8px; display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:9px; color:#475569;">
         <div>
           <strong style="color:#0a3d6d;">${i18n.signatureName}</strong> — ${i18n.signatureRole}<br>
           <em>IT Servicios de Venezuela, S.A. | RIF: J-30694859-0</em>
         </div>
-        <div style="text-align:right; font-family:monospace; background:#f1f5f9; padding:4px 8px; border-radius:4px; border:1px solid #cbd5e1;">
-          🔒 <strong>${isEn ? 'SHA-256 SEAL:' : 'SELLO SHA-256:'}</strong> SHA256-VP-${Date.now().toString(16).toUpperCase()}-ITSERV
+        <div style="text-align:right; font-family:monospace; font-size:8px; line-height:1.35; background:#f1f5f9; padding:4px 8px; border-radius:4px; border:1px solid #cbd5e1; max-width:340px; word-break:break-all;">
+          🔒 <strong>${isEn ? 'SHA-256 SEAL:' : 'SELLO SHA-256:'}</strong> ${buildForensicSealHex('VP-EXECUTIVE', { client: activeClient ? activeClient.name : 'Entrust', version: activeClient ? activeClient.version : '', dateStamp, totalLogs: totalCount, totalErrors: criticalLogsCount, totalWarnings: warningLogsCount, health: calculatedHealth, files: consolidated.fileCount || 1 })}
         </div>
       </div>
     `;
@@ -5058,9 +5140,9 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
 
           <!-- Sello SHA-256 de Autenticidad -->
-          <div style="margin-top:16px; padding:10px 14px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:10px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
-            <span>${i18n.digitalSeal} SHA256-FORENSIC-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS</span>
-            <span>${escapeHtml((isEn ? 'Validated by IT SERVICIOS Suite Enterprise ' : 'Validado por IT SERVICIOS Suite Enterprise ') + (state.appVersion?.version || 'v3.17.0'))}</span>
+          <div style="margin-top:16px; padding:10px 14px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; font-size:10px; color:#475569; font-family:monospace; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <span style="word-break:break-all;">${i18n.digitalSeal} ${buildForensicSealHex('FORENSIC-REPORT', { client: activeClient?.name || 'Entrust', version: activeClient?.version || '', dateStamp: new Date().toISOString().slice(0, 10), totalLogs: totalCount, totalErrors: criticalLogsCount, totalWarnings: warningLogsCount, fileCount: consolidated.fileCount || 1, activeLockedUsers: lockedUsersCount, topCodes: sortedIncidents.slice(0, 10).map(x => `${x.code}:${x.count}`) })}</span>
+            <span>${escapeHtml((isEn ? 'Validated by IT SERVICIOS Suite Enterprise ' : 'Validado por IT SERVICIOS Suite Enterprise ') + (state.appVersion?.version || 'v3.17.1'))}</span>
           </div>
         </div>
       </div>
@@ -5268,7 +5350,8 @@ document.addEventListener('DOMContentLoaded', () => {
     md += `---\n\n`;
     md += `**IT Servicios de Venezuela Support Department**  \n`;
     md += `*${i18n.signatureName} — ${i18n.signatureRole}*\n\n`;
-    md += `🔒 **${isEn ? 'SHA-256 DIGITAL SEAL:' : 'SELLO DIGITAL DE AUTENTICIDAD Y AUDITORÍA SHA-256:'}** \`SHA256-190PLATINUM-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS\`  \n`;
+    const mdSealHex = buildForensicSealHex('FORENSIC-MARKDOWN', { client: activeClient?.name || 'Entrust', version: activeClient?.version || '', dateStamp: new Date().toISOString().slice(0, 10), mdLength: md.length, mdDigest: computeSha256Hex(md) });
+    md += `🔒 **${isEn ? 'SHA-256 DIGITAL SEAL:' : 'SELLO DIGITAL DE AUTENTICIDAD Y AUDITORÍA SHA-256:'}** \`${mdSealHex}\`  \n`;
 
     return md;
   }
@@ -6818,7 +6901,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!cli) return;
       const textToCopy = targetOs === 'win' ? cli.win : cli.nix;
       navigator.clipboard.writeText(textToCopy).then(() => {
-        alert(`📋 ¡Comandos CLI para ${targetOs === 'win' ? 'Windows SACVWIG07' : 'Linux sadcluapi01'} copiados al portapapeles!`);
+        alert(`📋 ¡Comandos CLI para ${targetOs === 'win' ? 'Windows Server (Entrust IG)' : 'Linux / Unix (Entrust IG)'} copiados al portapapeles!`);
       });
     };
 
@@ -7496,9 +7579,9 @@ Referencia Manual: ${diag.manualFile || diag.sectionTitle} (${docVerBadge})`;
     <div class="code-box">${escapeHtml(rule.cliCommands.win || rule.cliCommands.nix || '')}</div>
   </div>` : ''}
 
-  <div style="margin-top: 24px; padding: 14px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; font-size: 11px; color: #64748b; display: flex; justify-content: space-between; align-items: center;">
+  <div style="margin-top: 24px; padding: 14px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; font-size: 11px; color: #64748b; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
     <span>🔒 Documento Oficial Indexado por <strong>IT SERVICIOS DE VENEZUELA</strong> — Suite de Diagnóstico Entrust</span>
-    <span>Sello Digital: SHA256-KB-${Date.now().toString(16).toUpperCase()}</span>
+    <span style="word-break: break-all; font-family: monospace;">Sello Digital SHA-256: ${buildForensicSealHex('KB-RULE', { code: rule.code || code, title: rule.title || '', version: rule.manualVersion || '' })}</span>
   </div>
 </body>
 </html>`;
@@ -12528,7 +12611,7 @@ ${escapeHtml(opinion.crossFileSummary)}
           subjInput.value = `[INC-ENTRUST-${client.name.toUpperCase()}] ${criticalsCount > 0 ? `Fallo en Proceso de Autenticación / Aprovisionamiento (${criticalsCount.toLocaleString()} eventos)` : 'Auditoría de Rutina Preventiva'}`;
         }
 
-        const ticketText = `=== TICKET DE INCIDENTE ITIL — ZOHO DESK ===
+        const ticketBodyBeforeSeal = `=== TICKET DE INCIDENTE ITIL — ZOHO DESK ===
 Cliente / Organización: ${client.name}
 Plataforma: ${client.platform} (${client.version})
 Ingeniero Responsable: ${client.engineer}
@@ -12544,9 +12627,11 @@ ${isCloud ? 'Patrones Críticos: bulkidentityguard.add.error.assignedgrid (1.1M)
 
 --- PLAN DE REMEDIACIÓN RECOMENDADO ---
 ${isCloud ? '1. Habilitar overwriteExistingGrid=true en conector masivo.\n2. Habilitar updateExistingCredentials=true para actualización de esquema Q&A.\n3. Validar directiva allowPasswordReset=true y sincronización LDAP/AD.' : '1. Verificar conectividad con Directorio Activo LDAP.\n2. Comprobar disponibilidad de memoria Heap en Tomcat (-Xmx4096m).\n3. Validar vigencia de certificados en identityguard.keystore.'}
-
---- SELLO CRIPTOGRÁFICO DE AUTENTICIDAD ---
-SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
+`;
+        const zohoSealHex = computeSha256Hex(ticketBodyBeforeSeal);
+        const ticketText = `${ticketBodyBeforeSeal}
+--- SELLO CRIPTOGRÁFICO DE AUTENTICIDAD (SHA-256) ---
+${zohoSealHex}`;
 
         if (bodyArea) bodyArea.value = ticketText;
         if (modalZoho) modalZoho.classList.add('active');
@@ -12767,8 +12852,8 @@ SHA256-ZOHO-${Date.now().toString(16).toUpperCase()}-ITSERVICIOS`;
                 <option value="source_ig_audit" ${currentAssignment === 'source_ig_audit' || /audit/i.test(fn) ? 'selected' : ''}>📋 Logs de Auditoría (IG.AUDIT)</option>
                 <option value="source_ig_system" ${currentAssignment === 'source_ig_system' || (!/\.\d+$/i.test(fn) && /system/i.test(fn)) ? 'selected' : ''}>⚙️ Logs de Sistema Activo (IG.SYSTEM)</option>
                 <option value="file_${fn.toLowerCase().replace(/[^a-z0-9_.-]/g, '_')}" ${currentAssignment.startsWith('file_') ? 'selected' : ''}>📄 Archivo Rotado: ${escapeHtml(fn)}</option>
-                <option value="node_06" ${currentAssignment === 'node_06' ? 'selected' : ''}>🖥️ Servidor Primario (SACVWIG06)</option>
-                <option value="node_07" ${currentAssignment === 'node_07' ? 'selected' : ''}>🖥️ Servidor Secundario (SACVWIG07)</option>
+                <option value="node_06" ${currentAssignment === 'node_06' ? 'selected' : ''}>🖥️ Servidor Primario (IG Node 01)</option>
+                <option value="node_07" ${currentAssignment === 'node_07' ? 'selected' : ''}>🖥️ Servidor Secundario (IG Node 02)</option>
                 <option value="node_wso2" ${currentAssignment === 'node_wso2' ? 'selected' : ''}>🖥️ Gateway WSO2 APIM</option>
               </select>
             </div>
